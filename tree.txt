@@ -1,0 +1,73 @@
+.
+├── apps
+│   ├── agents
+│   │   ├── editor
+│   │   ├── maintainer
+│   │   └── producer
+│   ├── crawlers
+│   ├── portals
+│   │   ├── admin
+│   │   │   └── src
+│   │   │       └── apps
+│   │   │           └── csr
+│   │   └── main
+│   │       └── src
+│   │           ├── apps
+│   │           │   ├── csr
+│   │           │   ├── ssg
+│   │           │   └── ssr
+│   │           ├── aspects
+│   │           └── features
+│   ├── scrappers
+│   │   └── store-app
+│   │       ├── Dockerfile
+│   │       ├── eslint.config.mjs
+│   │       ├── jest.config.ts
+│   │       ├── project.json
+│   │       ├── provisioning
+│   │       │   ├── azure-pipelines.yml
+│   │       │   └── k8s
+│   │       │       ├── namespace.yaml
+│   │       │       ├── scrapper.configmap.yaml
+│   │       │       ├── scrapper.cronjob.yaml
+│   │       │       ├── scrapper.onetimejob.yaml
+│   │       │       └── service-account.yaml
+│   │       ├── README.md
+│   │       ├── src
+│   │       │   ├── index.ts
+│   │       │   └── lib
+│   │       │       ├── scrap-app-details-from-store-app.task.ts
+│   │       │       ├── scrap-app-list-from-store-app.task.ts
+│   │       │       ├── scraped-app.dto.ts
+│   │       │       ├── scrapper.ts
+│   │       │       ├── store-app.spec.ts
+│   │       │       ├── store-app.ts
+│   │       │       └── utils.ts
+│   │       ├── tsconfig.json
+│   │       ├── tsconfig.lib.json
+│   │       └── tsconfig.spec.json
+│   └── services
+│       ├── content
+│       ├── identity
+│       └── subscription
+├── docs.md
+├── domains
+│   ├── customer
+│   ├── editorial
+│   ├── identity
+│   ├── monetization
+│   └── publishing
+├── eslint.config.mjs
+├── infrastructure
+├── jest.config.ts
+├── jest.preset.js
+├── libs
+│   ├── primitives
+│   └── ui
+├── nx.json
+├── package-lock.json
+├── package.json
+├── tree.txt
+└── tsconfig.base.json
+
+39 directories, 31 files

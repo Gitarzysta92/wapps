@@ -1,0 +1,9 @@
+{
+  "collectionName": "store_links",
+  "info": { "name": "StoreLink" },
+  "attributes": {
+    "storeId": { "type": "enumeration", "enum": ["GooglePlay", "AppleStore", "AppGallery", "MicrosoftStore"] },
+    "url": { "type": "string" },
+    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" }
+  }
+} 

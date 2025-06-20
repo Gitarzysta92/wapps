@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-discovery
+  namespace: scrapper
+data:
+  RABBITMQ_HOST: rabbitmq.rabbitmq.svc.cluster.local
+  RABBITMQ_PORT: "5672"

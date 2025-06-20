@@ -1,0 +1,24 @@
+{
+  "collectionName": "categories",
+  "info": {
+    "name": "Category"
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "childCategories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category",
+      "mappedBy": "parentCategory"
+    },
+    "parentCategory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "childCategories"
+    }
+  },
+  "kind": "collectionType"
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
+    }
+  },
+  "projects": {},
+  "generators": {},
+  "affected": {},
+  "cli": {},
+  "tasksRunnerOptions": {},
+  "workspaceLayout": {},
+  "defaultProject": "",
+  "pluginsConfig": {},
+  "implicitDependencies": {},
+  "enforceModuleBoundaries": [
+    {
+      "sourceTag": "type:app",
+      "onlyDependOnLibsWithTags": [
+        "type:lib",
+        "type:ui",
+        "type:primitive",
+        "type:domain"
+      ]
+    },
+    {
+      "sourceTag": "type:domain",
+      "onlyDependOnLibsWithTags": ["type:lib", "type:ui", "type:primitive"]
+    },
+    {
+      "sourceTag": "type:lib",
+      "onlyDependOnLibsWithTags": ["type:ui", "type:primitive"]
+    },
+    {
+      "sourceTag": "type:ui",
+      "onlyDependOnLibsWithTags": ["type:primitive"]
+    }
+  ],
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    }
+  ]
+}

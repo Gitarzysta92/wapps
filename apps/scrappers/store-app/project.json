@@ -1,0 +1,19 @@
+{
+  "name": "store-app",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/scrappers/store-app/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:scrappers-store-app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/scrappers/store-app",
+        "main": "apps/scrappers/store-app/src/index.ts",
+        "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
+        "assets": ["apps/scrappers/store-app/*.md"]
+      }
+    }
+  }
+}

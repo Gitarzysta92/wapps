@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  IMAGE_NAME: editorial
+  IMAGE_TAG: $(Build.BuildId)
+
+pool:
+  name: 'Local Server Pool'
+
+steps:
+  # 1. Setup Node.js
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Use Node.js 18'
+
+  # 2. Install dependencies
+  - script: |
+      npm ci
+    displayName: 'Install dependencies'
+
+  # 3. Build Strapi (if needed)
+  - script: |
+      npm run build
+    displayName: 'Build Strapi app'
+
+  # 4. Build Docker image
+  - script: |
+      eval $(minikube docker-env)
+      docker build -f apps/services/editorial/Dockerfile -t $(IMAGE_NAME):$(IMAGE_TAG) .
+    displayName: 'Build Docker image inside Minikube'
+
+  # 5. Deploy to Kubernetes (Deployment & Service)
+  - script: |
+      kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.deployment.yaml
+      kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service.yaml
+    displayName: 'Deploy Strapi Deployment and Service'

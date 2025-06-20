@@ -1,0 +1,24 @@
+{
+  "name": "editorial",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/editorial/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:editorial"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/services/editorial",
+        "main": "apps/services/editorial/src/index.ts",
+        "tsConfig": "apps/services/editorial/tsconfig.json",
+        "assets": [
+          "apps/services/editorial/*.md",
+          "apps/services/editorial/public",
+          "apps/services/editorial/config",
+          "apps/services/editorial/database"
+        ]
+      }
+    }
+  }
+} 

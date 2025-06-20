@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+      - main
+
+  paths:
+    include:
+      - apps/scrappers/store-app/**
+
+
+variables:
+  IMAGE_NAME: store-app-scrapper
+  IMAGE_TAG: latest
+
+pool:
+  name: 'Local Server Pool'
+
+steps:
+  # 1. Setup Node.js
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Use Node.js 18'
+
+  # 2. Install deps
+  - script: |
+      npm ci
+    displayName: 'Install dependencies'
+
+  # 3. Build the specific app using Nx
+  - script: |
+      npx nx build scrappers-store-app
+    displayName: 'Build scrappers-store-app with Nx'
+
+  # 4. Build the Docker image using output from dist/
+  - script: |
+      eval $(minikube docker-env)
+      docker build -f apps/scrappers/store-app/Dockerfile -t $(IMAGE_NAME):$(IMAGE_TAG) .
+    displayName: 'Build Docker image inside Minikube'
+
+  # 5. Deploy Kubernetes components
+  - script: |
+      kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.cronjob.yaml
+    displayName: 'Apply CronJob to cluster'
+
+  - script: |
+      kubectl create -f apps/scrappers/store-app/provisioning/k8s/scrapper.onetimejob.yaml || echo "Job probably already exists"
+    displayName: 'Create OneTimeJob to cluster'

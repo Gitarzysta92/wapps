@@ -1,0 +1,25 @@
+{
+  "collectionName": "platform_associations",
+  "info": {
+    "name": "PlatformAssociation"
+  },
+  "attributes": {
+    "platformId": {
+      "type": "enumeration",
+      "enum": [
+        "Web",
+        "IOS",
+        "Android",
+        "Windows",
+        "Linux",
+        "MacOS"
+      ]
+    },
+    "appListing": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-listing.app-listing"
+    }
+  },
+  "kind": "collectionType"
+}

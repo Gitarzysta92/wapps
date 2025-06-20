@@ -1,0 +1,24 @@
+{
+  "collectionName": "device_associations",
+  "info": {
+    "name": "DeviceAssociation"
+  },
+  "attributes": {
+    "deviceId": {
+      "type": "enumeration",
+      "enum": [
+        "Desktop",
+        "Tablet",
+        "Phone",
+        "Smartwatch",
+        "Tv"
+      ]
+    },
+    "appListing": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-listing.app-listing"
+    }
+  },
+  "kind": "collectionType"
+}

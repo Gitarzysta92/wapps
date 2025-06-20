@@ -1,0 +1,12 @@
+{
+  "collectionName": "tags",
+  "info": {
+    "name": "Tag"
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "kind": "collectionType"
+}

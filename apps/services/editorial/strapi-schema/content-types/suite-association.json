@@ -1,0 +1,8 @@
+{
+  "collectionName": "suite_associations",
+  "info": { "name": "SuiteAssociation" },
+  "attributes": {
+    "suite": { "type": "relation", "relation": "manyToOne", "target": "api::suite.suite" },
+    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" }
+  }
+} 

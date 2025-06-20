@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022", "DOM"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist/out-tsc",
+    "rootDir": ".",
+    "composite": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "types": [],
+    "paths": {
+      "store-app": ["apps/scrappers/store-app/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"],
+  "rules": {
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "collectionName": "social_links",
+  "info": { "name": "SocialLink" },
+  "attributes": {
+    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" },
+    "socialId": { "type": "enumeration", "enum": ["Facebook", "X", "Reddit", "Discord", "LinkedIn", "Medium"] },
+    "url": { "type": "string" }
+  }
+} 

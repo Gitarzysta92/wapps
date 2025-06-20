@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: editorial
+  namespace: editorial
+spec:
+  selector:
+    app: editorial
+  ports:
+    - protocol: TCP
+      port: 1337
+      targetPort: 1337
+  type: ClusterIP 

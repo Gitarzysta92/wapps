@@ -1,0 +1,22 @@
+{
+  "collectionName": "app_listings",
+  "info": { "name": "AppListing" },
+  "attributes": {
+    "organizationProfile": { "type": "relation", "relation": "manyToOne", "target": "api::organization-profile.organization-profile" },
+    "category": { "type": "relation", "relation": "manyToOne", "target": "api::category.category" },
+    "tags": { "type": "relation", "relation": "manyToMany", "target": "api::tag.tag" },
+    "isPwa": { "type": "boolean" },
+    "rating": { "type": "integer" },
+    "website": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "text" },
+    "estimatedNumberOfUsers": { "type": "integer" },
+    "isSuspended": { "type": "boolean" },
+    "logo": { "type": "media", "multiple": false, "required": false },
+    "banner": { "type": "media", "multiple": false, "required": false },
+    "screenshots": { "type": "media", "multiple": true, "required": false },
+    "stores": { "type": "relation", "relation": "oneToMany", "target": "api::social-link.social-link" },
+    "socials": { "type": "relation", "relation": "oneToMany", "target": "api::store-link.store-link" },
+    "devices": { "type": "relation", "relation": "oneToMany", "target": "api::device-association.device-association" }
+  }
+} 

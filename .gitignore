@@ -1,0 +1,41 @@
+# Node
+node_modules/
+
+# Nx
+/dist/
+/.nx/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Strapi
+.cache/
+build/
+public/uploads/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Test
+coverage/
+
+# Misc
+*.tgz
+*.log
+
+# Docker
+*.local
+.docker/ 

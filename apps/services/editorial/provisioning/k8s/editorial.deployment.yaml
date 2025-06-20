@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editorial
+  namespace: editorial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: editorial
+  template:
+    metadata:
+      labels:
+        app: editorial
+    spec:
+      containers:
+        - name: editorial
+          image: editorial:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 1337
+          env:
+            - name: NODE_ENV
+              value: "production"
+            # Add other Strapi env vars as needed 

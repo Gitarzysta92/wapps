@@ -1,0 +1,22 @@
+{
+  "collectionName": "app_listing_associations",
+  "info": {
+    "name": "AppListingAssociation"
+  },
+  "attributes": {
+    "appListing": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-listing.app-listing"
+    },
+    "organizationProfile": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organization-profile.organization-profile"
+    },
+    "isSuspended": {
+      "type": "boolean"
+    }
+  },
+  "kind": "collectionType"
+}

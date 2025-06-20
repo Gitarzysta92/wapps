@@ -1,0 +1,19 @@
+{
+  "collectionName": "tag_associations",
+  "info": {
+    "name": "TagAssociation"
+  },
+  "attributes": {
+    "tag": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tag.tag"
+    },
+    "appListing": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-listing.app-listing"
+    }
+  },
+  "kind": "collectionType"
+}
