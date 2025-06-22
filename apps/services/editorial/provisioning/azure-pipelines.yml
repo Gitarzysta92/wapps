@@ -28,8 +28,8 @@ steps:
   # 3. Symlink root package.json into Strapi project,
   # to satisfy strapi cli
   - script: |
-      ln -sf package.json apps/services/editorial/package.json
-    displayName: 'Symlink root package.json into editorial'
+      cp package.json apps/services/editorial/package.jsonn
+    displayName: 'Copy root package.json into editorial'
 
   # 4. Build Strapi using Nx
   - script: |
@@ -49,8 +49,3 @@ steps:
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service-account.yaml
     displayName: 'Deploy Strapi Deployment and Service'
 
-  # 7. Always clean up the symlink
-  - script: |
-      rm -f apps/services/editorial/package.json
-    displayName: 'Clean up symlinked package.json'
-    condition: always()
