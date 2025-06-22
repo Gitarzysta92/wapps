@@ -8,7 +8,7 @@ trigger:
 
 variables:
   IMAGE_NAME: editorial
-  IMAGE_TAG: $(Build.BuildId)
+  IMAGE_TAG: latest
 
 pool:
   name: 'Local Server Pool'
