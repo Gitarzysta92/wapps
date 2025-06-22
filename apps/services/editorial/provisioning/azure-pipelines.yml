@@ -1,7 +1,10 @@
 trigger:
   branches:
     include:
-      - main
+      - "*"
+  paths:
+    include:
+      - services/editorial/*
 
 variables:
   IMAGE_NAME: editorial
