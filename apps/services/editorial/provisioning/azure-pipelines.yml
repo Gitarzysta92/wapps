@@ -25,18 +25,23 @@ steps:
       npm ci
     displayName: 'Install dependencies'
 
-  # 3. Build Strapi using Nx target
+  # 3. Generate minimal package.json for Strapi compatibility
+  - script: |
+      echo '{ "name": "editorial", "private": true, "version": "0.0.0" }' > apps/services/editorial/package.json
+    displayName: 'Create minimal package.json for Strapi'
+
+  # 4. Build Strapi using Nx
   - script: |
       npx nx run apps.services.editorial:build
     displayName: 'Nx build Strapi app'
 
-  # 4. Build Docker image
+  # 5. Build Docker image
   - script: |
       eval $(minikube docker-env)
       docker build -f apps/services/editorial/Dockerfile -t $(IMAGE_NAME):$(IMAGE_TAG) .
     displayName: 'Build Docker image inside Minikube'
 
-  # 5. Deploy to Kubernetes
+  # 6. Deploy to Kubernetes
   - script: |
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.deployment.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service.yaml
