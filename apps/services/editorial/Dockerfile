@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install dependencies for Chromium if your app needs headless browsing
+# Install dependencies for Chromium (optional)
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
@@ -21,14 +21,18 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-# Copy only pre-built output from the Nx build
-COPY /apps/services/editorial/dist ./dist
+# Copy only the built output and runtime package info
+COPY dist/apps/services/editorial ./dist
+COPY apps/services/editorial/package*.json ./
 
-# Optional: If your app reads its own package.json or uses runtime deps
-# COPY apps/services/editorial/package*.json ./
-# RUN npm ci --omit=dev
+# Install only production dependencies
+RUN npm ci --omit=dev
 
-# Run the app
-CMD ["node", "dist/src/index.js"]  # Adjust entrypoint if different 
+# Set env to production
+ENV NODE_ENV=production
+
+# Launch the app
+CMD ["npm", "start"]
