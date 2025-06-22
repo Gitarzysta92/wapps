@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy dependency files and install
-COPY package*.json ./
-RUN npm install --production
+COPY apps/services/editorial/package*.json ./
+RUN npm install --omit=dev
 
 # Copy the rest of your app (API + Admin + Config)
-COPY . .
+COPY apps/services/editorial/ .
 
 # Build Admin Panel
 RUN npm run build

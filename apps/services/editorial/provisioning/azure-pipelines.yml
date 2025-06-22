@@ -20,11 +20,6 @@ steps:
       versionSpec: '18.x'
     displayName: 'Use Node.js 18'
 
-  # 2. Install dependencies
-  - script: |
-      npm ci
-    displayName: 'Install dependencies'
-
   # 5. Build Docker image
   - script: |
       eval $(minikube docker-env)
