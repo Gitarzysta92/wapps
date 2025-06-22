@@ -1,10 +1,10 @@
 trigger:
   branches:
     include:
-      - "master"
+      - master
   paths:
     include:
-      - apps/services/editorial/*
+      - apps/services/editorial/**
 
 variables:
   IMAGE_NAME: editorial
@@ -25,10 +25,10 @@ steps:
       npm ci
     displayName: 'Install dependencies'
 
-  # 3. Build Strapi (if needed)
+  # 3. Build Strapi using Nx target
   - script: |
-      npm run build
-    displayName: 'Build Strapi app'
+      npx nx run apps.services.editorial:build
+    displayName: 'Nx build Strapi app'
 
   # 4. Build Docker image
   - script: |
@@ -36,7 +36,7 @@ steps:
       docker build -f apps/services/editorial/Dockerfile -t $(IMAGE_NAME):$(IMAGE_TAG) .
     displayName: 'Build Docker image inside Minikube'
 
-  # 5. Deploy to Kubernetes (Deployment & Service)
+  # 5. Deploy to Kubernetes
   - script: |
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.deployment.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service.yaml
