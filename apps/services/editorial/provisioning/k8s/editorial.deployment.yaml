@@ -23,7 +23,7 @@ spec:
           export DATABASE_NAME={{ .Data.data.name }}
           export DATABASE_USERNAME={{ .Data.data.username }}
           export DATABASE_PASSWORD={{ .Data.data.password }}
-          export DATABASE_SSL={{ .Data.data.ssl | default "false" }}
+          export DATABASE_SSL={{ .Data.data.ssl }}
           {{- end }}
     spec:
       serviceAccountName: editorial-service-auth

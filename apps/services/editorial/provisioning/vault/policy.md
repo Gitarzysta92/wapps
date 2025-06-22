@@ -10,4 +10,4 @@ path "secret/data/editorial/strapi-db" {
 }
 
 
-echo 'path "secret/data/editorial/service-db" { capabilities = ["read"] }' | vault policy write editorial-service-policy -
+echo 'path "secret/data/editorial/database" { capabilities = ["read"] }' | vault policy write editorial-service-policy -
