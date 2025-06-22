@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy only pre-built output from the Nx build
-COPY dist/apps/services/editorial ./dist
+COPY /apps/services/editorial/dist ./dist
 
 # Optional: If your app reads its own package.json or uses runtime deps
 # COPY apps/services/editorial/package*.json ./
