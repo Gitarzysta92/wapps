@@ -25,11 +25,6 @@ steps:
       npm ci
     displayName: 'Install dependencies'
 
-  # 3. Symlink root package.json into Strapi project,
-  # to satisfy strapi cli
-  - script: |
-      cp package.json apps/services/editorial/package.jsonn
-    displayName: 'Copy root package.json into editorial'
 
   # 4. Build Strapi using Nx
   - script: |
