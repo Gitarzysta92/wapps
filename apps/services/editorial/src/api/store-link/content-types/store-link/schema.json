@@ -1,7 +1,10 @@
 {
   "collectionName": "store_links",
   "info": {
-    "name": "StoreLink"
+    "name": "StoreLink",
+    "singularName": "store-link",
+    "pluralName": "store-links",
+    "displayName": "Store link"
   },
   "attributes": {
     "storeId": {

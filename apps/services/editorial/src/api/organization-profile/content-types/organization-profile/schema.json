@@ -1,7 +1,10 @@
 {
   "collectionName": "organization_profiles",
   "info": {
-    "name": "OrganizationProfile"
+    "name": "OrganizationProfile",
+    "singularName": "organization-profile",
+    "pluralName": "organization-profiles",
+    "displayName": "Organization profile"
   },
   "attributes": {
     "name": {

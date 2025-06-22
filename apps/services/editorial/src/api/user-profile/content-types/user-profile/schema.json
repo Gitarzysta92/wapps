@@ -1,7 +1,10 @@
 {
   "collectionName": "user_profiles",
   "info": {
-    "name": "UserProfile"
+    "name": "UserProfile",
+    "singularName": "user-profile",
+    "pluralName": "user-profiles",
+    "displayName": "User profile"
   },
   "attributes": {
     "name": {

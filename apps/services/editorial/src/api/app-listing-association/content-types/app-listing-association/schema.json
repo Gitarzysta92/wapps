@@ -1,7 +1,10 @@
 {
   "collectionName": "app_listing_associations",
   "info": {
-    "name": "AppListingAssociation"
+    "name": "AppListingAssociation",
+    "singularName": "app-listing-association",
+    "pluralName": "app-listing-associations",
+    "displayName": "App listing association"
   },
   "attributes": {
     "appListing": {

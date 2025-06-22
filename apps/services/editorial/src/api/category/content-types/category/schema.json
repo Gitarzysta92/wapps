@@ -1,7 +1,10 @@
 {
   "collectionName": "categories",
   "info": {
-    "name": "Category"
+    "name": "Category",
+    "singularName": "category",
+    "pluralName": "categorys",
+    "displayName": "Category"
   },
   "attributes": {
     "name": {

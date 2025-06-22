@@ -1,13 +1,16 @@
 {
-  "collectionName": "suite_associations",
+  "collectionName": "tag_associations",
   "info": {
-    "name": "SuiteAssociation"
+    "name": "TagAssociation",
+    "singularName": "tag-association",
+    "pluralName": "tag-associations",
+    "displayName": "Tag association"
   },
   "attributes": {
-    "suite": {
+    "tag": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::suite.suite"
+      "target": "api::tag.tag"
     },
     "appListing": {
       "type": "relation",

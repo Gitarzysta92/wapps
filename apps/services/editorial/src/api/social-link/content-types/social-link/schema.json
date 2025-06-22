@@ -1,7 +1,10 @@
 {
   "collectionName": "social_links",
   "info": {
-    "name": "SocialLink"
+    "name": "SocialLink",
+    "singularName": "social-link",
+    "pluralName": "social-links",
+    "displayName": "Social link"
   },
   "attributes": {
     "appListing": {

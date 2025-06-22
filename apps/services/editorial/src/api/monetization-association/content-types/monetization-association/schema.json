@@ -1,7 +1,10 @@
 {
   "collectionName": "monetization_associations",
   "info": {
-    "name": "MonetizationAssociation"
+    "name": "MonetizationAssociation",
+    "singularName": "monetization-association",
+    "pluralName": "monetization-associations",
+    "displayName": "Monetization association"
   },
   "attributes": {
     "monetizationId": {

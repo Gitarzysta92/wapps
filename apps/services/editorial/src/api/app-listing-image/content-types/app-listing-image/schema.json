@@ -1,7 +1,10 @@
 {
   "collectionName": "app_listing_images",
   "info": {
-    "name": "AppListingImage"
+    "name": "AppListingImage",
+    "singularName": "app-listing-image",
+    "pluralName": "app-listing-images",
+    "displayName": "App listing image"
   },
   "attributes": {
     "appListing": {

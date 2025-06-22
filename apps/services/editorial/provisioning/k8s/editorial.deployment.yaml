@@ -12,7 +12,21 @@ spec:
     metadata:
       labels:
         app: editorial
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "editorial-strapi-role"
+        vault.hashicorp.com/agent-inject-secret-db-creds: "secret/data/editorial/strapi-db"
+        vault.hashicorp.com/agent-inject-template-db-creds: |
+          {{- with secret "secret/data/editorial/strapi-db" -}}
+          export DATABASE_HOST={{ .Data.data.host }}
+          export DATABASE_PORT={{ .Data.data.port }}
+          export DATABASE_NAME={{ .Data.data.name }}
+          export DATABASE_USERNAME={{ .Data.data.username }}
+          export DATABASE_PASSWORD={{ .Data.data.password }}
+          export DATABASE_SSL={{ .Data.data.ssl | default "false" }}
+          {{- end }}
     spec:
+      serviceAccountName: editorial-service-auth
       containers:
         - name: editorial
           image: editorial:latest
@@ -22,4 +36,8 @@ spec:
           env:
             - name: NODE_ENV
               value: "production"
-            # Add other Strapi env vars as needed 
+          command: ["sh", "-c"]
+          args:
+            - |
+              . /vault/secrets/db-creds && node dist/src/index.js
+          # Add other Strapi env vars as needed 

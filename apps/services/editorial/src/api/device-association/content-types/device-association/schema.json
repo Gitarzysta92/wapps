@@ -1,7 +1,10 @@
 {
   "collectionName": "device_associations",
   "info": {
-    "name": "DeviceAssociation"
+    "name": "DeviceAssociation",
+    "singularName": "device-association",
+    "pluralName": "device-associations",
+    "displayName": "Device association"
   },
   "attributes": {
     "deviceId": {

@@ -373,6 +373,481 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAppListingAssociationAppListingAssociation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'app_listing_associations';
+  info: {
+    displayName: 'App listing association';
+    name: 'AppListingAssociation';
+    pluralName: 'app-listing-associations';
+    singularName: 'app-listing-association';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    isSuspended: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::app-listing-association.app-listing-association'
+    > &
+      Schema.Attribute.Private;
+    organizationProfile: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::organization-profile.organization-profile'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiAppListingImageAppListingImage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'app_listing_images';
+  info: {
+    displayName: 'App listing image';
+    name: 'AppListingImage';
+    pluralName: 'app-listing-images';
+    singularName: 'app-listing-image';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::app-listing-image.app-listing-image'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiAppListingAppListing extends Struct.CollectionTypeSchema {
+  collectionName: 'app_listings';
+  info: {
+    displayName: 'App listing';
+    pluralName: 'app-listings';
+    singularName: 'app-listing';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    banner: Schema.Attribute.Media;
+    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    devices: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::device-association.device-association'
+    >;
+    estimatedNumberOfUsers: Schema.Attribute.Integer;
+    isPwa: Schema.Attribute.Boolean;
+    isSuspended: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::app-listing.app-listing'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media;
+    name: Schema.Attribute.String;
+    organizationProfile: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::organization-profile.organization-profile'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Integer;
+    screenshots: Schema.Attribute.Media<undefined, true>;
+    socials: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::store-link.store-link'
+    >;
+    stores: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::social-link.social-link'
+    >;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    website: Schema.Attribute.String;
+  };
+}
+
+export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
+  collectionName: 'categories';
+  info: {
+    displayName: 'Category';
+    name: 'Category';
+    pluralName: 'categorys';
+    singularName: 'category';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    childCategories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    parentCategory: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::category.category'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDeviceAssociationDeviceAssociation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'device_associations';
+  info: {
+    displayName: 'Device association';
+    name: 'DeviceAssociation';
+    pluralName: 'device-associations';
+    singularName: 'device-association';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deviceId: Schema.Attribute.Enumeration<
+      ['Desktop', 'Tablet', 'Phone', 'Smartwatch', 'Tv']
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::device-association.device-association'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiMonetizationAssociationMonetizationAssociation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'monetization_associations';
+  info: {
+    displayName: 'Monetization association';
+    name: 'MonetizationAssociation';
+    pluralName: 'monetization-associations';
+    singularName: 'monetization-association';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::monetization-association.monetization-association'
+    > &
+      Schema.Attribute.Private;
+    monetizationId: Schema.Attribute.Enumeration<
+      ['Free', 'Freemium', 'Subscription', 'AdBased', 'OneTimePurchase', 'Fees']
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOrganizationProfileOrganizationProfile
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'organization_profiles';
+  info: {
+    displayName: 'Organization profile';
+    name: 'OrganizationProfile';
+    pluralName: 'organization-profiles';
+    singularName: 'organization-profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListingAssignments: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::app-listing-association.app-listing-association'
+    >;
+    avatar: Schema.Attribute.Media;
+    contactWebpage: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    email: Schema.Attribute.String;
+    listingLimit: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::organization-profile.organization-profile'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    phoneNumber: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+  };
+}
+
+export interface ApiPlatformAssociationPlatformAssociation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'platform_associations';
+  info: {
+    displayName: 'Platform association';
+    name: 'PlatformAssociation';
+    pluralName: 'platform-associations';
+    singularName: 'platform-association';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::platform-association.platform-association'
+    > &
+      Schema.Attribute.Private;
+    platformId: Schema.Attribute.Enumeration<
+      ['Web', 'IOS', 'Android', 'Windows', 'Linux', 'MacOS']
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSocialLinkSocialLink extends Struct.CollectionTypeSchema {
+  collectionName: 'social_links';
+  info: {
+    displayName: 'Social link';
+    name: 'SocialLink';
+    pluralName: 'social-links';
+    singularName: 'social-link';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::social-link.social-link'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    socialId: Schema.Attribute.Enumeration<
+      ['Facebook', 'X', 'Reddit', 'Discord', 'LinkedIn', 'Medium']
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+  };
+}
+
+export interface ApiStoreLinkStoreLink extends Struct.CollectionTypeSchema {
+  collectionName: 'store_links';
+  info: {
+    displayName: 'Store link';
+    name: 'StoreLink';
+    pluralName: 'store-links';
+    singularName: 'store-link';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::store-link.store-link'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    storeId: Schema.Attribute.Enumeration<
+      ['GooglePlay', 'AppleStore', 'AppGallery', 'MicrosoftStore']
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+  };
+}
+
+export interface ApiTagAssociationTagAssociation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'tag_associations';
+  info: {
+    displayName: 'Tag association';
+    name: 'TagAssociation';
+    pluralName: 'tag-associations';
+    singularName: 'tag-association';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    appListing: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::app-listing.app-listing'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tag-association.tag-association'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    tag: Schema.Attribute.Relation<'manyToOne', 'api::tag.tag'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTagTag extends Struct.CollectionTypeSchema {
+  collectionName: 'tags';
+  info: {
+    displayName: 'Tag';
+    name: 'Tag';
+    pluralName: 'tags';
+    singularName: 'tag';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiUserProfileUserProfile extends Struct.CollectionTypeSchema {
+  collectionName: 'user_profiles';
+  info: {
+    displayName: 'User profile';
+    name: 'UserProfile';
+    pluralName: 'user-profiles';
+    singularName: 'user-profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::user-profile.user-profile'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -730,6 +1205,19 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::app-listing-association.app-listing-association': ApiAppListingAssociationAppListingAssociation;
+      'api::app-listing-image.app-listing-image': ApiAppListingImageAppListingImage;
+      'api::app-listing.app-listing': ApiAppListingAppListing;
+      'api::category.category': ApiCategoryCategory;
+      'api::device-association.device-association': ApiDeviceAssociationDeviceAssociation;
+      'api::monetization-association.monetization-association': ApiMonetizationAssociationMonetizationAssociation;
+      'api::organization-profile.organization-profile': ApiOrganizationProfileOrganizationProfile;
+      'api::platform-association.platform-association': ApiPlatformAssociationPlatformAssociation;
+      'api::social-link.social-link': ApiSocialLinkSocialLink;
+      'api::store-link.store-link': ApiStoreLinkStoreLink;
+      'api::tag-association.tag-association': ApiTagAssociationTagAssociation;
+      'api::tag.tag': ApiTagTag;
+      'api::user-profile.user-profile': ApiUserProfileUserProfile;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

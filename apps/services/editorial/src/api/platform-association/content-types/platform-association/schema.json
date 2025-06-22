@@ -1,7 +1,10 @@
 {
   "collectionName": "platform_associations",
   "info": {
-    "name": "PlatformAssociation"
+    "name": "PlatformAssociation",
+    "singularName": "platform-association",
+    "pluralName": "platform-associations",
+    "displayName": "Platform association"
   },
   "attributes": {
     "platformId": {
