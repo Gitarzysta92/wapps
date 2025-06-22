@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy only the built output and runtime package info
-COPY dist/apps/services/editorial ./dist
+COPY apps/services/editorial/dist ./dist
 COPY apps/services/editorial/package*.json ./
 
 # Install only production dependencies
