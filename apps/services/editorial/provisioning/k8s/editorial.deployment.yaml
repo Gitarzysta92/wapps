@@ -39,5 +39,8 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              . /vault/secrets/db-creds && node dist/src/index.js
+              . /vault/secrets/db-creds
+              echo "Launching app with env:"
+              env | grep DATABASE
+              node dist/src/index.js 2>&1 | tee /tmp/app.log
           # Add other Strapi env vars as needed 
