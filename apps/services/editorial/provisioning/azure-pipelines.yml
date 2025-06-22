@@ -25,12 +25,6 @@ steps:
       npm ci
     displayName: 'Install dependencies'
 
-
-  # 4. Build Strapi using Nx
-  - script: |
-      npx nx run apps.services.editorial:build
-    displayName: 'Nx build Strapi app'
-
   # 5. Build Docker image
   - script: |
       eval $(minikube docker-env)

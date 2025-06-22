@@ -1,38 +1,26 @@
 FROM node:18-slim
 
-# Install dependencies for Chromium (optional)
+# Install OS deps (optional: only needed if you use SQLite or sharp)
 RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    xdg-utils \
-    wget \
+    python3 make g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Set workdir
 WORKDIR /app
 
-# Copy only the built output and runtime package info
-COPY apps/services/editorial/dist ./dist
-COPY apps/services/editorial/package*.json ./
+# Copy dependency files and install
+COPY package*.json ./
+RUN npm install --production
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# Copy the rest of your app (API + Admin + Config)
+COPY . .
 
-# Set env to production
+# Build Admin Panel
+RUN npm run build
+
+# Expose Strapi port
+EXPOSE 1337
+
+# Run Strapi in production mode
 ENV NODE_ENV=production
-
-# Launch the app
 CMD ["npm", "start"]
