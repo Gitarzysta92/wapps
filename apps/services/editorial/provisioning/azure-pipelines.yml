@@ -40,6 +40,7 @@ steps:
   # 6. Deploy to Kubernetes
   - script: |
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.namespace.yaml
+      kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.ingress.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.deployment.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service-account.yaml
