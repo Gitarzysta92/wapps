@@ -25,10 +25,11 @@ steps:
       npm ci
     displayName: 'Install dependencies'
 
-  # 3. Generate minimal package.json for Strapi compatibility
+  # 3. Symlink root package.json into Strapi project,
+  # to satisfy strapi cli
   - script: |
-      echo '{ "name": "editorial", "private": true, "version": "0.0.0" }' > apps/services/editorial/package.json
-    displayName: 'Create minimal package.json for Strapi'
+      ln -sf package.json apps/services/editorial/package.json
+    displayName: 'Symlink root package.json into editorial'
 
   # 4. Build Strapi using Nx
   - script: |
@@ -47,3 +48,9 @@ steps:
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service.yaml
       kubectl apply -f apps/services/editorial/provisioning/k8s/editorial.service-account.yaml
     displayName: 'Deploy Strapi Deployment and Service'
+
+  # 7. Always clean up the symlink
+  - script: |
+      rm -f apps/services/editorial/package.json
+    displayName: 'Clean up symlinked package.json'
+    condition: always()
