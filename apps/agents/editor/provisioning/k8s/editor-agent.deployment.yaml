@@ -40,7 +40,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              . /vault/secrets/openai && 
-              . /vault/secrets/editorial-service && 
-              . /vault/secrets/queue && 
+              . /vault/secrets/openai &&
+              . /vault/secrets/editorial-service &&
+              . /vault/secrets/queue &&
               node dist/index.js 
