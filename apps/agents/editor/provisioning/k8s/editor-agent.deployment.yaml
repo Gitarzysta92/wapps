@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editor-agent
+  namespace: editor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: editor-agent
+  template:
+    metadata:
+      labels:
+        app: editor-agent
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "editor-agent-role"
+        vault.hashicorp.com/agent-inject-secret-openai: "secret/data/openai"
+        vault.hashicorp.com/agent-inject-template-openai: |
+          {{- with secret "secret/data/openai" -}}
+          export OPENAI_API_KEY={{ .Data.data.OPENAI_API_KEY }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-secret-editorial-service: "secret/data/editorial/service"
+        vault.hashicorp.com/agent-inject-template-editorial-service: |
+          {{- with secret "secret/data/editorial/service" -}}
+          export EDITORIAL_SERVICE_API_TOKEN={{ .Data.data.editorial.service.token }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-secret-queue: "secret/data/rabbitmq"
+        vault.hashicorp.com/agent-inject-template-queue: |
+          {{- with secret "secret/data/rabbitmq" -}}
+          export QUEUE_USER={{ .Data.data.user }}
+          export QUEUE_PASSWORD={{ .Data.data.password }}
+          {{- end }}
+    spec:
+      serviceAccountName: editor-agent
+      containers:
+        - name: editor-agent
+          image: editor-agent:latest
+          imagePullPolicy: Never
+          command: ["sh", "-c"]
+          args:
+            - |
+              . /vault/secrets/openai && 
+              . /vault/secrets/editorial-service && 
+              . /vault/secrets/queue && 
+              node dist/index.js 

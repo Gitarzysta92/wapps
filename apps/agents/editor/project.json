@@ -1,0 +1,19 @@
+{
+  "name": "editor-agent",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/agents/editor/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/agents/editor",
+        "main": "apps/agents/editor/src/index.ts",
+        "tsConfig": "apps/agents/editor/tsconfig.lib.json",
+        "assets": ["apps/agents/editor/*.md"]
+      }
+    }
+  }
+}

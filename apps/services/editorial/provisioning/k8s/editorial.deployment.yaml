@@ -39,7 +39,7 @@ spec:
           export TRANSFER_TOKEN_SALT={{ .Data.data.TRANSFER_TOKEN_SALT }}
           {{- end }}
     spec:
-      serviceAccountName: editorial-service-auth
+      serviceAccountName: editorial-service
       containers:
         - name: editorial
           image: editorial:latest

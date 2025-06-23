@@ -31,7 +31,8 @@
     "skipLibCheck": true,
     "types": [],
     "paths": {
-      "store-app": ["apps/scrappers/store-app/src/index.ts"]
+      "@agents/editor/": ["apps/agents/editor/src/index.ts"],
+      "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
