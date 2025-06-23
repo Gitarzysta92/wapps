@@ -23,7 +23,7 @@ spec:
         vault.hashicorp.com/agent-inject-secret-editorial-service: "secret/data/editorial/service"
         vault.hashicorp.com/agent-inject-template-editorial-service: |
           {{- with secret "secret/data/editorial/service" -}}
-          export EDITORIAL_SERVICE_API_TOKEN={{ .Data.data.editorial.service.token }}
+          export EDITORIAL_SERVICE_API_TOKEN={{ .Data.data.token }}
           {{- end }}
         vault.hashicorp.com/agent-inject-secret-queue: "secret/data/rabbitmq"
         vault.hashicorp.com/agent-inject-template-queue: |
