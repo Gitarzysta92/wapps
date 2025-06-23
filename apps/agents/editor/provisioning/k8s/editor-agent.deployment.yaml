@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: editor-agent
-  namespace: editor
+  namespace: editorial
 spec:
   replicas: 1
   selector:
