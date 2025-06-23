@@ -38,11 +38,5 @@ spec:
           image: editor-agent:latest
           imagePullPolicy: Never
           command: ["sh", "-c"]
-          args:
-            - >
-              set -a &&
-              . /vault/secrets/openai &&
-              . /vault/secrets/editorial-service &&
-              . /vault/secrets/queue &&
-              set +a &&
-              exec node dist/index.js
+          args: 
+            - "set -a && . /vault/secrets/openai && . /vault/secrets/editorial-service && . /vault/secrets/queue && set +a && exec node dist/index.js"
