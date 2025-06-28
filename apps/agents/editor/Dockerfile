@@ -5,7 +5,7 @@ WORKDIR /app
 COPY dist/apps/agents/editor ./dist
 
 # Install production dependencies
-RUN npm ci --only=production
+RUN npm install
 
 ENV NODE_ENV=production
 
