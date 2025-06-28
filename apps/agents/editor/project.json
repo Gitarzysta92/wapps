@@ -6,13 +6,14 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/node:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/agents/editor",
         "main": "apps/agents/editor/src/index.ts",
         "tsConfig": "apps/agents/editor/tsconfig.lib.json",
-        "assets": ["apps/agents/editor/*.md"]
+        "assets": ["apps/agents/editor/*.md"],
+        "generatePackageJson": true
       }
     }
   }
