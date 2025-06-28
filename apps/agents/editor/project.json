@@ -2,7 +2,7 @@
   "name": "editor-agent",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/agents/editor/src",
-  "projectType": "library",
+  "projectType": "application",
   "tags": [],
   "targets": {
     "build": {

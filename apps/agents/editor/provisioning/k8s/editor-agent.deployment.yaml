@@ -39,4 +39,5 @@ spec:
           imagePullPolicy: Never
           command: ["sh", "-c"]
           args: 
-            - "set -a && . /vault/secrets/openai && . /vault/secrets/editorial-service &&  set +a && exec node dist/index.js"
+            # tutaj prawdopodobnie editorial-service token ma next line'a na końcu.
+            - "set -a && . /vault/secrets/openai && . /vault/secrets/editorial-service && . /vault/secrets/queue && set +a && exec node dist/src/index.js"
