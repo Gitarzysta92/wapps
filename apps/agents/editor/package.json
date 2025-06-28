@@ -1,0 +1,8 @@
+{
+  "name": "editor-agent",
+  "version": "0.0.1",
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "dotenv": "^16.5.0"
+  }
+}
