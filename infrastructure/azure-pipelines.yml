@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - infrastructure/**
+
+variables:
+  IMAGE_NAME: editor-agent
+  IMAGE_TAG: latest
+
+pool:
+  name: 'Local Server Pool'
+
+steps:
+  - script: |
+      kubectl apply -f infrastructure/rabbitmq/k8s/rabbitmq.service.yaml
+    displayName: 'Deploy RabbitMQ to Kubernetes'

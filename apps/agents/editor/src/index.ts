@@ -7,8 +7,8 @@ dotenv.config();
 
 const user = process.env['QUEUE_USERNAME'];
 const pass = process.env['QUEUE_PASSWORD'];
-const host = process.env['RABBITMQ_HOST'] || 'localhost';
-const port = process.env['RABBITMQ_PORT'] || '5672';
+const host = process.env['QUEUE_HOST'] || 'localhost';
+const port = process.env['QUEUE_PORT'] || '5672';
 const url = `amqp://${user}:${pass}@${host}:${port}`;
 const queueName = "store.app-scrapper";
 
