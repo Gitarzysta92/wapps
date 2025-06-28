@@ -38,6 +38,17 @@ spec:
           image: editor-agent:latest
           imagePullPolicy: Never
           command: ["sh", "-c"]
-          args: 
-            # tutaj prawdopodobnie editorial-service token ma next line'a na końcu.
-            - "set -a && . /vault/secrets/openai && . /vault/secrets/editorial-service && . /vault/secrets/queue && set +a && exec node dist/src/index.js"
+          args:
+            - >
+              echo "======= /vault/secrets/openai =======";
+              nl -ba /vault/secrets/openai;
+              echo "======= /vault/secrets/editorial-service =======";
+              nl -ba /vault/secrets/editorial-service;
+              echo "======= /vault/secrets/queue =======";
+              nl -ba /vault/secrets/queue;
+              set -a
+              && . /vault/secrets/openai
+              && . /vault/secrets/editorial-service
+              && . /vault/secrets/queue
+              && set +a
+              && exec node dist/src/index.js
