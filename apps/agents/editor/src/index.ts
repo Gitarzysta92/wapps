@@ -5,8 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-const user = process.env['RABBITMQ_USER'];
-const pass = process.env['RABBITMQ_PASSWORD'];
+const user = process.env['QUEUE_USERNAME'];
+const pass = process.env['QUEUE_PASSWORD'];
 const host = process.env['RABBITMQ_HOST'] || 'localhost';
 const port = process.env['RABBITMQ_PORT'] || '5672';
 const url = `amqp://${user}:${pass}@${host}:${port}`;

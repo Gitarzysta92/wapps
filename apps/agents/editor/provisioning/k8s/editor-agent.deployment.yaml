@@ -28,7 +28,7 @@ spec:
         vault.hashicorp.com/agent-inject-secret-queue: "secret/data/rabbitmq"
         vault.hashicorp.com/agent-inject-template-queue: |
           {{- with secret "secret/data/rabbitmq" -}}
-          export QUEUE_USER={{ .Data.data.user }}
+          export QUEUE_USERNAME={{ .Data.data.username }}
           export QUEUE_PASSWORD={{ .Data.data.password }}
           {{- end }}
     spec:
