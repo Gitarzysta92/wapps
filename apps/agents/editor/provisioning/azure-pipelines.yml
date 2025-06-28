@@ -38,4 +38,5 @@ steps:
       kubectl apply -f apps/agents/editor/provisioning/k8s/editor-agent.service-account.yaml
       kubectl apply -f apps/agents/editor/provisioning/k8s/editor-agent.config-map.yaml
       kubectl apply -f apps/agents/editor/provisioning/k8s/editor-agent.deployment.yaml
+      kubectl rollout restart deployment editor-agent -n editor-agent
     displayName: 'Deploy editor-agent to Kubernetes'
