@@ -26,6 +26,9 @@ WORKDIR /app
 # Copy only pre-built output from the Nx build
 COPY dist/apps/scrappers/store-app ./
 
+RUN npm install
+
+ENV NODE_ENV=production
 # Optional: If your app reads its own package.json or uses runtime deps
 # COPY apps/scrappers/store-app/package*.json ./
 # RUN npm ci --omit=dev
