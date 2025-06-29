@@ -14,6 +14,13 @@
         "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
         "assets": ["apps/scrappers/store-app/*.md"]
       }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "store-app:build",
+        "watch": true
+      }
     }
   }
 }

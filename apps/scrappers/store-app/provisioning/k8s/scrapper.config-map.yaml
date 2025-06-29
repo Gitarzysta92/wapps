@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scrapper-config
+  namespace: acquisition
+data:
+  MEDIA_STORAGE_HOST: "http://my-minio.minio.svc.cluster.local"
+  QUEUE_HOST: "http://rabbitmq.rabbitmq.minio.svc.cluster.local"
+  QUEUE_PORT: "5672"

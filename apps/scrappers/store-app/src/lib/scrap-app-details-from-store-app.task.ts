@@ -3,8 +3,8 @@ import { ScrapedApp } from "./scraped-app.dto";
 
 type AppInput = {
   url: string;
-  name?: string;
-  tags?: string[];
+  name: string;
+  tags: string[];
 }
 
 export class ScrapAppDetailsFromStoreApp {
@@ -23,6 +23,7 @@ export class ScrapAppDetailsFromStoreApp {
       
       const result: ScrapedApp = {
         name: baseData.name || '',
+        slug: baseData.name.trim().toLowerCase().replaceAll(' ', '-'),
         detailsLink: baseData.url,
         tags: baseData.tags || [],
         description: '',
@@ -50,12 +51,15 @@ export class ScrapAppDetailsFromStoreApp {
         }
 
         // Get assets (images)
-        const assets = new Map<string, string>();
+        const assets = new Map<string, { src: string, type: 'logo' | 'gallery' }>();
         const images = Array.from(document.querySelectorAll('main [srcset]'));
         for (const image of images) {
           const src = (image as HTMLImageElement).src;
           if (src) {
-            assets.set(src, src);
+            assets.set(src, {
+              src: src,
+              type: (image as HTMLImageElement).alt.includes('icon') ? 'logo' : 'gallery' as const
+            });
           }
         }
 

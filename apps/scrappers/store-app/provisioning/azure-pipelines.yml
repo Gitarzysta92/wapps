@@ -40,6 +40,11 @@ steps:
 
   # 5. Deploy Kubernetes components
   - script: |
+      kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.config-map.yaml
+    displayName: 'Apply k8s config'
+
+  # 5. Deploy Kubernetes components
+  - script: |
       kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.cronjob.yaml
     displayName: 'Apply CronJob to cluster'
 

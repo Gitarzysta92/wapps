@@ -4,5 +4,6 @@ export type ScrapedApp = {
   tags: string[];
   description: string;
   links: Array<{ id: number; link: string }>;
-  assets: string[];
+  assets: Array<{ src: string, type: 'logo' | 'gallery' }>;
+  slug: string
 } 

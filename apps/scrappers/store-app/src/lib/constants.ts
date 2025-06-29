@@ -1,0 +1,1 @@
+export const MEDIA_STORAGE_BUCKET_NAME = "media-storage";

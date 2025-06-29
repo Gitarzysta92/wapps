@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   generateName: store-app-scrapper-once-
-  namespace: scrapper
+  namespace: acquisition
   labels:
     job-type: init
 spec:
@@ -14,8 +14,13 @@ spec:
         vault.hashicorp.com/agent-inject-secret-config: "secret/data/rabbitmq"
         vault.hashicorp.com/agent-inject-template-config: |
           {{- with secret "secret/data/rabbitmq" }}
-          export RABBITMQ_USER={{ .Data.data.username }}
-          export RABBITMQ_PASSWORD={{ .Data.data.password }}
+          export QUEUE_USERNAME={{ .Data.data.username }}
+          export QUEUE_PASSWORD={{ .Data.data.password }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "secret/data/minio" -}}
+          export MEDIA_STORAGE_ACCESSKEY={{ .Data.data.accesskey }}
+          export MEDIA_STORAGE_SECRETKEY={{ .Data.data.secretkey }}
           {{- end }}
     spec:
       serviceAccountName: vault-auth
@@ -27,7 +32,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              . /vault/secrets/config && exec node dist/scrapper.js
+              . /vault/secrets/config && . /vault/secrets/minio && exec node dist/scrapper.js
           envFrom:
             - configMapRef:
-                name: rabbitmq-discovery
+                name: scrapper-config

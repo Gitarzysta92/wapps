@@ -4,7 +4,7 @@ export function getJsonFromFile<T>(path: string): T {
   return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
-export async function autoScroll(page){
+export async function autoScroll(page: any){
   await page.evaluate(async () => {
     let prevHeight = 0;
     const timer = await new Promise((r) => {
