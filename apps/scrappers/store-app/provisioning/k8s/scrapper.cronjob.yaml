@@ -34,7 +34,7 @@ spec:
               command: ["sh", "-c"]
               args:
                 - |
-                  . /vault/secrets/queue && . /vault/secrets/minio && exec node dist/scrapper.js
+                  . /vault/secrets/queue && . /vault/secrets/minio && exec node src/index.js
               envFrom:
                 - configMapRef:
-                    name: rabbitmq-discovery
+                    name: scrapper-config

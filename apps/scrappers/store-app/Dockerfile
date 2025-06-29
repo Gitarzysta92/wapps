@@ -24,11 +24,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy only pre-built output from the Nx build
-COPY dist/apps/scrappers/store-app ./dist
+COPY dist/apps/scrappers/store-app ./
 
 # Optional: If your app reads its own package.json or uses runtime deps
 # COPY apps/scrappers/store-app/package*.json ./
 # RUN npm ci --omit=dev
 
 # Run the app
-CMD ["node", "dist/main.js"]  # Adjust entrypoint if different
+CMD ["node", "src/index.js"]  # Adjust entrypoint if different

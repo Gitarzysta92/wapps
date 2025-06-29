@@ -32,7 +32,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              . /vault/secrets/config && . /vault/secrets/minio && exec node dist/scrapper.js
+              . /vault/secrets/config && . /vault/secrets/minio && exec node src/index.js
           envFrom:
             - configMapRef:
                 name: scrapper-config
