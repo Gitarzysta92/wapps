@@ -1,10 +1,11 @@
 {
   "name": "store-app",
   "version": "0.0.1",
+  "type": "module",
   "dependencies": {
     "amqplib": "^0.10.3",
     "dotenv": "^16.5.0",
     "puppeteer": "^24.10.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.12"
   }
 }
