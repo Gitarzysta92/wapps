@@ -21,7 +21,7 @@ export function createMediaStorageClient(d: {
 }) {
   const s3Client = new S3Client({
     region: "us-east-1",
-    endpoint: `http://${d.host}`,
+    endpoint: d.host,
     forcePathStyle: true,
     credentials: {
       accessKeyId: d.accessKey as string,

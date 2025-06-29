@@ -22,6 +22,9 @@ const queueName = "store.app-scrapper";
 // const mediaStorageAccessKey = process.env['MEDIA_STORAGE_ACCESSKEY'];
 // const mediaStorageSecretKey = process.env['MEDIA_STORAGE_SECRETKEY'];
 
+console.log(process.env['MEDIA_STORAGE_HOST'])
+
+
 
 async function run() {
   const connection = await amqp.connect(url);
