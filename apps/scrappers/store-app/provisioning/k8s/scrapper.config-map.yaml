@@ -5,5 +5,5 @@ metadata:
   namespace: acquisition
 data:
   MEDIA_STORAGE_HOST: "http://my-minio.minio.svc.cluster.local"
-  QUEUE_HOST: "rabbitmq.rabbitmq.minio.svc.cluster.local"
+  QUEUE_HOST: "rabbitmq.rabbitmq.svc.cluster.local"
   QUEUE_PORT: "5672"
