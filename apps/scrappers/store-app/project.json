@@ -12,7 +12,8 @@
         "outputPath": "dist/apps/scrappers/store-app",
         "main": "apps/scrappers/store-app/src/index.ts",
         "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
-        "assets": ["apps/scrappers/store-app/*.md"]
+        "assets": ["apps/scrappers/store-app/*.md"],
+        "generatePackageJson": true
       }
     },
     "serve": {
