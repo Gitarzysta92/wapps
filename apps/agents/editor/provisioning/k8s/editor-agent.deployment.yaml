@@ -52,3 +52,6 @@ spec:
               && . /vault/secrets/queue
               && set +a
               && exec node src/index.js
+          envFrom:
+            - configMapRef:
+                name: editor-agent-config

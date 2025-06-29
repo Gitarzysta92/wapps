@@ -22,7 +22,7 @@ const queueName = "store.app-scrapper";
 // const mediaStorageAccessKey = process.env['MEDIA_STORAGE_ACCESSKEY'];
 // const mediaStorageSecretKey = process.env['MEDIA_STORAGE_SECRETKEY'];
 
-console.log(process.env['MEDIA_STORAGE_HOST'])
+console.log(process.env['MEDIA_STORAGE_HOST'], url)
 
 
 
