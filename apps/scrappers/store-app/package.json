@@ -1,7 +1,6 @@
 {
   "name": "store-app",
   "version": "0.0.1",
-  "type": "module",
   "dependencies": {
     "amqplib": "^0.10.3",
     "dotenv": "^16.5.0",
