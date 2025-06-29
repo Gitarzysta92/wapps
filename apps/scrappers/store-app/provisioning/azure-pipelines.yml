@@ -29,7 +29,7 @@ steps:
 
   # 3. Build the specific app using Nx
   - script: |
-      npx nx build scrappers-store-app
+      npx nx build store-app
     displayName: 'Build scrappers-store-app with Nx'
 
   # 4. Build the Docker image using output from dist/
