@@ -17,3 +17,21 @@ steps:
   - script: |
       kubectl apply -f infrastructure/rabbitmq/k8s/rabbitmq.service.yaml
     displayName: 'Deploy RabbitMQ to Kubernetes'
+
+  - script: |
+      helm repo add minio https://charts.min.io/
+      helm repo update
+      helm install my-minio minio/minio \
+        --namespace minio \
+        --create-namespace \
+        --set rootUser=myaccesskey \
+        --set rootPassword=mysecretkey \
+        --set mode=standalone \
+        --set persistence.enabled=true \
+        --set consoleService.type=ClusterIP \
+        --set apiService.type=ClusterIP
+    displayName: 'Install MinIO via Helm'
+
+  - script: |
+      kubectl apply -f infrastructure/minio/provisioning/k8s/minio.ingress.yaml
+    displayName: 'Set MiniIO ingress controller'

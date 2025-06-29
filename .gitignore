@@ -4,6 +4,7 @@ node_modules/
 # Nx
 /dist/
 /.nx/
+/tmp/
 
 # Logs
 npm-debug.log*

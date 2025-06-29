@@ -1,0 +1,1 @@
+export const CONTENT_ACQUIRED_QUEUE = "content-acquired-queue";

@@ -15,6 +15,13 @@
         "assets": ["apps/agents/editor/*.md"],
         "generatePackageJson": true
       }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "editor-agent:build",
+        "watch": true
+      }
     }
   }
 }

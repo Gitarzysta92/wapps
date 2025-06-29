@@ -1,24 +1,30 @@
-import amqp from 'amqplib';
 import dotenv from 'dotenv';
-
-
+import amqp from 'amqplib';
+import { getConnectionString } from './rabbitmq';
 dotenv.config();
 
 
-const user = process.env['QUEUE_USERNAME'];
-const pass = process.env['QUEUE_PASSWORD'];
-const host = process.env['QUEUE_HOST'] || 'localhost';
-const port = process.env['QUEUE_PORT'] || '5672';
-const url = `amqp://${user}:${pass}@${host}:${port}`;
-const queueName = "store.app-scrapper";
 
-console.log(user, pass, host, port, url)
 
 async function run() {
-  const connection = await amqp.connect(url);
+  const connection = await amqp.connect(getConnectionString());
   const channel = await connection.createChannel();
-  await channel.assertQueue(queueName);
+  // await channel.assertExchange(`${EDITORIAL_DOMAIN_SLUG}.${EVENTS_KEY}`, "topic");
 
+  // await channel.assertQueue(CONTENT_ACQUIRED_QUEUE);
+  // await channel.assertExchange(`${ACQUISITION_DOMAIN_SLUG}.${EVENTS_KEY}`, "topic");
+  // await channel.bindQueue(CONTENT_ACQUIRED_QUEUE,
+  //   `${ACQUISITION_DOMAIN_SLUG}.${EVENTS_KEY}`,
+  //   `${CONTENT_ENTITY_SLUG}.${ACQUIRED_EVENT_SLUG}`);
+
+  
+  // await channel.consume(CONTENT_ACQUIRED_QUEUE, msg => {
+  //   console.log("Analytics service received:", msg.content.toString());
+  //   channel.ack(msg);
+  // });
+    
+
+  console.log(connection)
 
   await channel.close();
   await connection.close();
