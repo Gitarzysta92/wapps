@@ -11,7 +11,7 @@ spec:
         metadata:
           annotations:
             vault.hashicorp.com/agent-inject: "true"
-            vault.hashicorp.com/role: "rabbitmq-role"
+            vault.hashicorp.com/role: "store-app-scrapper"
             vault.hashicorp.com/agent-inject-secret-queue: "secret/data/rabbitmq"
             vault.hashicorp.com/agent-inject-template-queue: |
               {{- with secret "secret/data/rabbitmq" }}
