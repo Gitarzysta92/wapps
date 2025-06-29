@@ -4,6 +4,7 @@
   "dependencies": {
     "amqplib": "^0.10.3",
     "dotenv": "^16.5.0",
-    "puppeteer": "^24.10.2"
+    "puppeteer": "^24.10.2",
+    "node-fetch": "^3.3.2"
   }
 }
