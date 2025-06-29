@@ -23,7 +23,7 @@ spec:
           export MEDIA_STORAGE_SECRETKEY={{ .Data.data.secretkey }}
           {{- end }}
     spec:
-      serviceAccountName: vault-auth
+      serviceAccountName: store-app
       restartPolicy: OnFailure
       containers:
         - name: scrapper

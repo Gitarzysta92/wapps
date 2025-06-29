@@ -42,6 +42,7 @@ steps:
   - script: |
       kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.config-map.yaml
       kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.namespace.yaml
+      kubectl apply -f apps/scrappers/store-app/provisioning/k8s/scrapper.service-account.yaml
     displayName: 'Apply k8s config'
 
   # 5. Deploy Kubernetes components
