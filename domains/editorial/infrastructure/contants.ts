@@ -1,0 +1,1 @@
+export const EDITORIAL_DOMAIN_SLUG = 'editorial'
