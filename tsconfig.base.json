@@ -33,7 +33,21 @@
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
-      "@cross-cutting/events": ["cross-cutting/events/src/index.ts"]
+      "@cross-cutting/events": ["cross-cutting/events/src/index.ts"],
+      "@ui/filters": ["libs/ui/filters/src/index.ts"],
+      "@ui/form": ["libs/ui/form/src/index.ts"],
+      "@ui/infinite-scroll": ["libs/ui/infinite-scroll/src/index.ts"],
+      "@ui/items-listing": ["libs/ui/items-listing/src/index.ts"],
+      "@ui/layout": ["libs/ui/layout/src/index.ts"],
+      "@ui/login": ["libs/ui/login/src/index.ts"],
+      "@ui/misc": ["libs/ui/misc/src/index.ts"],
+      "@ui/multi-search": ["libs/ui/multi-search/src/index.ts"],
+      "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
+      "@ui/password": ["libs/ui/password/src/index.ts"],
+      "@ui/registration": ["libs/ui/registration/src/index.ts"],
+      "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
+      "@ui/routing": ["libs/ui/routing/src/index.ts"],
+      "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
