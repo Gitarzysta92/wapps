@@ -1,0 +1,9 @@
+:host {
+  min-width: 600px;
+}
+
+.multisearch-result {
+  min-width: 600px;
+  box-sizing: border-box;
+  padding: var(--tui-padding-l);
+}

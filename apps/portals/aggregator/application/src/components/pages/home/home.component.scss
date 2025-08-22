@@ -1,0 +1,71 @@
+
+.section_quick-search.stuck {
+  multi-search {
+    top: 0;
+    padding: 10px;
+    position: fixed;
+  }
+}
+
+
+
+.section_quick-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  quick-search {
+    min-width: 600px;
+  }
+}
+
+.container {
+  margin: 20px auto;
+}
+
+.grid-container {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: [col1-start] calc(33% - 4px) [col1-end col2-start] calc(33% - 4px) [col2-end col3-start] calc(33% - 4px) [col3-end];
+  grid-template-rows: [row1-start] auto [row2-start] auto [row2-end];
+  background-color: #fff;
+  color: #444;
+}
+
+
+.featured {
+  border-radius: 5px;
+  background-color: aqua;
+  padding: 18px;
+}
+
+div {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 18px;
+  font-size: 150%;
+
+}
+
+
+
+
+.a {
+  grid-column: col1-start / col2-end;
+  grid-row: row1-start ;
+}
+.b {
+  grid-column: col3-start / col3-end;
+  grid-row: row1-start/row2-end ;
+}
+.c {
+  grid-column: col1-start / col2-end;
+  grid-row: row2-start ;
+}
+
+.c {
+  grid-column: col1-start;
+  grid-row: row2-end ;
+}

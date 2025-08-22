@@ -1,0 +1,20 @@
+@let items = searchResults$ | async;
+<tui-multi-select
+  placeholder="Ignored text"
+  [ngModel]="selectedOptions"
+  (ngModelChange)="change.next($event)"
+  [identityMatcher]="identityMatcher"
+  [stringify]="stringifyItem"
+  [tuiTextfieldLabelOutside]="true"
+  (searchChange)="searchChange($event)"
+>
+  <tui-data-list-wrapper
+    *tuiDataList
+    tuiMultiSelectGroup
+    [itemContent]="template"
+    [items]="items">
+    <ng-template #template let-item>
+      {{ item.name }}
+    </ng-template>
+  </tui-data-list-wrapper>
+</tui-multi-select>

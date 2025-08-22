@@ -1,0 +1,10 @@
+<label
+  (click)="change.next(!checked)"
+  appearance="outline-grayscale"
+  tuiChip>
+    <input
+      tuiCheckbox
+      type="checkbox"
+      [checked]="checked"/>
+  <ng-content></ng-content>
+</label>

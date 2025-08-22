@@ -1,0 +1,16 @@
+<section class="container">
+  <h2>Active filters</h2>
+  <button tuiButton type="button" (click)="openDialog()">open</button>
+  <filters-bar (onUpdate)="filterParams.next($event)"></filters-bar>
+</section>
+
+<section class="container">
+  <div>
+    <h2>Results</h2>
+  </div>
+  <div>
+    <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select>
+  </div>
+  <app-listing (onUpdate)="listingParams.next($event)"></app-listing>
+</section>
+

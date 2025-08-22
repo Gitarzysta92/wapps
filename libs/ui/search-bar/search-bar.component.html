@@ -1,0 +1,17 @@
+<search tuiSearch>
+  <form [formGroup]="form">
+    <fieldset>
+      <tui-textfield 
+        iconStart="@tui.search"
+        tuiTextfieldSize="l">
+        <input
+          (focus)="onFocus.emit(true)"
+          (blur)="onFocus.emit(false)"
+          formControlName="search" 
+          placeholder="Search" 
+          tuiTextfield />
+        <ng-content></ng-content>
+      </tui-textfield>
+    </fieldset>
+  </form>
+</search>

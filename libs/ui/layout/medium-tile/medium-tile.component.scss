@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  background: var(--tui-base-01);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+
+  .content {
+    flex-grow: 2;
+  }
+
+  .content, .cta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+}
