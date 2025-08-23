@@ -5,20 +5,26 @@
   },
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES2022",
-    "module": "commonjs",
-    "lib": ["ES2022", "DOM"],
+    "rootDir": ".",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
     "outDir": "./dist/out-tsc",
-    "rootDir": ".",
-    "composite": true,
     "strict": true,
+    "strictNullChecks": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
@@ -29,10 +35,7 @@
     "noEmitOnError": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
     "types": [],
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
@@ -59,3 +62,11 @@
     "@typescript-eslint/consistent-type-definitions": ["error", "type"]
   }
 }
+
+
+
+
+
+
+
+
