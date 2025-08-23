@@ -1,0 +1,1 @@
+export * from './identity-registration-api.service'

@@ -1,0 +1,29 @@
+@let filters = filters$ | async;
+
+<filter-group 
+  [filters]="filters" 
+  (change)="emitFilterChange($event)">
+  @for (f of filters; track f.key) {
+    @if (f.key === filterKey.category) {
+      <category-multiselect
+        #container="categoryListContainer"
+        #filter="filter"
+        [filter]="f" 
+        [selectedOptions]="f.options"
+        (change)="filter.updateMany($event)">
+      </category-multiselect>
+    }
+    @else if (f.key === filterKey.platform) {
+      @let options = container.platforms$ | async | toFilterOptionsList: f.options;
+      <multiselect-dropdown
+        #container="platformListContainer"
+        platformListContainer
+        #filter="filter"
+        [filter]="f" 
+        [selectedOptions]="f.options"
+        [items]="options"
+        (change)="filter.updateMany($event)">
+      </multiselect-dropdown>
+    }
+  } 
+</filter-group>

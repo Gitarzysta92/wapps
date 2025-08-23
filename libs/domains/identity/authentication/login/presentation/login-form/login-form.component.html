@@ -1,0 +1,41 @@
+<form [formGroup]="loginForm" (ngSubmit)="submitForm()">
+  <div class="form-field">
+    <tui-input
+      formControlName="login"
+      tuiTextfieldIconLeft="tuiIconMailLarge">
+      Email
+    </tui-input>
+    <div class="error-container">
+      <ng-container *ngFor="let validation of validationMessages.email">
+        <div
+          class="error-message"
+          *ngIf="
+            loginForm.get('login')?.hasError(validation.type) &&
+            (loginForm.get('login')?.dirty || loginForm.get('login')?.touched)
+          ">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <tui-input
+      formControlName="password">
+      Hasło
+    </tui-input>
+    <div class="error-container">
+      <ng-container *ngFor="let validation of validationMessages.password">
+        <div
+          class="error-message"
+          *ngIf="
+            loginForm.get('password')?.hasError(validation.type) &&
+            (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
+          ">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <ng-content select="button[type=submit]"></ng-content>
+</form>

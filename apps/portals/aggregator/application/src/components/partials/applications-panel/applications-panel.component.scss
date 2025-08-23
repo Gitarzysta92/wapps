@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background: var(--tui-background-elevation-3);
+  box-sizing: border-box;
+}
+
+div.content, div.bar {
+  display: flex;
+  flex-direction: row;
+  & > div:first-child {
+    width: 25%;
+    padding: 26px;
+  }
+}
+
+.root-categories {
+  background-color: aqua;
+  padding: 26px;
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.child-categories {
+  width: 100%;
+  padding: 26px;
+  ul {
+    column-count: 2;
+    column-gap: 2rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    li {
+      break-inside: avoid;
+      text-overflow: ellipsis;
+      white-space: nowrap; /* optional: for single-line truncation */
+    }
+  }
+}

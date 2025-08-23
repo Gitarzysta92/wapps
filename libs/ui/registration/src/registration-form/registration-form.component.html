@@ -1,0 +1,83 @@
+<form [formGroup]="registrationForm" (ngSubmit)="submitForm()">
+
+  <div class="form-field">
+    Nickname
+    <tui-textfield
+      tuiHintContent="Type 5 letters or more"
+      [tuiTextfieldCleaner]="true"
+      tuiTextfieldIconLeft="@tui.user">
+      <input tuiTextfield type="text" formControlName="nickname" />
+      <ng-container *ngIf="registrationForm.get('nickname')?.valid">
+        <ng-container *ngTemplateOutlet="success"></ng-container>
+      </ng-container>
+    </tui-textfield>
+    <input-validation 
+      class="error-container" 
+      [control]="registrationForm.get('nickname')"
+      [messages]="validationMessages.nickname">
+    </input-validation>
+  </div>
+
+  <div class="form-field">
+    <tui-textfield
+      tuiHintContent="Type 8 letters or more"
+      [tuiTextfieldCleaner]="true"
+      tuiTextfieldIconLeft="@tui.mail">
+      Email
+      <input tuiTextfield type="text" formControlName="email" />
+      <ng-container *ngIf="registrationForm.get('email')?.valid">
+        <ng-container *ngTemplateOutlet="success"></ng-container>
+      </ng-container>
+    </tui-textfield>
+    <input-validation 
+      class="error-container" 
+      [control]="registrationForm.get('email')"
+      [messages]="validationMessages.email">
+    </input-validation>
+  </div>
+
+  <div class="form-field">
+    <tui-textfield
+      tuiHintContent="Type 5 letters or more"
+      formControlName="password"
+      type="password"
+      tuiTextfieldIconLeft="@tui.lock">
+      Password
+      <tui-icon tuiPassword />
+    </tui-textfield>
+    <input-validation 
+      class="error-container" 
+      [control]="registrationForm.get('password')"
+      [messages]="validationMessages.password">
+    </input-validation>
+  </div>
+
+  <div class="form-field">
+    <tui-textfield
+      formControlName="passwordConfirmation"
+      type="password"
+      tuiTextfieldIconLeft="@tui.lock">
+      Password confirmation
+    </tui-textfield>
+    <input-validation 
+      class="error-container" 
+      [control]="registrationForm.get('passwordConfirmation')"
+      [messages]="validationMessages.passwordConfirmation">
+    </input-validation>
+    <input-validation 
+      class="error-container" 
+      [control]="registrationForm"
+      [messages]="validationMessages.passwordConfirmation">
+    </input-validation>
+  </div>
+
+  <ng-content select="button[type=submit]"></ng-content>
+</form>
+
+
+<ng-template #success>
+  <tui-icon
+    icon="@tui.check"
+    class="success tui-space_left-3"
+  />
+</ng-template>

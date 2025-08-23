@@ -1,0 +1,26 @@
+<registration-form #registrationForm (onSubmit)="register($event)">
+  <button
+    tuiButton
+    type="submit"
+    [disabled]="!registrationForm.valid">
+    <tui-loader
+      class="loader"
+      [inheritColor]="true"
+      [overlay]="true"
+      [showLoader]="isRegistering"/>
+    Sign in
+  </button>
+</registration-form>
+
+@for (entry of timeoutQueue.entries; track entry.id) {
+  <tui-notification size="l">
+    {{ entry.item.text }}
+    <button
+      (click)="timeoutQueue.dequeue(entry.id)"
+      iconStart="@tui.x"
+      tuiIconButton
+      type="button">
+        Close
+    </button>
+  </tui-notification>
+}

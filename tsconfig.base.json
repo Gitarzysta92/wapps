@@ -1,20 +1,30 @@
 {
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictNullInputTypes": false
+  },
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES2022",
-    "module": "commonjs",
-    "lib": ["ES2022", "DOM"],
+    "rootDir": ".",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
     "outDir": "./dist/out-tsc",
-    "rootDir": ".",
-    "composite": true,
     "strict": true,
+    "strictNullChecks": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
@@ -25,15 +35,26 @@
     "noEmitOnError": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
     "types": [],
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
-      "@cross-cutting/events": ["cross-cutting/events/src/index.ts"]
+      "@cross-cutting/events": ["cross-cutting/events/src/index.ts"],
+      "@ui/filters": ["libs/ui/filters/src/index.ts"],
+      "@ui/form": ["libs/ui/form/src/index.ts"],
+      "@ui/infinite-scroll": ["libs/ui/infinite-scroll/src/index.ts"],
+      "@ui/items-listing": ["libs/ui/items-listing/src/index.ts"],
+      "@ui/layout": ["libs/ui/layout/src/index.ts"],
+      "@ui/login": ["libs/ui/login/src/index.ts"],
+      "@ui/misc": ["libs/ui/misc/src/index.ts"],
+      "@ui/multi-search": ["libs/ui/multi-search/src/index.ts"],
+      "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
+      "@ui/password-reset": ["libs/ui/password-reset/src/index.ts"],
+      "@ui/registration": ["libs/ui/registration/src/index.ts"],
+      "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
+      "@ui/routing": ["libs/ui/routing/src/index.ts"],
+      "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
@@ -41,3 +62,11 @@
     "@typescript-eslint/consistent-type-definitions": ["error", "type"]
   }
 }
+
+
+
+
+
+
+
+

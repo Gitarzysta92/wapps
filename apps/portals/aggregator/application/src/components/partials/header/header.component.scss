@@ -1,0 +1,59 @@
+:host {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+
+  .submenu-panel {
+    position: absolute;
+    top: 80%;
+    left: -100%;
+    right: -100%;
+    margin: auto;
+    width: 1140px;
+    display: none;
+    z-index: 10;
+    border-radius: var(--tui-radius-l);
+    outline: 1px solid var(--tui-border-normal);
+  }
+
+  a {
+    position: initial;
+  }
+
+  a:hover .submenu-panel {
+    display: block;
+  }
+}
+
+.avatar-btn, .logo-btn {
+  // position: fixed;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+// .avatar-btn {
+//   right: 0;
+// }
+
+// .logo-btn {
+//   left: 0;
+// }
+
+
+header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+}
+
+nav {
+
+
+} 
