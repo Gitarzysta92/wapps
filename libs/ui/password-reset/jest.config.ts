@@ -1,9 +1,9 @@
 /* eslint-disable */
 export default {
-  displayName: 'ui-password',
+  displayName: 'ui-password-reset',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/libs/ui/password',
+  coverageDirectory: '../../../coverage/libs/ui/password-reset',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

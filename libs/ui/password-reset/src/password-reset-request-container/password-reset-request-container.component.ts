@@ -4,7 +4,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angula
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
 import { TuiTextfieldComponent } from "@taiga-ui/core";
 import { PASSWORD_RESET_REQUEST_HANDLER } from "../password-reset-request-handler.token";
-import { VALIDATION_MESSAGES } from "../validation-messages";
+import { VALIDATION_MESSAGES, ValidationMessages } from "../validation-messages";
 import { ActivatedRoute } from "@angular/router";
 import { TimedQueue } from "../../../../primitives/timed-queue";
 
@@ -25,7 +25,7 @@ import { TimedQueue } from "../../../../primitives/timed-queue";
 })
 export class PasswordResetRequestContainer {
   public readonly timeoutQueue = new TimedQueue<{ text: string }>();
-  public readonly validationMessages = inject(VALIDATION_MESSAGES);
+  public readonly validationMessages: ValidationMessages = VALIDATION_MESSAGES;
   private readonly _service = inject(PASSWORD_RESET_REQUEST_HANDLER);
   private readonly _activatedRoute = inject(ActivatedRoute);
 

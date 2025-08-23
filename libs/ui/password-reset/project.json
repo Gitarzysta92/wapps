@@ -1,23 +1,23 @@
 {
-  "name": "ui-password",
+  "name": "ui-password-reset",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "ui",
-  "sourceRoot": "libs/ui/password/src",
+  "sourceRoot": "libs/ui/password-reset/src",
   "tags": ["type:ui", "scope:password"],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "libs/ui/password/ng-package.json"
+        "project": "libs/ui/password-reset/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/ui/password/tsconfig.lib.prod.json"
+          "tsConfig": "libs/ui/password-reset/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/ui/password/tsconfig.lib.json"
+          "tsConfig": "libs/ui/password-reset/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"
@@ -26,7 +26,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/ui/password/jest.config.ts",
+        "jestConfig": "libs/ui/password-reset/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

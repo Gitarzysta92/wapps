@@ -50,7 +50,7 @@
       "@ui/misc": ["libs/ui/misc/src/index.ts"],
       "@ui/multi-search": ["libs/ui/multi-search/src/index.ts"],
       "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
-      "@ui/password": ["libs/ui/password/src/index.ts"],
+      "@ui/password-reset": ["libs/ui/password-reset/src/index.ts"],
       "@ui/registration": ["libs/ui/registration/src/index.ts"],
       "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
       "@ui/routing": ["libs/ui/routing/src/index.ts"],

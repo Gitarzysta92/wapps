@@ -2,4 +2,4 @@ export { PasswordResetRequestContainer } from './password-reset-request-containe
 export { PasswordResetRequestDto } from './password-reset-request.dto';
 export { PasswordResetRequestHandlerPort } from './password-reset-request-handler.port';
 export { PASSWORD_RESET_REQUEST_HANDLER } from './password-reset-request-handler.token';
-export { VALIDATION_MESSAGES } from './validation-messages';
+export { VALIDATION_MESSAGES, ValidationMessages } from './validation-messages';
