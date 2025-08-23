@@ -1,5 +1,5 @@
 {
-  "name": "aggregator-angular",
+  "name": "aggregator-csr",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
@@ -52,14 +52,14 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "buildTarget": "aggregator-angular:build"
+        "buildTarget": "aggregator-csr:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "aggregator-angular:build:production"
+          "buildTarget": "aggregator-csr:build:production"
         },
         "development": {
-          "buildTarget": "aggregator-angular:build:development"
+          "buildTarget": "aggregator-csr:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -67,7 +67,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "aggregator-angular:build"
+        "browserTarget": "aggregator-csr:build"
       }
     },
     "lint": {
