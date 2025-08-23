@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
-import { ItemListingContainerDirective } from '../../../../../libs/ui/components/items-listing/item-listing-container.directive';
+import { ItemListingContainerDirective } from '@ui/items-listing';
 import { concatMap, map, startWith, tap, withLatestFrom } from 'rxjs';
 import { RouteDrivenContainerDirective } from '../../../../../libs/ui/routing/route-driven-container.directive';
 import { ParamMapToAppListingRequestDtoMapper } from '../../../../../libs/features/listing/app/presentation/mappings/param-map-to-app-listing-request-dto.mapper';

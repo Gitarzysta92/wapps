@@ -1,1 +1,0 @@
-export { RegistrationContainerComponent } from './registration-container.component';

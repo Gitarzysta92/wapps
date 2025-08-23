@@ -154,3 +154,5 @@ libpeerconnection.log
 *.tgz
 *.log
 .cache/ 
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

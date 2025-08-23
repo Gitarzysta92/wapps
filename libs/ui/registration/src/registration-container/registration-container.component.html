@@ -12,11 +12,11 @@
   </button>
 </registration-form>
 
-@for (item of timeoutQueue.items; track item.id) {
+@for (entry of timeoutQueue.entries; track entry.id) {
   <tui-notification size="l">
-    {{ item.text }}
+    {{ entry.item.text }}
     <button
-      (click)="timeoutQueue.dequeue(item)"
+      (click)="timeoutQueue.dequeue(entry.id)"
       iconStart="@tui.x"
       tuiIconButton
       type="button">

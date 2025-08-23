@@ -1,14 +1,16 @@
 <form [formGroup]="registrationForm" (ngSubmit)="submitForm()">
 
   <div class="form-field">
-    <tui-input
+    Nickname
+    <tui-textfield
       tuiHintContent="Type 5 letters or more"
       [tuiTextfieldCleaner]="true"
-      formControlName="nickname"
-      tuiTextfieldIconLeft="@tui.user"
-      [tuiTextfieldCustomContent]="registrationForm.get('nickname')?.valid ? success : ''">
-      Nickname
-    </tui-input>
+      tuiTextfieldIconLeft="@tui.user">
+      <input tuiTextfield type="text" formControlName="nickname" />
+      <ng-container *ngIf="registrationForm.get('nickname')?.valid">
+        <ng-container *ngTemplateOutlet="success"></ng-container>
+      </ng-container>
+    </tui-textfield>
     <input-validation 
       class="error-container" 
       [control]="registrationForm.get('nickname')"
@@ -17,14 +19,17 @@
   </div>
 
   <div class="form-field">
-    <tui-input
-      formControlName="email"
+    <tui-textfield
+      tuiHintContent="Type 8 letters or more"
       [tuiTextfieldCleaner]="true"
-      tuiTextfieldIconLeft="@tui.mail"
-      [tuiTextfieldCustomContent]="registrationForm.get('email')?.valid ? success : ''">
+      tuiTextfieldIconLeft="@tui.mail">
       Email
-    </tui-input>
-    <input-validation
+      <input tuiTextfield type="text" formControlName="email" />
+      <ng-container *ngIf="registrationForm.get('email')?.valid">
+        <ng-container *ngTemplateOutlet="success"></ng-container>
+      </ng-container>
+    </tui-textfield>
+    <input-validation 
       class="error-container" 
       [control]="registrationForm.get('email')"
       [messages]="validationMessages.email">
@@ -32,14 +37,14 @@
   </div>
 
   <div class="form-field">
-    <tui-input
+    <tui-textfield
       tuiHintContent="Type 5 letters or more"
       formControlName="password"
       type="password"
       tuiTextfieldIconLeft="@tui.lock">
       Password
       <tui-icon tuiPassword />
-    </tui-input>
+    </tui-textfield>
     <input-validation 
       class="error-container" 
       [control]="registrationForm.get('password')"
@@ -48,12 +53,12 @@
   </div>
 
   <div class="form-field">
-    <tui-input
+    <tui-textfield
       formControlName="passwordConfirmation"
       type="password"
       tuiTextfieldIconLeft="@tui.lock">
       Password confirmation
-    </tui-input>
+    </tui-textfield>
     <input-validation 
       class="error-container" 
       [control]="registrationForm.get('passwordConfirmation')"

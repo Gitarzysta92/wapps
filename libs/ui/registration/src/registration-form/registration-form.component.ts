@@ -1,11 +1,12 @@
-import { Component, inject, output } from "@angular/core";
+import { Component, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
-import { TuiInputModule, TuiTextfieldControllerModule } from "@taiga-ui/legacy";
-import { RegistrationDto } from "../../application/models";
-import { VALIDATION_MESSAGES } from "../ports/validation-messages.port";
-import { InputValidationComponent } from "../../../../../ui/components/form/input-validation/input-validation.component";
-import { matchFieldsValidator } from "../../application";
-import { TuiHint, TuiIcon, TuiTextfieldComponent } from "@taiga-ui/core";
+import { TuiTextfieldComponent, TuiTextfieldOptionsDirective } from "@taiga-ui/core";
+import { InputValidationComponent } from "@ui/form";
+import { TuiHint, TuiIcon } from "@taiga-ui/core";
+import { equalValue } from "../equal-value.form-validator";
+import { RegistrationDto } from "../registration.dto";
+import { NgIf, NgTemplateOutlet } from "@angular/common";
+import { VALIDATION_MESSAGES } from "../validation-messages";
 
 
 
@@ -16,11 +17,13 @@ import { TuiHint, TuiIcon, TuiTextfieldComponent } from "@taiga-ui/core";
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TuiInputModule,
+    TuiTextfieldComponent,
     TuiIcon,
     TuiHint,
     InputValidationComponent,
-    TuiTextfieldControllerModule
+    TuiTextfieldOptionsDirective,
+    NgTemplateOutlet,
+    NgIf
   ]
 })
 export class RegistrationFormComponent {
@@ -29,7 +32,7 @@ export class RegistrationFormComponent {
 
   public get valid() { return this.registrationForm.valid }
 
-  public readonly validationMessages = inject(VALIDATION_MESSAGES);
+  public readonly validationMessages = VALIDATION_MESSAGES;
   
   public readonly registrationForm = new FormGroup({
     nickname: new FormControl('', [
@@ -51,7 +54,7 @@ export class RegistrationFormComponent {
       Validators.maxLength(35),
       Validators.required
     ])
-  }, { validators: matchFieldsValidator('password', 'passwordConfirmation') });
+  }, { validators: equalValue(['password', 'passwordConfirmation']) });
 
   public submitForm(): void {
     if (this.registrationForm.valid) {

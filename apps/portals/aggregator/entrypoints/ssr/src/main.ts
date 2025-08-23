@@ -1,7 +1,6 @@
 import 'zone.js';
 import { bootstrapApplication } from "@angular/platform-browser";
 import { join } from "node:path";
-
 import { CommonEngine } from "@angular/ssr/node";
 import { mergeApplicationConfig } from "@angular/core";
 import { appConfigSSR } from "./app-config.ssr";

@@ -1,4 +1,8 @@
 {
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictNullInputTypes": false
+  },
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES2022",
