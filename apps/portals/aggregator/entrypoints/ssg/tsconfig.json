@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "extends": "../../../../tsconfig.base.json",
+=======
+  "extends": "../../../../../tsconfig.base.json",
+>>>>>>> Stashed changes
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",

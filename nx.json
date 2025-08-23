@@ -9,13 +9,11 @@
   },
   "projects": {},
   "generators": {},
-  "affected": {},
   "cli": {},
   "tasksRunnerOptions": {},
   "workspaceLayout": {},
   "defaultProject": "",
   "pluginsConfig": {},
-  "implicitDependencies": {},
   "enforceModuleBoundaries": [
     {
       "sourceTag": "type:app",
