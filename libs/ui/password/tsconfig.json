@@ -1,19 +1,13 @@
 {
   "extends": "../../../tsconfig.base.json",
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "moduleResolution": "bundler",
-    "types": ["node"],
-    "outDir": "../../../dist/out-tsc",
-    "rootDir": ".",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
-  },
-  "files": ["src/index.ts"],
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  ]
 }

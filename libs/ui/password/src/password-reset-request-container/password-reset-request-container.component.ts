@@ -2,35 +2,36 @@ import { NgIf, NgFor } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
-import { TuiInputModule } from "@taiga-ui/legacy";
-import { PASSWORD_RESET_REQUEST_HANDLER } from "../../application/ports";
-import { VALIDATION_MESSAGES } from "../ports/validation-messages.port";
+import { TuiTextfieldComponent } from "@taiga-ui/core";
+import { PASSWORD_RESET_REQUEST_HANDLER } from "../password-reset-request-handler.token";
+import { VALIDATION_MESSAGES } from "../validation-messages";
 import { ActivatedRoute } from "@angular/router";
-import { TimeoutQueue } from "../../../../../utils/timeout-queue";
+import { TimedQueue } from "../../../../primitives/timed-queue";
 
 @Component({
   selector: "password-reset-request-container",
   templateUrl: "password-reset-request-container.component.html",
   styleUrl: "password-reset-request-container.component.scss",
+  standalone: true,
   imports: [
     NgIf,
     NgFor,
     ReactiveFormsModule,
-    TuiInputModule,
+    TuiTextfieldComponent,
     TuiButton,
     TuiLoader,
     TuiNotification,
   ]
 })
 export class PasswordResetRequestContainer {
-  public readonly timeoutQueue = new TimeoutQueue<{ id: number, text: string }>()
+  public readonly timeoutQueue = new TimedQueue<{ text: string }>();
   public readonly validationMessages = inject(VALIDATION_MESSAGES);
   private readonly _service = inject(PASSWORD_RESET_REQUEST_HANDLER);
   private readonly _activatedRoute = inject(ActivatedRoute);
 
   public isProcessing: boolean = false;
   public readonly resetRequestForm = new FormGroup({
-    email: new FormControl('', [
+    email: new FormControl<string>('', [
       Validators.required,
       Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
     ]),
