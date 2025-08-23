@@ -4,7 +4,7 @@ import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScroll
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins'; 
 
-import { ListingSearchService } from "../../libs/features/listing/search/services/listing-search.service";
+import { ListingSearchService } from "../../../libs/features/listing/search/services/listing-search.service";
 
 
 export function createAppConfig(c: {

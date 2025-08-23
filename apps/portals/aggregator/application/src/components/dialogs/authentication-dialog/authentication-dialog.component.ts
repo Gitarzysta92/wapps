@@ -1,8 +1,8 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { TuiLink } from "@taiga-ui/core";
-import { RoutedDialogButton } from "../../../../../libs/ui/directives/identity-routed-dialog-button.directive";
-import { LoginContainerComponent } from "../../../../../libs/features/identity/login/presentation/login-container";
-import { AuthenticationService } from "../../../../../libs/aspects/authentication/application";
+import { RoutedDialogButton } from "../../../libs/ui/directives/identity-routed-dialog-button.directive";
+import { LoginContainerComponent } from "../../../libs/features/identity/login/presentation/login-container";
+import { AuthenticationService } from "../../../libs/aspects/authentication/application";
 import { filter, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 

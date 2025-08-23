@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {FormsModule} from '@angular/forms';
 import {TuiIcon, TuiTextfield} from '@taiga-ui/core';
 import {TuiChevron, TuiDataListWrapper, TuiSelect, TuiTooltip} from '@taiga-ui/kit';
-import { RouteDrivenContainerDirective } from '../../../../../libs/ui/routing/route-driven-container.directive';
+import { RouteDrivenContainerDirective } from '../../../libs/ui/routing/route-driven-container.directive';
 @Component({
   selector: 'sorting-select',
   templateUrl: './sorting-select.component.html',

@@ -1,20 +1,20 @@
 import { Component, inject } from '@angular/core';
-import { ChipCheckboxComponent } from '../../../../../libs/ui/components/form/chip-checkbox/chip-checkbox.component';
+import { ChipCheckboxComponent } from '../../../libs/ui/components/form/chip-checkbox/chip-checkbox.component';
 import { AsyncPipe } from '@angular/common';
-import { CategoryListContainerDirective } from '../../../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
-import { PlatformListContainerDirective } from '../../../../../libs/features/listing/platform/presentation';
+import { CategoryListContainerDirective } from '../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
+import { PlatformListContainerDirective } from '../../../libs/features/listing/platform/presentation';
 import { FILTERS } from '../../../filters';
-import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../../../libs/ui/components/filters';
-import { ToFilterOptionsList } from '../../../../../libs/ui/components/filters/to-filter-options-list.pipe';
+import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../libs/ui/components/filters';
+import { ToFilterOptionsList } from '../../../libs/ui/components/filters/to-filter-options-list.pipe';
 import { map } from 'rxjs';
-import { DeviceListContainerDirective } from '../../../../../libs/features/listing/device/presentation';
-import { MonetizationListContainerDirective } from '../../../../../libs/features/listing/monetization/presentation';
-import { SocialListContainerDirective } from '../../../../../libs/features/listing/social/presentation';
-import { EstimatedUserSpanListContainerDirective } from '../../../../../libs/features/listing/statistic/users/presentation';
-import { TagListContainerDirective } from '../../../../../libs/features/listing/tags/feature/presentation';
-import { RouteDrivenContainerDirective } from '../../../../../libs/ui/routing/route-driven-container.directive';
-import { FilterVmListToParamMapMapper } from '../../../../../libs/features/listing/filter/presentation/mappings/filter-vm-list-to-param-map.mapper';
-import { ParamMapToFilterVmListMapper } from '../../../../../libs/features/listing/filter/presentation/mappings/param-map-to-filter-vm-list.mapper';
+import { DeviceListContainerDirective } from '../../../libs/features/listing/device/presentation';
+import { MonetizationListContainerDirective } from '../../../libs/features/listing/monetization/presentation';
+import { SocialListContainerDirective } from '../../../libs/features/listing/social/presentation';
+import { EstimatedUserSpanListContainerDirective } from '../../../libs/features/listing/statistic/users/presentation';
+import { TagListContainerDirective } from '../../../libs/features/listing/tags/feature/presentation';
+import { RouteDrivenContainerDirective } from '../../../libs/ui/routing/route-driven-container.directive';
+import { FilterVmListToParamMapMapper } from '../../../libs/features/listing/filter/presentation/mappings/filter-vm-list-to-param-map.mapper';
+import { ParamMapToFilterVmListMapper } from '../../../libs/features/listing/filter/presentation/mappings/param-map-to-filter-vm-list.mapper';
 
 @Component({
   selector: 'filters-panel',
