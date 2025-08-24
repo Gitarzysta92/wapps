@@ -1,6 +1,7 @@
 import { ApplicationConfig } from "@angular/core";
-import { PasswordResetApiService } from "../../../../../../libs/features/identity/password-reset/infrastructure";
 import { PASSWORD_RESET_HANDLER } from "../../../../../../libs/features/identity/password-reset/ports";
+import { PasswordResetApiService } from "./password-reset-api.service";
+
 
 
 export function provideIdentityPasswordResetFeature(): ApplicationConfig {

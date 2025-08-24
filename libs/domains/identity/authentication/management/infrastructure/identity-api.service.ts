@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { IIdentityProvider } from "../application/ports";
 import { Observable } from "rxjs";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { IdentityDto } from "../application/models";
 
 @Injectable()

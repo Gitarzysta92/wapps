@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { IRegistrationHandler } from "../application/ports";
 import { RegistrationDto } from "../application/models";
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { IMonetizationProvider, MonetizationDto } from "../application";
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { InjectionToken } from "@angular/core";
 import { MyProfileDto } from "../models";
 import { Observable } from "rxjs";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 
 export const MY_PROFILE_UPDATER = new InjectionToken<IMyProfileUpdater>('MY_PROFILE_UPDATER');
 

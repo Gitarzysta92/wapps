@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { CredentialsDto } from "../application/models";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { AuthenticationService } from "../../../../aspects/authentication/application/services/authentication.service";
 import { map, Observable } from "rxjs";
 import { IAuthenticationHandler } from "../application/ports";

@@ -1,6 +1,6 @@
 import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { GuestProfileDto } from "../models/guest-profile.dto";
 
 

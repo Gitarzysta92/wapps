@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
 import { IAppListingProvider } from "../application/ports/app-listing-provider.port";
 import { AppListingSliceDto } from "../application/models/app-listing.dto";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { AppListingQueryDto } from "../application/models/app-listing-query.dto";
 
 @Injectable()

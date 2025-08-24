@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { iif, map, merge, Observable, Subject, switchMap, tap } from "rxjs";
 import { GuestProfileDto, MyProfileDto } from "../models";
-import { Result } from "../../../../utils/utility-types";
+import { Result } from "@standard";
 import { AUTHENTICATION_PROVIDER, GUEST_PROFILE_PROVIDER, MY_PROFILE_EVENT_LISTENERS, MY_PROFILE_PROVIDER, MY_PROFILE_UPDATER } from "../ports";
 
 @Injectable()
