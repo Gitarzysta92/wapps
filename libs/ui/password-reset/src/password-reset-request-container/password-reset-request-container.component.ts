@@ -6,7 +6,7 @@ import { TuiTextfieldComponent } from "@taiga-ui/core";
 import { PASSWORD_RESET_REQUEST_HANDLER } from "../password-reset-request-handler.token";
 import { VALIDATION_MESSAGES, ValidationMessages } from "../validation-messages";
 import { ActivatedRoute } from "@angular/router";
-import { TimedQueue } from "../../../../primitives/timed-queue";
+import { TimedQueue } from "../../../../primitives/src/timed-queue";
 
 @Component({
   selector: "password-reset-request-container",

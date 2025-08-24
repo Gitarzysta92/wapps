@@ -1,0 +1,1 @@
+export { TrendingTagDto } from './trending-tag.dto';

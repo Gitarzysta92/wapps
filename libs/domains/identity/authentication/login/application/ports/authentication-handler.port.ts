@@ -1,6 +1,6 @@
 import { InjectionToken } from "@angular/core";
 import { CredentialsDto } from "../models/credentials.dto";
-import { Result } from "../../../../../utils/utility-types";
+import { Result } from "@standard";
 import { Observable } from "rxjs";
 
 export const AUTHENTICATION_HANDLER = new InjectionToken<IAuthenticationHandler>('AUTHENTICATION_HANDLER_PORT');

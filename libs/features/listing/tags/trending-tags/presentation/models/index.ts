@@ -1,0 +1,1 @@
+export { TrendingTagVm } from './trending-tag.vm';

@@ -1,0 +1,11 @@
+@for (trendingTag of (trendingTags$ | async); track trendingTag.id) {
+  <label
+    (click)="selectedTag.next(trendingTag)"
+    tuiChip
+    appearance="outline"
+    size="m">
+    {{ trendingTag.name }}
+  </label>
+}
+
+<!-- <div [tuiSkeleton]="true" class="asd"></div> -->

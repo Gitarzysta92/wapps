@@ -1,20 +1,19 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { ItemListingContainerDirective } from '@ui/items-listing';
 import { concatMap, map, startWith, tap, withLatestFrom } from 'rxjs';
-import { RouteDrivenContainerDirective } from '../../../../../libs/ui/routing/route-driven-container.directive';
-import { ParamMapToAppListingRequestDtoMapper } from '../../../../../libs/features/listing/app/presentation/mappings/param-map-to-app-listing-request-dto.mapper';
+import { RouteDrivenContainerDirective } from '@ui/routing';
+import { ParamMapToAppListingRequestDtoMapper } from '@ui/items-listing';
 import { AppListingService } from '../../../../../libs/features/listing/app/application/app-lisiting.service';
 import { AppListingItemVm } from '../../../../../libs/features/listing/app/presentation/models/app-listing.vm';
-import { LoadingListingSliceFactory } from '../../../../../libs/ui/components/items-listing/factories/loading-listing-slice.factory';
-import { IListingSlice } from '../../../../../libs/ui/components/items-listing/models/listing-slice';
 import { AppListingSliceDto } from '../../../../../libs/features/listing/app/application/models/app-listing.dto';
-import { TuiSkeleton } from '@taiga-ui/kit';
 import { AppMediumTileComponent } from '../../../../../libs/features/listing/app/presentation/app-medium-tile';
+import { LoadingListingSliceFactory, IListingSlice } from '@ui/items-listing';
+import { TuiSkeleton } from '@taiga-ui/kit';
 import { AsyncPipe } from '@angular/common';
-import { InfiniteScrollDirective } from '../../../../../libs/ui/components/infinite-scroll/infinite-scroll.directive';
+import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 import { TuiIcon, TuiButton, TuiDialogService } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
-import { MediumTileComponent } from '../../../../../libs/ui/components/layout/medium-tile/medium-tile.component';
+import { MediumTileComponent } from '@ui/layout';
 import { AppDetailsDialogComponent } from '../../dialogs/app-details-dialog/app-details-dialog.component';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
