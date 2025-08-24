@@ -1,0 +1,1 @@
+export type { IdentityDto } from './identity.dto';

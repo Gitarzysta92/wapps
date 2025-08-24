@@ -1,0 +1,38 @@
+{
+  "name": "features-identity",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "features-identity",
+  "sourceRoot": "libs/features/identity",
+  "tags": ["type:lib", "scope:identity", "scope:features"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/features-identity",
+        "main": "libs/features/identity/index.ts",
+        "tsConfig": "libs/features/identity/tsconfig.lib.json",
+        "assets": ["libs/features/identity/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/features/identity/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

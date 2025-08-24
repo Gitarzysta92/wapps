@@ -54,7 +54,14 @@
       "@ui/registration": ["libs/ui/registration/src/index.ts"],
       "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
-      "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"]
+      "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
+      "@standard/*": ["libs/standard/src/*"],
+      "@standard": ["libs/standard/src/index.ts"],
+      "@primitives/*": ["libs/primitives/src/*"],
+      "@primitives": ["libs/primitives/src/index.ts"],
+      "@identity/*": ["apps/portals/shared/features/identity/*"],
+      "@identity": ["apps/portals/shared/features/identity/index.ts"],
+      "@features/identity": ["libs/features/identity/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
@@ -62,11 +69,3 @@
     "@typescript-eslint/consistent-type-definitions": ["error", "type"]
   }
 }
-
-
-
-
-
-
-
-
