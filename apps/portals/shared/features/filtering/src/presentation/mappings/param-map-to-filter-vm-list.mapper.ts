@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FilterVm } from "../models/filter.vm";
-import { FilterOptionVm } from "../../../../../ui/components/filters";
-
+import { FilterOptionVm } from "@ui/filters";
 
 @Injectable()
 export class ParamMapToFilterVmListMapper {

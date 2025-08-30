@@ -65,7 +65,8 @@
       "@features/categories": ["apps/portals/shared/features/categories/src/index.ts"],
       "@portals/cross-cutting/environment": ["apps/portals/shared/cross-cutting/environment/src/index.ts"],
       "@domains/catalog/category": ["libs/domains/catalog/category/src/index.ts"],
-      "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/application/index.ts"]
+      "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/application/index.ts"],
+      "@portals/shared/features/filtering": ["apps/portals/shared/features/filtering/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
