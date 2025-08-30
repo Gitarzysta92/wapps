@@ -11,4 +11,4 @@ export class PlatformService {
       map(r => r.value ?? []),
       shareReplay({ bufferSize: 1, refCount: false }))
     ;
-} 
+}
