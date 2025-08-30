@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { PLATFORMS_PROVIDER } from "@domains/catalog/platform";
 import { defer, map, shareReplay } from "rxjs";
+import { isOk } from "@standard";
 
 @Injectable()
 export class PlatformService {
@@ -8,7 +9,7 @@ export class PlatformService {
 
   public platforms$ = defer(() => this._platformsProvider.getPlatforms())
     .pipe(
-      map(r => r.value ?? []),
+      map(r => isOk(r) ? r.value : []),
       shareReplay({ bufferSize: 1, refCount: false }))
     ;
 } 

@@ -15,7 +15,7 @@ import { VALIDATION_MESSAGES } from './data/validation-messages';
 import { provideListingCategoryFeature } from '../../../libs/features/listing/category/feature/category.providers';
 import { provideTrendingTagsFeature } from '../../../libs/features/listing/tags/trending-tags/trending-tags.providers';
 import { provideFilterFeature } from '../../../libs/features/listing/filter/filter.providers';
-import { provideListingPlatformFeature } from '../../../libs/features/listing/platform/platform.providers';
+import { provideListingPlatformFeature } from '../../../portals/shared/features/platform/platform.providers';
 import { provideFilterAppFeature } from '../../../libs/features/listing/app/app.providers';
 import { FILTERS } from './filters';
 import { NAVIGATION } from './navigation';

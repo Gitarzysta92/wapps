@@ -73,7 +73,8 @@
       "@portals/shared/features/categories": ["apps/portals/shared/features/categories/src/index.ts"],
       "@portals/shared/features/listing": ["apps/portals/shared/features/listing/src/index.ts"],
       "@portals/shared/features/filtering": ["apps/portals/shared/features/filtering/src/index.ts"],
-      "@portals/shared/features/metrics": ["apps/portals/shared/features/metrics/src/index.ts"]
+      "@portals/shared/features/metrics": ["apps/portals/shared/features/metrics/src/index.ts"],
+      "@portals/shared/features/platform": ["apps/portals/shared/features/platform/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

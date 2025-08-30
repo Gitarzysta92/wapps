@@ -12,6 +12,12 @@ steps:
 3. Make actual operations on workon
 fix imports in this feature. Make changes only in related files. Do not move files. Do not change logic in files. You can change only configuration code/naming. Do not rename files. Fix nx boilerplate if needed. Add nx boilerplate if needed. Stick to the architectural conventions (First learn them). Add aliases by root tsconfig. Use tsconfigs from identity. Scan lib folder because thera are most of missing imports. 
 
+4. Make actual operations on workon
+structurize project based on feature.definition.ts
+
+4. Make actual operations on workon
+add nx boilerplate, like tsconfigs.ts .lib.ts .spec.ts, project.json, jest.config.ts. Base on categories boilerplate
+
 4. add feature branch based on main, add conventional commit, push to origin, connect to github cli, create merge request, accept merge request.
 
 5. Remove local branch.
@@ -20,7 +26,7 @@ fix imports in this feature. Make changes only in related files. Do not move fil
 
 
 
-
+add nx boilerplate, like tsconfigs.ts .lib.ts .spec.ts, project.json, jest.config.ts. Base on categories boilerplate
 add feature branch based on main, add conventional commit, push to origin, connect to github by cli, create merge request, accept merge request.
 
 
