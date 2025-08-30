@@ -1,0 +1,38 @@
+{
+  "name": "portals-shared-features-filtering",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "id",
+  "sourceRoot": "apps/portals/shared/features/filtering/src",
+  "tags": ["type:identity", "scope:auth"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/filtering",
+        "main": "apps/portals/shared/features/filtering/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/filtering/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/filtering/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/filtering/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
