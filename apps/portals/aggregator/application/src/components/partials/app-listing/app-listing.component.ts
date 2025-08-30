@@ -3,10 +3,6 @@ import { ItemListingContainerDirective } from '@ui/items-listing';
 import { concatMap, map, startWith, tap, withLatestFrom } from 'rxjs';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { ParamMapToAppListingRequestDtoMapper } from '@ui/items-listing';
-import { AppListingService } from '../../../../../libs/features/listing/app/application/app-lisiting.service';
-import { AppListingItemVm } from '../../../../../libs/features/listing/app/presentation/models/app-listing.vm';
-import { AppListingSliceDto } from '../../../../../libs/features/listing/app/application/models/app-listing.dto';
-import { AppMediumTileComponent } from '../../../../../libs/features/listing/app/presentation/app-medium-tile';
 import { LoadingListingSliceFactory, IListingSlice } from '@ui/items-listing';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { AsyncPipe } from '@angular/common';
@@ -14,9 +10,24 @@ import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 import { TuiIcon, TuiButton, TuiDialogService } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { MediumTileComponent } from '@ui/layout';
-import { AppDetailsDialogComponent } from '../../dialogs/app-details-dialog/app-details-dialog.component';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
+// Shared features imports using aliases
+import { AppListingService } from '@portals/shared/features/listing';
+import { AppListingQueryDto, AppListingSliceDto, AppPreviewDto } from '@domains/catalog/entry';
+
+// Generic interfaces for abstraction
+interface IListingItem {
+  id: unknown;
+  name: string;
+  logo?: string;
+  isLoaded: boolean;
+  parentIndex: number;
+}
+
+interface IAppDetailsDialogData {
+  item: IListingItem;
+}
 
 @Component({
   selector: 'app-listing',
@@ -29,7 +40,6 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
   ],
   imports: [ 
     AsyncPipe,
-    AppMediumTileComponent,
     TuiSkeleton,
     TuiIcon,
     TuiButton,
@@ -43,12 +53,14 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 export class AppListingComponent implements OnInit {
 
   @Output() onUpdate: EventEmitter<{ page: string; }> = new EventEmitter();
+  @Output() onItemClick: EventEmitter<IListingItem> = new EventEmitter();
+  @Output() onItemFavourite: EventEmitter<IListingItem> = new EventEmitter();
 
   private readonly _routeContainer = inject(RouteDrivenContainerDirective, { self: true });
-  private readonly _itemContainer = inject<ItemListingContainerDirective<AppListingItemVm>>(ItemListingContainerDirective, { self: true });
+  private readonly _itemContainer = inject<ItemListingContainerDirective<IListingItem>>(ItemListingContainerDirective, { self: true });
   private readonly _infiniteScroll = inject(InfiniteScrollDirective, { self: true });
   private readonly _mapper = inject(ParamMapToAppListingRequestDtoMapper);
-  private readonly _factory = inject<LoadingListingSliceFactory<AppListingItemVm>>(LoadingListingSliceFactory)
+  private readonly _factory = inject<LoadingListingSliceFactory<IListingItem>>(LoadingListingSliceFactory);
   private readonly _service = inject(AppListingService);
   private readonly _dialogService = inject(TuiDialogService);
 
@@ -86,25 +98,30 @@ export class AppListingComponent implements OnInit {
     this.onUpdate.next({ page: p.toString() })
   }
 
-  public addToFavourites(item: AppListingItemVm): void {
-
+  public addToFavourites(item: IListingItem): void {
+    this.onItemFavourite.emit(item);
   }
 
-  public openAppDetailsModal(item: AppListingItemVm): void {
-    this._dialogService.open(
-      new PolymorpheusComponent(AppDetailsDialogComponent),
-      { data: { app: item } }
-    ).subscribe()
+  public openAppDetailsModal(item: IListingItem): void {
+    this.onItemClick.emit(item);
+    
+    // Note: Dialog opening should be handled by parent component or service
+    // to maintain separation of concerns
   }
 
-  private _mapAppListingDtoToListingSlice(dto: AppListingSliceDto): IListingSlice<AppListingItemVm> {
+  private _mapAppListingDtoToListingSlice(dto: AppListingSliceDto): IListingSlice<IListingItem> {
     return {
       hash: dto.hash,
       count: dto.count,
       maxCount: dto.maxCount,
       index: dto.index,
-      items: dto.items.map(i => Object.assign(i, { isLoaded: true, parentIndex: dto.index, }))
+      items: dto.items.map((i: AppPreviewDto) => ({
+        id: i.id,
+        name: i.name,
+        logo: i.logo,
+        isLoaded: true,
+        parentIndex: dto.index,
+      }))
     }
   }
-
 }

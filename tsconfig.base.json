@@ -72,16 +72,19 @@
       "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/application/index.ts"],
       "@domains/catalog/social": ["libs/domains/catalog/social/application/index.ts"],
       "@domains/customer/my-profile": ["libs/domains/customer/my-profile/application/index.ts"],
+      "@domains/catalog/tags": ["libs/domains/catalog/tags/application/index.ts"],
       "@portals/shared/features/pricing": ["apps/portals/shared/features/pricing/src/index.ts"],
       "@portals/shared/features/categories": ["apps/portals/shared/features/categories/src/index.ts"],
       "@portals/shared/features/listing": ["apps/portals/shared/features/listing/src/index.ts"],
       "@portals/shared/features/search": ["apps/portals/shared/features/search/src/index.ts"],
       "@portals/shared/features/filtering": ["apps/portals/shared/features/filtering/src/index.ts"],
       "@portals/shared/features/metrics": ["apps/portals/shared/features/metrics/src/index.ts"],
-      "@portals/shared/features/profile": ["apps/portals/shared/features/profile/src/index.ts"],
       "@portals/shared/features/platform": ["apps/portals/shared/features/platform/index.ts"],
       "@portals/shared/features/tags": ["apps/portals/shared/features/tags/src/index.ts"],
-      "@domains/catalog/tags": ["libs/domains/catalog/tags/application/index.ts"]
+      "@portals/shared/features/social": ["apps/portals/shared/features/social/src/index.ts"],
+      "@portals/shared/feature/compatibility": ["apps/portals/shared/features/compatibility/src/index.ts"],
+      "@portals/shared/features/identity": ["apps/portals/shared/features/identity/src/index.ts"],
+      "@portals/shared/features/profile": ["apps/portals/shared/features/profile/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
