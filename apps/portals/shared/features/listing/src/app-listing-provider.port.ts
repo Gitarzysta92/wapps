@@ -1,8 +1,7 @@
 import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
 import { Result } from "@standard";
-import { AppListingSliceDto } from "../models/app-listing.dto";
-import { AppListingQueryDto } from "../models/app-listing-query.dto";
+import { AppListingSliceDto, AppListingQueryDto } from "@domains/catalog/entry";
 
 export const APP_LISTING_PROVIDER = new InjectionToken<IAppListingProvider>('APP_LISTING_PROVIDER_PORT');
 

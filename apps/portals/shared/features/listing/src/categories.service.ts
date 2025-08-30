@@ -1,14 +1,14 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
 import { CategoriesRestApi } from "../../categories/src/infrastructure/categories.restapi";
-import { CategoryDto } from "@features/categories";
+import { CategoryDto } from "@domains/catalog/category";
 
 @Injectable()
 export class CategoriesService {
 
   private readonly _service = inject(CategoriesRestApi);
 
-  public categories$ = defer(() => this._service.getCategries())
+  public categories$ = defer(() => this._service.getCategories())
     .pipe(
       map(r => r.ok ? r.value : []),
       shareReplay({ bufferSize: 1, refCount: false })

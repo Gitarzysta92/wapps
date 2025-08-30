@@ -1,8 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { APP_LISTING_PROVIDER } from "../../../../../../libs/features/listing/app/application/ports/app-listing-provider.port";
 import { map, Observable, tap } from "rxjs";
-import { AppListingQueryDto } from "./models/app-listing-query.dto";
-import { AppListingSliceDto } from "./models/app-listing.dto";
+import { AppListingQueryDto, AppListingSliceDto } from "@domains/catalog/entry";
+import { APP_LISTING_PROVIDER } from "./app-listing-provider.port";
 
 @Injectable()
 export class AppListingService {
