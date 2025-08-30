@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { PlatformService } from "./platform.service";
+import { PlatformService } from "../application/platform.service";
 
 @Directive({
   selector: '[platformListContainer]',
