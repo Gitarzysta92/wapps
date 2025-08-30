@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { CategoryDto } from "../../application/models";
+import { CategoryDto } from "@domains/catalog/category";
 import { CategoryVm } from "../models/category.vm";
-import { CATEGORIES_PATH } from "../ports/categories-path.port";
+import { CATEGORIES_PATH } from "../categories-path.token";
 
 @Injectable()
 export class CategoryDtoToCategoryViewModelMapper {

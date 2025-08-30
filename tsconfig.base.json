@@ -62,12 +62,13 @@
       "@identity/*": ["apps/portals/shared/features/identity/*"],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
       "@features/identity": ["libs/features/identity/index.ts"],
-      "@features/categories": ["libs/features/categories/src/index.ts"],
-      "@portals/infrastructure/environment": ["apps/portals/shared/infrastructure/environment/src/index.ts"]
+      "@features/categories": ["apps/portals/shared/features/categories/src/index.ts"],
+      "@portals/cross-cutting/environment": ["apps/portals/shared/cross-cutting/environment/src/index.ts"],
+      "@domains/catalog/category": ["libs/domains/catalog/category/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
   "rules": {
-    "@typescript-eslint/consistent-type-definitions": ["error", "type"]
+    "@typescript-eslint/consistent-type-definitions": true
   }
 }

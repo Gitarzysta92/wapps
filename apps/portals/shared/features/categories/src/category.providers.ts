@@ -1,9 +1,11 @@
 import { ApplicationConfig } from "@angular/core";
-import { CATEGORIES_PATH, CategoryDtoToCategoryViewModelMapper } from "../../../../../libs/features/listing/category/feature/presentation";
-import { CategoriesService } from "../../../../../libs/features/listing/category/feature/application";
-import { CATEGORIES_PROVIDER } from "../../../../../libs/features/listing/category/feature/application/ports";
-import { CategoryApiService } from "../../../../../libs/features/listing/category/feature/infrastructure/category-api.service";
-import { CategoryDtoToFilterOptionVmMapper } from "../../../../../libs/features/listing/category/feature/presentation/mappings/category-dto-to-filter-option-vm.mapper";
+
+import { CategoriesService } from "./application/categories.service";
+import { CategoryApiService } from "./infrastructure/categories.restapi";
+import { CATEGORIES_PROVIDER } from "./application/categories-provider.token";
+import { CATEGORIES_PATH } from "./presentation/categories-path.token";
+import { CategoryDtoToCategoryViewModelMapper } from "./presentation/mappings/category-dto-to-category-view-model.mapper";
+import { CategoryDtoToFilterOptionVmMapper } from "./presentation/mappings/category-dto-to-filter-option-vm.mapper";
 
 export function provideCategoryFeature(c: { path: string }): ApplicationConfig {
   return {

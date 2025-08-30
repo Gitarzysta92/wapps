@@ -1,18 +1,23 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
-import { CategoriesRestApi } from "../infrastructure/categories.restapi";
-import { CategoryDto } from "@features/categories";
+import { Result } from "@standard";
+import { CategoryDto, ICategoriesProvider } from "@domains/catalog/category";
+import { CATEGORIES_PROVIDER } from "./categories-provider.token";
 
 @Injectable()
-export class CategoriesService {
+export class CategoriesService implements ICategoriesProvider {
 
-  private readonly _service = inject(CategoriesRestApi);
+  private readonly _service = inject(CATEGORIES_PROVIDER);
 
   public categories$ = defer(() => this._service.getCategries())
     .pipe(
       map(r => r.ok ? r.value : []),
       shareReplay({ bufferSize: 1, refCount: false })
     );
+
+  public getCategries(): Observable<Result<CategoryDto[], Error>> {
+    return this._service.getCategries();
+  }
 
   public getCategories(): Observable<CategoryDto[]> {
     return this.categories$;

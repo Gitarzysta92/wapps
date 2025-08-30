@@ -1,0 +1,38 @@
+{
+  "name": "catalog-category",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "cat",
+  "sourceRoot": "libs/domains/catalog/category/src",
+  "tags": ["type:identity", "scope:auth"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/catalog/category",
+        "main": "libs/domains/catalog/category/src/index.ts",
+        "tsConfig": "libs/domains/catalog/category/tsconfig.lib.json",
+        "assets": ["libs/domains/catalog/category/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domains/catalog/category/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
