@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { DeviceService } from "../application";
+import { DeviceService } from "../application/device.service";
 
 @Directive({
   selector: '[deviceListContainer]',

@@ -1,13 +1,14 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Result } from "@standard";
-import { IDevicesProvider, DeviceDto } from "../application";
+import { IDevicesProvider, DeviceDto } from "@domains/catalog/compatibility";
 
 @Injectable()
 export class DeviceApiService implements IDevicesProvider {
 
   public getDevices(): Observable<Result<DeviceDto[], Error>> {
     return of({
+      ok: true,
       value: [
         { id: 0, name: "Desktop" },
         { id: 1, name: "Tablet" },

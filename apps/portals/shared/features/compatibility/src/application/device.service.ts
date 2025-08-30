@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { DEVICES_PROVIDER } from "./ports/device-provider.port";
+import { DEVICES_PROVIDER } from "@domains/catalog/compatibility";
 import { defer, map, shareReplay } from "rxjs";
+import { Result } from "@standard";
 
 @Injectable()
 export class DeviceService {
@@ -8,7 +9,7 @@ export class DeviceService {
 
   public devices$ = defer(() => this._devicesProvider.getDevices())
     .pipe(
-      map(r => r.value ?? []),
+      map((r: Result<{ id: number; name: string }[], Error>) => r.ok ? r.value : []),
       shareReplay({ bufferSize: 1, refCount: false }))
     ;
 } 
