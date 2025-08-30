@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, EventEmitter, inject, Output } from '@angular/core';
-import { CategoryListContainerDirective } from '../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
+
 import { PlatformListContainerDirective } from '../../../libs/features/listing/platform/presentation';
 import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../libs/ui/components/filters';
 import { MultiselectDropdownComponent } from '../../../libs/ui/components/form/multiselect-dropdown/multiselect-dropdown.component';

@@ -1,7 +1,7 @@
 import { ApplicationConfig } from "@angular/core";
-import { PasswordResetRequestApiService } from "../../../../../../libs/features/identity/password-reset-request/infrastructure";
-import { PASSWORD_RESET_REQUEST_HANDLER } from "../../../../../../libs/features/identity/password-reset-request/application/ports";
-import { VALIDATION_MESSAGES } from "../../../../../../libs/features/identity/password-reset-request/presentation/ports/validation-messages.port";
+
+import { PasswordResetRequestApiService } from "./password-reset-request-api.service";
+import { PASSWORD_RESET_REQUEST_HANDLER, VALIDATION_MESSAGES } from "@ui/password-reset";
 
 
 export function providePasswordResetRequestFeature(c: {

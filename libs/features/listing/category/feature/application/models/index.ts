@@ -1,1 +1,1 @@
-export * from './category.dto';
+export * from '../../../../../category/src/category.dto';

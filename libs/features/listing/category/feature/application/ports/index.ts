@@ -1,1 +1,1 @@
-export * from './categories-provider.port';
+export * from '../../../../../category/src/categories-provider.port';

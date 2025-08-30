@@ -1,1 +1,0 @@
-export * from './app-medium-tile.component';

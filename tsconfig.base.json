@@ -61,7 +61,9 @@
       "@primitives": ["libs/primitives/src/index.ts"],
       "@identity/*": ["apps/portals/shared/features/identity/*"],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
-      "@features/identity": ["libs/features/identity/index.ts"]
+      "@features/identity": ["libs/features/identity/index.ts"],
+      "@features/categories": ["libs/features/categories/src/index.ts"],
+      "@portals/infrastructure/environment": ["apps/portals/shared/infrastructure/environment/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
