@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ChipCheckboxComponent } from '../../../libs/ui/components/form/chip-checkbox/chip-checkbox.component';
 import { AsyncPipe } from '@angular/common';
 import { CategoryListContainerDirective } from '../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
-import { PlatformListContainerDirective } from '../../../libs/features/listing/platform/presentation';
+import { PlatformListContainerDirective } from '../../../portals/shared/features/platform';
 import { FILTERS } from '../../../filters';
 import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../libs/ui/components/filters';
 import { ToFilterOptionsList } from '../../../libs/ui/components/filters/to-filter-options-list.pipe';

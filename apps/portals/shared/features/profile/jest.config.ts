@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'portals-shared-features-platform',
+  displayName: 'portals-shared-features-profile',
   preset: '../../../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }]
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../../../coverage/apps/portals/shared/features/platform'
+  coverageDirectory: '../../../../../coverage/apps/portals/shared/features/profile'
 };
