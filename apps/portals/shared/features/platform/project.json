@@ -1,5 +1,5 @@
 {
-  "name": "platform",
+  "name": "portals-shared-features-platform",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "plt",
@@ -11,7 +11,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/portals/shared/features/platform",
-        "main": "apps/portals/shared/features/platform/index.ts",
+        "main": "apps/portals/shared/features/platform/src/index.ts",
         "tsConfig": "apps/portals/shared/features/platform/tsconfig.lib.json",
         "assets": ["apps/portals/shared/features/platform/*.md"]
       }

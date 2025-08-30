@@ -1,6 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { PlatformService } from "@features/listing";
-import { asyncScheduler, delay, observeOn, tap } from "rxjs";
+import { PlatformService } from "../application/platform.service";
 
 @Directive({
   selector: '[platformListContainer]',

@@ -8,6 +8,7 @@ export class PlatformApiService implements IPlatformsProvider {
 
   public getPlatforms(): Observable<Result<PlatformDto[], Error>> {
     return of({
+      ok: true,
       value: [
         { id: 0, name: "Web" },
         { id: 1, name: "IOS" },
