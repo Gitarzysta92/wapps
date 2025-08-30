@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { UserStatisticService } from "../../../../../libs/features/listing/statistic/users/application";
+import { UserStatisticService } from "../application/user-statistic.service";
 
 @Directive({
   selector: '[estimatedUserSpanListContainer]',

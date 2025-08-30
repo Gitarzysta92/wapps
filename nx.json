@@ -37,19 +37,5 @@
       "onlyDependOnLibsWithTags": ["type:primitive"]
     }
   ],
-  "plugins": [
-    "@nx/node",
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    }
-  ]
+  "plugins": []
 }
