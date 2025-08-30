@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { PlatformService } from "../../../../../libs/features/listing/platform/application";
+import { PlatformService } from "@features/listing";
 import { asyncScheduler, delay, observeOn, tap } from "rxjs";
 
 @Directive({
