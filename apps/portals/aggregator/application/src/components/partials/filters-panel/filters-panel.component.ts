@@ -10,7 +10,7 @@ import { map } from 'rxjs';
 import { DeviceListContainerDirective } from '../../../libs/features/listing/device/presentation';
 import { MonetizationListContainerDirective } from '../../../libs/features/listing/monetization/presentation';
 import { SocialListContainerDirective } from '../../../libs/features/listing/social/presentation';
-import { EstimatedUserSpanListContainerDirective } from '../../../libs/features/listing/statistic/users/presentation';
+import { EstimatedUserSpanListContainerDirective } from '../../../portals/shared/features/metrics/src';
 import { TagListContainerDirective } from '../../../libs/features/listing/tags/feature/presentation';
 import { RouteDrivenContainerDirective } from '../../../libs/ui/routing/route-driven-container.directive';
 import { FilterVmListToParamMapMapper } from '../../../libs/features/listing/filter/presentation/mappings/filter-vm-list-to-param-map.mapper';

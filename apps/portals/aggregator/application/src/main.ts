@@ -22,7 +22,7 @@ import { NAVIGATION } from './navigation';
 import { provideListingDeviceFeature } from '../../../libs/features/listing/device/device.providers';
 import { provideListingMonetizationFeature } from '../../../libs/features/listing/monetization/monetization.providers';
 import { provideListingSocialsFeature } from '../../../libs/features/listing/social/social.providers';
-import { provideUserStatisticPlatformFeature } from '../../../libs/features/listing/statistic/users/user-statistic.providers';
+import { provideUserStatisticPlatformFeature } from '../../../portals/shared/features/metrics/src/user-statistic.providers';
 import { provideListingTagFeature } from '../../../libs/features/listing/tags/feature/tag.providers';
 
 
