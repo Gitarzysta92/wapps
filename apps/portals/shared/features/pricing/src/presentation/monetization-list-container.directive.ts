@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { MonetizationService } from "../../../../../libs/features/listing/monetization/application";
+import { MonetizationService } from "../application";
 
 @Directive({
   selector: '[monetizationListContainer]',
