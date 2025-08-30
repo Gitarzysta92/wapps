@@ -1,4 +1,4 @@
-import { IdentityDto } from "../models/identity.dto";
+import { IdentityDto } from "./identity.dto";
 
 export type IdentityState = {
   isIdentifying: boolean;
