@@ -1,11 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Result } from "../../../utils/utility-types";
+import { Result } from "@standard";
 import { Observable, of } from "rxjs";
-import { IMyProfileProvider } from "../../../../../../../libs/domains/customer/my-profile/application/ports";
-import { MyProfileDto } from "../../../../../../../libs/domains/customer/my-profile/application/models";
-import { MY_PROFILE_API_BASE_URL_PROVIDER } from "../../../../../../../libs/features/my-profile/infrastructure/ports/my-profile-api-base-url-provider.port";
-import { MY_PROFILE_AVATAR_BASE_URL_PROVIDER } from "../../../../../../../libs/features/my-profile/infrastructure/ports/my-profile-avatar-base-url-provider.port";
+import { IMyProfileProvider, MyProfileDto, MY_PROFILE_API_BASE_URL_PROVIDER, MY_PROFILE_AVATAR_BASE_URL_PROVIDER } from "@domains/customer/my-profile";
 
 @Injectable()
 export class MyProfileApiService implements IMyProfileProvider {

@@ -1,5 +1,5 @@
 import { Component, inject } from "@angular/core";
-import { MyProfileService } from "../../../../../../../../libs/features/my-profile/application";
+import { MyProfileService } from "../../../application/my-profile.service";
 import { filter, map } from "rxjs";
 import { AsyncPipe } from "@angular/common";
 

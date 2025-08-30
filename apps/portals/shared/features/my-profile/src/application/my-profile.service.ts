@@ -1,8 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { iif, map, merge, Observable, Subject, switchMap, tap } from "rxjs";
-import { GuestProfileDto, MyProfileDto } from "../../../../../../../libs/domains/customer/my-profile/application/models";
+import { GuestProfileDto, MyProfileDto, AUTHENTICATION_PROVIDER, GUEST_PROFILE_PROVIDER, MY_PROFILE_EVENT_LISTENERS, MY_PROFILE_PROVIDER, MY_PROFILE_UPDATER } from "@domains/customer/my-profile";
 import { Result } from "@standard";
-import { AUTHENTICATION_PROVIDER, GUEST_PROFILE_PROVIDER, MY_PROFILE_EVENT_LISTENERS, MY_PROFILE_PROVIDER, MY_PROFILE_UPDATER } from "../../../../../../../libs/domains/customer/my-profile/application/ports";
 
 @Injectable()
 export class MyProfileService {

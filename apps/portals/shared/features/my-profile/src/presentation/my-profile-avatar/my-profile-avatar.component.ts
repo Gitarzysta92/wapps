@@ -1,7 +1,7 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { TuiAvatar, TuiBadgedContent } from "@taiga-ui/kit";
-import { MyProfileService } from "../../../../../../../../libs/features/my-profile/application";
+import { MyProfileService } from "../../../application/my-profile.service";
 import { map, tap } from "rxjs";
 
 @Component({

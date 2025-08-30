@@ -67,6 +67,7 @@
       "@domains/catalog/category": ["libs/domains/catalog/category/src/index.ts"],
       "@domains/catalog/entry": ["libs/domains/catalog/entry/application/index.ts"],
       "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/application/index.ts"],
+      "@domains/customer/my-profile": ["libs/domains/customer/my-profile/application/index.ts"],
       "@domains/identity": ["libs/domains/identity/index.ts"],
       "@portals/shared/features/filtering": ["apps/portals/shared/features/filtering/src/index.ts"],
       "@portals/shared/features/metrics": ["apps/portals/shared/features/metrics/src/index.ts"]
