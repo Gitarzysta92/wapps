@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Result } from "@standard";
-import { ISocialsProvider, SocialDto } from "../../../../../../../libs/features/listing/social/application";
+import { ISocialsProvider, SocialDto } from "@domains/catalog/social";
 
 @Injectable()
 export class SocialApiService implements ISocialsProvider {

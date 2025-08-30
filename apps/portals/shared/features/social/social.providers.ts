@@ -1,6 +1,6 @@
 import { ApplicationConfig } from "@angular/core";
-import { SOCIALS_PROVIDER, SocialService } from "../../../../../../../libs/features/listing/social/application";
-import { SocialApiService } from "./infrastructure/social-api.service";
+import { SOCIALS_PROVIDER, SocialService } from "./src/application";
+import { SocialApiService } from "./src/infrastructure/social-api.service";
 
 export function provideListingSocialsFeature(): ApplicationConfig {
   return {
