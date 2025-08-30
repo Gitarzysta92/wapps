@@ -2,14 +2,14 @@ import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiButton, TuiIcon } from "@taiga-ui/core";
-import { NavigationService } from "../../../../../libs/aspects/navigation";
-import { ThemeToggleComponent } from "../../../../../libs/aspects/theming/components/theme-toggle.component";
-import { THEME_PROVIDER_TOKEN } from "../../../../../libs/aspects/theming/constants";
-import { ThemingDescriptorDirective } from "../../../../../libs/aspects/theming/theming-descriptor.directive";
+import { NavigationService } from "../../../libs/aspects/navigation";
+import { ThemeToggleComponent } from "../../../libs/aspects/theming/components/theme-toggle.component";
+import { THEME_PROVIDER_TOKEN } from "../../../libs/aspects/theming/constants";
+import { ThemingDescriptorDirective } from "../../../libs/aspects/theming/theming-descriptor.directive";
 import { Menu } from "applications/web-client/navigation";
-import { AuthenticationService } from "../../../../../libs/aspects/authentication/application";
-import { MyProfileAvatarComponent } from "../../../../../libs/features/my-profile/presentation/containers/my-profile-avatar";
-import { MyProfileNameComponent } from "../../../../../libs/features/my-profile/presentation/containers/my-profile-name";
+import { AuthenticationService } from "../../../libs/aspects/authentication/application";
+import { MyProfileAvatarComponent } from "../../../libs/features/my-profile/presentation/containers/my-profile-avatar";
+import { MyProfileNameComponent } from "../../../libs/features/my-profile/presentation/containers/my-profile-name";
 
 
 @Component({

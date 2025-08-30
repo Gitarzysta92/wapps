@@ -2,12 +2,12 @@ import { Routes } from "@angular/router";
 
 
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
-import { RoutableDialogComponent } from "../../libs/ui/components/routable-dialog/routable-dialog.component";
+import { RoutableDialogComponent } from "../../../libs/ui/components/routable-dialog/routable-dialog.component";
 import { AuthenticationDialogComponent } from "./components/dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./components/dialogs/lost-password-dialog/lost-password-dialog.component";
 import { RegistrationDialogComponent } from "./components/dialogs/registration-dialog/registration-dialog.component";
 import { HomePageComponent } from "./components/pages/home/home.component";
-import { AuthenticationGuard } from "../../libs/aspects/authentication/application/guards/authentication.guard";
+import { AuthenticationGuard } from "../../../libs/aspects/authentication/application/guards/authentication.guard";
 import { AppShellComponent } from "./components/shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
@@ -47,11 +47,11 @@ export const routes: Routes = [
       // {
       //   path: 'my-listings',
       //   canActivate: [AuthenticationGuard],
-      //   loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+      //   loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
       //   children: [
       //     {
       //       path: 'manage',
-      //       loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+      //       loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
       //     },
       //   ]
       // },
@@ -61,11 +61,11 @@ export const routes: Routes = [
         children: [
           // {
           //   path: 'ownership',
-          //   loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+          //   loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
           // },
           // {
           //   path: 'usage-plan',
-          //   loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+          //   loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
           // },
         ]
       },
@@ -76,11 +76,11 @@ export const routes: Routes = [
         children: [
           // {
           //   path: 'user',
-          //   loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+          //   loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
           // },
           // {
           //   path: 'profile',
-          //   loadComponent: () => import('../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
+          //   loadComponent: () => import('../../../libs/features/listing/shells/category/listing-category-shell.module').then(m => m.ListingCategoryShellModule),
           // },
         ]
       }

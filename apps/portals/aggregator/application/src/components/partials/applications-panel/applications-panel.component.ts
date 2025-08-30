@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { CategoriesService } from '../../../../../libs/features/listing/category/feature/application';
+import { CategoriesService } from '../../../libs/features/listing/category/feature/application';
 import { AsyncPipe } from '@angular/common';
 import { BehaviorSubject, map, switchMap } from 'rxjs';
-import { CategoryDtoToCategoryViewModelMapper, CategoryVm } from '../../../../../libs/features/listing/category/feature/presentation';
+import { CategoryDtoToCategoryViewModelMapper, CategoryVm } from '../../../libs/features/listing/category/feature/presentation';
 import { Router, RouterLink } from '@angular/router';
-import { TrendingTagsContainerComponent } from '../../../../../libs/features/listing/tags/trending-tags/presentation/trending-tags-container';
-import { TrendingTagVm } from '../../../../../libs/features/listing/tags/trending-tags/presentation/models';
+import { TrendingTagsContainerComponent } from '../../../libs/features/listing/tags/trending-tags/presentation/trending-tags-container';
+import { TrendingTagVm } from '../../../libs/features/listing/tags/trending-tags/presentation/models';
 
 @Component({
   selector: 'applications-panel',

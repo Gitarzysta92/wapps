@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiLink } from "@taiga-ui/core";
-import { NavigationService } from "../../../../../libs/aspects/navigation";
+import { NavigationService } from "../../../libs/aspects/navigation";
 import { Menu } from "applications/web-client/navigation";
 
 

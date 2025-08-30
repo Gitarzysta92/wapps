@@ -4,6 +4,6 @@
     "outDir": "../../../dist/out-tsc",
     "types": []
   },
-  "include": ["src/**/*.ts", "../../primitives/timed-queue.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

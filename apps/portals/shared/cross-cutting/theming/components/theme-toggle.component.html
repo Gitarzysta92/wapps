@@ -1,0 +1,6 @@
+<input
+  tuiSwitch
+  type="checkbox"
+  [ngModel]="themeProvider.isToggled$ | async"
+  (click)="themeProvider.toggle()"
+/>
