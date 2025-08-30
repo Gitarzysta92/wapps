@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, shareReplay } from "rxjs";
-import { TAGS_PROVIDER } from "./ports/tag-provider.port";
+import { TAGS_PROVIDER } from "@domains/catalog/tags";
 
 @Injectable()
 export class TagsService {
@@ -11,4 +11,4 @@ export class TagsService {
       map(r => r.value ?? []),
       shareReplay({ bufferSize: 1, refCount: false }))
     ;
-} 
+}
