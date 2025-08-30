@@ -1,6 +1,6 @@
 import { ApplicationConfig } from "@angular/core";
-import { AuthenticationAdapter } from "./authentication.adapter";
-import { AUTHENTICATION_HANDLER } from "@features/identity";
+import { AuthenticationAdapter } from "./login/authentication.adapter";
+import { AUTHENTICATION_HANDLER } from "@domains/identity";
 
 
 export function provideIdentityLoginFeature(): ApplicationConfig {
