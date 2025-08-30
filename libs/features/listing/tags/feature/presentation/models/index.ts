@@ -1,1 +1,0 @@
-export { TagVm } from './tag.vm';

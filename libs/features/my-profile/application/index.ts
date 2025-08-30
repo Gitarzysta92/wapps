@@ -1,1 +1,0 @@
-export { MyProfileService } from './services/my-profile.service';

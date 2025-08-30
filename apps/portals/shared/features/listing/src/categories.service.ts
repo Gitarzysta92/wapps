@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
-import { CategoriesRestApi } from "../../categories/infrastructure/categories.restapi";
+import { CategoriesRestApi } from "../../categories/src/infrastructure/categories.restapi";
 import { CategoryDto } from "@features/categories";
 
 @Injectable()

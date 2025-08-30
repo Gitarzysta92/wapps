@@ -1,2 +1,2 @@
-export * from '../../categories/presentation/category-list-container.directive';
+export * from '../../categories/src/presentation/category-list-container.directive';
 
