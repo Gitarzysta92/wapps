@@ -69,6 +69,7 @@
       "@domains/catalog/platform": ["libs/domains/catalog/platform/index.ts"],
       "@domains/catalog/pricing": ["libs/domains/catalog/pricing/index.ts"],
       "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/application/index.ts"],
+      "@domains/catalog/social": ["libs/domains/catalog/social/application/index.ts"],
       "@domains/customer/my-profile": ["libs/domains/customer/my-profile/application/index.ts"],
       "@portals/shared/features/pricing": ["apps/portals/shared/features/pricing/src/index.ts"],
       "@portals/shared/features/categories": ["apps/portals/shared/features/categories/src/index.ts"],

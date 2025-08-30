@@ -1,5 +1,5 @@
 import { Directive, inject } from "@angular/core";
-import { SocialService } from "../../../../../../../libs/features/listing/social/application";
+import { SocialService } from "../application/social.service";
 
 @Directive({
   selector: '[socialListContainer]',
