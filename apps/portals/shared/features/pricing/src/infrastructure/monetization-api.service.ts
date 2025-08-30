@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Result } from "@standard";
-import { IMonetizationProvider, MonetizationDto } from "../../../../../libs/features/listing/monetization/application";
+import { IMonetizationProvider, MonetizationDto } from "@domains/catalog/pricing";
 
 @Injectable()
 export class MonetizationApiService implements IMonetizationProvider {
