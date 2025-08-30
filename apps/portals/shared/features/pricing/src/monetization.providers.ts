@@ -1,6 +1,6 @@
 import { ApplicationConfig } from "@angular/core";
-import { MONETIZATION_PROVIDER, MonetizationService } from "../../../../../libs/features/listing/monetization/application";
-import { MonetizationApiService } from "./monetization-api.service";
+import { MONETIZATION_PROVIDER, MonetizationService } from "./application";
+import { MonetizationApiService } from "./infrastructure";
 
 export function provideListingMonetizationFeature(): ApplicationConfig {
   return {
