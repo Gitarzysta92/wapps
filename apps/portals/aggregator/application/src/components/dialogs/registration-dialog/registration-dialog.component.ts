@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { TuiLink } from "@taiga-ui/core";
-import { RoutedDialogButton } from "../../../libs/ui/directives/identity-routed-dialog-button.directive";
-import { RegistrationContainerComponent } from "../../../libs/features/identity/registration/presentation/registration-container";
+import { RoutedDialogButton } from "@ui/routable-dialog";
+import { RegistrationContainerComponent } from "@ui/registration";
 
 @Component({
   templateUrl: "registration-dialog.component.html",
