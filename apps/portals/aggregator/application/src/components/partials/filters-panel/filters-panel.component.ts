@@ -1,25 +1,24 @@
 import { Component, inject } from '@angular/core';
-import { ChipCheckboxComponent } from '../../../libs/ui/components/form/chip-checkbox/chip-checkbox.component';
+import { ChipCheckboxComponent } from '@ui/form';
 import { AsyncPipe } from '@angular/common';
-import { CategoryListContainerDirective } from '../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
-import { PlatformListContainerDirective } from '../../../portals/shared/features/platform';
+import { CategoryListContainerDirective } from '@portals/shared/features/categories';
+import { PlatformListContainerDirective } from '@portals/shared/features/platform';
 import { FILTERS } from '../../../filters';
-import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../libs/ui/components/filters';
-import { ToFilterOptionsList } from '../../../libs/ui/components/filters/to-filter-options-list.pipe';
+import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
 import { map } from 'rxjs';
-import { DeviceListContainerDirective } from '../../../libs/features/listing/device/presentation';
-import { MonetizationListContainerDirective } from '../../../libs/features/listing/monetization/presentation';
-import { SocialListContainerDirective } from '../../../libs/features/listing/social/presentation';
-import { EstimatedUserSpanListContainerDirective } from '../../../portals/shared/features/metrics/src';
-import { TagListContainerDirective } from '../../../libs/features/listing/tags/feature/presentation';
-import { RouteDrivenContainerDirective } from '../../../libs/ui/routing/route-driven-container.directive';
-import { FilterVmListToParamMapMapper } from '../../../libs/features/listing/filter/presentation/mappings/filter-vm-list-to-param-map.mapper';
-import { ParamMapToFilterVmListMapper } from '../../../libs/features/listing/filter/presentation/mappings/param-map-to-filter-vm-list.mapper';
+import { DeviceListContainerDirective } from '@portals/shared/features/device';
+import { MonetizationListContainerDirective } from '@portals/shared/features/monetization';
+import { SocialListContainerDirective } from '@portals/shared/features/social';
+import { EstimatedUserSpanListContainerDirective } from '@portals/shared/features/metrics';
+import { TagListContainerDirective } from '@portals/shared/features/tags';
+import { RouteDrivenContainerDirective } from '@ui/routing';
+import { FilterVmListToParamMapMapper, ParamMapToFilterVmListMapper } from '@portals/shared/features/filtering';
 
 @Component({
   selector: 'filters-panel',
   templateUrl: './filters-panel.component.html',
   styleUrl: './filters-panel.component.scss',
+  standalone: true,
   hostDirectives: [
     {
       directive: RouteDrivenContainerDirective,
@@ -35,7 +34,6 @@ import { ParamMapToFilterVmListMapper } from '../../../libs/features/listing/fil
     CategoryListContainerDirective,
     DeviceListContainerDirective,
     MonetizationListContainerDirective,
-    PlatformListContainerDirective,
     SocialListContainerDirective,
     EstimatedUserSpanListContainerDirective,
     TagListContainerDirective,

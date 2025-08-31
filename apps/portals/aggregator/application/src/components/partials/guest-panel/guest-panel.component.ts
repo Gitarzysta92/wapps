@@ -1,10 +1,8 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { TuiIcon } from "@taiga-ui/core";
-import { ThemeToggleComponent } from "../../../libs/aspects/theming/components/theme-toggle.component";
-import { THEME_PROVIDER_TOKEN } from "../../../libs/aspects/theming/constants";
-import { ThemingDescriptorDirective } from "../../../libs/aspects/theming/theming-descriptor.directive";
-import { RoutedDialogButton } from "../../../libs/ui/directives/identity-routed-dialog-button.directive";
+import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from "@portals/cross-cutting/theming";
+import { RoutedDialogButton } from "@ui/routing";
 
 
 @Component({

@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { NAVIGATION_CONFIGURATION } from "./navigation.constants";
-import { INavigationDeclaration } from "./navigation.interface";
+import { NAVIGATION_CONFIGURATION } from "../navigation-configuration.token";
+import { INavigationDeclaration } from "../navigation.interface";
 
 @Injectable()
 export class NavigationService {

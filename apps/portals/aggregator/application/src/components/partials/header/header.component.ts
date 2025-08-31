@@ -10,11 +10,9 @@ import {
 import { UserPanelComponent } from '../user-panel/user-panel.component';
 import { AsyncPipe } from '@angular/common';
 import { GuestPanelComponent } from '../guest-panel/guest-panel.component';
-import { OutsideClickDirective } from '../../../libs/ui/directives/outside-click.directive';
-import { NavigationService } from '../../../libs/aspects/navigation';
-import { AuthenticationService } from '../../../libs/aspects/authentication/application';
+import { OutsideClickDirective } from '@ui/misc';
+import { NavigationService } from '@portals/shared/cross-cutting/navigation';
 import { GlobalStateService } from '../../../state/global-state.service';
-import { MyProfileAvatarComponent } from '../../../libs/features/my-profile/presentation/containers/my-profile-avatar';
 import { ApplicationsPanelComponent } from '../applications-panel/applications-panel.component';
 
 
@@ -32,12 +30,10 @@ import { ApplicationsPanelComponent } from '../applications-panel/applications-p
     UserPanelComponent,
     GuestPanelComponent,
     OutsideClickDirective,
-    MyProfileAvatarComponent,
     ApplicationsPanelComponent
   ]
 })
 export class HeaderPartialComponent {
   public readonly state = inject(GlobalStateService);
-  public readonly authentication = inject(AuthenticationService);
   public readonly navigation = inject(NavigationService).config
 }
