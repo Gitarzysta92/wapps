@@ -1,21 +1,20 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 
-import { PlatformListContainerDirective } from '../../../portals/shared/features/platform';
-import { FilterDirective, FilterGroupComponent, FilterVm } from '../../../libs/ui/components/filters';
-import { MultiselectDropdownComponent } from '../../../libs/ui/components/form/multiselect-dropdown/multiselect-dropdown.component';
+import { PlatformListContainerDirective } from '@portals/shared/features/platform';
+import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
+import { MultiselectDropdownComponent } from '@ui/form';
 import { FILTERS } from '../../../filters';
-import { ToFilterOptionsList } from '../../../libs/ui/components/filters/to-filter-options-list.pipe';
 import { CategoryMultiselectComponent } from '../category-multiselect/category-multiselect.component';
 import { map } from 'rxjs';
-import { RouteDrivenContainerDirective } from '../../../libs/ui/routing/route-driven-container.directive';
-import { ParamMapToFilterVmListMapper } from '../../../libs/features/listing/filter/presentation/mappings/param-map-to-filter-vm-list.mapper';
-import { FilterVmListToParamMapMapper } from '../../../libs/features/listing/filter/presentation/mappings/filter-vm-list-to-param-map.mapper';
+import { RouteDrivenContainerDirective } from '@ui/routing';
+import { ParamMapToFilterVmListMapper, FilterVmListToParamMapMapper } from '@portals/shared/features/filtering';
 
 @Component({
   selector: 'filters-bar',
   templateUrl: './filters-bar.component.html',
   styleUrl: './filters-bar.component.scss',
+  standalone: true,
   hostDirectives: [
     RouteDrivenContainerDirective
   ],
@@ -25,7 +24,6 @@ import { FilterVmListToParamMapMapper } from '../../../libs/features/listing/fil
     MultiselectDropdownComponent,
     AsyncPipe,
     PlatformListContainerDirective,
-    CategoryListContainerDirective,
     ToFilterOptionsList,
     CategoryMultiselectComponent
   ]
