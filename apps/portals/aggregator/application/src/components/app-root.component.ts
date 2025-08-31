@@ -1,11 +1,9 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, ViewEncapsulation } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { TuiPlatform, TuiVisualViewport } from '@taiga-ui/cdk';
 import { TuiDialogs, TuiDropdowns } from '@taiga-ui/core';
-import { NavigationService, NAVIGATION_CONFIGURATION } from '../../../libs/aspects/navigation';
-import { THEME_PROVIDER_TOKEN, THEME_PROVIDER_CFG_TOKEN } from '../../../libs/aspects/theming/constants';
-import { ThemingDescriptorDirective } from '../../../libs/aspects/theming/theming-descriptor.directive';
-import { ThemingService } from '../../../libs/aspects/theming/theming.service';
+import { NavigationService, NAVIGATION_CONFIGURATION } from '@portals/cross-cutting/navigation';
+import { THEME_PROVIDER_TOKEN, THEME_PROVIDER_CFG_TOKEN, ThemingDescriptorDirective, ThemingService } from '@portals/cross-cutting/theming';
 import { NAVIGATION } from '../navigation';
 import { GlobalStateService } from '../state/global-state.service';
 
@@ -51,13 +49,13 @@ export class AppRootComponent {
   //   // this.router.events
   //   //   .pipe(
   //   //     filter(e => e instanceof NavigationEnd),
-  //   //     map(e => e)
+  //     map(e => e)
   //   //   )
   //   //   .subscribe(() => {
   //   //     if (component) {
   //   //       this.dialogs.open(component, { label: 'Dialog via Routing' }).subscribe(() => {
   //   //         this.router.navigate([{ outlets: { dialog: null } }]); // Close dialog on dismiss
-  //   //       });
+  //       });
   //   //     }  
   //   //   });
   // }

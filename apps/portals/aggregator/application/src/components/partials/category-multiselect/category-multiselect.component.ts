@@ -2,10 +2,10 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { TuiDataList } from '@taiga-ui/core';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiMultiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { CategoryListContainerDirective } from '../../../libs/features/listing/category/feature/presentation/category-list-container.directive';
-import { FilterOptionVm } from '../../../libs/ui/components/filters';
+import { CategoryListContainerDirective } from '@portals/shared/features/categories';
+import { FilterOptionVm } from '@ui/filters';
 import { combineLatest, debounceTime, map, Subject } from 'rxjs';
-import { CategoryDtoToFilterOptionVmMapper } from '../../../libs/features/listing/category/feature/presentation/mappings/category-dto-to-filter-option-vm.mapper';
+import { CategoryDtoToFilterOptionVmMapper } from '@portals/shared/features/categories';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'category-multiselect',
   templateUrl: './category-multiselect.component.html',
   styleUrl: './category-multiselect.component.scss',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
