@@ -19,7 +19,6 @@ import { provideListingMonetizationFeature } from '@portals/shared/features/pric
 import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
 import { provideTagsFeature } from '@portals/shared/features/tags';
-import { API_BASE_URL, AVATAR_BASE_URL } from './environment';
 import { MY_PROFILE_DEFAULT } from './data/my-profile-default';
 import { FILTERS } from './filters';
 import { NAVIGATION } from './navigation';
@@ -40,8 +39,6 @@ bootstrapApplication(AppRootComponent,
       validationMessages: VALIDATION_MESSAGES
     }),
     provideProfileFeature({
-      avatarBaseUrl: AVATAR_BASE_URL,
-      apiBaseUrl: API_BASE_URL,
       guestProfile: MY_PROFILE_DEFAULT
     }),
     provideCategoryFeature({
