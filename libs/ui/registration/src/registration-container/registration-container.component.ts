@@ -29,7 +29,7 @@ export class RegistrationContainerComponent {
     }
     this.isRegistering = true;
     this.service.register(c).subscribe({
-      next: v => !!v.error && this.timeoutQueue.enqueue(this._createExpectedErrorNotification(v.error), 2000),
+      next: v => !v.ok && this.timeoutQueue.enqueue(this._createExpectedErrorNotification(v.error), 2000),
       error: e => this.timeoutQueue.enqueue(this._createUnexpectedErrorNotification(e), 2000),
       complete: () => this.isRegistering = false
     })

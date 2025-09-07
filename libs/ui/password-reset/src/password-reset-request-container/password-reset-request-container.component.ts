@@ -1,4 +1,5 @@
 import { NgIf, NgFor } from "@angular/common";
+import { WA_WINDOW } from "@ng-web-apis/common";
 import { Component, inject } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
@@ -24,7 +25,8 @@ import { TimedQueue } from "../../../../primitives/src/timed-queue";
   ]
 })
 export class PasswordResetRequestContainer {
-  public readonly timeoutQueue = new TimedQueue<{ text: string }>();
+  private readonly _window = inject(WA_WINDOW);
+  public readonly timeoutQueue = new TimedQueue<{ text: string }>(this._window);
   public readonly validationMessages: ValidationMessages = VALIDATION_MESSAGES;
   private readonly _service = inject(PASSWORD_RESET_REQUEST_HANDLER);
   private readonly _activatedRoute = inject(ActivatedRoute);
