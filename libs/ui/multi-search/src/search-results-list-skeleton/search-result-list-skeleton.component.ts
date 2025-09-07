@@ -1,13 +1,8 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {TuiIcon, TuiLoader, TuiTitle} from '@taiga-ui/core';
 import {
     TuiAvatar,
-    TuiBadgeNotification,
-    TuiCheckbox,
-    TuiSensitive,
     TuiSkeleton,
-    TuiTooltip,
 } from '@taiga-ui/kit';
 import {TuiCell} from '@taiga-ui/layout';
  

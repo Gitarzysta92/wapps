@@ -11,7 +11,7 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true,
   imports: [
     AsyncPipe,
-    RouterLink
+    RouterLink,
   ]
 })
 export class ApplicationsPanelComponent {
@@ -33,8 +33,8 @@ export class ApplicationsPanelComponent {
   public readonly selectedCategory$ = this._selectedCategoryId$
     .pipe(
       switchMap(id => this._service.getCategory(id)),
-      map(c => this._mapper.map(c)))
-    );
+      map(c => this._mapper.map(c))
+    )
     
   public selectCategory(c: CategoryVm): void {
     this._selectedCategoryId$.next(c.id);

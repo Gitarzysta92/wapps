@@ -2,9 +2,9 @@ import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { TuiLink } from "@taiga-ui/core";
 import { RoutedDialogButton } from "@ui/routable-dialog";
 import { LoginContainerComponent } from "@ui/login";
-import { IAuthenticationProvider } from "@domains/customer/my-profile";
 import { filter, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
+import { AuthenticationService } from "@portals/shared/features/identity";
 
 
 @Component({
@@ -17,7 +17,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   ]
 })
 export class AuthenticationDialogComponent implements OnInit, OnDestroy {
-  private readonly _service = inject(IAuthenticationProvider);
+  private readonly _service = inject(AuthenticationService);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private _s: Subscription | undefined;
