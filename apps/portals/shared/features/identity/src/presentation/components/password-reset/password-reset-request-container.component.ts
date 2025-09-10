@@ -1,63 +1,48 @@
-import { NgIf, NgFor } from "@angular/common";
+import { NgFor } from "@angular/common";
 import { WA_WINDOW } from "@ng-web-apis/common";
 import { Component, inject } from "@angular/core";
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
-import { TuiTextfieldComponent } from "@taiga-ui/core";
-import { PASSWORD_RESET_REQUEST_HANDLER } from "../password-reset-request-handler.token";
-import { VALIDATION_MESSAGES, ValidationMessages } from "../validation-messages";
-import { ActivatedRoute } from "@angular/router";
 import { TimedQueue } from "@primitives";
+import { PASSWORD_RESET_REQUEST_HANDLER } from "../../../application/password-reset-request-handler.token";
+import { PasswordResetRequestForm, PasswordResetRequestFormDto } from "@ui/password-reset";
 
 
 @Component({
-  selector: "password-reset-request-container",
+  selector: "password-reset-request-page",
   templateUrl: "password-reset-request-container.component.html",
   styleUrl: "password-reset-request-container.component.scss",
   standalone: true,
   imports: [
-    NgIf,
     NgFor,
-    ReactiveFormsModule,
-    TuiTextfieldComponent,
     TuiButton,
     TuiLoader,
     TuiNotification,
+    PasswordResetRequestForm,
   ]
 })
-export class PasswordResetRequestContainer {
+export class PasswordResetRequestPage {
   private readonly _window = inject(WA_WINDOW);
-  public readonly timeoutQueue = new TimedQueue<{ text: string }>(this._window);
-  public readonly validationMessages: ValidationMessages = VALIDATION_MESSAGES;
+  public readonly timedQueue = new TimedQueue<{ text: string }>(this._window);
   private readonly _service = inject(PASSWORD_RESET_REQUEST_HANDLER);
-  private readonly _activatedRoute = inject(ActivatedRoute);
 
   public isProcessing: boolean = false;
-  public readonly resetRequestForm = new FormGroup({
-    email: new FormControl<string>('', [
-      Validators.required,
-      Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
-    ]),
-  });
 
-  public requestPasswordReset(): void {
+  public onFormSubmit(formData: PasswordResetRequestFormDto): void {
     if (this.isProcessing) {
       return
     }
     this.isProcessing = true;
     this._service.requestPasswordReset({
-      email: this.resetRequestForm.value.email as string,
-      token: this._activatedRoute.snapshot.queryParamMap.get('token') as string }
-    ).subscribe({
+      login: formData.email
+    }).subscribe({
       next: r => {
-        if (r.value) {
-          this.timeoutQueue.enqueue(this._createSuccessNotification(), 2000)
+        if (r.ok) {
+          this.timedQueue.enqueue(this._createSuccessNotification(), 2000)
         }
       },
-      error: e => this.timeoutQueue.enqueue(this._createUnexpectedErrorNotification(e), 2000),
+      error: e => this.timedQueue.enqueue(this._createUnexpectedErrorNotification(e), 2000),
       complete: () => {
         this.isProcessing = false;
-        this.resetRequestForm.reset()
       }
     })
   }

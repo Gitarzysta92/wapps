@@ -12,5 +12,5 @@ export * from './password-reset-request.providers';
 
 export { AuthenticationService } from './application/authentication.service';
 export { LoginContainerComponent } from './presentation/components/login/login-container.component';
-export { PasswordResetRequestContainer } from './presentation/components/password-reset/password-reset-request-container.component';
+export { PasswordResetRequestPage } from './presentation/components/password-reset/password-reset-request-container.component';
 export { AuthenticationGuard } from './presentation/guards/authentication.guard';
