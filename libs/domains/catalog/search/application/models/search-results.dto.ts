@@ -1,5 +1,5 @@
-import { IAppListingSearchRecordDto } from "./app-listing-search-record-dto.interface";
+import { AppListingSearchRecordDto } from "./search-record.dto";
 
-export interface IQuickSearchResultDto {
-  records: IAppListingSearchRecordDto[];
+export type QuickSearchResultDto = {
+  records: AppListingSearchRecordDto[];
 }

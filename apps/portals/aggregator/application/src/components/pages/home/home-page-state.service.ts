@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { IMultiSearchState } from "@ui/multi-search";
+import { IMultiSearchState } from "@portals/shared/features/multi-search";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalStateService } from "../../../state/global-state.service";
 

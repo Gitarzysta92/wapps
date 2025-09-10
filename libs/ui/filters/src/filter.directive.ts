@@ -1,6 +1,6 @@
 import { Directive, Input } from '@angular/core';
-import { FilterOptionVm, FilterVm } from './models/filter.vm';
-import { IFilterGroup } from './filter-group/filter-group.interface';
+import type { FilterOptionVm, FilterVm } from './models/filter.vm';
+import type { IFilterGroup } from './filter-group/filter-group.interface';
 
 @Directive({
   selector: '[filter]',

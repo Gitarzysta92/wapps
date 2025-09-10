@@ -40,7 +40,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return this._apiClient.getRefreshedToken(authToken)
       .pipe(
-        tap(t => this._storage.setToken(t.value)),
+        tap(t => t.ok && this._storage.setToken(t.value)),
         switchMap(t => next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${t}` } }))),
         catchError((e) => {
           this._storage.clear();

@@ -1,0 +1,26 @@
+<login-form #loginForm (onSubmit)="authenticate($event)">
+  <button
+    tuiButton
+    type="submit"
+    [disabled]="!loginForm.valid">
+    <tui-loader
+      class="loader"
+      [inheritColor]="true"
+      [overlay]="true"
+      [showLoader]="isAuthenticating"/>
+    Sign in
+  </button>
+</login-form>
+
+@for (entry of timedQueue.entries; track entry.id) {
+  <tui-notification size="l">
+    {{ entry.item.text }}
+    <button
+      (click)="timedQueue.dequeue(entry.id)"
+      iconStart="@tui.x"
+      tuiIconButton
+      type="button">
+        Close
+    </button>
+  </tui-notification>
+}

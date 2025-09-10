@@ -2,7 +2,8 @@ import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiLink } from "@taiga-ui/core";
 import { NavigationService } from "@portals/cross-cutting/navigation";
-import { Menu } from "@portals/shared/features/navigation";
+import { Menu } from "../../../navigation";
+
 
 
 @Component({

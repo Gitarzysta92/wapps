@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Result } from "@standard";
-import { IRegistrationHandler } from "../../../../../../libs/features/identity/registration/application/ports";
-import { RegistrationDto } from "../../../../../../libs/features/identity/registration/application/models";
+import { IRegistrationHandler, RegistrationDto } from "@domains/identity/authentication";
+
 
 @Injectable()
 export class IdentityRegistrationApiService implements IRegistrationHandler {

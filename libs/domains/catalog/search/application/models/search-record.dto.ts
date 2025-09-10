@@ -1,13 +1,12 @@
-import { ISuiteSearchRecord } from "./suite-search-record-dto.interface";
-import { ITagDto } from "./tag-dto.interface";
+import { TagDto } from "../../../tags/application/models/tag.dto";
 
-export interface IAppListingSearchRecordDto {
+export type AppListingSearchRecordDto = {
   id: number;
   name: string;
   description: string;
   rating: number;
-  tagIds: ITagDto[];
+  tagIds: TagDto[];
   platformIds: number[];
   deviceIds: number[];
-  associatedSuites: ISuiteSearchRecord[];
+ // associatedSuites: SuiteSearchRecordDto[];
 }

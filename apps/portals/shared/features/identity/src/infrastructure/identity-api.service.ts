@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { IdentityDto, IIdentityProvider } from "@features/identity";
 import { Observable } from "rxjs";
 import { Result } from "@standard";
-//import { IdentityDto } from "../application/models";
+import { IIdentityProvider, IdentityDto } from "@domains/identity/authentication";
 
 @Injectable()
 export class IdentityApiService implements IIdentityProvider {

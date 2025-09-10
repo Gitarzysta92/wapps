@@ -1,0 +1,44 @@
+{
+  "name": "portals-shared-features-multi-search",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "src",
+  "sourceRoot": "apps/portals/shared/features/multi-search",
+  "tags": ["type:ui", "scope:multi-search"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "apps/portals/shared/features/multi-search/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "apps/portals/shared/features/multi-search/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "apps/portals/shared/features/multi-search/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/multi-search/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

@@ -18,6 +18,7 @@ import { provideCompatibilityFeature } from '@portals/shared/feature/compatibili
 import { provideListingMonetizationFeature } from '@portals/shared/features/pricing';
 import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
+import { provideMultiSearchFeature } from '@portals/shared/features/multi-search';
 import { provideTagsFeature } from '@portals/shared/features/tags';
 import { MY_PROFILE_DEFAULT } from './data/my-profile-default';
 import { FILTERS } from './filters';
@@ -50,12 +51,13 @@ bootstrapApplication(AppRootComponent,
     provideFilterFeature(),
     // appConfigCSR,
     provideListingFeature(),
-    provideFilterAppFeature({
+    provideFilterFeature({
       pageNumberParamKey: FILTERS.page
     }),
     provideCompatibilityFeature(),
     provideListingMonetizationFeature(),
     provideSocialsFeature(),
     provideUserStatisticPlatformFeature(),
-    provideTagsFeature()
+    provideTagsFeature(),
+    provideMultiSearchFeature()
   ))

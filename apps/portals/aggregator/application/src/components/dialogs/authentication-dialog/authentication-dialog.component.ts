@@ -1,10 +1,9 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { TuiLink } from "@taiga-ui/core";
 import { RoutedDialogButton } from "@ui/routable-dialog";
-import { LoginContainerComponent } from "@ui/login";
 import { filter, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AuthenticationService } from "@portals/shared/features/identity";
+import { AuthenticationService, LoginContainerComponent } from "@portals/shared/features/identity";
 
 
 @Component({

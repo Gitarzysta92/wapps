@@ -1,11 +1,14 @@
+import { Injectable } from "@angular/core";
+import { IdentityDto, IIdentityProvider, IIdentityUpdater } from "@domains/identity/authentication";
 
 
 
-export abstract class IdentityManagementService {
-  protected readonly abstract _identityProvider: IIdentityProvider;
-  protected readonly abstract _identityUpdater: IIdentityUpdater;
+@Injectable()
+export class IdentityManagementService {
+  // protected readonly _identityProvider: IIdentityProvider;
+  // protected readonly _identityUpdater: IIdentityUpdater;
 
   async updateIdentity(identity: IdentityDto): Promise<void> {
-    await this._identityUpdater.updateIdentity(identity);
+    // await this._identityUpdater.updateIdentity(identity);
   }
 }
