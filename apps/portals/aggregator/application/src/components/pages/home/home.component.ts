@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { ListingSearchService } from "@portals/shared/features/search";
 import { StickyElementDirective } from "@ui/misc";
-import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "@ui/multi-search";
+import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "@portals/shared/features/multi-search";
 import { HomePageStateService } from "./home-page-state.service";
 
  

@@ -2,15 +2,17 @@ import { Routes } from "@angular/router";
 
 
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
-import { RoutableDialogComponent } from "../../../libs/ui/components/routable-dialog/routable-dialog.component";
+
 import { AuthenticationDialogComponent } from "./components/dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./components/dialogs/lost-password-dialog/lost-password-dialog.component";
 import { RegistrationDialogComponent } from "./components/dialogs/registration-dialog/registration-dialog.component";
 import { HomePageComponent } from "./components/pages/home/home.component";
-import { AuthenticationGuard } from "../../../libs/aspects/authentication/application/guards/authentication.guard";
+import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent } from "./components/shells/app-shell/app-shell.component";
+
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
+import { AuthenticationGuard } from "@portals/shared/features/identity";
 
 export const routes: Routes = [
   {

@@ -4,7 +4,7 @@ import { Component, inject } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
 import { TuiTextfieldComponent } from "@taiga-ui/core";
-import { PASSWORD_RESET_REQUEST_HANDLER } from "../password-reset-request-handler.token";
+import { PASSWORD_RESET_REQUEST_HANDLER } from "../../../../../apps/portals/shared/features/identity/src/application/password-reset-request-handler.token";
 import { VALIDATION_MESSAGES, ValidationMessages } from "../validation-messages";
 import { ActivatedRoute } from "@angular/router";
 import { TimedQueue } from "../../../../primitives/src/timed-queue";
@@ -59,17 +59,5 @@ export class PasswordResetRequestContainer {
         this.resetRequestForm.reset()
       }
     })
-  }
-
-  private _createSuccessNotification(): { text: string } {
-    return {
-      text: "success"
-    }
-  }
-
-  private _createUnexpectedErrorNotification(e: Error): { text: string } {
-    return {
-      text: e.message
-    }
   }
 }

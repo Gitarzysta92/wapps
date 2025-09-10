@@ -6,13 +6,14 @@ import { PlatformListContainerDirective } from '@portals/shared/features/platfor
 import { FILTERS } from '../../../filters';
 import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
 import { map } from 'rxjs';
-import { DeviceListContainerDirective } from '@portals/shared/features/device';
-import { MonetizationListContainerDirective } from '@portals/shared/features/monetization';
+
 import { SocialListContainerDirective } from '@portals/shared/features/social';
 import { EstimatedUserSpanListContainerDirective } from '@portals/shared/features/metrics';
 import { TagListContainerDirective } from '@portals/shared/features/tags';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FilterVmListToParamMapMapper, ParamMapToFilterVmListMapper } from '@portals/shared/features/filtering';
+import { DeviceListContainerDirective } from '@portals/shared/features/compatibility';
+import { MonetizationListContainerDirective } from '@portals/shared/features/pricing';
 
 @Component({
   selector: 'filters-panel',

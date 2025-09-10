@@ -1,12 +1,12 @@
-import { Component, output } from "@angular/core";
+import { Component, inject, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { TuiTextfieldComponent, TuiTextfieldOptionsDirective } from "@taiga-ui/core";
 import { InputValidationComponent } from "@ui/form";
 import { TuiHint, TuiIcon } from "@taiga-ui/core";
 import { equalValue } from "../equal-value.form-validator";
-import { RegistrationDto } from "../registration.dto";
 import { NgIf, NgTemplateOutlet } from "@angular/common";
-import { VALIDATION_MESSAGES } from "../validation-messages";
+import { RegistrationFormDto } from "../registration-form.dto";
+import { VALIDATION_MESSAGES } from "../validation-messages.port";
 
 
 
@@ -28,11 +28,11 @@ import { VALIDATION_MESSAGES } from "../validation-messages";
 })
 export class RegistrationFormComponent {
 
-  public onSubmit = output<RegistrationDto>();
+  public onSubmit = output<RegistrationFormDto>();
 
   public get valid() { return this.registrationForm.valid }
 
-  public readonly validationMessages = VALIDATION_MESSAGES;
+  public readonly validationMessages = inject(VALIDATION_MESSAGES);
   
   public readonly registrationForm = new FormGroup({
     nickname: new FormControl('', [

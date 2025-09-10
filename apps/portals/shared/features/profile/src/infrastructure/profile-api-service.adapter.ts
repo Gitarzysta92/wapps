@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { IProfileApiService } from "../application/ports/profile-api-service.port";
 import { IdentityDto } from "../application/models/identity.dto";

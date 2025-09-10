@@ -7,14 +7,13 @@ import { LoadingListingSliceFactory, IListingSlice } from '@ui/items-listing';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { AsyncPipe } from '@angular/common';
 import { InfiniteScrollDirective } from '@ui/infinite-scroll';
-import { TuiIcon, TuiButton, TuiDialogService } from '@taiga-ui/core';
+import { TuiIcon, TuiButton } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { MediumTileComponent } from '@ui/layout';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
 // Shared features imports using aliases
 import { AppListingService } from '@portals/shared/features/listing';
-import { AppListingQueryDto, AppListingSliceDto, AppPreviewDto } from '@domains/catalog/entry';
+import { AppListingSliceDto, AppPreviewDto } from '@domains/catalog/entry';
 
 // Generic interfaces for abstraction
 interface IListingItem {
@@ -25,9 +24,6 @@ interface IListingItem {
   parentIndex: number;
 }
 
-interface IAppDetailsDialogData {
-  item: IListingItem;
-}
 
 @Component({
   selector: 'app-listing',
@@ -62,7 +58,7 @@ export class AppListingComponent implements OnInit {
   private readonly _mapper = inject(ParamMapToAppListingRequestDtoMapper);
   private readonly _factory = inject<LoadingListingSliceFactory<IListingItem>>(LoadingListingSliceFactory);
   private readonly _service = inject(AppListingService);
-  private readonly _dialogService = inject(TuiDialogService);
+  //private readonly _dialogService = inject(TuiDialogService);
 
   public listing$ = this._itemContainer.state$.pipe(tap(console.log));
 

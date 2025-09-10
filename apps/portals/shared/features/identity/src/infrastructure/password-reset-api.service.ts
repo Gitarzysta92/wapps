@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Result } from "@standard";
-import { IPasswordResetHandler } from "@features/identity";
+import { IPasswordResetHandler } from "@domains/identity/authentication";
+
 
 @Injectable()
 export class PasswordResetApiService implements IPasswordResetHandler {

@@ -1,3 +1,14 @@
+export interface ITimer {
+  setTimeout(handler: () => void, ms: number): number;
+  clearTimeout(id: number): void;
+}
+
+export const defaultTimer: ITimer = {
+  setTimeout: (fn, ms) => globalThis.setTimeout(fn, ms) as unknown as number,
+  clearTimeout: (id) => globalThis.clearTimeout(id as unknown as number),
+};
+
+
 export class TimedQueue<T> {
 
   public get entries() { return this.queue }
@@ -6,12 +17,12 @@ export class TimedQueue<T> {
   private nextId = 1;
 
   constructor(
-    private readonly _window: Window
+    private readonly _timer: ITimer = defaultTimer
   ) { }
 
   enqueue(item: T, timeout: number): number {
     const id = this.nextId++;
-    const timeoutId = this._window.setTimeout(() => {
+    const timeoutId = this._timer.setTimeout(() => {
       this.dequeue(id);
     }, timeout);
     
@@ -23,7 +34,7 @@ export class TimedQueue<T> {
     const index = this.queue.findIndex(item => item.id === id);
     if (index !== -1) {
       const item = this.queue[index];
-      this._window.clearTimeout(item.timeout);
+      this._timer.clearTimeout(item.timeout);
       this.queue.splice(index, 1);
       return true;
     }
@@ -31,7 +42,7 @@ export class TimedQueue<T> {
   }
 
   clear(): void {
-    this.queue.forEach(item => this._window.clearTimeout(item.timeout));
+    this.queue.forEach(item => this._timer.clearTimeout(item.timeout));
     this.queue = [];
   }
 

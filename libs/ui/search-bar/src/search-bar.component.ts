@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, OnInit, output } from "@angular/core";
 import { ReactiveFormsModule, FormControl, FormGroup } from "@angular/forms";
-import { TuiIcon, TuiLoader, TuiTextfield } from "@taiga-ui/core";
+import { TuiTextfield } from "@taiga-ui/core";
 import { TuiSearch } from "@taiga-ui/layout";
 import { debounceTime } from "rxjs";
 import { TuiTextfieldControllerModule} from '@taiga-ui/legacy';

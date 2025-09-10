@@ -2,10 +2,13 @@ import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiButton, TuiIcon } from "@taiga-ui/core";
-import { NavigationService } from "@portals/shared/cross-cutting/navigation";
-import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from "@portals/shared/cross-cutting/theming";
-import { Menu } from "@portals/shared/features/navigation";
-import { MyProfileAvatarComponent, MyProfileNameComponent } from "@ui/my-profile";
+
+import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from "@portals/cross-cutting/theming";
+import { MyProfileNameComponent } from "@ui/my-profile";
+import { NavigationService } from "@portals/cross-cutting/navigation";
+import { MyProfileAvatarComponent } from "@ui/my-profile";
+import { Menu } from "../../../navigation";
+import { AuthenticationService } from "@portals/shared/features/identity";
 
 
 @Component({

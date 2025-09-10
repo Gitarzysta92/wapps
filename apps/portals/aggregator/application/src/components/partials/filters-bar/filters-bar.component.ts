@@ -1,7 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 
-import { PlatformListContainerDirective } from '@portals/shared/features/platform';
 import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
 import { MultiselectDropdownComponent } from '@ui/form';
 import { FILTERS } from '../../../filters';
@@ -9,6 +8,7 @@ import { CategoryMultiselectComponent } from '../category-multiselect/category-m
 import { map } from 'rxjs';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { ParamMapToFilterVmListMapper, FilterVmListToParamMapMapper } from '@portals/shared/features/filtering';
+import { PlatformListContainerDirective } from '@portals/shared/features/platform';
 
 @Component({
   selector: 'filters-bar',

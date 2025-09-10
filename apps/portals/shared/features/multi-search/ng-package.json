@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../../../dist/apps/portals/shared/features/multi-search",
+  "lib": {
+    "entryFile": "src/index.ts"
+  }
+}
+
+
