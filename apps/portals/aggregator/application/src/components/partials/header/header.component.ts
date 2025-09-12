@@ -45,8 +45,8 @@ export class HeaderPartialComponent {
 
   // Navigation items - these should come from a proper navigation configuration
   public readonly navigationItems = {
-    applications: { icon: 'tuiIconApps', label: 'Applications' },
-    suites: { icon: 'tuiIconPackage', label: 'Suites' },
-    articles: { icon: 'tuiIconFileText', label: 'Articles' }
+    applications: { icon: 'app-window', label: 'Applications' },
+    suites: { icon: 'package', label: 'Suites' },
+    articles: { icon: 'file-text', label: 'Articles' }
   };
 }

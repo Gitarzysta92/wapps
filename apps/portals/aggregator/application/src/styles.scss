@@ -1,6 +1,8 @@
-@use "@taiga-ui/core/styles/taiga-ui-local";
 @use 'variables';
 @use 'theme';
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap');
+@import "@taiga-ui/core/styles/taiga-ui-local";
 
 :host, html {
   width: 100%;

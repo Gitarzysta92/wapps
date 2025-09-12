@@ -17,9 +17,20 @@
         "tsConfig": "apps/portals/aggregator/src/apps/angular/tsconfig.app.json",
         "assets": [
           "apps/portals/aggregator/src/apps/angular/src/favicon.ico",
-          "apps/portals/aggregator/src/apps/angular/src/assets"
+          "apps/portals/aggregator/src/apps/angular/src/assets",
+          {
+            "glob": "**/*",
+            "input": "node_modules/@taiga-ui/icons/src",
+            "output": "assets/taiga-ui/icons"
+          }
         ],
-        "styles": ["apps/portals/aggregator/src/apps/angular/src/styles.scss"],
+        "styles": [
+          "apps/portals/aggregator/application/src/styles.scss",
+          {
+            "input": "node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
+            "bundleName": "taiga-theme"
+          }
+        ],
         "scripts": []
       },
       "configurations": {
