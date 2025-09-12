@@ -7,7 +7,7 @@ import { PLATFORMS_PROVIDER } from "./platforms-provider.token";
 export class DeviceService {
   private readonly _devicesProvider = inject(PLATFORMS_PROVIDER);
 
-  public devices$ = defer(() => this._devicesProvider.getDevices())
+  public devices$ = defer(() => this._devicesProvider.getPlatforms())
     .pipe(
       map((r: Result<{ id: number; name: string }[], Error>) => r.ok ? r.value : []),
       shareReplay({ bufferSize: 1, refCount: false }))

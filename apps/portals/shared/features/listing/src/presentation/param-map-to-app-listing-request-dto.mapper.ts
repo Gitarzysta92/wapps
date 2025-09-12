@@ -7,7 +7,8 @@ import { AppListingQueryDto } from "../application/models/app-listing-query.dto"
 export class ParamMapToAppListingRequestDtoMapper {
   map(query: { [key: string]: Set<string> }): AppListingQueryDto {
     return {
-      page: 'page' in query ? parseInt(query['page'].values().next().value ?? '1') : 1,
+      index: 'page' in query ? parseInt(query['page'].values().next().value ?? '1') : 1,
+      batchSize: 20, // Default batch size
       query: Object.fromEntries(Object.entries(query).map(([k, v]) => [k, Array.from(v.values())]))
     };
   }

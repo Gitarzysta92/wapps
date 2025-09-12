@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { IProfileApiService } from "../../../../../../../libs/domains/customer/src/my-profile/application/ports/profile-api-service.port";
+import { IProfileApiService } from "../../../../../../../libs/domains/customer/src/ports/profile-api-service.port";
 import { OwnerDto } from "../../../../../../../libs/domains/catalog/ownership/src/models/owner.dto";
 
 @Injectable()

@@ -10,7 +10,7 @@ export class CategoriesRestApi implements ICategoriesProvider {
 
   private readonly _http = inject(HttpClient);
 
-  public getCategries(): Observable<Result<CategoryDto[], Error>> {
+  public getCategories(): Observable<Result<CategoryDto[], Error>> {
     return this._http.get<CategoryDto[]>(`https://api.example.com/categories`).pipe(
       map(r => ({ ok: true, value: r }))
     );
@@ -19,7 +19,7 @@ export class CategoriesRestApi implements ICategoriesProvider {
 
 @Injectable()
 export class CategoryApiService implements ICategoriesProvider {
-  getCategries(): Observable<Result<CategoryDto[], Error>> {
+  getCategories(): Observable<Result<CategoryDto[], Error>> {
     return of({
       ok: true,
       value: [

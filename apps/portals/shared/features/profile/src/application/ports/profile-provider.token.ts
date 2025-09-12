@@ -1,4 +1,4 @@
 import { InjectionToken } from "@angular/core";
-import { OwnerDto } from "../../../../../../../../libs/domains/catalog/ownership/src/models/owner.dto";
+import { IProfileApiService } from "../../../../../../../../libs/domains/customer/src/ports/profile-api-service.port";
 
-export const PROFILE_PROVIDER = new InjectionToken<OwnerDto[]>('PROFILE_PROVIDER');
+export const PROFILE_PROVIDER = new InjectionToken<IProfileApiService>('PROFILE_PROVIDER');

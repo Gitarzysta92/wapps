@@ -13,7 +13,13 @@ export class AppListingService {
   public getApps(rDto: AppListingQueryDto, prefetch: number[] = []): Observable<AppListingSliceDto> {
     return this._appListingProvider.getAppListing(rDto)
       .pipe(
-        map(r => r.ok ? r.value : []),
+        map(r => r.ok ? r.value : {
+          items: [],
+          count: 0,
+          maxCount: 0,
+          hash: '',
+          index: 0
+        }),
         tap(r => {
           for (let page of prefetch) {
             this._appListingProvider.prefetchAppListing({

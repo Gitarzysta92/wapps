@@ -14,6 +14,7 @@ import { OutsideClickDirective } from '@ui/misc';
 import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../../state/global-state.service';
 import { ApplicationsPanelComponent } from '../applications-panel/applications-panel.component';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Component({
@@ -35,5 +36,17 @@ import { ApplicationsPanelComponent } from '../applications-panel/applications-p
 })
 export class HeaderPartialComponent {
   public readonly state = inject(GlobalStateService);
-  public readonly navigation = inject(NavigationService).config
+  public readonly navigation = inject(NavigationService).config;
+  
+  // Mock authentication service - replace with actual implementation
+  public readonly authentication = {
+    token$: new BehaviorSubject<string | null>(null)
+  };
+
+  // Navigation items - these should come from a proper navigation configuration
+  public readonly navigationItems = {
+    applications: { icon: 'tuiIconApps', label: 'Applications' },
+    suites: { icon: 'tuiIconPackage', label: 'Suites' },
+    articles: { icon: 'tuiIconFileText', label: 'Articles' }
+  };
 }
