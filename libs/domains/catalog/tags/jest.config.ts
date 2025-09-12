@@ -9,3 +9,7 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../../../../coverage/libs/domains/catalog/tags'
 };
+
+
+
+

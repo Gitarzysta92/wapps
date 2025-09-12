@@ -22,7 +22,7 @@ export class ApplicationsPanelComponent {
     
   public readonly categories$ = this._service
     .getCategories()
-    .pipe(map(cs => cs.map(c => this._mapper.map(c))));
+    .pipe(map(cs => cs.ok ? cs.value.map(c => this._mapper.map(c)) : []));
   
   public readonly childCategories$ = this._selectedCategoryId$
     .pipe(

@@ -13,7 +13,8 @@ import { MediumTileComponent } from '@ui/layout';
 
 // Shared features imports using aliases
 import { AppListingService } from '@portals/shared/features/listing';
-import { AppListingSliceDto, AppPreviewDto } from '@domains/catalog/entry';
+import { AppPreviewDto } from '@domains/catalog/record';
+import { AppListingSliceDto } from '../../../../../../shared/features/listing/src/application/models/record-listing.dto';
 
 // Generic interfaces for abstraction
 interface IListingItem {

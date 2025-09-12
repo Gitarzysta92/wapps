@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { IMultiSearchResult } from "../application/models/search-results.interface";
+import { SearchResultDto } from "@domains/catalog/search";
 
 @Injectable()
 export class SearchMockDataService {
-  private readonly _appListingSearchRecords: IMultiSearchResult = {
+  private readonly _appListingSearchRecords: SearchResultDto = {
     records: [
       {
         id: 1,
@@ -13,7 +13,6 @@ export class SearchMockDataService {
         tagIds: [],
         platformIds: [1, 2],
         deviceIds: [1, 2],
-        associatedSuites: []
       },
       {
         id: 2,
@@ -23,12 +22,11 @@ export class SearchMockDataService {
         tagIds: [],
         platformIds: [1, 2, 3],
         deviceIds: [1, 2, 3],
-        associatedSuites: []
       }
     ]
   };
 
-  getAppListingSearchRecords(): IMultiSearchResult {
+  getAppListingSearchRecords(): SearchResultDto {
     return this._appListingSearchRecords;
   }
 }

@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { TuiLink } from "@taiga-ui/core";
-import { PasswordResetRequestContainer } from "@ui/password-reset";
 import { RoutedDialogButton } from "@ui/routable-dialog";
+import { PasswordResetRequestContainerComponent } from "@portals/shared/features/identity";
+
 
 @Component({
   templateUrl: "lost-password-dialog.component.html",
@@ -10,7 +11,7 @@ import { RoutedDialogButton } from "@ui/routable-dialog";
   imports: [
     RoutedDialogButton,
     TuiLink,
-    PasswordResetRequestContainer
+    PasswordResetRequestContainerComponent
   ]
 })
 export class LostPasswordDialogComponent {

@@ -1,0 +1,39 @@
+{
+  "name": "catalog-ownership",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "cat",
+  "sourceRoot": "libs/domains/catalog/ownership/src",
+  "tags": ["type:domain", "scope:catalog"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/catalog/ownership",
+        "main": "libs/domains/catalog/ownership/src/index.ts",
+        "tsConfig": "libs/domains/catalog/ownership/tsconfig.lib.json",
+        "assets": ["libs/domains/catalog/ownership/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domains/catalog/ownership/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

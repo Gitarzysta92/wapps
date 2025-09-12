@@ -1,8 +1,8 @@
 {
-  "name": "identity",
+  "name": "data",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "id",
-  "sourceRoot": "apps/portals/shared/features/identity",
+  "sourceRoot": "apps/portals/shared/data",
   "tags": ["type:identity", "scope:auth"]
 }

@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
 import { ParamMap } from "@angular/router";
-import { IMultiSearchResult } from "./models/search-results.interface";
 import { SearchMockDataService } from "../infrastructure/search-mock-data.service";
+import { SearchResultDto } from "@domains/catalog/search";
 
 @Injectable()
 export class ListingSearchService {
@@ -11,11 +11,12 @@ export class ListingSearchService {
   private readonly _httpClient = inject(HttpClient);
   private readonly _mockDataService = inject(SearchMockDataService);
 
-  search(term: string): Observable<IMultiSearchResult> {
+  search(term: string): Observable<SearchResultDto> {
+    this._httpClient
     return of(this._mockDataService.getAppListingSearchRecords()).pipe(delay(3000))
   }
 
-  getRecentSearches(): IMultiSearchResult {
+  getRecentSearches(): SearchResultDto {
     return this._mockDataService.getAppListingSearchRecords()
   }
 

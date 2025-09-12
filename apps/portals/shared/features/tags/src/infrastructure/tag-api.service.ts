@@ -8,6 +8,7 @@ export class TagApiService implements ITagsProvider {
 
   public getTags(): Observable<Result<TagDto[], Error>> {
     return of({
+      ok: true,
       value: [
         { id: 0, slug: "Web", name: "Web" },
       ],

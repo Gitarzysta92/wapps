@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FiltersPanelComponent } from '../../partials/filters-panel/filters-panel.component';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
@@ -17,6 +17,7 @@ export class FiltersDialogComponent implements OnInit {
   filterParams: any;
 
   ngOnInit(): void {
+    this.dialogs;
     this.filterParams = this.context?.data?.filterParams
 
   }

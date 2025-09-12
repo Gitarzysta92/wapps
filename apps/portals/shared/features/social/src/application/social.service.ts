@@ -9,7 +9,7 @@ export class SocialService {
 
   public socials$ = defer(() => this._socialsProvider.getSocials())
     .pipe(
-      map(r => r.value ?? []),
+      map(r => r.ok ? r.value ?? [] : []),
       shareReplay({ bufferSize: 1, refCount: false }))
     ;
 } 
