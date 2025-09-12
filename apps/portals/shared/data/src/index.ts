@@ -29,3 +29,14 @@ export const REGISTRATION_VALIDATION_MESSAGES: RegistrationValidationMessages = 
     {type: "maxlength", message: 'Password confirmation cannot exceed 35 characters' }
   ]
 };
+
+export const LOGIN_VALIDATION_MESSAGES = {
+  'email': [
+    { type: 'required', message: 'Email jest wymagany.' },
+    { type: 'pattern', message: 'Wprowadź poprawny adres email.' }
+  ],
+  'password': [
+    { type: 'required', message: 'Hasło jest wymagane.' },
+    { type: 'minlength', message: 'Hasło musi posiadać conajmniej 5 znaków.' }
+  ]
+};

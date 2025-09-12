@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
-import { DEVICES_PROVIDER } from "@domains/catalog/compatibility";
 import { defer, map, shareReplay } from "rxjs";
 import { Result } from "@standard";
+import { PLATFORMS_PROVIDER } from "./platforms-provider.token";
 
 @Injectable()
 export class DeviceService {
-  private readonly _devicesProvider = inject(DEVICES_PROVIDER);
+  private readonly _devicesProvider = inject(PLATFORMS_PROVIDER);
 
   public devices$ = defer(() => this._devicesProvider.getDevices())
     .pipe(

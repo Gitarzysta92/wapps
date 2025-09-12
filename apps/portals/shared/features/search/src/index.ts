@@ -1,4 +1,3 @@
-export * from './application';
-export * from './infrastructure';
-export * from './presentation';
+export { ListingSearchService } from './application/listing-search.service';
+export { SearchMockDataService } from './infrastructure/search-mock-data.service';
 export * from './search.providers';

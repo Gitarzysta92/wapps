@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {TuiTitle} from '@taiga-ui/core';
+import {TuiIcon, TuiTitle} from '@taiga-ui/core';
 import {
     TuiBadgeNotification,
 } from '@taiga-ui/kit';
@@ -16,6 +16,7 @@ import {TuiCell} from '@taiga-ui/layout';
     FormsModule,
     TuiBadgeNotification,
     TuiTitle,
+    TuiIcon
   ],
   templateUrl: 'full-search-redirect.component.html',
   styleUrl: 'full-search-redirect.component.scss',

@@ -1,12 +1,12 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
-import { CategoriesRestApi } from "@portals/shared/features/categories";
 import { CategoryDto } from "@domains/catalog/category";
+import { CategoryApiService } from "../infrastructure/category-api.service";
 
 @Injectable()
 export class CategoriesService {
 
-  private readonly _service = inject(CategoriesRestApi);
+  private readonly _service = inject(CategoryApiService);
 
   public categories$ = defer(() => this._service.getCategories())
     .pipe(

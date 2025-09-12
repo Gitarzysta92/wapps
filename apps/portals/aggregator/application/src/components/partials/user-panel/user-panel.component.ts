@@ -5,7 +5,7 @@ import { TuiButton, TuiIcon } from "@taiga-ui/core";
 
 import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from "@portals/cross-cutting/theming";
 import { MyProfileNameComponent } from "@ui/my-profile";
-import { NavigationService } from "@portals/cross-cutting/navigation";
+import { NavigationService } from "@ui/navigation";
 import { MyProfileAvatarComponent } from "@ui/my-profile";
 import { Menu } from "../../../navigation";
 import { AuthenticationService } from "@portals/shared/features/identity";

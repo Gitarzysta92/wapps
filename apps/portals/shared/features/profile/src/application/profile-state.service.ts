@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { IdentityDto } from "./models/identity.dto";
-import { IdentityState, IDENTITY_DEFAULT_STATE } from "./models/profile.state";
+import { OwnerDto } from "../../../../../../../libs/domains/catalog/ownership/src/models/owner.dto";
+import { IdentityState, IDENTITY_DEFAULT_STATE } from "../../../../../../../libs/domains/catalog/ownership/src/models/profile.state";
 
 @Injectable()
 export class ProfileStateService {
@@ -17,7 +17,7 @@ export class ProfileStateService {
     });
   }
 
-  public obtainIdentity(i: IdentityDto | null) {
+  public obtainIdentity(i: OwnerDto | null) {
     this._state$.next({
       ...this.state,
       isIdentifying: false,

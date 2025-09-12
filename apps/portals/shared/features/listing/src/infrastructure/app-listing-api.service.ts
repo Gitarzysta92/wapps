@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
-import { IAppListingProvider } from "./app-listing-provider.port";
-import { AppListingSliceDto, AppListingQueryDto } from "@domains/catalog/entry";
 import { Result } from "@standard";
+import { IAppListingProvider } from "../application";
+import { AppListingQueryDto } from "../application/models/app-listing-query.dto";
+import { AppListingSliceDto } from "../application/models/record-listing.dto";
 
 @Injectable()
 export class AppListingApiService implements IAppListingProvider {
@@ -36,6 +37,7 @@ export class AppListingApiService implements IAppListingProvider {
     const randomNetworkDelay = 300 + Math.random() * 1200;
 
     const result: Result<AppListingSliceDto, Error> = {
+      ok: true,
       value: {
         items,
         hash: this._createQuickFixedHash(p.query),

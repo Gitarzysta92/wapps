@@ -1,7 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { IMultiSearchState } from "@portals/shared/features/multi-search";
 import { ActivatedRoute, Router } from "@angular/router";
-import { GlobalStateService } from "../../../state/global-state.service";
 
 
 @Injectable()
@@ -9,7 +8,6 @@ export class HomePageStateService implements IMultiSearchState {
 
   private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
-  private readonly _globalState = inject(GlobalStateService);
 
   public queryParamMap$ = this._route.queryParamMap;
   

@@ -1,1 +1,0 @@
-export type { TagDto } from './tag.dto';

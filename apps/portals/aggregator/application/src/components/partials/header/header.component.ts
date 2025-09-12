@@ -11,7 +11,7 @@ import { UserPanelComponent } from '../user-panel/user-panel.component';
 import { AsyncPipe } from '@angular/common';
 import { GuestPanelComponent } from '../guest-panel/guest-panel.component';
 import { OutsideClickDirective } from '@ui/misc';
-import { NavigationService } from '@portals/cross-cutting/navigation';
+import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../../state/global-state.service';
 import { ApplicationsPanelComponent } from '../applications-panel/applications-panel.component';
 

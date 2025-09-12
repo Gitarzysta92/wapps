@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 
 import { defer, map, shareReplay } from "rxjs";
-import { MONETIZATION_PROVIDER } from "./ports/monetization-provider.port";
+import { MONETIZATION_PROVIDER } from "./monetization-provider.port";
 
 @Injectable()
 export class MonetizationService {

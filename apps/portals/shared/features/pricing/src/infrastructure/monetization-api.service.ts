@@ -8,6 +8,7 @@ export class MonetizationApiService implements IMonetizationProvider {
 
   public getMonetizations(): Observable<Result<MonetizationDto[], Error>> {
     return of({
+      ok: true,
       value: [
         { id: 0, name: "Free" },
         { id: 1, name: "Freemium" },

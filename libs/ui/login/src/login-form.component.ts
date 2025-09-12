@@ -1,8 +1,10 @@
-import { Component, output } from "@angular/core";
+import { Component, inject, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { NgIf, NgFor } from '@angular/common';
 import { TuiInputModule } from "@taiga-ui/legacy";
-import { CredentialsDto } from "../../application/models";
+import { LoginFormDto } from "./login-form.dto";
+import { VALIDATION_MESSAGES } from "./validation-messages.port";
+
 
 
 @Component({
@@ -19,9 +21,11 @@ import { CredentialsDto } from "../../application/models";
 })
 export class LoginFormComponent {
 
-  public onSubmit = output<CredentialsDto>();
+  public onSubmit = output<LoginFormDto>();
 
   public get valid() { return this.loginForm.valid }
+
+  public readonly validationMessages = inject(VALIDATION_MESSAGES);
 
   public readonly loginForm = new FormGroup({
     login: new FormControl('', [
@@ -34,16 +38,6 @@ export class LoginFormComponent {
     ])
   });
 
-  public readonly validationMessages = {
-    'email': [
-      { type: 'required', message: 'Email jest wymagany.' },
-      { type: 'pattern', message: 'Wprowadź poprawny adres email.' }
-    ],
-    'password': [
-      { type: 'required', message: 'Hasło jest wymagane.' },
-      { type: 'minlength', message: 'Hasło musi posiadać conajmniej 5 znaków.' }
-    ]
-  };
 
   public submitForm(): void {
     if (this.loginForm.valid) {

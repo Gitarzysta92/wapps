@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { IProfileApiService } from "../application/ports/profile-api-service.port";
-import { IdentityDto } from "../application/models/identity.dto";
+import { IProfileApiService } from "../../../../../../../libs/domains/customer/src/my-profile/application/ports/profile-api-service.port";
+import { OwnerDto } from "../../../../../../../libs/domains/catalog/ownership/src/models/owner.dto";
 
 @Injectable()
 export class ProfileApiServiceAdapter implements IProfileApiService {
 
-  public getProfile(id: string): Observable<IdentityDto> {
+  public getProfile(id: string): Observable<OwnerDto> {
     // Mock implementation - replace with actual API call
     return of({
       id: id,
@@ -16,7 +16,7 @@ export class ProfileApiServiceAdapter implements IProfileApiService {
     });
   }
 
-  public updateProfile(profile: IdentityDto): Observable<boolean> {
+  public updateProfile(profile: OwnerDto): Observable<boolean> {
     // Mock implementation - replace with actual API call
     return of(true);
   }

@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TuiPlatform, TuiVisualViewport } from '@taiga-ui/cdk';
 import { TuiDialogs, TuiDropdowns } from '@taiga-ui/core';
-import { NavigationService, NAVIGATION_CONFIGURATION } from '@portals/cross-cutting/navigation';
+import { NavigationService, NAVIGATION_CONFIGURATION } from '@ui/navigation';
 import { THEME_PROVIDER_TOKEN, THEME_PROVIDER_CFG_TOKEN, ThemingDescriptorDirective, ThemingService } from '@portals/cross-cutting/theming';
 import { NAVIGATION } from '../navigation';
 import { GlobalStateService } from '../state/global-state.service';

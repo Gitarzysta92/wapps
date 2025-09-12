@@ -1,3 +1,2 @@
-export * from './application';
-export * from './infrastructure';
+export * from './application/profile-state.store';
 export * from './profile.providers';

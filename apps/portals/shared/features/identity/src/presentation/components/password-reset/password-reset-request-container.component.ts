@@ -1,4 +1,3 @@
-import { NgFor } from "@angular/common";
 import { WA_WINDOW } from "@ng-web-apis/common";
 import { Component, inject } from "@angular/core";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
@@ -8,19 +7,18 @@ import { PasswordResetRequestForm, PasswordResetRequestFormDto } from "@ui/passw
 
 
 @Component({
-  selector: "password-reset-request-page",
+  selector: "password-reset-request-container",
   templateUrl: "password-reset-request-container.component.html",
   styleUrl: "password-reset-request-container.component.scss",
   standalone: true,
   imports: [
-    NgFor,
     TuiButton,
     TuiLoader,
     TuiNotification,
     PasswordResetRequestForm,
   ]
 })
-export class PasswordResetRequestPage {
+export class PasswordResetRequestContainerComponent {
   private readonly _window = inject(WA_WINDOW);
   public readonly timedQueue = new TimedQueue<{ text: string }>(this._window);
   private readonly _service = inject(PASSWORD_RESET_REQUEST_HANDLER);

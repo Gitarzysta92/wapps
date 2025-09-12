@@ -1,7 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { map, Observable, tap } from "rxjs";
-import { AppListingQueryDto, AppListingSliceDto } from "@domains/catalog/entry";
+
 import { APP_LISTING_PROVIDER } from "./app-listing-provider.port";
+import { AppListingQueryDto } from "./models/app-listing-query.dto";
+import { AppListingSliceDto } from "./models/record-listing.dto";
 
 @Injectable()
 export class AppListingService {
@@ -11,7 +13,7 @@ export class AppListingService {
   public getApps(rDto: AppListingQueryDto, prefetch: number[] = []): Observable<AppListingSliceDto> {
     return this._appListingProvider.getAppListing(rDto)
       .pipe(
-        map(r => r.value),
+        map(r => r.ok ? r.value : []),
         tap(r => {
           for (let page of prefetch) {
             this._appListingProvider.prefetchAppListing({

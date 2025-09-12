@@ -1,1 +1,0 @@
-export * from './device-list-container.directive';

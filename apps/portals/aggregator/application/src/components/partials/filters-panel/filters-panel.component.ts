@@ -15,6 +15,7 @@ import { FilterVmListToParamMapMapper, ParamMapToFilterVmListMapper } from '@por
 import { DeviceListContainerDirective } from '@portals/shared/features/compatibility';
 import { MonetizationListContainerDirective } from '@portals/shared/features/pricing';
 
+
 @Component({
   selector: 'filters-panel',
   templateUrl: './filters-panel.component.html',

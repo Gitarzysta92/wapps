@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiLink } from "@taiga-ui/core";
-import { NavigationService } from "@portals/cross-cutting/navigation";
+import { NavigationService } from "@ui/navigation";
 import { Menu } from "../../../navigation";
 
 

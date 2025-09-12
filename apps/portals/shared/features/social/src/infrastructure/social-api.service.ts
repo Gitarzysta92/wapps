@@ -1,13 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Result } from "@standard";
-import { ISocialsProvider, SocialDto } from "@domains/catalog/social";
+import { ISocialsProvider } from "../application";
+import { SocialDto } from "@domains/catalog/social";
+
 
 @Injectable()
 export class SocialApiService implements ISocialsProvider {
 
   public getSocials(): Observable<Result<SocialDto[], Error>> {
     return of({
+      ok: true,
       value: [
         { id: 0, name: "Facebook" },
         { id: 1, name: "X" },
