@@ -1,4 +1,4 @@
-import { IAppListingSearchRecordDto } from "../../../libs/features/listing/search/models/app-listing-search-record-dto.interface";
+import { SearchRecordDto } from "@domains/catalog/search";
 
 
 export const appListingSearchRecordsV2 = {

@@ -16,7 +16,6 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/portals/aggregator/entrypoints/csr/tsconfig.app.json",
         "assets": [
-          "apps/portals/aggregator/entrypoints/csr/src/favicon.ico",
           "apps/portals/aggregator/entrypoints/csr/src/assets"
         ],
         "styles": ["apps/portals/aggregator/entrypoints/csr/src/styles.scss"],

@@ -1,73 +1,19 @@
 {
   "name": "aggregator-angular",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
+  "projectType": "library",
   "prefix": "app",
-        "sourceRoot": "apps/portals/aggregator/application/src",
-  "tags": ["type:app"],
+  "sourceRoot": "apps/portals/aggregator/application/src",
+  "tags": ["type:lib"],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/portals/aggregator/application",
-        "index": "apps/portals/aggregator/application/src/static/index.html",
-        "main": "apps/portals/aggregator/application/src/main.ts",
-        "polyfills": ["zone.js"],
-        "tsConfig": "apps/portals/aggregator/application/tsconfig.app.json",
-        "assets": [
-          "apps/portals/aggregator/application/src/static/assets/favicon.ico",
-          "apps/portals/aggregator/application/src/static/assets"
-        ],
-        "styles": ["apps/portals/aggregator/application/src/styles.scss"],
-        "scripts": []
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "2kb",
-              "maximumError": "4kb"
-            }
-          ],
-          "outputHashing": "all"
-        },
-        "development": {
-          "buildOptimizer": false,
-          "optimization": false,
-          "vendorChunk": true,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
-        }
-      },
-      "defaultConfiguration": "production"
-    },
-    "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
-      "options": {
-        "buildTarget": "aggregator-angular:build"
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "aggregator-angular:build:production"
-        },
-        "development": {
-          "buildTarget": "aggregator-angular:build:development"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
-    "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
-      "options": {
-        "browserTarget": "aggregator-angular:build"
+        "main": "apps/portals/aggregator/application/src/index.ts",
+        "tsConfig": "apps/portals/aggregator/application/tsconfig.lib.json",
+        "assets": ["apps/portals/aggregator/application/*.md"]
       }
     },
     "lint": {

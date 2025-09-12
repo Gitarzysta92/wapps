@@ -1,4 +1,4 @@
-import { CategoryDto } from "../../../libs/features/listing/category/feature/application/models/category.dto"
+import { CategoryDto } from "@domains/catalog/category"
 
 export const CATEGORIES: CategoryDto[] = [
   {

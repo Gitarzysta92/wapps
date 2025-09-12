@@ -14,7 +14,7 @@ import { VALIDATION_MESSAGES } from './data/validation-messages';
 import { provideCategoryFeature } from '@portals/shared/features/categories';
 import { provideFilterFeature } from '@portals/shared/features/filtering';
 import { provideListingFeature } from '@portals/shared/features/listing';
-import { provideCompatibilityFeature } from '@portals/shared/feature/compatibility';
+import { provideCompatibilityFeature } from '@portals/shared/features/compatibility';
 import { provideListingMonetizationFeature } from '@portals/shared/features/pricing';
 import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
@@ -39,9 +39,7 @@ bootstrapApplication(AppRootComponent,
     providePasswordResetRequestFeature({
       validationMessages: VALIDATION_MESSAGES
     }),
-    provideProfileFeature({
-      guestProfile: MY_PROFILE_DEFAULT
-    }),
+    provideProfileFeature(),
     provideCategoryFeature({
       path: NAVIGATION.categories.path
     }),
@@ -51,9 +49,6 @@ bootstrapApplication(AppRootComponent,
     provideFilterFeature(),
     // appConfigCSR,
     provideListingFeature(),
-    provideFilterFeature({
-      pageNumberParamKey: FILTERS.page
-    }),
     provideCompatibilityFeature(),
     provideListingMonetizationFeature(),
     provideSocialsFeature(),
