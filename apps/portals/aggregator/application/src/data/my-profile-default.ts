@@ -1,4 +1,4 @@
-import { GuestProfileDto } from "../../../libs/features/my-profile/application/models";
+import { GuestProfileDto } from "../../../../../../libs/domains/identity/authentication/src/application/models/guest-profile.dto";
 import { AVATAR_BASE_URL } from "../environment";
 
 export const MY_PROFILE_DEFAULT: GuestProfileDto = {

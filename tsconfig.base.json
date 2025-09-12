@@ -71,6 +71,7 @@
       "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
       "@domains/catalog/pricing": ["libs/domains/catalog/pricing/src/index.ts"],
       "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/src/index.ts"],
+      "@domains/catalog/ownership": ["libs/domains/catalog/ownership/src/index.ts"],
       "@domains/catalog/social": ["libs/domains/catalog/social/src/index.ts"],
       "@domains/customer/my-profile": ["libs/domains/customer/my-profile/src/index.ts"],
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
