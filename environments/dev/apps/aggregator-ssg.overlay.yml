@@ -1,0 +1,31 @@
+# Development environment overlay for aggregator-ssg
+replicas: 2
+image:
+  tag: "dev-latest"
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+env:
+  NODE_ENV: "development"
+  PORT: "80"
+  API_URL: "http://editorial.editorial:1337"
+  KONG_URL: "http://kong.kong:8000"
+
+ingress:
+  enabled: true
+  host: "aggregator-ssg-dev.lab"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80

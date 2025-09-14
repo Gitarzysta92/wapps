@@ -1,0 +1,57 @@
+# Development environment overlay for Kong API Gateway
+replicaCount: 2
+
+image:
+  repository: kong
+  tag: "3.4"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  proxy:
+    port: 8000
+    nodePort: 30080
+  admin:
+    port: 8001
+    nodePort: 30081
+  proxyTls:
+    port: 8443
+    nodePort: 30443
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+env:
+  database: "off"
+  declarative_config: "/kong/declarative/kong.yml"
+  proxy_access_log: "/dev/stdout"
+  proxy_error_log: "/dev/stderr"
+  admin_access_log: "/dev/stdout"
+  admin_error_log: "/dev/stderr"
+
+ingress:
+  enabled: true
+  hosts:
+    - host: "kong-dev.lab"
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: "kong-admin-dev.lab"
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"

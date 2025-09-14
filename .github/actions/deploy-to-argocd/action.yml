@@ -1,0 +1,49 @@
+name: 'Deploy to ArgoCD'
+description: 'Deploy application to ArgoCD'
+inputs:
+  app-name:
+    description: 'ArgoCD application name'
+    required: true
+  namespace:
+    description: 'ArgoCD namespace'
+    required: true
+    default: 'argocd'
+  argocd-server:
+    description: 'ArgoCD server URL'
+    required: true
+  argocd-token:
+    description: 'ArgoCD token'
+    required: true
+  image-tag:
+    description: 'Docker image tag to deploy'
+    required: true
+  environment:
+    description: 'Target environment (dev/prod)'
+    required: true
+    default: 'dev'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install ArgoCD CLI
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+
+    - name: Login to ArgoCD
+      run: |
+        argocd login ${{ inputs.argocd-server }} --auth-token ${{ inputs.argocd-token }} --insecure
+
+    - name: Update image tag in ArgoCD application
+      run: |
+        # Update the image tag in the deployment
+        kubectl patch application ${{ inputs.app-name }} -n ${{ inputs.namespace }} --type merge -p '{"spec":{"source":{"helm":{"parameters":[{"name":"image.tag","value":"${{ inputs.image-tag }}"}]}}}}'
+
+    - name: Sync ArgoCD application
+      run: |
+        argocd app sync ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --force
+
+    - name: Wait for deployment to be ready
+      run: |
+        argocd app wait ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --timeout 300

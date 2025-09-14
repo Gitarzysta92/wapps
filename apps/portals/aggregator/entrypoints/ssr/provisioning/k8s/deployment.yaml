@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-ssr
+  namespace: aggregator
+  labels:
+    app: aggregator-ssr
+    app.kubernetes.io/name: aggregator-ssr
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aggregator-ssr
+  template:
+    metadata:
+      labels:
+        app: aggregator-ssr
+        app.kubernetes.io/name: aggregator-ssr
+        app.kubernetes.io/component: frontend
+    spec:
+      containers:
+      - name: aggregator-ssr
+        image: aggregator-ssr:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "80"
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5

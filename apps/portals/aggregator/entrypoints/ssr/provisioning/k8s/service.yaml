@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aggregator-ssr-service
+  namespace: aggregator
+  labels:
+    app: aggregator-ssr
+    app.kubernetes.io/name: aggregator-ssr
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: aggregator-ssr

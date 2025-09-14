@@ -1,0 +1,45 @@
+# Development environment overlay for editorial service
+replicas: 1
+image:
+  tag: "dev-latest"
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  NODE_ENV: "development"
+  HOST: "0.0.0.0"
+  PORT: "1337"
+  DATABASE_CLIENT: "mysql2"
+  DATABASE_HOST: "mysql.mysql"
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: "editorial_dev"
+  DATABASE_USERNAME: "editorial"
+  DATABASE_PASSWORD: "editorial_password"
+
+ingress:
+  enabled: true
+  host: "editorial-dev.lab"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+service:
+  type: ClusterIP
+  port: 1337
+  targetPort: 1337
+
+vault:
+  enabled: true
+  role: "editorial-service-role"
+  secrets:
+    - name: "db-creds"
+      path: "secret/data/editorial/database"
+    - name: "admin-panel"
+      path: "secret/data/editorial/admin_panel"
