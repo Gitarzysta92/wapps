@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aggregator-ssr-ingress
+  namespace: aggregator
+  labels:
+    app: aggregator-ssr
+    app.kubernetes.io/name: aggregator-ssr
+    app.kubernetes.io/component: frontend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: aggregator-ssr.lab
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: aggregator-ssr-service
+            port:
+              number: 80

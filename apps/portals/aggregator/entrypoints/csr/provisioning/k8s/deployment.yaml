@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-csr
+  namespace: aggregator
+  labels:
+    app: aggregator-csr
+    app.kubernetes.io/name: aggregator-csr
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aggregator-csr
+  template:
+    metadata:
+      labels:
+        app: aggregator-csr
+        app.kubernetes.io/name: aggregator-csr
+        app.kubernetes.io/component: frontend
+    spec:
+      containers:
+      - name: aggregator-csr
+        image: aggregator-csr:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "80"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5

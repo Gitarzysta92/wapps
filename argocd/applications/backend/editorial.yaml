@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: editorial
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: wapps-platform
+  source:
+    repoURL: https://github.com/your-org/wapps.git
+    targetRevision: HEAD
+    path: apps/services/editorial/provisioning/k8s
+    helm:
+      valueFiles:
+        - $values/environments/dev/apps/editorial.overlay.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: editorial
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

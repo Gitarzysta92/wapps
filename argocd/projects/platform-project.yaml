@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: wapps-platform
+  namespace: argocd
+spec:
+  description: WApps Platform Infrastructure and Applications
+  sourceRepos:
+    - 'https://github.com/your-org/wapps.git'
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+    - namespace: 'argocd'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+    - group: 'apiextensions.k8s.io'
+      kind: CustomResourceDefinition
+    - group: 'admissionregistration.k8s.io'
+      kind: MutatingWebhookConfiguration
+    - group: 'admissionregistration.k8s.io'
+      kind: ValidatingWebhookConfiguration
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: '*'
+    - group: 'apps'
+      kind: '*'
+    - group: 'extensions'
+      kind: '*'
+    - group: 'networking.k8s.io'
+      kind: '*'
+    - group: 'batch'
+      kind: '*'
+    - group: 'policy'
+      kind: '*'
+    - group: 'autoscaling'
+      kind: '*'
+    - group: 'rbac.authorization.k8s.io'
+      kind: '*'
+    - group: 'cert-manager.io'
+      kind: '*'
+    - group: 'monitoring.coreos.com'
+      kind: '*'
+    - group: 'vault.hashicorp.com'
+      kind: '*'
+  roles:
+    - name: platform-admin
+      description: Platform administrators
+      policies:
+        - p, proj:wapps-platform:platform-admin, applications, *, wapps-platform/*, allow
+        - p, proj:wapps-platform:platform-admin, repositories, *, *, allow
+      groups:
+        - platform-admins
+    - name: developer
+      description: Application developers
+      policies:
+        - p, proj:wapps-platform:developer, applications, get, wapps-platform/*, allow
+        - p, proj:wapps-platform:developer, applications, sync, wapps-platform/*, allow
+      groups:
+        - developers
+  syncWindows:
+    - kind: allow
+      schedule: '0 0 * * *'
+      duration: 24h
+      applications:
+        - '*-dev'
+        - '*-staging'
+    - kind: deny
+      schedule: '0 0 * * 0'
+      duration: 24h
+      applications:
+        - '*-prod'

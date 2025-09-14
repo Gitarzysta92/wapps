@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-config
+  namespace: kong
+data:
+  kong.yml: |
+    _format_version: "3.0"
+    
+    services:
+    - name: aggregator-ssr-service
+      url: http://aggregator-ssr-service.aggregator:80
+      
+    - name: cdn-service
+      url: https://your-cdn-domain.com
+      
+    routes:
+    # Static routes with fallback to SSR
+    - name: home-route
+      service: cdn-service
+      paths:
+      - /
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: static"
+              
+    - name: categories-route
+      service: cdn-service
+      paths:
+      - /categories
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: static"
+    
+    # Dynamic routes to SSR
+    - name: api-route
+      service: aggregator-ssr-service
+      paths:
+      - /api
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: dynamic"
+    
+    - name: search-route
+      service: aggregator-ssr-service
+      paths:
+      - /search
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: dynamic"
+    
+    - name: app-route
+      service: aggregator-ssr-service
+      paths:
+      - /app
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: dynamic"
+    
+    # Default fallback to SSR
+    - name: default-route
+      service: aggregator-ssr-service
+      paths:
+      - /
+      plugins:
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: fallback"
+    
+    # Global plugins
+    plugins:
+    - name: rate-limiting
+      config:
+        minute: 100
+        hour: 1000
+    - name: cors
+      config:
+        origins:
+        - "*"
+        methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+        headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Requested-With

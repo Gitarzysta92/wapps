@@ -1,0 +1,119 @@
+name: 'Aggregator SSG - Frontend Application'
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/portals/aggregator/entrypoints/ssg/**'
+      - 'apps/portals/aggregator/application/**'
+      - 'apps/portals/aggregator/shared/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'nx.json'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/portals/aggregator/entrypoints/ssg/**'
+      - 'apps/portals/aggregator/application/**'
+      - 'apps/portals/aggregator/shared/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'nx.json'
+
+env:
+  APP_NAME: aggregator-ssg
+  IMAGE_NAME: aggregator-ssg
+  REGISTRY: ghcr.io
+  NAMESPACE: argocd
+
+jobs:
+  test:
+    name: 'Test and Lint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests and linting
+        uses: ./.github/actions/test-and-lint
+        with:
+          app-name: ${{ env.APP_NAME }}
+
+  build:
+    name: 'Build and Push'
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push'
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npx nx build ${{ env.APP_NAME }} --configuration=production
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: ./.github/actions/build-and-push
+        with:
+          image-name: ${{ env.IMAGE_NAME }}
+          dockerfile-path: './apps/portals/aggregator/entrypoints/ssg/Dockerfile'
+          context-path: '.'
+          tags: ${{ steps.meta.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-dev:
+    name: 'Deploy to Development'
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment: development
+    steps:
+      - name: Deploy to ArgoCD
+        uses: ./.github/actions/deploy-to-argocd
+        with:
+          app-name: ${{ env.APP_NAME }}
+          namespace: ${{ env.NAMESPACE }}
+          argocd-server: ${{ secrets.ARGOCD_SERVER }}
+          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
+          image-tag: ${{ needs.build.outputs.image-tag }}
+          environment: dev
+
+  deploy-prod:
+    name: 'Deploy to Production'
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Deploy to ArgoCD
+        uses: ./.github/actions/deploy-to-argocd
+        with:
+          app-name: ${{ env.APP_NAME }}
+          namespace: ${{ env.NAMESPACE }}
+          argocd-server: ${{ secrets.ARGOCD_SERVER }}
+          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
+          image-tag: ${{ needs.build.outputs.image-tag }}
+          environment: prod
