@@ -28,10 +28,6 @@
       include_tasks: argocd/install.yml
       when: target_env in ['staging', 'production']
 
-    - name: Include GitHub Agent installation
-      include_tasks: github-agent/install.yml
-      when: target_env in ['staging', 'production']
-
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
       when: target_env in ['staging', 'production']
