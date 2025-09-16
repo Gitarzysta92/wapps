@@ -1,0 +1,52 @@
+---
+- name: Host Environment Provisioning - Main Playbook
+  hosts: web
+  become: yes
+  vars:
+    target_env: "{{ target_env | default('staging') }}"
+    git_sha: "{{ git_sha | default('main') }}"
+    apps_dir: "/opt/wapps"
+
+  tasks:
+    - name: Display provisioning start
+      debug:
+        msg: |
+          Starting host environment provisioning...
+          Environment: {{ target_env }}
+          Git SHA: {{ git_sha }}
+          Target directory: {{ apps_dir }}
+
+    - name: Include system configuration
+      include_tasks: system/configure.yml
+      when: target_env in ['staging', 'production']
+
+    - name: Include K3s installation
+      include_tasks: k3s/install.yml
+      when: target_env in ['staging', 'production']
+
+    - name: Include ArgoCD installation
+      include_tasks: argocd/install.yml
+      when: target_env in ['staging', 'production']
+
+    - name: Include GitHub Agent installation
+      include_tasks: github-agent/install.yml
+      when: target_env in ['staging', 'production']
+
+    - name: Include Node Exporter installation
+      include_tasks: node-exporter/install.yml
+      when: target_env in ['staging', 'production']
+
+    - name: Display provisioning summary
+      debug:
+        msg: |
+          Host provisioning completed successfully!
+          Environment: {{ target_env }}
+          Git SHA: {{ git_sha }}
+          Applications directory: {{ apps_dir }}
+          Installed services:
+            - ArgoCD (port 30080) - GitOps CD
+            - GitHub Actions Runner - CI/CD
+            - K3s (port 6443) - Kubernetes
+            - Node Exporter (port 9100) - Metrics
+            - NTP - Time synchronization
+          Logs directory: {{ apps_dir }}/logs

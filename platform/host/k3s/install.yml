@@ -1,0 +1,66 @@
+---
+- name: Install K3s
+  hosts: web
+  become: yes
+  vars:
+    target_env: "{{ target_env | default('staging') }}"
+    apps_dir: "/opt/wapps"
+
+  tasks:
+    - name: Download K3s installation script
+      get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: '0755'
+
+    - name: Install K3s server
+      shell: /tmp/k3s-install.sh
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Wait for K3s to be ready
+      wait_for:
+        port: 6443
+        host: localhost
+        delay: 10
+        timeout: 300
+
+    - name: Create kubeconfig directory
+      file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Copy kubeconfig to user directory
+      copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+      become: yes
+
+    - name: Update kubeconfig server address
+      replace:
+        path: "{{ ansible_env.HOME }}/.kube/config"
+        regexp: 'https://127.0.0.1:6443'
+        replace: 'https://{{ ansible_default_ipv4.address }}:6443'
+
+    - name: Install kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+      args:
+        creates: /usr/local/bin/kubectl
+
+    - name: Verify K3s installation
+      shell: kubectl get nodes
+      register: k3s_status
+      changed_when: false
+
+    - name: Display K3s status
+      debug:
+        var: k3s_status.stdout_lines
