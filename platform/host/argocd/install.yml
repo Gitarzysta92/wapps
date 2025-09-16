@@ -1,0 +1,61 @@
+---
+- name: Install ArgoCD
+  hosts: web
+  become: yes
+  vars:
+    target_env: "{{ target_env | default('staging') }}"
+    apps_dir: "/opt/wapps"
+
+  tasks:
+    - name: Create ArgoCD namespace
+      kubernetes.core.k8s:
+        name: argocd
+        api_version: v1
+        kind: Namespace
+        state: present
+      when: k3s_status is defined
+
+    - name: Install ArgoCD via kubectl
+      shell: |
+        kubectl create namespace argocd
+        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      args:
+        creates: /tmp/argocd-installed
+      register: argocd_install
+
+    - name: Wait for ArgoCD to be ready
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        namespace: argocd
+        name: argocd-server
+        wait: true
+        wait_condition:
+          type: Available
+          status: "True"
+        wait_timeout: 300
+
+    - name: Install ArgoCD CLI
+      get_url:
+        url: "https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64"
+        dest: /usr/local/bin/argocd
+        mode: '0755'
+
+    - name: Patch ArgoCD server service to NodePort
+      shell: |
+        kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort","ports":[{"port":80,"nodePort":30080}]}}'
+      register: argocd_patch
+
+    - name: Get ArgoCD admin password
+      shell: |
+        kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+      register: argocd_password
+      changed_when: false
+
+    - name: Display ArgoCD access information
+      debug:
+        msg: |
+          ArgoCD installed successfully!
+          Access URL: http://{{ ansible_default_ipv4.address }}:30080
+          Username: admin
+          Password: {{ argocd_password.stdout }}

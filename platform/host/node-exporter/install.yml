@@ -1,0 +1,91 @@
+---
+- name: Install Node Exporter
+  hosts: web
+  become: yes
+  vars:
+    target_env: "{{ target_env | default('staging') }}"
+    apps_dir: "/opt/wapps"
+
+  tasks:
+    - name: Create node-exporter user
+      user:
+        name: node-exporter
+        system: yes
+        shell: /bin/false
+        home: /var/lib/node_exporter
+        create_home: yes
+
+    - name: Create node-exporter directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: node-exporter
+        group: node-exporter
+        mode: '0755'
+      loop:
+        - /var/lib/node_exporter
+        - /etc/node_exporter
+
+    - name: Download Node Exporter
+      get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/latest/download/node_exporter-1.7.0.linux-amd64.tar.gz"
+        dest: /tmp/node_exporter.tar.gz
+        mode: '0644'
+
+    - name: Extract Node Exporter
+      unarchive:
+        src: /tmp/node_exporter.tar.gz
+        dest: /tmp
+        remote_src: yes
+
+    - name: Install Node Exporter binary
+      copy:
+        src: /tmp/node_exporter-1.7.0.linux-amd64/node_exporter
+        dest: /usr/local/bin/node_exporter
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: yes
+
+    - name: Create Node Exporter systemd service
+      copy:
+        content: |
+          [Unit]
+          Description=Node Exporter
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=node-exporter
+          Group=node-exporter
+          ExecStart=/usr/local/bin/node_exporter --web.listen-address=0.0.0.0:9100
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/node_exporter.service
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Node Exporter
+      systemd:
+        name: node_exporter
+        enabled: yes
+        state: started
+
+    - name: Verify Node Exporter is running
+      wait_for:
+        port: 9100
+        host: localhost
+        delay: 5
+        timeout: 30
+
+    - name: Display Node Exporter status
+      debug:
+        msg: |
+          Node Exporter installed and running!
+          Metrics endpoint: http://{{ ansible_default_ipv4.address }}:9100/metrics

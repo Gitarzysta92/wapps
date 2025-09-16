@@ -1,0 +1,82 @@
+---
+- name: Install GitHub Actions Runner
+  hosts: web
+  become: yes
+  vars:
+    target_env: "{{ target_env | default('staging') }}"
+    apps_dir: "/opt/wapps"
+
+  tasks:
+    - name: Create GitHub Actions runner user
+      user:
+        name: github-runner
+        system: yes
+        shell: /bin/bash
+        home: /home/github-runner
+        create_home: yes
+
+    - name: Create GitHub Actions runner directory
+      file:
+        path: /home/github-runner/actions-runner
+        state: directory
+        owner: github-runner
+        group: github-runner
+        mode: '0755'
+
+    - name: Download GitHub Actions runner
+      get_url:
+        url: "https://github.com/actions/runner/releases/latest/download/actions-runner-linux-x64-2.311.0.tar.gz"
+        dest: /tmp/actions-runner.tar.gz
+        mode: '0644'
+
+    - name: Extract GitHub Actions runner
+      unarchive:
+        src: /tmp/actions-runner.tar.gz
+        dest: /home/github-runner/actions-runner
+        owner: github-runner
+        group: github-runner
+        remote_src: yes
+
+    - name: Install dependencies for GitHub Actions runner
+      package:
+        name:
+          - libc6
+          - libssl3
+          - libstdc++6
+          - zlib1g
+        state: present
+
+    - name: Create GitHub Actions runner service
+      copy:
+        content: |
+          [Unit]
+          Description=GitHub Actions Runner
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=github-runner
+          WorkingDirectory=/home/github-runner/actions-runner
+          ExecStart=/home/github-runner/actions-runner/run.sh
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/github-actions-runner.service
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Display GitHub Actions runner setup instructions
+      debug:
+        msg: |
+          GitHub Actions runner installed but not configured!
+          To configure the runner:
+          1. Go to your GitHub repository Settings > Actions > Runners
+          2. Click "New self-hosted runner"
+          3. Copy the registration token
+          4. Run: sudo -u github-runner /home/github-runner/actions-runner/config.sh --url <repo-url> --token <token>
+          5. Enable service: sudo systemctl enable --now github-actions-runner
