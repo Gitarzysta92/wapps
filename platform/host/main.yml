@@ -18,19 +18,19 @@
 
     - name: Include system configuration
       include_tasks: system/configure.yml
-      when: target_env in ['staging', 'production']
+      when: target_env in ['development', 'staging', 'production']
 
     - name: Include K3s installation
       include_tasks: k3s/install.yml
-      when: target_env in ['staging', 'production']
+      when: target_env in ['development', 'staging', 'production']
 
     - name: Include ArgoCD installation
       include_tasks: argocd/install.yml
-      when: target_env in ['staging', 'production']
+      when: target_env in ['development', 'staging', 'production']
 
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
-      when: target_env in ['staging', 'production']
+      when: target_env in ['development', 'staging', 'production']
 
     - name: Display provisioning summary
       debug:
