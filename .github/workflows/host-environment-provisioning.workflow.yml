@@ -21,9 +21,11 @@ jobs:
       - name: Install Python & Ansible
         run: |
           echo "$SUDO_PASS" | sudo -S apt-get update --yes
-          echo "$SUDO_PASS" | sudo -S apt-get install --yes python3-pip
+          echo "$SUDO_PASS" | sudo -S apt-get install --yes python3-pip python3-venv
           python3 -m pip install --upgrade pip
-          pip install "ansible>=9,<10"
+          python3 -m venv /opt/ansible-env
+          /opt/ansible-env/bin/pip install "ansible>=9,<10"
+          echo "/opt/ansible-env/bin" >> $GITHUB_PATH
         env:
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
 
