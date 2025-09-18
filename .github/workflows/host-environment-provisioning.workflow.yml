@@ -53,7 +53,10 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: "False"
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
         run: |
-          EXTRA_VARS="target_env=${{ job.environment }} git_sha=${{ github.sha }}"
+          echo "Debug: job.environment = ${{ job.environment }}"
+          echo "Debug: github.event.inputs.env = ${{ github.event.inputs.env }}"
+          EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }}"
+          echo "Debug: EXTRA_VARS = $EXTRA_VARS"
 
           echo "$SUDO_PASS" | ansible-playbook -i inventory.ini platform/host/main.yml \
             --extra-vars "$EXTRA_VARS" \
