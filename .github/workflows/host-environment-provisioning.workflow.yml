@@ -20,10 +20,12 @@ jobs:
 
       - name: Install Python & Ansible
         run: |
-          sudo apt-get update --yes
-          sudo apt-get install --yes python3-pip
+          echo "$SUDO_PASS" | sudo -S apt-get update --yes
+          echo "$SUDO_PASS" | sudo -S apt-get install --yes python3-pip
           python3 -m pip install --upgrade pip
           pip install "ansible>=9,<10"
+        env:
+          SUDO_PASS: ${{ secrets.SUDO_PASS }}
 
       - name: Configure SSH
         shell: bash
