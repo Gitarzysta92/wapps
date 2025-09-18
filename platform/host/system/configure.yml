@@ -52,16 +52,27 @@
   timezone:
     name: UTC
 
-- name: Configure NTP
-  package:
-    name: ntp
-    state: present
+- name: Configure time synchronization
+  block:
+    - name: Install chrony (modern NTP alternative)
+      package:
+        name: chrony
+        state: present
 
-- name: Start and enable NTP
-  systemd:
-    name: ntp
-    state: started
-    enabled: yes
+    - name: Start and enable chrony
+      systemd:
+        name: chrony
+        state: started
+        enabled: yes
+
+    - name: Verify time synchronization
+      command: chrony sources -v
+      register: chrony_status
+      changed_when: false
+
+    - name: Display time sync status
+      debug:
+        msg: "Time synchronization configured with chrony"
 
 - name: Create applications directory
   file:
