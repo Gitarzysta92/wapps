@@ -22,10 +22,10 @@ jobs:
         run: |
           echo "$SUDO_PASS" | sudo -S apt-get update --yes
           echo "$SUDO_PASS" | sudo -S apt-get install --yes python3-pip python3-venv
-          python3 -m venv /opt/ansible-env
-          /opt/ansible-env/bin/pip install --upgrade pip
-          /opt/ansible-env/bin/pip install "ansible>=9,<10"
-          echo "/opt/ansible-env/bin" >> $GITHUB_PATH
+          python3 -m venv ~/ansible-env
+          ~/ansible-env/bin/pip install --upgrade pip
+          ~/ansible-env/bin/pip install "ansible>=9,<10"
+          echo "$HOME/ansible-env/bin" >> $GITHUB_PATH
         env:
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
 
