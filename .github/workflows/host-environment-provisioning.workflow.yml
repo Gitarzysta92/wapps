@@ -7,11 +7,11 @@ on:
         description: "Target environment"
         type: choice
         required: true
-        options: [staging, production]
+        options: [development, staging, production]
 
 jobs:
   provision:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, development]
     environment: ${{ github.event.inputs.env }}
 
     steps:
