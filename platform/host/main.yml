@@ -1,6 +1,6 @@
 ---
 - name: Host Environment Provisioning - Main Playbook
-  hosts: web
+  hosts: localhost
   become: yes
   vars:
     target_env: "{{ target_env | default('staging') }}"

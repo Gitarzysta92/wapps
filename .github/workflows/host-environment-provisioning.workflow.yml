@@ -43,7 +43,7 @@ jobs:
 
       - name: Create local inventory
         run: |
-          echo "[web]" > inventory.ini
+          echo "[local]" > inventory.ini
           echo "localhost ansible_connection=local" >> inventory.ini
           echo "Generated inventory:"
           cat inventory.ini
