@@ -6,6 +6,7 @@
     target_env: "{{ target_env | default('staging') }}"
     git_sha: "{{ git_sha | default('main') }}"
     apps_dir: "/opt/wapps"
+    ansible_user: "{{ ansible_env.USER | default('root') }}"
 
   tasks:
     - name: Display provisioning start
