@@ -41,27 +41,20 @@ jobs:
           touch ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Build dynamic inventory from secrets
-        shell: bash
-        env:
-          WEB_HOSTS: ${{ secrets.WEB_HOSTS }}
-          SSH_USER: ${{ secrets.SSH_USER }}
+      - name: Create local inventory
         run: |
-          HOSTS=$(echo "$WEB_HOSTS" | tr ',' '\n' | sed '/^\s*$/d')
-          echo "[web]" > inventory.ini
-          while IFS= read -r h; do
-            ssh-keyscan -H "$h" >> ~/.ssh/known_hosts 2>/dev/null || true
-            echo "$h ansible_user=$SSH_USER ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory.ini
-          done <<< "$HOSTS"
+          echo "[local]" > inventory.ini
+          echo "localhost ansible_connection=local" >> inventory.ini
           echo "Generated inventory:"
           cat inventory.ini
 
-      - name: Provision hosts with Ansible
+      - name: Provision local host with Ansible
         env:
-          ANSIBLE_HOST_KEY_CHECKING: "True"
+          ANSIBLE_HOST_KEY_CHECKING: "False"
           ANSIBLE_BECOME_PASSWORD: ${{ secrets.SUDO_PASS }}
         run: |
           EXTRA_VARS="target_env=${{ job.environment }} git_sha=${{ github.sha }}"
 
           ansible-playbook -i inventory.ini platform/host/main.yml \
-            --extra-vars "$EXTRA_VARS"
+            --extra-vars "$EXTRA_VARS" \
+            --ask-become-pass
