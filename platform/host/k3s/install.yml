@@ -22,15 +22,15 @@
     path: "{{ ansible_env.HOME }}/.kube"
     state: directory
     mode: '0755'
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_env.USER | default('root') }}"
+    group: "{{ ansible_env.USER | default('root') }}"
 
 - name: Copy kubeconfig to user directory
   copy:
     src: /etc/rancher/k3s/k3s.yaml
     dest: "{{ ansible_env.HOME }}/.kube/config"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_env.USER | default('root') }}"
+    group: "{{ ansible_env.USER | default('root') }}"
     mode: '0600'
   become: yes
 
