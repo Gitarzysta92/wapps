@@ -51,10 +51,11 @@ jobs:
       - name: Provision local host with Ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-          ANSIBLE_BECOME_PASSWORD: ${{ secrets.SUDO_PASS }}
         run: |
           EXTRA_VARS="target_env=${{ job.environment }} git_sha=${{ github.sha }}"
 
-          ansible-playbook -i inventory.ini platform/host/main.yml \
+          echo "$SUDO_PASS" | ansible-playbook -i inventory.ini platform/host/main.yml \
             --extra-vars "$EXTRA_VARS" \
             --ask-become-pass
+        env:
+          SUDO_PASS: ${{ secrets.SUDO_PASS }}
