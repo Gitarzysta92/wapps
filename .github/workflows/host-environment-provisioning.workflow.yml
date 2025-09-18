@@ -20,8 +20,8 @@ jobs:
 
       - name: Install Python & Ansible
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y python3-pip
+          sudo apt-get update --yes
+          sudo apt-get install --yes python3-pip
           python3 -m pip install --upgrade pip
           pip install "ansible>=9,<10"
 
