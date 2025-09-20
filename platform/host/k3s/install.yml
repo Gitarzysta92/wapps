@@ -19,24 +19,22 @@
 
 - name: Create kubeconfig directory
   file:
-    path: "{{ ansible_env.HOME }}/.kube"
+    path: "{{ ansible_user_dir }}/.kube"
     state: directory
     mode: '0755'
-    owner: "{{ ansible_env.USER | default('root') }}"
-    group: "{{ ansible_env.USER | default('root') }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 - name: Copy kubeconfig to user directory
-  copy:
-    src: /etc/rancher/k3s/k3s.yaml
-    dest: "{{ ansible_env.HOME }}/.kube/config"
-    owner: "{{ ansible_env.USER | default('root') }}"
-    group: "{{ ansible_env.USER | default('root') }}"
-    mode: '0600'
+  shell: |
+    cp /etc/rancher/k3s/k3s.yaml "{{ ansible_user_dir }}/.kube/config"
+    chown "{{ ansible_user }}:{{ ansible_user }}" "{{ ansible_user_dir }}/.kube/config"
+    chmod 600 "{{ ansible_user_dir }}/.kube/config"
   become: yes
 
 - name: Update kubeconfig server address
   replace:
-    path: "{{ ansible_env.HOME }}/.kube/config"
+    path: "{{ ansible_user_dir }}/.kube/config"
     regexp: 'https://127.0.0.1:6443'
     replace: 'https://{{ ansible_default_ipv4.address }}:6443'
 

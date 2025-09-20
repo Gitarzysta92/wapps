@@ -81,13 +81,23 @@
     state: directory
     mode: '0755'
 
-- name: Clone or update repository
+- name: Configure git credentials
+  git_config:
+    name: "{{ git_user_name | default('GitHub Actions') }}"
+    email: "{{ git_user_email | default('actions@github.com') }}"
+    scope: global
+  when: git_token is defined
+
+- name: Clone or update repository with token
   git:
-    repo: "https://github.com/Gitarzysta92/wapps.git"
+    repo: "{{ git_repo_url }}"
     dest: "{{ apps_dir }}"
     version: "{{ git_sha }}"
     force: yes
+  environment:
+    GIT_ASKPASS: "echo {{ git_token }}"
   register: git_result
+  when: git_token is defined
 
 - name: Configure system monitoring
   block:
