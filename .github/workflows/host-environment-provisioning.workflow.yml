@@ -29,18 +29,6 @@ jobs:
         env:
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
 
-      - name: Configure SSH
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          touch ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
       - name: Provision local host with Ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
