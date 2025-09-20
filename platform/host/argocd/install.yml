@@ -1,31 +1,19 @@
 ---
 - name: Create ArgoCD namespace
-  kubernetes.core.k8s:
-    name: argocd
-    api_version: v1
-    kind: Namespace
-    state: present
-  when: k3s_status is defined
+  shell: kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+  register: argocd_namespace
+  changed_when: argocd_namespace.rc != 0
+  failed_when: false
 
 - name: Install ArgoCD via kubectl
   shell: |
-    kubectl create namespace argocd
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-  args:
-    creates: /tmp/argocd-installed
   register: argocd_install
 
 - name: Wait for ArgoCD to be ready
-  kubernetes.core.k8s_info:
-    api_version: apps/v1
-    kind: Deployment
-    namespace: argocd
-    name: argocd-server
-    wait: true
-    wait_condition:
-      type: Available
-      status: "True"
-    wait_timeout: 300
+  shell: kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+  register: argocd_wait
+  changed_when: false
 
 - name: Install ArgoCD CLI
   get_url:
@@ -39,15 +27,13 @@
   register: argocd_patch
 
 - name: Set ArgoCD admin password
-  kubernetes.core.k8s:
-    name: argocd-initial-admin-secret
-    namespace: argocd
-    api_version: v1
-    kind: Secret
-    state: present
-    data:
-      password: "{{ argocd_admin_password | b64encode }}"
+  shell: |
+    kubectl create secret generic argocd-initial-admin-secret \
+      --from-literal=password="{{ argocd_admin_password }}" \
+      -n argocd \
+      --dry-run=client -o yaml | kubectl apply -f -
   when: argocd_admin_password is defined
+  register: argocd_password_set
 
 - name: Get ArgoCD admin password (fallback to auto-generated)
   shell: |
