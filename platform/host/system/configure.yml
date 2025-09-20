@@ -81,22 +81,18 @@
     state: directory
     mode: '0755'
 
-- name: Configure git credentials
+- name: Configure git user name
   git_config:
-    name: "{{ git_user_name | default('GitHub Actions') }}"
-    email: "{{ git_user_email | default('actions@github.com') }}"
+    name: user.name
+    value: "{{ git_user_name | default('GitHub Actions') }}"
     scope: global
   when: git_token is defined
 
-- name: Clone or update repository with token
-  git:
-    repo: "{{ git_repo_url }}"
-    dest: "{{ apps_dir }}"
-    version: "{{ git_sha }}"
-    force: yes
-  environment:
-    GIT_ASKPASS: "echo {{ git_token }}"
-  register: git_result
+- name: Configure git user email
+  git_config:
+    name: user.email
+    value: "{{ git_user_email | default('actions@github.com') }}"
+    scope: global
   when: git_token is defined
 
 - name: Configure system monitoring
