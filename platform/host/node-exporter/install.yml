@@ -18,9 +18,21 @@
     - /var/lib/node_exporter
     - /etc/node_exporter
 
+- name: Get latest Node Exporter version
+  uri:
+    url: "https://api.github.com/repos/prometheus/node_exporter/releases/latest"
+    method: GET
+    return_content: yes
+  register: node_exporter_release
+  changed_when: false
+
+- name: Set Node Exporter version
+  set_fact:
+    node_exporter_version: "{{ node_exporter_release.json.tag_name }}"
+
 - name: Download Node Exporter
   get_url:
-    url: "https://github.com/prometheus/node_exporter/releases/latest/download/node_exporter-1.7.0.linux-amd64.tar.gz"
+    url: "https://github.com/prometheus/node_exporter/releases/download/{{ node_exporter_version }}/node_exporter-{{ node_exporter_version | regex_replace('^v', '') }}.linux-amd64.tar.gz"
     dest: /tmp/node_exporter.tar.gz
     mode: '0644'
 
@@ -32,7 +44,7 @@
 
 - name: Install Node Exporter binary
   copy:
-    src: /tmp/node_exporter-1.7.0.linux-amd64/node_exporter
+    src: "/tmp/node_exporter-{{ node_exporter_version | regex_replace('^v', '') }}.linux-amd64/node_exporter"
     dest: /usr/local/bin/node_exporter
     owner: root
     group: root
