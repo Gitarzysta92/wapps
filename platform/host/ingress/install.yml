@@ -1,0 +1,90 @@
+---
+- name: Install NGINX Ingress Controller
+  shell: |
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+  register: nginx_ingress_install
+
+- name: Wait for NGINX Ingress Controller
+  shell: kubectl wait --for=condition=available --timeout=300s deployment/ingress-nginx-controller -n ingress-nginx
+  register: nginx_ingress_wait
+  changed_when: false
+
+- name: Create Ingress for K3s API
+  shell: |
+    cat << 'INGRESS_EOF' | kubectl apply -f -
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: k3s-api-ingress
+      namespace: default
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: k3s-api.{{ tailscale_domain | default('development-wapps.ts.net') }}
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kubernetes
+                port:
+                  number: 6443
+    INGRESS_EOF
+  register: k3s_ingress
+
+- name: Create Ingress for Node Exporter
+  shell: |
+    cat << 'INGRESS_EOF' | kubectl apply -f -
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: metrics-ingress
+      namespace: default
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: metrics.{{ tailscale_domain | default('development-wapps.ts.net') }}
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: node-exporter
+                port:
+                  number: 9100
+    INGRESS_EOF
+  register: metrics_ingress
+
+- name: Create Node Exporter Service
+  shell: |
+    cat << 'SERVICE_EOF' | kubectl apply -f -
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: node-exporter
+      namespace: default
+    spec:
+      selector:
+        app: node-exporter
+      ports:
+      - port: 9100
+        targetPort: 9100
+    SERVICE_EOF
+  register: node_exporter_service
+
+- name: Display Ingress Status
+  debug:
+    msg: |
+      Ingress controllers installed successfully!
+      
+      Clean URLs (no ports required):
+      - K3s API: https://k3s-api.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
+      - ArgoCD: https://argocd.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
+      - Metrics: http://metrics.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
+      
+      Note: These URLs will work once DNS records are created and propagated.

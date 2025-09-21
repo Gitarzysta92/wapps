@@ -98,9 +98,9 @@
       Tailscale DNS records created successfully!
       
       Service URLs:
-      - K3s API: https://k3s-api.\{\{ tailscale_domain }}:6443
+      - K3s API: https://k3s-api.\{\{ tailscale_domain }}
       - ArgoCD: https://argocd.\{\{ tailscale_domain }}
-      - Node Exporter: http://metrics.\{\{ tailscale_domain }}:9100/metrics
+      - Node Exporter: http://metrics.\{\{ tailscale_domain }}
       
       Device hostname: {{ tailscale_device_name }}
       Device IP: {{ tailscale_device_ip }}
