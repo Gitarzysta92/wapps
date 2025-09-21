@@ -98,3 +98,31 @@ curl http://<tailscale-ip>:9100/metrics
 sudo systemctl restart tailscaled
 sudo systemctl restart k3s
 ```
+
+## Custom Hostname Configuration
+
+You can set a custom hostname for your Tailscale device to make it easier to identify in your network.
+
+### GitHub Actions Setup
+1. Add a new repository secret: `TAILSCALE_HOSTNAME`
+2. Set the value to your desired hostname (e.g., `k3s-cluster`)
+
+### Local Environment
+```bash
+export TAILSCALE_HOSTNAME="k3s-cluster"
+```
+
+### Manual Override
+If you want to change the hostname after authentication:
+```bash
+sudo tailscale up --hostname="your-custom-name"
+```
+
+### Result
+Your device will appear in Tailscale as:
+- **Device name**: `k3s-cluster` (or your custom name)
+- **DNS name**: `k3s-cluster.ts.net` (if MagicDNS enabled)
+- **Access URLs**: 
+  - K3s API: `https://k3s-cluster.ts.net:6443`
+  - ArgoCD: `http://k3s-cluster.ts.net:30080`
+  - Node Exporter: `http://k3s-cluster.ts.net:9100/metrics`
