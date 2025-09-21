@@ -33,7 +33,7 @@
     tailscale_device_name: "{{ target_env }}-wapps"
 
 - name: Authenticate Tailscale with auth key
-  shell: tailscale up --authkey="{{ tailscale_auth_key }}" --hostname="{{ tailscale_device_name }}" --accept-dns=false
+  shell: tailscale up --authkey="{{ tailscale_auth_key }}" --hostname="{{ tailscale_device_name }}"
   when: tailscale_auth_key is defined
   register: tailscale_auth
   changed_when: tailscale_auth.rc == 0
