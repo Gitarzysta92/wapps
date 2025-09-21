@@ -206,12 +206,14 @@
         port: "6443"
         proto: tcp
 
-    - name: Allow ArgoCD server
     - name: Allow ArgoCD HTTPS
       ufw:
         rule: allow
         port: "30443"
-        proto: tcp      ufw:
+        proto: tcp
+
+    - name: Allow ArgoCD HTTP
+      ufw:
         rule: allow
         port: "30080"
         proto: tcp
