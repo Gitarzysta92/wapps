@@ -4,6 +4,11 @@
     msg: "Skipping Tailscale Split DNS configuration - TAILSCALE_DOMAIN not provided"
   when: tailscale_domain is not defined or tailscale_domain == ""
 
+- name: Extract tailnet name from domain
+  set_fact:
+    tailnet_name: "{{ tailscale_domain | regex_replace('\\.ts\\.net$', '') }}"
+  when: tailscale_domain is defined and tailscale_domain != ""
+
 - name: Get Tailscale IP using CLI
   shell: tailscale ip -4
   register: tailscale_ip_result
