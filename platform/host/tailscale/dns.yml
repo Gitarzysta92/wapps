@@ -9,16 +9,6 @@
     tailnet_name: "{{ tailscale_domain | regex_replace('\\.ts\\.net$', '') }}"
   when: tailscale_domain is defined and tailscale_domain != ""
 
-- name: Test Tailscale API token
-  uri:
-    url: "https://api.tailscale.com/api/v2/user"
-    method: GET
-    headers:
-      Authorization: "Bearer {{ tailscale_api_token }}"
-    status_code: 200
-  register: api_token_test
-  when: tailscale_api_token is defined and tailscale_api_token != ""
-
 - name: Get Tailscale device information
   uri:
     url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/devices"
@@ -30,7 +20,7 @@
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
     - tailnet_name is defined
-    - api_token_test is defined and api_token_test.status == 200
+  ignore_errors: yes
 
 - name: Find device by hostname
   set_fact:
@@ -39,6 +29,7 @@
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
     - tailscale_devices is defined
+    - tailscale_devices.status == 200
     - item.hostname == tailscale_device_name
   loop_control:
     label: "{{ item.hostname }}"
@@ -60,6 +51,7 @@
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
     - tailscale_device_ip is defined
+  ignore_errors: yes
 
 - name: Create DNS A record for ArgoCD
   uri:
@@ -78,6 +70,7 @@
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
     - tailscale_device_ip is defined
+  ignore_errors: yes
 
 - name: Create DNS A record for Node Exporter
   uri:
@@ -96,6 +89,7 @@
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
     - tailscale_device_ip is defined
+  ignore_errors: yes
 
 - name: Display DNS configuration status
   debug:
@@ -112,7 +106,7 @@
       Device IP: {{ tailscale_device_ip }}
       Tailnet: {{ tailnet_name }}
       {% elif tailscale_api_token is defined and tailscale_api_token != "" %}
-      DNS configuration skipped - API token invalid or insufficient permissions
+      DNS configuration failed - API token may be invalid or insufficient permissions
       {% else %}
       DNS configuration skipped - API token or domain not provided
       {% endif %}
