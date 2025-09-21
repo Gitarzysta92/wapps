@@ -1,0 +1,60 @@
+---
+- name: Install Tailscale
+  shell: |
+    curl -fsSL https://tailscale.com/install.sh | sh
+  register: tailscale_install
+  changed_when: tailscale_install.rc == 0
+
+- name: Start Tailscale daemon
+  systemd:
+    name: tailscaled
+    state: started
+    enabled: yes
+
+- name: Wait for Tailscale to be ready
+  wait_for:
+    port: 41641
+    host: localhost
+    delay: 5
+    timeout: 30
+
+- name: Display Tailscale authentication instructions
+  debug:
+    msg: |
+      Tailscale installed successfully!
+      
+      To authenticate this device:
+      1. Run: sudo tailscale up
+      2. Follow the authentication link in your browser
+      3. Or use auth key: sudo tailscale up --authkey=<your-auth-key>
+      
+      After authentication, your services will be available at:
+      - K3s API: https://{{ ansible_default_ipv4.address }}:6443 (or via Tailscale IP)
+      - ArgoCD: http://{{ ansible_default_ipv4.address }}:30080 (or via Tailscale IP)
+      - Node Exporter: http://{{ ansible_default_ipv4.address }}:9100/metrics (or via Tailscale IP)
+      
+      Tailscale will provide DNS names like:
+      - <hostname>.tailnet-name.ts.net
+      - <hostname>.ts.net (if MagicDNS is enabled)
+
+- name: Configure Tailscale for K3s external access
+  block:
+    - name: Get Tailscale IP
+      shell: tailscale ip -4
+      register: tailscale_ip
+      changed_when: false
+      failed_when: false
+
+    - name: Update kubeconfig with Tailscale IP
+      replace:
+        path: "{{ ansible_user_dir }}/.kube/config"
+        regexp: 'https://{{ ansible_default_ipv4.address }}:6443'
+        replace: 'https://{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:6443'
+      when: tailscale_ip.stdout is defined and tailscale_ip.stdout != ""
+
+    - name: Display Tailscale networking info
+      debug:
+        msg: |
+          Tailscale IP: {{ tailscale_ip.stdout | default('Not available yet - authenticate first') }}
+          K3s API will be available at: https://{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:6443
+          ArgoCD will be available at: http://{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:30080

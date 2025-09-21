@@ -218,6 +218,18 @@
         port: "9100"
         proto: tcp
 
+    - name: Allow Tailscale
+      ufw:
+        rule: allow
+        port: "41641"
+        proto: udp
+
+    - name: Allow Tailscale outbound
+      ufw:
+        rule: allow
+        port: "41641"
+        proto: tcp
+
     - name: Enable UFW
       ufw:
         state: enabled

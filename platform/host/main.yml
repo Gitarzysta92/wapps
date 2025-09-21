@@ -33,6 +33,10 @@
       include_tasks: node-exporter/install.yml
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Include Tailscale installation
+      include_tasks: tailscale/install.yml
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Display provisioning summary
       debug:
         msg: |
@@ -45,5 +49,6 @@
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
+            - Tailscale (port 41641) - VPN networking
             - NTP - Time synchronization
           Logs directory: {{ apps_dir }}/logs
