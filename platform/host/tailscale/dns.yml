@@ -17,9 +17,28 @@
       tailnet_name: {{ tailnet_name | default('undefined') }}
       tailscale_device_name: {{ tailscale_device_name | default('undefined') }}
 
+- name: Test Tailscale API token with user info
+  uri:
+    url: "https://api.tailscale.com/api/v2/user"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+    status_code: 200
+  register: tailscale_user
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+  ignore_errors: yes
+
+- name: Debug API token test
+  debug:
+    msg: |
+      User API Status: {{ tailscale_user.status | default('not called') }}
+      User API Response: {{ tailscale_user.json | default('no response') }}
+  when: tailscale_user is defined
+
 - name: Get Tailscale device information
   uri:
-    url: "https://api.tailscale.com/api/v2/devices"
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/devices"
     method: GET
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -27,6 +46,7 @@
   register: tailscale_devices
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailnet_name is defined
   ignore_errors: yes
 
 - name: Debug Tailscale API response
@@ -44,7 +64,7 @@
       - tailscale_devices defined: {{ tailscale_devices is defined }}
       - API status 200: {{ tailscale_devices.status == 200 if tailscale_devices is defined else 'N/A' }}
       - Looking for device: {{ tailscale_device_name | default('undefined') }}
-      - Available devices: {{ tailscale_devices.json.devices | map(attribute='hostname') | list if tailscale_devices is defined and tailscale_devices.json is defined else 'none' }}
+      - Available devices: {{ tailscale_devices.json.devices | map(attribute='hostname') | list if tailscale_devices is defined and tailscale_devices.json is defined and tailscale_devices.json.devices is defined else 'none' }}
 
 - name: Find device by hostname
   set_fact:
