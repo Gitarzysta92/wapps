@@ -113,3 +113,61 @@ curl http://<env>-wapps.ts.net:9100/metrics
 sudo systemctl restart tailscaled
 sudo systemctl restart k3s
 ```
+
+## DNS Management
+
+The playbook can automatically create DNS records in Tailscale for easy access to your services.
+
+### Setup DNS Management
+
+#### Required Secrets
+Add these secrets to your GitHub repository:
+
+1. **`TAILSCALE_API_TOKEN`** - Your Tailscale API token
+2. **`TAILSCALE_DOMAIN`** - Your Tailscale domain (e.g., `your-domain.ts.net`)
+
+#### How to Get Tailscale API Token
+1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin/settings/keys)
+2. Click **"Generate auth key"**
+3. Select **"API token"** instead of auth key
+4. Copy the token (starts with `tskey-api-`)
+
+### DNS Records Created
+
+The playbook will automatically create these DNS records:
+
+- **K3s API**: `k3s-api.your-domain.ts.net` → `https://k3s-api.your-domain.ts.net:6443`
+- **ArgoCD**: `argocd.your-domain.ts.net` → `http://argocd.your-domain.ts.net:30080`
+- **Node Exporter**: `metrics.your-domain.ts.net` → `http://metrics.your-domain.ts.net:9100/metrics`
+
+### Access Your Services
+
+Once DNS records are created, you can access your services using clean URLs:
+
+```bash
+# K3s API
+kubectl get nodes --server https://k3s-api.your-domain.ts.net:6443
+
+# ArgoCD
+open http://argocd.your-domain.ts.net:30080
+
+# Node Exporter metrics
+curl http://metrics.your-domain.ts.net:9100/metrics
+```
+
+### Manual DNS Management
+
+If you prefer to manage DNS records manually:
+
+```bash
+# List existing records
+curl -H "Authorization: Bearer $TAILSCALE_API_TOKEN" \
+  "https://api.tailscale.com/api/v2/dns/nameservers/your-domain.ts.net/records"
+
+# Create a new A record
+curl -X POST \
+  -H "Authorization: Bearer $TAILSCALE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"A","name":"k3s-api","value":"100.64.0.1"}' \
+  "https://api.tailscale.com/api/v2/dns/nameservers/your-domain.ts.net/records"
+```
