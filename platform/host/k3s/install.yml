@@ -6,7 +6,7 @@
     mode: '0755'
 
 - name: Install K3s server
-  shell: /tmp/k3s-install.sh
+  shell: /tmp/k3s-install.sh --write-kubeconfig-mode 644
   args:
     creates: /usr/local/bin/k3s
 
@@ -16,6 +16,13 @@
     host: localhost
     delay: 10
     timeout: 300
+
+- name: Fix kubeconfig permissions
+  file:
+    path: /etc/rancher/k3s/k3s.yaml
+    mode: '0644'
+    owner: root
+    group: root
 
 - name: Create kubeconfig directory
   file:
