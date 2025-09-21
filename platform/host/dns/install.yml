@@ -4,25 +4,7 @@
     name: dnsmasq
     state: present
 
-- name: Create dnsmasq configuration directory
-  file:
-    path: /etc/dnsmasq.d
-    state: directory
-    mode: '0755'
-
-# Removed separate loopback config - everything is now in main config
-
-- name: Remove entire dnsmasq.d directory to avoid any conflicts
-  file:
-    path: /etc/dnsmasq.d
-    state: absent
-  ignore_errors: yes
-
-- name: Recreate dnsmasq configuration directory
-  file:
-    path: /etc/dnsmasq.d
-    state: directory
-    mode: '0755'
+# We don't need dnsmasq.d directory since we're using main config file only
 
 - name: Create main dnsmasq configuration
   template:
@@ -42,10 +24,6 @@
     dest: /etc/systemd/resolved.conf.d/dnsmasq.conf
     mode: '0644'
   when: target_ip is defined and target_ip != ""
-
-- name: Reload systemd daemon
-  systemd:
-    daemon_reload: yes
 
 - name: Create systemd override directory
   file:
@@ -76,7 +54,6 @@
   systemd:
     name: systemd-resolved
     state: restarted
-    daemon_reload: yes
 
 - name: Wait for dnsmasq to start
   wait_for:
