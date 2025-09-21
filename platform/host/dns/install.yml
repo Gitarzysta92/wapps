@@ -47,12 +47,30 @@
   systemd:
     daemon_reload: yes
 
+- name: Create systemd override directory
+  file:
+    path: /etc/systemd/system/dnsmasq.service.d
+    state: directory
+    mode: '0755'
+
+- name: Override systemd service to use our configuration
+  copy:
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/sbin/dnsmasq --conf-file=/etc/dnsmasq.conf
+    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
 - name: Start and enable dnsmasq
   systemd:
     name: dnsmasq
     state: started
     enabled: yes
-    daemon_reload: yes
 
 - name: Restart systemd-resolved
   systemd:
