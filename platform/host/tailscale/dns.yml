@@ -1,87 +1,28 @@
 ---
-- name: Check if Tailscale API token and domain are provided
+- name: Check if Tailscale domain is provided
   debug:
-    msg: "Skipping DNS configuration - TAILSCALE_API_TOKEN or TAILSCALE_DOMAIN not provided"
-  when: tailscale_api_token is not defined or tailscale_api_token == "" or tailscale_domain is not defined or tailscale_domain == ""
+    msg: "Skipping DNS configuration - TAILSCALE_DOMAIN not provided"
+  when: tailscale_domain is not defined or tailscale_domain == ""
 
 - name: Extract tailnet name from domain
   set_fact:
     tailnet_name: "{{ tailscale_domain | regex_replace('\\.ts\\.net$', '') }}"
   when: tailscale_domain is defined and tailscale_domain != ""
 
-- name: Debug Tailscale variables
+- name: Get Tailscale IP using CLI
+  shell: tailscale ip -4
+  register: tailscale_ip_result
+  changed_when: false
+  failed_when: false
+  when: tailscale_domain is defined and tailscale_domain != ""
+
+- name: Debug Tailscale IP
   debug:
     msg: |
-      tailscale_api_token: {{ 'defined' if tailscale_api_token is defined else 'undefined' }}
-      tailscale_domain: {{ tailscale_domain | default('undefined') }}
-      tailnet_name: {{ tailnet_name | default('undefined') }}
-      tailscale_device_name: {{ tailscale_device_name | default('undefined') }}
-
-- name: Test Tailscale API token with user info
-  uri:
-    url: "https://api.tailscale.com/api/v2/user"
-    method: GET
-    headers:
-      Authorization: "Bearer {{ tailscale_api_token }}"
-    status_code: 200
-  register: tailscale_user
-  when: 
-    - tailscale_api_token is defined and tailscale_api_token != ""
-  ignore_errors: yes
-
-- name: Debug API token test
-  debug:
-    msg: |
-      User API Status: {{ tailscale_user.status | default('not called') }}
-      User API Response: {{ tailscale_user.json | default('no response') }}
-  when: tailscale_user is defined
-
-- name: Get Tailscale device information
-  uri:
-    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/devices"
-    method: GET
-    headers:
-      Authorization: "Bearer {{ tailscale_api_token }}"
-    status_code: 200
-  register: tailscale_devices
-  when: 
-    - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailnet_name is defined
-  ignore_errors: yes
-
-- name: Debug Tailscale API response
-  debug:
-    msg: |
-      API Status: {{ tailscale_devices.status | default('not called') }}
-      API Response: {{ tailscale_devices.json | default('no response') }}
-  when: tailscale_devices is defined
-
-- name: Debug device search conditions
-  debug:
-    msg: |
-      Conditions check:
-      - tailscale_api_token defined: {{ tailscale_api_token is defined and tailscale_api_token != "" }}
-      - tailscale_devices defined: {{ tailscale_devices is defined }}
-      - API status 200: {{ tailscale_devices.status == 200 if tailscale_devices is defined else 'N/A' }}
-      - Looking for device: {{ tailscale_device_name | default('undefined') }}
-      - Available devices: {{ tailscale_devices.json.devices | map(attribute='hostname') | list if tailscale_devices is defined and tailscale_devices.json is defined and tailscale_devices.json.devices is defined else 'none' }}
-
-- name: Find device by hostname
-  set_fact:
-    tailscale_device_ip: "{{ item.addresses[0] }}"
-  loop: "{{ tailscale_devices.json.devices }}"
-  when: 
-    - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailscale_devices is defined
-    - tailscale_devices.status == 200
-    - item.hostname == tailscale_device_name
-  loop_control:
-    label: "{{ item.hostname }}"
-
-- name: Debug device IP result
-  debug:
-    msg: |
-      tailscale_device_ip: {{ tailscale_device_ip | default('not found') }}
+      Tailscale IP: {{ tailscale_ip_result.stdout | default('not found') }}
+      Tailscale domain: {{ tailscale_domain | default('undefined') }}
+      Tailnet name: {{ tailnet_name | default('undefined') }}
+      Device name: {{ tailscale_device_name | default('undefined') }}
 
 - name: Create DNS A record for K3s API
   uri:
@@ -94,12 +35,13 @@
     body:
       type: "A"
       name: "k3s-api.{{ tailscale_device_name }}"
-      value: "{{ tailscale_device_ip }}"
+      value: "{{ tailscale_ip_result.stdout }}"
     status_code: 200
   register: k3s_dns_record
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailscale_device_ip is defined
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
 
 - name: Create DNS A record for ArgoCD
@@ -113,12 +55,13 @@
     body:
       type: "A"
       name: "argocd.{{ tailscale_device_name }}"
-      value: "{{ tailscale_device_ip }}"
+      value: "{{ tailscale_ip_result.stdout }}"
     status_code: 200
   register: argocd_dns_record
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailscale_device_ip is defined
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
 
 - name: Create DNS A record for Node Exporter
@@ -132,18 +75,37 @@
     body:
       type: "A"
       name: "metrics.{{ tailscale_device_name }}"
-      value: "{{ tailscale_device_ip }}"
+      value: "{{ tailscale_ip_result.stdout }}"
     status_code: 200
   register: metrics_dns_record
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailscale_device_ip is defined
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
+
+- name: Debug DNS record creation results
+  debug:
+    msg: |
+      DNS Record Creation Results:
+      - K3s API: {{ 'Success' if k3s_dns_record is defined and k3s_dns_record.status == 200 else 'Failed' }}
+      - ArgoCD: {{ 'Success' if argocd_dns_record is defined and argocd_dns_record.status == 200 else 'Failed' }}
+      - Node Exporter: {{ 'Success' if metrics_dns_record is defined and metrics_dns_record.status == 200 else 'Failed' }}
+      
+      {% if k3s_dns_record is defined and k3s_dns_record.status != 200 %}
+      K3s API Error: {{ k3s_dns_record.json | default('Unknown error') }}
+      {% endif %}
+      {% if argocd_dns_record is defined and argocd_dns_record.status != 200 %}
+      ArgoCD Error: {{ argocd_dns_record.json | default('Unknown error') }}
+      {% endif %}
+      {% if metrics_dns_record is defined and metrics_dns_record.status != 200 %}
+      Node Exporter Error: {{ metrics_dns_record.json | default('Unknown error') }}
+      {% endif %}
 
 - name: Display DNS configuration status
   debug:
     msg: |
-      {% if tailscale_api_token is defined and tailscale_api_token != "" and tailscale_device_ip is defined %}
+      {% if tailscale_api_token is defined and tailscale_api_token != "" and tailscale_domain is defined and tailscale_domain != "" and tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != "" %}
       Tailscale DNS records created successfully!
       
       Service URLs:
@@ -152,10 +114,10 @@
       - Node Exporter: http://metrics.{{ tailscale_device_name }}.{{ tailscale_domain }}
       
       Device hostname: {{ tailscale_device_name }}
-      Device IP: {{ tailscale_device_ip }}
+      Tailscale IP: {{ tailscale_ip_result.stdout }}
       Tailnet: {{ tailnet_name }}
-      {% elif tailscale_api_token is defined and tailscale_api_token != "" %}
+      {% elif tailscale_domain is defined and tailscale_domain != "" %}
       DNS configuration failed - API token may be invalid or insufficient permissions
       {% else %}
-      DNS configuration skipped - API token or domain not provided
+      DNS configuration skipped - domain not provided
       {% endif %}
