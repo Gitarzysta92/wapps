@@ -28,24 +28,12 @@
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
 
-- name: Configure systemd-resolved to use dnsmasq for development domain only
-  copy:
-    content: |
-      [Resolve]
-      DNS=127.0.0.1:5353 8.8.8.8 1.1.1.1
-      Domains={{ target_env }}.wapps.com
-      FallbackDNS=8.8.8.8 1.1.1.1
-    dest: /etc/systemd/resolved.conf.d/99-dnsmasq.conf
-    mode: '0644'
-  when: 
-    - tailscale_domain is defined and tailscale_domain != ""
-    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
-
-- name: Restart systemd-resolved
-  systemd:
-    name: systemd-resolved
-    state: restarted
-    daemon_reload: yes
+- name: Set Tailscale nameserver for development domain
+  shell: |
+    tailscale set --dns="{{ ansible_default_ipv4.address }}:5353" --accept-dns=false
+  register: tailscale_nameserver_set
+  changed_when: false
+  failed_when: false
   when: 
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
@@ -65,6 +53,7 @@
     msg: |
       Current Tailscale DNS: {{ tailscale_dns_status.stdout | default('No DNS info') }}
       Tailscale DNS CLI Result: {{ tailscale_dns_set.stdout | default('No output') }}
+      Nameserver Set Result: {{ tailscale_nameserver_set.stdout | default('No output') }}
   when: tailscale_dns_status is defined
 
 - name: Display Tailscale Split DNS configuration status
@@ -81,7 +70,7 @@
       
       📋 Configuration:
       - Tailscale DNS disabled (--accept-dns=false)
-      - systemd-resolved routes {{ target_env }}.wapps.com to dnsmasq
+      - Tailscale nameserver set to {{ ansible_default_ipv4.address }}:5353
       - dnsmasq resolves *.{{ target_env }}.wapps.com to {{ tailscale_ip_result.stdout }}
       - All other domains use normal system DNS
       
