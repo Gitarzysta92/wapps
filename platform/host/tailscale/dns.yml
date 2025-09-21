@@ -36,6 +36,12 @@
     enabled: no
     daemon_reload: yes
 
+- name: Create systemd-resolved configuration directory
+  file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: '0755'
+
 - name: Remove systemd-resolved DNS configuration
   file:
     path: /etc/systemd/resolved.conf.d/99-dns.conf
