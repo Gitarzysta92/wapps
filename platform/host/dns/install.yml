@@ -10,12 +10,17 @@
     state: directory
     mode: '0755'
 
-- name: Create dnsmasq loopback configuration
-  template:
-    src: dnsmasq-loopback.conf.j2
-    dest: /etc/dnsmasq.d/loopback-5353.conf
-    mode: '0644'
-  when: target_ip is defined and target_ip != ""
+# Removed separate loopback config - everything is now in main config
+
+- name: Clean up any existing dnsmasq configs that might conflict
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/dnsmasq.d/loopback-5353.conf
+    - /etc/dnsmasq.d/01-pihole.conf
+    - /etc/dnsmasq.d/99-custom.conf
+  ignore_errors: yes
 
 - name: Create main dnsmasq configuration
   template:
