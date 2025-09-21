@@ -44,7 +44,7 @@
     body_format: json
     body:
       type: "A"
-      name: "k3s-api"
+      name: "k3s-api.{{ tailscale_device_name }}"
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: k3s_dns_record
@@ -63,7 +63,7 @@
     body_format: json
     body:
       type: "A"
-      name: "argocd"
+      name: "argocd.{{ tailscale_device_name }}"
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: argocd_dns_record
@@ -82,7 +82,7 @@
     body_format: json
     body:
       type: "A"
-      name: "metrics"
+      name: "metrics.{{ tailscale_device_name }}"
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: metrics_dns_record
@@ -98,9 +98,9 @@
       Tailscale DNS records created successfully!
       
       Service URLs:
-      - K3s API: https://k3s-api.\{\{ tailscale_domain }}
-      - ArgoCD: https://argocd.\{\{ tailscale_domain }}
-      - Node Exporter: http://metrics.\{\{ tailscale_domain }}
+      - K3s API: https://k3s-api.{{ tailscale_device_name }}.{{ tailscale_domain }}
+      - ArgoCD: https://argocd.{{ tailscale_device_name }}.{{ tailscale_domain }}
+      - Node Exporter: http://metrics.{{ tailscale_device_name }}.{{ tailscale_domain }}
       
       Device hostname: {{ tailscale_device_name }}
       Device IP: {{ tailscale_device_ip }}
