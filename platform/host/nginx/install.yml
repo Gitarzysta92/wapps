@@ -171,8 +171,7 @@
           
           # Error page for services not found in cluster
           location @cluster_error {
-              return 200 '
-      <!DOCTYPE html>
+              return 200 '<!DOCTYPE html>
       <html>
       <head>
           <title>Service Not Found - {{ target_env | title }} Environment</title>
@@ -213,8 +212,7 @@
               </div>
           </div>
       </body>
-      </html>
-              ';
+      </html>';
               add_header Content-Type text/html;
           }
       }
