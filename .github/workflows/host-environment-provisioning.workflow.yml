@@ -35,10 +35,11 @@ jobs:
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
           ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
         run: |
           echo "Debug: job.environment = ${{ job.environment }}"
           echo "Debug: github.event.inputs.env = ${{ github.event.inputs.env }}"
-          EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }} argocd_admin_password=$ARGOCD_ADMIN_PASSWORD git_token=$GIT_TOKEN"
+          EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }} argocd_admin_password=$ARGOCD_ADMIN_PASSWORD git_token=$GIT_TOKEN tailscale_auth_key=$TAILSCALE_AUTH_KEY"
           echo "Debug: EXTRA_VARS = $EXTRA_VARS"
 
           echo "$SUDO_PASS" | ansible-playbook -i platform/host/inventory.ini platform/host/main.yml \

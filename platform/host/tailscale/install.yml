@@ -18,16 +18,18 @@
     delay: 5
     timeout: 30
 
-- name: Display Tailscale authentication instructions
+- name: Authenticate Tailscale with auth key
+  shell: tailscale up --authkey="{{ tailscale_auth_key }}"
+  when: tailscale_auth_key is defined
+  register: tailscale_auth
+  changed_when: tailscale_auth.rc == 0
+
+- name: Display Tailscale authentication status
   debug:
     msg: |
-      Tailscale installed successfully!
+      Tailscale authentication {{ 'completed' if tailscale_auth_key is defined else 'skipped - no auth key provided' }}!
       
-      To authenticate this device:
-      1. Run: sudo tailscale up
-      2. Follow the authentication link in your browser
-      3. Or use auth key: sudo tailscale up --authkey=<your-auth-key>
-      
+      {% if tailscale_auth_key is defined %}
       After authentication, your services will be available at:
       - K3s API: https://{{ ansible_default_ipv4.address }}:6443 (or via Tailscale IP)
       - ArgoCD: http://{{ ansible_default_ipv4.address }}:30080 (or via Tailscale IP)
@@ -36,6 +38,9 @@
       Tailscale will provide DNS names like:
       - <hostname>.tailnet-name.ts.net
       - <hostname>.ts.net (if MagicDNS is enabled)
+      {% else %}
+      To authenticate manually, run: sudo tailscale up
+      {% endif %}
 
 - name: Configure Tailscale for K3s external access
   block:

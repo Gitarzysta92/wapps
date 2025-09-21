@@ -12,14 +12,26 @@ This configuration sets up Tailscale to expose your K3s cluster to your homelab 
 ## Setup Instructions
 
 ### 1. Authentication
-After the Ansible playbook runs, authenticate Tailscale:
+The playbook supports automated authentication via environment variable:
 
+#### Automated (Recommended)
+Set the `TAILSCALE_AUTH_KEY` environment variable:
 ```bash
-# Option 1: Interactive authentication
-sudo tailscale up
+export TAILSCALE_AUTH_KEY="tskey-auth-xxxxx"
+```
 
-# Option 2: Use auth key (recommended for automation)
-sudo tailscale up --authkey=<your-auth-key>
+The playbook will automatically authenticate Tailscale during provisioning.
+
+#### GitHub Actions
+For automated provisioning via GitHub Actions, add the auth key as a repository secret:
+1. Go to your repository Settings → Secrets and variables → Actions
+2. Add a new secret named `TAILSCALE_AUTH_KEY`
+3. Set the value to your Tailscale auth key (tskey-auth-xxxxx)
+
+#### Manual Authentication
+If no auth key is provided, authenticate manually after the playbook runs:
+```bash
+sudo tailscale up
 ```
 
 ### 2. Access Your Services
