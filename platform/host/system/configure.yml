@@ -17,6 +17,28 @@
       - jq
     state: present
 
+- name: Create initial user
+  user:
+    name: "{{ initial_username | default('runner') }}"
+    state: present
+    shell: /bin/bash
+    create_home: yes
+    home: "/home/{{ initial_username | default('runner') }}"
+  when: initial_username is defined
+
+- name: Set initial user password
+  user:
+    name: "{{ initial_username | default('runner') }}"
+    password: "{{ initial_password | password_hash('sha512') }}"
+  when: initial_username is defined and initial_password is defined
+
+- name: Add initial user to sudo group
+  user:
+    name: "{{ initial_username | default('runner') }}"
+    groups: sudo
+    append: yes
+  when: initial_username is defined
+
 - name: Configure kernel parameters for K3s
   sysctl:
     name: "{{ item.name }}"
