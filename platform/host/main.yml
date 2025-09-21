@@ -41,6 +41,10 @@
       include_tasks: ingress/install.yml
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Include Nginx reverse proxy installation
+      include_tasks: nginx/install.yml
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Include Tailscale DNS configuration
       include_tasks: tailscale/dns.yml
       when: target_env in ['development', 'staging', 'production']
@@ -58,5 +62,6 @@
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
             - Tailscale (port 41641) - VPN networking
+            - Nginx (ports 80/443) - Reverse Proxy
             - NTP - Time synchronization
           Logs directory: {{ apps_dir }}/logs
