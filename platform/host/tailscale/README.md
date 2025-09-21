@@ -8,6 +8,7 @@ This configuration sets up Tailscale to expose your K3s cluster to your homelab 
 - **K3s binding** to all interfaces for external access
 - **Firewall rules** for Tailscale traffic (UDP/TCP 41641)
 - **Automatic kubeconfig updates** with Tailscale IP when available
+- **Automatic hostname generation** based on environment (e.g., `development-wapps`, `staging-wapps`)
 
 ## Setup Instructions
 
@@ -31,7 +32,7 @@ For automated provisioning via GitHub Actions, add the auth key as a repository 
 #### Manual Authentication
 If no auth key is provided, authenticate manually after the playbook runs:
 ```bash
-sudo tailscale up
+sudo tailscale up --hostname="development-wapps"
 ```
 
 ### 2. Access Your Services
@@ -44,16 +45,18 @@ Once authenticated, your services will be available via:
 - **Node Exporter**: `http://<tailscale-ip>:9100/metrics`
 
 #### Via Tailscale DNS (if MagicDNS enabled):
-- **K3s API**: `https://<hostname>.ts.net:6443`
-- **ArgoCD**: `http://<hostname>.ts.net:30080`
-- **Node Exporter**: `http://<hostname>.ts.net:9100/metrics`
+- **K3s API**: `https://<env>-wapps.ts.net:6443`
+- **ArgoCD**: `http://<env>-wapps.ts.net:30080`
+- **Node Exporter**: `http://<env>-wapps.ts.net:9100/metrics`
+
+Where `<env>` is your target environment (development, staging, production).
 
 ### 3. Configure Your Homelab
 
 #### Option A: Use Tailscale DNS
 1. Enable MagicDNS in your Tailscale admin console
 2. Set your homelab DNS to use Tailscale's DNS server
-3. Access services using hostname.ts.net
+3. Access services using `<env>-wapps.ts.net`
 
 #### Option B: Use dnsmasq with Tailscale
 1. Add Tailscale IPs to your dnsmasq configuration
@@ -62,9 +65,21 @@ Once authenticated, your services will be available via:
    ```
    # Add to /etc/dnsmasq.conf
    server=/ts.net/100.64.0.1
-   address=/k3s.ts.net/<tailscale-ip>
-   address=/argocd.ts.net/<tailscale-ip>
+   address=/development-wapps.ts.net/<tailscale-ip>
+   address=/staging-wapps.ts.net/<tailscale-ip>
+   address=/production-wapps.ts.net/<tailscale-ip>
    ```
+
+## Hostname Pattern
+
+The device hostname is automatically generated as: `<environment>-wapps`
+
+Examples:
+- **Development**: `development-wapps`
+- **Staging**: `staging-wapps`  
+- **Production**: `production-wapps`
+
+This makes it easy to identify which environment each device belongs to in your Tailscale network.
 
 ## Security Notes
 
@@ -87,10 +102,10 @@ sudo tailscale ip -4
 kubectl get nodes --kubeconfig=/home/runner/.kube/config
 
 # Test ArgoCD
-curl http://<tailscale-ip>:30080
+curl http://<env>-wapps.ts.net:30080
 
 # Test Node Exporter
-curl http://<tailscale-ip>:9100/metrics
+curl http://<env>-wapps.ts.net:9100/metrics
 ```
 
 ### Restart Services
@@ -98,31 +113,3 @@ curl http://<tailscale-ip>:9100/metrics
 sudo systemctl restart tailscaled
 sudo systemctl restart k3s
 ```
-
-## Custom Hostname Configuration
-
-You can set a custom hostname for your Tailscale device to make it easier to identify in your network.
-
-### GitHub Actions Setup
-1. Add a new repository secret: `TAILSCALE_HOSTNAME`
-2. Set the value to your desired hostname (e.g., `k3s-cluster`)
-
-### Local Environment
-```bash
-export TAILSCALE_HOSTNAME="k3s-cluster"
-```
-
-### Manual Override
-If you want to change the hostname after authentication:
-```bash
-sudo tailscale up --hostname="your-custom-name"
-```
-
-### Result
-Your device will appear in Tailscale as:
-- **Device name**: `k3s-cluster` (or your custom name)
-- **DNS name**: `k3s-cluster.ts.net` (if MagicDNS enabled)
-- **Access URLs**: 
-  - K3s API: `https://k3s-cluster.ts.net:6443`
-  - ArgoCD: `http://k3s-cluster.ts.net:30080`
-  - Node Exporter: `http://k3s-cluster.ts.net:9100/metrics`

@@ -28,8 +28,12 @@
   debug:
     msg: "Tailscale daemon status: {{ tailscale_status.status.ActiveState }}"
 
+- name: Set Tailscale hostname
+  set_fact:
+    tailscale_device_name: "{{ target_env }}-wapps"
+
 - name: Authenticate Tailscale with auth key
-  shell: tailscale up --authkey="{{ tailscale_auth_key }}" --hostname="{{ tailscale_hostname | default(ansible_hostname) }}"
+  shell: tailscale up --authkey="{{ tailscale_auth_key }}" --hostname="{{ tailscale_device_name }}"
   when: tailscale_auth_key is defined
   register: tailscale_auth
   changed_when: tailscale_auth.rc == 0
@@ -38,7 +42,7 @@
   debug:
     msg: |
       Tailscale authentication {{ 'completed' if tailscale_auth_key is defined else 'skipped - no auth key provided' }}!
-      Device hostname: {{ tailscale_hostname | default(ansible_hostname) }}
+      Device hostname: {{ tailscale_device_name }}
       
       {% if tailscale_auth_key is defined %}
       After authentication, your services will be available at:
@@ -47,10 +51,10 @@
       - Node Exporter: http://\{\{ ansible_default_ipv4.address }}:9100/metrics (or via Tailscale IP)
       
       Tailscale will provide DNS names like:
-      - {{ tailscale_hostname | default(ansible_hostname) }}.tailnet-name.ts.net
-      - {{ tailscale_hostname | default(ansible_hostname) }}.ts.net (if MagicDNS is enabled)
+      - {{ tailscale_device_name }}.tailnet-name.ts.net
+      - {{ tailscale_device_name }}.ts.net (if MagicDNS is enabled)
       {% else %}
-      To authenticate manually, run: sudo tailscale up --hostname="your-custom-name"
+      To authenticate manually, run: sudo tailscale up --hostname="{{ tailscale_device_name }}"
       {% endif %}
 
 - name: Configure Tailscale for K3s external access
@@ -72,6 +76,6 @@
       debug:
         msg: |
           Tailscale IP: {{ tailscale_ip.stdout | default('Not available yet - authenticate first') }}
-          Device hostname: {{ tailscale_hostname | default(ansible_hostname) }}
+          Device hostname: {{ tailscale_device_name }}
           K3s API will be available at: https://\{\{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:6443
           ArgoCD will be available at: http://\{\{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:30080
