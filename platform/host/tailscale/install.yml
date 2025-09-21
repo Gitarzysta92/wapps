@@ -10,13 +10,23 @@
     name: tailscaled
     state: started
     enabled: yes
+  become: yes
 
-- name: Wait for Tailscale to be ready
+- name: Wait for Tailscale daemon to start
   wait_for:
-    port: 41641
-    host: localhost
-    delay: 5
+    path: /var/run/tailscale/tailscaled.sock
     timeout: 30
+  ignore_errors: yes
+
+- name: Check Tailscale daemon status
+  systemd:
+    name: tailscaled
+  register: tailscale_status
+  changed_when: false
+
+- name: Display Tailscale daemon status
+  debug:
+    msg: "Tailscale daemon status: {{ tailscale_status.status.ActiveState }}"
 
 - name: Authenticate Tailscale with auth key
   shell: tailscale up --authkey="{{ tailscale_auth_key }}"
