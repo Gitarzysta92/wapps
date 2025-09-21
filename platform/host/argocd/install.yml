@@ -21,9 +21,9 @@
     dest: /usr/local/bin/argocd
     mode: '0755'
 
-- name: Patch ArgoCD server service to NodePort
+- name: Patch ArgoCD server service to NodePort with HTTPS
   shell: |
-    kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort","ports":[{"port":80,"nodePort":30080}]}}'
+    kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort","ports":[{"port":443,"nodePort":30443,"targetPort":8080}]}}'
   register: argocd_patch
 
 - name: Set ArgoCD admin password
@@ -46,6 +46,10 @@
   debug:
     msg: |
       ArgoCD installed successfully!
-      Access URL: http://{{ ansible_default_ipv4.address }}:30080
+      Access URL: https://argocd.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
       Username: admin
       Password: {{ argocd_admin_password if argocd_admin_password is defined else argocd_password.stdout }}
+      
+      Alternative access (direct IP):
+      - HTTPS: https://\{\{ ansible_default_ipv4.address }}:30443
+      - HTTP: http://\{\{ ansible_default_ipv4.address }}:30080

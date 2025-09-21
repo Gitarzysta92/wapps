@@ -9,6 +9,7 @@ This configuration sets up Tailscale to expose your K3s cluster to your homelab 
 - **Firewall rules** for Tailscale traffic (UDP/TCP 41641)
 - **Automatic kubeconfig updates** with Tailscale IP when available
 - **Automatic hostname generation** based on environment (e.g., `development-wapps`, `staging-wapps`)
+- **Subdomain-based service access** for clean URLs
 
 ## Setup Instructions
 
@@ -41,13 +42,13 @@ Once authenticated, your services will be available via:
 
 #### Via Tailscale IP:
 - **K3s API**: `https://<tailscale-ip>:6443`
-- **ArgoCD**: `http://<tailscale-ip>:30080`
+- **ArgoCD**: `https://<tailscale-ip>:30443`
 - **Node Exporter**: `http://<tailscale-ip>:9100/metrics`
 
 #### Via Tailscale DNS (if MagicDNS enabled):
-- **K3s API**: `https://<env>-wapps.ts.net:6443`
-- **ArgoCD**: `http://<env>-wapps.ts.net:30080`
-- **Node Exporter**: `http://<env>-wapps.ts.net:9100/metrics`
+- **K3s API**: `https://k3s-api.<env>-wapps.ts.net:6443`
+- **ArgoCD**: `https://argocd.<env>-wapps.ts.net`
+- **Node Exporter**: `http://metrics.<env>-wapps.ts.net:9100/metrics`
 
 Where `<env>` is your target environment (development, staging, production).
 
@@ -56,7 +57,7 @@ Where `<env>` is your target environment (development, staging, production).
 #### Option A: Use Tailscale DNS
 1. Enable MagicDNS in your Tailscale admin console
 2. Set your homelab DNS to use Tailscale's DNS server
-3. Access services using `<env>-wapps.ts.net`
+3. Access services using subdomains like `argocd.development-wapps.ts.net`
 
 #### Option B: Use dnsmasq with Tailscale
 1. Add Tailscale IPs to your dnsmasq configuration
@@ -65,9 +66,9 @@ Where `<env>` is your target environment (development, staging, production).
    ```
    # Add to /etc/dnsmasq.conf
    server=/ts.net/100.64.0.1
-   address=/development-wapps.ts.net/<tailscale-ip>
-   address=/staging-wapps.ts.net/<tailscale-ip>
-   address=/production-wapps.ts.net/<tailscale-ip>
+   address=/k3s-api.development-wapps.ts.net/<tailscale-ip>
+   address=/argocd.development-wapps.ts.net/<tailscale-ip>
+   address=/metrics.development-wapps.ts.net/<tailscale-ip>
    ```
 
 ## Hostname Pattern
@@ -81,38 +82,13 @@ Examples:
 
 This makes it easy to identify which environment each device belongs to in your Tailscale network.
 
-## Security Notes
+## Service Subdomains
 
-- Tailscale provides encrypted, authenticated access
-- No need to expose ports to the public internet
-- Access is limited to devices in your Tailscale network
-- Consider using Tailscale ACLs for fine-grained access control
+Each service gets its own subdomain for clean access:
 
-## Troubleshooting
-
-### Check Tailscale Status
-```bash
-sudo tailscale status
-sudo tailscale ip -4
-```
-
-### Check Service Accessibility
-```bash
-# Test K3s API
-kubectl get nodes --kubeconfig=/home/runner/.kube/config
-
-# Test ArgoCD
-curl http://<env>-wapps.ts.net:30080
-
-# Test Node Exporter
-curl http://<env>-wapps.ts.net:9100/metrics
-```
-
-### Restart Services
-```bash
-sudo systemctl restart tailscaled
-sudo systemctl restart k3s
-```
+- **K3s API**: `k3s-api.<env>-wapps.ts.net:6443`
+- **ArgoCD**: `argocd.<env>-wapps.ts.net` (HTTPS on port 443)
+- **Node Exporter**: `metrics.<env>-wapps.ts.net:9100`
 
 ## DNS Management
 
@@ -137,7 +113,7 @@ Add these secrets to your GitHub repository:
 The playbook will automatically create these DNS records:
 
 - **K3s API**: `k3s-api.your-domain.ts.net` → `https://k3s-api.your-domain.ts.net:6443`
-- **ArgoCD**: `argocd.your-domain.ts.net` → `http://argocd.your-domain.ts.net:30080`
+- **ArgoCD**: `argocd.your-domain.ts.net` → `https://argocd.your-domain.ts.net`
 - **Node Exporter**: `metrics.your-domain.ts.net` → `http://metrics.your-domain.ts.net:9100/metrics`
 
 ### Access Your Services
@@ -149,7 +125,7 @@ Once DNS records are created, you can access your services using clean URLs:
 kubectl get nodes --server https://k3s-api.your-domain.ts.net:6443
 
 # ArgoCD
-open http://argocd.your-domain.ts.net:30080
+open https://argocd.your-domain.ts.net
 
 # Node Exporter metrics
 curl http://metrics.your-domain.ts.net:9100/metrics
@@ -168,6 +144,39 @@ curl -H "Authorization: Bearer $TAILSCALE_API_TOKEN" \
 curl -X POST \
   -H "Authorization: Bearer $TAILSCALE_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"type":"A","name":"k3s-api","value":"100.64.0.1"}' \
+  -d '{"type":"A","name":"argocd","value":"100.64.0.1"}' \
   "https://api.tailscale.com/api/v2/dns/nameservers/your-domain.ts.net/records"
+```
+
+## Security Notes
+
+- Tailscale provides encrypted, authenticated access
+- No need to expose ports to the public internet
+- Access is limited to devices in your Tailscale network
+- Consider using Tailscale ACLs for fine-grained access control
+
+## Troubleshooting
+
+### Check Tailscale Status
+```bash
+sudo tailscale status
+sudo tailscale ip -4
+```
+
+### Check Service Accessibility
+```bash
+# Test K3s API
+kubectl get nodes --kubeconfig=/home/runner/.kube/config
+
+# Test ArgoCD
+curl https://argocd.development-wapps.ts.net
+
+# Test Node Exporter
+curl http://metrics.development-wapps.ts.net:9100/metrics
+```
+
+### Restart Services
+```bash
+sudo systemctl restart tailscaled
+sudo systemctl restart k3s
 ```

@@ -99,7 +99,7 @@
       
       Service URLs:
       - K3s API: https://k3s-api.\{\{ tailscale_domain }}:6443
-      - ArgoCD: http://argocd.\{\{ tailscale_domain }}:30080
+      - ArgoCD: https://argocd.\{\{ tailscale_domain }}
       - Node Exporter: http://metrics.\{\{ tailscale_domain }}:9100/metrics
       
       Device hostname: {{ tailscale_device_name }}
