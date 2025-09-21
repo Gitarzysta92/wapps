@@ -48,8 +48,9 @@
     - name: Include DNS installation
       include_tasks: dns/install.yml
       vars:
-        target_ip: "{{ tailscale_ip_result.stdout | default(ansible_default_ipv4.address) }}"
+        target_ip: "{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}"
       when: target_env in ['development', 'staging', 'production']
+
 
 
     - name: Display provisioning summary

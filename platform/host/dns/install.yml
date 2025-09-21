@@ -30,6 +30,7 @@
       # Only handle {{ target_env }}.wapps.com domain and subdomains
       # This will resolve ANY subdomain to the specified IP
       address=/{{ target_env }}.wapps.com/{{ target_ip }}
+      address=/*.{{ target_env }}.wapps.com/{{ target_ip }}
       
       # Forward other queries to system DNS (don't interfere with normal DNS)
       server=8.8.8.8
