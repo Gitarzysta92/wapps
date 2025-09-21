@@ -4,10 +4,6 @@
     msg: "Skipping Tailscale Split DNS configuration - TAILSCALE_DOMAIN not provided"
   when: tailscale_domain is not defined or tailscale_domain == ""
 
-- name: Extract tailnet name from domain
-  set_fact:
-    tailnet_name: "{{ tailscale_domain | regex_replace('\\.ts\\.net$', '') }}"
-  when: tailscale_domain is defined and tailscale_domain != ""
 
 - name: Get Tailscale IP using CLI
   shell: tailscale ip -4
@@ -27,32 +23,19 @@
   debug:
     msg: |
       Split DNS Conditions Check:
-      - tailscale_api_token defined: {{ tailscale_api_token is defined }}
-      - tailnet_name defined: {{ tailnet_name is defined }}
       - tailscale_domain defined: {{ tailscale_domain is defined }}
       - tailscale_ip_result.stdout defined: {{ tailscale_ip_result.stdout is defined }}
-      - tailnet_name value: {{ tailnet_name | default('undefined') }}
-      - tailscale_api_token value: {{ tailscale_api_token | default('undefined') }}
+      - Using CLI approach (no API token needed)
 
-- name: Configure Tailscale Split DNS for development domain
-  uri:
-    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/nameservers"
-    method: POST
-    headers:
-      Authorization: "Bearer {{ tailscale_api_token }}"
-      Content-Type: "application/json"
-    body_format: json
-    body:
-      domains: ["{{ target_env }}.wapps.com"]
-      nameservers: ["{{ ansible_default_ipv4.address }}:5353"]
-    status_code: 200
+- name: Configure Tailscale Split DNS for development domain using CLI
+  shell: |
+    tailscale set --accept-dns=true --dns="{{ target_env }}.wapps.com={{ ansible_default_ipv4.address }}:5353"
   register: tailscale_split_dns
+  changed_when: false
+  failed_when: false
   when: 
-    - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailnet_name is defined
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
-  ignore_errors: yes
 
 - name: Test Tailscale DNS resolution
   shell: |
@@ -68,10 +51,8 @@
   debug:
     msg: |
       Current Tailscale DNS: {{ tailscale_dns_status.stdout | default('No DNS info') }}
-      Split DNS API Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status == 200 else 'Failed' }}
-      {% if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status != 200 %}
-      API Error: {{ tailscale_split_dns.json | default('Unknown error') }}
-      {% endif %}
+      Split DNS CLI Result: {{ tailscale_split_dns.stdout | default('No output') }}
+      CLI Exit Code: {{ tailscale_split_dns.rc | default('No exit code') }}
   when: tailscale_dns_status is defined
 
 - name: Display Tailscale Split DNS configuration status
@@ -87,16 +68,15 @@
       - DNS Server: {{ ansible_default_ipv4.address }}:5353
       
       📋 Configuration:
-      {% if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status == 200 %}
-      - ✅ Split DNS configured for {{ target_env }}.wapps.com
+      {% if tailscale_split_dns is defined and tailscale_split_dns.rc == 0 %}
+      - ✅ Split DNS configured for {{ target_env }}.wapps.com via CLI
       - Custom nameserver: {{ ansible_default_ipv4.address }}:5353
       - dnsmasq resolves *.{{ target_env }}.wapps.com to {{ tailscale_ip_result.stdout }}
       - All other domains use normal system DNS
       {% else %}
-      - ❌ Split DNS configuration failed (API error or missing token)
-      - Manual setup required in Tailscale admin console
-      - Add nameserver {{ ansible_default_ipv4.address }}:5353 for domain {{ target_env }}.wapps.com
-      - Or check if TAILSCALE_API_TOKEN is valid and has proper permissions
+      - ❌ Split DNS configuration failed (CLI error)
+      - Manual setup: tailscale set --accept-dns=true --dns="{{ target_env }}.wapps.com={{ ansible_default_ipv4.address }}:5353"
+      - Or check Tailscale CLI permissions and connectivity
       {% endif %}
       
       🌐 Service URLs (via Tailscale):
