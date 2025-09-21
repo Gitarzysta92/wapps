@@ -121,9 +121,28 @@
       {{ dns_test_result.stdout | default('DNS test not run') }}
   when: dns_test_result is defined
 
+- name: Get Tailscale tailnet info
+  uri:
+    url: "https://api.tailscale.com/api/v2/tailnet"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+    status_code: 200
+  register: tailscale_tailnet_info
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+  ignore_errors: yes
+
+- name: Debug Tailscale tailnet info
+  debug:
+    msg: |
+      Tailscale API Response: {{ tailscale_tailnet_info.json | default('No response') }}
+      Status: {{ tailscale_tailnet_info.status | default('No status') }}
+  when: tailscale_tailnet_info is defined
+
 - name: Configure Tailscale Split DNS
   uri:
-    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/nameservers"
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet_info.json.name }}/dns/nameservers"
     method: POST
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -136,14 +155,16 @@
   register: tailscale_split_dns
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailnet_name is defined
+    - tailscale_tailnet_info is defined
+    - tailscale_tailnet_info.status == 200
+    - tailscale_tailnet_info.json.name is defined
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
 
 - name: Add search domain to Tailscale
   uri:
-    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/searchpaths"
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet_info.json.name }}/dns/searchpaths"
     method: POST
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -155,7 +176,9 @@
   register: tailscale_search_path
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailnet_name is defined
+    - tailscale_tailnet_info is defined
+    - tailscale_tailnet_info.status == 200
+    - tailscale_tailnet_info.json.name is defined
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
