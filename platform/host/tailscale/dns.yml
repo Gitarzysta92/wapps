@@ -19,7 +19,7 @@
 
 - name: Get Tailscale device information
   uri:
-    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/devices"
+    url: "https://api.tailscale.com/api/v2/devices"
     method: GET
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -27,7 +27,6 @@
   register: tailscale_devices
   when: 
     - tailscale_api_token is defined and tailscale_api_token != ""
-    - tailnet_name is defined
   ignore_errors: yes
 
 - name: Debug Tailscale API response
@@ -66,7 +65,7 @@
 
 - name: Create DNS A record for K3s API
   uri:
-    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailscale_domain }}/records"
+    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailnet_name }}/records"
     method: POST
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -85,7 +84,7 @@
 
 - name: Create DNS A record for ArgoCD
   uri:
-    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailscale_domain }}/records"
+    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailnet_name }}/records"
     method: POST
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
@@ -104,7 +103,7 @@
 
 - name: Create DNS A record for Node Exporter
   uri:
-    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailscale_domain }}/records"
+    url: "https://api.tailscale.com/api/v2/dns/nameservers/{{ tailnet_name }}/records"
     method: POST
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
