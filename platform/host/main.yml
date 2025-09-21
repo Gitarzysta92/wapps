@@ -51,9 +51,6 @@
         target_ip: "{{ tailscale_ip_result.stdout | default(ansible_default_ipv4.address) }}"
       when: target_env in ['development', 'staging', 'production']
 
-    - name: Include Tailscale Split DNS configuration
-      include_tasks: tailscale/split-dns.yml
-      when: target_env in ['development', 'staging', 'production']
 
     - name: Display provisioning summary
       debug:
