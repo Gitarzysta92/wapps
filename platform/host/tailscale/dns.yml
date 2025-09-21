@@ -1,23 +1,29 @@
 ---
 - name: Check if Tailscale API token is provided
-  fail:
-    msg: "TAILSCALE_API_TOKEN is required for DNS management"
-  when: tailscale_api_token is not defined
+  debug:
+    msg: "Skipping DNS configuration - TAILSCALE_API_TOKEN not provided"
+  when: tailscale_api_token is not defined or tailscale_api_token == ""
 
 - name: Get Tailscale device information
   uri:
-    url: "https://api.tailscale.com/api/v2/device/{{ tailscale_device_name }}"
+    url: "https://api.tailscale.com/api/v2/devices"
     method: GET
     headers:
       Authorization: "Bearer {{ tailscale_api_token }}"
     status_code: 200
-  register: tailscale_device
-  when: tailscale_api_token is defined
+  register: tailscale_devices
+  when: tailscale_api_token is defined and tailscale_api_token != ""
 
-- name: Get Tailscale IP from device info
+- name: Find device by hostname
   set_fact:
-    tailscale_device_ip: "{{ tailscale_device.json.addresses[0] }}"
-  when: tailscale_device is defined and tailscale_device.json.addresses is defined
+    tailscale_device_ip: "{{ item.addresses[0] }}"
+  loop: "{{ tailscale_devices.json.devices }}"
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailscale_devices is defined
+    - item.hostname == tailscale_device_name
+  loop_control:
+    label: "{{ item.hostname }}"
 
 - name: Create DNS A record for K3s API
   uri:
@@ -33,7 +39,9 @@
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: k3s_dns_record
-  when: tailscale_api_token is defined and tailscale_device_ip is defined
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailscale_device_ip is defined
 
 - name: Create DNS A record for ArgoCD
   uri:
@@ -49,7 +57,9 @@
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: argocd_dns_record
-  when: tailscale_api_token is defined and tailscale_device_ip is defined
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailscale_device_ip is defined
 
 - name: Create DNS A record for Node Exporter
   uri:
@@ -65,11 +75,14 @@
       value: "{{ tailscale_device_ip }}"
     status_code: 200
   register: metrics_dns_record
-  when: tailscale_api_token is defined and tailscale_device_ip is defined
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailscale_device_ip is defined
 
 - name: Display DNS configuration status
   debug:
     msg: |
+      {% if tailscale_api_token is defined and tailscale_api_token != "" and tailscale_device_ip is defined %}
       Tailscale DNS records created successfully!
       
       Service URLs:
@@ -79,4 +92,6 @@
       
       Device hostname: {{ tailscale_device_name }}
       Device IP: {{ tailscale_device_ip }}
-  when: tailscale_api_token is defined and tailscale_device_ip is defined
+      {% else %}
+      DNS configuration skipped - API token not provided or device not found
+      {% endif %}
