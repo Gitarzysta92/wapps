@@ -130,14 +130,8 @@
       Content-Type: "application/json"
     body_format: json
     body:
-      name: "{{ target_env }}-wapps-dns"
-      nameservers:
-        - "{{ ansible_default_ipv4.address }}:53"
-      search_domains:
-        - "{{ target_env }}.wapps.com"
-      restricted_nameservers:
-        "{{ target_env }}.wapps.com":
-          - "{{ ansible_default_ipv4.address }}:53"
+      domains: ["{{ target_env }}.wapps.com"]
+      nameservers: ["{{ ansible_default_ipv4.address }}"]
     status_code: 200
   register: tailscale_split_dns
   when: 
@@ -147,14 +141,24 @@
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
   ignore_errors: yes
 
-- name: Debug Tailscale Split DNS configuration
-  debug:
-    msg: |
-      Tailscale Split DNS Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status == 200 else 'Failed' }}
-      {% if tailscale_split_dns is defined and tailscale_split_dns.status != 200 %}
-      Error: {{ tailscale_split_dns.json | default('Unknown error') }}
-      {% endif %}
-  when: tailscale_split_dns is defined
+- name: Add search domain to Tailscale
+  uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/searchpaths"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      searchPaths: ["{{ target_env }}.wapps.com"]
+    status_code: 200
+  register: tailscale_search_path
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailnet_name is defined
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+  ignore_errors: yes
 
 - name: Display DNS configuration status
   debug:
@@ -165,12 +169,12 @@
       🌐 Wildcard DNS: *.{{ target_env }}.wapps.com → {{ tailscale_ip_result.stdout }}
       
       📍 Service URLs (all resolve to the same IP):
-      - ArgoCD: https://argocd.\{\{ target_env }}.wapps.com
-      - K3s API: https://k3s-api.\{\{ target_env }}.wapps.com
-      - Node Exporter: http://metrics.\{\{ target_env }}.wapps.com
-      - Grafana: https://grafana.\{\{ target_env }}.wapps.com
-      - Prometheus: https://prometheus.\{\{ target_env }}.wapps.com
-      - ANY service: https://anything.\{\{ target_env }}.wapps.com
+      - ArgoCD: https://argocd.{{ target_env }}.wapps.com
+      - K3s API: https://k3s-api.{{ target_env }}.wapps.com
+      - Node Exporter: http://metrics.{{ target_env }}.wapps.com
+      - Grafana: https://grafana.{{ target_env }}.wapps.com
+      - Prometheus: https://prometheus.{{ target_env }}.wapps.com
+      - ANY service: https://anything.{{ target_env }}.wapps.com
       
       🔧 Device info:
       - Device hostname: {{ tailscale_device_name }}
