@@ -30,6 +30,13 @@
     - tailscale_api_token is defined and tailscale_api_token != ""
   ignore_errors: yes
 
+- name: Debug Tailscale API response
+  debug:
+    msg: |
+      Tailscale API Status: {{ tailscale_tailnet_info.status | default('No status') }}
+      API Response: {{ tailscale_tailnet_info.json | default('No response') }}
+  when: tailscale_tailnet_info is defined
+
 - name: Configure Tailscale Split DNS for development domain
   uri:
     url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet_info.json.name }}/dns/nameservers"
@@ -66,8 +73,8 @@
   debug:
     msg: |
       Current Tailscale DNS: {{ tailscale_dns_status.stdout | default('No DNS info') }}
-      Split DNS API Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status == 200 else 'Failed' }}
-      {% if tailscale_split_dns is defined and tailscale_split_dns.status != 200 %}
+      Split DNS API Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status == 200 else 'Failed' }}
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status != 200 %}
       API Error: {{ tailscale_split_dns.json | default('Unknown error') }}
       {% endif %}
   when: tailscale_dns_status is defined
@@ -85,15 +92,16 @@
       - DNS Server: {{ ansible_default_ipv4.address }}:5353
       
       📋 Configuration:
-      {% if tailscale_split_dns is defined and tailscale_split_dns.status == 200 %}
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status is defined and tailscale_split_dns.status == 200 %}
       - ✅ Split DNS configured for {{ target_env }}.wapps.com
       - Custom nameserver: {{ ansible_default_ipv4.address }}:5353
       - dnsmasq resolves *.{{ target_env }}.wapps.com to {{ tailscale_ip_result.stdout }}
       - All other domains use normal system DNS
       {% else %}
-      - ❌ Split DNS configuration failed
+      - ❌ Split DNS configuration failed (API error or missing token)
       - Manual setup required in Tailscale admin console
       - Add nameserver {{ ansible_default_ipv4.address }}:5353 for domain {{ target_env }}.wapps.com
+      - Or check if TAILSCALE_API_TOKEN is valid and has proper permissions
       {% endif %}
       
       🌐 Service URLs (via Tailscale):
