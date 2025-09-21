@@ -9,6 +9,14 @@
     tailnet_name: "{{ tailscale_domain | regex_replace('\\.ts\\.net$', '') }}"
   when: tailscale_domain is defined and tailscale_domain != ""
 
+- name: Debug Tailscale variables
+  debug:
+    msg: |
+      tailscale_api_token: {{ 'defined' if tailscale_api_token is defined else 'undefined' }}
+      tailscale_domain: {{ tailscale_domain | default('undefined') }}
+      tailnet_name: {{ tailnet_name | default('undefined') }}
+      tailscale_device_name: {{ tailscale_device_name | default('undefined') }}
+
 - name: Get Tailscale device information
   uri:
     url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/devices"
@@ -22,6 +30,23 @@
     - tailnet_name is defined
   ignore_errors: yes
 
+- name: Debug Tailscale API response
+  debug:
+    msg: |
+      API Status: {{ tailscale_devices.status | default('not called') }}
+      API Response: {{ tailscale_devices.json | default('no response') }}
+  when: tailscale_devices is defined
+
+- name: Debug device search conditions
+  debug:
+    msg: |
+      Conditions check:
+      - tailscale_api_token defined: {{ tailscale_api_token is defined and tailscale_api_token != "" }}
+      - tailscale_devices defined: {{ tailscale_devices is defined }}
+      - API status 200: {{ tailscale_devices.status == 200 if tailscale_devices is defined else 'N/A' }}
+      - Looking for device: {{ tailscale_device_name | default('undefined') }}
+      - Available devices: {{ tailscale_devices.json.devices | map(attribute='hostname') | list if tailscale_devices is defined and tailscale_devices.json is defined else 'none' }}
+
 - name: Find device by hostname
   set_fact:
     tailscale_device_ip: "{{ item.addresses[0] }}"
@@ -33,6 +58,11 @@
     - item.hostname == tailscale_device_name
   loop_control:
     label: "{{ item.hostname }}"
+
+- name: Debug device IP result
+  debug:
+    msg: |
+      tailscale_device_ip: {{ tailscale_device_ip | default('not found') }}
 
 - name: Create DNS A record for K3s API
   uri:
