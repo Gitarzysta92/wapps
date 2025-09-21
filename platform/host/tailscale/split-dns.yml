@@ -18,6 +18,17 @@
       Tailscale domain: {{ tailscale_domain | default('undefined') }}
       Device name: {{ tailscale_device_name | default('undefined') }}
 
+- name: Debug Split DNS conditions
+  debug:
+    msg: |
+      Split DNS Conditions Check:
+      - tailscale_api_token defined: {{ tailscale_api_token is defined }}
+      - tailnet_name defined: {{ tailnet_name is defined }}
+      - tailscale_domain defined: {{ tailscale_domain is defined }}
+      - tailscale_ip_result.stdout defined: {{ tailscale_ip_result.stdout is defined }}
+      - tailnet_name value: {{ tailnet_name | default('undefined') }}
+      - tailscale_api_token value: {{ tailscale_api_token | default('undefined') }}
+
 - name: Configure Tailscale Split DNS for development domain
   uri:
     url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/nameservers"
