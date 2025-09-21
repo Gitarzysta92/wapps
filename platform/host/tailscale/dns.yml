@@ -54,13 +54,6 @@
       # This will resolve ANY subdomain to the Tailscale IP
       address=/{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
       
-      # Specific service mappings (optional - wildcard covers these too)
-      address=/argocd.{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
-      address=/k3s-api.{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
-      address=/metrics.{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
-      address=/grafana.{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
-      address=/prometheus.{{ target_env }}.wapps.com/{{ tailscale_ip_result.stdout }}
-      
       # Forward other queries to system DNS
       server=8.8.8.8
       server=1.1.1.1
