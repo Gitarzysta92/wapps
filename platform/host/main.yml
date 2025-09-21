@@ -45,8 +45,14 @@
       include_tasks: nginx/install.yml
       when: target_env in ['development', 'staging', 'production']
 
-    - name: Include Tailscale DNS configuration
-      include_tasks: tailscale/dns.yml
+    - name: Include DNS installation
+      include_tasks: dns/install.yml
+      vars:
+        target_ip: "{{ tailscale_ip_result.stdout | default(ansible_default_ipv4.address) }}"
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Include Tailscale Split DNS configuration
+      include_tasks: tailscale/split-dns.yml
       when: target_env in ['development', 'staging', 'production']
 
     - name: Display provisioning summary

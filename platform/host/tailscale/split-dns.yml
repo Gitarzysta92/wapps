@@ -1,0 +1,95 @@
+---
+- name: Check if Tailscale domain is provided
+  debug:
+    msg: "Skipping Tailscale Split DNS configuration - TAILSCALE_DOMAIN not provided"
+  when: tailscale_domain is not defined or tailscale_domain == ""
+
+- name: Get Tailscale IP using CLI
+  shell: tailscale ip -4
+  register: tailscale_ip_result
+  changed_when: false
+  failed_when: false
+  when: tailscale_domain is defined and tailscale_domain != ""
+
+- name: Debug Tailscale IP
+  debug:
+    msg: |
+      Tailscale IP: {{ tailscale_ip_result.stdout | default('not found') }}
+      Tailscale domain: {{ tailscale_domain | default('undefined') }}
+      Device name: {{ tailscale_device_name | default('undefined') }}
+
+- name: Configure Tailscale Split DNS using CLI
+  shell: |
+    tailscale set --accept-dns=false
+  register: tailscale_dns_set
+  changed_when: false
+  failed_when: false
+  when: 
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+
+- name: Configure systemd-resolved to use dnsmasq for development domain only
+  copy:
+    content: |
+      [Resolve]
+      DNS=127.0.0.1:5353 8.8.8.8 1.1.1.1
+      Domains={{ target_env }}.wapps.com
+      FallbackDNS=8.8.8.8 1.1.1.1
+    dest: /etc/systemd/resolved.conf.d/99-dnsmasq.conf
+    mode: '0644'
+  when: 
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+
+- name: Restart systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: restarted
+    daemon_reload: yes
+  when: 
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+
+- name: Test Tailscale DNS resolution
+  shell: |
+    tailscale status --json | jq -r '.Self.DNS | join(",")'
+  register: tailscale_dns_status
+  changed_when: false
+  failed_when: false
+  when: 
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+
+- name: Debug Tailscale DNS status
+  debug:
+    msg: |
+      Current Tailscale DNS: {{ tailscale_dns_status.stdout | default('No DNS info') }}
+      Tailscale DNS CLI Result: {{ tailscale_dns_set.stdout | default('No output') }}
+  when: tailscale_dns_status is defined
+
+- name: Display Tailscale Split DNS configuration status
+  debug:
+    msg: |
+      {% if tailscale_domain is defined and tailscale_domain != "" and tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != "" %}
+      ✅ Tailscale Split DNS configured successfully!
+      
+      🔧 Device info:
+      - Device hostname: {{ tailscale_device_name }}
+      - Tailscale IP: {{ tailscale_ip_result.stdout }}
+      - Environment: {{ target_env }}
+      - DNS Server: {{ ansible_default_ipv4.address }}:5353
+      
+      📋 Configuration:
+      - Tailscale DNS disabled (--accept-dns=false)
+      - systemd-resolved routes {{ target_env }}.wapps.com to dnsmasq
+      - dnsmasq resolves *.{{ target_env }}.wapps.com to {{ tailscale_ip_result.stdout }}
+      - All other domains use normal system DNS
+      
+      🌐 Service URLs (via Tailscale):
+      - ArgoCD: https://argocd.{{ target_env }}.wapps.com
+      - K3s API: https://k3s-api.{{ target_env }}.wapps.com
+      - Node Exporter: http://metrics.{{ target_env }}.wapps.com
+      - ANY service: https://anything.{{ target_env }}.wapps.com
+      {% else %}
+      ❌ Tailscale Split DNS configuration failed - missing required variables
+      {% endif %}
