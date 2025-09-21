@@ -129,7 +129,7 @@
           }
       }
       
-      # Default server - catch all other subdomains
+      # Default server - route all other traffic to Kubernetes cluster
       server {
           listen 80 default_server;
           listen 443 ssl http2 default_server;
@@ -142,54 +142,74 @@
           ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
           ssl_prefer_server_ciphers off;
           
-          # Show available services
+          # Route all traffic to Kubernetes cluster via ingress
           location / {
+              # Try to find the service in the cluster
+              # This will be handled by the ingress controller
+              proxy_pass http://127.0.0.1:80\;  # Ingress controller port
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Forwarded-Host $host;
+              proxy_set_header X-Forwarded-Port $server_port;
+              
+              # WebSocket support for ingress
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              
+              # Timeouts
+              proxy_connect_timeout 60s;
+              proxy_send_timeout 60s;
+              proxy_read_timeout 60s;
+              
+              # Error handling - if service not found in cluster
+              proxy_intercept_errors on;
+              error_page 502 503 504 = @cluster_error;
+          }
+          
+          # Error page for services not found in cluster
+          location @cluster_error {
               return 200 '
       <!DOCTYPE html>
       <html>
       <head>
-          <title>{{ target_env | title }} Environment - Available Services</title>
+          <title>Service Not Found - {{ target_env | title }} Environment</title>
           <style>
               body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
               .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-              h1 { color: #333; border-bottom: 2px solid #007acc; padding-bottom: 10px; }
+              h1 { color: #333; border-bottom: 2px solid #dc3545; padding-bottom: 10px; }
               .service { margin: 20px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #007acc; border-radius: 4px; }
               .service h3 { margin: 0 0 10px 0; color: #007acc; }
               .service p { margin: 5px 0; color: #666; }
               .url { font-family: monospace; background: #e9ecef; padding: 2px 6px; border-radius: 3px; }
               .status { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
               .status.available { background: #d4edda; color: #155724; }
+              .status.not-found { background: #f8d7da; color: #721c24; }
           </style>
       </head>
       <body>
           <div class="container">
-              <h1>{{ target_env | title }} Environment Services</h1>
-              <p>Welcome to the {{ target_env }} environment. Here are the available services:</p>
+              <h1>Service Not Found - {{ target_env | title }} Environment</h1>
+              <p>The service <strong><span class="url">$host</span></strong> was not found in the Kubernetes cluster.</p>
               
               <div class="service">
-                  <h3>🚀 ArgoCD - GitOps CD</h3>
-                  <p><strong>URL:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.com</span></p>
-                  <p>GitOps continuous deployment platform for managing Kubernetes applications.</p>
-                  <span class="status available">Available</span>
+                  <h3>🔍 Available Host-Level Services</h3>
+                  <p><strong>ArgoCD:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p>
+                  <p><strong>K3s API:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p>
+                  <p><strong>Node Exporter:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p>
               </div>
               
               <div class="service">
-                  <h3>☸️ K3s API - Kubernetes API Server</h3>
-                  <p><strong>URL:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.com</span></p>
-                  <p>Kubernetes API server for cluster management and kubectl access.</p>
-                  <span class="status available">Available</span>
+                  <h3>☸️ Cluster Services</h3>
+                  <p>Other services should be deployed to the Kubernetes cluster and will be handled by the ingress controller.</p>
+                  <p><strong>Status:</strong> <span class="status not-found">Service not found in cluster</span></p>
               </div>
               
-              <div class="service">
-                  <h3>📊 Node Exporter - Metrics</h3>
-                  <p><strong>URL:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.com</span></p>
-                  <p>Prometheus node exporter for system metrics collection.</p>
-                  <span class="status available">Available</span>
-              </div>
-              
-              <div style="margin-top: 30px; padding: 15px; background: #e7f3ff; border-radius: 4px; border-left: 4px solid #007acc;">
-                  <p><strong>💡 Tip:</strong> All services are accessible via their subdomain on the {{ target_env }}.wapps.com domain.</p>
-                  <p><strong>🔒 Security:</strong> Services use self-signed SSL certificates. You may need to accept the certificate in your browser.</p>
+              <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">
+                  <p><strong>💡 Tip:</strong> Deploy your service to the Kubernetes cluster with an ingress resource to make it accessible.</p>
+                  <p><strong>🔧 Check:</strong> Verify the service is running with <code>kubectl get services</code> and has an ingress configured.</p>
               </div>
           </div>
       </body>
@@ -257,15 +277,17 @@
       - ArgoCD: https://argocd.\{\{ target_env }}.wapps.com
       - K3s API: https://k3s-api.\{\{ target_env }}.wapps.com  
       - Node Exporter: http://metrics.\{\{ target_env }}.wapps.com
-      - Service List: https://anything.\{\{ target_env }}.wapps.com
+      - Cluster Services: https://any-service.\{\{ target_env }}.wapps.com (via ingress)
       
       🔧 Configuration:
       - Environment: {{ target_env }}
       - Nginx Config: /etc/nginx/sites-available/{{ target_env }}-wapps
       - SSL Certificate: Self-signed (browser warning expected)
       - Port: 80 (HTTP) and 443 (HTTPS)
+      - Default routing: All unknown subdomains → Kubernetes cluster
       
       📋 Notes:
       - All HTTP traffic redirects to HTTPS
       - Self-signed SSL certificates are used
-      - Default server shows available services for unknown subdomains
+      - Unknown subdomains are routed to the Kubernetes cluster
+      - Cluster services are handled by the ingress controller
