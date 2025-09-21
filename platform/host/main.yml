@@ -38,9 +38,7 @@
       when: target_env in ['development', 'staging', 'production']
 
     - name: Include Tailscale DNS configuration
-    - name: Include Tailscale DNS configuration
       include_tasks: tailscale/dns.yml
-      when: target_env in ['development', 'staging', 'production']      include_tasks: tailscale/install.yml
       when: target_env in ['development', 'staging', 'production']
 
     - name: Display provisioning summary
