@@ -18,25 +18,39 @@
       Tailscale domain: {{ tailscale_domain | default('undefined') }}
       Device name: {{ tailscale_device_name | default('undefined') }}
 
-- name: Configure Tailscale Split DNS using CLI
-  shell: |
-    tailscale set --accept-dns=false
-  register: tailscale_dns_set
-  changed_when: false
-  failed_when: false
+- name: Get Tailscale tailnet info
+  uri:
+    url: "https://api.tailscale.com/api/v2/tailnet"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+    status_code: 200
+  register: tailscale_tailnet_info
   when: 
-    - tailscale_domain is defined and tailscale_domain != ""
-    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+    - tailscale_api_token is defined and tailscale_api_token != ""
+  ignore_errors: yes
 
-- name: Set Tailscale nameserver for development domain
-  shell: |
-    tailscale set --dns="{{ ansible_default_ipv4.address }}:5353" --accept-dns=false
-  register: tailscale_nameserver_set
-  changed_when: false
-  failed_when: false
+- name: Configure Tailscale Split DNS for development domain
+  uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet_info.json.name }}/dns/nameservers"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      domains: ["{{ target_env }}.wapps.com"]
+      nameservers: ["{{ ansible_default_ipv4.address }}:5353"]
+    status_code: 200
+  register: tailscale_split_dns
   when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailscale_tailnet_info is defined
+    - tailscale_tailnet_info.status == 200
+    - tailscale_tailnet_info.json.name is defined
     - tailscale_domain is defined and tailscale_domain != ""
     - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+  ignore_errors: yes
 
 - name: Test Tailscale DNS resolution
   shell: |
@@ -52,8 +66,10 @@
   debug:
     msg: |
       Current Tailscale DNS: {{ tailscale_dns_status.stdout | default('No DNS info') }}
-      Tailscale DNS CLI Result: {{ tailscale_dns_set.stdout | default('No output') }}
-      Nameserver Set Result: {{ tailscale_nameserver_set.stdout | default('No output') }}
+      Split DNS API Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status == 200 else 'Failed' }}
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status != 200 %}
+      API Error: {{ tailscale_split_dns.json | default('Unknown error') }}
+      {% endif %}
   when: tailscale_dns_status is defined
 
 - name: Display Tailscale Split DNS configuration status
@@ -69,10 +85,16 @@
       - DNS Server: {{ ansible_default_ipv4.address }}:5353
       
       📋 Configuration:
-      - Tailscale DNS disabled (--accept-dns=false)
-      - Tailscale nameserver set to {{ ansible_default_ipv4.address }}:5353
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status == 200 %}
+      - ✅ Split DNS configured for {{ target_env }}.wapps.com
+      - Custom nameserver: {{ ansible_default_ipv4.address }}:5353
       - dnsmasq resolves *.{{ target_env }}.wapps.com to {{ tailscale_ip_result.stdout }}
       - All other domains use normal system DNS
+      {% else %}
+      - ❌ Split DNS configuration failed
+      - Manual setup required in Tailscale admin console
+      - Add nameserver {{ ansible_default_ipv4.address }}:5353 for domain {{ target_env }}.wapps.com
+      {% endif %}
       
       🌐 Service URLs (via Tailscale):
       - ArgoCD: https://argocd.{{ target_env }}.wapps.com
