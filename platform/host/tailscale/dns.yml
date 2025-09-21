@@ -121,6 +121,41 @@
       {{ dns_test_result.stdout | default('DNS test not run') }}
   when: dns_test_result is defined
 
+- name: Configure Tailscale Split DNS
+  uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailnet_name }}/dns/nameservers"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ tailscale_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      name: "{{ target_env }}-wapps-dns"
+      nameservers:
+        - "{{ ansible_default_ipv4.address }}:53"
+      search_domains:
+        - "{{ target_env }}.wapps.com"
+      restricted_nameservers:
+        "{{ target_env }}.wapps.com":
+          - "{{ ansible_default_ipv4.address }}:53"
+    status_code: 200
+  register: tailscale_split_dns
+  when: 
+    - tailscale_api_token is defined and tailscale_api_token != ""
+    - tailnet_name is defined
+    - tailscale_domain is defined and tailscale_domain != ""
+    - tailscale_ip_result.stdout is defined and tailscale_ip_result.stdout != ""
+  ignore_errors: yes
+
+- name: Debug Tailscale Split DNS configuration
+  debug:
+    msg: |
+      Tailscale Split DNS Status: {{ 'Success' if tailscale_split_dns is defined and tailscale_split_dns.status == 200 else 'Failed' }}
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status != 200 %}
+      Error: {{ tailscale_split_dns.json | default('Unknown error') }}
+      {% endif %}
+  when: tailscale_split_dns is defined
+
 - name: Display DNS configuration status
   debug:
     msg: |
@@ -143,10 +178,16 @@
       - Environment: {{ target_env }}
       - DNS Server: {{ ansible_default_ipv4.address }}:53
       
-      📋 Next steps:
+      {% if tailscale_split_dns is defined and tailscale_split_dns.status == 200 %}
+      ✅ Tailscale Split DNS configured automatically!
+      - Domain: {{ target_env }}.wapps.com → {{ ansible_default_ipv4.address }}:53
+      - All Tailscale devices will now resolve these domains automatically!
+      {% else %}
+      📋 Manual setup required:
       1. In Tailscale admin console → DNS → Split DNS
       2. Add: {{ target_env }}.wapps.com → {{ ansible_default_ipv4.address }}
       3. All devices will then resolve *.{{ target_env }}.wapps.com automatically!
+      {% endif %}
       {% else %}
       ❌ DNS configuration failed - missing required variables
       {% endif %}
