@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+  labels:
+    name: argocd
+---
+# ArgoCD installation manifest
+# This will be applied via kubectl or ArgoCD itself

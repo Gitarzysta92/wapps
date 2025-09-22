@@ -25,8 +25,21 @@
       include_tasks: k3s/install.yml
       when: target_env in ['development', 'staging', 'production']
 
-    - name: Include ArgoCD installation
-      include_tasks: argocd/install.yml
+    - name: Install ArgoCD in cluster
+      shell: |
+        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      register: argocd_install
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Wait for ArgoCD to be ready
+      shell: kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+      register: argocd_wait
+      changed_when: false
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Apply ArgoCD ingress
+      shell: kubectl apply -f /Users/michal.lukasiewicz/Programming/wapps/wapps/platform/cluster/argocd/ingress.yaml
+      register: argocd_ingress
       when: target_env in ['development', 'staging', 'production']
 
     - name: Include Node Exporter installation
@@ -61,7 +74,7 @@
           Git SHA: {{ git_sha }}
           Applications directory: {{ apps_dir }}
           Installed services:
-            - ArgoCD (HTTPS 443) - GitOps CD
+            - ArgoCD (Cluster) - GitOps CD
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
