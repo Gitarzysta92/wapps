@@ -38,7 +38,7 @@
       when: target_env in ['development', 'staging', 'production']
 
     - name: Apply ArgoCD ingress
-      shell: kubectl apply -f /Users/michal.lukasiewicz/Programming/wapps/wapps/platform/cluster/argocd/ingress.yaml
+      shell: kubectl apply -f {{ playbook_dir }}/../cluster/argocd/ingress.yaml
       register: argocd_ingress
       when: target_env in ['development', 'staging', 'production']
 
