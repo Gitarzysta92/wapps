@@ -31,6 +31,16 @@
       register: argocd_install
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Remove ArgoCD NodePorts (use ClusterIP + Ingress)
+      shell: |
+        kubectl -n argocd patch svc argocd-server --type='json' -p '[
+          {"op":"replace","path":"/spec/type","value":"ClusterIP"},
+          {"op":"remove","path":"/spec/ports/0/nodePort"},
+          {"op":"remove","path":"/spec/ports/1/nodePort"}
+        ]'
+      register: argocd_patch
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Wait for ArgoCD to be ready
       shell: kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
       register: argocd_wait
