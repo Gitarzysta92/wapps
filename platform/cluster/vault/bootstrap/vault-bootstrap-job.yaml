@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-bootstrap
+  namespace: vault
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-bootstrap
+  namespace: vault
+spec:
+  template:
+    spec:
+      serviceAccountName: vault-bootstrap
+      restartPolicy: OnFailure
+      containers:
+        - name: bootstrap
+          image: hashicorp/vault:1.17.3
+          env:
+            - name: VAULT_ADDR
+              value: http://vault.vault.svc:8200
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-root-token
+                  key: token
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              vault secrets enable -path=kv -version=2 kv || true
+              vault auth enable kubernetes || true
+              vault write auth/kubernetes/config \
+                kubernetes_host="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}" \
+                kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+                token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+
+              cat >/tmp/argocd.hcl <<'EOF'
+              path "kv/data/argocd/*" { capabilities = ["read"] }
+              path "kv/metadata/argocd/*" { capabilities = ["read"] }
+              EOF
+              vault policy write argocd /tmp/argocd.hcl
+
+              vault write auth/kubernetes/role/argocd \
+                bound_service_account_names=argocd-server \
+                bound_service_account_namespaces=argocd \
+                policies=argocd \
+                ttl=24h
+
+              echo "Bootstrap complete"
+

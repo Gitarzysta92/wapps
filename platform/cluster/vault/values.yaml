@@ -1,0 +1,41 @@
+global:
+  enabled: true
+
+server:
+  image:
+    repository: hashicorp/vault
+    tag: "1.17.3"
+  ha:
+    enabled: true
+    replicas: 1
+  standalone:
+    enabled: false
+  dev:
+    enabled: false
+
+  haRaft:
+    enabled: true
+    config: |
+      ui = true
+      cluster_name = "wapps"
+      listener "tcp" {
+        address     = "0.0.0.0:8200"
+        tls_disable = 1
+      }
+      storage "raft" {
+        path = "/vault/data"
+      }
+      service_registration "kubernetes" {}
+      disable_mlock = true
+
+  dataStorage:
+    enabled: true
+    size: 5Gi
+
+  service:
+    type: ClusterIP
+    port: 8200
+
+ui:
+  enabled: true
+
