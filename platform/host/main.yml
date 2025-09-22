@@ -61,7 +61,7 @@
           Git SHA: {{ git_sha }}
           Applications directory: {{ apps_dir }}
           Installed services:
-            - ArgoCD (port 30080) - GitOps CD
+            - ArgoCD (port 32080) - GitOps CD
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics

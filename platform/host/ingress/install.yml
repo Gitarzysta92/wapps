@@ -9,14 +9,14 @@
   register: nginx_ingress_wait
   changed_when: false
 
-- name: Expose NGINX Ingress via NodePort (80->30080, 443->30443)
+- name: Expose NGINX Ingress via NodePort (80->32080, 443->32443)
   shell: |
     kubectl -n ingress-nginx patch svc ingress-nginx-controller -p '{
       "spec": {
         "type": "NodePort",
         "ports": [
-          {"name": "http",  "port": 80,  "targetPort": 80,  "nodePort": 30080},
-          {"name": "https", "port": 443, "targetPort": 443, "nodePort": 30443}
+          {"name": "http",  "port": 80,  "targetPort": 80,  "nodePort": 32080},
+          {"name": "https", "port": 443, "targetPort": 443, "nodePort": 32443}
         ]
       }
     }'

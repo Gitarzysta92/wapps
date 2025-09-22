@@ -46,8 +46,8 @@
       
       {% if tailscale_auth_key is defined %}
       After authentication, your services will be available at:
-      - K3s API: https://\{\{ ansible_default_ipv4.address }}:6443 (or via Tailscale IP)
-      - ArgoCD: http://\{\{ ansible_default_ipv4.address }}:30080 (or via Tailscale IP)
+      - K3s API: https://{{ ansible_default_ipv4.address }}:6443 (or via Tailscale IP)
+      - ArgoCD: http://{{ ansible_default_ipv4.address }}:32080 (or via Tailscale IP)
       - Node Exporter: http://\{\{ ansible_default_ipv4.address }}:9100/metrics (or via Tailscale IP)
       
       Tailscale will provide DNS names like:
@@ -77,5 +77,5 @@
         msg: |
           Tailscale IP: {{ tailscale_ip.stdout | default('Not available yet - authenticate first') }}
           Device hostname: {{ tailscale_device_name }}
-          K3s API will be available at: https://\{\{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:6443
-          ArgoCD will be available at: http://\{\{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:30080
+          K3s API will be available at: https://{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:6443
+          ArgoCD will be available at: http://{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}:32080

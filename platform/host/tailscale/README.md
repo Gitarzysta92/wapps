@@ -42,7 +42,7 @@ Once authenticated, your services will be available via:
 
 #### Via Tailscale IP:
 - **K3s API**: `https://<tailscale-ip>:6443`
-- **ArgoCD**: `https://<tailscale-ip>:30443`
+- **ArgoCD**: `https://<tailscale-ip>:32443`
 - **Node Exporter**: `http://<tailscale-ip>:9100/metrics`
 
 #### Via Tailscale DNS (if MagicDNS enabled):
