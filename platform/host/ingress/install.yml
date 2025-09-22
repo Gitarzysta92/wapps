@@ -90,6 +90,33 @@
     SERVICE_EOF
   register: node_exporter_service
 
+- name: Create Ingress for ArgoCD
+  shell: |
+    cat << 'INGRESS_EOF' | kubectl apply -f -
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: argocd-ingress
+      namespace: argocd
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: argocd.{{ tailscale_domain | default('development-wapps.ts.net') }}
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
+    INGRESS_EOF
+  register: argocd_ingress
+
 - name: Display Ingress Status
   debug:
     msg: |
