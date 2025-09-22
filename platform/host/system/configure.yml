@@ -222,29 +222,8 @@
         port: "443"
         proto: tcp
 
-    - name: Allow K3s API server
-      ufw:
-        rule: allow
-        port: "6443"
-        proto: tcp
-
-    - name: Allow ArgoCD HTTPS
-      ufw:
-        rule: allow
-        port: "30443"
-        proto: tcp
-
-    - name: Allow ArgoCD HTTP
-      ufw:
-        rule: allow
-        port: "30080"
-        proto: tcp
-
-    - name: Allow Node Exporter
-      ufw:
-        rule: allow
-        port: "9100"
-        proto: tcp
+    # Do not expose Kubernetes API, ingress NodePorts, or metrics directly
+    # Access is provided via host-level NGINX reverse proxy on 80/443
 
     - name: Allow Tailscale
       ufw:

@@ -6,7 +6,7 @@
     mode: '0755'
 
 - name: Install K3s server
-  shell: INSTALL_K3S_EXEC="server --disable traefik" /tmp/k3s-install.sh --write-kubeconfig-mode 644 --bind-address 0.0.0.0 --advertise-address {{ ansible_default_ipv4.address }}
+  shell: INSTALL_K3S_EXEC="server --disable traefik --bind-address 127.0.0.1 --advertise-address 127.0.0.1" /tmp/k3s-install.sh --write-kubeconfig-mode 644
   args:
     creates: /usr/local/bin/k3s
 
@@ -39,11 +39,7 @@
     chmod 600 "{{ ansible_user_dir }}/.kube/config"
   become: yes
 
-- name: Update kubeconfig server address
-  replace:
-    path: "{{ ansible_user_dir }}/.kube/config"
-    regexp: 'https://127.0.0.1:6443'
-    replace: 'https://{{ ansible_default_ipv4.address }}:6443'
+# Keep kubeconfig pointing to localhost; access via host-level NGINX when remote
 
 - name: Install kubectl
   shell: |
