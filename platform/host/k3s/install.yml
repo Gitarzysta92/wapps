@@ -6,7 +6,7 @@
     mode: '0755'
 
 - name: Install K3s server
-  shell: /tmp/k3s-install.sh --write-kubeconfig-mode 644 --bind-address 0.0.0.0 --advertise-address {{ ansible_default_ipv4.address }}
+  shell: INSTALL_K3S_EXEC="server --disable traefik" /tmp/k3s-install.sh --write-kubeconfig-mode 644 --bind-address 0.0.0.0 --advertise-address {{ ansible_default_ipv4.address }}
   args:
     creates: /usr/local/bin/k3s
 
