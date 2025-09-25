@@ -7,7 +7,7 @@ import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective 
 import { MyProfileNameComponent } from "@ui/my-profile";
 import { NavigationService } from "@ui/navigation";
 import { MyProfileAvatarComponent } from "@ui/my-profile";
-import { Menu } from "../../../navigation";
+import { Menu } from "../../navigation";
 import { AuthenticationService } from "@portals/shared/features/identity";
 
 

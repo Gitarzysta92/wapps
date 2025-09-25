@@ -4,14 +4,14 @@ import { TuiPlatform, TuiVisualViewport } from '@taiga-ui/cdk';
 import { TuiDialogs, TuiDropdowns } from '@taiga-ui/core';
 import { NavigationService, NAVIGATION_CONFIGURATION } from '@ui/navigation';
 import { THEME_PROVIDER_TOKEN, THEME_PROVIDER_CFG_TOKEN, ThemingDescriptorDirective, ThemingService } from '@portals/cross-cutting/theming';
-import { NAVIGATION } from '../navigation';
-import { GlobalStateService } from '../state/global-state.service';
+import { GlobalStateService } from './state/global-state.service';
+import { NAVIGATION } from './navigation';
 
 
 @Component({
   selector: "body",
   templateUrl: "app-root.component.html",
-  styleUrl: "../styles.scss",
+  styleUrl: "styles.scss",
   standalone: true,
   hostDirectives: [
     TuiPlatform,

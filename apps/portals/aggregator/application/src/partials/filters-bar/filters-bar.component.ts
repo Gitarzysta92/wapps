@@ -3,7 +3,7 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 
 import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
 import { MultiselectDropdownComponent } from '@ui/form';
-import { FILTERS } from '../../../filters';
+import { FILTERS } from '../../filters';
 import { CategoryMultiselectComponent } from '../category-multiselect/category-multiselect.component';
 import { map } from 'rxjs';
 import { RouteDrivenContainerDirective } from '@ui/routing';

@@ -5,7 +5,7 @@ export { createAppConfig } from './app-config';
 export { routes } from './routes';
 
 // Components
-export { AppRootComponent } from './components/app-root.component';
+export { AppRootComponent } from './app-root.component';
 
 // Data
 export { VALIDATION_MESSAGES } from './data/validation-messages';

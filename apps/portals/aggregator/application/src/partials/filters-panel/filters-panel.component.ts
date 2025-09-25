@@ -3,7 +3,7 @@ import { ChipCheckboxComponent } from '@ui/form';
 import { AsyncPipe } from '@angular/common';
 import { CategoryListContainerDirective } from '@portals/shared/features/categories';
 import { PlatformListContainerDirective } from '@portals/shared/features/platform';
-import { FILTERS } from '../../../filters';
+import { FILTERS } from '../../filters';
 import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
 import { map } from 'rxjs';
 

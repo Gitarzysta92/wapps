@@ -1,5 +1,5 @@
 import { Component, inject, Injector, OnInit } from '@angular/core';
-import { FILTERS } from '../../../filters';
+import { FILTERS } from '../../filters';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { FiltersBarComponent } from '../../partials/filters-bar/filters-bar.component';
 import { TuiDialogService } from '@taiga-ui/core';

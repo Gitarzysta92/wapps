@@ -3,12 +3,12 @@ import { Routes } from "@angular/router";
 
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 
-import { AuthenticationDialogComponent } from "./components/dialogs/authentication-dialog/authentication-dialog.component";
-import { LostPasswordDialogComponent } from "./components/dialogs/lost-password-dialog/lost-password-dialog.component";
-import { RegistrationDialogComponent } from "./components/dialogs/registration-dialog/registration-dialog.component";
-import { HomePageComponent } from "./components/pages/home/home.component";
+import { AuthenticationDialogComponent } from "./dialogs/authentication-dialog/authentication-dialog.component";
+import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost-password-dialog.component";
+import { RegistrationDialogComponent } from "./dialogs/registration-dialog/registration-dialog.component";
+import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
-import { AppShellComponent } from "./components/shells/app-shell/app-shell.component";
+import { AppShellComponent } from "./shells/app-shell/app-shell.component";
 
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
@@ -31,15 +31,15 @@ export const routes: Routes = [
       },
       {
         path: 'results/page/:page',
-        loadComponent: () => import('./components/pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
+        loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
       },
       {
         path: `${NAVIGATION.tags.path}/:${FILTERS.tag}/page/:page`,
-        loadComponent: () => import('./components/pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
+        loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
       },
       {
         path: `${NAVIGATION.categories.path}/:${FILTERS.category}/page/:page`,
-        loadComponent: () => import('./components/pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
+        loadComponent: () => import('./pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
       },
         
       // {
@@ -74,7 +74,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./components/pages/settings/settings.component').then(m => m.HomePageComponent),
+        loadComponent: () => import('./pages/settings/settings.component').then(m => m.HomePageComponent),
         children: [
           // {
           //   path: 'user',
