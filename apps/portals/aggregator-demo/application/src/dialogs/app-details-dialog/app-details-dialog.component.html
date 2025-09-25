@@ -1,0 +1,45 @@
+<!-- <tui-avatar
+  [src]="app.logo"
+  [round]="false"
+  class="custom-avatar">
+</tui-avatar>
+
+<div class="app-info">
+  <h3 class="tile-name">{{ app.name }}
+    <tui-badge> Category </tui-badge>
+    <span *ngIf="app.isPwa" class="tile-pwa">PWA</span>
+  </h3>
+  <div>
+    <div class="app-reviews">
+      <tui-icon
+      icon="@tui.message-circle-more">
+    </tui-icon>
+      {{ app.reviews }}
+
+    </div>
+    <div class="app-rating">
+      <tui-rating
+        [ngModel]="app.rating"
+        [readOnly]="true">
+      </tui-rating>
+      {{ app.rating }} / 5
+    </div>
+  </div>
+  <div>
+    <tui-badge *ngFor="let tag of app.tagIds" size="s">
+      Tag {{ tag }}
+    </tui-badge>
+  </div>
+  <div>
+    <tui-badge *ngFor="let platform of app.platformIds" appearance="primary" size="s">
+      Platform {{ platform }}
+    </tui-badge>
+  </div>
+</div>
+
+<div class="app-actions">
+  <div>
+    <ng-content></ng-content>
+  </div>
+</div>
+ -->

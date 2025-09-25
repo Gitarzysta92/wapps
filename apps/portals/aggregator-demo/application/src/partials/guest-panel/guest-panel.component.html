@@ -1,0 +1,15 @@
+<div class="theme_section">
+  <theme-toggle></theme-toggle> <span><strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong></span>
+</div>
+<hr>
+<button
+  class="logout-button"
+  appearance="action-grayscale"
+  tuiButton
+  type="button"
+  routedDialogButton="identity">
+  <tui-icon
+    icon="@tui.log-in"
+    [style.height.rem]="1"/>
+  Log In
+</button>

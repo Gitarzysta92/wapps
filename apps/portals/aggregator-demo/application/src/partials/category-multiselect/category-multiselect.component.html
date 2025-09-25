@@ -1,0 +1,44 @@
+<tui-multi-select
+  placeholder="Ignored text"
+  [ngModel]="selectedOptions"
+  (ngModelChange)="change.next($event)"
+  [identityMatcher]="identityMatcher"
+  [stringify]="stringifyItem"
+  [tuiTextfieldLabelOutside]="true"
+  (searchChange)="searchChange($event)"
+>
+  <tui-data-list *tuiDataList>
+    @let searchResults = searchResults$ | async;
+    @if (searchResults) {
+    <tui-opt-group label="Main dishes menu with long label" tuiMultiSelectGroup>
+      <button
+        *ngFor="let item of searchResults"
+        tuiOption
+        type="button"
+        [value]="item"
+      >
+        <span [style.flex]="1">{{ item.name }}</span>
+      </button>
+    </tui-opt-group>
+    } @else {
+      @let items = options$ | async;
+      <tui-opt-group label="Main dishes menu with long label" tuiMultiSelectGroup>
+        <button *ngFor="let item of items" tuiOption type="button" [value]="item">
+          <span [style.flex]="1">{{ item.name }}</span>
+        </button>
+      </tui-opt-group>
+    }
+  </tui-data-list>
+</tui-multi-select>
+
+<!-- <div
+        #filter="filter"
+        [filter]="filterVm"
+        [options]="options"
+        #container="platformListContainer"
+        platformListContainer>
+        <multiselect-dropdown 
+          [items]="options"
+          (change)="filter.updateMany($event)">
+        </multiselect-dropdown>
+      </div> -->

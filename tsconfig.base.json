@@ -83,6 +83,7 @@
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@portals/aggregator/application": ["apps/portals/aggregator/application/src/index.ts"],
+      "@portals/aggregator-demo/application": ["apps/portals/aggregator-demo/application/src/index.ts"],
       "@portals/cross-cutting/environment": ["apps/portals/shared/cross-cutting/environment/src/index.ts"],
       "@portals/cross-cutting/configuration": ["apps/portals/shared/cross-cutting/configuration/src/index.ts"],
       "@portals/cross-cutting/theming": ["apps/portals/shared/cross-cutting/theming/src/index.ts"],
@@ -98,7 +99,8 @@
       "@portals/shared/features/compatibility": ["apps/portals/shared/features/compatibility/src/index.ts"],
       "@portals/shared/features/identity": ["apps/portals/shared/features/identity/src/index.ts"],
       "@portals/shared/features/profile": ["apps/portals/shared/features/profile/src/index.ts"],
-      "@portals/shared/features/multi-search": ["apps/portals/shared/features/multi-search/src/index.ts"]
+      "@portals/shared/features/multi-search": ["apps/portals/shared/features/multi-search/src/index.ts"],
+      "@portals/shared/features/smart-search": ["apps/portals/shared/features/smart-search/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

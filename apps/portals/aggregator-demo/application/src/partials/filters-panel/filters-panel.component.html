@@ -1,0 +1,128 @@
+@let filters = filters$ | async;
+
+<filter-group
+  [filters]="filters"
+  (change)="emitFilterChange($event)">
+  @for (f of filters; track f.key) {
+    @if (f.key === filterKey.platform) {
+      @let options = container.platforms$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter" 
+        [filter]="f"
+        #container="platformListContainer" 
+        platformListContainer>
+        <h3>Platforms</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.category) {
+      @let options = container.categories$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="categoryListContainer"
+        categoryListContainer>
+        <h3>Categories</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.device) {
+      @let options = container.devices$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="deviceListContainer"
+        deviceListContainer>
+        <h3>Devices</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.monetization) {
+      @let options = container.monetizations$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="monetizationListContainer"
+        monetizationListContainer>
+        <h3>Monetization</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.social) {
+      @let options = container.socials$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="socialListContainer"
+        socialListContainer>
+        <h3>Promoted on</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.estimatedUsers) {
+      @let options = container.estimatedUsersSpan$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="estimatedUserSpanListContainer"
+        estimatedUserSpanListContainer>
+        <h3>Estimated users number</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+    @else if (f.key === filterKey.tag) {
+      @let options = container.tags$ | async | toFilterOptionsList: f.options;
+      <div
+        #filter="filter"
+        [filter]="f"
+        #container="tagListContainer"
+        tagListContainer>
+        <h3>Tags</h3>
+        @for (option of options; track option.value) {
+          <chip-checkbox
+            [checked]="option.isSelected"
+            (change)="filter.update(option, $event)">
+            {{ option.name }}
+          </chip-checkbox>
+        }
+      </div>
+    }
+  } 
+</filter-group>
+

@@ -1,0 +1,55 @@
+<button class="logo-btn">
+  <tui-icon icon="@tui.home" />
+</button>
+<nav>
+  <a
+    tuiButton
+    appearance="action-grayscale"
+    type="button">
+    <tui-icon
+      [icon]="navigationItems.applications.icon"
+      [style.height.rem]="1"/>
+    {{ navigationItems.applications.label }}
+    <applications-panel class="submenu-panel"></applications-panel>
+  </a>
+  <a
+    tuiButton
+    appearance="action-grayscale"
+    type="button">
+    <tui-icon
+      [icon]="navigationItems.suites.icon"
+      [style.height.rem]="1"/>
+    {{ navigationItems.suites.label }}
+    <applications-panel class="submenu-panel"></applications-panel>
+  </a>
+  <a
+    tuiButton
+    appearance="action-grayscale"
+    type="button">
+    <tui-icon
+      [icon]="navigationItems.articles.icon"
+      [style.height.rem]="1"/>
+    {{ navigationItems.articles.label }}
+    <applications-panel class="submenu-panel"></applications-panel> 
+  </a>
+</nav>
+<button
+  class="avatar-btn"
+  [tuiDropdown]="dropdownContent"
+  tuiDropdownAlign="right"
+  [tuiDropdownMaxHeight]="800"
+  [tuiDropdownManual]="!!(state.userPanelOpen$ | async)"
+  (click)="$event.stopPropagation(); state.toggleUserPanel();">
+  <div my-profile-avatar>
+    <div notification-indicator top-badge></div>
+  </div>
+</button>
+
+<ng-template #dropdownContent>
+  @if (authentication.token$ | async) {
+    <user-panel (outsideClick)="state.closeUserPanel()"></user-panel>
+  }
+  @else {
+    <guest-panel (outsideClick)="state.closeUserPanel()"></guest-panel>
+  }
+</ng-template>

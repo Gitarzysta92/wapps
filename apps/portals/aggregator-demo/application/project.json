@@ -1,0 +1,38 @@
+{
+  "name": "aggregator-demo-angular",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "app",
+  "sourceRoot": "apps/portals/aggregator-demo/application/src",
+  "tags": ["type:lib"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/aggregator-demo/application",
+        "main": "apps/portals/aggregator-demo/application/src/index.ts",
+        "tsConfig": "apps/portals/aggregator-demo/application/tsconfig.app.json",
+        "assets": ["apps/portals/aggregator-demo/application/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/aggregator-demo/application/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  }
+}
