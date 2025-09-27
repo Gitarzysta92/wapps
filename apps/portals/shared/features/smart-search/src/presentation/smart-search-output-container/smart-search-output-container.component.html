@@ -1,0 +1,78 @@
+@if (isVisible) {
+  <div class="smart-search-output">
+    @if (searchPhraseProvided$ | async) {
+      @let searchResult = searchResults$ | async;
+
+      @if (loadingResults) {
+        <ul search-result-list-skeleton></ul>
+      }
+      @else if (searchResult && searchResult.groups && searchResult.groups.length > 0) {
+        <a [full-search-redirect]="searchResult.itemsNumber || 0"></a>
+        <ul [search-result-list]="searchResult.groups"></ul>
+        
+        @if (searchResult.suggestions && searchResult.suggestions.length > 0) {
+          <div class="smart-suggestions">
+            <h4>Related searches:</h4>
+            <ul class="suggestion-list">
+              @for (suggestion of searchResult.suggestions; track suggestion) {
+                <li class="suggestion-item" (click)="onSuggestionSelect(suggestion)">
+                  {{ suggestion }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      }
+      @else {
+        <div class="no-results">
+          <p>No results found for your search.</p>
+          @if (suggestions.length > 0) {
+            <div class="suggestions">
+              <h4>Did you mean:</h4>
+              <ul class="suggestion-list">
+                @for (suggestion of suggestions; track suggestion) {
+                  <li class="suggestion-item" (click)="onSuggestionSelect(suggestion)">
+                    {{ suggestion }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    }
+    @else {   
+      <div class="smart-recommendations">
+        @if (suggestions.length > 0) {
+          <div class="suggestions">
+            <h4>Suggestions:</h4>
+            @if (loadingSuggestions) {
+              <div class="loading-suggestions">
+                <tui-loader size="s"></tui-loader>
+                <span>Loading suggestions...</span>
+              </div>
+            } @else {
+              <ul class="suggestion-list">
+                @for (suggestion of suggestions; track suggestion) {
+                  <li class="suggestion-item" (click)="onSuggestionSelect(suggestion)">
+                    {{ suggestion }}
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+        
+        @if (smartRecommendations && smartRecommendations.groups.length > 0) {
+          <h4>Smart Recommendations:</h4>
+          <ul [search-result-list]="smartRecommendations.groups"></ul>
+        }
+        
+        <div class="recent-searches">
+          <h4>Recent searches:</h4>
+          <ul [search-result-list]="recentSearches.groups"></ul>
+        </div>
+      </div>
+    }
+  </div>
+}

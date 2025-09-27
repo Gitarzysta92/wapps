@@ -1,0 +1,17 @@
+<div class="messages-container">
+  @for (message of messages(); track message.id) {
+    <div class="message" [class.user-message]="message.sender === 'user'" [class.other-message]="message.sender === 'other'">
+      <div class="message-content">
+        <div class="message-header">
+          <span class="sender-name">{{ message.sender === 'user' ? currentUser() : (message.senderName || otherUser()) }}</span>
+          <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+        </div>
+        <div class="message-text">{{ message.text }}</div>
+      </div>
+    </div>
+  } @empty {
+    <div class="empty-state">
+      <p>No messages yet. Start the conversation!</p>
+    </div>
+  }
+</div>

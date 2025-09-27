@@ -57,6 +57,7 @@
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
       "@ui/navigation": ["libs/ui/navigation/src/index.ts"],
+      "@ui/chat": ["libs/ui/chat/src/index.ts"],
       "@standard/*": ["libs/standard/src/*"],
       "@standard": ["libs/standard/src/index.ts"],
       "@primitives/*": ["libs/primitives/src/*"],
