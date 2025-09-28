@@ -10,6 +10,7 @@ export * from './presentation/smart-search-output-container/smart-search-output-
 // Services
 export * from './application/smart-search-container.service';
 export * from './application/smart-search.service';
+export * from './application/smart-search-state.service';
 export * from './infrastructure/smart-search.service';
 
 // Interfaces and types

@@ -20,6 +20,7 @@ import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
 import { provideMultiSearchFeature } from '@portals/shared/features/multi-search';
 import { provideTagsFeature } from '@portals/shared/features/tags';
+import { provideSmartSearchFeature } from '@portals/shared/features/smart-search';
 import { MY_PROFILE_DEFAULT } from './data/my-profile-default';
 import { FILTERS } from './filters';
 import { NAVIGATION } from './navigation';
@@ -54,5 +55,6 @@ bootstrapApplication(AppRootComponent,
     provideSocialsFeature(),
     provideUserStatisticPlatformFeature(),
     provideTagsFeature(),
-    provideMultiSearchFeature()
+    provideMultiSearchFeature(),
+    provideSmartSearchFeature()
   ))

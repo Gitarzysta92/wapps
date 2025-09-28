@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ISmartSearchResultsProvider, ISmartSearchResult, ISmartSearchQuery } from './smart-search.interface';
-import { SMART_SEARCH_RESULTS_PROVIDER } from './smart-search-provider.token';
+import { Observable, from } from 'rxjs';
+import { ISmartSearchResultsProvider, ISmartSearchResult } from '../smart-search.interface';
+import { SMART_SEARCH_RESULTS_PROVIDER } from './smart-search.constants';
 import { SMART_SEARCH_CONFIG } from './smart-search.constants';
 
 @Injectable({
@@ -15,8 +15,8 @@ export class SmartSearchService {
    * @param query The search query parameters
    * @returns Observable of search results
    */
-  search(query: ISmartSearchQuery): Observable<ISmartSearchResult> {
-    return this._searchResultsProvider.search(query.query);
+  search(query: { query: string }): Observable<ISmartSearchResult> {
+    return from(this._searchResultsProvider.search(query.query));
   }
 
   /**
@@ -28,23 +28,23 @@ export class SmartSearchService {
     if (partialQuery.length < SMART_SEARCH_CONFIG.MIN_QUERY_LENGTH) {
       return new Observable(observer => observer.next([]));
     }
-    return this._searchResultsProvider.getSuggestions(partialQuery);
+    return from(this._searchResultsProvider.getSuggestions(partialQuery));
   }
 
   /**
    * Gets smart recommendations
    * @returns Observable of smart recommendations
    */
-  getSmartRecommendations(): Observable<ISmartSearchResult> {
-    return this._searchResultsProvider.getSmartRecommendations();
+  getSmartRecommendations(): Observable<any[]> {
+    return from(this._searchResultsProvider.getSmartRecommendations());
   }
 
   /**
    * Gets recent searches
    * @returns Recent searches result
    */
-  getRecentSearches(): ISmartSearchResult {
-    return this._searchResultsProvider.getRecentSearches();
+  getRecentSearches(): Observable<string[]> {
+    return from(this._searchResultsProvider.getRecentSearches());
   }
 
   /**

@@ -1,6 +1,9 @@
-<div class="messages-container">
-  @for (message of messages(); track message.id) {
-    <div class="message" [class.user-message]="message.sender === 'user'" [class.other-message]="message.sender === 'other'">
+<div class="messages-container" #messagesContainer>
+  @for (message of animatedMessages(); track message.id; let i = $index) {
+    <div class="message" 
+         [class.user-message]="message.sender === 'user'" 
+         [class.other-message]="message.sender === 'other'"
+         [style.animation-delay]="(i * 0.1) + 's'">
       <div class="message-content">
         <div class="message-header">
           <span class="sender-name">{{ message.sender === 'user' ? currentUser() : (message.senderName || otherUser()) }}</span>
@@ -9,7 +12,27 @@
         <div class="message-text">{{ message.text }}</div>
       </div>
     </div>
-  } @empty {
+  }
+  
+  @if (typingMessage()) {
+    <div class="message other-message" style="animation-delay: 0s">
+      <div class="message-content">
+        <div class="message-header">
+          <span class="sender-name">{{ otherUser() }}</span>
+          <span class="timestamp">{{ formatTimestamp(getCurrentTimestamp()) }}</span>
+        </div>
+        <div class="message-text typing-indicator">
+          <span class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+  
+  @if (animatedMessages().length === 0 && !typingMessage()) {
     <div class="empty-state">
       <p>No messages yet. Start the conversation!</p>
     </div>

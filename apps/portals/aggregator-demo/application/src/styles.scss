@@ -19,6 +19,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   --t-root-top: 0;
   background-color: var(--tui-background-base);
+  padding: 0;
+  margin: 0;
 }
 
 // Required by some Taiga UI components

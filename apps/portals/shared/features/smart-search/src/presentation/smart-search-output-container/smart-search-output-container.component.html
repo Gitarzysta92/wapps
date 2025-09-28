@@ -1,7 +1,6 @@
 @if (isVisible) {
   <div class="smart-search-output">
     @if (searchPhraseProvided$ | async) {
-      @let searchResult = searchResults$ | async;
 
       @if (loadingResults) {
         <ul search-result-list-skeleton></ul>
@@ -63,14 +62,14 @@
           </div>
         }
         
-        @if (smartRecommendations && smartRecommendations.groups.length > 0) {
+        @if (smartRecommendations && smartRecommendations.groups && smartRecommendations.groups.length > 0) {
           <h4>Smart Recommendations:</h4>
           <ul [search-result-list]="smartRecommendations.groups"></ul>
         }
         
         <div class="recent-searches">
           <h4>Recent searches:</h4>
-          <ul [search-result-list]="recentSearches.groups"></ul>
+          <ul [search-result-list]="recentSearches"></ul>
         </div>
       </div>
     }

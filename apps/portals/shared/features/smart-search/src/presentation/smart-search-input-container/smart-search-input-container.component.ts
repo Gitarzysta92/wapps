@@ -29,7 +29,7 @@ export class SmartSearchInputContainerComponent implements OnInit, OnDestroy {
   public isFocused = false;
 
   private readonly _searchPhrase = this.state.queryParamMap$.pipe(
-    map(p => this._searchResultsProvider.buildSearchString(p))
+    map(p => this._searchResultsProvider.buildSearchString(p as Map<string, any>))
   );
 
   public readonly searchPhraseProvided$ = this._searchPhrase.pipe(map(p => !!p));

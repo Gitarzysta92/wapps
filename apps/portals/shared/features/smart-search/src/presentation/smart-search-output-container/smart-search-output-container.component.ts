@@ -1,10 +1,10 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, Input } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
-import { first, map, of, switchMap, tap, Subject, takeUntil } from "rxjs";
+import { first, map, of, switchMap, tap, Subject, takeUntil, from } from "rxjs";
 import { FullSearchRedirectComponent, SearchResultList, SearchResultListSkeleton } from "@ui/search-results";
-import { SMART_SEARCH_RESULTS_PROVIDER, SMART_SEARCH_STATE_PROVIDER, SMART_SEARCH_CONFIG } from "../../application/smart-search.constants";
-import { ISmartSearchResult } from "../../application/smart-search.interface";
+import { SMART_SEARCH_STATE_PROVIDER, SMART_SEARCH_CONFIG, SMART_SEARCH_RESULTS_PROVIDER } from "../../application/smart-search.constants";
+import { ISmartSearchResult } from "../../smart-search.interface";
 
 @Component({
   selector: "smart-search-output-container",
@@ -31,20 +31,24 @@ export class SmartSearchOutputContainerComponent implements OnInit, OnDestroy {
 
   public loadingResults: boolean = false;
   public loadingSuggestions: boolean = false;
-  public smartRecommendations: ISmartSearchResult | null = null;
+  public smartRecommendations: any = null;
+  public searchResult: any = null;
 
   private readonly _searchPhrase = this.state.queryParamMap$.pipe(
-    map(p => this._searchResultsProvider.buildSearchString(p))
+    map(p => this._searchResultsProvider.buildSearchString(p as Map<string, any>))
   );
   
   public readonly searchResults$ = this._searchPhrase.pipe(
     tap(p => this.loadingResults = !!p),
-    switchMap(p => p ? this._searchResultsProvider.search(p) : of({ itemsNumber: null, groups: [], suggestions: []}) ),
-    tap(() => this.loadingResults = false)
+    switchMap(p => p ? from(this._searchResultsProvider.search(p as string)) : of({ itemsNumber: null, groups: [], suggestions: []} as any) ),
+    tap((result) => {
+      this.searchResult = result;
+      this.loadingResults = false;
+    })
   );
 
   public readonly searchPhraseProvided$ = this._searchPhrase.pipe(map(p => !!p));
-  public readonly recentSearches = this._searchResultsProvider.getRecentSearches();
+  public readonly recentSearches: any = { groups: [] };
 
   ngOnInit(): void {
     // Load smart recommendations on component init
@@ -67,10 +71,10 @@ export class SmartSearchOutputContainerComponent implements OnInit, OnDestroy {
 
   private _loadSuggestions(query: string): void {
     this.loadingSuggestions = true;
-    this._searchResultsProvider.getSuggestions(query)
+    from(this._searchResultsProvider.getSuggestions(query))
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (suggestions) => {
+        next: (suggestions: string[]) => {
           this.suggestions = suggestions.slice(0, SMART_SEARCH_CONFIG.MAX_SUGGESTIONS);
           this.loadingSuggestions = false;
         },
@@ -81,10 +85,10 @@ export class SmartSearchOutputContainerComponent implements OnInit, OnDestroy {
   }
 
   private _loadSmartRecommendations(): void {
-    this._searchResultsProvider.getSmartRecommendations()
+    from(this._searchResultsProvider.getSmartRecommendations())
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (recommendations) => {
+        next: (recommendations: any[]) => {
           this.smartRecommendations = recommendations;
         },
         error: () => {

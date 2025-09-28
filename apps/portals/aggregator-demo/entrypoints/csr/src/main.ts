@@ -15,6 +15,7 @@ import { provideListingMonetizationFeature } from '@portals/shared/features/pric
 import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
 import { provideTagsFeature } from '@portals/shared/features/tags';
+import { provideSmartSearchFeature } from '@portals/shared/features/smart-search';
 
 bootstrapApplication(AppRootComponent,
   mergeApplicationConfig(
@@ -40,6 +41,7 @@ bootstrapApplication(AppRootComponent,
     provideListingMonetizationFeature(),
     provideSocialsFeature(),
     provideUserStatisticPlatformFeature(),
-    provideTagsFeature()
+    provideTagsFeature(),
+    provideSmartSearchFeature()
   ))
   .catch((err) => console.error(err));

@@ -1,3 +1,14 @@
-<header></header>
-<router-outlet></router-outlet>
+<!-- <div class="routed-header">
+  <router-outlet name="header"></router-outlet>
+</div> -->
+<header
+  stickyState
+  [threshold]="-380"
+  (stickyStateChange)="onHeaderStickyStateChange($event)" 
+  [style.top.vh]="-stickyTopOffset"
+  [style.height]="'calc(110px + ' + height + 'vh)'"
+  [showCollapseButton]="isSticky"
+  (expandedStateChange)="onHeaderExpandedChange($event)">
+</header>
+<router-outlet ></router-outlet>
 <footer class="container"></footer>

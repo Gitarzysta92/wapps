@@ -1,4 +1,4 @@
-import { Routes } from "@angular/router";
+import { ActivatedRouteSnapshot, createUrlTreeFromSnapshot, Router, Routes } from "@angular/router";
 
 
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
@@ -9,10 +9,13 @@ import { RegistrationDialogComponent } from "./dialogs/registration-dialog/regis
 import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent } from "./shells/app-shell/app-shell.component";
+import { ChatBannerComponent } from "./partials/chat/chat-banner.component";
+
 
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
+import { inject } from "@angular/core";
 
 export const routes: Routes = [
   {
@@ -22,8 +25,17 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'home'
+        redirectTo: 'home',
+        // redirectTo: () => inject(Router).createUrlTree([
+        //   '',
+        //   {
+        //     outlets: {
+        //       primary: ['home'],
+        //     },
+        //   },
+        // ]),
       },
+      { path: '', outlet: 'header', component: ChatBannerComponent },
       {
         path: 'home',
         component: HomePageComponent,

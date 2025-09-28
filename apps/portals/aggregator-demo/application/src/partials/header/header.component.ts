@@ -1,20 +1,11 @@
-import { Component, inject } from '@angular/core';
-import {
-  TuiButton,
-  TuiDropdown,
-  TuiIcon,
-} from '@taiga-ui/core';
-import {
-  TuiBadgedContent,
-} from '@taiga-ui/kit';
-import { UserPanelComponent } from '../user-panel/user-panel.component';
-import { AsyncPipe } from '@angular/common';
-import { GuestPanelComponent } from '../guest-panel/guest-panel.component';
-import { OutsideClickDirective } from '@ui/misc';
+import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
-import { ApplicationsPanelComponent } from '../applications-panel/applications-panel.component';
-import { BehaviorSubject } from 'rxjs';
+import { SmartSearchInputContainerComponent } from '@portals/shared/features/smart-search';
+import { StickyElementDirective } from '@ui/misc';
+import { ChatBannerComponent } from '../chat';
+import { TuiIcon } from '@taiga-ui/core';
 
 
 @Component({
@@ -23,30 +14,25 @@ import { BehaviorSubject } from 'rxjs';
   styleUrl: 'header.component.scss',
   standalone: true,
   imports: [
-    AsyncPipe,
-    TuiButton,
-    TuiIcon,
-    TuiDropdown,
-    TuiBadgedContent,
-    UserPanelComponent,
-    GuestPanelComponent,
-    OutsideClickDirective,
-    ApplicationsPanelComponent
+    CommonModule,
+    SmartSearchInputContainerComponent,
+    StickyElementDirective,
+    ChatBannerComponent,
+    TuiIcon
   ]
 })
 export class HeaderPartialComponent {
   public readonly state = inject(GlobalStateService);
   public readonly navigation = inject(NavigationService).config;
   
-  // Mock authentication service - replace with actual implementation
-  public readonly authentication = {
-    token$: new BehaviorSubject<string | null>(null)
-  };
+  public isChatBannerCollapsed = true;
 
-  // Navigation items - these should come from a proper navigation configuration
-  public readonly navigationItems = {
-    applications: { icon: 'app-window', label: 'Applications' },
-    suites: { icon: 'package', label: 'Suites' },
-    articles: { icon: 'file-text', label: 'Articles' }
-  };
+  @Input() showCollapseButton = false;
+
+  @Output() expandedStateChange = new EventEmitter<boolean>();
+  
+  public toggleChatBanner(): void {
+    this.isChatBannerCollapsed = !this.isChatBannerCollapsed;
+    this.expandedStateChange.emit(!this.isChatBannerCollapsed);
+  }
 }
