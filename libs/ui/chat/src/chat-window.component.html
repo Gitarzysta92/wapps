@@ -1,0 +1,29 @@
+<div class="messages-container" #messagesContainer>
+  @for (message of animatedMessages(); track trackByMessageId($index, message)) {
+    <div class="message" 
+         [class.user-message]="!message.isIncoming" 
+         [class.other-message]="message.isIncoming"
+         [class.new-message]="message.isNew"
+         [@messageSlideIn]>
+      <div class="message-content">
+        <div class="message-header">
+          <span class="sender-name">{{ message.messageAuthor }}</span>
+          <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+        </div>
+        <div class="message-text">
+          @if (message.isIncoming) {
+            <span [@typingText]>{{ message.text }}</span>
+          } @else {
+            {{ message.text }}
+          }
+        </div>
+      </div>
+    </div>
+  }
+  
+  @if (animatedMessages().length === 0) {
+    <div class="empty-state">
+      <p>No messages yet. Start the conversation!</p>
+    </div>
+  }
+</div>

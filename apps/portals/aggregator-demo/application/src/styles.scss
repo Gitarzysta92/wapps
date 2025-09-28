@@ -1,0 +1,48 @@
+@use 'variables';
+@use 'theme';
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap');
+@import "@taiga-ui/core/styles/taiga-ui-local";
+
+:host, html {
+  width: 100%;
+  margin: 0;
+}
+
+body {
+  position: relative;
+  display: block;
+  block-size: 100%;
+  isolation: isolate;
+  font: var(--tui-font-text-s);
+  color: var(--tui-text-primary);
+  -webkit-tap-highlight-color: transparent;
+  --t-root-top: 0;
+  background-color: var(--tui-background-base);
+  padding: 0;
+  margin: 0;
+}
+
+// Required by some Taiga UI components
+@keyframes tuiPresent {
+  to {
+    content: '';
+  }
+}
+
+@keyframes tuiSkeletonVibe {
+  to {
+    opacity: 0.5;
+  }
+}
+
+//TODO: fix for taiga-dropdown that doesn't change theme dynamically
+tui-dropdown:has(user-panel), tui-dropdown:has(guest-panel) {
+  border: none!important;
+}
+
+
+//TODO: create dedicated button with this styling
+button tui-loader {
+  margin-left: -24px;
+}

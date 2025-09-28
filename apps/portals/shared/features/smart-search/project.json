@@ -1,0 +1,38 @@
+{
+  "name": "portals-shared-features-smart-search",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "smart-search",
+  "sourceRoot": "apps/portals/shared/features/smart-search",
+  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/smart-search",
+        "main": "apps/portals/shared/features/smart-search/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/smart-search/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/smart-search/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/smart-search/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

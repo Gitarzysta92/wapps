@@ -1,0 +1,12 @@
+<!-- <div class="routed-header">
+  <router-outlet name="header"></router-outlet>
+</div> -->
+<header
+  [showCollapseButton]="!isCollapsed"
+  [style.top.vh]="-stickyTopOffset"
+  [style.height]="'calc(90px + ' + height + 'vh)'"
+  (expandedStateChange)="onHeaderExpandedChange($event)">
+</header>
+<div class="chat-fade-overlay"></div>
+<router-outlet ></router-outlet>
+<footer class="container"></footer>

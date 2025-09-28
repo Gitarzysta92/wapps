@@ -1,0 +1,52 @@
+@let listing = listing$ | async;
+
+@if (listing) {
+  @if (listing.hasPrevSlicesToLoad) {
+    <button (click)="changePage(listing.startingIndex - 1)">Load more</button> {{ listing.currentIndex }}
+  }
+  
+  @if (listing.slices.length === 0) {
+    <p class="tui-text">No items found.</p>
+  }
+  <ul>
+    @for (slice of listing.slices; track slice.index) {
+      @for (item of slice.items; track item.id) {
+        <li>
+          <article medium-tile
+            [tuiSkeleton]="!item.isLoaded">
+            <a tile-content 
+              routerLink="/path/to/page"
+              app-medium-tile>
+            </a>
+            <div tile-cta>
+              <button
+                appearance="secondary"
+                size="l"
+                tuiButton
+                type="button"
+                (click)="addToFavourites(item)">
+                <tui-icon
+                  icon="@tui.heart"
+                  [style.height.rem]="1"/>
+              </button>
+              <button
+                size="l"
+                tuiButton
+                type="button"
+                (click)="openAppDetailsModal(item)">
+                <tui-icon
+                  icon="@tui.app-window"
+                  [style.height.rem]="1"/>
+                  About
+              </button>
+            </div>
+          </article>
+        </li>
+      }
+    }
+  </ul>
+
+  @if (listing.hasNextSlicesToLoad) {
+    <button (click)="changePage(listing.currentIndex + 1)">Load more</button> {{ listing.currentIndex }}
+  }
+}
