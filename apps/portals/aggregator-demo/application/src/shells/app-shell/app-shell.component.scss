@@ -202,6 +202,189 @@ header {
   }
 }
 
+// Right Sidebar
+.right-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0; // Start visible by default
+  width: 60px; // Start collapsed (icons only)
+  height: 100vh;
+  background: var(--tui-background-elevation-3);
+  border: 1px solid var(--tui-border-normal);
+  border-right: none;
+  z-index: 999;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  
+  // Collapsed state (icons only) - DEFAULT STATE
+  &.collapsed {
+    width: 60px;
+    
+    .right-sidebar-header h3 {
+      display: none;
+    }
+    
+    .nav-label {
+      display: none;
+    }
+    
+    .navigation_section a {
+      justify-content: center;
+      padding: 12px;
+    }
+  }
+  
+  // Expanded state (icons + labels)
+  &.expanded {
+    width: 220px;
+  }
+}
+
+.right-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--tui-border-normal);
+  background: var(--tui-background-elevation-3);
+  min-height: 60px;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--tui-text-primary);
+    transition: opacity 0.3s ease;
+    
+    &.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .expand-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--tui-background-elevation-2);
+    color: var(--tui-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: var(--tui-background-elevation-1);
+      color: var(--tui-text-primary);
+    }
+  }
+}
+
+// User panel styles (copied from user-panel component)
+.user-profile_section {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: row;
+  font: var(--tui-font-text-s);
+  color: var(--tui-text-secondary);
+  
+  tui-avatar {
+    margin-right: 5px;
+  }
+  
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.navigation_section {
+  padding: 0 10px;
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  a {
+    --t-size: var(--tui-height-m);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    margin: 4px 0;
+    text-decoration: none;
+    color: var(--tui-text-primary);
+    transition: all 0.2s ease;
+    border-radius: 0;
+    width: 100%;
+    justify-content: flex-start;
+    
+    .nav-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      flex: 1;
+      transition: opacity 0.3s ease;
+      
+      &.hidden {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        overflow: hidden;
+      }
+    }
+    
+    &:hover {
+      background: var(--tui-background-elevation-2);
+      color: var(--tui-primary);
+    }
+  }
+}
+
+.theme_section {
+  padding: 20px 25px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font: var(--tui-font-text-s);
+  color: var(--tui-text-secondary);
+  
+  theme-toggle {
+    display: block;
+    height: 24px;
+    margin-right: 10px;
+  }
+}
+
+.logout-button {
+  width: 100%;
+  border-radius: 0;
+  padding: 0 28px;
+  justify-content: start;
+}
+
+div[my-profile-name] {
+  margin-left: 10px;
+}
+
+hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--tui-border-normal);
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .sidebar {
@@ -218,6 +401,19 @@ header {
     
     &.expanded {
       width: 280px;
+    }
+  }
+  
+  .right-sidebar {
+    width: 50px; // Start collapsed on mobile
+    right: 0; // Start visible on mobile too
+    
+    &.collapsed {
+      width: 50px;
+    }
+    
+    &.expanded {
+      width: 200px;
     }
   }
 }
