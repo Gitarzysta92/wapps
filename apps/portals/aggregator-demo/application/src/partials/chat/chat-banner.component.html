@@ -1,8 +1,5 @@
 <div class="chat-banner-content">
-  <div class="chat-fade-overlay"></div>
   <ui-chat-window
-    [messages]="chatMessages()"
-    [currentUser]="'You'"
-    [otherUser]="'Assistant'">
+    [viewModel]="chatViewModel()">
   </ui-chat-window>
 </div>

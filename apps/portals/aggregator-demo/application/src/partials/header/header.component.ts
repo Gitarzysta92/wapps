@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { SmartSearchInputContainerComponent } from '@portals/shared/features/smart-search';
-import { StickyElementDirective } from '@ui/misc';
+import { StickyElementDirective, OutOfViewportDirective, OutOfViewportChange } from '@ui/misc';
 import { ChatBannerComponent } from '../chat';
 import { TuiIcon } from '@taiga-ui/core';
 
@@ -17,6 +17,7 @@ import { TuiIcon } from '@taiga-ui/core';
     CommonModule,
     SmartSearchInputContainerComponent,
     StickyElementDirective,
+    OutOfViewportDirective,
     ChatBannerComponent,
     TuiIcon
   ]
@@ -33,6 +34,13 @@ export class HeaderPartialComponent {
   
   public toggleChatBanner(): void {
     this.isChatBannerCollapsed = !this.isChatBannerCollapsed;
+    if (this.isChatBannerCollapsed) {
+      this.showCollapseButton = true;
+    }
     this.expandedStateChange.emit(!this.isChatBannerCollapsed);
+  }
+
+  public onOutOfViewportChange(event: OutOfViewportChange): void {
+    this.showCollapseButton = event.isOutOfViewport;
   }
 }

@@ -1,8 +1,30 @@
 .messages-container {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 16px;
+  height: 100%;
   max-height: 100%;
+  overflow-y: auto; /* Keep auto for programmatic scrolling */
+  padding: 16px;
+  box-sizing: border-box;
+  
+  /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+  
+  /* Ensure scrolling still works */
+  -ms-overflow-style: none;
+  
+  /* Prevent touch scrolling */
+  touch-action: none;
+  
+  /* Prevent mouse wheel scrolling */
+  pointer-events: auto;
 }
 
 .message {
@@ -92,55 +114,27 @@
   font-style: italic;
 }
 
-@keyframes messageSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
+// Angular animations are now handled in the component
 
-.typing-indicator {
+.typing-text {
   display: flex;
   align-items: center;
   min-height: 20px;
 }
 
-.typing-dots {
-  display: flex;
-  gap: 4px;
-  
-  span {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #999;
-    animation: typingDot 1.4s infinite ease-in-out;
-    
-    &:nth-child(1) {
-      animation-delay: 0s;
-    }
-    
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    
-    &:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-  }
+.typing-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: typingCursor 1s infinite;
+  font-weight: normal;
+  color: #666;
 }
 
-@keyframes typingDot {
-  0%, 60%, 100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  30% {
-    transform: scale(1.2);
+@keyframes typingCursor {
+  0%, 50% {
     opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
   }
 }

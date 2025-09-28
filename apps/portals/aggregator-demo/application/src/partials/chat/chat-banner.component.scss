@@ -1,20 +1,6 @@
 .chat-banner-content {
   position: relative;
+  height: 100%;
   width: 800px;
   max-width: 100%;
-}
-
-.chat-fade-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: linear-gradient(to bottom, 
-    rgba(248, 249, 250, 1) 0%, 
-    rgba(248, 249, 250, 0.8) 50%, 
-    rgba(248, 249, 250, 0) 100%);
-  pointer-events: none;
-  z-index: 10;
-  border-radius: 8px 8px 0 0;
 }

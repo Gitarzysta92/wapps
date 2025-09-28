@@ -2,12 +2,11 @@
   position: sticky;
   top: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
+  justify-content: flex-end;
   width: 100%;
-  z-index: 100;
-  background: white;
+  height: 100%;
 
   .submenu-panel {
     position: absolute;
@@ -79,7 +78,9 @@ header {
   margin: 10px 0;
   padding: 8px 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
+  height: 16px;
+  min-height: 16px;
+
   &:hover {
     cursor: grab;
     background: linear-gradient(135deg, #e1f5fe 0%, #fce4ec 100%);
@@ -113,4 +114,17 @@ header {
 
 smart-search-input-container {
   width: 800px;
+}
+
+.chat-banner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  height: calc(100% - 80px);
+
+  chat-banner {
+    height: 100%;
+  }
 }
