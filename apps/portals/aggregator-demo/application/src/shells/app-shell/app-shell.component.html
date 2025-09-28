@@ -7,6 +7,49 @@
   [style.height]="'calc(90px + ' + height + 'vh)'"
   (expandedStateChange)="onHeaderExpandedChange($event)">
 </header>
+
+<!-- Sidebar Overlay removed - sidebar is visible by default -->
+
+<!-- Sidebar -->
+<aside 
+  class="sidebar"
+  [class.expanded]="isSidebarExpanded"
+  [class.collapsed]="!isSidebarExpanded">
+  <div class="sidebar-header">
+    <h3 [class.hidden]="!isSidebarExpanded">Navigation</h3>
+    <div class="header-actions">
+      <button 
+        class="expand-btn"
+        (click)="toggleSidebarExpansion()"
+        [title]="isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'">
+        <tui-icon [icon]="isSidebarExpanded ? 'chevron-left' : 'chevron-right'"></tui-icon>
+      </button>
+    </div>
+  </div>
+  
+  <nav class="sidebar-nav">
+    @for (item of navigationItems; track item.id) {
+      <a
+        class="nav-item"
+        tuiButton
+        appearance="ghost"
+        type="button"
+        [routerLink]="item.path"
+        [title]="!isSidebarExpanded ? item.label : ''">
+        <div class="nav-icon">
+          <tui-icon
+            [icon]="item.icon || 'tuiIconSettings'"
+            [style.height.rem]="1.2"
+            [style.width.rem]="1.2"
+            [style.display]="'inline-block'"
+            [style.visibility]="'visible'"/>
+        </div>
+        <span class="nav-label" [class.hidden]="!isSidebarExpanded">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</aside>
+
 <div class="chat-fade-overlay"></div>
 <router-outlet ></router-outlet>
 <footer class="container"></footer>

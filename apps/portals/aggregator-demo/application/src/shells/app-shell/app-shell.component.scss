@@ -27,3 +27,197 @@ header {
   position: sticky;
   top: 0;
 }
+
+// Old sidebar toggle button removed - sidebar is always visible now
+
+// Sidebar Overlay removed - not needed since sidebar is visible by default
+
+// Sidebar
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0; // Start visible by default
+  width: 60px; // Start collapsed (icons only)
+  height: 100vh;
+  background: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  
+  // Ensure all icons are visible
+  tui-icon {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  &.closed {
+    left: -60px; // Hide when closed (use collapsed width)
+  }
+  
+  // Collapsed state (icons only) - DEFAULT STATE
+  &.collapsed {
+    width: 60px;
+    
+    .sidebar-header h3 {
+      display: none;
+    }
+    
+    .nav-label {
+      display: none;
+    }
+    
+    .nav-item {
+      justify-content: center;
+      padding: 12px;
+    }
+  }
+  
+  // Expanded state (icons + labels)
+  &.expanded {
+    width: 300px;
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  min-height: 60px;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    transition: opacity 0.3s ease;
+    
+    &.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .expand-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #e9ecef;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #dee2e6;
+      color: #333;
+    }
+  }
+  
+  // Close button removed - sidebar is always visible
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    margin: 4px 0;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s ease;
+    border-radius: 0;
+    width: 100%;
+    justify-content: flex-start;
+    
+    // Ensure icons are always visible
+    .nav-icon {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 1.2rem;
+      min-height: 1.2rem;
+      flex-shrink: 0;
+      
+      tui-icon {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-width: 1.2rem;
+        min-height: 1.2rem;
+        flex-shrink: 0;
+      }
+    }
+    
+    .nav-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      flex: 1;
+      transition: opacity 0.3s ease;
+      
+      &.hidden {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        overflow: hidden;
+      }
+    }
+    
+    &:hover {
+      background: #f8f9fa;
+      color: var(--tui-primary);
+      
+      .nav-icon tui-icon {
+        color: var(--tui-primary);
+      }
+    }
+    
+    &.active {
+      background: var(--tui-primary);
+      color: white;
+      
+      .nav-icon tui-icon {
+        color: white;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .sidebar {
+    width: 50px; // Start collapsed on mobile
+    left: 0; // Start visible on mobile too
+    
+    &.closed {
+      left: -50px;
+    }
+    
+    &.collapsed {
+      width: 50px;
+    }
+    
+    &.expanded {
+      width: 280px;
+    }
+  }
+}
