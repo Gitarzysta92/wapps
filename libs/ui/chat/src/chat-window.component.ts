@@ -77,29 +77,12 @@ export class ChatWindowComponent implements AfterViewInit {
     });
   });
 
-  private previousMessageCount = 0;
-
-  constructor() {
-    // Watch for new messages and scroll to bottom
-    effect(() => {
-      const messages = this.animatedMessages();
-      if (messages.length > this.previousMessageCount) {
-        // Only scroll when a new message is added
-        this.previousMessageCount = messages.length;
-        setTimeout(() => this.scrollToBottom(), 100);
-      }
-    });
-  }
 
   public trackByMessageId(index: number, message: AnimatedChatMessage): string {
     return message.id;
   }
 
   ngAfterViewInit(): void {
-    // Initial scroll to bottom
-    setTimeout(() => this.scrollToBottom(), 100);
-    
-    // Prevent user scrolling
     this.preventUserScrolling();
   }
 
@@ -127,19 +110,6 @@ export class ChatWindowComponent implements AfterViewInit {
           e.preventDefault();
           e.stopPropagation();
         }
-      });
-    }
-  }
-
-  private scrollToBottom(): void {
-    if (this.messagesContainer) {
-      const element = this.messagesContainer.nativeElement;
-      // Use requestAnimationFrame to ensure DOM is updated
-      requestAnimationFrame(() => {
-        element.scrollTo({
-          top: element.scrollHeight,
-          behavior: 'smooth'
-        });
       });
     }
   }

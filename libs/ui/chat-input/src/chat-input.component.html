@@ -1,0 +1,30 @@
+<div class="chat-input-container">
+  <div class="input-wrapper" [class.disabled]="disabled()" [class.focused]="isFocused()">
+    <div 
+      #inputElement
+      class="chat-input"
+      contenteditable="true"
+      [attr.data-placeholder]="placeholder()"
+      [attr.disabled]="disabled()"
+      (input)="onInput($event)"
+      (keydown)="onKeyDown($event)"
+      (paste)="onPaste($event)"
+      (focus)="handleFocusChange(true)"
+      (blur)="handleFocusChange(false)"
+      role="textbox"
+      aria-multiline="true"
+      tabindex="0">
+    </div>
+    <button 
+      type="button"
+      class="send-button"
+      [disabled]="!canSubmit()"
+      [class.disabled]="!canSubmit()"
+      (click)="onSendClick()"
+      aria-label="Send message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>

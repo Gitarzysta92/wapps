@@ -1,6 +1,32 @@
-<search-bar
-  [initialValue]="initialValue$ | async"
-  (onSearch)="onSearch($event)"
-  (onQueryChange)="onQueryChange($event)"
-  (onFocus)="onFocus($event)">
-</search-bar>
+<search tuiSearch>
+  <div class="search-container">
+    <chat-input
+      [placeholder]="placeholder()"
+      [initialValue]="initialValue()"
+      (onSubmit)="onChatSubmit($event)"
+      (onContentChange)="onChatContentChange($event)"
+      (onFocus)="onChatFocusChange($event)">
+    </chat-input>
+  </div>
+</search>
+
+
+
+
+
+
+
+
+<!-- <fieldset>
+  <tui-textfield 
+    iconStart="@tui.bot"
+    tuiTextfieldSize="l">
+    <input
+      (focus)="onFocus.emit(true)"
+      (blur)="onFocus.emit(false)"
+      formControlName="search" 
+      placeholder="Search" 
+      tuiTextfield />
+    <ng-content></ng-content>
+  </tui-textfield>
+</fieldset> -->

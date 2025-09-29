@@ -6,7 +6,6 @@
   height: 100%;
   max-height: 100%;
   overflow-y: auto; /* Keep auto for programmatic scrolling */
-  padding: 16px;
   box-sizing: border-box;
   
   /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
@@ -40,7 +39,6 @@
       color: white;
       border-radius: 18px 18px 4px 18px;
       border: 1px solid rgba(0, 123, 255, 0.2);
-      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
     }
 
     .message-header {
@@ -62,7 +60,6 @@
       color: #1a1a1a;
       border-radius: 18px 18px 18px 4px;
       border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .message-header {
