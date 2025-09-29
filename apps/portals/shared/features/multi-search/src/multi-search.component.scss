@@ -1,9 +1,11 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
-  min-width: 600px;
+  min-width: $min-width-search;
 }
 
 .multisearch-result {
-  min-width: 600px;
+  min-width: $min-width-search;
   box-sizing: border-box;
   padding: var(--tui-padding-l);
 }

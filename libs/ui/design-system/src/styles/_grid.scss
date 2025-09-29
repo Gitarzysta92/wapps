@@ -1,0 +1,111 @@
+// Grid system variables and utilities
+@use './space' as *;
+@use './media' as *;
+
+// Grid columns
+$grid-cols: 12;
+$grid-cols-sm: 6;
+$grid-cols-md: 8;
+$grid-cols-lg: 12;
+
+// Container widths
+$container-sm: 640px;
+$container-md: 768px;
+$container-lg: 1024px;
+$container-xl: 1280px;
+$container-2xl: 1536px;
+
+// Grid gaps
+$grid-gap-xs: $space-2;   // 8px
+$grid-gap-sm: $space-3;   // 12px
+$grid-gap-md: $space-4;   // 16px
+$grid-gap-lg: $space-6;   // 24px
+$grid-gap-xl: $space-8;   // 32px
+
+// Grid breakpoints (using Taiga's media variables)
+$grid-breakpoint-sm: $tui-mobile;
+$grid-breakpoint-md: $tui-tablet;
+$grid-breakpoint-lg: $tui-desktop;
+$grid-breakpoint-xl: $tui-desktop-lg-min;
+
+// Grid utilities
+@mixin grid-container($max-width: $container-xl) {
+  width: 100%;
+  max-width: $max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $space-4;
+  padding-right: $space-4;
+}
+
+@mixin grid-row($gap: $grid-gap-md) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -#{$gap / 2};
+  margin-right: -#{$gap / 2};
+}
+
+@mixin grid-col($span: 1, $gap: $grid-gap-md) {
+  flex: 0 0 percentage($span / $grid-cols);
+  max-width: percentage($span / $grid-cols);
+  padding-left: #{$gap / 2};
+  padding-right: #{$gap / 2};
+}
+
+@mixin grid-col-responsive($sm: 12, $md: 6, $lg: 4, $xl: 3) {
+  @include grid-col($sm);
+  
+  @media #{$grid-breakpoint-md} {
+    flex: 0 0 percentage($md / $grid-cols);
+    max-width: percentage($md / $grid-cols);
+  }
+  
+  @media #{$grid-breakpoint-lg} {
+    flex: 0 0 percentage($lg / $grid-cols);
+    max-width: percentage($lg / $grid-cols);
+  }
+  
+  @media #{$grid-breakpoint-xl} {
+    flex: 0 0 percentage($xl / $grid-cols);
+    max-width: percentage($xl / $grid-cols);
+  }
+}
+
+// CSS Grid utilities
+@mixin css-grid($cols: 12, $gap: $grid-gap-md) {
+  display: grid;
+  grid-template-columns: repeat($cols, 1fr);
+  gap: $gap;
+}
+
+@mixin grid-item($col-start: auto, $col-end: auto, $row-start: auto, $row-end: auto) {
+  grid-column-start: $col-start;
+  grid-column-end: $col-end;
+  grid-row-start: $row-start;
+  grid-row-end: $row-end;
+}
+
+// Common grid layouts
+@mixin grid-2-col($gap: $grid-gap-md) {
+  @include css-grid(2, $gap);
+}
+
+@mixin grid-3-col($gap: $grid-gap-md) {
+  @include css-grid(3, $gap);
+}
+
+@mixin grid-4-col($gap: $grid-gap-md) {
+  @include css-grid(4, $gap);
+}
+
+@mixin grid-auto-fit($min-width: 250px, $gap: $grid-gap-md) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+@mixin grid-auto-fill($min-width: 250px, $gap: $grid-gap-md) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
+  gap: $gap;
+}

@@ -1,5 +1,7 @@
+@use 'ui/design-system/src/styles' as *;
+
 .smart-search-output {
-  min-width: 600px;
+  min-width: $min-width-search;
   box-sizing: border-box;
   padding: var(--tui-padding-l);
 }
@@ -8,7 +10,7 @@
 .suggestions {
   margin-top: var(--tui-padding-m);
   padding-top: var(--tui-padding-m);
-  border-top: 1px solid var(--tui-color-border);
+  border-top: $border-width-thin solid var(--tui-color-border);
 }
 
 .smart-suggestions h4,
@@ -31,7 +33,7 @@
   padding: var(--tui-padding-s) var(--tui-padding-m);
   cursor: pointer;
   border-radius: var(--tui-radius-s);
-  transition: background-color 0.2s ease;
+  transition: background-color $duration-200 $ease-in-out;
   
   &:hover {
     background-color: var(--tui-color-background-hover);
@@ -52,6 +54,6 @@
   .recent-searches {
     margin-top: var(--tui-padding-l);
     padding-top: var(--tui-padding-l);
-    border-top: 1px solid var(--tui-color-border);
+    border-top: $border-width-thin solid var(--tui-color-border);
   }
 }

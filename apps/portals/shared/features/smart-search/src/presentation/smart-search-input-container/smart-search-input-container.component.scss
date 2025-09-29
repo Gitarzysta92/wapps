@@ -1,5 +1,7 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
-  min-width: 600px;
+  min-width: $min-width-search;
   width: 100%;
 }
 
