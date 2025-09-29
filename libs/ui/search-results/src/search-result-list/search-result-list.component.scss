@@ -1,8 +1,10 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host, ul {
   padding: 0;
   margin: 0;
   list-style: none;
-  --tui-skeleton-background: #e0e0e0;
+  --tui-skeleton-background: #{$color-skeleton-bg};
   --tui-skeleton-animation-duration: 1.5s;
 }
 
@@ -20,5 +22,5 @@
 
 
 span {
-  padding: .5rem 1rem;
+  padding: $space-2 $space-4;
 }

@@ -15,6 +15,12 @@
         "main": "apps/portals/aggregator/src/apps/angular/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/portals/aggregator/src/apps/angular/tsconfig.app.json",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "libs",
+            "libs/ui/design-system/src"
+          ]
+        },
         "assets": [
           "apps/portals/aggregator/src/apps/angular/src/favicon.ico",
           "apps/portals/aggregator/src/apps/angular/src/assets",

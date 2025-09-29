@@ -1,0 +1,112 @@
+/* CSS variables for runtime theming and JavaScript access */
+:root {
+  /* Colors */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  
+  /* Brand / Primary */
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-accent-500: #10b981;
+  --color-accent-600: #059669;
+  --color-blue-600: #007bff;
+  
+  /* Text */
+  --color-text-strong: #0f172a;
+  --color-text: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-light: #f9fafb;
+  --color-text-weak: #666;
+  --color-text-weaker: #999;
+  --color-text-contrast: #1a1a1a;
+  
+  /* Backgrounds */
+  --color-bg: #ffffff;
+  --color-bg-muted: #f9fafb;
+  --color-bg-subtle: #f1f3f4;
+  --color-bg-soft: #f9f9f9;
+  --color-bg-inverse: #111827;
+  --color-surface: #1f2937;
+  
+  /* Borders */
+  --color-border: #e5e7eb;
+  --color-border-strong: #374151;
+  --color-border-muted: #4b5563;
+  
+  /* Extended palette */
+  --color-indigo-400: #667eea;
+  --color-purple-600: #764ba2;
+  --color-blue-50: #e3f2fd;
+  --color-purple-50: #f3e5f5;
+  --color-sky-50: #e1f5fe;
+  --color-rose-50: #fce4ec;
+  
+  /* Spacing */
+  --space-0: 0;
+  --space-0_5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1_5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-2_5: 0.625rem;
+  --space-3: 0.75rem;
+  --space-3_5: 0.875rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+  --space-32: 8rem;
+  
+  /* Typography */
+  --font-family-sans: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.7;
+  
+  /* Motion */
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  
+  /* Elevation */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+  --border-width-thin: 1px;
+  --border-width-regular: 2px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-modal: 1200;
+  --z-popover: 1300;
+  --z-toast: 1400;
+}
+
+

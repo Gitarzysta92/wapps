@@ -15,6 +15,12 @@
         "main": "apps/portals/aggregator-demo/entrypoints/csr/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/portals/aggregator-demo/entrypoints/csr/tsconfig.app.json",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "libs",
+            "libs/ui/design-system/src"
+          ]
+        },
         "assets": [
           "apps/portals/aggregator-demo/entrypoints/csr/src/assets",
           {

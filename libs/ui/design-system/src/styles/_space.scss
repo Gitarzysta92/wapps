@@ -1,0 +1,56 @@
+// Spacing scale (4px step, rem-based; 1rem = 16px)
+// Variables and a lookup helper for consistent spacing across the UI
+
+$space-0: 0;
+$space-0_5: 0.125rem; // 2px
+$space-1: 0.25rem;    // 4px
+$space-1_5: 0.375rem; // 6px
+$space-2: 0.5rem;     // 8px
+$space-2_5: 0.625rem; // 10px
+$space-3: 0.75rem;    // 12px
+$space-3_5: 0.875rem; // 14px
+$space-4: 1rem;       // 16px
+$space-5: 1.25rem;    // 20px
+$space-6: 1.5rem;     // 24px
+$space-7: 1.75rem;    // 28px
+$space-8: 2rem;       // 32px
+$space-9: 2.25rem;    // 36px
+$space-10: 2.5rem;    // 40px
+$space-12: 3rem;      // 48px
+$space-14: 3.5rem;    // 56px
+$space-16: 4rem;      // 64px
+$space-20: 5rem;      // 80px
+$space-24: 6rem;      // 96px
+$space-28: 7rem;      // 112px
+$space-32: 8rem;      // 128px
+
+$spacing-scale: (
+  0: $space-0,
+  0.5: $space-0_5,
+  1: $space-1,
+  1.5: $space-1_5,
+  2: $space-2,
+  2.5: $space-2_5,
+  3: $space-3,
+  3.5: $space-3_5,
+  4: $space-4,
+  5: $space-5,
+  6: $space-6,
+  7: $space-7,
+  8: $space-8,
+  9: $space-9,
+  10: $space-10,
+  12: $space-12,
+  14: $space-14,
+  16: $space-16,
+  20: $space-20,
+  24: $space-24,
+  28: $space-28,
+  32: $space-32
+);
+
+@function space($key) {
+  @return map-get($spacing-scale, $key);
+}
+
+

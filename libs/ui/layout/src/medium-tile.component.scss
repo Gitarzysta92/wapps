@@ -1,12 +1,14 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: flex;
   flex-direction: row;
-  gap: 24px;
+  gap: $space-6;
   background: var(--tui-base-01);
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  box-shadow: $shadow-md;
+  transition: box-shadow $duration-200 $ease-in-out, transform $duration-200 $ease-in-out;
   cursor: pointer;
 
   .content {
@@ -21,7 +23,7 @@
 
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: $shadow-lg;
     transform: translateY(-2px);
   }
 }
