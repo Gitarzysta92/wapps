@@ -16,7 +16,6 @@
   [class.expanded]="isSidebarExpanded"
   [class.collapsed]="!isSidebarExpanded">
   <div class="sidebar-header">
-    <h3 [class.hidden]="!isSidebarExpanded">Navigation</h3>
     <div class="header-actions">
       <button 
         class="expand-btn"
@@ -28,7 +27,7 @@
   </div>
   
   <nav class="sidebar-nav">
-    @for (item of navigationItems; track item.id) {
+    @for (item of filteredNavigationItems; track item.id) {
       <a
         class="nav-item"
         tuiButton
@@ -56,7 +55,6 @@
   [class.expanded]="isRightSidebarExpanded"
   [class.collapsed]="!isRightSidebarExpanded">
   <div class="right-sidebar-header">
-    <h3 [class.hidden]="!isRightSidebarExpanded">User Panel</h3>
     <div class="header-actions">
       <button 
         class="expand-btn"

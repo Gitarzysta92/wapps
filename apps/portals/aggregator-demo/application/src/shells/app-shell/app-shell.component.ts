@@ -52,6 +52,15 @@ export class AppShellComponent implements OnInit {
     return Object.values(config).filter(item => typeof item === 'object' && item !== null);
   }
 
+  // Left sidebar should exclude items that appear in the user panel (primary or secondary)
+  public get filteredNavigationItems() {
+    const userPanelIds = new Set<number>([
+      ...this.navigationPrimary.map(i => i.id),
+      ...this.navigationSecondary.map(i => i.id)
+    ]);
+    return this.navigationItems.filter(i => !userPanelIds.has(i.id));
+  }
+
   // User panel properties
   public readonly authService = inject(AuthenticationService, { optional: true });
   public readonly navigationPrimary = this.navigationService.getNavigationFor(Menu.UserPanelPrimary);
