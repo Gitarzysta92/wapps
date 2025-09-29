@@ -16,7 +16,7 @@
     left: -100%;
     right: -100%;
     margin: auto;
-    width: $container-xl;
+    @include grid-container($container-xl);
     display: none;
     z-index: $z-dropdown;
     border-radius: $radius-lg;
@@ -65,7 +65,7 @@ header {
 }
 
 .chat-banner-toggle {
-  width: $min-width-search;
+  @include grid-container($container-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,15 +108,14 @@ header {
 
 
 .section__smart-search {
-  width: $min-width-search;
-  max-width: 100%;
+  @include grid-container($container-lg);
   padding: $space-5 0;
 } 
 
 
 smart-search-input-container {
   margin-top: $space-5;
-  width: $min-width-search;
+  @include grid-container($container-lg);
 }
 
 .chat-banner-container {

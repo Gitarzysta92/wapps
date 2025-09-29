@@ -24,8 +24,7 @@ $space-24: 6rem;      // 96px
 $space-28: 7rem;      // 112px
 $space-32: 8rem;      // 128px
 
-// Component-specific widths
-$min-width-search: 37.5rem; // 600px
+// Component-specific widths removed - use grid mixins instead
 
 $spacing-scale: (
   0: $space-0,

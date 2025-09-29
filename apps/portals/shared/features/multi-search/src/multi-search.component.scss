@@ -1,11 +1,11 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  min-width: $min-width-search;
+  @include grid-container($container-lg);
 }
 
 .multisearch-result {
-  min-width: $min-width-search;
+  @include grid-container($container-lg);
   box-sizing: border-box;
   padding: var(--tui-padding-l);
 }

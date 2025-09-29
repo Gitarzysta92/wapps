@@ -26,8 +26,7 @@
   align-items: center;
   height: calc(40vh);
   justify-content: flex-end;
-  width: $min-width-search;
-  min-width: $min-width-search;
+  @include grid-container($container-lg);
   padding: 0;
 
   ui-chat-window {
@@ -41,8 +40,7 @@
   align-items: center;
   justify-content: flex-end;
   multi-search {
-    width: $min-width-search;
-    min-width: $min-width-search;
+    @include grid-container($container-lg);
   }
 }
 
@@ -127,16 +125,16 @@
   padding: $space-5;
   font-size: $font-size-md;
   text-align: left;
-  width: $min-width-search;
+  @include grid-container($container-lg);
 }
 
 .separator {
   margin: $space-7 0;
-  width: $min-width-search;
+  @include grid-container($container-lg);
 }
 
 .shortcuts {
-  width: $min-width-search;
+  @include grid-container($container-lg);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -146,9 +144,7 @@
 
 // Facebook-style feed containers
 .feed-container {
-  width: $min-width-search;
-  margin: 0 auto;
-  max-width: 100%;
+  @include grid-container($container-lg);
 }
 
 .feed-post {
