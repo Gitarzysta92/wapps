@@ -65,7 +65,10 @@ header {
 }
 
 .chat-banner-toggle {
-  @include grid-container($container-lg);
+  width: 100%;
+  max-width: $container-lg;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   align-items: center;
   justify-content: center;
