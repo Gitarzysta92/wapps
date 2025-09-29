@@ -136,15 +136,35 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
   }
 
   private autoResize(element: HTMLDivElement): void {
+    const minHeight = this.minHeight();
+    const maxHeight = this.maxHeight();
+    
     // Reset height to auto to get the correct scrollHeight
     element.style.height = 'auto';
     
-    // Set height to scrollHeight, with min and max constraints
-    const minHeight = this.minHeight();
-    const maxHeight = this.maxHeight();
+    // Get the natural height needed for the content
     const scrollHeight = element.scrollHeight;
     
-    const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+    // Calculate the actual height needed, accounting for padding and line height
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight) || 24;
+    const content = element.textContent || '';
+    
+    // Count actual lines (including wrapped text)
+    const hasExplicitLineBreaks = content.includes('\n');
+    const estimatedLines = hasExplicitLineBreaks 
+      ? content.split('\n').length 
+      : Math.ceil(scrollHeight / lineHeight);
+    
+    // Only expand if we have multiple lines or explicit line breaks
+    let newHeight: number;
+    if (estimatedLines > 1 || hasExplicitLineBreaks) {
+      // Multi-line content - use calculated height
+      newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+    } else {
+      // Single line content - keep at min height
+      newHeight = minHeight;
+    }
+    
     element.style.height = `${newHeight}px`;
     
     // Handle overflow
