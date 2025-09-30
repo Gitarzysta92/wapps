@@ -41,11 +41,10 @@ export const routes: Routes = [
         path: `${NAVIGATION.categories.path}/:${FILTERS.category}/page/:page`,
         loadComponent: () => import('./pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
       },
-        
-      // {
-      //   path: ':entrySlug',
-      //   loadComponent: () => import('./components/pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
-      // },
+      {
+        path: ':entrySlug',
+        loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
+      },
       // {
       //   path: 'my-listings',
       //   canActivate: [AuthenticationGuard],

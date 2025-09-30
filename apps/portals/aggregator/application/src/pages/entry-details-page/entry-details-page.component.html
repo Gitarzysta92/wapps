@@ -1,1 +1,137 @@
-<p>entry-details-page works!</p>
+<div class="single-column">
+  <section>
+    <header class="app-header">
+      <div class="icon-title">
+        <tui-avatar
+          [src]="(app$ | async)?.logo"
+          size="l"
+        />
+        <div class="titles">
+          <h1 class="app-title">{{ (app$ | async)?.name }}</h1>
+          <a tuiLink href="#" target="_blank" rel="noopener noreferrer">Developer name</a>
+        </div>
+      </div>
+      <div class="labels">
+        <tui-badge
+          status="info"
+          class="label"
+        >Contains ads</tui-badge>
+        <tui-badge
+          status="info"
+          class="label"
+        >In-app purchases</tui-badge>
+        <tui-badge
+          status="neutral"
+          class="label"
+        >Content rating</tui-badge>
+      </div>
+      <div class="actions">
+        <button tuiButton size="m" appearance="flat" iconLeft="@tui.share-2">Share</button>
+        <button tuiButton size="m" appearance="flat" iconLeft="@tui.heart">Add to wishlist</button>
+        <button tuiButton size="m" appearance="flat" iconLeft="@tui.video">Trailer</button>
+      </div>
+    </header>
+  </section>
+
+  <section class="media-gallery">
+    <div class="media">
+      <a tuiLink href="#">Trailer / Video preview</a>
+    </div>
+    <div class="media">
+      <img alt="Feature graphic" src="https://picsum.photos/seed/feature/800/320" />
+    </div>
+    <div class="screenshots">
+      <img alt="Screenshot 1" src="https://picsum.photos/seed/s1/320/640" />
+      <img alt="Screenshot 2" src="https://picsum.photos/seed/s2/320/640" />
+      <img alt="Screenshot 3" src="https://picsum.photos/seed/s3/320/640" />
+    </div>
+  </section>
+
+  <section class="description">
+    <h2>About</h2>
+    <p class="short">Short description (up to ~80 chars)</p>
+    <div class="long">
+      <p>Long description paragraph with features and details.</p>
+      <ul>
+        <li>Feature A</li>
+        <li>Feature B</li>
+        <li>Feature C</li>
+      </ul>
+    </div>
+    <div class="links">
+      <a tuiLink href="#">Terms of Service</a>
+      <a tuiLink href="#">Privacy Notice</a>
+      <a tuiLink href="#">Support</a>
+    </div>
+    <div class="meta">
+      <span>Updated on {{ (app$ | async)?.updateDate | date }}</span>
+      <span>Category</span>
+      <span>Developer contact info</span>
+    </div>
+  </section>
+
+  <section class="app-details">
+    <h2>App details</h2>
+    <ul>
+      <li>Version</li>
+      <li>Requires Android</li>
+      <li>Size</li>
+      <li>Installs</li>
+      <li>Current version / Latest version</li>
+      <li>Offered by</li>
+      <li>Developer address</li>
+      <li>Developer email</li>
+      <li>Permissions</li>
+      <li>Languages</li>
+      <li>Content rating</li>
+      <li>In-app products</li>
+      <li>Interactive elements</li>
+      <li>Shares info / Collects info</li>
+      <li><a tuiLink href="#">Privacy policy</a></li>
+    </ul>
+  </section>
+
+  <section class="data-safety">
+    <h2>Data safety</h2>
+    <p>Introduction / warning</p>
+    <ul>
+      <li>Data types collected</li>
+      <li>Data shared</li>
+      <li>Data encrypted in transit</li>
+      <li>User can request deletion</li>
+    </ul>
+    <a tuiLink href="#">See details</a>
+  </section>
+
+  <section class="whats-new">
+    <h2>What’s new</h2>
+    <p>Changelog text – news / fixes</p>
+    <button tuiButton appearance="flat">Flag as inappropriate</button>
+  </section>
+
+  <section class="support">
+    <h2>App support</h2>
+    <div class="links">
+      <a tuiLink href="#">Website</a>
+      <a tuiLink href="#">Support email</a>
+      <a tuiLink href="#">Privacy policy</a>
+    </div>
+  </section>
+
+  <section class="developer-info">
+    <h2>About the developer</h2>
+    <ul>
+      <li>Company name</li>
+      <li>Contact email</li>
+      <li>Address</li>
+      <li>Phone</li>
+    </ul>
+  </section>
+
+  <section class="recommendations">
+    <h2>More by Developer</h2>
+    <div class="carousel">...</div>
+    <h2>Similar apps</h2>
+    <div class="carousel">...</div>
+  </section>
+</div>

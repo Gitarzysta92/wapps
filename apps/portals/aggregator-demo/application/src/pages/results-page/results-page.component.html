@@ -1,0 +1,51 @@
+<section class="container">
+  <h1>{{ config.title }}</h1>
+  
+  <div *ngIf="selectedCategory" class="info-badge">
+    <p><strong>Category:</strong> {{ selectedCategory }}</p>
+  </div>
+  
+  <div *ngIf="selectedTag" class="info-badge">
+    <p><strong>Tag:</strong> {{ selectedTag }}</p>
+  </div>
+  
+  <div *ngIf="currentPage > 1" class="info-badge">
+    <p><strong>Page:</strong> {{ currentPage }} of {{ totalPages }}</p>
+  </div>
+  
+  <div *ngIf="config.showFilters" class="filters-section">
+    <h2>Active filters</h2>
+    <button tuiButton type="button" (click)="openDialog()">Open Filters</button>
+    <!-- <filters-bar (onUpdate)="filterParams.next($event)"></filters-bar> -->
+  </div>
+</section>
+
+<section class="container">
+  <div class="results-header">
+    <h2>Results ({{ items.length }} items)</h2>
+    <div *ngIf="config.showSorting" class="sorting-controls">
+      <!-- <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select> -->
+      <p>Sort options would go here</p>
+    </div>
+  </div>
+  
+  <div *ngIf="config.showListing" class="listing-section">
+    <!-- <app-listing (onUpdate)="listingParams.next($event)"></app-listing> -->
+    <div class="items-grid">
+      <a *ngFor="let item of items" [routerLink]="['/', item.id]" class="item-card">
+        <h3>{{ item.name }}</h3>
+        <p class="description">{{ item.description }}</p>
+        <div class="item-meta">
+          <span class="category">{{ item.category }}</span>
+          <span class="rating">★ {{ item.rating }}</span>
+        </div>
+      </a>
+    </div>
+    
+    <div class="pagination">
+      <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+  </div>
+</section>

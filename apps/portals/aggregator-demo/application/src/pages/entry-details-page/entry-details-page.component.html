@@ -1,1 +1,317 @@
-<p>entry-details-page works!</p>
+<main class="page-layout">
+  <!-- App Header Section -->
+  <section class="app-header-section">
+    <div class="app-header">
+      <div class="app-icon-title">
+        <tui-avatar
+          [src]="(app$ | async)?.logo"
+          size="xl"
+          class="app-icon"
+        />
+        <div class="app-info">
+          <h1 class="app-title">{{ (app$ | async)?.name }}</h1>
+          <a tuiLink href="#" target="_blank" rel="noopener noreferrer" class="developer-link">
+            Developer name
+          </a>
+          <div class="rating-section">
+            <div class="rating-stars">
+              <tui-icon icon="star" class="star-icon"></tui-icon>
+              <tui-icon icon="star" class="star-icon"></tui-icon>
+              <tui-icon icon="star" class="star-icon"></tui-icon>
+              <tui-icon icon="star" class="star-icon"></tui-icon>
+              <tui-icon icon="star" class="star-icon"></tui-icon>
+            </div>
+            <span class="rating-text">{{ (app$ | async)?.rating }}</span>
+            <span class="reviews-count">({{ (app$ | async)?.reviewNumber | number }} reviews)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="app-labels">
+        <tui-badge status="info" class="label">Contains ads</tui-badge>
+        <tui-badge status="info" class="label">In-app purchases</tui-badge>
+        <tui-badge status="neutral" class="label">Content rating</tui-badge>
+      </div>
+      
+      <div class="app-actions">
+        <button tuiButton size="l" appearance="primary" class="install-btn">
+          <tui-icon icon="download" class="action-icon"></tui-icon>
+          Install
+        </button>
+        <button tuiButton size="m" appearance="flat" class="action-btn">
+          <tui-icon icon="share-2" class="action-icon"></tui-icon>
+          Share
+        </button>
+        <button tuiButton size="m" appearance="flat" class="action-btn">
+          <tui-icon icon="heart" class="action-icon"></tui-icon>
+          Wishlist
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <div class="content-layout">
+    <!-- Main Content -->
+    <div class="main-content">
+
+  <!-- Media Gallery Section -->
+  <section class="media-gallery-section">
+    <div class="media-gallery">
+      <div class="featured-media">
+        <img alt="Feature graphic" src="https://picsum.photos/seed/feature/800/400" class="feature-graphic" />
+      </div>
+      <div class="screenshots-carousel">
+        <div class="screenshot">
+          <img alt="Screenshot 1" src="https://picsum.photos/seed/s1/200/400" />
+        </div>
+        <div class="screenshot">
+          <img alt="Screenshot 2" src="https://picsum.photos/seed/s2/200/400" />
+        </div>
+        <div class="screenshot">
+          <img alt="Screenshot 3" src="https://picsum.photos/seed/s3/200/400" />
+        </div>
+        <div class="screenshot">
+          <img alt="Screenshot 4" src="https://picsum.photos/seed/s4/200/400" />
+        </div>
+        <div class="screenshot">
+          <img alt="Screenshot 5" src="https://picsum.photos/seed/s5/200/400" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="section-content">
+      <h2 class="section-title">About this app</h2>
+      <p class="short-description">Short description (up to ~80 characters)</p>
+      <div class="long-description">
+        <p>Long description paragraph with features and details. This app provides amazing functionality that will enhance your daily productivity and entertainment experience.</p>
+        <ul class="feature-list">
+          <li>Feature A - Amazing functionality</li>
+          <li>Feature B - Great user experience</li>
+          <li>Feature C - Premium quality</li>
+          <li>Feature D - Regular updates</li>
+        </ul>
+      </div>
+      <div class="app-links">
+        <a tuiLink href="#" class="app-link">Terms of Service</a>
+        <a tuiLink href="#" class="app-link">Privacy Policy</a>
+        <a tuiLink href="#" class="app-link">Support</a>
+      </div>
+      <div class="app-meta">
+        <span class="meta-item">Updated on {{ (app$ | async)?.updateDate | date }}</span>
+        <span class="meta-item">Category: Productivity</span>
+        <span class="meta-item">Developer contact info</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Details Section -->
+  <section class="app-details-section">
+    <div class="section-content">
+      <h2 class="section-title">App details</h2>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Version</span>
+          <span class="detail-value">1.2.3</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Requires Android</span>
+          <span class="detail-value">8.0 and up</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Size</span>
+          <span class="detail-value">45 MB</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Downloads</span>
+          <span class="detail-value">1M+</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Offered by</span>
+          <span class="detail-value">Developer Company</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Developer</span>
+          <span class="detail-value">developer&#64;company.com</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Safety Section -->
+  <section class="data-safety-section">
+    <div class="section-content">
+      <h2 class="section-title">Data safety</h2>
+      <p class="safety-intro">Safety starts with understanding how developers collect and share your data.</p>
+      <div class="safety-items">
+        <div class="safety-item">
+          <tui-icon icon="shield-check" class="safety-icon"></tui-icon>
+          <span>Data is encrypted in transit</span>
+        </div>
+        <div class="safety-item">
+          <tui-icon icon="trash" class="safety-icon"></tui-icon>
+          <span>You can request that data be deleted</span>
+        </div>
+        <div class="safety-item">
+          <tui-icon icon="eye" class="safety-icon"></tui-icon>
+          <span>See details</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's New Section -->
+  <section class="whats-new-section">
+    <div class="section-content">
+      <h2 class="section-title">What's new</h2>
+      <div class="changelog">
+        <div class="version">Version 1.2.3</div>
+        <div class="changes">
+          <p>• Bug fixes and performance improvements</p>
+          <p>• New feature: Enhanced user interface</p>
+          <p>• Improved stability and reliability</p>
+        </div>
+      </div>
+      <button tuiButton appearance="flat" class="flag-btn">Flag as inappropriate</button>
+    </div>
+  </section>
+
+  <!-- Support Section -->
+  <section class="support-section">
+    <div class="section-content">
+      <h2 class="section-title">App support</h2>
+      <div class="support-links">
+        <a tuiLink href="#" class="support-link">
+          <tui-icon icon="globe" class="support-icon"></tui-icon>
+          Website
+        </a>
+        <a tuiLink href="#" class="support-link">
+          <tui-icon icon="mail" class="support-icon"></tui-icon>
+          Support email
+        </a>
+        <a tuiLink href="#" class="support-link">
+          <tui-icon icon="shield" class="support-icon"></tui-icon>
+          Privacy policy
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Developer Info Section -->
+  <section class="developer-info-section">
+    <div class="section-content">
+      <h2 class="section-title">About the developer</h2>
+      <div class="developer-details">
+        <div class="developer-item">
+          <span class="developer-label">Company name</span>
+          <span class="developer-value">Developer Company Inc.</span>
+        </div>
+        <div class="developer-item">
+          <span class="developer-label">Contact email</span>
+          <span class="developer-value">developer&#64;company.com</span>
+        </div>
+        <div class="developer-item">
+          <span class="developer-label">Address</span>
+          <span class="developer-value">123 Developer Street, Tech City</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    </div>
+
+    <!-- Aside Content -->
+    <aside class="aside-content">
+      <!-- App Details Card -->
+      <div class="aside-card">
+        <h3 class="card-title">App Details</h3>
+        <div class="card-content">
+          <div class="detail-row">
+            <span class="detail-label">Version</span>
+            <span class="detail-value">1.2.3</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Size</span>
+            <span class="detail-value">45 MB</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Downloads</span>
+            <span class="detail-value">1M+</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Rating</span>
+            <span class="detail-value">{{ (app$ | async)?.rating }} ⭐</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Reviews</span>
+            <span class="detail-value">{{ (app$ | async)?.reviewNumber | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="aside-card">
+        <h3 class="card-title">Quick Actions</h3>
+        <div class="card-content">
+          <button tuiButton size="m" appearance="primary" class="full-width-btn">
+            <tui-icon icon="download" class="action-icon"></tui-icon>
+            Install App
+          </button>
+          <button tuiButton size="m" appearance="flat" class="full-width-btn">
+            <tui-icon icon="share-2" class="action-icon"></tui-icon>
+            Share
+          </button>
+          <button tuiButton size="m" appearance="flat" class="full-width-btn">
+            <tui-icon icon="heart" class="action-icon"></tui-icon>
+            Add to Wishlist
+          </button>
+        </div>
+      </div>
+
+      <!-- Developer Info Card -->
+      <div class="aside-card">
+        <h3 class="card-title">Developer</h3>
+        <div class="card-content">
+          <div class="developer-info">
+            <div class="dev-name">Developer Company Inc.</div>
+            <div class="dev-email">developer&#64;company.com</div>
+            <div class="dev-address">123 Developer Street, Tech City</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations Card -->
+      <div class="aside-card">
+        <h3 class="card-title">More by Developer</h3>
+        <div class="card-content">
+          <div class="recommendations-list">
+            <div class="recommendation-item">
+              <img src="https://picsum.photos/seed/rec1/60/60" alt="App 1" class="rec-icon" />
+              <div class="rec-info">
+                <div class="rec-name">Another App</div>
+                <div class="rec-rating">4.5 ⭐</div>
+              </div>
+            </div>
+            <div class="recommendation-item">
+              <img src="https://picsum.photos/seed/rec2/60/60" alt="App 2" class="rec-icon" />
+              <div class="rec-info">
+                <div class="rec-name">Cool App</div>
+                <div class="rec-rating">4.2 ⭐</div>
+              </div>
+            </div>
+            <div class="recommendation-item">
+              <img src="https://picsum.photos/seed/rec3/60/60" alt="App 3" class="rec-icon" />
+              <div class="rec-info">
+                <div class="rec-name">Great App</div>
+                <div class="rec-rating">4.8 ⭐</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>

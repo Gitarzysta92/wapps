@@ -1,0 +1,50 @@
+.app-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.icon-title {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.labels {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.media-gallery {
+  display: grid;
+  gap: 1rem;
+}
+
+.screenshots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.description .links {
+  display: flex;
+  gap: 1rem;
+}
+
+.recommendations .carousel {
+  min-height: 80px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+
