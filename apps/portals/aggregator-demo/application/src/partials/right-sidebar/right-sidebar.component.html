@@ -1,0 +1,86 @@
+<div class="right-sidebar-header">
+  <div class="header-actions">
+    <button 
+      class="expand-btn"
+      [title]="'Toggle sidebar'"
+      (click)="onToggleClick()">
+      <tui-icon [icon]="isExpanded ? 'chevron-right' : 'chevron-left'"></tui-icon>
+    </button>
+  </div>
+</div>
+
+<!-- User Profile Section -->
+<section class="user-profile_section">
+  <div my-profile-avatar></div>
+  <div my-profile-name></div>
+</section>
+<hr>
+
+<!-- Primary Navigation -->
+<nav class="navigation_section">
+  <ul>
+    @for (item of navigationPrimary; track item.id) {
+      <li>
+        <a
+          [routerLink]="['/', item.path]"
+          appearance="action-grayscale"
+          tuiButton
+          type="button"
+          [title]="item.label">
+          <tui-icon
+            [icon]="item.icon"
+            [style.height.rem]="1"/>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+<hr>
+
+<!-- Secondary Navigation -->
+<nav class="navigation_section">
+  <ul>
+    @for (item of navigationSecondary; track item.id) {
+      <li>
+        <a
+          [routerLink]="['/', item.path]"
+          appearance="action-grayscale"
+          tuiButton
+          type="button"
+          [title]="item.label">
+          <tui-icon
+            [icon]="item.icon"
+            [style.height.rem]="1"/>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+<hr>
+
+<!-- Theme Section -->
+<div class="theme_section">
+  <theme-toggle></theme-toggle> 
+  <span>
+    <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
+  </span>
+</div>
+<hr>
+
+<!-- Logout Button -->
+@if (authService) {
+  <button
+    class="logout-button"
+    appearance="action-grayscale"
+    tuiButton
+    type="button"
+    (click)="authService.unauthenticate()"
+    [title]="'Log out'">
+    <tui-icon
+      icon="@tui.log-out"
+      [style.height.rem]="1"/>
+    <span class="nav-label">Log out</span>
+  </button>
+}

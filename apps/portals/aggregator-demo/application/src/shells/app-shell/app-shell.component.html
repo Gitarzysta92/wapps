@@ -1,162 +1,48 @@
-<!-- <div class="routed-header">
-  <router-outlet name="header"></router-outlet>
-</div> -->
-<header
-  [showCollapseButton]="!isCollapsed"
-  [style.top.vh]="-stickyTopOffset"
-  [style.height]="'calc(90px + ' + height + 'vh)'"
-  (expandedStateChange)="onHeaderExpandedChange($event)">
-</header>
-
-<!-- Sidebar Overlay removed - sidebar is visible by default -->
-
-<!-- Sidebar -->
-<aside 
-  class="sidebar"
-  [class.expanded]="isSidebarExpanded"
-  [class.collapsed]="!isSidebarExpanded">
-  <div class="sidebar-header">
-    <div class="header-actions">
-      <button 
-        class="expand-btn"
-        (click)="toggleSidebarExpansion()"
-        [title]="isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'">
-        <tui-icon [icon]="isSidebarExpanded ? 'chevron-left' : 'chevron-right'"></tui-icon>
-      </button>
-    </div>
-  </div>
-  
-  <nav class="sidebar-nav">
-    @for (item of filteredNavigationItems; track item.id) {
-      <a
-        class="nav-item"
-        tuiButton
-        appearance="ghost"
-        type="button"
-        [routerLink]="item.path"
-        [title]="!isSidebarExpanded ? item.label : ''">
-        <div class="nav-icon">
-          <tui-icon
-            [icon]="item.icon || 'tuiIconSettings'"
-            [style.height.rem]="1.2"
-            [style.width.rem]="1.2"
-            [style.display]="'inline-block'"
-            [style.visibility]="'visible'"/>
-        </div>
-        <span class="nav-label" [class.hidden]="!isSidebarExpanded">{{ item.label }}</span>
-      </a>
-    }
-  </nav>
-</aside>
-
-<!-- Right Sidebar -->
-<aside 
-  class="right-sidebar"
-  [class.expanded]="isRightSidebarExpanded"
-  [class.collapsed]="!isRightSidebarExpanded">
-  <div class="right-sidebar-header">
-    <div class="header-actions">
-      <button 
-        class="expand-btn"
-        (click)="toggleRightSidebarExpansion()"
-        [title]="isRightSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'">
-        <tui-icon [icon]="isRightSidebarExpanded ? 'chevron-right' : 'chevron-left'"></tui-icon>
-      </button>
-    </div>
-  </div>
-  
-  <!-- User Profile Section -->
-  <section class="user-profile_section">
-    <div my-profile-avatar></div>
-    <div my-profile-name [class.hidden]="!isRightSidebarExpanded"></div>
-  </section>
-  @if (isRightSidebarExpanded) {
-    <hr>
-  }
-  
-  <!-- Primary Navigation -->
-  <nav class="navigation_section">
-    <ul>
-      @for (item of navigationPrimary; track item.id) {
-        <li>
-          <a
-            [routerLink]="item.path"
-            appearance="action-grayscale"
-            tuiButton
-            type="button"
-            [title]="!isRightSidebarExpanded ? item.label : ''">
-            <tui-icon
-              [icon]="item.icon"
-              [style.height.rem]="1"/>
-            <span class="nav-label" [class.hidden]="!isRightSidebarExpanded">{{ item.label }}</span>
-          </a>
-        </li>
-      }
-    </ul>
-  </nav>
-  <hr>
-  
-  <!-- Secondary Navigation -->
-  <nav class="navigation_section">
-    <ul>
-      @for (item of navigationSecondary; track item.id) {
-        <li>
-          <a
-            [routerLink]="item.path"
-            appearance="action-grayscale"
-            tuiButton
-            type="button"
-            [title]="!isRightSidebarExpanded ? item.label : ''">
-            <tui-icon
-              [icon]="item.icon"
-              [style.height.rem]="1"/>
-            <span class="nav-label" [class.hidden]="!isRightSidebarExpanded">{{ item.label }}</span>
-          </a>
-        </li>
-      }
-    </ul>
-  </nav>
-  <hr>
-  
-  <!-- Test Content -->
-  @if (isRightSidebarExpanded) {
-    <div style="padding: 20px; color: var(--tui-text-primary);">
-      <p><strong>Right Sidebar Test</strong></p>
-      <p>This should be visible!</p>
-      <p>Auth Service: {{ authService ? 'Available' : 'Not Available' }}</p>
-      <p>Navigation Items: {{ navigationPrimary.length }}</p>
-    </div>
-    <hr>
-  }
-  
-  <!-- Theme Section -->
-  <div class="theme_section">
-    <theme-toggle></theme-toggle> 
-    <span [class.hidden]="!isRightSidebarExpanded">
-      <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
-    </span>
-  </div>
-  @if (isRightSidebarExpanded) {
-    <hr>
-  }
-  
-  <!-- Logout Button -->
-  @if (authService) {
-    <button
-      class="logout-button"
-      appearance="action-grayscale"
-      tuiButton
-      type="button"
-      (click)="authService.unauthenticate()"
-      [title]="!isRightSidebarExpanded ? 'Log out' : ''">
-      <tui-icon
-        icon="@tui.log-out"
-        [style.height.rem]="1"/>
-      <span class="nav-label" [class.hidden]="!isRightSidebarExpanded">Log out</span>
-    </button>
-  }
-</aside>
-
 <div class="chat-fade-overlay"></div>
-<router-outlet ></router-outlet>
-<footer class="container"></footer>
+
+@if (headerComponent | async; as cmp) {
+  <header>
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        showCollapseButton: showCollapseButton
+      }">
+    </ng-container>
+  </header>  
+}
+
+@if (leftSidebarComponent | async; as cmp) {
+  <aside class="sidebar" 
+    [class.expanded]="isSidebarExpanded" 
+    [class.collapsed]="!isSidebarExpanded"
+    (click)="onSidebarClick($event, 'left')">
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        isExpanded: isSidebarExpanded
+      }">
+    </ng-container>
+  </aside>
+}
+
+@if (rightSidebarComponent | async; as cmp) {
+  <aside class="right-sidebar" 
+    [class.expanded]="isRightSidebarExpanded" 
+    [class.collapsed]="!isRightSidebarExpanded"
+    (click)="onSidebarClick($event, 'right')">
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        isExpanded: isRightSidebarExpanded
+      }">
+    </ng-container>
+  </aside>
+}
+
+<main>
+  <router-outlet ></router-outlet>
+</main>
+
+
+@if (footerComponent | async; as cmp) {
+  <footer class="container">
+    <ng-container *ngComponentOutlet="cmp"></ng-container>
+  </footer>
+}

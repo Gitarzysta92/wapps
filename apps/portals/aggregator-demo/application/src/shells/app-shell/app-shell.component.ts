@@ -1,17 +1,27 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
-import { FooterPartialComponent } from '../../partials/footer/footer.component';
-import { HeaderPartialComponent } from '../../partials/header/header.component';
+import { ChangeDetectionStrategy, Component, OnInit, Type, inject, EventEmitter, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { NavigationService } from '@ui/navigation';
-import { TuiButton } from '@taiga-ui/core';
-import { TuiIcon } from '@taiga-ui/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
-import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
-import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile';
-import { AuthenticationService } from '@portals/shared/features/identity';
-import { Menu } from '../../navigation';
-// Removed sticky state directive imports - using out-of-viewport approach instead
+import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
+import { filter, startWith, map, distinctUntilChanged } from 'rxjs';
+
+export interface IAppShellRouteData {
+  header: Type<IAppShellHeaderComponent> | null;
+  leftSidebar: Type<IAppShellSidebarComponent> | null;
+  rightSidebar: Type<IAppShellSidebarComponent> | null;
+  footer: Type<unknown> | null;
+}
+
+export interface IAppShellHeaderComponent {
+  showCollapseButton?: boolean;
+  expandedStateChange?: EventEmitter<boolean>;
+}
+
+export interface IAppShellSidebarComponent {
+  isExpanded: boolean;
+}
+
 
 @Component({
   selector: 'app-shell',
@@ -20,59 +30,51 @@ import { Menu } from '../../navigation';
   imports: [
     RouterOutlet,
     RouterModule,
-    HeaderPartialComponent,
-    FooterPartialComponent,
     CommonModule,
-    TuiButton,
-    TuiIcon,
     AsyncPipe,
-    ThemeToggleComponent,
-    MyProfileAvatarComponent,
-    MyProfileNameComponent
+    NgComponentOutlet,
   ],
   hostDirectives: [
     ThemingDescriptorDirective
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppShellComponent implements OnInit {
+
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
+
+  private readonly _routeData = this._router.events.pipe(
+    filter((e) => e instanceof NavigationEnd),
+    //INFO: startWith is used to ensure that the data is initialized, 
+    //router outlet events don't emit a value on init
+    startWith(null),
+    map(() => this._route.firstChild?.snapshot.data ?? {} as IAppShellRouteData)
+  );
+
+  public readonly headerComponent = this._routeData.pipe(
+    map((data) => data['header']),
+    distinctUntilChanged()
+  );
+
+  public readonly leftSidebarComponent = this._routeData.pipe(
+    map((data) => data['leftSidebar']));
+
+  public readonly rightSidebarComponent = this._routeData.pipe(
+    map((data) => data['rightSidebar']));
+
+  public readonly footerComponent = this._routeData.pipe(
+    map((data) => data['footer']));
+
   private readonly navigationService = inject(NavigationService);
 
   ngOnInit(): void {
-    this.stickyTopOffset = this.height;
+    // Component initialization if needed
   }
 
-  public height = 40;
-  public stickyTopOffset = this.height;
-  public isCollapsed = true;
-  public isSidebarExpanded = false; // Start collapsed (icons only)
-  public isRightSidebarExpanded = false; // Start collapsed (icons only)
-
-  public get navigationItems() {
-    const config = this.navigationService.config;
-    return Object.values(config).filter(item => typeof item === 'object' && item !== null);
-  }
-
-  // Left sidebar should exclude items that appear in the user panel (primary or secondary)
-  public get filteredNavigationItems() {
-    const userPanelIds = new Set<number>([
-      ...this.navigationPrimary.map(i => i.id),
-      ...this.navigationSecondary.map(i => i.id)
-    ]);
-    return this.navigationItems.filter(i => !userPanelIds.has(i.id));
-  }
-
-  // User panel properties
-  public readonly authService = inject(AuthenticationService, { optional: true });
-  public readonly navigationPrimary = this.navigationService.getNavigationFor(Menu.UserPanelPrimary);
-  public readonly navigationSecondary = this.navigationService.getNavigationFor(Menu.UserPanelSecondary);
-  public readonly theme = inject(THEME_PROVIDER_TOKEN);
-
-  public onHeaderExpandedChange(isExpanded: boolean): void {
-    this.stickyTopOffset = isExpanded ? 0 : this.height;
-    this.isCollapsed = !isExpanded;
-  }
-
-  // Old toggle methods removed - sidebar is always visible now
+  public isSidebarExpanded = false;
+  public isRightSidebarExpanded = false;
+  public showCollapseButton = false;
 
   public toggleSidebarExpansion(): void {
     this.isSidebarExpanded = !this.isSidebarExpanded;
@@ -80,5 +82,21 @@ export class AppShellComponent implements OnInit {
 
   public toggleRightSidebarExpansion(): void {
     this.isRightSidebarExpanded = !this.isRightSidebarExpanded;
+  }
+
+  public onHeaderExpandedChange(_isExpanded: boolean): void {
+    // Handle header expansion state changes if needed
+  }
+
+  public onSidebarClick(event: Event, side: 'left' | 'right'): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('expand-btn')) {
+      event.stopPropagation();
+      if (side === 'left') {
+        this.toggleSidebarExpansion();
+      } else {
+        this.toggleRightSidebarExpansion();
+      }
+    }
   }
 }
