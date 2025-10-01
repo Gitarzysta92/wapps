@@ -7,43 +7,53 @@ import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost
 import { RegistrationDialogComponent } from "./dialogs/registration-dialog/registration-dialog.component";
 import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
-import { AppShellComponent } from "./shells/app-shell/app-shell.component";
-import { ChatBannerComponent } from "./partials/chat/chat-banner.component";
-
+import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
+import { HeaderPartialComponent } from "./partials/header/header.component";
+import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
+import { RightSidebarPartialComponent } from "./partials/right-sidebar/right-sidebar.component";
+import { applicationsMatcher } from "./pages/applications/applications.matcher";
+import { FooterPartialComponent } from "./partials/footer/footer.component";
+
+export interface IBreadcrumbRouteData {
+  breadcrumb: string;
+}
+
 
 export const routes: Routes = [
   {
     path: '',
     component: AppShellComponent,
+    providers: [AuthenticationGuard],
     children: [
       {
         path: '',
         pathMatch: 'full',
         redirectTo: NAVIGATION.home.path,
       },
-      { path: '', outlet: 'header', component: ChatBannerComponent },
       {
         path: NAVIGATION.home.path,
         component: HomePageComponent,
-        data: { breadcrumb: NAVIGATION.home.label },
+        data: {
+          breadcrumb: NAVIGATION.home.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.applications.path,
+        matcher: applicationsMatcher,
         loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
-        data: { breadcrumb: NAVIGATION.applications.label },
-        children: [
-          {
-            path: `:${FILTERS.category}/page/:page`,
-            loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
-          },
-          {
-            path: 'page/:page',
-            loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
-          }
-        ]
+        data: {
+          breadcrumb: NAVIGATION.applications.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
         path: NAVIGATION.suites.path,
@@ -169,7 +179,7 @@ export const routes: Routes = [
       {
         path: NAVIGATION.settings.path,
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/settings/settings.component').then(m => m.HomePageComponent),
+        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
         data: { breadcrumb: NAVIGATION.settings.label },
         children: [
           // {

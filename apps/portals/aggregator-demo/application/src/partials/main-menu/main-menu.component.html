@@ -1,1 +1,21 @@
-<p>main-menu works!</p>
+<nav class="sidebar-nav">
+  @for (item of navigationItems; track item.id) {
+    <a
+      class="nav-item"
+      tuiButton
+      appearance="ghost"
+      type="button"
+      [routerLink]="item.path"
+      [title]="item.label">
+      <div class="nav-icon">
+        <tui-icon
+          [icon]="item.icon || 'tuiIconSettings'"
+          [style.height.rem]="1.2"
+          [style.width.rem]="1.2"
+          [style.display]="'inline-block'"
+          [style.visibility]="'visible'"/>
+      </div>
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  }
+</nav>
