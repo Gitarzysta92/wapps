@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   position: sticky;
   top: 0;
@@ -14,11 +16,11 @@
     left: -100%;
     right: -100%;
     margin: auto;
-    width: 1140px;
+    @include grid-container($container-xl);
     display: none;
-    z-index: 10;
-    border-radius: var(--tui-radius-l);
-    outline: 1px solid var(--tui-border-normal);
+    z-index: $z-dropdown;
+    border-radius: $radius-lg;
+    outline: $border-width-thin solid $color-border;
   }
 
   a {
@@ -63,40 +65,43 @@ header {
 }
 
 .chat-banner-toggle {
-  width: 800px;
+  width: 100%;
+  max-width: $container-lg;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  border: 1px solid rgba(156, 39, 176, 0.2);
+  gap: $space-2;
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, $color-blue-50 0%, $color-purple-50 100%);
+  border: $border-width-thin solid $rgba-accent-10;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 14px;
-  color: #5e35b1;
-  margin: 10px 0;
-  padding: 8px 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 16px;
-  min-height: 16px;
+  transition: all $duration-300 $ease-in-out;
+  font-size: $font-size-sm;
+  color: $color-primary-700;
+  margin: $space-2_5 0;
+  padding: $space-2 $space-4;
+  box-shadow: $shadow-sm;
+  height: $space-4;
+  min-height: $space-4;
 
   &:hover {
     cursor: grab;
-    background: linear-gradient(135deg, #e1f5fe 0%, #fce4ec 100%);
-    border-color: rgba(156, 39, 176, 0.3);
+    background: linear-gradient(135deg, $color-sky-50 0%, $color-rose-50 100%);
+    border-color: $rgba-accent-10;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-md;
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-sm;
   }
 
   tui-icon {
-    font-size: 16px;
-    transition: transform 0.3s ease;
+    font-size: $space-4;
+    transition: transform $duration-300 $ease-in-out;
   }
 
   &:hover tui-icon {
@@ -106,14 +111,14 @@ header {
 
 
 .section__smart-search {
-  width: 800px;
-  max-width: 100%;
-  padding: 20px 0;
+  @include grid-container($container-lg);
+  padding: $space-5 0;
 } 
 
 
 smart-search-input-container {
-  width: 800px;
+  margin-top: $space-5;
+  @include grid-container($container-lg);
 }
 
 .chat-banner-container {

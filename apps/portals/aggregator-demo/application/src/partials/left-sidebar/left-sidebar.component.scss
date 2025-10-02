@@ -1,0 +1,54 @@
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--tui-base-03);
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: var(--tui-base-02);
+  }
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--tui-text-01);
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: var(--tui-base-02);
+  }
+  
+  &.active {
+    background-color: var(--tui-primary);
+    color: var(--tui-text-on-primary);
+  }
+}
+
+.nav-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

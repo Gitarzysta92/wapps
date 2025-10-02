@@ -10,6 +10,7 @@ import {
   providePasswordResetRequestFeature,
   provideIdentityLoginFeature
 } from '@portals/shared/features/identity';
+import { provideIdentityManagementFeature } from '@portals/shared/features/identity';
 import { VALIDATION_MESSAGES } from './data/validation-messages';
 import { provideCategoryFeature } from '@portals/shared/features/categories';
 import { provideFilterFeature } from '@portals/shared/features/filtering';
@@ -34,6 +35,7 @@ bootstrapApplication(AppRootComponent,
       routes: routes
     }),
     provideIdentityLoginFeature(),
+    provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
       validationMessages: VALIDATION_MESSAGES
     }),

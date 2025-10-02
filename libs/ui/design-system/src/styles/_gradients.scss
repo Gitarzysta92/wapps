@@ -1,0 +1,8 @@
+// Central gradient variables extracted from apps
+@use './colors' as *;
+
+$gradient-blue-lilac-45: linear-gradient(45deg, $color-indigo-400 0%, $color-purple-600 100%);
+$gradient-blue-pink-135: linear-gradient(135deg, $color-blue-50 0%, $color-purple-50 100%);
+$gradient-sky-rose-135: linear-gradient(135deg, $color-sky-50 0%, $color-rose-50 100%);
+
+

@@ -1,6 +1,10 @@
+@use 'ui/design-system/src/styles' as *;
+
 .chat-banner-content {
   position: relative;
   height: 100%;
-  width: 800px;
-  max-width: 100%;
+  width: 100%;
+  max-width: $container-lg;
+  margin-left: auto;
+  margin-right: auto;
 }

@@ -1,12 +1,13 @@
+@use 'ui/design-system/src/styles' as *;
+
 .messages-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 16px;
+  gap: $space-4;
   height: 100%;
   max-height: 100%;
   overflow-y: auto; /* Keep auto for programmatic scrolling */
-  padding: 16px;
   box-sizing: border-box;
   
   /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
@@ -30,26 +31,25 @@
 .message {
   display: flex;
   max-width: 70%;
-  animation: messageSlideIn 0.3s ease-out;
+  animation: messageSlideIn $duration-300 $ease-out;
 
   &.user-message {
     align-self: flex-end;
     
     .message-content {
-      background-color: #007bff;
-      color: white;
+      background-color: $color-blue-600;
+      color: $color-white;
       border-radius: 18px 18px 4px 18px;
-      border: 1px solid rgba(0, 123, 255, 0.2);
-      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+      border: $border-width-thin solid $rgba-blue-20;
     }
 
     .message-header {
       .sender-name {
-        color: rgba(255, 255, 255, 0.9);
+        color: $rgba-white-90;
       }
       
       .timestamp {
-        color: rgba(255, 255, 255, 0.7);
+        color: $rgba-white-70;
       }
     }
   }
@@ -58,27 +58,26 @@
     align-self: flex-start;
     
     .message-content {
-      background-color: #f1f3f4;
-      color: #1a1a1a;
+      background-color: $color-bg-subtle;
+      color: $color-text-contrast;
       border-radius: 18px 18px 18px 4px;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: $border-width-thin solid $rgba-black-8;
     }
 
     .message-header {
       .sender-name {
-        color: #666;
+        color: $color-text-weak;
       }
       
       .timestamp {
-        color: #999;
+        color: $color-text-weaker;
       }
     }
   }
 }
 
 .message-content {
-  padding: 12px 16px;
+  padding: $space-3 $space-4;
   position: relative;
 }
 
@@ -86,12 +85,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
-  font-size: 12px;
+  margin-bottom: $space-1;
+  font-size: $font-size-xs;
 }
 
 .sender-name {
-  font-weight: 600;
+  font-weight: $font-weight-bold;
 }
 
 .timestamp {
@@ -99,8 +98,8 @@
 }
 
 .message-text {
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: $font-size-sm;
+  line-height: $line-height-tight;
   word-wrap: break-word;
 }
 
@@ -110,7 +109,7 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: #666;
+  color: $color-text-weak;
   font-style: italic;
 }
 
@@ -124,10 +123,10 @@
 
 .typing-cursor {
   display: inline-block;
-  margin-left: 2px;
+  margin-left: $space-0_5;
   animation: typingCursor 1s infinite;
-  font-weight: normal;
-  color: #666;
+  font-weight: $font-weight-regular;
+  color: $color-text-weak;
 }
 
 @keyframes typingCursor {

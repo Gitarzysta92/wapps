@@ -1,0 +1,27 @@
+// Elevation, radii, borders, z-index
+@use './colors' as *;
+
+// Radii
+$radius-sm: 0.5rem;   // 8px
+$radius-md: 0.75rem;  // 12px
+$radius-lg: 1rem;     // 16px
+$radius-full: 9999px;
+
+// Borders
+$border-width-thin: 1px;
+$border-width-regular: 2px;
+
+// Shadows
+$shadow-sm: 0 1px 3px $rgba-black-10;
+$shadow-md: 0 2px 6px $rgba-black-8;
+$shadow-lg: 0 8px 24px $rgba-black-12;
+
+// Z-index scale
+$z-base: 1;
+$z-dropdown: 1000;
+$z-sticky: 1100;
+$z-modal: 1200;
+$z-popover: 1300;
+$z-toast: 1400;
+
+

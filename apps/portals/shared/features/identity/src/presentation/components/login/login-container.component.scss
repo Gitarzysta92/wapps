@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 login-form {
-  margin-bottom: 20px;
+  margin-bottom: $space-5;
 }

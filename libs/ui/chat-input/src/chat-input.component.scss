@@ -1,0 +1,190 @@
+@use 'ui/design-system/src/styles' as *;
+
+.chat-input-container {
+  width: 100%;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  background: $color-white;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  box-shadow: $shadow-sm;
+  transition: all $duration-200 $ease-in-out;
+  min-height: 48px;
+
+  &.focused {
+    border-color: $color-accent-500;
+    box-shadow: 0 0 0 3px $rgba-accent-10;
+  }
+
+  &:hover:not(.disabled) {
+    border-color: $color-gray-200;
+  }
+
+  &.disabled {
+    background: $color-bg-muted;
+    border-color: $color-border;
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    .chat-input {
+      cursor: not-allowed;
+      color: $color-text-muted;
+    }
+
+    .send-button {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.chat-input {
+  flex: 1;
+  min-height: 24px;
+  max-height: 200px;
+  height: 48px; // Set initial height
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: none;
+  background: $color-transparent;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  color: $color-text;
+  resize: none;
+  overflow-y: hidden;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+
+  &::before {
+    content: attr(data-placeholder);
+    color: $color-text-muted;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: $space-4;
+    transform: translateY(-50%);
+    transition: opacity $duration-200 $ease-in-out;
+  }
+
+  &:not(:empty)::before,
+  &:focus::before {
+    opacity: 0;
+  }
+
+  &:empty::before {
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    color: $color-text-muted;
+  }
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: $space-2;
+  background: $color-accent-500;
+  border: none;
+  border-radius: $radius-sm;
+  color: $color-white;
+  cursor: pointer;
+  transition: all $duration-200 $ease-in-out;
+  flex-shrink: 0;
+
+  &:hover:not(.disabled) {
+    background: $color-accent-600;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(.disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled,
+  &.disabled {
+    background: $color-gray-200;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  svg {
+    transform: rotate(-90deg);
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .input-wrapper {
+    background: $color-surface;
+    border-color: $color-border-strong;
+
+    &.focused {
+      border-color: $color-accent-500;
+    }
+
+    &:hover:not(.disabled) {
+      border-color: $color-border-muted;
+    }
+
+    &.disabled {
+      background: $color-bg-inverse;
+      border-color: $color-border-strong;
+    }
+  }
+
+  .chat-input {
+    color: $color-text-light;
+
+    &::before {
+      color: $color-text-muted;
+    }
+
+    &[disabled] {
+      color: $color-text-muted;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .input-wrapper {
+    padding: $space-2_5 $space-3;
+  }
+
+  .chat-input {
+    font-size: $font-size-md; // Prevent zoom on iOS
+  }
+
+  .send-button {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// Focus visible support for better accessibility
+.send-button:focus-visible {
+  outline: $border-width-regular solid $color-accent-500;
+  outline-offset: $space-1;
+}
+
+.chat-input:focus-visible {
+  outline: none;
+}
+
+.input-wrapper:focus-within {
+  outline: none;
+}

@@ -8,7 +8,15 @@
     }
   },
   "projects": {},
-  "generators": {},
+  "generators": {
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nx/angular:component": {
+      "style": "scss"
+    }
+  },
   "cli": {},
   "tasksRunnerOptions": {},
   "workspaceLayout": {},

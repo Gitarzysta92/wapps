@@ -1,12 +1,48 @@
-<!-- <div class="routed-header">
-  <router-outlet name="header"></router-outlet>
-</div> -->
-<header
-  [showCollapseButton]="!isCollapsed"
-  [style.top.vh]="-stickyTopOffset"
-  [style.height]="'calc(90px + ' + height + 'vh)'"
-  (expandedStateChange)="onHeaderExpandedChange($event)">
-</header>
 <div class="chat-fade-overlay"></div>
-<router-outlet ></router-outlet>
-<footer class="container"></footer>
+
+@if (headerComponent | async; as cmp) {
+  <header>
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        showCollapseButton: showCollapseButton
+      }">
+    </ng-container>
+  </header>  
+}
+
+@if (leftSidebarComponent | async; as cmp) {
+  <aside class="sidebar" 
+    [class.expanded]="isSidebarExpanded" 
+    [class.collapsed]="!isSidebarExpanded"
+    (click)="onSidebarClick($event, 'left')">
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        isExpanded: isSidebarExpanded
+      }">
+    </ng-container>
+  </aside>
+}
+
+@if (rightSidebarComponent | async; as cmp) {
+  <aside class="right-sidebar" 
+    [class.expanded]="isRightSidebarExpanded" 
+    [class.collapsed]="!isRightSidebarExpanded"
+    (click)="onSidebarClick($event, 'right')">
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        isExpanded: isRightSidebarExpanded
+      }">
+    </ng-container>
+  </aside>
+}
+
+<main>
+  <router-outlet ></router-outlet>
+</main>
+
+
+@if (footerComponent | async; as cmp) {
+  <footer class="container">
+    <ng-container *ngComponentOutlet="cmp"></ng-container>
+  </footer>
+}

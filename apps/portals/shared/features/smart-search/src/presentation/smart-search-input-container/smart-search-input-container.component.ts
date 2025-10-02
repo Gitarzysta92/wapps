@@ -1,8 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, Output, EventEmitter, input, output } from "@angular/core";
 import { first, map, debounceTime, distinctUntilChanged, Subject, takeUntil, BehaviorSubject } from "rxjs";
 import { SMART_SEARCH_RESULTS_PROVIDER, SMART_SEARCH_STATE_PROVIDER, SMART_SEARCH_CONFIG } from "../../application/smart-search.constants";
-import { SearchBarComponent } from "@ui/search-bar";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { TuiSearch } from "@taiga-ui/layout";
+import { ChatInputComponent } from "@ui/chat-input";
 
 @Component({
   selector: "smart-search-input-container",
@@ -12,7 +14,9 @@ import { SearchBarComponent } from "@ui/search-bar";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    SearchBarComponent,
+    TuiSearch,
+    ReactiveFormsModule,
+    ChatInputComponent,
   ],
 })
 export class SmartSearchInputContainerComponent implements OnInit, OnDestroy {
@@ -26,16 +30,28 @@ export class SmartSearchInputContainerComponent implements OnInit, OnDestroy {
   @Output() public focus = new EventEmitter<boolean>();
   @Output() public suggestionsRequest = new EventEmitter<string>();
 
-  public isFocused = false;
+  public readonly initialValue = input<string | null>(null);
+  public readonly onSearch = output<{ phrase: string }>();
+  public readonly onFocus = output<boolean>();
+  public readonly placeholder = input<string>('Search…');
+
+  public readonly form = new FormGroup({
+    search: new FormControl(this.initialValue())
+  });
 
   private readonly _searchPhrase = this.state.queryParamMap$.pipe(
-    map(p => this._searchResultsProvider.buildSearchString(p as Map<string, any>))
+    map(p => this._searchResultsProvider.buildSearchString(p as Map<string, string>))
   );
 
   public readonly searchPhraseProvided$ = this._searchPhrase.pipe(map(p => !!p));
   public readonly initialValue$ = this._searchPhrase.pipe(first());
 
   ngOnInit(): void {
+    this.form.controls.search.setValue(this.initialValue())
+    this.form.valueChanges
+      .pipe(debounceTime(300))
+      .subscribe(v => this.onSearch.emit({ phrase: v.search as string }))
+    
     // Setup query debouncing for suggestions
     this._querySubject.pipe(
       debounceTime(SMART_SEARCH_CONFIG.DEBOUNCE_TIME),
@@ -46,6 +62,7 @@ export class SmartSearchInputContainerComponent implements OnInit, OnDestroy {
         this.suggestionsRequest.emit(query);
       }
     });
+
   }
 
   ngOnDestroy(): void {
@@ -53,21 +70,19 @@ export class SmartSearchInputContainerComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  public onQueryChange(event: any): void {
-    const query = typeof event === 'string' ? event : event?.target?.value || '';
-    this._querySubject.next(query);
-    this.queryChange.emit(query);
+  // Event handlers for chat-input component
+  public onChatSubmit(content: string): void {
+    this.onSearch.emit({ phrase: content });
+    this.search.emit(content);
   }
 
-  public onSearch(event: any): void {
-    const query = typeof event === 'string' ? event : event?.phrase || event?.target?.value || '';
-    this.state.setQueryParams({ q: query });
-    this.search.emit(query);
+  public onChatContentChange(content: string): void {
+    this._querySubject.next(content);
+    this.queryChange.emit(content);
   }
 
-  public onFocus(event: any): void {
-    const focused = typeof event === 'boolean' ? event : event?.target?.focused || false;
-    this.isFocused = focused;
+  public onChatFocusChange(focused: boolean): void {
+    this.onFocus.emit(focused);
     this.focus.emit(focused);
   }
 

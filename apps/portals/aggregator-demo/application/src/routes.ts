@@ -1,5 +1,4 @@
-import { ActivatedRouteSnapshot, createUrlTreeFromSnapshot, Router, Routes } from "@angular/router";
-
+import { Routes } from "@angular/router";
 
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 
@@ -8,56 +7,150 @@ import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost
 import { RegistrationDialogComponent } from "./dialogs/registration-dialog/registration-dialog.component";
 import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
-import { AppShellComponent } from "./shells/app-shell/app-shell.component";
-import { ChatBannerComponent } from "./partials/chat/chat-banner.component";
-
-
+import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
-import { inject } from "@angular/core";
+import { HeaderPartialComponent } from "./partials/header/header.component";
+import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
+import { RightSidebarPartialComponent } from "./partials/right-sidebar/right-sidebar.component";
+import { applicationsMatcher } from "./pages/applications/applications.matcher";
+import { FooterPartialComponent } from "./partials/footer/footer.component";
+
+export interface IBreadcrumbRouteData {
+  breadcrumb: string;
+}
+
 
 export const routes: Routes = [
   {
     path: '',
     component: AppShellComponent,
+    providers: [AuthenticationGuard],
     children: [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'home',
-        // redirectTo: () => inject(Router).createUrlTree([
-        //   '',
-        //   {
-        //     outlets: {
-        //       primary: ['home'],
-        //     },
-        //   },
-        // ]),
+        redirectTo: NAVIGATION.home.path,
       },
-      { path: '', outlet: 'header', component: ChatBannerComponent },
       {
-        path: 'home',
+        path: NAVIGATION.home.path,
         component: HomePageComponent,
-        data: { breadcrumb: 'Home' },
+        data: {
+          breadcrumb: NAVIGATION.home.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: 'results/page/:page',
+        matcher: applicationsMatcher,
+        loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
+        data: {
+          breadcrumb: NAVIGATION.applications.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.suites.path,
+        loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
+        data: { breadcrumb: NAVIGATION.suites.label },
+        children: [
+          {
+            path: `:${FILTERS.category}/page/:page`,
+            loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
+          },
+          {
+            path: 'page/:page',
+            loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
+          }
+        ]
+      },
+      {
+        path: NAVIGATION.articles.path,
+        loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+        data: { breadcrumb: NAVIGATION.articles.label },
+        children: [
+          {
+            path: `:${FILTERS.category}/page/:page`,
+            loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+          },
+          {
+            path: 'page/:page',
+            loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+          }
+        ]
+      },
+      {
+        path: NAVIGATION.favourites.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
+        data: { breadcrumb: NAVIGATION.favourites.label },
+      },
+      {
+        path: NAVIGATION.mySuites.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/my-suites/my-suites.component').then(m => m.MySuitesPageComponent),
+        data: { breadcrumb: NAVIGATION.mySuites.label },
+      },
+      {
+        path: NAVIGATION.myApps.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/my-apps/my-apps.component').then(m => m.MyAppsPageComponent),
+        data: { breadcrumb: NAVIGATION.myApps.label },
+      },
+      {
+        path: NAVIGATION.ownership.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/ownership/ownership.component').then(m => m.OwnershipPageComponent),
+        data: { breadcrumb: NAVIGATION.ownership.label },
+      },
+      {
+        path: 'results',
         loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
+        children: [
+          {
+            path: 'page/:page',
+            loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
+          }
+        ]
       },
       {
-        path: `${NAVIGATION.tags.path}/:${FILTERS.tag}/page/:page`,
+        path: NAVIGATION.tags.path,
         loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
+        children: [
+          {
+            path: `:${FILTERS.tag}/page/:page`,
+            loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
+          },
+          {
+            path: 'page/:page',
+            loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
+          }
+        ]
       },
       {
-        path: `${NAVIGATION.categories.path}/:${FILTERS.category}/page/:page`,
+        path: NAVIGATION.categories.path,
         loadComponent: () => import('./pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
+        children: [
+          {
+            path: `:${FILTERS.category}/page/:page`,
+            loadComponent: () => import('./pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
+          },
+          {
+            path: 'page/:page',
+            loadComponent: () => import('./pages/category-results-page/category-results-page.component').then(m => m.CategoryResultsPageComponent),
+          }
+        ]
       },
-        
-      // {
-      //   path: ':entrySlug',
-      //   loadComponent: () => import('./components/pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
-      // },
+      {
+        path: ':entrySlug',
+        loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
+      },
       // {
       //   path: 'my-listings',
       //   canActivate: [AuthenticationGuard],
@@ -84,9 +177,10 @@ export const routes: Routes = [
         ]
       },
       {
-        path: 'settings',
+        path: NAVIGATION.settings.path,
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/settings/settings.component').then(m => m.HomePageComponent),
+        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
+        data: { breadcrumb: NAVIGATION.settings.label },
         children: [
           // {
           //   path: 'user',

@@ -16,14 +16,14 @@ export const NAVIGATION = {
     id: 1,
     path: '',
     label: 'Home',
-    icon: '@tui.settings',
+    icon: '@tui.home',
     slots: [
-      // { id: Menu.Main, order: 1 }
+      { id: Menu.Main, order: 1 }
     ]
   },
   applications: {
     id: 2,
-    path: '',
+    path: 'applications',
     label: 'Applications',
     icon: '@tui.layout-grid',
     slots: [
@@ -33,7 +33,7 @@ export const NAVIGATION = {
   },
   suites: {
     id: 3,
-    path: '',
+    path: 'suites',
     label: 'Suites',
     icon: '@tui.briefcase-business',
     slots: [
@@ -42,7 +42,7 @@ export const NAVIGATION = {
   },
   articles: {
     id: 4,
-    path: '',
+    path: 'articles',
     label: 'Articles',
     icon: '@tui.newspaper',
     slots: [
@@ -51,7 +51,7 @@ export const NAVIGATION = {
   },
   favourites: {
     id: 5,
-    path: '',
+    path: 'favourites',
     label: 'Favourites',
     icon: '@tui.folder-heart',
     slots: [
@@ -61,7 +61,7 @@ export const NAVIGATION = {
   },
   mySuites: {
     id: 6,
-    path: '',
+    path: 'my-suites',
     label: 'My suites',
     icon: '@tui.book-copy',
     slots: [
@@ -71,7 +71,7 @@ export const NAVIGATION = {
   },
   myApps: {
     id: 7,
-    path: '',
+    path: 'my-apps',
     label: 'My apps',
     icon: '@tui.app-window',
     slots: [
@@ -81,7 +81,7 @@ export const NAVIGATION = {
   },
   ownership: {
     id: 8,
-    path: '',
+    path: 'ownership',
     label: 'Ownership',
     icon: '@tui.link',
     slots: [
@@ -91,7 +91,7 @@ export const NAVIGATION = {
   },
   settings: {
     id: 9,
-    path: '',
+    path: 'settings',
     label: 'Settings',
     icon: '@tui.settings',
     slots: [
@@ -103,15 +103,15 @@ export const NAVIGATION = {
     id: 10,
     path: 'category',
     label: 'Categories',
-    icon: '@tui.settings',
+    icon: '@tui.folder',
     slots: [
     ]
   },
   tags: {
     id: 11,
-    path: 'Tags',
+    path: 'tags',
     label: 'Tags',
-    icon: '@tui.settings',
+    icon: '@tui.tag',
     slots: [
     ]
   },

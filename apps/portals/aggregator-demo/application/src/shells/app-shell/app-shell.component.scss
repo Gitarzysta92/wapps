@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 [stickyStateIndicator] {
   position: absolute;
   top: 0;
@@ -13,17 +15,312 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 100px;
+  height: $space-24;
   background: linear-gradient(to bottom, 
-    rgba(248, 249, 250, 1) 0%, 
-    rgba(248, 249, 250, 0.8) 50%, 
-    rgba(248, 249, 250, 0) 100%);
+    $color-bg-muted 0%, 
+    rgba(249, 250, 251, 0.8) 50%, 
+    rgba(249, 250, 251, 0) 100%);
   pointer-events: none;
-  z-index: 10;
-  border-radius: 8px 8px 0 0;
+  z-index: $z-base;
+  border-radius: $radius-sm $radius-sm 0 0;
 }
 
 header {
   position: sticky;
   top: 0;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $space-16;
+  height: 100vh;
+  background: $color-white;
+  box-shadow: 2px 0 10px $rgba-black-10;
+  z-index: $z-modal;
+  @include transition(all, $duration-300);
+  display: flex;
+  flex-direction: column;
+  
+  &.collapsed {
+    width: $space-16;
+    
+    .nav-label {
+      display: none;
+    }
+    
+    .nav-item {
+      justify-content: center;
+      padding: $space-3;
+    }
+  }
+  
+  &.expanded {
+    width: 300px; // Custom width for expanded sidebar
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-5;
+  border-bottom: $border-width-thin solid $color-border;
+  background: $color-bg-muted;
+  min-height: $space-16;
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+  
+  .expand-btn {
+    width: $space-8;
+    height: $space-8;
+    border-radius: $radius-full;
+    border: none;
+    background: $color-gray-200;
+    color: $color-text-weak;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include transition(all, $duration-200);
+    
+    &:hover {
+      background: $color-gray-100-ish;
+      color: $color-text;
+    }
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: $space-5 0;
+  overflow-y: auto;
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-5;
+    margin: $space-1 0;
+    text-decoration: none;
+    color: $color-text;
+    @include transition(all, $duration-200);
+    border-radius: 0;
+    width: 100%;
+    justify-content: flex-start;
+    
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.2rem;
+      min-height: 1.2rem;
+      flex-shrink: 0;
+    }
+    
+    .nav-label {
+      @include text($font-size-sm, $font-weight-medium);
+      flex: 1;
+      @include transition(opacity, $duration-300);
+    }
+    
+    &:hover {
+      background: $color-bg-muted;
+      color: var(--tui-primary);
+      
+      .nav-icon tui-icon {
+        color: var(--tui-primary);
+      }
+    }
+    
+    &.active {
+      background: var(--tui-primary);
+      color: $color-white;
+      
+      .nav-icon tui-icon {
+        color: $color-white;
+      }
+    }
+  }
+}
+
+.right-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: $space-16;
+  height: 100vh;
+  background: var(--tui-background-elevation-3);
+  border: $border-width-thin solid var(--tui-border-normal);
+  border-right: none;
+  z-index: $z-modal;
+  @include transition(all, $duration-300);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px $rgba-black-10;
+  
+  &.collapsed {
+    width: $space-16;
+    
+    .nav-label {
+      display: none;
+    }
+    
+    .navigation_section a {
+      justify-content: center;
+      padding: $space-3;
+    }
+  }
+  
+  &.expanded {
+    width: 220px; // Custom width for expanded right sidebar
+  }
+}
+
+.right-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-5;
+  border-bottom: $border-width-thin solid var(--tui-border-normal);
+  background: var(--tui-background-elevation-3);
+  min-height: $space-16;
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+  
+  .expand-btn {
+    width: $space-8;
+    height: $space-8;
+    border-radius: $radius-full;
+    border: none;
+    background: var(--tui-background-elevation-2);
+    color: var(--tui-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include transition(all, $duration-200);
+    
+    &:hover {
+      background: var(--tui-background-elevation-1);
+      color: var(--tui-text-primary);
+    }
+  }
+}
+
+.user-profile_section {
+  padding: $space-5 $space-6;
+  display: flex;
+  flex-direction: row;
+  @include text($font-size-xs);
+  color: var(--tui-text-secondary);
+  
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.navigation_section {
+  padding: 0 $space-3;
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  a {
+    --t-size: var(--tui-height-m);
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-5;
+    margin: $space-1 0;
+    text-decoration: none;
+    color: var(--tui-text-primary);
+    @include transition(all, $duration-200);
+    border-radius: 0;
+    width: 100%;
+    justify-content: flex-start;
+    
+    .nav-label {
+      @include text($font-size-sm, $font-weight-medium);
+      flex: 1;
+      @include transition(opacity, $duration-300);
+    }
+    
+    &:hover {
+      background: var(--tui-background-elevation-2);
+      color: var(--tui-primary);
+    }
+  }
+}
+
+.theme_section {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  @include text($font-size-xs);
+  color: var(--tui-text-secondary);
+  
+  theme-toggle {
+    display: block;
+    height: $space-6;
+    margin-right: $space-3;
+  }
+}
+
+.logout-button {
+  width: 100%;
+  border-radius: 0;
+  padding: 0 $space-7;
+  justify-content: start;
+}
+
+div[my-profile-name] {
+  margin-left: $space-3;
+}
+
+hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: $border-width-thin solid var(--tui-border-normal);
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .sidebar {
+    width: $space-12;
+    
+    &.collapsed {
+      width: $space-12;
+    }
+    
+    &.expanded {
+      width: 280px; // Custom width for mobile expanded sidebar
+    }
+  }
+  
+  .right-sidebar {
+    width: $space-12;
+    
+    &.collapsed {
+      width: $space-12;
+    }
+    
+    &.expanded {
+      width: 200px; // Custom width for mobile expanded right sidebar
+    }
+  }
 }

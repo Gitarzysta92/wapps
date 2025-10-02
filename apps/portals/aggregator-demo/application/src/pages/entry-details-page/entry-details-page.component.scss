@@ -1,0 +1,556 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Page Layout
+.page-layout {
+  @include grid-container($container-lg);
+  padding: 0;
+}
+
+// App Header Section
+.app-header-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+  padding: $space-6 0;
+}
+
+.app-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: $space-6;
+  align-items: flex-start;
+  @include grid-container($container-lg);
+}
+
+.app-icon-title {
+  display: flex;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+.app-icon {
+  flex-shrink: 0;
+}
+
+.app-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.app-title {
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+}
+
+.developer-link {
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-primary-600;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rating-stars {
+  display: flex;
+  gap: $space-0_5;
+}
+
+.star-icon {
+  color: $color-accent-500;
+  font-size: $font-size-sm;
+}
+
+.rating-text {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-strong;
+}
+
+.reviews-count {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+.app-labels {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  align-items: flex-end;
+}
+
+.label {
+  font-size: $font-size-xs;
+}
+
+.app-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  align-items: flex-end;
+}
+
+.install-btn {
+  min-width: 120px;
+}
+
+.action-btn {
+  min-width: 100px;
+}
+
+.action-icon {
+  margin-right: $space-1;
+}
+
+// Main Content Layout (6:2 ratio)
+.content-layout {
+  display: grid;
+  grid-template-columns: 6fr 2fr;
+  gap: $space-6;
+  padding: $space-6 0;
+  min-height: 60vh;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.aside-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  position: sticky;
+  top: $space-6;
+  height: fit-content;
+}
+
+// Aside Cards
+.aside-card {
+  background: $color-bg;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  box-shadow: $shadow-sm;
+}
+
+.card-title {
+  @include text($font-size-lg, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-3 0;
+  padding-bottom: $space-2;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+// Detail Rows in Aside
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-2 0;
+  border-bottom: $border-width-thin solid $color-bg-muted;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.detail-label {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-muted;
+}
+
+.detail-value {
+  @include text($font-size-sm, $font-weight-regular);
+  color: $color-text-strong;
+}
+
+// Full Width Buttons
+.full-width-btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+// Developer Info in Aside
+.developer-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dev-name {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.dev-email,
+.dev-address {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+// Recommendations in Aside
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2;
+  background: $color-bg-muted;
+  border-radius: $radius-sm;
+  transition: background-color $duration-200;
+  
+  &:hover {
+    background: $color-bg-subtle;
+  }
+}
+
+.rec-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-sm;
+  object-fit: cover;
+}
+
+.rec-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-0_5;
+  flex: 1;
+}
+
+.rec-name {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-strong;
+}
+
+.rec-rating {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+// Media Gallery Section
+.media-gallery-section {
+  background: $color-bg-muted;
+  padding: $space-6 0;
+}
+
+.media-gallery {
+  @include grid-container($container-lg);
+}
+
+.featured-media {
+  margin-bottom: $space-4;
+}
+
+.feature-graphic {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+}
+
+.screenshots-carousel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: $space-3;
+}
+
+.screenshot {
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: $radius-sm;
+    box-shadow: $shadow-sm;
+    transition: transform $duration-200;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+// Section Styling
+.section-content {
+  @include grid-container($container-lg);
+  padding: $space-6 0;
+}
+
+.section-title {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+}
+
+// About Section
+.about-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.short-description {
+  @include text($font-size-lg, $font-weight-medium);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+}
+
+.long-description {
+  margin-bottom: $space-4;
+  
+  p {
+    @include text($font-size-md, $font-weight-regular, $line-height-loose);
+    color: $color-text;
+    margin: 0 0 $space-3 0;
+  }
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: $space-4 0;
+  
+  li {
+    @include text($font-size-md, $font-weight-regular, $line-height-loose);
+    color: $color-text;
+    padding: $space-1 0;
+    position: relative;
+    padding-left: $space-6;
+    
+    &::before {
+      content: "•";
+      color: $color-primary-600;
+      font-weight: $font-weight-bold;
+      position: absolute;
+      left: 0;
+    }
+  }
+}
+
+.app-links {
+  display: flex;
+  gap: $space-4;
+  margin: $space-4 0;
+}
+
+.app-link {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-primary-600;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.app-meta {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  margin-top: $space-4;
+}
+
+.meta-item {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+// App Details Section (moved to aside, keeping for reference)
+.app-details-section {
+  background: $color-bg-muted;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-4;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+// Data Safety Section
+.data-safety-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.safety-intro {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0 0 $space-4 0;
+}
+
+.safety-items {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.safety-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  
+  span {
+    @include text($font-size-sm, $font-weight-regular);
+    color: $color-text;
+  }
+}
+
+.safety-icon {
+  color: $color-accent-500;
+  font-size: $font-size-md;
+}
+
+// What's New Section
+.whats-new-section {
+  background: $color-bg-muted;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.changelog {
+  background: $color-bg;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+  box-shadow: $shadow-sm;
+}
+
+.version {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+  margin-bottom: $space-2;
+}
+
+.changes {
+  p {
+    @include text($font-size-sm, $font-weight-regular, $line-height-loose);
+    color: $color-text;
+    margin: $space-1 0;
+  }
+}
+
+.flag-btn {
+  font-size: $font-size-sm;
+}
+
+// Support Section
+.support-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.support-links {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.support-link {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-primary-600;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.support-icon {
+  font-size: $font-size-md;
+}
+
+// Developer Info Section (moved to aside, keeping for reference)
+.developer-info-section {
+  background: $color-bg-muted;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.developer-details {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.developer-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.developer-label {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-muted;
+}
+
+.developer-value {
+  @include text($font-size-md, $font-weight-regular);
+  color: $color-text-strong;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+    gap: $space-4;
+  }
+  
+  .aside-content {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    grid-template-columns: 1fr;
+    gap: $space-4;
+    text-align: center;
+  }
+  
+  .app-labels,
+  .app-actions {
+    align-items: center;
+  }
+  
+  .app-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .screenshots-carousel {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}

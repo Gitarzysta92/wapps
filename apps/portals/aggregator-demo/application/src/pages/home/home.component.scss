@@ -1,6 +1,8 @@
 
 
 
+@use 'ui/design-system/src/styles' as *;
+
 .flex-container {
   display: flex;
   flex-direction: column;
@@ -12,7 +14,7 @@
 .section__smart-search.stuck {
   multi-search {
     top: 0;
-    padding: 10px;
+    padding: $space-2_5;
     position: fixed;
     width: 100%;
   }
@@ -24,8 +26,7 @@
   align-items: center;
   height: calc(40vh);
   justify-content: flex-end;
-  width: 800px;
-  min-width: 800px;
+  @include grid-container($container-lg);
   padding: 0;
 
   ui-chat-window {
@@ -39,8 +40,7 @@
   align-items: center;
   justify-content: flex-end;
   multi-search {
-    width: 800px;
-    min-width: 800px;
+    @include grid-container($container-lg);
   }
 }
 
@@ -56,35 +56,35 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px 0;
+  padding: $space-5 0;
 }
 
 .container {
-  margin: 20px auto;
+  margin: $space-5 auto;
 }
 
 .grid-container {
   display: grid;
-  grid-gap: 12px;
+  grid-gap: $space-3;
   grid-template-columns: [col1-start] calc(33% - 4px) [col1-end col2-start] calc(33% - 4px) [col2-end col3-start] calc(33% - 4px) [col3-end];
   grid-template-rows: [row1-start] auto [row2-start] auto [row2-end];
-  background-color: #fff;
-  color: #444;
+  background-color: $color-bg;
+  color: $color-text;
 }
 
 
 .featured {
-  border-radius: 5px;
-  background-color: aqua;
-  padding: 18px;
+  border-radius: $radius-sm;
+  background-color: $color-accent-500;
+  padding: $space-4;
 }
 
 .application-banner {
-  background-color: #444;
-  color: #fff;
-  border-radius: 5px;
-  padding: 18px;
-  font-size: 150%;
+  background-color: $color-gray-700;
+  color: $color-text-light;
+  border-radius: $radius-sm;
+  padding: $space-4;
+  font-size: $font-size-2xl;
 
 }
 
@@ -109,73 +109,72 @@
 }
 
 .tile {
-  background-color: #44444418;
-  color: #fff;
-  border-radius: 5px;
-  padding: 18px;
-  font-size: 150%;
+  background-color: $color-gray-700;
+  opacity: 0.1;
+  color: $color-text-light;
+  border-radius: $radius-sm;
+  padding: $space-4;
+  font-size: $font-size-2xl;
   flex-grow: 1;
-  height: 100px;
+  height: $space-24;
   
 }
 
 
 .shortcuts-heading {
-  padding: 20px;
-  font-size: 100%;
+  padding: $space-5 0;
+  font-size: $font-size-md;
   text-align: left;
-  width: 800px;
+  @include grid-container($container-lg);
 }
 
 .separator {
-  margin: 30px 0;
-  width: 800px;
+  margin: $space-7 0;
+  @include grid-container($container-lg);
 }
 
 .shortcuts {
-  width: 800px;
+  @include grid-container($container-lg);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: $space-2_5;
 }
 
 // Facebook-style feed containers
 .feed-container {
-  width: 800px;
-  margin: 0 auto;
-  max-width: 100%;
+  @include grid-container($container-lg);
 }
 
 .feed-post {
-  background-color: #ffffff;
-  border: 1px solid #dadde1;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  background-color: $color-bg;
+  border: $border-width-thin solid $color-border;
+  border-radius: $space-2;
+  margin-bottom: $space-4;
   padding: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-sm;
 }
 
 .post-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f2f5;
+  padding: $space-3 $space-4;
+  border-bottom: $border-width-thin solid $color-bg-muted;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $space-2;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  width: $space-10;
+  height: $space-10;
+  border-radius: $radius-full;
+  background: linear-gradient(45deg, $color-indigo-400 0%, $color-purple-600 100%);
 }
 
 .user-details {
@@ -184,82 +183,82 @@
 }
 
 .user-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: #1c1e21;
-  line-height: 1.2;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
+  color: $color-text-strong;
+  line-height: $line-height-tight;
 }
 
 .post-time {
-  font-size: 12px;
-  color: #65676b;
-  line-height: 1.2;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  line-height: $line-height-tight;
 }
 
 .post-options {
-  font-size: 20px;
-  color: #65676b;
+  font-size: $space-5;
+  color: $color-text-muted;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  transition: background-color $duration-200;
 
   &:hover {
-    background-color: #f0f2f5;
+    background-color: $color-bg-muted;
   }
 }
 
 .post-content {
-  padding: 12px 16px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #1c1e21;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+  color: $color-text-strong;
 }
 
 .post-image {
   width: 100%;
-  height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: $space-20;
+  background: linear-gradient(135deg, $color-indigo-400 0%, $color-purple-600 100%);
   margin: 0;
 }
 
 .post-actions {
   display: flex;
   justify-content: space-around;
-  padding: 8px 16px;
-  border-top: 1px solid #f0f2f5;
+  padding: $space-2 $space-4;
+  border-top: $border-width-thin solid $color-bg-muted;
 }
 
 .action-btn {
   background: none;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: $space-2 $space-4;
+  border-radius: $radius-sm;
   cursor: pointer;
-  font-size: 13px;
-  color: #65676b;
-  transition: background-color 0.2s;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  transition: background-color $duration-200;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: $space-1;
 
   &:hover {
-    background-color: #f0f2f5;
+    background-color: $color-bg-muted;
   }
 }
 
 .post-stats {
-  padding: 8px 16px;
-  font-size: 13px;
-  color: #65676b;
+  padding: $space-2 $space-4;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
   display: flex;
   justify-content: space-between;
 }
 
 .likes-count {
-  font-weight: 500;
+  font-weight: $font-weight-medium;
 }
 
 .comments-count {
-  font-weight: 500;
+  font-weight: $font-weight-medium;
 }
