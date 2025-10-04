@@ -1,9 +1,5 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { createAppConfig } from './app-config';
 import { mergeApplicationConfig } from '@angular/core';
 // import { appConfigCSR } from './app-config.csr';
-import { routes } from './routes';
-import { AppRootComponent } from './components/app-root.component';
 import { provideProfileFeature } from '@portals/shared/features/profile';
 import {
   provideIdentityRegistrationFeature,
@@ -22,18 +18,12 @@ import { provideUserStatisticPlatformFeature } from '@portals/shared/features/me
 import { provideMultiSearchFeature } from '@portals/shared/features/multi-search';
 import { provideTagsFeature } from '@portals/shared/features/tags';
 import { provideSmartSearchFeature } from '@portals/shared/features/smart-search';
-import { MY_PROFILE_DEFAULT } from './data/my-profile-default';
-import { FILTERS } from './filters';
 import { NAVIGATION } from './navigation';
+import { APP_SHELL_STATE } from './shells/app-shell/app-shell.component';
+import { GlobalStateService } from './state/global-state.service';
 
 
-
-
-bootstrapApplication(AppRootComponent,
-  mergeApplicationConfig(
-    createAppConfig({
-      routes: routes
-    }),
+export const APPLICATION_ROOT = mergeApplicationConfig(
     provideIdentityLoginFeature(),
     provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
@@ -58,5 +48,11 @@ bootstrapApplication(AppRootComponent,
     provideUserStatisticPlatformFeature(),
     provideTagsFeature(),
     provideMultiSearchFeature(),
-    provideSmartSearchFeature()
-  ))
+    provideSmartSearchFeature(),
+    {
+      providers: [
+        GlobalStateService,
+        { provide: APP_SHELL_STATE, useExisting: GlobalStateService }
+      ]
+    }
+  )

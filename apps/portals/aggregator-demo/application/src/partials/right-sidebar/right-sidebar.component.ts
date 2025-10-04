@@ -7,6 +7,7 @@ import { Menu } from '../../navigation';
 import { AuthenticationService } from '@portals/shared/features/identity';
 import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile';
+import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.component';
 
 @Component({
   selector: 'right-sidebar',
@@ -26,7 +27,7 @@ import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile
     ThemingDescriptorDirective
   ]
 })
-export class RightSidebarPartialComponent {
+export class RightSidebarPartialComponent implements IAppShellSidebarComponent {
   private readonly navigationService = inject(NavigationService);
   public readonly authService = inject(AuthenticationService, { optional: true });
   public readonly theme = inject(THEME_PROVIDER_TOKEN);

@@ -1,47 +1,39 @@
 <div class="chat-fade-overlay"></div>
 
-@if (headerComponent | async; as cmp) {
-  <header>
+@if (headerComponent$ | async; as cmp) {
+  <header class="container">
     <ng-container 
-      *ngComponentOutlet="cmp; inputs: { 
-        showCollapseButton: showCollapseButton
-      }">
+      *ngComponentOutlet="cmp; inputs: { }">
     </ng-container>
   </header>  
 }
 
-@if (leftSidebarComponent | async; as cmp) {
-  <aside class="sidebar" 
-    [class.expanded]="isSidebarExpanded" 
-    [class.collapsed]="!isSidebarExpanded"
-    (click)="onSidebarClick($event, 'left')">
+@if (leftSidebarComponent$ | async; as cmp) {
+  <aside class="container sidebar sidebar-left">
     <ng-container 
       *ngComponentOutlet="cmp; inputs: { 
-        isExpanded: isSidebarExpanded
+        isExpanded: isLeftSidebarExpanded$ | async
       }">
     </ng-container>
   </aside>
 }
 
-@if (rightSidebarComponent | async; as cmp) {
-  <aside class="right-sidebar" 
-    [class.expanded]="isRightSidebarExpanded" 
-    [class.collapsed]="!isRightSidebarExpanded"
-    (click)="onSidebarClick($event, 'right')">
-    <ng-container 
-      *ngComponentOutlet="cmp; inputs: { 
-        isExpanded: isRightSidebarExpanded
-      }">
-    </ng-container>
-  </aside>
-}
-
-<main>
-  <router-outlet ></router-outlet>
+<main class="container container-main">
+  <router-outlet></router-outlet>
 </main>
 
+@if (rightSidebarComponent$ | async; as cmp) {
+  <aside class="container sidebar sidebar-right">
+    <ng-container 
+      *ngComponentOutlet="cmp; inputs: { 
+        isExpanded: isRightSidebarExpanded$ | async
+      }">
+    </ng-container>
+  </aside>
+}
 
-@if (footerComponent | async; as cmp) {
+
+@if (footerComponent$ | async; as cmp) {
   <footer class="container">
     <ng-container *ngComponentOutlet="cmp"></ng-container>
   </footer>

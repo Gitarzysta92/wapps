@@ -7,6 +7,7 @@ export * from './infrastructure/password-reset-api.service';
 export * from './infrastructure/password-reset-request-api.service';
 
 export * from './login.providers';
+export * from './management.providers';
 export * from './registration.providers';
 export * from './password-reset-request.providers';
 
