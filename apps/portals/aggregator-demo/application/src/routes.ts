@@ -12,6 +12,7 @@ import { FILTERS } from "./filters";
 import { NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
+import { HeaderV2PartialComponent } from "./partials/header-v2/header-v2.component";
 import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
 import { RightSidebarPartialComponent } from "./partials/right-sidebar/right-sidebar.component";
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
@@ -38,7 +39,7 @@ export const routes: Routes = [
         component: HomePageComponent,
         data: {
           breadcrumb: NAVIGATION.home.label,
-          header: HeaderPartialComponent,
+          header: null,
           leftSidebar: LeftSidebarPartialComponent,
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
@@ -58,7 +59,13 @@ export const routes: Routes = [
       {
         path: NAVIGATION.suites.path,
         loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
-        data: { breadcrumb: NAVIGATION.suites.label },
+        data: {
+          breadcrumb: NAVIGATION.suites.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
         children: [
           {
             path: `:${FILTERS.category}/page/:page`,
@@ -73,7 +80,13 @@ export const routes: Routes = [
       {
         path: NAVIGATION.articles.path,
         loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
-        data: { breadcrumb: NAVIGATION.articles.label },
+        data: {
+          breadcrumb: NAVIGATION.articles.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
         children: [
           {
             path: `:${FILTERS.category}/page/:page`,

@@ -1,0 +1,11 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  @include grid-container($container-lg);
+  display: block;
+}
+
+.multisearch-container {
+  display: block;
+  width: 100%;
+}
