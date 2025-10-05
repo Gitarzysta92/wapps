@@ -100,7 +100,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.feed.path,
-        loadComponent: () => import('./pages/feed/feed.component').then(m => m.FeedPageComponent),
+        loadComponent: () => import('@portals/shared/features/feed').then(m => m.FeedPageComponent),
         data: {
           breadcrumb: NAVIGATION.feed.label,
           header: HeaderPartialComponent,
