@@ -1,35 +1,34 @@
-<search-bar
-  [initialValue]="initialValue$ | async"
-  (onSearch)="state.setQueryParams($event)"
-  (onFocus)="isFocused = $event"
-  [tuiDropdown]="resultTemplate"
-  tuiDropdownAlign="center"
-  [tuiDropdownManual]="isFocused">
-  <tui-loader *ngIf="loadingResults && isFocused"/>
-</search-bar>
+<div class="search-container" [class.focused]="isFocused">
+  <search-bar
+    [initialValue]="initialValue$ | async"
+    (onSearch)="state.setQueryParams($event)"
+    (onFocus)="onFocusChange($event)">
+    <tui-loader *ngIf="loadingResults && isFocused"/>
+  </search-bar>
+  
+  <div class="dropdown" *ngIf="isFocused">
+    <div class="multisearch-result">
+      @if (searchPhraseProvided$ | async) {
+        @let searchResult = searchResults$ | async;
 
-<ng-template #resultTemplate>
-  <div class="multisearch-result">
-    @if (searchPhraseProvided$ | async) {
-      @let searchResult = searchResults$ | async;
-
-      @if (loadingResults) {
-        <ul search-result-list-skeleton></ul>
+        @if (loadingResults) {
+          <ul search-result-list-skeleton></ul>
+        }
+        @else if (searchResult && searchResult.groups.length > 0) {
+          <a [full-search-redirect]="searchResult.itemsNumber"></a>
+          <ul [search-result-list]="searchResult.groups"></ul>
+        }
+        @else {
+          No results
+        }
       }
-      @else if (searchResult && searchResult.groups.length > 0) {
-        <a [full-search-redirect]="searchResult.itemsNumber"></a>
-        <ul [search-result-list]="searchResult.groups"></ul>
+      @else {   
+        Recent searches:
+        <ul [search-result-list]="recentSearches.groups"></ul>
       }
-      @else {
-        No results
-      }
-    }
-    @else {   
-      Recent searches:
-      <ul [search-result-list]="recentSearches.groups"></ul>
-    }
+    </div>
   </div>
-</ng-template>
+</div>
 
 
 

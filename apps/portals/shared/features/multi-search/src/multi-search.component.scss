@@ -1,7 +1,28 @@
 @use 'ui/design-system/src/styles' as *;
 
+.search-container {
+  position: relative;
+  display: block;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--tui-base-03);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
 .multisearch-result {
   box-sizing: border-box;
   padding: var(--tui-padding-l);
   width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
 }
