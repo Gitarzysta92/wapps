@@ -99,6 +99,17 @@ export const routes: Routes = [
         ]
       },
       {
+        path: NAVIGATION.feed.path,
+        loadComponent: () => import('./pages/feed/feed.component').then(m => m.FeedPageComponent),
+        data: {
+          breadcrumb: NAVIGATION.feed.label,
+          header: HeaderPartialComponent,
+          leftSidebar: LeftSidebarPartialComponent,
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
         path: NAVIGATION.favourites.path,
         canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
