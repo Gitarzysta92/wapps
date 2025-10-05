@@ -115,10 +115,10 @@ export const NAVIGATION = {
     slots: [
     ]
   },
-  feed: {
+  newsFeed: {
     id: 12,
-    path: 'feed',
-    label: 'Feed',
+    path: 'news-feed',
+    label: 'News Feed',
     icon: '@tui.rss',
     slots: [
       { id: Menu.Main, order: 4 },

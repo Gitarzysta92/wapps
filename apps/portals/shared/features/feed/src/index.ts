@@ -1,1 +1,1 @@
-export * from './presentation/feed.component';
+export * from './presentation';

@@ -99,10 +99,10 @@ export const routes: Routes = [
         ]
       },
       {
-        path: NAVIGATION.feed.path,
-        loadComponent: () => import('@portals/shared/features/feed').then(m => m.FeedPageComponent),
+        path: NAVIGATION.newsFeed.path,
+        loadComponent: () => import('@portals/shared/features/feed').then(m => m.NewsFeedPageComponent),
         data: {
-          breadcrumb: NAVIGATION.feed.label,
+          breadcrumb: NAVIGATION.newsFeed.label,
           header: HeaderPartialComponent,
           leftSidebar: LeftSidebarPartialComponent,
           rightSidebar: RightSidebarPartialComponent,
