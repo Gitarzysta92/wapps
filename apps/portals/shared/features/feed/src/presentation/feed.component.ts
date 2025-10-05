@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
+import { TuiButton, TuiLoader, TuiIcon } from '@taiga-ui/core';
 import { IFeedItem, FeedItemType } from './models';
 import { ArticleHighlightFeedItemComponent } from './feed-items/article-highlight-feed-item.component';
 import { ApplicationHealthFeedItemComponent } from './feed-items/application-health-feed-item.component';
 import { NewsFeedService } from './services/news-feed.service';
-import { InfiniteScrollDirective } from './directives/infinite-scroll.directive';
+import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 
 @Component({
   selector: 'news-feed',
@@ -15,6 +16,9 @@ import { InfiniteScrollDirective } from './directives/infinite-scroll.directive'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    TuiButton,
+    TuiLoader,
+    TuiIcon,
     ArticleHighlightFeedItemComponent,
     ApplicationHealthFeedItemComponent,
     InfiniteScrollDirective
@@ -49,7 +53,7 @@ export class NewsFeedPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onScroll(): void {
+  onScrolledToBottom(): void {
     if (this.useInfiniteScroll) {
       this.newsFeedService.loadNextPage();
     }
