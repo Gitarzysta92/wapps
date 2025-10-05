@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { TuiButton, TuiLoader, TuiIcon } from '@taiga-ui/core';
+import { TuiLoader } from '@taiga-ui/core';
 import { IFeedItem, FeedItemType } from './models';
 import { ArticleHighlightFeedItemComponent } from './feed-items/article-highlight-feed-item.component';
 import { ApplicationHealthFeedItemComponent } from './feed-items/application-health-feed-item.component';
@@ -16,9 +16,7 @@ import { InfiniteScrollDirective } from '@ui/infinite-scroll';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    TuiButton,
     TuiLoader,
-    TuiIcon,
     ArticleHighlightFeedItemComponent,
     ApplicationHealthFeedItemComponent,
     InfiniteScrollDirective
@@ -27,6 +25,7 @@ import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 export class NewsFeedPageComponent implements OnInit, OnDestroy {
   @Input() useInfiniteScroll = false; // Toggle between static and infinite scroll mode
   @Input() feedItems: IFeedItem[] = []; // For static mode
+  @Input() itemTemplate?: TemplateRef<{ $implicit: IFeedItem }>; // Custom template for rendering items
 
   FeedItemType = FeedItemType;
   

@@ -24,7 +24,20 @@
   </section>
 
   <section class="section__feed">
-    <news-feed [useInfiniteScroll]="true"></news-feed>
+    <news-feed [useInfiniteScroll]="true" [itemTemplate]="itemTemplate"></news-feed>
+    
+    <ng-template #itemTemplate let-item>
+      <div class="custom-feed-item">
+        <div class="custom-header">
+          <span class="custom-icon">📰</span>
+          <span class="custom-title">{{ item.metadata?.['title'] || 'Feed Item' }}</span>
+          <span class="custom-time">{{ item.timestamp | date:'short' }}</span>
+        </div>
+        <div class="custom-content">
+          <p>{{ item.metadata?.['excerpt'] || item.metadata?.['message'] || 'Feed item content...' }}</p>
+        </div>
+      </div>
+    </ng-template>
   </section>
 
 </main>

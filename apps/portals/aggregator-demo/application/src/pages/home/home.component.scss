@@ -275,3 +275,55 @@
 .comments-count {
   font-weight: $font-weight-medium;
 }
+
+news-feed {
+  width: 100%;
+  display: block;
+}
+
+.custom-feed-item {
+  background: var(--tui-base-01);
+  border: 1px solid var(--tui-base-03);
+  border-radius: 12px;
+  padding: var(--tui-padding-l);
+  margin-bottom: var(--tui-padding-m);
+  box-shadow: 0 2px 8px var(--tui-shadow);
+}
+
+.custom-header {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-padding-s);
+  margin-bottom: var(--tui-padding-s);
+}
+
+.custom-icon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tui-base-02);
+  border-radius: 8px;
+}
+
+.custom-title {
+  flex: 1;
+  font-weight: 600;
+  color: var(--tui-text-01);
+  font-size: 16px;
+}
+
+.custom-time {
+  font-size: 12px;
+  color: var(--tui-text-03);
+}
+
+.custom-content {
+  p {
+    color: var(--tui-text-02);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
