@@ -10,13 +10,27 @@
   justify-content: center;
 }
 
-
-.section__smart-search.stuck {
+.section_quick-search {
+  position: sticky;
+  top: $space-4;
+  @include grid-container($container-lg);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   multi-search {
-    top: 0;
-    padding: $space-2_5;
-    position: fixed;
     width: 100%;
+    display: block;
+  }
+}
+
+.section_intro {
+  @include grid-container($container-lg);
+  h1 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    padding: $space-20 0;
+    text-align: center;
   }
 }
 
@@ -110,7 +124,6 @@
 
 .tile {
   background-color: $color-gray-700;
-  opacity: 0.1;
   color: $color-text-light;
   border-radius: $radius-sm;
   padding: $space-4;

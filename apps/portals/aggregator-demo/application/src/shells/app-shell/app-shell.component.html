@@ -1,7 +1,7 @@
 <div class="chat-fade-overlay"></div>
 
 @if (headerComponent$ | async; as cmp) {
-  <header class="container">
+  <header class="container container-header">
     <ng-container 
       *ngComponentOutlet="cmp; inputs: { }">
     </ng-container>
@@ -9,7 +9,7 @@
 }
 
 @if (leftSidebarComponent$ | async; as cmp) {
-  <aside class="container sidebar sidebar-left">
+  <aside class="container sidebar left">
     <ng-container 
       *ngComponentOutlet="cmp; inputs: { 
         isExpanded: isLeftSidebarExpanded$ | async
@@ -18,12 +18,12 @@
   </aside>
 }
 
-<main class="container container-main">
+<main class="container main">
   <router-outlet></router-outlet>
 </main>
 
 @if (rightSidebarComponent$ | async; as cmp) {
-  <aside class="container sidebar sidebar-right">
+  <aside class="container sidebar right">
     <ng-container 
       *ngComponentOutlet="cmp; inputs: { 
         isExpanded: isRightSidebarExpanded$ | async
@@ -34,7 +34,7 @@
 
 
 @if (footerComponent$ | async; as cmp) {
-  <footer class="container">
+  <footer class="container container-footer">
     <ng-container *ngComponentOutlet="cmp"></ng-container>
   </footer>
 }

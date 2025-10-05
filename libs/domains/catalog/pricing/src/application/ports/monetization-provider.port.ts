@@ -7,4 +7,3 @@ import { MonetizationDto } from "../models/monetization.dto";
 export interface IMonetizationProvider {
   getMonetizations(): Observable<Result<MonetizationDto[], Error>>;
 }
-

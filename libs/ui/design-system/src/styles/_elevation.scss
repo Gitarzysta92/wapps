@@ -17,7 +17,8 @@ $shadow-md: 0 2px 6px $rgba-black-8;
 $shadow-lg: 0 8px 24px $rgba-black-12;
 
 // Z-index scale
-$z-base: 1;
+$z-base-overlay: 1;
+$z-base: 2;
 $z-dropdown: 1000;
 $z-sticky: 1100;
 $z-modal: 1200;

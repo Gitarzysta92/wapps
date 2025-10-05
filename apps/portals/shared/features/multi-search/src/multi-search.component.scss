@@ -1,11 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 
-:host {
-  @include grid-container($container-lg);
-}
-
 .multisearch-result {
-  @include grid-container($container-lg);
   box-sizing: border-box;
   padding: var(--tui-padding-l);
+  width: 100%;
 }

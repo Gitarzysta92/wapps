@@ -1,0 +1,58 @@
+// App Shell Width Values
+@use './grid' as *;
+@use './space' as *;
+@use './media' as *;
+
+$sidebar-min-width: 200px;
+$layout-breakpoint-sm: $tui-mobile;
+$custom-tablet-min: calc($container-sm + $sidebar-min-width * 2);
+$layout-breakpoint-md: $custom-tablet-min;
+$layout-breakpoint-lg: $tui-desktop;
+$layout-breakpoint-xl: $tui-desktop-lg-min;
+
+
+@mixin main-width {
+
+  @media #{$layout-breakpoint-xl} {
+    width: 100%;
+    max-width: calc($container-xl - ($sidebar-min-width * 2));
+  }
+
+  @media #{$layout-breakpoint-lg} {
+    width: 100%;
+    max-width: calc(100% - ($sidebar-min-width * 2));
+  }
+
+  @media screen and (max-width: #{$layout-breakpoint-md}) {
+    width: $container-sm;
+    max-width: $container-sm;
+  }
+
+  @media #{$layout-breakpoint-sm} {
+    width: 100%;
+    max-width: $container-sm;
+  }
+  
+}
+
+@mixin sidebar-width {
+
+  @media #{$layout-breakpoint-xl} {
+    width: calc((100% - #{$container-xl}) / 2 + $sidebar-min-width);
+  }
+
+  @media #{$layout-breakpoint-lg} {
+    width: $sidebar-min-width;
+  }
+
+  @media (max-width: #{$layout-breakpoint-md}) {
+    width: $sidebar-min-width;
+    display: none;
+  }
+
+  @media #{$layout-breakpoint-sm} {
+    width: 0;
+    display: none;
+  }
+
+}

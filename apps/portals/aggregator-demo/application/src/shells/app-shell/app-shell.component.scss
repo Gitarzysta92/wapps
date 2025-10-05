@@ -8,38 +8,53 @@
   height: $space-24;
   background: var(--chat-fade-gradient);
   pointer-events: none;
-  z-index: $z-base;
+  z-index: $z-base-overlay;
   border-radius: $radius-sm $radius-sm 0 0;
 }
 
-header {
+:host {
   background: var(--header-gradient);
+  display: block;
+}
+
+.container-header {
   position: sticky;
   top: 0;
+  @include main-width();
+  margin: 0 auto;
+  z-index: $z-base;
+}
+
+.container-footer {
+  position: sticky;
+  top: 0;
+  @include main-width();
+  margin: 0 auto;
+  z-index: $z-base;
 }
 
 .sidebar {
   position: fixed;
   top: 0;
-  width: $space-16;
   height: 100vh;
-  @include transition(all, $duration-300);
+  z-index: $z-base;
 
-  &-left {
+  &.left {
     left: 0;
-    background-color: red;
+    @include sidebar-width();
   }
 
-  &-right {
+  &.right {
     right: 0;
-    background-color: green;
+    @include sidebar-width();
   }
 }
 
  .container {
-    display: block;
-
-    &-main {
-      background-color: blue;
+    &.main {
+      position: relative;
+      margin: 0 auto;
+      @include main-width();
+      z-index: $z-base;
     }
   }
