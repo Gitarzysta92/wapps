@@ -3,6 +3,7 @@ import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
 import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from '@portals/shared/features/multi-search';
 import { SearchMockDataService, ListingSearchService } from '@portals/shared/features/search';
+import { FeedPageComponent } from '@portals/shared/features/feed';
 import { HomePageStateService } from "./home-page-state.service";
 
 
@@ -13,6 +14,7 @@ import { HomePageStateService } from "./home-page-state.service";
   styleUrl: 'home.component.scss',
   imports: [
     MultiSearchComponent,
+    FeedPageComponent,
     TuiDropdown,
     TuiBadgedContent,
   ],
