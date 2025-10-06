@@ -1,8 +1,38 @@
-body.dark {
+// Import design system variables
+@use 'ui/design-system/src/styles' as *;
 
+// Light theme gradients using design system variables
+body.light {
+  --chat-fade-gradient: linear-gradient(to bottom, 
+    #{$color-bg-muted} 0%, 
+    rgba(249, 250, 251, 0.8) 50%, 
+    rgba(249, 250, 251, 0) 100%);
+  
+  --sidebar-gradient: linear-gradient(135deg, #{$color-bg-muted} 0%, #{$color-border} 100%);
+  --header-gradient: linear-gradient(90deg, #{$color-white} 0%, #{$color-bg-muted} 100%);
+  --primary-gradient: linear-gradient(45deg, #{$color-primary-600} 0%, #{$color-purple-600} 100%);
+  
+  --overlay-gradient: linear-gradient(180deg, #{$rgba-white-90} 0%, rgba(255, 255, 255, 0) 100%);
+  --card-gradient: linear-gradient(145deg, #{$color-white} 0%, #{$color-bg-muted} 100%);
+  
+  --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
+  --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
 }
 
-
-body.light {
+// Dark theme gradients using design system variables
+body.dark {
+  --chat-fade-gradient: linear-gradient(to bottom, 
+    #{$color-surface} 0%, 
+    rgba(31, 41, 55, 0.8) 50%, 
+    rgba(31, 41, 55, 0) 100%);
   
+  --sidebar-gradient: linear-gradient(135deg, #{$color-gray-700} 0%, #{$color-gray-600} 100%);
+  --header-gradient: linear-gradient(90deg, #{$color-bg-inverse} 0%, #{$color-surface} 100%);
+  --primary-gradient: linear-gradient(45deg, #{$color-primary-600} 0%, #{$color-purple-600} 100%);
+  
+  --overlay-gradient: linear-gradient(180deg, rgba(17, 24, 39, 0.9) 0%, rgba(17, 24, 39, 0) 100%);
+  --card-gradient: linear-gradient(145deg, #{$color-surface} 0%, #{$color-gray-700} 100%);
+  
+  --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
+  --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
 }

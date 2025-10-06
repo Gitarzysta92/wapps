@@ -1,5 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { IAppShellState } from '../shells/app-shell/app-shell.component';
 
 export interface GlobalState {
   isLoading: boolean;
@@ -8,16 +9,17 @@ export interface GlobalState {
   userPanelOpen: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class GlobalStateService {
+@Injectable()
+export class GlobalStateService implements IAppShellState {
   private readonly _state = signal<GlobalState>({
     isLoading: false,
     currentTheme: 'light',
     userPreferences: {},
     userPanelOpen: false
   });
+
+  public isSidebarExpanded = false;
+  public isRightSidebarExpanded = false;
 
   private readonly _userPanelOpen$ = new BehaviorSubject<boolean>(false);
 
@@ -53,4 +55,17 @@ export class GlobalStateService {
     this._userPanelOpen$.next(false);
     this._state.update(current => ({ ...current, userPanelOpen: false }));
   }
+
+  public isLeftSidebarExpanded$ = new BehaviorSubject(false);
+
+  public toggleLeftSidebar(): void {
+    this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
+  }
+
+  public isRightSidebarExpanded$ = new BehaviorSubject(false);
+
+  public toggleRightSidebar(): void {
+    this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
+  }
+
 }

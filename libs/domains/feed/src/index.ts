@@ -1,0 +1,1 @@
+export type { FeedItemDto } from './application/feed-item.dto';

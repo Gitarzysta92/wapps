@@ -1,32 +1,12 @@
-.sidebar-header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--tui-base-03);
-}
-
-.header-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.expand-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  
-  &:hover {
-    background-color: var(--tui-base-02);
-  }
-}
-
 .sidebar-nav {
+  margin-top: 100px;
   padding: 1rem 0;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   padding: 0.75rem 1rem;
   text-decoration: none;
   color: var(--tui-text-01);

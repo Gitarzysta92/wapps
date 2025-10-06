@@ -1,7 +1,17 @@
 <main class="fluid-container">
 
+  <section class="section_intro">
+      <h1>Welcome to the Home Page</h1>
+  </section>
+  
 
-  <section class="section__shortcuts flex-container container">
+
+  <section class="section_quick-search">
+    <multi-search></multi-search>
+  </section>
+  
+
+  <section class="section__shortcuts">
     <div class="shortcuts-heading">
       Shortcuts:
     </div>
@@ -13,199 +23,61 @@
     <hr class="separator">
   </section>
 
-  <section class="section__feed flex-container container">
-    <div class="feed-container">
-      <div class="feed-post">
-        <div class="post-header">
-          <div class="user-info">
-            <div class="avatar"></div>
-            <div class="user-details">
-              <div class="user-name">John Doe</div>
-              <div class="post-time">2 hours ago</div>
+  <section class="section__feed">
+    <news-feed 
+      [useInfiniteScroll]="true" 
+      [itemTemplate]="itemTemplate">
+    </news-feed>
+    
+    <ng-template #itemTemplate let-item>
+      <news-feed-item 
+        [item]="item">
+        @switch (item.type) {
+          @case (FeedItemType.ARTICLE_HIGHLIGHT) {
+            <article-highlight-feed-item content [item]="item"></article-highlight-feed-item>
+          }
+          @case (FeedItemType.APPLICATION_HEALTH) {
+            <application-health-feed-item content [item]="item"></application-health-feed-item>
+          }
+          @default {
+            <div content class="unknown-feed-item">
+              <p>Unknown feed item type: {{ item.type }}</p>
             </div>
-          </div>
-          <div class="post-options">⋯</div>
-        </div>
-        <div class="post-content">
-          Just discovered this amazing app! The interface is super clean and user-friendly. Has anyone else tried it?
-        </div>
-        <div class="post-actions">
-          <button class="action-btn">👍 Like</button>
-          <button class="action-btn">💬 Comment</button>
-          <button class="action-btn">↗️ Share</button>
-        </div>
-        <div class="post-stats">
-          <span class="likes-count">42 likes</span>
-          <span class="comments-count">8 comments</span>
-        </div>
-      </div>
-
-      <div class="feed-post">
-        <div class="post-header">
-          <div class="user-info">
-            <div class="avatar"></div>
-            <div class="user-details">
-              <div class="user-name">Sarah Wilson</div>
-              <div class="post-time">4 hours ago</div>
-            </div>
-          </div>
-          <div class="post-options">⋯</div>
-        </div>
-        <div class="post-content">
-          Working on some exciting new features for our upcoming release. Can't wait to share them with everyone!
-        </div>
-        <div class="post-actions">
-          <button class="action-btn">👍 Like</button>
-          <button class="action-btn">💬 Comment</button>
-          <button class="action-btn">↗️ Share</button>
-        </div>
-        <div class="post-stats">
-          <span class="likes-count">27 likes</span>
-          <span class="comments-count">5 comments</span>
-        </div>
-      </div>
-
-      <div class="feed-post">
-        <div class="post-header">
-          <div class="user-info">
-            <div class="avatar"></div>
-            <div class="user-details">
-              <div class="user-name">Tech News</div>
-              <div class="post-time">6 hours ago</div>
-            </div>
-          </div>
-          <div class="post-options">⋯</div>
-        </div>
-        <div class="post-content">
-          Breaking: New technology breakthrough announced today. This could change the entire industry landscape.
-        </div>
-        <div class="post-image"></div>
-        <div class="post-actions">
-          <button class="action-btn">👍 Like</button>
-          <button class="action-btn">💬 Comment</button>
-          <button class="action-btn">↗️ Share</button>
-        </div>
-        <div class="post-stats">
-          <span class="likes-count">156 likes</span>
-          <span class="comments-count">23 comments</span>
-        </div>
-      </div>
-
-      <div class="feed-post">
-        <div class="post-header">
-          <div class="user-info">
-            <div class="avatar"></div>
-            <div class="user-details">
-              <div class="user-name">Mike Johnson</div>
-              <div class="post-time">1 day ago</div>
-            </div>
-          </div>
-          <div class="post-options">⋯</div>
-        </div>
-        <div class="post-content">
-          Had an incredible experience at the conference today. So many great ideas and inspiring conversations!
-        </div>
-        <div class="post-actions">
-          <button class="action-btn">👍 Like</button>
-          <button class="action-btn">💬 Comment</button>
-          <button class="action-btn">↗️ Share</button>
-        </div>
-        <div class="post-stats">
-          <span class="likes-count">89 likes</span>
-          <span class="comments-count">12 comments</span>
-        </div>
-      </div>
-
-      <div class="feed-post">
-        <div class="post-header">
-          <div class="user-info">
-            <div class="avatar"></div>
-            <div class="user-details">
-              <div class="user-name">Emma Davis</div>
-              <div class="post-time">2 days ago</div>
-            </div>
-          </div>
-          <div class="post-options">⋯</div>
-        </div>
-        <div class="post-content">
-          Just finished reading this amazing book about design principles. Highly recommend it to anyone interested in UI/UX!
-        </div>
-        <div class="post-actions">
-          <button class="action-btn">👍 Like</button>
-          <button class="action-btn">💬 Comment</button>
-          <button class="action-btn">↗️ Share</button>
-        </div>
-        <div class="post-stats">
-          <span class="likes-count">34 likes</span>
-          <span class="comments-count">7 comments</span>
-        </div>
-      </div>
-    </div>
+          }
+        }
+        @if (item.discussion) {
+          <discussion footer [data]="item.discussion"></discussion>
+        }
+      </news-feed-item>
+    </ng-template>
   </section>
 
-
-  
-  <!-- <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-  
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-  
-  
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-  
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section>
-
-  <section class="featured grid-container container">
-    <div class="application-banner a">asdasd</div>
-    <div class="application-banner b">asdasd</div>
-    <div class="application-banner c">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-    <div class="application-banner d">asdasd</div>
-  </section> -->
 </main>
+
+
+
+
+
+
+ <!-- <div class="custom-feed-item">
+        <div class="custom-header">
+          <span class="custom-icon">📰</span>
+          <span class="custom-title">{{ item.metadata?.['title'] || 'Feed Item' }}</span>
+          <span class="custom-time">{{ item.timestamp | date:'short' }}</span>
+        </div>
+        <div class="custom-content">
+          @switch (item.type) {
+            @case (FeedItemType.ARTICLE_HIGHLIGHT) {
+              <article-highlight-feed-item [item]="item"></article-highlight-feed-item>
+            }
+            @case (FeedItemType.APPLICATION_HEALTH) {
+              <application-health-feed-item [item]="item"></application-health-feed-item>
+            }
+            @default {
+              <div class="unknown-feed-item">
+                <p>Unknown feed item type: {{ item.type }}</p>
+              </div>
+            }
+          }
+        </div>
+      </div> -->

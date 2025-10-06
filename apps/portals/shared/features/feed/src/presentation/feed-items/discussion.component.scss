@@ -1,0 +1,21 @@
+.discussion {
+  padding: 0.5rem;
+  background: var(--tui-base-02);
+  border-radius: var(--tui-radius-s);
+  margin-top: 0.5rem;
+
+  .discussion-header {
+    margin-bottom: 0.5rem;
+    
+    h4 {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--tui-text-02);
+    }
+  }
+
+  .discussion-content {
+    font-size: 0.875rem;
+    color: var(--tui-text-01);
+  }
+}

@@ -19,7 +19,6 @@ import { TuiIcon } from '@taiga-ui/core';
     StickyElementDirective,
     OutOfViewportDirective,
     ChatBannerComponent,
-    TuiIcon
   ]
 })
 export class HeaderPartialComponent {

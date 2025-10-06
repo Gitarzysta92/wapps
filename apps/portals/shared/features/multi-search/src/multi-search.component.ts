@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy,  Component, inject } from "@angular/core";
-import { TuiDropdown, TuiLoader } from "@taiga-ui/core";
+import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
+import { TuiLoader } from "@taiga-ui/core";
 import { first, map, of, switchMap, tap } from "rxjs";
 import { FullSearchRedirectComponent, SearchResultList, SearchResultListSkeleton } from "@ui/search-results";
 import { MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
@@ -15,7 +15,6 @@ import { SearchBarComponent } from "@ui/search-bar";
   imports: [
     CommonModule,
     SearchBarComponent,
-    TuiDropdown,
     FullSearchRedirectComponent,
     SearchResultListSkeleton,
     SearchResultList,
@@ -43,5 +42,23 @@ export class MultiSearchComponent {
   public readonly initialValue$ = this._searchPharse.pipe(first());
 
   public readonly recentSearches = this._searchResultsProvider.getRecentSearches()
+
+  public onFocusChange(focused: boolean): void {
+    this.isFocused = focused;
+  }
+
+  public closeDropdown(): void {
+    this.isFocused = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const searchContainer = target.closest('.search-container');
+    
+    if (!searchContainer && this.isFocused) {
+      this.closeDropdown();
+    }
+  }
 
 }

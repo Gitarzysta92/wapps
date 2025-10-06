@@ -60,6 +60,7 @@
       "@domains/customer/my-profile": [
         "libs/domains/customer/my-profile/src/index.ts"
       ],
+      "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
       "@domains/identity": ["libs/domains/identity/src/index.ts"],
       "@domains/identity/authentication": [
@@ -69,6 +70,9 @@
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
+      ],
+      "@portals/shared/features/feed": [
+        "apps/portals/shared/features/feed/src/index.ts"
       ],
       "@features/identity": ["libs/features/identity/index.ts"],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],

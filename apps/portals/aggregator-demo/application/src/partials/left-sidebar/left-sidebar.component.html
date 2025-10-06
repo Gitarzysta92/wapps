@@ -1,13 +1,3 @@
-<div class="sidebar-header">
-  <div class="header-actions">
-    <button 
-      class="expand-btn"
-      [title]="'Toggle sidebar'"
-      (click)="onToggleClick()">
-      <tui-icon [icon]="isExpanded ? 'chevron-left' : 'chevron-right'"></tui-icon>
-    </button>
-  </div>
-</div>
 
 <nav class="sidebar-nav">
   @for (item of navigationItems; track item.id) {
@@ -18,6 +8,7 @@
       type="button"
       [routerLink]="item.path"
       [title]="item.label">
+      <span class="nav-label">{{ item.label }}</span>
       <div class="nav-icon">
         <tui-icon
           [icon]="item.icon || 'tuiIconSettings'"
@@ -26,7 +17,6 @@
           [style.display]="'inline-block'"
           [style.visibility]="'visible'"/>
       </div>
-      <span class="nav-label">{{ item.label }}</span>
     </a>
   }
 </nav>

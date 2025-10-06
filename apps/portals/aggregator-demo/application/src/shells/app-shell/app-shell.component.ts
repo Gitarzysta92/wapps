@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, Type, inject, EventEmitter, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken } from '@angular/core';
 import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { NavigationService } from '@ui/navigation';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
-import { filter, startWith, map, distinctUntilChanged } from 'rxjs';
+import { filter, startWith, map, distinctUntilChanged, Observable } from 'rxjs';
 
 export interface IAppShellRouteData {
   header: Type<IAppShellHeaderComponent> | null;
@@ -21,6 +20,13 @@ export interface IAppShellHeaderComponent {
 export interface IAppShellSidebarComponent {
   isExpanded: boolean;
 }
+
+export interface IAppShellState {
+  isLeftSidebarExpanded$: Observable<boolean>;
+  isRightSidebarExpanded$: Observable<boolean>;
+}
+
+export const APP_SHELL_STATE = new InjectionToken<IAppShellState>('APP_SHELL_STATE');
 
 
 @Component({
@@ -39,10 +45,11 @@ export interface IAppShellSidebarComponent {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppShellComponent implements OnInit {
+export class AppShellComponent {
 
-  private _route = inject(ActivatedRoute);
-  private _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _router = inject(Router);
+  private readonly _shellState = inject(APP_SHELL_STATE);
 
   private readonly _routeData = this._router.events.pipe(
     filter((e) => e instanceof NavigationEnd),
@@ -52,51 +59,27 @@ export class AppShellComponent implements OnInit {
     map(() => this._route.firstChild?.snapshot.data ?? {} as IAppShellRouteData)
   );
 
-  public readonly headerComponent = this._routeData.pipe(
+  public readonly headerComponent$ = this._routeData.pipe(
     map((data) => data['header']),
     distinctUntilChanged()
   );
 
-  public readonly leftSidebarComponent = this._routeData.pipe(
-    map((data) => data['leftSidebar']));
+  public readonly leftSidebarComponent$ = this._routeData.pipe(
+    map((data) => data['leftSidebar']),
+    distinctUntilChanged()
+  );
 
-  public readonly rightSidebarComponent = this._routeData.pipe(
-    map((data) => data['rightSidebar']));
+  public readonly isLeftSidebarExpanded$ = this._shellState.isLeftSidebarExpanded$;
 
-  public readonly footerComponent = this._routeData.pipe(
-    map((data) => data['footer']));
+  public readonly rightSidebarComponent$ = this._routeData.pipe(
+    map((data) => data['rightSidebar']),
+    distinctUntilChanged()
+  );
 
-  private readonly navigationService = inject(NavigationService);
+  public readonly isRightSidebarExpanded$ = this._shellState.isRightSidebarExpanded$;
 
-  ngOnInit(): void {
-    // Component initialization if needed
-  }
-
-  public isSidebarExpanded = false;
-  public isRightSidebarExpanded = false;
-  public showCollapseButton = false;
-
-  public toggleSidebarExpansion(): void {
-    this.isSidebarExpanded = !this.isSidebarExpanded;
-  }
-
-  public toggleRightSidebarExpansion(): void {
-    this.isRightSidebarExpanded = !this.isRightSidebarExpanded;
-  }
-
-  public onHeaderExpandedChange(_isExpanded: boolean): void {
-    // Handle header expansion state changes if needed
-  }
-
-  public onSidebarClick(event: Event, side: 'left' | 'right'): void {
-    const target = event.target as HTMLElement;
-    if (target.classList.contains('expand-btn')) {
-      event.stopPropagation();
-      if (side === 'left') {
-        this.toggleSidebarExpansion();
-      } else {
-        this.toggleRightSidebarExpansion();
-      }
-    }
-  }
+  public readonly footerComponent$ = this._routeData.pipe(
+    map((data) => data['footer']),
+    distinctUntilChanged()
+  );
 }
