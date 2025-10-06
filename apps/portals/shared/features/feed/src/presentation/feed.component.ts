@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, OnDestroy, TemplateR
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { TuiLoader } from '@taiga-ui/core';
-import { IFeedItem, FeedItemType } from './models';
+import { IFeedItem, FeedItemType } from './models/feed-item.interface';
 import { ArticleHighlightFeedItemComponent } from './feed-items/article-highlight-feed-item.component';
 import { ApplicationHealthFeedItemComponent } from './feed-items/application-health-feed-item.component';
 import { NewsFeedService } from './services/news-feed.service';
-import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 
 @Component({
   selector: 'news-feed',
@@ -18,8 +17,7 @@ import { InfiniteScrollDirective } from '@ui/infinite-scroll';
     CommonModule,
     TuiLoader,
     ArticleHighlightFeedItemComponent,
-    ApplicationHealthFeedItemComponent,
-    InfiniteScrollDirective
+    ApplicationHealthFeedItemComponent
   ]
 })
 export class NewsFeedPageComponent implements OnInit, OnDestroy {

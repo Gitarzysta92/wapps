@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, delay } from 'rxjs';
-import { IFeedItem, FeedItemType, FeedItemPriority } from '../models';
+import { BehaviorSubject, Observable, of, delay, map } from 'rxjs';
+import { FeedItemDto } from '@domains/feed';
+import { IFeedItem, FeedItemType, FeedItemPriority } from '../models/feed-item.interface';
+import { FeedItemMapper } from '../mappers/feed-item.mapper';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -8,9 +10,7 @@ export interface INewsFeedPage {
   nextPage?: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class NewsFeedService {
   private readonly _feedItems$ = new BehaviorSubject<IFeedItem[]>([]);
   private readonly _loading$ = new BehaviorSubject<boolean>(false);
@@ -57,18 +57,18 @@ export class NewsFeedService {
 
   private getFeedPage(page: number, size: number): Observable<INewsFeedPage> {
     // Simulate API call - in real app, this would be an HTTP request
-    const mockItems = this.generateMockFeedItems(page, size);
+    const mockDtos = this.generateMockFeedItemDtos(page, size);
     const hasMore = page < 5; // Simulate 5 pages of data
 
     return of({
-      items: mockItems,
+      items: mockDtos.map(dto => FeedItemMapper.toPresentationModel(dto)),
       hasMore,
       nextPage: hasMore ? page + 1 : undefined
-    }).pipe(delay(1000)); // Simulate network delay
+    });
   }
 
-  private generateMockFeedItems(page: number, size: number): IFeedItem[] {
-    const items: IFeedItem[] = [];
+  private generateMockFeedItemDtos(page: number, size: number): FeedItemDto[] {
+    const items: FeedItemDto[] = [];
     const baseId = page * size;
 
     for (let i = 0; i < size; i++) {
@@ -77,10 +77,12 @@ export class NewsFeedService {
       
       items.push({
         id: `feed-item-${itemId}`,
-        type: itemType,
+        type: this.mapTypeToDomain(itemType),
         timestamp: new Date(Date.now() - (itemId * 2 * 60 * 60 * 1000)), // Each item 2 hours older
-        priority: this.getRandomPriority(),
-        metadata: this.generateMetadataForType(itemType, itemId)
+        params: {
+          priority: this.mapPriorityToDomain(this.getRandomPriority()),
+          ...this.generateMetadataForType(itemType, itemId)
+        }
       });
     }
 
@@ -226,5 +228,43 @@ export class NewsFeedService {
     const status = this.getRandomHealthStatus();
     const statusMessages = messages[status as keyof typeof messages];
     return statusMessages[Math.floor(Math.random() * statusMessages.length)];
+  }
+
+  private mapTypeToDomain(presentationType: FeedItemType): string {
+    switch (presentationType) {
+      case FeedItemType.ARTICLE_HIGHLIGHT:
+        return 'article-highlight';
+      case FeedItemType.APPLICATION_HEALTH:
+        return 'application-health';
+      case FeedItemType.FORUM_REPLY:
+        return 'forum-reply';
+      case FeedItemType.CHANGELOG_UPDATE:
+        return 'changelog-update';
+      case FeedItemType.APPLICATION_AD:
+        return 'application-ad';
+      case FeedItemType.SUITE_UPDATE:
+        return 'suite-update';
+      case FeedItemType.USER_POST:
+        return 'user-post';
+      case FeedItemType.SYSTEM_NOTIFICATION:
+        return 'system-notification';
+      default:
+        return 'system-notification';
+    }
+  }
+
+  private mapPriorityToDomain(presentationPriority: FeedItemPriority): string {
+    switch (presentationPriority) {
+      case FeedItemPriority.LOW:
+        return 'low';
+      case FeedItemPriority.MEDIUM:
+        return 'medium';
+      case FeedItemPriority.HIGH:
+        return 'high';
+      case FeedItemPriority.URGENT:
+        return 'urgent';
+      default:
+        return 'medium';
+    }
   }
 }

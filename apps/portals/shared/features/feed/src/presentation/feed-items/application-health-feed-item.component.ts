@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import type { IFeedItem, IFeedItemComponent } from '../models';
+import type { IFeedItem, IFeedItemComponent } from '../models/feed-item.interface';
 
 @Component({
   selector: 'application-health-feed-item',
