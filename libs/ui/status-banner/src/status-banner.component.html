@@ -1,0 +1,12 @@
+<div class="status-banner" [class]="'status-' + status">
+  <div class="status-content">
+    <tui-icon 
+      [icon]="getStatusIcon()" 
+      class="status-icon">
+    </tui-icon>
+    <span class="status-text">{{ message }}</span>
+  </div>
+  <div class="status-timestamp">
+    {{ timestamp | date:'MMM d, y HH:mm (z)' }}
+  </div>
+</div>

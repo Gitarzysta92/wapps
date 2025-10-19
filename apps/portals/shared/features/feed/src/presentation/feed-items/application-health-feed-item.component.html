@@ -1,13 +1,22 @@
 <content-feed-item
-  icon="@tui.home"
+  icon="@tui.heart-pulse"
   [item]="item">
   <div class="item-content" content>
-    <h3 class="app-name">{{ item.metadata?.['appName'] || 'Application' }}</h3>
-    <p class="status-message">{{ item.metadata?.['message'] || 'Health status update' }}</p>
-    <div class="health-details">
-      <span class="status-badge" [class]="'status-' + item.metadata?.['status']">{{ item.metadata?.['status'] || 'unknown' }}</span>
-      <span class="response-time" *ngIf="item.metadata?.['responseTime']">Response: {{ item.metadata?.['responseTime'] }}ms</span>
-    </div>
+    <ui-status-banner
+      [status]="getOverallStatus()"
+      [message]="getStatusMessage()"
+      [timestamp]="getCurrentTimestamp()">
+    </ui-status-banner>
+    
+    <ui-service-status-item
+      *ngFor="let service of getServices()"
+      [service]="service">
+    </ui-service-status-item>
+    
+    <ui-notices-section
+      [notices]="getNotices()"
+      [showEmptyState]="true">
+    </ui-notices-section>
   </div>
   <div footer>
     <ng-content></ng-content>

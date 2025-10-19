@@ -1,12 +1,16 @@
-<div class="content-feed-item">
-  <div class="feed-item-header">
-    <tui-icon icon="@tui.home" />
-    <h4>{{ item?.title }}</h4>
+<div class="feed-item-header">
+  <tui-avatar 
+    [src]="'@tui.mastercard' | tuiIcon"
+    size="s"
+  />
+  <h4 class="feed-item-title">{{ item?.title }}</h4>
+  <div class="feed-item-type">
+    <tui-icon [icon]="icon" />
   </div>
-  <div class="feed-item-content">
-    <ng-content select="[content]"></ng-content>
-  </div>
-  <div class="feed-item-footer">
-    <ng-content select="[footer]"></ng-content>
-  </div>
+</div>
+<div class="feed-item-content">
+  <ng-content select="[content]"></ng-content>
+</div>
+<div class="feed-item-footer">
+  <ng-content select="[footer]"></ng-content>
 </div>
