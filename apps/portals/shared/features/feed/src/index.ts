@@ -1,1 +1,10 @@
-export * from './presentation';
+
+export * from './presentation/feed-items/article-highlight-feed-item.component';
+export * from './presentation/feed-items/application-health-feed-item.component';
+export * from './presentation/feed-container.component';
+
+// Services
+export * from './presentation/services/news-feed-old.service';
+
+// Mappers
+export * from './presentation/mappers/feed-item.mapper';

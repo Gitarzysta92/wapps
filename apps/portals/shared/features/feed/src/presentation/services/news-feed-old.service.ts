@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, delay, map } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { FeedItemDto } from '@domains/feed';
-import { IFeedItem, FeedItemType, FeedItemPriority } from '../models/feed-item.interface';
-import { FeedItemMapper } from '../mappers/feed-item.mapper';
+import { IFeedItem, FeedItemPriority } from '../models/feed-item.interface';
+import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health-feed-item.component';
+import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -61,7 +62,7 @@ export class NewsFeedService {
     const hasMore = page < 5; // Simulate 5 pages of data
 
     return of({
-      items: mockDtos.map(dto => FeedItemMapper.toPresentationModel(dto)),
+      items: mockDtos.map(dto => dto),
       hasMore,
       nextPage: hasMore ? page + 1 : undefined
     });
@@ -77,7 +78,8 @@ export class NewsFeedService {
       
       items.push({
         id: `feed-item-${itemId}`,
-        type: this.mapTypeToDomain(itemType),
+        type: itemType,
+        title: this.getRandomArticleTitle(),
         timestamp: new Date(Date.now() - (itemId * 2 * 60 * 60 * 1000)), // Each item 2 hours older
         params: {
           priority: this.mapPriorityToDomain(this.getRandomPriority()),
@@ -89,12 +91,10 @@ export class NewsFeedService {
     return items;
   }
 
-  private getRandomFeedItemType(): FeedItemType {
+  private getRandomFeedItemType(): string {
     const types = [
-      FeedItemType.ARTICLE_HIGHLIGHT,
-      FeedItemType.APPLICATION_HEALTH,
-      FeedItemType.ARTICLE_HIGHLIGHT, // More articles
-      FeedItemType.APPLICATION_HEALTH, // More health checks
+      APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
+      ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -109,9 +109,9 @@ export class NewsFeedService {
     return priorities[Math.floor(Math.random() * priorities.length)];
   }
 
-  private generateMetadataForType(type: FeedItemType, itemId: number): Record<string, any> {
+  private generateMetadataForType(type: string, itemId: number): Record<string, any> {
     switch (type) {
-      case FeedItemType.ARTICLE_HIGHLIGHT:
+      case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR:
         return {
           title: `Article ${itemId + 1}: ${this.getRandomArticleTitle()}`,
           excerpt: `This is a sample excerpt for article ${itemId + 1}. It provides a brief overview of the content and encourages readers to learn more.`,
@@ -119,8 +119,9 @@ export class NewsFeedService {
           category: this.getRandomCategory()
         };
       
-      case FeedItemType.APPLICATION_HEALTH:
+      case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
         return {
+          title: this.getRandomArticleTitle(),
           appName: this.getRandomAppName(),
           status: this.getRandomHealthStatus(),
           message: this.getRandomHealthMessage(),
@@ -230,28 +231,6 @@ export class NewsFeedService {
     return statusMessages[Math.floor(Math.random() * statusMessages.length)];
   }
 
-  private mapTypeToDomain(presentationType: FeedItemType): string {
-    switch (presentationType) {
-      case FeedItemType.ARTICLE_HIGHLIGHT:
-        return 'article-highlight';
-      case FeedItemType.APPLICATION_HEALTH:
-        return 'application-health';
-      case FeedItemType.FORUM_REPLY:
-        return 'forum-reply';
-      case FeedItemType.CHANGELOG_UPDATE:
-        return 'changelog-update';
-      case FeedItemType.APPLICATION_AD:
-        return 'application-ad';
-      case FeedItemType.SUITE_UPDATE:
-        return 'suite-update';
-      case FeedItemType.USER_POST:
-        return 'user-post';
-      case FeedItemType.SYSTEM_NOTIFICATION:
-        return 'system-notification';
-      default:
-        return 'system-notification';
-    }
-  }
 
   private mapPriorityToDomain(presentationPriority: FeedItemPriority): string {
     switch (presentationPriority) {

@@ -1,0 +1,6 @@
+<content-feed
+  class="content-feed"
+  [feedItems]="feedItems$ | async"
+  [itemTemplate]="itemTemplate"
+  (scrolledToBottom)="loadNextItems()">
+</content-feed>

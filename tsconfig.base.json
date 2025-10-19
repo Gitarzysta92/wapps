@@ -134,6 +134,9 @@
       "@portals/shared/features/tags": [
         "apps/portals/shared/features/tags/src/index.ts"
       ],
+      "@portals/shared/features/discussion": [
+        "apps/portals/shared/features/discussion/src/index.ts"
+      ],
       "@primitives": ["libs/primitives/src/index.ts"],
       "@primitives/*": ["libs/primitives/src/*"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
@@ -156,7 +159,8 @@
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
-      "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"]
+      "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"],
+      "@ui/content-feed": ["libs/ui/content-feed/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

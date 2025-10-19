@@ -5,6 +5,6 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "../articles/src/presentation/article-highlight-feed-item.component.ts", "../discussion/src/discussion.component.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

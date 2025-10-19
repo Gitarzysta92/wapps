@@ -1,5 +1,10 @@
 // Central color variables extracted from apps and ui libs
 
+  // --chat-fade-gradient: linear-gradient(to bottom, 
+  //   #{$color-surface} 0%, 
+  //   #1f2937cc 50%, 
+  //   #1f293700 100%);
+
 // Base
 $color-white: #ffffff;
 $color-black: #000000;
@@ -34,8 +39,8 @@ $color-bg: #ffffff;
 $color-bg-muted: #f9fafb;
 $color-bg-subtle: #f1f3f4;
 $color-bg-soft: #f9f9f9;
-$color-bg-inverse: #111827;  // gray-900
-$color-surface: #1f2937;     // gray-800
+$color-bg-inverse: #111827;
+$color-surface: #1f2937;
 
 // Borders
 $color-border: #e5e7eb;      // gray-200
