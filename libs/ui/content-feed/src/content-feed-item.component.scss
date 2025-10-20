@@ -3,7 +3,6 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   border-radius: $radius-sm;
   padding: $space-4;
 
@@ -19,6 +18,10 @@
       font-size: $font-size-md;
       font-weight: $font-weight-extrabold;
       flex-grow: 2;
+      small {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+      }
     }
 
     .feed-item-content {
@@ -39,7 +42,6 @@
 
   .feed-item-footer {
     border-top: 1px solid var(--tui-base-03);
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
   }
 }
+

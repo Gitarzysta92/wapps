@@ -2,7 +2,7 @@ export interface IFeedItem {
   id: string;
   type: string;
   timestamp: Date;
-  metadata?: Record<string, any>;
+  params?: Record<string, any>;
 }
 
 

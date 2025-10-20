@@ -3,7 +3,12 @@
     [src]="'@tui.mastercard' | tuiIcon"
     size="s"
   />
-  <h4 class="feed-item-title">{{ item?.title }}</h4>
+  <h4 class="feed-item-title">
+    {{ item?.title }} <br>
+    <small>
+      {{ item?.subtitle }}
+    </small>
+  </h4>
   <div class="feed-item-type">
     <tui-icon [icon]="icon" />
   </div>

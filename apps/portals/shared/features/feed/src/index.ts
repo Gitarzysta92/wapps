@@ -1,6 +1,6 @@
 
-export * from './presentation/feed-items/article-highlight-feed-item.component';
-export * from './presentation/feed-items/application-health-feed-item.component';
+export * from './presentation/feed-items/article-highlight/article-highlight-feed-item.component';
+export * from './presentation/feed-items/application-health/application-health-feed-item.component';
 export * from './presentation/feed-container.component';
 
 // Services

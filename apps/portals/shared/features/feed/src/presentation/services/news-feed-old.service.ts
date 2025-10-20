@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { FeedItemDto } from '@domains/feed';
 import { IFeedItem, FeedItemPriority } from '../models/feed-item.interface';
-import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health-feed-item.component';
-import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight-feed-item.component';
+
+import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight/article-highlight-feed-item.component';
+import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health/application-health-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -80,6 +81,7 @@ export class NewsFeedService {
         id: `feed-item-${itemId}`,
         type: itemType,
         title: this.getRandomArticleTitle(),
+        subtitle: this.getRandomAppName(),
         timestamp: new Date(Date.now() - (itemId * 2 * 60 * 60 * 1000)), // Each item 2 hours older
         params: {
           priority: this.mapPriorityToDomain(this.getRandomPriority()),
@@ -116,7 +118,11 @@ export class NewsFeedService {
           title: `Article ${itemId + 1}: ${this.getRandomArticleTitle()}`,
           excerpt: `This is a sample excerpt for article ${itemId + 1}. It provides a brief overview of the content and encourages readers to learn more.`,
           author: this.getRandomAuthor(),
-          category: this.getRandomCategory()
+          category: this.getRandomCategory(),
+          coverImage: {
+            url: "https://picsum.photos/800/200",
+            alt: ""
+          }
         };
       
       case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
