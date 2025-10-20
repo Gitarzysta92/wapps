@@ -6,6 +6,7 @@ import { IFeedItem, FeedItemPriority } from '../models/feed-item.interface';
 import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight/article-highlight-feed-item.component';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health/application-health-feed-item.component';
 import { APPLICATION_REVIEW_FEED_ITEM_SELECTOR } from '../feed-items/application-review/application-review-feed-item.component';
+import { APPLICATION_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/application-teaser/application-teaser-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -98,7 +99,8 @@ export class NewsFeedService {
     const types = [
       APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
       ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
-      APPLICATION_REVIEW_FEED_ITEM_SELECTOR
+      APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
+      APPLICATION_TEASER_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -148,9 +150,50 @@ export class NewsFeedService {
           helpfulCount: Math.floor(Math.random() * 150) + 10
         };
       
+      case APPLICATION_TEASER_FEED_ITEM_SELECTOR:
+        return {
+          applicationName: this.getRandomAppName(),
+          description: this.getRandomAppDescription(),
+          category: this.getRandomCategory(),
+          tags: this.getRandomTags(),
+          coverImage: {
+            url: "https://picsum.photos/800/400",
+            alt: ""
+          },
+          aggregatedScore: Math.floor(Math.random() * 2) + 3.5, // 3.5-5 stars
+          reviewsCount: Math.floor(Math.random() * 500) + 50,
+          categoryLink: `/category/${this.getRandomCategory().toLowerCase()}`,
+          reviewsLink: `/reviews`
+        };
+      
       default:
         return {};
     }
+  }
+
+  private getRandomAppDescription(): string {
+    const descriptions = [
+      'A powerful tool for managing your projects and teams efficiently.',
+      'Streamline your workflow with this innovative application solution.',
+      'The ultimate platform for collaboration and productivity.',
+      'Professional-grade software designed for modern businesses.',
+      'Transform how you work with this cutting-edge application.',
+      'Enterprise-ready solution with advanced features and integrations.',
+      'Intuitive interface meets powerful functionality in this app.',
+      'Built for scale, designed for simplicity and ease of use.'
+    ];
+    return descriptions[Math.floor(Math.random() * descriptions.length)];
+  }
+
+  private getRandomTags(): string[] {
+    const allTags = [
+      'Cloud', 'SaaS', 'Enterprise', 'Open Source', 'AI-Powered',
+      'Real-time', 'Analytics', 'Automation', 'Integration', 'Mobile',
+      'Collaboration', 'Productivity', 'Security', 'API', 'Dashboard'
+    ];
+    const count = Math.floor(Math.random() * 3) + 2; // 2-4 tags
+    const shuffled = [...allTags].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
   }
 
   private getRandomReviewerName(): string {
