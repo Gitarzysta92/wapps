@@ -5,6 +5,7 @@ export * from './presentation/feed-items/application-review/application-review-f
 export * from './presentation/feed-items/application-teaser/application-teaser-feed-item.component';
 export * from './presentation/feed-items/application-dev-log/application-dev-log-feed-item.component';
 export * from './presentation/feed-items/suite-teaser/suite-teaser-feed-item.component';
+export * from './presentation/feed-items/discussion-topic/discussion-topic-feed-item.component';
 export * from './presentation/feed-container.component';
 
 // Services

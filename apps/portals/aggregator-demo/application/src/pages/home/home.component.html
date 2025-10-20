@@ -59,6 +59,12 @@
             [item]="item">
           </suite-teaser-feed-item>
         }
+        @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
+          <discussion-topic-feed-item 
+            class="feed-item"
+            [item]="item">
+          </discussion-topic-feed-item>
+        }
         @default {
           <div content class="unknown-feed-item">
             <p>Unknown feed item type: {{ item.type }}</p>

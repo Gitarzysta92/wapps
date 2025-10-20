@@ -1,0 +1,157 @@
+.discussion-container {
+  position: relative;
+  background: var(--tui-background-base);
+  border: 1px solid var(--tui-base-03);
+  border-radius: 12px;
+  padding: var(--tui-padding-m);
+}
+
+.discussion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--tui-padding-m);
+  padding-bottom: var(--tui-padding-m);
+  border-bottom: 1px solid var(--tui-base-03);
+}
+
+.topic-info {
+  flex: 1;
+}
+
+.discussion-topic {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+  margin: 0 0 var(--tui-padding-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--tui-padding-xs);
+
+  .topic-icon {
+    font-size: 20px;
+    color: var(--tui-primary);
+  }
+}
+
+.topic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tui-padding-xs);
+}
+
+.discussion-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-padding-xs);
+  padding: 4px 8px;
+  background: var(--tui-status-warning-pale);
+  border-radius: 6px;
+
+  .trending-icon {
+    font-size: 16px;
+    color: var(--tui-status-warning);
+  }
+
+  .trending-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tui-status-warning);
+  }
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-padding-m);
+}
+
+.message-item {
+  display: flex;
+  gap: var(--tui-padding-s);
+}
+
+.message-avatar {
+  flex-shrink: 0;
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.message-author {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+}
+
+.message-timestamp {
+  font-size: 12px;
+  color: var(--tui-text-03);
+}
+
+.message-text {
+  font-size: 14px;
+  color: var(--tui-text-02);
+  line-height: 1.5;
+  margin: 0 0 var(--tui-padding-xs) 0;
+  word-wrap: break-word;
+}
+
+.message-actions {
+  display: flex;
+  gap: var(--tui-padding-xs);
+}
+
+.like-btn {
+  font-size: 12px;
+  color: var(--tui-text-03);
+}
+
+.discussion-footer {
+  margin-top: var(--tui-padding-m);
+  padding-top: var(--tui-padding-m);
+  border-top: 1px solid var(--tui-base-03);
+  text-align: center;
+}
+
+.view-more-btn {
+  width: 100%;
+}
+
+.readonly-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, var(--tui-background-base) 50%, transparent);
+  padding: var(--tui-padding-m);
+  border-radius: 0 0 12px 12px;
+  pointer-events: none;
+}
+
+.readonly-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tui-padding-xs);
+  padding: var(--tui-padding-xs) var(--tui-padding-s);
+  background: var(--tui-base-02);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--tui-text-03);
+  font-weight: 500;
+
+  tui-icon {
+    font-size: 14px;
+  }
+}
+

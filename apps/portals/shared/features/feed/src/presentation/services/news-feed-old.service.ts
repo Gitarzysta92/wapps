@@ -9,6 +9,7 @@ import { APPLICATION_REVIEW_FEED_ITEM_SELECTOR } from '../feed-items/application
 import { APPLICATION_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/application-teaser/application-teaser-feed-item.component';
 import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '../feed-items/application-dev-log/application-dev-log-feed-item.component';
 import { SUITE_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/suite-teaser/suite-teaser-feed-item.component';
+import { DISCUSSION_TOPIC_FEED_ITEM_SELECTOR } from '../feed-items/discussion-topic/discussion-topic-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -104,7 +105,8 @@ export class NewsFeedService {
       APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
       APPLICATION_TEASER_FEED_ITEM_SELECTOR,
       APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR,
-      SUITE_TEASER_FEED_ITEM_SELECTOR
+      SUITE_TEASER_FEED_ITEM_SELECTOR,
+      DISCUSSION_TOPIC_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -188,9 +190,84 @@ export class NewsFeedService {
           category: 'Suite'
         };
       
+      case DISCUSSION_TOPIC_FEED_ITEM_SELECTOR:
+        return {
+          discussionData: {
+            topic: this.getRandomDiscussionTopic(),
+            category: this.getRandomCategory(),
+            tags: this.getRandomDiscussionTags(),
+            messages: this.getRandomDiscussionMessages(),
+            isPopular: Math.random() > 0.5
+          },
+          participantsCount: Math.floor(Math.random() * 100) + 10,
+          viewsCount: Math.floor(Math.random() * 1000) + 100
+        };
+      
       default:
         return {};
     }
+  }
+
+  private getRandomDiscussionTopic(): string {
+    const topics = [
+      'Best practices for microservices architecture',
+      'How to optimize database queries for better performance',
+      'Comparing Angular vs React for enterprise apps',
+      'Cloud deployment strategies discussion',
+      'Security best practices for modern web apps',
+      'CI/CD pipeline optimization tips',
+      'Scaling applications: challenges and solutions',
+      'Developer productivity tools you can\'t live without'
+    ];
+    return topics[Math.floor(Math.random() * topics.length)];
+  }
+
+  private getRandomDiscussionTags(): string[] {
+    const allTags = [
+      'architecture', 'performance', 'security', 'devops',
+      'frontend', 'backend', 'database', 'cloud',
+      'best-practices', 'optimization', 'scaling', 'productivity'
+    ];
+    const count = Math.floor(Math.random() * 3) + 2; // 2-4 tags
+    const shuffled = [...allTags].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  private getRandomDiscussionMessages(): Array<{ author: string; message: string; timestamp: Date; likes?: number }> {
+    const messages = [
+      {
+        author: 'Alex Developer',
+        message: 'I think we should focus on horizontal scaling first. It\'s more cost-effective and provides better fault tolerance.',
+        likes: Math.floor(Math.random() * 20) + 5
+      },
+      {
+        author: 'Sarah Engineer',
+        message: 'Good point! We\'ve been using containerization with Kubernetes and it\'s been working great for us.',
+        likes: Math.floor(Math.random() * 15) + 3
+      },
+      {
+        author: 'Mike Architect',
+        message: 'Don\'t forget about monitoring and observability. Without proper metrics, you\'ll be flying blind.',
+        likes: Math.floor(Math.random() * 25) + 8
+      },
+      {
+        author: 'Emily DevOps',
+        message: 'Absolutely agree. We use Prometheus and Grafana for monitoring and it\'s been invaluable.',
+        likes: Math.floor(Math.random() * 18) + 4
+      },
+      {
+        author: 'David Backend',
+        message: 'Has anyone tried implementing circuit breakers? They\'ve been a game-changer for our microservices.',
+        likes: Math.floor(Math.random() * 22) + 6
+      }
+    ];
+
+    const count = Math.floor(Math.random() * 3) + 3; // 3-5 messages
+    const shuffled = [...messages].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count).map(msg => ({
+      ...msg,
+      timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000)
+    }));
   }
 
   private getRandomSuiteTitle(): string {

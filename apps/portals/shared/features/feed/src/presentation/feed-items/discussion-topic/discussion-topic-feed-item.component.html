@@ -1,0 +1,43 @@
+<content-feed-item
+  icon="@tui.message-square"
+  [item]="item">
+  <div class="item-content" content>
+    <ui-discussion
+      [data]="getDiscussionData()"
+      [readonly]="true"
+      [maxMessagesToShow]="3"
+      class="discussion">
+    </ui-discussion>
+
+    <button
+      class="discussion-cta" 
+      tuiButton 
+      size="s" 
+      appearance="primary">
+        <tui-icon icon="@tui.message-circle"/>
+        Join Discussion
+    </button>
+  </div>
+
+  <div class="item-actions" footer>
+    <div class="stats-group">
+      <div class="stat-item">
+        <tui-icon icon="@tui.users" />
+        <span>{{ getParticipantsCount() }} participants</span>
+      </div>
+      <div class="stat-item">
+        <tui-icon icon="@tui.eye" />
+        <span>{{ getViewsCount() }} views</span>
+      </div>
+    </div>
+    <button 
+      class="action-btn"
+      tuiButton
+      size="s"
+      appearance="flat">
+        <tui-icon icon="@tui.bookmark" />
+        Follow
+    </button>
+  </div>
+</content-feed-item>
+
