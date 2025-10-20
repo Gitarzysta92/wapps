@@ -5,6 +5,7 @@ import { IFeedItem, FeedItemPriority } from '../models/feed-item.interface';
 
 import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight/article-highlight-feed-item.component';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health/application-health-feed-item.component';
+import { APPLICATION_REVIEW_FEED_ITEM_SELECTOR } from '../feed-items/application-review/application-review-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -96,7 +97,8 @@ export class NewsFeedService {
   private getRandomFeedItemType(): string {
     const types = [
       APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
-      ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR
+      ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
+      APPLICATION_REVIEW_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -134,9 +136,63 @@ export class NewsFeedService {
           responseTime: Math.floor(Math.random() * 200) + 20
         };
       
+      case APPLICATION_REVIEW_FEED_ITEM_SELECTOR:
+        return {
+          rating: Math.floor(Math.random() * 2) + 3.5, // 3.5-5 stars
+          reviewerName: this.getRandomReviewerName(),
+          reviewerRole: this.getRandomReviewerRole(),
+          reviewerAvatar: '',
+          testimonial: this.getRandomTestimonial(),
+          applicationName: this.getRandomAppName(),
+          reviewDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+          helpfulCount: Math.floor(Math.random() * 150) + 10
+        };
+      
       default:
         return {};
     }
+  }
+
+  private getRandomReviewerName(): string {
+    const names = [
+      'John Developer',
+      'Sarah Engineer',
+      'Mike Tester',
+      'Emily Architect',
+      'David Admin',
+      'Lisa Manager',
+      'Tom Designer',
+      'Anna Analyst'
+    ];
+    return names[Math.floor(Math.random() * names.length)];
+  }
+
+  private getRandomReviewerRole(): string {
+    const roles = [
+      'Developer',
+      'Software Engineer',
+      'QA Tester',
+      'Solutions Architect',
+      'System Administrator',
+      'Project Manager',
+      'UI/UX Designer',
+      'Data Analyst'
+    ];
+    return roles[Math.floor(Math.random() * roles.length)];
+  }
+
+  private getRandomTestimonial(): string {
+    const testimonials = [
+      'This application has transformed our workflow. Highly recommended for teams looking to improve productivity.',
+      'Excellent tool with intuitive interface. The features are exactly what we needed for our project.',
+      'Outstanding performance and reliability. Our team has been using it for months without any issues.',
+      'Great application with solid documentation. Easy to integrate into our existing infrastructure.',
+      'Impressed with the support and regular updates. The development team really cares about user feedback.',
+      'Best solution in its category. The features are comprehensive and well-thought-out.',
+      'Game-changer for our development process. Saved us countless hours of manual work.',
+      'Reliable and efficient. The application delivers exactly what it promises without bloat.'
+    ];
+    return testimonials[Math.floor(Math.random() * testimonials.length)];
   }
 
   private getRandomArticleTitle(): string {

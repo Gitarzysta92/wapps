@@ -35,6 +35,12 @@
             [item]="item">
           </application-health-feed-item>
         }
+        @case (feedItemType.APPLICATION_REVIEW_FEED_ITEM_SELECTOR) {
+          <application-review-feed-item 
+            class="feed-item"
+            [item]="item">
+          </application-review-feed-item>
+        }
         @default {
           <div content class="unknown-feed-item">
             <p>Unknown feed item type: {{ item.type }}</p>
