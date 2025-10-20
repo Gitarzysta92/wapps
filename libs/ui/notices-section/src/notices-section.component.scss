@@ -1,0 +1,83 @@
+.notices-section {
+  border: 2px dashed #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.notices-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  
+  .notices-icon {
+    font-size: 20px;
+    color: #6b7280;
+  }
+  
+  .notices-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+    margin: 0;
+  }
+}
+
+.notice-item {
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  .notice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    
+    .notice-title {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .notice-date {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+  }
+  
+  .notice-message {
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 1.5rem;
+  
+  .empty-icon {
+    font-size: 32px;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+  
+  .empty-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .empty-message {
+    color: #374151;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}

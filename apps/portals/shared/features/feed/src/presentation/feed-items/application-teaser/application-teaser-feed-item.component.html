@@ -1,0 +1,61 @@
+<content-feed-item
+  icon="@tui.box"
+  [item]="item">
+  <div class="item-content" content>
+    <ui-cover-image
+      class="cover-image"
+      [image]="getCoverImage()">
+    </ui-cover-image>
+    <div class="app-info">
+      <tui-chip 
+        class="app-category" 
+        appearance="primary">
+        {{ getCategory() }}
+      </tui-chip>
+      <div class="app-content">
+        <h3 class="app-name">{{ getApplicationName() }}</h3>
+        <p class="app-description">{{ getDescription() }}</p>
+        <div class="app-tags">
+          <tui-chip 
+            *ngFor="let tag of getTags()"
+            class="app-tag" 
+            size="s"
+            appearance="secondary">
+            {{ tag }}
+          </tui-chip>
+        </div>
+      </div>
+      <button
+        class="app-cta" 
+        tuiButton 
+        size="s" 
+        appearance="primary">
+          <tui-icon icon="@tui.grid"/>
+          Application overview
+      </button>
+    </div>
+  </div>
+  <div class="item-actions" footer>
+    <div class="score-container">
+      Rating:
+      <div class="score-stars">
+        <tui-icon 
+          *ngFor="let star of [1,2,3,4,5]"
+          [icon]="star <= getAggregatedScore() ? '@tui.star' : '@tui.star'"
+          [class.filled]="star <= getAggregatedScore()"
+          class="star-icon" />
+      </div>
+      <span class="score-value">{{ getAggregatedScore().toFixed(1) }}/5</span>
+    </div>
+    <button 
+      class="action-btn"
+      tuiButton
+      size="s"
+      appearance="flat">
+        <tui-icon icon="@tui.message-circle" />
+        See Reviews
+        <span class="reviews-count">({{ getReviewsCount() }} reviews)</span>
+    </button>
+  </div>
+</content-feed-item>
+

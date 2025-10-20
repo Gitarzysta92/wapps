@@ -1,0 +1,64 @@
+@use 'ui/design-system/src/styles' as *;
+
+.news-feed-container {
+  width: 100%;
+}
+
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--tui-padding-l);
+  padding-bottom: var(--tui-padding-m);
+  border-bottom: 1px solid var(--tui-base-03);
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--tui-text-01);
+  }
+}
+
+.empty-feed {
+  text-align: center;
+  padding: var(--tui-padding-xl);
+  color: var(--tui-text-03);
+  background: var(--tui-base-02);
+  border-radius: 8px;
+  border: 1px dashed var(--tui-base-03);
+}
+
+.feed-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-padding-m);
+}
+
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--tui-padding-l);
+  color: var(--tui-text-02);
+  gap: var(--tui-padding-s);
+}
+
+.end-of-feed {
+  text-align: center;
+  padding: var(--tui-padding-l);
+  color: var(--tui-text-03);
+  font-style: italic;
+  border-top: 1px solid var(--tui-base-03);
+  margin-top: var(--tui-padding-m);
+}
+
+.unknown-feed-item {
+  background: var(--tui-base-02);
+  border: 1px solid var(--tui-base-03);
+  border-radius: 8px;
+  padding: var(--tui-padding-m);
+  text-align: center;
+  color: var(--tui-text-03);
+  font-style: italic;
+}

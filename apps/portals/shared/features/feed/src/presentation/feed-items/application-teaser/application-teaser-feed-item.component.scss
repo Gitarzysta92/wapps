@@ -1,0 +1,114 @@
+@use 'ui/design-system/src/styles' as *;
+
+.item-content {
+  padding: var(--tui-padding-m) 0;
+}
+
+.app-info {
+  position: relative;
+
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 30px 30px 15px 30px;
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 40px);
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+  margin: 0 0 var(--tui-padding-s) 0;
+  line-height: 1.4;
+}
+
+.app-description {
+  color: var(--tui-text-02);
+  line-height: 1.5;
+  margin: 0 0 var(--tui-padding-m) 0;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tui-padding-xs);
+  margin-bottom: var(--tui-padding-m);
+}
+
+.app-tag {
+  font-size: 12px;
+}
+
+.cover-image {
+  display: block;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.app-category {
+  position: absolute;
+  top: -15px;
+}
+
+.app-cta {
+  width: 100%;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--tui-background-base-alt);
+  color: var(--tui-background-accent-opposite-pressed);
+  padding: $space-1 30px $space-1 30px;
+  border-radius: $radius-sm;
+  gap: var(--tui-padding-m);
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-padding-xs);
+  flex: 1;
+}
+
+.score-stars {
+  display: flex;
+  gap: 2px;
+
+  .star-icon {
+    font-size: 16px;
+    color: var(--tui-text-04);
+    
+    &.filled {
+      color: #FFC107;
+    }
+  }
+}
+
+.score-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+  margin-left: var(--tui-padding-xs);
+}
+
+.reviews-count {
+  font-size: 13px;
+  color: var(--tui-text-03);
+  margin-left: var(--tui-padding-xs);
+}
+
+.action-btn {
+  flex-shrink: 0;
+}
+

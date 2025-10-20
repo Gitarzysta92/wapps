@@ -1,0 +1,19 @@
+@if (feedItems.length === 0 && !isLoading) {
+  <div class="empty-feed">
+    <p>No news items to display. Feed items will appear here when available.</p>
+  </div>
+} @else {
+  @for (item of feedItems; track item.id) {
+    <ng-container 
+      [ngTemplateOutlet]="itemTemplate" 
+      [ngTemplateOutletContext]="{ $implicit: item }">
+    </ng-container>
+  }
+  
+  @if (isLoading) {
+    <div class="loading-indicator">
+      <tui-loader size="s"></tui-loader>
+      <p>Loading more items...</p>
+    </div>
+  }
+}

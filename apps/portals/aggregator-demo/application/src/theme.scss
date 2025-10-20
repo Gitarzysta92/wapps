@@ -17,6 +17,12 @@ body.light {
   
   --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
+
+  --indigo-gradient2: linear-gradient(0deg, #{$color-white} 20%, #ece8fc 100%);
+}
+
+[tuiTheme='light'] {
+  --tui-background-elevation-1: #{$color-bg};
 }
 
 // Dark theme gradients using design system variables
@@ -35,4 +41,10 @@ body.dark {
   
   --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
+
+  --indigo-gradient2: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
+}
+
+[tuiTheme='dark'] {
+  --tui-background-elevation-1: #{$color-surface};
 }

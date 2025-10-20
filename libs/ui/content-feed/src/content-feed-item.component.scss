@@ -1,0 +1,47 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-sm;
+  padding: $space-4;
+
+  .feed-item-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: $space-2;
+    width: 100%;
+
+    .feed-item-title {
+      font-size: $font-size-md;
+      font-weight: $font-weight-extrabold;
+      flex-grow: 2;
+      small {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+      }
+    }
+
+    .feed-item-content {
+      max-height: 1000px;
+    }
+
+    .feed-item-type {
+      background-color: var(--tui-background-base-alt);
+      color: var(--tui-background-accent-opposite-pressed);
+      padding: $space-1;
+      border-radius: $radius-sm;
+    }
+  }
+
+  .feed-item-content {
+    flex: 1;
+  }
+
+  .feed-item-footer {
+    border-top: 1px solid var(--tui-base-03);
+  }
+}
+

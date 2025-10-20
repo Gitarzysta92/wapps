@@ -60,8 +60,8 @@
       "@domains/customer/my-profile": [
         "libs/domains/customer/my-profile/src/index.ts"
       ],
-      "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
+      "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/identity": ["libs/domains/identity/src/index.ts"],
       "@domains/identity/authentication": [
         "libs/domains/identity/authentication/src/index.ts"
@@ -70,9 +70,6 @@
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
-      ],
-      "@portals/shared/features/feed": [
-        "apps/portals/shared/features/feed/src/index.ts"
       ],
       "@features/identity": ["libs/features/identity/index.ts"],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
@@ -97,6 +94,12 @@
       ],
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"
+      ],
+      "@portals/shared/features/discussion": [
+        "apps/portals/shared/features/discussion/src/index.ts"
+      ],
+      "@portals/shared/features/feed": [
+        "apps/portals/shared/features/feed/src/index.ts"
       ],
       "@portals/shared/features/filtering": [
         "apps/portals/shared/features/filtering/src/index.ts"
@@ -140,6 +143,8 @@
       "@standard": ["libs/standard/src/index.ts"],
       "@standard/*": ["libs/standard/src/*"],
       "@ui/chat": ["libs/ui/chat/src/index.ts"],
+      "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"],
+      "@ui/content-feed": ["libs/ui/content-feed/src/index.ts"],
       "@ui/filters": ["libs/ui/filters/src/index.ts"],
       "@ui/form": ["libs/ui/form/src/index.ts"],
       "@ui/infinite-scroll": ["libs/ui/infinite-scroll/src/index.ts"],
@@ -150,13 +155,16 @@
       "@ui/multi-search": ["libs/ui/multi-search/src/index.ts"],
       "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
       "@ui/navigation": ["libs/ui/navigation/src/index.ts"],
+      "@ui/notices-section": ["libs/ui/notices-section/src/index.ts"],
       "@ui/password-reset": ["libs/ui/password-reset/src/index.ts"],
       "@ui/registration": ["libs/ui/registration/src/index.ts"],
       "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
-      "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"]
+      "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
+      "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
+      "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

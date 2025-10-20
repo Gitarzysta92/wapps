@@ -1,83 +1,58 @@
-<main class="fluid-container">
+<section class="section_intro">
+  <h1>Welcome to the Home Page</h1>
+</section>
 
-  <section class="section_intro">
-      <h1>Welcome to the Home Page</h1>
-  </section>
-  
+<section class="section_quick-search">
+  <multi-search></multi-search>
+</section>
 
+<section class="section__shortcuts">
+  <div class="shortcuts-heading">
+    Shortcuts:
+  </div>
+  <div class="shortcuts">
+    <div class="tile">x</div>
+    <div class="tile">x</div>
+    <div class="tile">x</div>
+  </div>
+  <hr class="separator">
+</section>
 
-  <section class="section_quick-search">
-    <multi-search></multi-search>
-  </section>
-  
-
-  <section class="section__shortcuts">
-    <div class="shortcuts-heading">
-      Shortcuts:
-    </div>
-    <div class="shortcuts">
-      <div class="tile">x</div>
-      <div class="tile">x</div>
-      <div class="tile">x</div>
-    </div>
-    <hr class="separator">
-  </section>
-
-  <section class="section__feed">
-    <news-feed 
-      [useInfiniteScroll]="true" 
-      [itemTemplate]="itemTemplate">
-    </news-feed>
-    
+<section class="section__feed">
+  <feed-container class="section__feed-container">
     <ng-template #itemTemplate let-item>
-      <news-feed-item 
-        [item]="item">
-        @switch (item.type) {
-          @case (FeedItemType.ARTICLE_HIGHLIGHT) {
-            <article-highlight-feed-item content [item]="item"></article-highlight-feed-item>
-          }
-          @case (FeedItemType.APPLICATION_HEALTH) {
-            <application-health-feed-item content [item]="item"></application-health-feed-item>
-          }
-          @default {
-            <div content class="unknown-feed-item">
-              <p>Unknown feed item type: {{ item.type }}</p>
-            </div>
-          }
+      @switch (item.type) {
+        @case (feedItemType.ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR) {
+          <article-highlight-feed-item
+            class="feed-item"
+            [item]="item">
+            <discussion *ngIf="item.discussion" [data]="item.discussion"></discussion>
+          </article-highlight-feed-item>
         }
-        @if (item.discussion) {
-          <discussion footer [data]="item.discussion"></discussion>
+        @case (feedItemType.APPLICATION_HEALTH_FEED_ITEM_SELECTOR) {
+          <application-health-feed-item 
+            class="feed-item"
+            [item]="item">
+          </application-health-feed-item>
         }
-      </news-feed-item>
+        @case (feedItemType.APPLICATION_REVIEW_FEED_ITEM_SELECTOR) {
+          <application-review-feed-item 
+            class="feed-item"
+            [item]="item">
+          </application-review-feed-item>
+        }
+        @case (feedItemType.APPLICATION_TEASER_FEED_ITEM_SELECTOR) {
+          <application-teaser-feed-item 
+            class="feed-item"
+            [item]="item">
+          </application-teaser-feed-item>
+        }
+        @default {
+          <div content class="unknown-feed-item">
+            <p>Unknown feed item type: {{ item.type }}</p>
+          </div>
+        }
+      }
     </ng-template>
-  </section>
-
-</main>
-
-
-
-
-
-
- <!-- <div class="custom-feed-item">
-        <div class="custom-header">
-          <span class="custom-icon">📰</span>
-          <span class="custom-title">{{ item.metadata?.['title'] || 'Feed Item' }}</span>
-          <span class="custom-time">{{ item.timestamp | date:'short' }}</span>
-        </div>
-        <div class="custom-content">
-          @switch (item.type) {
-            @case (FeedItemType.ARTICLE_HIGHLIGHT) {
-              <article-highlight-feed-item [item]="item"></article-highlight-feed-item>
-            }
-            @case (FeedItemType.APPLICATION_HEALTH) {
-              <application-health-feed-item [item]="item"></application-health-feed-item>
-            }
-            @default {
-              <div class="unknown-feed-item">
-                <p>Unknown feed item type: {{ item.type }}</p>
-              </div>
-            }
-          }
-        </div>
-      </div> -->
+  </feed-container>
+</section>
