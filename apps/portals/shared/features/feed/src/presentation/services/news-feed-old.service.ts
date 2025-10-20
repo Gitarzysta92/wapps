@@ -8,6 +8,7 @@ import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application
 import { APPLICATION_REVIEW_FEED_ITEM_SELECTOR } from '../feed-items/application-review/application-review-feed-item.component';
 import { APPLICATION_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/application-teaser/application-teaser-feed-item.component';
 import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '../feed-items/application-dev-log/application-dev-log-feed-item.component';
+import { SUITE_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/suite-teaser/suite-teaser-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -102,7 +103,8 @@ export class NewsFeedService {
       ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
       APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
       APPLICATION_TEASER_FEED_ITEM_SELECTOR,
-      APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR
+      APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR,
+      SUITE_TEASER_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -178,9 +180,66 @@ export class NewsFeedService {
           changeType: this.getRandomChangeType()
         };
       
+      case SUITE_TEASER_FEED_ITEM_SELECTOR:
+        return {
+          suiteTitle: this.getRandomSuiteTitle(),
+          suiteDescription: this.getRandomSuiteDescription(),
+          apps: this.getRandomSuiteApps(),
+          category: 'Suite'
+        };
+      
       default:
         return {};
     }
+  }
+
+  private getRandomSuiteTitle(): string {
+    const titles = [
+      'Productivity Suite',
+      'Developer Tools Suite',
+      'Creative Professional Suite',
+      'Business Intelligence Suite',
+      'Marketing Automation Suite',
+      'Data Analytics Suite',
+      'Enterprise Management Suite',
+      'Communication & Collaboration Suite'
+    ];
+    return titles[Math.floor(Math.random() * titles.length)];
+  }
+
+  private getRandomSuiteDescription(): string {
+    const descriptions = [
+      'A comprehensive collection of tools designed to boost your productivity.',
+      'Everything you need in one integrated suite of applications.',
+      'Powerful tools working together seamlessly for your business needs.',
+      'Integrated applications built for modern workflows.',
+      'Complete solution with all the tools your team needs.',
+      'Professional-grade applications designed to work together.',
+      'All-in-one suite for maximum efficiency and collaboration.',
+      'Transform your workflow with this powerful suite of tools.'
+    ];
+    return descriptions[Math.floor(Math.random() * descriptions.length)];
+  }
+
+  private getRandomSuiteApps(): Array<{ name: string; logo?: string; description?: string }> {
+    const allApps = [
+      { name: 'Analytics Pro', description: 'Advanced analytics and reporting' },
+      { name: 'Task Manager', description: 'Organize and track your tasks' },
+      { name: 'Team Chat', description: 'Real-time team communication' },
+      { name: 'File Sync', description: 'Cloud storage and file sharing' },
+      { name: 'Project Board', description: 'Visual project management' },
+      { name: 'Time Tracker', description: 'Track time and productivity' },
+      { name: 'Calendar Pro', description: 'Schedule and meeting management' },
+      { name: 'Notes Plus', description: 'Rich note-taking application' },
+      { name: 'Invoice Manager', description: 'Create and manage invoices' },
+      { name: 'CRM Suite', description: 'Customer relationship management' },
+      { name: 'Email Client', description: 'Professional email solution' },
+      { name: 'Video Conference', description: 'HD video meetings' }
+    ];
+    
+    const count = Math.floor(Math.random() * 3) + 4; // 4-6 apps
+    const shuffled = [...allApps].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
   }
 
   private getRandomVersion(): string {

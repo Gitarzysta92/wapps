@@ -53,6 +53,12 @@
             [item]="item">
           </application-dev-log-feed-item>
         }
+        @case (feedItemType.SUITE_TEASER_FEED_ITEM_SELECTOR) {
+          <suite-teaser-feed-item 
+            class="feed-item"
+            [item]="item">
+          </suite-teaser-feed-item>
+        }
         @default {
           <div content class="unknown-feed-item">
             <p>Unknown feed item type: {{ item.type }}</p>
