@@ -47,6 +47,24 @@
             [item]="item">
           </application-teaser-feed-item>
         }
+        @case (feedItemType.APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR) {
+          <application-dev-log-feed-item 
+            class="feed-item"
+            [item]="item">
+          </application-dev-log-feed-item>
+        }
+        @case (feedItemType.SUITE_TEASER_FEED_ITEM_SELECTOR) {
+          <suite-teaser-feed-item 
+            class="feed-item"
+            [item]="item">
+          </suite-teaser-feed-item>
+        }
+        @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
+          <discussion-topic-feed-item 
+            class="feed-item"
+            [item]="item">
+          </discussion-topic-feed-item>
+        }
         @default {
           <div content class="unknown-feed-item">
             <p>Unknown feed item type: {{ item.type }}</p>
