@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import type { IFeedItem, IFeedItemComponent } from '../models/feed-item.interface';
+import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
@@ -23,15 +23,15 @@ export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-it
   ]
 })
 export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string };
+  @Input() item!: IFeedItem & { title: string } & any;
 
   getOverallStatus(): 'operational' | 'degraded' | 'outage' {
-    const status = this.item.metadata?.['overallStatus'];
+    const status = this.item.params?.['overallStatus'];
     return status || 'operational';
   }
 
   getStatusMessage(): string {
-    return this.item.metadata?.['statusMessage'] || 'All Systems Operational';
+    return this.item.params?.['statusMessage'] || 'All Systems Operational';
   }
 
   getCurrentTimestamp(): Date {
@@ -39,7 +39,7 @@ export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
   }
 
   getServices(): ServiceStatus[] {
-    return this.item.metadata?.['services'] || [
+    return this.item.params?.['services'] || [
       {
         name: 'OpenStatus',
         uptime: 99.99,
@@ -55,6 +55,6 @@ export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
   }
 
   getNotices(): Notice[] {
-    return this.item.metadata?.['notices'] || [];
+    return this.item.params?.['notices'] || [];
   }
 }
