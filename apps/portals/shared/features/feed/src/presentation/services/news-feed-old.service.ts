@@ -7,6 +7,7 @@ import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-high
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health/application-health-feed-item.component';
 import { APPLICATION_REVIEW_FEED_ITEM_SELECTOR } from '../feed-items/application-review/application-review-feed-item.component';
 import { APPLICATION_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/application-teaser/application-teaser-feed-item.component';
+import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '../feed-items/application-dev-log/application-dev-log-feed-item.component';
 
 export interface INewsFeedPage {
   items: IFeedItem[];
@@ -100,7 +101,8 @@ export class NewsFeedService {
       APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
       ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
       APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
-      APPLICATION_TEASER_FEED_ITEM_SELECTOR
+      APPLICATION_TEASER_FEED_ITEM_SELECTOR,
+      APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR
     ];
     return types[Math.floor(Math.random() * types.length)];
   }
@@ -166,9 +168,68 @@ export class NewsFeedService {
           reviewsLink: `/reviews`
         };
       
+      case APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR:
+        return {
+          applicationName: this.getRandomAppName(),
+          version: this.getRandomVersion(),
+          description: this.getRandomVersionDescription(),
+          releaseDate: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+          changes: this.getRandomChanges(),
+          changeType: this.getRandomChangeType()
+        };
+      
       default:
         return {};
     }
+  }
+
+  private getRandomVersion(): string {
+    const major = Math.floor(Math.random() * 5) + 1;
+    const minor = Math.floor(Math.random() * 10);
+    const patch = Math.floor(Math.random() * 20);
+    return `${major}.${minor}.${patch}`;
+  }
+
+  private getRandomVersionDescription(): string {
+    const descriptions = [
+      'This release includes performance improvements and bug fixes.',
+      'Major update with new features and enhanced stability.',
+      'Security patches and minor improvements included in this update.',
+      'Significant enhancements to user experience and reliability.',
+      'Critical bug fixes and performance optimizations.',
+      'New features and improvements based on user feedback.',
+      'Enhanced security measures and system stability improvements.',
+      'Performance boost and bug fixes for a smoother experience.'
+    ];
+    return descriptions[Math.floor(Math.random() * descriptions.length)];
+  }
+
+  private getRandomChanges(): string[] {
+    const allChanges = [
+      'Added dark mode support for better usability',
+      'Improved performance by 40% on large datasets',
+      'Fixed critical security vulnerability in authentication',
+      'Enhanced mobile responsiveness across all devices',
+      'Added export functionality for reports',
+      'Improved search algorithm for faster results',
+      'Fixed memory leak in data processing module',
+      'Added support for multiple languages',
+      'Implemented real-time notifications',
+      'Enhanced API rate limiting',
+      'Fixed timezone handling issues',
+      'Added keyboard shortcuts for power users',
+      'Improved error messages and logging',
+      'Added bulk operations support',
+      'Fixed compatibility issues with older browsers'
+    ];
+    const count = Math.floor(Math.random() * 3) + 3; // 3-5 changes
+    const shuffled = [...allChanges].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  private getRandomChangeType(): 'major' | 'minor' | 'patch' {
+    const types: ('major' | 'minor' | 'patch')[] = ['major', 'minor', 'minor', 'patch', 'patch'];
+    return types[Math.floor(Math.random() * types.length)];
   }
 
   private getRandomAppDescription(): string {
