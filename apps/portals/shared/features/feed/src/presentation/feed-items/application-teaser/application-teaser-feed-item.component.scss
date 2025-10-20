@@ -6,14 +6,13 @@
 
 .app-info {
   position: relative;
-  top: -175px;
+
   background: #ffffff;
   border-radius: 15px;
   padding: 30px 30px 15px 30px;
   left: 20px;
   right: 20px;
   width: calc(100% - 40px);
-  margin-bottom: -180px;
 }
 
 .app-name {
@@ -61,11 +60,6 @@
 
 .app-cta {
   width: 100%;
-}
-
-.app-content {
-  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
 }
 
 .item-actions {

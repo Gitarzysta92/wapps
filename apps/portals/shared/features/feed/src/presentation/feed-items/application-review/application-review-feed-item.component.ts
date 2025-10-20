@@ -3,6 +3,7 @@ import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.inter
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
+import { TuiAvatar } from '@taiga-ui/kit';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
@@ -16,7 +17,8 @@ export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-it
     ContentFeedItemComponent,
     TuiButton,
     TuiIcon,
-    NgForOf
+    NgForOf,
+    TuiAvatar
   ]
 })
 export class ApplicationReviewFeedItemComponent implements IFeedItemComponent {

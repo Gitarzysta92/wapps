@@ -1,11 +1,30 @@
 @use 'ui/design-system/src/styles' as *;
 
 .item-content {
-  padding: var(--tui-padding-m);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--tui-padding-m);
 }
+
+.reviewer-column {
+  background: gray;
+  border-radius: $radius-sm;
+  padding: $space-2 $space-3;
+  max-width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.review-column {
+  display: flex;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
+
 
 .review-header {
   display: flex;
@@ -68,10 +87,7 @@
 }
 
 .rating-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  
 }
 
 .rating-stars {
@@ -119,16 +135,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1.5em;
-    background: linear-gradient(to bottom, transparent, var(--tui-background-base));
-  }
 }
 
 .review-cta {

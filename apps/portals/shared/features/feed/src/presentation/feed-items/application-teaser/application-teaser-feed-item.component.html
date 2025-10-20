@@ -31,12 +31,13 @@
         size="s" 
         appearance="primary">
           <tui-icon icon="@tui.grid"/>
-          View in {{ getCategory() }}
+          Application overview
       </button>
     </div>
   </div>
   <div class="item-actions" footer>
     <div class="score-container">
+      Rating:
       <div class="score-stars">
         <tui-icon 
           *ngFor="let star of [1,2,3,4,5]"
@@ -45,7 +46,6 @@
           class="star-icon" />
       </div>
       <span class="score-value">{{ getAggregatedScore().toFixed(1) }}/5</span>
-      <span class="reviews-count">({{ getReviewsCount() }} reviews)</span>
     </div>
     <button 
       class="action-btn"
@@ -54,6 +54,7 @@
       appearance="flat">
         <tui-icon icon="@tui.message-circle" />
         See Reviews
+        <span class="reviews-count">({{ getReviewsCount() }} reviews)</span>
     </button>
   </div>
 </content-feed-item>

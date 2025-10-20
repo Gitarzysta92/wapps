@@ -2,22 +2,27 @@
   icon="@tui.star"
   [item]="item">
   <div class="item-content" content>
-    <div class="review-header">
-      <div class="reviewer-info">
-        <div class="reviewer-avatar">
-          <tui-icon 
-            icon="@tui.user" 
-            class="avatar-icon" />
-        </div>
-        <div class="reviewer-details">
-          <div class="reviewer-name">{{ getReviewerName() }}</div>
-          <div class="reviewer-meta">
-            <span class="reviewer-role">{{ getReviewerRole() }}</span>
-            <span class="review-date">{{ getReviewDate() }}</span>
-          </div>
-        </div>
+
+    <div class="reviewer-column">
+      <tui-avatar src="AI" />
+      <div class="reviewer-name">{{ getReviewerName() }}</div>
+      <div class="reviewer-meta">
+        <span class="reviewer-role">{{ getReviewerRole() }}</span>
+        <span class="review-date">{{ getReviewDate() }}</span>
       </div>
+
+           
+    </div>
+
+
+
+    <div class="review-column">
+
+        <h3 class="application-name">{{ getApplicationName() }}</h3>
+        <p class="testimonial">"{{ getTestimonial() }}"</p>
+
       <div class="rating-container">
+        <span class="rating-value">{{ getRating().toFixed(1) }}/5</span>
         <div class="rating-stars">
           <tui-icon 
             *ngFor="let star of [1,2,3,4,5]"
@@ -25,26 +30,22 @@
             [class.filled]="star <= getRating()"
             class="star-icon" />
         </div>
-        <span class="rating-value">{{ getRating().toFixed(1) }}/5</span>
       </div>
+
+       <button
+        class="review-cta" 
+        tuiButton 
+        size="s" 
+        appearance="primary">
+          <tui-icon icon="@tui.external-link"/>
+          Read Full Review
+      </button>
     </div>
 
-    <div class="review-content">
-      <h3 class="application-name">{{ getApplicationName() }}</h3>
-      <p class="testimonial">"{{ getTestimonial() }}"</p>
-    </div>
 
-    <button
-      class="review-cta" 
-      tuiButton 
-      size="s" 
-      appearance="outline">
-        <tui-icon icon="@tui.external-link"/>
-        Read Full Review
-    </button>
   </div>
 
-  <div class="item-actions" footer>
+  <!-- <div class="item-actions" footer>
     <button 
       class="action-btn"
       tuiButton
@@ -61,6 +62,6 @@
         <tui-icon icon="@tui.share" />
         Share
     </button>
-  </div>
+  </div> -->
 </content-feed-item>
 
