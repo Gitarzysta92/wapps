@@ -25,14 +25,15 @@
           </tui-chip>
         </div>
       </div>
-      <button
+      <a
         class="app-cta" 
         tuiButton 
         size="s" 
-        appearance="primary">
+        appearance="primary"
+        [routerLink]="getApplicationOverviewLink()">
           <tui-icon icon="@tui.grid"/>
           Application overview
-      </button>
+      </a>
     </div>
   </div>
   <div class="item-actions" footer>

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiChip } from '@taiga-ui/kit';
@@ -18,7 +19,8 @@ export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-
     TuiChip,
     TuiButton,
     TuiIcon,
-    NgForOf
+    NgForOf,
+    RouterLink
   ]
 })
 export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
@@ -26,6 +28,14 @@ export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
 
   getApplicationName(): string {
     return this.item.params?.['applicationName'] || 'Application';
+  }
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+  }
+
+  getApplicationLogLink(): string[] {
+    return ['/app', this.getApplicationSlug(), 'log'];
   }
 
   getVersion(): string {

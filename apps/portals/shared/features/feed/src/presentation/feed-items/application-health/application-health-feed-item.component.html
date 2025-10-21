@@ -17,6 +17,16 @@
       [notices]="getNotices()"
       [showEmptyState]="true">
     </ui-notices-section>
+    
+    <a
+      class="health-cta" 
+      tuiButton 
+      size="s" 
+      appearance="primary"
+      [routerLink]="getApplicationHealthLink()">
+        <tui-icon icon="@tui.external-link"/>
+        View Full Health Status
+    </a>
   </div>
   <div footer>
     <ng-content></ng-content>

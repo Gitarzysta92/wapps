@@ -1,0 +1,35 @@
+.sidebar-nav {
+  margin-top: 100px;
+  padding: 1rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--tui-text-01);
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: var(--tui-base-02);
+  }
+  
+  &.active {
+    background-color: var(--tui-primary);
+    color: var(--tui-text-on-primary);
+  }
+}
+
+.nav-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+

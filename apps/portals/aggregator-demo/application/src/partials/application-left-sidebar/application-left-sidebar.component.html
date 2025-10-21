@@ -1,0 +1,22 @@
+<nav class="sidebar-nav" *ngIf="appSlug$ | async as appSlug">
+  <a
+    *ngFor="let item of menuItems"
+    class="nav-item"
+    tuiButton
+    appearance="ghost"
+    type="button"
+    [routerLink]="getNavigationPath(appSlug, item.section)"
+    routerLinkActive="active"
+    [title]="item.label">
+    <span class="nav-label">{{ item.label }}</span>
+    <div class="nav-icon">
+      <tui-icon
+        [icon]="item.icon"
+        [style.height.rem]="1.2"
+        [style.width.rem]="1.2"
+        [style.display]="'inline-block'"
+        [style.visibility]="'visible'"/>
+    </div>
+  </a>
+</nav>
+

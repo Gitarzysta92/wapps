@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
@@ -18,11 +19,20 @@ export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-it
     TuiButton,
     TuiIcon,
     NgForOf,
-    TuiAvatar
+    TuiAvatar,
+    RouterLink
   ]
 })
 export class ApplicationReviewFeedItemComponent implements IFeedItemComponent {
   @Input() item!: IFeedItem & { title: string, subtitle: string };
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+  }
+
+  getApplicationReviewLink(): string[] {
+    return ['/app', this.getApplicationSlug(), 'review'];
+  }
 
   getRating(): number {
     return this.item.params?.['rating'] || 0;

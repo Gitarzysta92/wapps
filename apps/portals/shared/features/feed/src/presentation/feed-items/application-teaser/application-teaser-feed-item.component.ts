@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
@@ -20,11 +21,20 @@ export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-it
     TuiChip,
     TuiButton,
     TuiIcon,
-    NgForOf
+    NgForOf,
+    RouterLink
   ]
 })
 export class ApplicationTeaserFeedItemComponent implements IFeedItemComponent {
   @Input() item!: IFeedItem & { title: string, subtitle: string };
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+  }
+
+  getApplicationOverviewLink(): string[] {
+    return ['/app', this.getApplicationSlug(), 'overview'];
+  }
 
   getApplicationName(): string {
     return this.item.params?.['applicationName'] || 'Application Name';
