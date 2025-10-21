@@ -9,14 +9,15 @@
       class="discussion">
     </ui-discussion>
 
-    <button
+    <a
       class="discussion-cta" 
       tuiButton 
       size="s" 
-      appearance="primary">
+      appearance="primary"
+      [routerLink]="getApplicationDiscussionsLink()">
         <tui-icon icon="@tui.message-circle"/>
         Join Discussion
-    </button>
+    </a>
   </div>
 
   <div class="item-actions" footer>
