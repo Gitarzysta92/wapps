@@ -7,6 +7,8 @@
       appearance="ghost"
       type="button"
       [routerLink]="item.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.path === '' }"
       [title]="item.label">
       <span class="nav-label">{{ item.label }}</span>
       <div class="nav-icon">
