@@ -1,5 +1,5 @@
 {
-  "name": "@ui/discussion",
+  "name": "@ui/intro-hero",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^19.0.0",
@@ -10,5 +10,4 @@
   },
   "sideEffects": false
 }
-
 

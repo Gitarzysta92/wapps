@@ -1,6 +1,7 @@
 // Import design system variables
 @use 'ui/design-system/src/styles' as *;
 
+
 // Light theme gradients using design system variables
 body.light {
   --chat-fade-gradient: linear-gradient(to bottom, 
@@ -19,10 +20,14 @@ body.light {
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
 
   --indigo-gradient2: linear-gradient(0deg, #{$color-white} 20%, #ece8fc 100%);
+  
+  --feed-radial-gradient: radial-gradient(ellipse at top, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
 }
 
 [tuiTheme='light'] {
   --tui-background-elevation-1: #{$color-bg};
+  --alt-text-color: #{$color-text-weaker};
+  //--t-shadow: 
 }
 
 // Dark theme gradients using design system variables
@@ -43,8 +48,12 @@ body.dark {
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
 
   --indigo-gradient2: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
+  
+  --feed-radial-gradient: radial-gradient(ellipse at top, #{$color-gray-800} 0%, #{$color-surface} 50%, #{$color-bg-inverse} 100%);
 }
 
 [tuiTheme='dark'] {
   --tui-background-elevation-1: #{$color-surface};
+  --alt-text-color: #{$color-text-weaker};
+  //--t-shadow
 }

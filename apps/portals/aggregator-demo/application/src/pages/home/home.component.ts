@@ -15,7 +15,8 @@ import { ApplicationDevLogFeedItemComponent } from '@portals/shared/features/fee
 import { SuiteTeaserFeedItemComponent } from '@portals/shared/features/feed';
 import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed';
 import { FeedContainerComponent } from "@portals/shared/features/feed";
-import { DiscussionComponent } from '@portals/shared/features/discussion'
+import { DiscussionComponent } from '@portals/shared/features/discussion';
+import { IntroHeroComponent } from '@ui/intro-hero';
 
 @Component({
   selector: 'home-page',
@@ -33,6 +34,7 @@ import { DiscussionComponent } from '@portals/shared/features/discussion'
     ApplicationDevLogFeedItemComponent,
     SuiteTeaserFeedItemComponent,
     DiscussionTopicFeedItemComponent,
+    IntroHeroComponent,
     TuiDropdown,
     TuiBadgedContent,
     FeedContainerComponent,

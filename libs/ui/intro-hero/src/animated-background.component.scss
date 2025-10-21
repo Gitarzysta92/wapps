@@ -1,0 +1,64 @@
+.animated-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.intro-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(118, 75, 162, 0.15));
+  backdrop-filter: blur(20px);
+  animation: float 8s ease-in-out infinite;
+  will-change: transform;
+  box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.2);
+}
+
+.intro-circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -100px;
+  right: -50px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.intro-circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -50px;
+  left: -30px;
+  animation: float 10s ease-in-out infinite 2s;
+}
+
+.intro-circle-3 {
+  width: 150px;
+  height: 150px;
+  top: 50%;
+  left: 10%;
+  animation: float 12s ease-in-out infinite 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -30px) scale(1.1) rotate(5deg);
+  }
+  50% {
+    transform: translate(-20px, 15px) scale(0.9) rotate(-5deg);
+  }
+  75% {
+    transform: translate(15px, 20px) scale(1.05) rotate(3deg);
+  }
+}
+
+// Dark mode adjustments
+:host-context([tuiTheme='dark']) {
+  .intro-circle {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(118, 75, 162, 0.08));
+    box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.1);
+  }
+}
+

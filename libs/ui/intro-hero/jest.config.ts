@@ -1,8 +1,8 @@
 export default {
-  displayName: 'ui-discussion',
+  displayName: 'ui-intro-hero',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/libs/ui/discussion',
+  coverageDirectory: '../../../coverage/libs/ui/intro-hero',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
@@ -19,5 +19,4 @@ export default {
     'jest-preset-angular/build/serializers/html-comment',
   ],
 };
-
 

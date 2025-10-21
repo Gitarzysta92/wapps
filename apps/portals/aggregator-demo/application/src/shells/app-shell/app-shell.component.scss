@@ -1,20 +1,16 @@
 @use 'ui/design-system/src/styles' as *;
 
-.chat-fade-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: $space-24;
-  background: var(--chat-fade-gradient);
-  pointer-events: none;
-  z-index: $z-base-overlay;
-  border-radius: $radius-sm $radius-sm 0 0;
-}
+
 
 :host {
-  background: var(--header-gradient);
   display: block;
+  position: relative;
+}
+
+.shell-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
 }
 
 .container-header {
@@ -22,7 +18,7 @@
   top: 0;
   @include main-width();
   margin: 0 auto;
-  z-index: $z-base;
+  z-index: 10;
 }
 
 .container-footer {
@@ -30,14 +26,14 @@
   top: 0;
   @include main-width();
   margin: 0 auto;
-  z-index: $z-base;
+  z-index: 10;
 }
 
 .sidebar {
   position: fixed;
   top: 0;
   height: 100vh;
-  z-index: $z-base;
+  z-index: 10;
 
   &.left {
     left: 0;
@@ -55,6 +51,6 @@
       position: relative;
       margin: 0 auto;
       @include main-width();
-      z-index: $z-base;
+      z-index: 1;
     }
   }
