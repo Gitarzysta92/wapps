@@ -14,8 +14,8 @@ export function createAppConfig(c: {
         c.routes,
         withEnabledBlockingInitialNavigation(),
         withInMemoryScrolling({
-          scrollPositionRestoration: 'disabled',
-          anchorScrolling: 'disabled',
+          scrollPositionRestoration: 'top',
+          anchorScrolling: 'enabled',
         }),
         withRouterConfig({
           onSameUrlNavigation: 'reload',
