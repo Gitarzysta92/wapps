@@ -6,9 +6,9 @@
       tuiButton
       appearance="ghost"
       type="button"
-      [routerLink]="item.path"
+      [routerLink]="['/', item.path]"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: item.path === '' }"
+      [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
       [title]="item.label">
       <span class="nav-label">{{ item.label }}</span>
       <div class="nav-icon">
