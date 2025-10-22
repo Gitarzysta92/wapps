@@ -4,6 +4,7 @@ import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { filter, startWith, map, distinctUntilChanged, Observable } from 'rxjs';
+import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 
 export interface IAppShellRouteData {
   header: Type<IAppShellHeaderComponent> | null;
@@ -39,6 +40,7 @@ export const APP_SHELL_STATE = new InjectionToken<IAppShellState>('APP_SHELL_STA
     CommonModule,
     AsyncPipe,
     NgComponentOutlet,
+    AnimatedBackgroundComponent,
   ],
   hostDirectives: [
     ThemingDescriptorDirective

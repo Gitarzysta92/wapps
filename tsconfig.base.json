@@ -147,6 +147,7 @@
       "@ui/content-feed": ["libs/ui/content-feed/src/index.ts"],
       "@ui/discussion": ["libs/ui/discussion/src/index.ts"],
       "@ui/filters": ["libs/ui/filters/src/index.ts"],
+      "@ui/intro-hero": ["libs/ui/intro-hero/src/index.ts"],
       "@ui/form": ["libs/ui/form/src/index.ts"],
       "@ui/infinite-scroll": ["libs/ui/infinite-scroll/src/index.ts"],
       "@ui/items-listing": ["libs/ui/items-listing/src/index.ts"],

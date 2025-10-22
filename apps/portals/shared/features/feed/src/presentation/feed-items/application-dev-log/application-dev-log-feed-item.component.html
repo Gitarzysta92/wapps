@@ -40,14 +40,15 @@
         </div>
       </div>
 
-      <button
+      <a
         class="dev-log-cta" 
         tuiButton 
         size="s" 
-        appearance="primary">
+        appearance="primary"
+        [routerLink]="getApplicationLogLink()">
           <tui-icon icon="@tui.external-link"/>
           View Full Changelog
-      </button>
+      </a>
     </div>
   </div>
 
@@ -70,4 +71,5 @@
     </button>
   </div>
 </content-feed-item>
+
 

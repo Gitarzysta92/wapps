@@ -1,0 +1,103 @@
+@use 'ui/design-system/src/styles' as *;
+
+.intro-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-10 $space-4;
+  overflow: hidden;
+}
+
+.intro-title {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  text-align: center;
+  margin: 0 0 $space-4 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  position: relative;
+  z-index: 2;
+
+  span {
+    line-height: normal;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 3rem; // 48px - larger than 4xl
+    flex-direction: row;
+    gap: $space-3;
+  }
+}
+
+.intro-word {
+  display: inline-block;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards;
+  background: linear-gradient(135deg, #4f46e5, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #4f46e5; // Fallback for browsers that don't support background-clip
+  will-change: transform, opacity;
+  
+  &:nth-child(1) {
+    animation-delay: 0s !important;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.3s !important;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.6s !important;
+  }
+}
+
+.intro-subtitle {
+  font-size: $font-size-lg;
+  color: var(--tui-text-02);
+  text-align: center;
+  margin: 0;
+  opacity: 0;
+  animation: fadeIn 1s ease-out 0.9s forwards;
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  will-change: opacity;
+
+  @media (min-width: 768px) {
+    font-size: $font-size-xl;
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Dark mode adjustments
+:host-context([tuiTheme='dark']) {
+  .intro-word {
+    filter: brightness(1.3);
+  }
+}
+

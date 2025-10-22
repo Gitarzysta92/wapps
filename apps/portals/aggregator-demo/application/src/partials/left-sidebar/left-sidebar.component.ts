@@ -36,6 +36,11 @@ export class LeftSidebarPartialComponent {
     return allItems.filter(i => !userPanelIds.has(i.id));
   }
 
+  public getRouterLinkActiveOptions(path: string): { exact: boolean } {
+    // Use exact matching for home route (empty path) to avoid matching all routes
+    return { exact: path === '' };
+  }
+
   public onToggleClick(): void {
     this.toggleExpansion.emit();
   }

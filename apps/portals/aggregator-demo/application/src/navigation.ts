@@ -115,4 +115,13 @@ export const NAVIGATION = {
     slots: [
     ]
   },
+  applicationDetails: {
+    id: 12,
+    path: 'app',
+    label: 'Application Details',
+    icon: '@tui.box',
+    slots: [
+      { id: Menu.Main, order: 4 }
+    ]
+  },
 }

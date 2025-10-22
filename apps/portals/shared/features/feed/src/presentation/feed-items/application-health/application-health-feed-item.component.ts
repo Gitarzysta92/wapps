@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
 import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { NgFor } from '@angular/common';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 
 export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-item';
 
@@ -19,11 +21,22 @@ export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-it
     StatusBannerComponent,
     ServiceStatusItemComponent,
     NoticesSectionComponent,
-    NgFor
+    NgFor,
+    RouterLink,
+    TuiButton,
+    TuiIcon
   ]
 })
 export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
   @Input() item!: IFeedItem & { title: string } & any;
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+  }
+
+  getApplicationHealthLink(): string[] {
+    return ['/app', this.getApplicationSlug(), 'health'];
+  }
 
   getOverallStatus(): 'operational' | 'degraded' | 'outage' {
     const status = this.item.params?.['overallStatus'];

@@ -1,0 +1,165 @@
+<main class="page-layout">
+  <!-- App Header Section -->
+  <section class="app-header-section">
+    <div class="app-header">
+      <div class="app-icon-title">
+        <tui-avatar
+          [src]="(app$ | async)?.logo"
+          size="xl"
+          class="app-icon"
+        />
+        <div class="app-info">
+          <h1 class="app-title">{{ (app$ | async)?.name }}</h1>
+          <a tuiLink href="#" target="_blank" rel="noopener noreferrer" class="developer-link">
+            Developer name
+          </a>
+          <div class="rating-section">
+            <div class="rating-stars">
+              <tui-icon icon="@tui.star" class="star-icon"></tui-icon>
+              <tui-icon icon="@tui.star" class="star-icon"></tui-icon>
+              <tui-icon icon="@tui.star" class="star-icon"></tui-icon>
+              <tui-icon icon="@tui.star" class="star-icon"></tui-icon>
+              <tui-icon icon="@tui.star" class="star-icon"></tui-icon>
+            </div>
+            <span class="rating-text">{{ (app$ | async)?.rating }}</span>
+            <span class="reviews-count">({{ (app$ | async)?.reviewNumber | number }} reviews)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="app-labels">
+        <tui-badge status="info" class="label">Contains ads</tui-badge>
+        <tui-badge status="info" class="label">In-app purchases</tui-badge>
+        <tui-badge status="neutral" class="label">Content rating</tui-badge>
+      </div>
+      
+      <div class="app-actions">
+        <button tuiButton size="l" appearance="primary" class="install-btn">
+          <tui-icon icon="@tui.download" class="action-icon"></tui-icon>
+          Install
+        </button>
+        <button tuiButton size="m" appearance="flat" class="action-btn">
+          <tui-icon icon="@tui.share-2" class="action-icon"></tui-icon>
+          Share
+        </button>
+        <button tuiButton size="m" appearance="flat" class="action-btn">
+          <tui-icon icon="@tui.heart" class="action-icon"></tui-icon>
+          Wishlist
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <div class="content-layout">
+    <!-- Main Content -->
+    <div class="main-content">
+      <section id="teaser" class="teaser-section">
+        <div class="section-content">
+          <h2 class="section-title">
+            <tui-icon icon="@tui.box" class="title-icon"></tui-icon>
+            Application Overview
+          </h2>
+          <ui-cover-image
+            class="cover-image"
+            [image]="getCoverImage()">
+          </ui-cover-image>
+          <div class="teaser-info">
+            <tui-chip 
+              class="app-category" 
+              appearance="primary">
+              {{ getCategory() }}
+            </tui-chip>
+            <div class="app-content">
+              <h3 class="app-name">{{ (app$ | async)?.name }}</h3>
+              <p class="app-description">Discover this amazing application with powerful features and seamless integration.</p>
+              <div class="app-tags">
+                <tui-chip 
+                  *ngFor="let tag of getTags()"
+                  class="app-tag" 
+                  size="s"
+                  appearance="secondary">
+                  {{ tag }}
+                </tui-chip>
+              </div>
+            </div>
+            <div class="score-container">
+              Rating:
+              <div class="score-stars">
+                <tui-icon 
+                  *ngFor="let star of [1,2,3,4,5]"
+                  [icon]="star <= getAggregatedScore() ? '@tui.star' : '@tui.star'"
+                  [class.filled]="star <= getAggregatedScore()"
+                  class="star-icon" />
+              </div>
+              <span class="score-value">{{ getAggregatedScore().toFixed(1) }}/5</span>
+              <span class="reviews-text">({{ getReviewsCount() }} reviews)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Aside Content -->
+    <aside class="aside-content">
+      <!-- App Details Card -->
+      <div class="aside-card">
+        <h3 class="card-title">App Details</h3>
+        <div class="card-content">
+          <div class="detail-row">
+            <span class="detail-label">Version</span>
+            <span class="detail-value">2.1.0</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Size</span>
+            <span class="detail-value">45 MB</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Downloads</span>
+            <span class="detail-value">1M+</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Rating</span>
+            <span class="detail-value">{{ (app$ | async)?.rating }} ⭐</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Reviews</span>
+            <span class="detail-value">{{ (app$ | async)?.reviewNumber | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="aside-card">
+        <h3 class="card-title">Quick Actions</h3>
+        <div class="card-content">
+          <button tuiButton size="m" appearance="primary" class="full-width-btn">
+            <tui-icon icon="@tui.download" class="action-icon"></tui-icon>
+            Install App
+          </button>
+          <button tuiButton size="m" appearance="flat" class="full-width-btn">
+            <tui-icon icon="@tui.share-2" class="action-icon"></tui-icon>
+            Share
+          </button>
+          <button tuiButton size="m" appearance="flat" class="full-width-btn">
+            <tui-icon icon="@tui.heart" class="action-icon"></tui-icon>
+            Add to Wishlist
+          </button>
+        </div>
+      </div>
+
+      <!-- Developer Info Card -->
+      <div class="aside-card">
+        <h3 class="card-title">Developer</h3>
+        <div class="card-content">
+          <div class="developer-info">
+            <div class="dev-name">Developer Company Inc.</div>
+            <div class="dev-email">developer&#64;company.com</div>
+            <div class="dev-address">123 Developer Street, Tech City</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+

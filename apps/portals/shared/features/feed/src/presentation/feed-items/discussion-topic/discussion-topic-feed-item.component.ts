@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { DiscussionComponent, type DiscussionData } from '@ui/discussion';
-import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
@@ -16,13 +16,21 @@ export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
   imports: [
     ContentFeedItemComponent,
     DiscussionComponent,
-    TuiChip,
     TuiButton,
-    TuiIcon
+    TuiIcon,
+    RouterLink
   ]
 })
 export class DiscussionTopicFeedItemComponent implements IFeedItemComponent {
   @Input() item!: IFeedItem & { title: string, subtitle: string };
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+  }
+
+  getApplicationDiscussionsLink(): string[] {
+    return ['/app', this.getApplicationSlug(), 'discussions'];
+  }
 
   getDiscussionData(): DiscussionData {
     return this.item.params?.['discussionData'] || {
@@ -39,4 +47,5 @@ export class DiscussionTopicFeedItemComponent implements IFeedItemComponent {
     return this.item.params?.['viewsCount'] || 0;
   }
 }
+
 
