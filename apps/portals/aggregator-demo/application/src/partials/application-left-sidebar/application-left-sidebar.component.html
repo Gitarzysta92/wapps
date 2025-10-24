@@ -1,11 +1,18 @@
-<nav class="sidebar-nav" *ngIf="appSlug$ | async as appSlug">
+<tui-avatar
+  [src]="buildMockFromSlug(appSlug!)?.logo"
+  size="xl"
+  class="app-icon"
+/>
+
+<nav class="sidebar-nav">
   <a
-    *ngFor="let item of menuItems"
+    *ngFor="let item of navigation"
     class="nav-item"
     tuiButton
     appearance="ghost"
     type="button"
-    [routerLink]="getNavigationPath(appSlug, item.section)"
+    [routerLink]="item.path | routePath:{ appSlug: appSlug }"
+    [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
     routerLinkActive="active"
     [title]="item.label">
     <span class="nav-label">{{ item.label }}</span>

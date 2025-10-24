@@ -33,7 +33,6 @@ export class ContentFeedComponent implements OnInit, OnChanges, OnDestroy {
   private _s: Subscription | undefined;
 
   ngOnInit(): void {
-    console.log(this.itemTemplate);
     this._s = this._scrollDirective.scrolledToBottom
       .subscribe(() => this.isLoading = true);
   }

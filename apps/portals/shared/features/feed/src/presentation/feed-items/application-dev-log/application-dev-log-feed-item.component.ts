@@ -5,6 +5,7 @@ import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
+import { RoutePathPipe } from '@ui/routing';
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
@@ -20,22 +21,20 @@ export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-
     TuiButton,
     TuiIcon,
     NgForOf,
-    RouterLink
+    RouterLink,
+    RoutePathPipe
   ]
 })
 export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
+  @Input() ctaPath = "";
   @Input() item!: IFeedItem & { title: string, subtitle: string };
+
+  getApplicationSlug(): string {
+    return this.item.params?.['applicationSlug'];
+  }
 
   getApplicationName(): string {
     return this.item.params?.['applicationName'] || 'Application';
-  }
-
-  getApplicationSlug(): string {
-    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
-  }
-
-  getApplicationLogLink(): string[] {
-    return ['/app', this.getApplicationSlug(), 'log'];
   }
 
   getVersion(): string {

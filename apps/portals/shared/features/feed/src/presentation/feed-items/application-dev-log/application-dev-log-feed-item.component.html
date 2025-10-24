@@ -45,7 +45,7 @@
         tuiButton 
         size="s" 
         appearance="primary"
-        [routerLink]="getApplicationLogLink()">
+        [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
           <tui-icon icon="@tui.external-link"/>
           View Full Changelog
       </a>
