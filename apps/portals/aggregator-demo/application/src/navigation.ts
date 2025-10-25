@@ -156,6 +156,13 @@ export const NAVIGATION = {
     label: 'Topic',
     icon: '@tui.message-circle',
     slots: []
+  },
+  applicationTimeline: {
+    id: 18,
+    path: 'app/:appSlug/timeline',
+    label: 'Timeline',
+    icon: '@tui.timeline',
+    slots: []
   }
 }
 
@@ -172,5 +179,6 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationHealth,
-  NAVIGATION.applicationTopics
+  NAVIGATION.applicationTopics,
+  NAVIGATION.applicationTimeline
 ]

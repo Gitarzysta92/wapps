@@ -138,6 +138,20 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
+        path: NAVIGATION.applicationTimeline.path,
+        loadComponent: () => import('./pages/application-timeline-page/application-timeline-page.component').then(m => m.ApplicationTimelinePageComponent),
+        data: {
+          breadcrumb: 'Timeline',
+          header: null,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
         matcher: applicationsMatcher,
         loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
         data: {
