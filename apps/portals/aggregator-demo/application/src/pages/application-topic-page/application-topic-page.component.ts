@@ -1,22 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
   selector: 'app-topic',
   standalone: true,
   imports: [
-    AsyncPipe,
-    DecimalPipe,
     TuiButton,
-    TuiIcon,
-    TuiLink,
-    TuiAvatar,
-    TuiBadge
+    TuiIcon
   ],
   templateUrl: './application-topic-page.component.html',
   styleUrl: './application-topic-page.component.scss'

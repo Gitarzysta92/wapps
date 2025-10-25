@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { SmartSearchInputContainerComponent } from '@portals/shared/features/smart-search';
-import { StickyElementDirective, OutOfViewportDirective, OutOfViewportChange } from '@ui/misc';
-import { ChatBannerComponent } from '../chat';
+import { StickyElementDirective, OutOfViewportChange } from '@ui/misc';
 import { TuiIcon } from '@taiga-ui/core';
 
 
@@ -17,8 +16,6 @@ import { TuiIcon } from '@taiga-ui/core';
     CommonModule,
     SmartSearchInputContainerComponent,
     StickyElementDirective,
-    OutOfViewportDirective,
-    ChatBannerComponent,
   ]
 })
 export class HeaderPartialComponent {
