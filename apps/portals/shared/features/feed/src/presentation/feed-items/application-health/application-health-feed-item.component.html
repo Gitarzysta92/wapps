@@ -23,7 +23,7 @@
       tuiButton 
       size="s" 
       appearance="primary"
-      [routerLink]="getApplicationHealthLink()">
+      [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
         <tui-icon icon="@tui.external-link"/>
         View Full Health Status
     </a>

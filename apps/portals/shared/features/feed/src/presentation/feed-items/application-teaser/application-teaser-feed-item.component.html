@@ -30,7 +30,7 @@
         tuiButton 
         size="s" 
         appearance="primary"
-        [routerLink]="getApplicationOverviewLink()">
+        [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
           <tui-icon icon="@tui.grid"/>
           Application overview
       </a>

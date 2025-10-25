@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnInit, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IFeedItem } from '../models/feed-item.interface';
 import { FEED_PROVIDER_TOKEN } from '../ports/feed-provider.port';

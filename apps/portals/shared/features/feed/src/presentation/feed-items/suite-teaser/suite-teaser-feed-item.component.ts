@@ -1,17 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiChip, TuiAvatar } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf, NgIf } from '@angular/common';
+import type { SuiteTeaserFeedItem, SuiteApp } from '@domains/feed';
 
 export const SUITE_TEASER_FEED_ITEM_SELECTOR = 'suite-teaser-feed-item';
-
-export interface SuiteApp {
-  name: string;
-  logo?: string;
-  description?: string;
-}
 
 @Component({
   selector: SUITE_TEASER_FEED_ITEM_SELECTOR,
@@ -30,18 +25,18 @@ export interface SuiteApp {
   ]
 })
 export class SuiteTeaserFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string, subtitle: string };
+  @Input() item!: SuiteTeaserFeedItem;
 
   getSuiteTitle(): string {
-    return this.item.params?.['suiteTitle'] || 'Application Suite';
+    return this.item.suiteTitle;
   }
 
   getSuiteDescription(): string {
-    return this.item.params?.['suiteDescription'] || 'Discover our collection of applications';
+    return this.item.suiteDescription;
   }
 
   getApps(): SuiteApp[] {
-    return this.item.params?.['apps'] || [];
+    return this.item.apps;
   }
 
   getAppsCount(): number {
@@ -49,7 +44,7 @@ export class SuiteTeaserFeedItemComponent implements IFeedItemComponent {
   }
 
   getCategory(): string {
-    return this.item.params?.['category'] || 'Suite';
+    return this.item.category;
   }
 }
 

@@ -64,6 +64,7 @@ export class HomePageComponent {
     overview: NAVIGATION.applicationOverview,
     reviews: NAVIGATION.applicationReviews,
     health: NAVIGATION.applicationHealth,
+    devlog: NAVIGATION.applicationDevLog,
     topic: NAVIGATION.applicationTopic
   }
 }

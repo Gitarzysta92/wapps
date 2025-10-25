@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { TuiAvatar } from '@taiga-ui/kit';
+import { RoutePathPipe } from '@ui/routing';
+import type { ApplicationReviewFeedItem } from '@domains/feed';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
@@ -20,14 +22,16 @@ export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-it
     TuiIcon,
     NgForOf,
     TuiAvatar,
-    RouterLink
+    RouterLink,
+    RoutePathPipe
   ]
 })
 export class ApplicationReviewFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string, subtitle: string };
+  @Input() ctaPath = "";
+  @Input() item!: ApplicationReviewFeedItem;
 
   getApplicationSlug(): string {
-    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+    return this.item.appSlug;
   }
 
   getApplicationReviewLink(): string[] {
@@ -35,31 +39,31 @@ export class ApplicationReviewFeedItemComponent implements IFeedItemComponent {
   }
 
   getRating(): number {
-    return this.item.params?.['rating'] || 0;
+    return this.item.rating;
   }
 
   getReviewerName(): string {
-    return this.item.params?.['reviewerName'] || 'Anonymous';
+    return this.item.reviewerName;
   }
 
   getReviewerAvatar(): string {
-    return this.item.params?.['reviewerAvatar'] || '';
+    return this.item.reviewerAvatar;
   }
 
   getReviewerRole(): string {
-    return this.item.params?.['reviewerRole'] || 'User';
+    return this.item.reviewerRole;
   }
 
   getTestimonial(): string {
-    return this.item.params?.['testimonial'] || 'Great application!';
+    return this.item.testimonial;
   }
 
   getApplicationName(): string {
-    return this.item.params?.['applicationName'] || 'Application';
+    return this.item.appName;
   }
 
   getReviewDate(): string {
-    const date = this.item.params?.['reviewDate'];
+    const date = this.item.reviewDate;
     if (date) {
       return new Date(date).toLocaleDateString('en-US', { 
         month: 'short', 
@@ -75,7 +79,7 @@ export class ApplicationReviewFeedItemComponent implements IFeedItemComponent {
   }
 
   getHelpfulCount(): number {
-    return this.item.params?.['helpfulCount'] || 0;
+    return this.item.helpfulCount;
   }
 }
 

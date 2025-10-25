@@ -11,4 +11,4 @@ export type ApplicationDevLogFeedItem = {
     type: unknown;
   }>;
   type: unknown;
-} & FeedItemDto
+} & FeedItemDto;

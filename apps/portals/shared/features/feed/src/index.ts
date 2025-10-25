@@ -13,13 +13,10 @@ export * from './presentation/models/feed-item.interface';
 
 // Services
 export * from './presentation/services/news-feed.service';
-export * from './presentation/services/feed-provider.service';
 
 // Ports
 export * from './presentation/ports/feed-provider.port';
 
-// Providers
-export * from './presentation/providers/feed-provider.provider';
 
 // Mappers
 export * from './presentation/mappers/feed-item.mapper';

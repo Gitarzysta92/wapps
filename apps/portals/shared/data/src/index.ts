@@ -13,6 +13,9 @@ export * from './devices';
 // Feed data
 export * from './feed';
 
+// Feed static data
+export * from './feed-static-data';
+
 // Platforms data
 export * from './platforms';
 
