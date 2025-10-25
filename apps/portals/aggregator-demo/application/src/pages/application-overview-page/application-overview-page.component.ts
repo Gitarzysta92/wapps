@@ -7,7 +7,7 @@ import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { AppRecordDto } from '@domains/catalog/record';
-import { NAVIGATION } from '../../../navigation';
+import { NAVIGATION } from '../../navigation';
 
 @Component({
   selector: 'app-application-overview-page',
