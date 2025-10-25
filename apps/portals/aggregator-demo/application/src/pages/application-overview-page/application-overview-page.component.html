@@ -157,7 +157,7 @@
         </h3>
         <a 
           *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
+          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }"
           tuiLink 
           size="s">
           View Details

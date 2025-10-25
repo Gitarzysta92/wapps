@@ -41,10 +41,10 @@ export class ApplicationOverviewPageComponent {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  // Navigation paths
-  readonly HEALTH_PATH = NAVIGATION.applicationHealth.path;
-  readonly REVIEWS_PATH = NAVIGATION.applicationReviews.path;
-  readonly TIMELINE_PATH = NAVIGATION.applicationTimeline.path;
+  // Navigation paths - prefix with / for absolute paths
+  readonly HEALTH_PATH = '/' + NAVIGATION.applicationHealth.path;
+  readonly REVIEWS_PATH = '/' + NAVIGATION.applicationReviews.path;
+  readonly TIMELINE_PATH = '/' + NAVIGATION.applicationTimeline.path;
 
   getCategory(): string {
     return 'Productivity';
