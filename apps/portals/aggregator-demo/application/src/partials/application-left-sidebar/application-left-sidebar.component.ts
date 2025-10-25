@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -16,6 +16,7 @@ import { RoutePathPipe } from '@ui/routing';
   standalone: true,
   imports: [
     CommonModule,
+    DecimalPipe,
     RouterModule,
     TuiButton,
     TuiIcon,

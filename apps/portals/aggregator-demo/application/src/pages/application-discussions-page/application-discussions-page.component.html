@@ -1,0 +1,55 @@
+<main class="page-layout">
+  <section class="discussions-section">
+    <div class="section-content">
+      <h1 class="section-title">
+        <tui-icon icon="@tui.message-circle" class="title-icon"></tui-icon>
+        Community Discussions
+      </h1>
+      <div class="discussions-container">
+        <p class="discussions-intro">Join the community discussion about this application.</p>
+        
+        <!-- Discussions List -->
+        <div class="discussions-list" *ngIf="discussions$ | async as discussions">
+          <div class="discussion-item" *ngFor="let discussion of discussions" (click)="navigateToDiscussion(discussion)">
+            <div class="discussion-header">
+              <div class="discussion-meta">
+                <img [src]="discussion.authorAvatar" [alt]="discussion.author" class="author-avatar" width="32" height="32">
+                <div class="author-info">
+                  <span class="author-name">{{ discussion.author }}</span>
+                  <span class="discussion-time">{{ formatRelativeTime(discussion.createdAt) }}</span>
+                </div>
+              </div>
+              <div class="discussion-stats">
+                <span class="replies-count">{{ discussion.repliesCount }} replies</span>
+                <span class="views-count">{{ discussion.viewsCount }} views</span>
+              </div>
+            </div>
+            <h3 class="discussion-title">
+              <tui-icon icon="@tui.pin" *ngIf="discussion.isPinned" class="pin-icon"></tui-icon>
+              {{ discussion.title }}
+            </h3>
+            <p class="discussion-excerpt">{{ discussion.excerpt }}</p>
+            <div class="discussion-tags">
+              <tui-badge size="s" *ngFor="let tag of discussion.tags">{{ tag }}</tui-badge>
+            </div>
+            <div class="discussion-arrow">
+              <tui-icon icon="@tui.arrow-right" class="arrow-icon"></tui-icon>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="discussions-actions">
+          <button tuiButton appearance="primary">
+            <tui-icon icon="@tui.plus"></tui-icon>
+            Start New Discussion
+          </button>
+          <button tuiButton appearance="secondary">
+            <tui-icon icon="@tui.message-circle"></tui-icon>
+            View All Discussions
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

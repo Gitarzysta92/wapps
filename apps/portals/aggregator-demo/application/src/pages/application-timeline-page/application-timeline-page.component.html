@@ -1,0 +1,65 @@
+<main class="page-layout">
+  <section class="timeline-section">
+    <div class="section-content">
+      <h1 class="section-title">
+        <tui-icon icon="@tui.timeline" class="title-icon"></tui-icon>
+        Timeline
+      </h1>
+      <p class="timeline-intro">Recent activity and updates for {{ (app$ | async)?.name }}</p>
+      
+      <feed-container class="timeline-feed">
+        <ng-template #itemTemplate let-item>
+          @switch (item.type) {
+            @case (feedItemType.ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR) {
+              <article-highlight-feed-item
+                class="feed-item"
+                [item]="item">
+              </article-highlight-feed-item>
+            }
+            @case (feedItemType.APPLICATION_HEALTH_FEED_ITEM_SELECTOR) {
+              <application-health-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-health-feed-item>
+            }
+            @case (feedItemType.APPLICATION_REVIEW_FEED_ITEM_SELECTOR) {
+              <application-review-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-review-feed-item>
+            }
+            @case (feedItemType.APPLICATION_TEASER_FEED_ITEM_SELECTOR) {
+              <application-teaser-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-teaser-feed-item>
+            }
+            @case (feedItemType.APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR) {
+              <application-dev-log-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-dev-log-feed-item>
+            }
+            @case (feedItemType.SUITE_TEASER_FEED_ITEM_SELECTOR) {
+              <suite-teaser-feed-item 
+                class="feed-item"
+                [item]="item">
+              </suite-teaser-feed-item>
+            }
+            @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
+              <discussion-topic-feed-item 
+                class="feed-item"
+                [item]="item">
+              </discussion-topic-feed-item>
+            }
+            @default {
+              <div class="unknown-feed-item">
+                <p>Unknown feed item type: {{ item.type }}</p>
+              </div>
+            }
+          }
+        </ng-template>
+      </feed-container>
+    </div>
+  </section>
+</main>

@@ -3,11 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
+import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { StatusBannerComponent } from '@ui/status-banner';
+import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
+import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-log-section',
+  selector: 'app-application-health-page',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -18,12 +21,14 @@ import { AppRecordDto } from '@domains/catalog/record';
     TuiLink,
     TuiAvatar,
     TuiBadge,
-    TuiChip
+    StatusBannerComponent,
+    ServiceStatusItemComponent,
+    NoticesSectionComponent
   ],
-  templateUrl: './log-section.component.html',
-  styleUrls: ['../../application-details-page.component.scss']
+  templateUrl: './application-health-page.component.html',
+  styleUrl: './application-health-page.component.scss'
 })
-export class LogSectionComponent {
+export class ApplicationHealthPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(
@@ -32,39 +37,41 @@ export class LogSectionComponent {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  getVersion(): string {
-    return '2.1.0';
+  getOverallStatus(): 'operational' | 'degraded' | 'outage' {
+    return 'operational';
   }
 
-  getDescription(): string {
-    return 'Major update with new features and improvements';
+  getStatusMessage(): string {
+    return 'All Systems Operational';
   }
 
-  getReleaseDate(): string {
-    return new Date().toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
+  getCurrentTimestamp(): Date {
+    return new Date();
   }
 
-  getChanges(): string[] {
+  getServices(): ServiceStatus[] {
     return [
-      'New user interface improvements',
-      'Performance optimizations',
-      'Bug fixes and stability improvements',
-      'Added dark mode support',
-      'Enhanced security features'
+      {
+        name: 'API Service',
+        uptime: 99.99,
+        status: 'operational',
+        hasInfo: true
+      },
+      {
+        name: 'Database',
+        uptime: 100,
+        status: 'operational'
+      },
+      {
+        name: 'Storage Service',
+        uptime: 99.95,
+        status: 'operational'
+      }
     ];
   }
 
-  getChangeType(): 'major' | 'minor' | 'patch' {
-    return 'major';
-  }
-
-  getChangeTypeLabel(): string {
-    const type = this.getChangeType();
-    return type === 'major' ? 'Major Update' : type === 'minor' ? 'Minor Update' : 'Patch';
+  getNotices(): Notice[] {
+    return [];
   }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {

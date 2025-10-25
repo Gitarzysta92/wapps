@@ -1,0 +1,29 @@
+<main class="page-layout">
+  <!-- Health Section -->
+  <section class="health-section">
+    <div class="section-content">
+      <h1 class="section-title">
+        <tui-icon icon="@tui.heart-pulse" class="title-icon"></tui-icon>
+        System Health
+      </h1>
+      
+      <ui-status-banner
+        [status]="getOverallStatus()"
+        [message]="getStatusMessage()"
+        [timestamp]="getCurrentTimestamp()">
+      </ui-status-banner>
+      
+      <div class="services-list">
+        <ui-service-status-item
+          *ngFor="let service of getServices()"
+          [service]="service">
+        </ui-service-status-item>
+      </div>
+      
+      <ui-notices-section
+        [notices]="getNotices()"
+        [showEmptyState]="true">
+      </ui-notices-section>
+    </div>
+  </section>
+</main>

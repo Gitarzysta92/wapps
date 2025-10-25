@@ -1,8 +1,17 @@
-<tui-avatar
-  [src]="buildMockFromSlug(appSlug!).logo"
-  size="xl"
-  class="app-icon"
-/>
+<div class="app-header">
+  <tui-avatar
+    [src]="buildMockFromSlug(appSlug!).logo"
+    size="xl"
+    class="app-icon"
+  />
+  <div class="app-info">
+    <h2 class="app-name">{{ buildMockFromSlug(appSlug!).name }}</h2>
+    <div class="app-meta">
+      <span class="rating">{{ buildMockFromSlug(appSlug!).rating }} ⭐</span>
+      <span class="reviews">({{ buildMockFromSlug(appSlug!).reviewNumber | number }} reviews)</span>
+    </div>
+  </div>
+</div>
 
 <nav class="sidebar-nav">
   <a

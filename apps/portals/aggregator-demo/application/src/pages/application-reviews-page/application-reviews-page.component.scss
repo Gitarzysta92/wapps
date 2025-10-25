@@ -1,0 +1,132 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Page Layout
+.page-layout {
+  @include grid-container($container-lg);
+  padding: 0;
+}
+
+// Section Styling
+.review-section {
+  padding: $space-6 0;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.section-title {
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.title-icon {
+  font-size: $font-size-3xl;
+  color: $color-primary-600;
+}
+
+// Review Container
+.review-container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: $space-6;
+  background: $color-bg-muted;
+  padding: $space-6;
+  border-radius: $radius-md;
+}
+
+.reviewer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  text-align: center;
+}
+
+.reviewer-name {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.reviewer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.reviewer-role {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-muted;
+}
+
+.review-date {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.review-column {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.application-name {
+  @include text($font-size-lg, $font-weight-bold);
+  color: $color-text-strong;
+  margin: 0;
+}
+
+.testimonial {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  font-style: italic;
+  margin: 0;
+}
+
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rating-value {
+  @include text($font-size-lg, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.rating-stars {
+  display: flex;
+  gap: $space-0_5;
+  
+  .star-icon {
+    color: $color-text-muted;
+    font-size: $font-size-md;
+    
+    &.filled {
+      color: $color-accent-500;
+    }
+  }
+}
+
+.review-cta {
+  width: fit-content;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .review-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .reviewer-column {
+    padding-bottom: $space-4;
+    border-bottom: $border-width-thin solid $color-border;
+  }
+}

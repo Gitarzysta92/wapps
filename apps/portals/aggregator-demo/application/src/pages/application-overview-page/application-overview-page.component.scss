@@ -1,0 +1,369 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Page Layout
+.page-layout {
+  @include grid-container($container-lg);
+  padding: 0;
+}
+
+// App Header Section
+.app-header-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+  padding: $space-6 0;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.app-icon-title {
+  display: flex;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+.app-icon {
+  flex-shrink: 0;
+}
+
+.app-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.app-title {
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+}
+
+.developer-link {
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-primary-600;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rating-stars {
+  display: flex;
+  gap: $space-0_5;
+}
+
+.star-icon {
+  color: $color-accent-500;
+  font-size: $font-size-sm;
+}
+
+.rating-text {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-strong;
+}
+
+.reviews-count {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+.app-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.label {
+  font-size: $font-size-xs;
+}
+
+.app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.install-btn {
+  min-width: 120px;
+}
+
+.action-btn {
+  min-width: 100px;
+}
+
+.action-icon {
+  margin-right: $space-1;
+}
+
+// Section Styling
+.overview-section {
+  padding: $space-6 0;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.section-title {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.title-icon {
+  font-size: $font-size-2xl;
+  color: $color-primary-600;
+}
+
+.cover-image {
+  width: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.overview-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.app-category {
+  width: fit-content;
+}
+
+.app-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.app-description {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0;
+}
+
+.app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-text;
+}
+
+.score-stars {
+  display: flex;
+  gap: $space-0_5;
+  
+  .star-icon {
+    color: $color-text-muted;
+    font-size: $font-size-md;
+    
+    &.filled {
+      color: $color-accent-500;
+    }
+  }
+}
+
+.score-value {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.reviews-text {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+// Shortcuts Section
+.shortcuts-section {
+  padding: $space-6 0;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $space-4;
+  margin-top: $space-4;
+}
+
+.shortcut-card {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  background: $color-bg-muted;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+  text-decoration: none;
+  color: inherit;
+  transition: all $duration-200;
+  
+  &:hover {
+    border-color: $color-primary-600;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.shortcut-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xl;
+  
+  &.health-icon {
+    background: rgba(#ef4444, 0.1);
+    color: #dc2626;
+  }
+  
+  &.reviews-icon {
+    background: rgba($color-accent-500, 0.1);
+    color: $color-accent-600;
+  }
+  
+  &.timeline-icon {
+    background: rgba(#6366f1, 0.1);
+    color: $color-primary-600;
+  }
+}
+
+.shortcut-content {
+  flex: 1;
+}
+
+.shortcut-title {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+  margin: 0 0 $space-0_5 0;
+}
+
+.shortcut-description {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+  margin: 0;
+}
+
+.shortcut-arrow {
+  flex-shrink: 0;
+  color: $color-primary-600;
+  transition: transform $duration-200;
+}
+
+.shortcut-card:hover .shortcut-arrow {
+  transform: translateX(4px);
+}
+
+// Preview Section
+.preview-section {
+  padding: $space-6 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: $space-4;
+}
+
+.preview-card {
+  padding: $space-5;
+  background: $color-bg-muted;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+}
+
+.preview-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+}
+
+.preview-card-title {
+  @include text($font-size-lg, $font-weight-bold);
+  color: $color-text-strong;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.review-preview {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.reviewer-info {
+  flex: 1;
+}
+
+.reviewer-name {
+  @include text($font-size-sm, $font-weight-bold);
+  color: $color-text-strong;
+  margin-bottom: $space-0_5;
+}
+
+.reviewer-role {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-strong;
+}
+
+.star-filled {
+  color: $color-accent-500;
+  font-size: $font-size-sm;
+}
+
+.review-text {
+  @include text($font-size-sm, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0;
+  font-style: italic;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-section {
+    grid-template-columns: 1fr;
+  }
+}

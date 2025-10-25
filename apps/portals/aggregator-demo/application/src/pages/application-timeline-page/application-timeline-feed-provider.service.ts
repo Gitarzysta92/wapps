@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { IFeedProviderPort, IFeedPage } from '@portals/shared/features/feed';
 import { APPLICATIONS } from '@portals/shared/data';
 import { feed } from '@portals/shared/data';
@@ -23,82 +25,101 @@ import { DISCUSSION_TOPIC_FEED_ITEM_SELECTOR } from '@portals/shared/features/fe
 import { SUITE_TEASER_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
 
 @Injectable()
-export class TempFeedProviderService implements IFeedProviderPort {
+export class ApplicationTimelineFeedProviderService implements IFeedProviderPort {
   private static idCounter = 0;
+  private readonly _route = inject(ActivatedRoute);
 
   public getFeedPage(page: number, size: number): Observable<IFeedPage> {
-    // Use the static data from @portals/shared/data
-    const allFeedItems = this.generateFeedItemsFromData();
-    
-    // Simulate pagination
-    const startIndex = page * size;
-    const endIndex = startIndex + size;
-    const pageItems = allFeedItems.slice(startIndex, endIndex);
-    const hasMore = endIndex < allFeedItems.length;
+    return this._route.paramMap.pipe(
+      map(paramMap => paramMap.get('appSlug') ?? 'unknown'),
+      map(appSlug => {
+        // Filter feed items for the specific app
+        const allFeedItems = this.generateFeedItemsForApp(appSlug);
+        
+        // Simulate pagination
+        const startIndex = page * size;
+        const endIndex = startIndex + size;
+        const pageItems = allFeedItems.slice(startIndex, endIndex);
+        const hasMore = endIndex < allFeedItems.length;
 
-    return of({
-      items: pageItems,
-      hasMore,
-      nextPage: hasMore ? page + 1 : undefined
-    });
+        return {
+          items: pageItems,
+          hasMore,
+          nextPage: hasMore ? page + 1 : undefined
+        };
+      })
+    );
   }
 
-  private generateFeedItemsFromData(): (ApplicationDevLogFeedItem | ApplicationTeaserFeedItem | ApplicationHealthFeedItem | ApplicationReviewFeedItem | ArticleHighlightFeedItem | DiscussionTopicFeedItem | SuiteTeaserFeedItem)[] {
+  private generateFeedItemsForApp(appSlug: string): (ApplicationDevLogFeedItem | ApplicationTeaserFeedItem | ApplicationHealthFeedItem | ApplicationReviewFeedItem | ArticleHighlightFeedItem | DiscussionTopicFeedItem | SuiteTeaserFeedItem)[] {
     const feedItems: (ApplicationDevLogFeedItem | ApplicationTeaserFeedItem | ApplicationHealthFeedItem | ApplicationReviewFeedItem | ArticleHighlightFeedItem | DiscussionTopicFeedItem | SuiteTeaserFeedItem)[] = [];
 
-    // Add items from the static feed data
+    // Find the app data
+    const app = APPLICATIONS.find(a => a.slug === appSlug);
+    if (!app) {
+      return feedItems;
+    }
+
+    // Add items from the static feed data that match this app
     feed.forEach((item) => {
-      // Filter by type and create appropriate feed items
-      if (item.type === 'application-dev-log-feed-item') {
-        feedItems.push(this.createDevLogFeedItem(item as ApplicationDevLogFeedItem));
-      } else if (item.type === 'application-teaser-feed-item') {
-        feedItems.push(item as ApplicationTeaserFeedItem);
-      } else if (item.type === 'application-health-feed-item') {
-        feedItems.push(item as ApplicationHealthFeedItem);
-      } else if (item.type === 'application-review-feed-item') {
-        feedItems.push(item as ApplicationReviewFeedItem);
-      } else if (item.type === 'article-highlight-feed-item') {
-        feedItems.push(item as ArticleHighlightFeedItem);
-      } else if (item.type === 'discussion-topic-feed-item') {
-        feedItems.push(item as DiscussionTopicFeedItem);
-      } else if (item.type === 'suite-teaser-feed-item') {
-        feedItems.push(item as SuiteTeaserFeedItem);
+      if (this.isAppRelatedItem(item, appSlug)) {
+        if (item.type === 'application-dev-log-feed-item') {
+          feedItems.push(this.createDevLogFeedItem(item as ApplicationDevLogFeedItem));
+        } else if (item.type === 'application-teaser-feed-item') {
+          feedItems.push(item as ApplicationTeaserFeedItem);
+        } else if (item.type === 'application-health-feed-item') {
+          feedItems.push(item as ApplicationHealthFeedItem);
+        } else if (item.type === 'application-review-feed-item') {
+          feedItems.push(item as ApplicationReviewFeedItem);
+        } else if (item.type === 'discussion-topic-feed-item') {
+          feedItems.push(item as DiscussionTopicFeedItem);
+        }
       }
     });
 
-    // Generate additional feed items based on applications data
-    APPLICATIONS.forEach((app) => {
-      // Create application teaser items
-      feedItems.push(this.createApplicationTeaserFeedItem(app));
+    // Generate app-specific feed items
+    feedItems.push(this.createApplicationTeaserFeedItem(app));
+    
+    // Create application health items
+    feedItems.push(this.createApplicationHealthFeedItem(app));
 
-      // Create application health items (randomly)
-      if (Math.random() > 0.7) {
-        feedItems.push(this.createApplicationHealthFeedItem(app));
-      }
+    // Create application review items
+    feedItems.push(this.createApplicationReviewFeedItem(app));
 
-      // Create application review items (randomly)
-      if (Math.random() > 0.8) {
-        feedItems.push(this.createApplicationReviewFeedItem(app));
-      }
+    // Create discussion topic items
+    feedItems.push(this.createDiscussionTopicFeedItem(app));
 
-      // Create discussion topic items (randomly)
-      if (Math.random() > 0.9) {
-        feedItems.push(this.createDiscussionTopicFeedItem(app));
-      }
-    });
-
-    // Add some article highlights (randomly)
-    if (Math.random() > 0.5) {
-      feedItems.push(this.createArticleHighlightFeedItem());
-    }
-
-    // Add some suite teasers (randomly)
-    if (Math.random() > 0.6) {
-      feedItems.push(this.createSuiteTeaserFeedItem());
-    }
+    // Create dev log items
+    feedItems.push(this.createDevLogFeedItemForApp(app));
 
     // Sort by timestamp (newest first)
     return feedItems.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+
+  private isAppRelatedItem(item: any, appSlug: string): boolean {
+    return item.appSlug === appSlug || item.slug === appSlug;
+  }
+
+  private createDevLogFeedItemForApp(app: AppRecordDto): ApplicationDevLogFeedItem {
+    return {
+      id: this.generateUniqueId(`app-dev-log-${app.id}`),
+      type: APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR,
+      timestamp: new Date(app.updateDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000),
+      title: `${app.name} Update`,
+      subtitle: 'New version available with improvements',
+      appSlug: app.slug,
+      appName: app.name,
+      version: '2.1.0',
+      description: 'Major update with new features and improvements',
+      releaseDate: new Date(app.updateDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000),
+      changes: [
+        { description: 'New user interface improvements', type: 'improvement' },
+        { description: 'Performance optimizations', type: 'performance' },
+        { description: 'Bug fixes and stability improvements', type: 'bugfix' },
+        { description: 'Added dark mode support', type: 'feature' },
+        { description: 'Enhanced security features', type: 'security' }
+      ]
+    };
   }
 
   private createDevLogFeedItem(item: ApplicationDevLogFeedItem): ApplicationDevLogFeedItem {
@@ -121,7 +142,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
     return {
       id: this.generateUniqueId(`app-teaser-${app.id}`),
       type: APPLICATION_TEASER_FEED_ITEM_SELECTOR,
-      timestamp: new Date(app.updateDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random time within last week
+      timestamp: new Date(app.updateDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000),
       title: app.name,
       subtitle: `Discover ${app.name} - a powerful application for your needs`,
       appSlug: app.slug,
@@ -148,7 +169,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
     return {
       id: this.generateUniqueId(`app-health-${app.id}`),
       type: APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000), // Within last 24 hours
+      timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
       title: `${app.name} Health Status`,
       subtitle: statusMessage,
       appSlug: app.slug,
@@ -177,12 +198,12 @@ export class TempFeedProviderService implements IFeedProviderPort {
     return {
       id: this.generateUniqueId(`app-review-${app.id}`),
       type: APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Within last 30 days
+      timestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
       title: `${reviewerName} reviewed ${app.name}`,
       subtitle: testimonial.substring(0, 100) + (testimonial.length > 100 ? '...' : ''),
       appSlug: app.slug,
       appId: String(app.id),
-      rating: app.rating + (Math.random() - 0.5) * 0.5, // Slight variation
+      rating: app.rating + (Math.random() - 0.5) * 0.5,
       reviewerName: reviewerName,
       reviewerRole: this.getRandomReviewerRole(),
       reviewerAvatar: '',
@@ -193,25 +214,6 @@ export class TempFeedProviderService implements IFeedProviderPort {
     };
   }
 
-  private createArticleHighlightFeedItem(): ArticleHighlightFeedItem {
-    const article = ARTICLES_DATA[Math.floor(Math.random() * ARTICLES_DATA.length)];
-    
-    return {
-      id: this.generateUniqueId('article-highlight'),
-      type: ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Within last week
-      title: article.title,
-      subtitle: article.excerpt,
-      excerpt: article.excerpt,
-      author: article.author,
-      category: article.category,
-      coverImage: {
-        url: 'https://via.placeholder.com/400x200/4f46e5/ffffff?text=Featured+Article',
-        alt: article.title
-      }
-    };
-  }
-
   private createDiscussionTopicFeedItem(app: AppRecordDto): DiscussionTopicFeedItem {
     const topic = DISCUSSION_TOPICS_DATA[Math.floor(Math.random() * DISCUSSION_TOPICS_DATA.length)];
     const topicSlug = topic.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -219,7 +221,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
     return {
       id: this.generateUniqueId(`discussion-topic-${app.id}`),
       type: DISCUSSION_TOPIC_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 3 * 24 * 60 * 60 * 1000), // Within last 3 days
+      timestamp: new Date(Date.now() - Math.random() * 3 * 24 * 60 * 60 * 1000),
       title: `Discussion: ${topic}`,
       subtitle: `Join the conversation about ${topic.toLowerCase()}`,
       appSlug: app.slug,
@@ -243,22 +245,6 @@ export class TempFeedProviderService implements IFeedProviderPort {
       },
       participantsCount: Math.floor(Math.random() * 50) + 5,
       viewsCount: Math.floor(Math.random() * 200) + 20
-    };
-  }
-
-  private createSuiteTeaserFeedItem(): SuiteTeaserFeedItem {
-    const suite = SUITES_DATA[Math.floor(Math.random() * SUITES_DATA.length)];
-    
-    return {
-      id: this.generateUniqueId('suite-teaser'),
-      type: SUITE_TEASER_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 14 * 24 * 60 * 60 * 1000), // Within last 2 weeks
-      title: suite.title,
-      subtitle: suite.description,
-      suiteTitle: suite.title,
-      suiteDescription: suite.description,
-      apps: suite.apps,
-      category: suite.category
     };
   }
 
@@ -287,12 +273,12 @@ export class TempFeedProviderService implements IFeedProviderPort {
       23: 'Health',
       18: 'Ecommerce'
     };
-    return tagIds.map(id => tags[id] || `Tag ${id}`).slice(0, 3); // Max 3 tags
+    return tagIds.map(id => tags[id] || `Tag ${id}`).slice(0, 3);
   }
 
   private getRandomHealthStatus(): 'operational' | 'degraded' | 'outage' {
     const statuses: ('operational' | 'degraded' | 'outage')[] = ['operational', 'degraded', 'outage'];
-    const weights = [0.8, 0.15, 0.05]; // 80% operational, 15% degraded, 5% outage
+    const weights = [0.8, 0.15, 0.05];
     const random = Math.random();
     let cumulative = 0;
     
@@ -324,6 +310,6 @@ export class TempFeedProviderService implements IFeedProviderPort {
   }
 
   private generateUniqueId(prefix: string): string {
-    return `${prefix}-${++TempFeedProviderService.idCounter}-${Date.now()}`;
+    return `${prefix}-${++ApplicationTimelineFeedProviderService.idCounter}-${Date.now()}`;
   }
 }

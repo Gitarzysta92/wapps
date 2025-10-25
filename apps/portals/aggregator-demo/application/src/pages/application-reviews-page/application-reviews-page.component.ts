@@ -4,13 +4,10 @@ import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
-import { StatusBannerComponent } from '@ui/status-banner';
-import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
-import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-health-section',
+  selector: 'app-application-reviews-page',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -20,15 +17,12 @@ import { AppRecordDto } from '@domains/catalog/record';
     TuiIcon,
     TuiLink,
     TuiAvatar,
-    TuiBadge,
-    StatusBannerComponent,
-    ServiceStatusItemComponent,
-    NoticesSectionComponent
+    TuiBadge
   ],
-  templateUrl: './health-section.component.html',
-  styleUrls: ['../../application-details-page.component.scss']
+  templateUrl: './application-reviews-page.component.html',
+  styleUrl: './application-reviews-page.component.scss'
 })
-export class HealthSectionComponent {
+export class ApplicationReviewsPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(
@@ -37,41 +31,28 @@ export class HealthSectionComponent {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  getOverallStatus(): 'operational' | 'degraded' | 'outage' {
-    return 'operational';
+  getRating(): number {
+    return 4.7;
   }
 
-  getStatusMessage(): string {
-    return 'All Systems Operational';
+  getReviewerName(): string {
+    return 'John Developer';
   }
 
-  getCurrentTimestamp(): Date {
-    return new Date();
+  getReviewerRole(): string {
+    return 'Senior Engineer';
   }
 
-  getServices(): ServiceStatus[] {
-    return [
-      {
-        name: 'API Service',
-        uptime: 99.99,
-        status: 'operational',
-        hasInfo: true
-      },
-      {
-        name: 'Database',
-        uptime: 100,
-        status: 'operational'
-      },
-      {
-        name: 'Storage Service',
-        uptime: 99.95,
-        status: 'operational'
-      }
-    ];
+  getTestimonial(): string {
+    return 'This application has revolutionized our workflow. The features are well thought out and the performance is excellent.';
   }
 
-  getNotices(): Notice[] {
-    return [];
+  getReviewDate(): string {
+    return new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
   }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {

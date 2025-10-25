@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-review-section',
+  selector: 'app-application-devlog-page',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -17,12 +17,13 @@ import { AppRecordDto } from '@domains/catalog/record';
     TuiIcon,
     TuiLink,
     TuiAvatar,
-    TuiBadge
+    TuiBadge,
+    TuiChip
   ],
-  templateUrl: './review-section.component.html',
-  styleUrls: ['../../application-details-page.component.scss']
+  templateUrl: './application-devlog-page.component.html',
+  styleUrl: './application-devlog-page.component.scss'
 })
-export class ReviewSectionComponent {
+export class ApplicationDevlogPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(
@@ -31,28 +32,39 @@ export class ReviewSectionComponent {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  getRating(): number {
-    return 4.7;
+  getVersion(): string {
+    return '2.1.0';
   }
 
-  getReviewerName(): string {
-    return 'John Developer';
+  getDescription(): string {
+    return 'Major update with new features and improvements';
   }
 
-  getReviewerRole(): string {
-    return 'Senior Engineer';
-  }
-
-  getTestimonial(): string {
-    return 'This application has revolutionized our workflow. The features are well thought out and the performance is excellent.';
-  }
-
-  getReviewDate(): string {
-    return new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toLocaleDateString('en-US', { 
-      month: 'short', 
+  getReleaseDate(): string {
+    return new Date().toLocaleDateString('en-US', { 
+      month: 'long', 
       day: 'numeric', 
       year: 'numeric' 
     });
+  }
+
+  getChanges(): string[] {
+    return [
+      'New user interface improvements',
+      'Performance optimizations',
+      'Bug fixes and stability improvements',
+      'Added dark mode support',
+      'Enhanced security features'
+    ];
+  }
+
+  getChangeType(): 'major' | 'minor' | 'patch' {
+    return 'major';
+  }
+
+  getChangeTypeLabel(): string {
+    const type = this.getChangeType();
+    return type === 'major' ? 'Major Update' : type === 'minor' ? 'Minor Update' : 'Patch';
   }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {
