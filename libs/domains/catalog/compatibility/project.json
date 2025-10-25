@@ -4,22 +4,30 @@
   "projectType": "library",
   "prefix": "cat",
   "sourceRoot": "libs/domains/catalog/compatibility/src",
-  "tags": ["type:domain", "scope:catalog"],
+  "tags": [
+    "type:domain",
+    "scope:catalog"
+  ],
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/domains/catalog/compatibility",
-        "main": "libs/domains/catalog/compatibility/src/index.ts",
-        "tsConfig": "libs/domains/catalog/compatibility/tsconfig.lib.json",
-        "assets": ["libs/domains/catalog/compatibility/*.md"]
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/domains/catalog/compatibility",
+        "main": "libs/domains/catalog/compatibility/src/index.ts",
+        "tsConfig": "libs/domains/catalog/compatibility/tsconfig.lib.json",
+        "assets": [
+          "libs/domains/catalog/compatibility/*.md"
+        ]
+      }
     }
   }
 }
-
