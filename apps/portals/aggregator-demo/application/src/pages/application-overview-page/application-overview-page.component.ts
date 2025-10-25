@@ -8,6 +8,7 @@ import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { AppRecordDto } from '@domains/catalog/record';
 import { NAVIGATION } from '../../navigation';
+import { RoutePathPipe } from '@ui/routing';
 
 @Component({
   selector: 'app-application-overview-page',
@@ -18,6 +19,7 @@ import { NAVIGATION } from '../../navigation';
     NgFor,
     NgIf,
     RouterLink,
+    RoutePathPipe,
     TuiButton,
     TuiIcon,
     TuiLink,

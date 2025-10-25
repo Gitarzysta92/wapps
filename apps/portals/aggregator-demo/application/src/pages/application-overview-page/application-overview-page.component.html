@@ -104,7 +104,7 @@
     <div class="shortcuts-grid">
       <a 
         *ngIf="app$ | async as app"
-        [routerLink]="HEALTH_PATH.replace(':appSlug', app.slug)"
+        [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }"
         class="shortcut-card">
         <div class="shortcut-icon health-icon">
           <tui-icon icon="@tui.heart-pulse"></tui-icon>
@@ -118,7 +118,7 @@
 
       <a 
         *ngIf="app$ | async as app"
-        [routerLink]="REVIEWS_PATH.replace(':appSlug', app.slug)"
+        [routerLink]="REVIEWS_PATH | routePath:{ appSlug: app.slug }"
         class="shortcut-card">
         <div class="shortcut-icon reviews-icon">
           <tui-icon icon="@tui.star"></tui-icon>
@@ -132,7 +132,7 @@
 
       <a 
         *ngIf="app$ | async as app"
-        [routerLink]="TIMELINE_PATH.replace(':appSlug', app.slug)"
+        [routerLink]="TIMELINE_PATH | routePath:{ appSlug: app.slug }"
         class="shortcut-card">
         <div class="shortcut-icon timeline-icon">
           <tui-icon icon="@tui.timeline"></tui-icon>
@@ -157,7 +157,7 @@
         </h3>
         <a 
           *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH.replace(':appSlug', app.slug)"
+          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }"
           tuiLink 
           size="s">
           View Details
@@ -179,7 +179,7 @@
         </h3>
         <a 
           *ngIf="app$ | async as app"
-          [routerLink]="REVIEWS_PATH.replace(':appSlug', app.slug)"
+          [routerLink]="REVIEWS_PATH | routePath:{ appSlug: app.slug }"
           tuiLink 
           size="s">
           View All Reviews
