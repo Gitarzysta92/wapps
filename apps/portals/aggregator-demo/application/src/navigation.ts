@@ -161,7 +161,7 @@ export const NAVIGATION = {
     id: 18,
     path: 'app/:appSlug/timeline',
     label: 'Timeline',
-    icon: '@tui.timeline',
+    icon: '@tui.list-ordered',
     slots: []
   }
 }
@@ -175,10 +175,10 @@ export const HOME_VIEW_MAIN_NAVIGATION = [
 
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
-  NAVIGATION.home,
   NAVIGATION.applicationOverview,
+  NAVIGATION.applicationTimeline,
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationHealth,
   NAVIGATION.applicationTopics,
-  NAVIGATION.applicationTimeline
+  NAVIGATION.home,
 ]
