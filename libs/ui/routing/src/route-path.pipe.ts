@@ -20,7 +20,6 @@ export class RoutePathPipe implements PipeTransform {
     mode: Mode = 'segments',
     opts: { strict?: boolean } = { strict: false }
   ): string | any[] {
-    console.log(path)
     if (!path) return mode === 'string' ? '/' : ['/'];
 
     const replaced = path.replace(/:([A-Za-z0-9_]+)/g, (_, key: string) => {
@@ -42,7 +41,6 @@ export class RoutePathPipe implements PipeTransform {
 
     // return routerLink-friendly segments
     const segments = normalized.split('/').filter(Boolean);
-    console.log(segments)
     return segments.length ? segments : [''];
   }
 }

@@ -110,10 +110,24 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.applicationDiscussions.path,
+        path: NAVIGATION.applicationTopics.path,
         loadComponent: () => import('./pages/application-details-page/sections/discussions/discussions-section.component').then(m => m.DiscussionsSectionComponent),
         data: {
           breadcrumb: 'Discussions',
+          header: null,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.applicationTopic.path,
+        loadComponent: () => import('./pages/application-topic-page/application-topic-page.component').then(m => m.ApplicationTopicPageComponent),
+        data: {
+          breadcrumb: 'Discussion',
           header: null,
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,

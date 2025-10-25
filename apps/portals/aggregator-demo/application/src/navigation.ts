@@ -143,13 +143,20 @@ export const NAVIGATION = {
     icon: '@tui.star',
     slots: []
   },
-  applicationDiscussions: {
+  applicationTopics: {
     id: 17,
-    path: 'app/:appSlug/discussions',
-    label: 'Reviews',
+    path: 'app/:appSlug/topics',
+    label: 'Topics',
     icon: '@tui.message-circle',
     slots: []
   },
+  applicationTopic: {
+    id: 18,
+    path: 'app/:appSlug/topics/:topicSlug',
+    label: 'Topic',
+    icon: '@tui.message-circle',
+    slots: []
+  }
 }
 
 export const HOME_VIEW_MAIN_NAVIGATION = [
@@ -165,5 +172,5 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationHealth,
-  NAVIGATION.applicationDiscussions
+  NAVIGATION.applicationTopics
 ]

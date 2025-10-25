@@ -30,6 +30,7 @@ export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
   @Input() item!: IFeedItem & { title: string, subtitle: string };
 
   getApplicationSlug(): string {
+    console.log(this.item.params)
     return this.item.params?.['applicationSlug'];
   }
 

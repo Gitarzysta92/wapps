@@ -17,6 +17,7 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
+import { NAVIGATION } from "../../navigation";
 
 @Component({
   selector: 'home-page',
@@ -58,4 +59,11 @@ export class HomePageComponent {
     SUITE_TEASER_FEED_ITEM_SELECTOR,
     DISCUSSION_TOPIC_FEED_ITEM_SELECTOR
   };
+
+  navigation = {
+    overview: NAVIGATION.applicationOverview,
+    reviews: NAVIGATION.applicationReviews,
+    health: NAVIGATION.applicationHealth,
+    topic: NAVIGATION.applicationTopic
+  }
 }

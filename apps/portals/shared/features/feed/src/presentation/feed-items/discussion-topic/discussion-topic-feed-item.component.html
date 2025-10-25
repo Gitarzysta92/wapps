@@ -14,7 +14,7 @@
       tuiButton 
       size="s" 
       appearance="primary"
-      [routerLink]="getApplicationDiscussionsLink()">
+      [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
         <tui-icon icon="@tui.message-circle"/>
         Join Discussion
     </a>

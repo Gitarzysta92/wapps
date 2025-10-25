@@ -4,6 +4,7 @@ import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.inter
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { DiscussionComponent, type DiscussionData } from '@ui/discussion';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { RoutePathPipe } from '@ui/routing';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
 
@@ -18,19 +19,19 @@ export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
     DiscussionComponent,
     TuiButton,
     TuiIcon,
-    RouterLink
+    RouterLink,
+    RoutePathPipe
   ]
 })
 export class DiscussionTopicFeedItemComponent implements IFeedItemComponent {
+  @Input() ctaPath = ''
   @Input() item!: IFeedItem & { title: string, subtitle: string };
 
   getApplicationSlug(): string {
-    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+    console.log(this.item)
+    return this.item.params?.['applicationSlug'];
   }
 
-  getApplicationDiscussionsLink(): string[] {
-    return ['/app', this.getApplicationSlug(), 'discussions'];
-  }
 
   getDiscussionData(): DiscussionData {
     return this.item.params?.['discussionData'] || {

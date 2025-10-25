@@ -73,7 +73,8 @@
         @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
           <discussion-topic-feed-item 
             class="feed-item"
-            [item]="item">
+            [item]="item"
+            [ctaPath]="navigation.topic.path">
           </discussion-topic-feed-item>
         }
         @default {
