@@ -7,7 +7,7 @@ import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-log-section',
+  selector: 'app-application-devlog-page',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -20,10 +20,10 @@ import { AppRecordDto } from '@domains/catalog/record';
     TuiBadge,
     TuiChip
   ],
-  templateUrl: './log-section.component.html',
-  styleUrls: ['../../application-details-page.component.scss']
+  templateUrl: './application-devlog-page.component.html',
+  styleUrl: './application-devlog-page.component.scss'
 })
-export class LogSectionComponent {
+export class ApplicationDevlogPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(

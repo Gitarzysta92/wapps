@@ -1,0 +1,45 @@
+<main class="page-layout">
+  <section class="review-section">
+    <div class="section-content">
+      <h1 class="section-title">
+        <tui-icon icon="@tui.star" class="title-icon"></tui-icon>
+        Reviews & Testimonials
+      </h1>
+      <div class="review-container">
+        <div class="reviewer-column">
+          <tui-avatar src="AI" size="l" />
+          <div class="reviewer-name">{{ getReviewerName() }}</div>
+          <div class="reviewer-meta">
+            <span class="reviewer-role">{{ getReviewerRole() }}</span>
+            <span class="review-date">{{ getReviewDate() }}</span>
+          </div>
+        </div>
+
+        <div class="review-column">
+          <h3 class="application-name">{{ (app$ | async)?.name }}</h3>
+          <p class="testimonial">"{{ getTestimonial() }}"</p>
+
+          <div class="rating-container">
+            <span class="rating-value">{{ getRating().toFixed(1) }}/5</span>
+            <div class="rating-stars">
+              <tui-icon 
+                *ngFor="let star of [1,2,3,4,5]"
+                [icon]="star <= getRating() ? '@tui.star' : '@tui.star'"
+                [class.filled]="star <= getRating()"
+                class="star-icon" />
+            </div>
+          </div>
+
+          <button
+            class="review-cta" 
+            tuiButton 
+            size="s" 
+            appearance="primary">
+              <tui-icon icon="@tui.external-link"/>
+              Read Full Review
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

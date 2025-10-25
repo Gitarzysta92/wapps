@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
@@ -21,18 +21,20 @@ interface DiscussionTopic {
 }
 
 @Component({
-  selector: 'app-discussions-section',
+  selector: 'app-application-discussions-page',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
+    NgFor,
+    NgIf,
     TuiButton,
     TuiIcon,
     TuiBadge
   ],
-  templateUrl: './discussions-section.component.html',
-  styleUrl: './discussions-section.component.scss',
+  templateUrl: './application-discussions-page.component.html',
+  styleUrl: './application-discussions-page.component.scss',
 })
-export class DiscussionsSectionComponent {
+export class ApplicationDiscussionsPageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
 

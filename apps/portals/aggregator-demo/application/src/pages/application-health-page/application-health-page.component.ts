@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
@@ -10,11 +10,12 @@ import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-health',
+  selector: 'app-application-health-page',
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
     DecimalPipe,
+    NgFor,
     TuiButton,
     TuiIcon,
     TuiLink,

@@ -6,45 +6,18 @@
   padding: 0;
 }
 
-// Header Section
-.header-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
+// Health Section
+.health-section {
   padding: $space-6 0;
 }
 
-.header {
-  @include grid-container($container-lg);
-}
-
-.breadcrumb {
+.section-content {
   display: flex;
-  align-items: center;
-  gap: $space-2;
-  margin-bottom: $space-4;
+  flex-direction: column;
+  gap: $space-6;
 }
 
-.breadcrumb-link {
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-primary-600;
-  text-decoration: none;
-  
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-.breadcrumb-separator {
-  font-size: $font-size-sm;
-  color: $color-text-muted;
-}
-
-.breadcrumb-current {
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-text-muted;
-}
-
-.page-title {
+.section-title {
   @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
   color: $color-text-strong;
   margin: 0;
@@ -58,82 +31,8 @@
   color: $color-primary-600;
 }
 
-// Main Content Layout
-.content-layout {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-  padding: $space-6 0;
-  min-height: 60vh;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-  width: 100%;
-  max-width: 100%;
-}
-
-// Sections
-.health-section,
-.services-section,
-.notices-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-  padding: $space-6 0;
-}
-
-.section-title {
-  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0 0 $space-4 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
 .services-list {
   display: flex;
   flex-direction: column;
   gap: $space-3;
-}
-
-// Cards
-.aside-card {
-  background: $color-bg;
-  border: $border-width-thin solid $color-border;
-  border-radius: $radius-md;
-  padding: $space-4;
-  box-shadow: $shadow-sm;
-}
-
-.card-title {
-  @include text($font-size-lg, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0 0 $space-3 0;
-  padding-bottom: $space-2;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.full-width-btn {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .page-title {
-    font-size: $font-size-2xl;
-  }
-  
-  .title-icon {
-    font-size: $font-size-2xl;
-  }
 }

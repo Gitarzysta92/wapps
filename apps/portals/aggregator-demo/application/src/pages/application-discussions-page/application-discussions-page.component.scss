@@ -6,46 +6,32 @@
   padding: 0;
 }
 
-// Main Content Layout
-.content-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $space-6;
+// Section Styling
+.discussions-section {
   padding: $space-6 0;
-  min-height: 60vh;
 }
 
-.main-content {
+.section-content {
   display: flex;
   flex-direction: column;
-  gap: 0;
-}
-
-// Section Styling
-.section-content {
-  padding: $space-6 0;
+  gap: $space-6;
 }
 
 .section-title {
-  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
   color: $color-text-strong;
-  margin: 0 0 $space-4 0;
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: $space-3;
 }
 
 .title-icon {
-  font-size: $font-size-2xl;
+  font-size: $font-size-3xl;
   color: $color-primary-600;
 }
 
-// Discussions Section
-.discussions-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
+// Discussions Container
 .discussions-container {
   display: flex;
   flex-direction: column;

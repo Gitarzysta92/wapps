@@ -55,7 +55,7 @@ export const routes: Routes = [
       },
       {
         path: `${NAVIGATION.applicationOverview.path}`,
-        loadComponent: () => import('./pages/application-details-page/sections/overview/overview-section.component').then(m => m.OverviewSectionComponent),
+        loadComponent: () => import('./pages/application-overview-page/application-overview-page.component').then(m => m.ApplicationOverviewPageComponent),
         data: {
           breadcrumb: 'Overview',
           header: null,
@@ -69,7 +69,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.applicationHealth.path,
-        loadComponent: () => import('./pages/application-details-page/sections/health/health-section.component').then(m => m.HealthSectionComponent),
+        loadComponent: () => import('./pages/application-health-page/application-health-page.component').then(m => m.ApplicationHealthPageComponent),
         data: {
           breadcrumb: 'Health',
           header: null,
@@ -83,7 +83,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.applicationDevLog.path,
-        loadComponent: () => import('./pages/application-details-page/sections/log/log-section.component').then(m => m.LogSectionComponent),
+        loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
         data: {
           breadcrumb: 'Dev Log',
           header: null,
@@ -97,7 +97,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.applicationReviews.path,
-        loadComponent: () => import('./pages/application-details-page/sections/review/review-section.component').then(m => m.ReviewSectionComponent),
+        loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
         data: {
           breadcrumb: 'Review',
           header: null,
@@ -111,7 +111,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.applicationTopics.path,
-        loadComponent: () => import('./pages/application-details-page/sections/discussions/discussions-section.component').then(m => m.DiscussionsSectionComponent),
+        loadComponent: () => import('./pages/application-discussions-page/application-discussions-page.component').then(m => m.ApplicationDiscussionsPageComponent),
         data: {
           breadcrumb: 'Discussions',
           header: null,

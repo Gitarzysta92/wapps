@@ -1,0 +1,199 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Page Layout
+.page-layout {
+  @include grid-container($container-lg);
+  padding: 0;
+}
+
+// App Header Section
+.app-header-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+  padding: $space-6 0;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.app-icon-title {
+  display: flex;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+.app-icon {
+  flex-shrink: 0;
+}
+
+.app-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.app-title {
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+}
+
+.developer-link {
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-primary-600;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rating-stars {
+  display: flex;
+  gap: $space-0_5;
+}
+
+.star-icon {
+  color: $color-accent-500;
+  font-size: $font-size-sm;
+}
+
+.rating-text {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-strong;
+}
+
+.reviews-count {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+.app-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.label {
+  font-size: $font-size-xs;
+}
+
+.app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.install-btn {
+  min-width: 120px;
+}
+
+.action-btn {
+  min-width: 100px;
+}
+
+.action-icon {
+  margin-right: $space-1;
+}
+
+// Section Styling
+.overview-section {
+  padding: $space-6 0;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.section-title {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.title-icon {
+  font-size: $font-size-2xl;
+  color: $color-primary-600;
+}
+
+.cover-image {
+  width: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.overview-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.app-category {
+  width: fit-content;
+}
+
+.app-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+
+
+.app-description {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0;
+}
+
+.app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  @include text($font-size-md, $font-weight-medium);
+  color: $color-text;
+}
+
+.score-stars {
+  display: flex;
+  gap: $space-0_5;
+  
+  .star-icon {
+    color: $color-text-muted;
+    font-size: $font-size-md;
+    
+    &.filled {
+      color: $color-accent-500;
+    }
+  }
+}
+
+.score-value {
+  @include text($font-size-md, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.reviews-text {
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}

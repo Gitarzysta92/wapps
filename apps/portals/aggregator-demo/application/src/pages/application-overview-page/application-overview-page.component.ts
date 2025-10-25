@@ -1,30 +1,31 @@
-import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiLink, TuiIcon } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
+import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
+import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'application-details-page',
+  selector: 'app-application-overview-page',
   standalone: true,
   imports: [
-    // Angular
     AsyncPipe,
     DecimalPipe,
-    RouterOutlet,
-    // UI
+    NgFor,
     TuiButton,
-    TuiLink,
     TuiIcon,
+    TuiLink,
     TuiAvatar,
     TuiBadge,
+    TuiChip,
+    CoverImageComponent
   ],
-  templateUrl: './application-details-page.component.html',
-  styleUrl: './application-details-page.component.scss'
+  templateUrl: './application-overview-page.component.html',
+  styleUrl: './application-overview-page.component.scss'
 })
-export class ApplicationDetailsPageComponent {
+export class ApplicationOverviewPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(
@@ -32,6 +33,29 @@ export class ApplicationDetailsPageComponent {
     map(slug => this._buildMockFromSlug(slug)),
     shareReplay({ bufferSize: 1, refCount: false })
   );
+
+  getCategory(): string {
+    return 'Productivity';
+  }
+
+  getTags(): string[] {
+    return ['workflow', 'collaboration', 'cloud'];
+  }
+
+  getCoverImage(): CoverImageDto {
+    return {
+      url: 'https://picsum.photos/seed/app/800/400',
+      alt: 'Application cover'
+    };
+  }
+
+  getAggregatedScore(): number {
+    return 4.7;
+  }
+
+  getReviewsCount(): number {
+    return 1234;
+  }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
@@ -54,4 +78,3 @@ export class ApplicationDetailsPageComponent {
     };
   }
 }
-
