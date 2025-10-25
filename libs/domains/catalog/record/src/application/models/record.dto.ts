@@ -1,4 +1,4 @@
-export type AppDto = {
+export type AppRecordDto = {
   id: unknown;
   slug: string;
   name: string;

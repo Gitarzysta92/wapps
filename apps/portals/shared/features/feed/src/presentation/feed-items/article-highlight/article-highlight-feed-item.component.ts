@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import type { ArticleHighlightFeedItem } from '@domains/feed';
 
 export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item';
 
@@ -22,25 +23,25 @@ export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item
   ]
 })
 export class ArticleHighlightFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string, subtitle: string };
+  @Input() item!: ArticleHighlightFeedItem;
 
   getTitle(): string {
-    return this.item.params?.['title'] || 'Featured Article';
+    return this.item.title;
   }
 
   getExcerpt(): string {
-    return this.item.params?.['excerpt'] || 'Check out this interesting article...';
+    return this.item.excerpt;
   }
 
   getAuthor(): string {
-    return this.item.params?.['author'] || 'Editorial Team';
+    return this.item.author;
   }
 
   getCategory(): string {
-    return this.item.params?.['category'] || 'General';
+    return this.item.category;
   }
 
   getCoverImage(): CoverImageDto {
-    return this.item.params?.['coverImage'];
+    return this.item.coverImage;
   }
 }

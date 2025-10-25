@@ -3,6 +3,8 @@ export interface IFeedItem {
   type: string;
   timestamp: Date;
   params?: Record<string, any>;
+  // Allow additional properties for different feed item types
+  [key: string]: any;
 }
 
 

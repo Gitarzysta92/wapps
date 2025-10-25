@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
 import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { NgFor } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { RoutePathPipe } from '@ui/routing';
+import type { ApplicationHealthFeedItem } from '@domains/feed';
 
 export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-item';
 
@@ -24,14 +26,16 @@ export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-it
     NgFor,
     RouterLink,
     TuiButton,
-    TuiIcon
+    TuiIcon,
+    RoutePathPipe
   ]
 })
 export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string } & any;
+  @Input() ctaPath = "";
+  @Input() item!: ApplicationHealthFeedItem;
 
   getApplicationSlug(): string {
-    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+    return this.item.appSlug;
   }
 
   getApplicationHealthLink(): string[] {
@@ -39,35 +43,31 @@ export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
   }
 
   getOverallStatus(): 'operational' | 'degraded' | 'outage' {
-    const status = this.item.params?.['overallStatus'];
-    return status || 'operational';
+    return this.item.overallStatus;
   }
 
   getStatusMessage(): string {
-    return this.item.params?.['statusMessage'] || 'All Systems Operational';
+    return this.item.statusMessage;
   }
 
   getCurrentTimestamp(): Date {
-    return this.item.timestamp || new Date();
+    return this.item.timestamp;
   }
 
   getServices(): ServiceStatus[] {
-    return this.item.params?.['services'] || [
-      {
-        name: 'OpenStatus',
-        uptime: 99.99,
-        status: 'operational',
-        hasInfo: true
-      },
-      {
-        name: 'OTEL Test',
-        uptime: 100,
-        status: 'operational'
-      }
-    ];
+    return this.item.services;
   }
 
   getNotices(): Notice[] {
-    return this.item.params?.['notices'] || [];
+    // Convert the DTO notices to the UI component expected format
+    return this.item.notices.map(notice => ({
+      id: `notice-${Date.now()}-${Math.random()}`,
+      date: notice.timestamp || new Date(),
+      severity: notice.type === 'error' ? 'error' : notice.type === 'warning' ? 'warning' : 'info',
+      title: notice.title || 'Notice',
+      message: notice.message || '',
+      timestamp: notice.timestamp || new Date(),
+      type: notice.type || 'info'
+    }));
   }
 }

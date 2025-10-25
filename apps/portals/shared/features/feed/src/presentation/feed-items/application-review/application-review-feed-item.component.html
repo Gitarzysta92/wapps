@@ -37,7 +37,7 @@
         tuiButton 
         size="s" 
         appearance="primary"
-        [routerLink]="getApplicationReviewLink()">
+        [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
           <tui-icon icon="@tui.external-link"/>
           Read Full Review
       </a>

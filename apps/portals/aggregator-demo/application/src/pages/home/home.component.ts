@@ -4,9 +4,9 @@ import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
 import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from '@portals/shared/features/multi-search';
 import { SearchMockDataService, ListingSearchService } from '@portals/shared/features/search';
-import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService } from '@portals/shared/features/feed';
+import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN } from '@portals/shared/features/feed';
 import { HomePageStateService } from "./home-page-state.service";
-import { ContentFeedComponent, ContentFeedItemComponent } from '@ui/content-feed'
+import { TempFeedProviderService } from "./temp-feed-provider.service";
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
 import { ApplicationHealthFeedItemComponent } from '@portals/shared/features/feed';
 import { ApplicationReviewFeedItemComponent } from '@portals/shared/features/feed';
@@ -26,8 +26,6 @@ import { NAVIGATION } from "../../navigation";
   imports: [
     CommonModule,
     MultiSearchComponent,
-    ContentFeedComponent,
-    ContentFeedItemComponent,
     ArticleHighlightFeedItemComponent,
     ApplicationHealthFeedItemComponent,
     ApplicationReviewFeedItemComponent,
@@ -45,8 +43,10 @@ import { NAVIGATION } from "../../navigation";
   providers: [
     SearchMockDataService,
     NewsFeedService,
+    TempFeedProviderService,
     { provide: MULTISEARCH_RESULTS_PROVIER, useClass: ListingSearchService },
-    { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService }
+    { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
+    { provide: FEED_PROVIDER_TOKEN, useClass: TempFeedProviderService }
   ]
 })
 export class HomePageComponent {
@@ -64,6 +64,7 @@ export class HomePageComponent {
     overview: NAVIGATION.applicationOverview,
     reviews: NAVIGATION.applicationReviews,
     health: NAVIGATION.applicationHealth,
+    devlog: NAVIGATION.applicationDevLog,
     topic: NAVIGATION.applicationTopic
   }
 }

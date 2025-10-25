@@ -7,7 +7,7 @@ import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
 import { NoticesSectionComponent, Notice } from '@ui/notices-section';
-import { AppDto } from '@domains/catalog/record';
+import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
   selector: 'app-health-section',
@@ -74,7 +74,7 @@ export class HealthSectionComponent {
     return [];
   }
 
-  private _buildMockFromSlug(slug: string): AppDto {
+  private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
       .split('-')
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))

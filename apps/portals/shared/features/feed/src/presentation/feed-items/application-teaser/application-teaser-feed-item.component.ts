@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
+import { RoutePathPipe } from '@ui/routing';
+import type { ApplicationTeaserFeedItem } from '@domains/feed';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 
@@ -22,14 +24,16 @@ export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-it
     TuiButton,
     TuiIcon,
     NgForOf,
-    RouterLink
+    RouterLink,
+    RoutePathPipe
   ]
 })
 export class ApplicationTeaserFeedItemComponent implements IFeedItemComponent {
-  @Input() item!: IFeedItem & { title: string, subtitle: string };
+  @Input() ctaPath = "";
+  @Input() item!: ApplicationTeaserFeedItem;
 
   getApplicationSlug(): string {
-    return this.item.params?.['applicationSlug'] || this.item.params?.['applicationId'] || '1';
+    return this.item.appSlug;
   }
 
   getApplicationOverviewLink(): string[] {
@@ -37,39 +41,39 @@ export class ApplicationTeaserFeedItemComponent implements IFeedItemComponent {
   }
 
   getApplicationName(): string {
-    return this.item.params?.['applicationName'] || 'Application Name';
+    return this.item.appName;
   }
 
   getDescription(): string {
-    return this.item.params?.['description'] || 'Discover this amazing application...';
+    return this.item.description;
   }
 
   getCategory(): string {
-    return this.item.params?.['category'] || 'General';
+    return this.item.category;
   }
 
   getTags(): string[] {
-    return this.item.params?.['tags'] || [];
+    return this.item.tags;
   }
 
   getCoverImage(): CoverImageDto {
-    return this.item.params?.['coverImage'];
+    return this.item.coverImage;
   }
 
   getAggregatedScore(): number {
-    return this.item.params?.['aggregatedScore'] || 0;
+    return this.item.aggregatedScore;
   }
 
   getReviewsCount(): number {
-    return this.item.params?.['reviewsCount'] || 0;
+    return this.item.reviewsCount;
   }
 
   getCategoryLink(): string {
-    return this.item.params?.['categoryLink'] || '#';
+    return this.item.categoryLink;
   }
 
   getReviewsLink(): string {
-    return this.item.params?.['reviewsLink'] || '#';
+    return this.item.reviewsLink;
   }
 }
 

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { NgForOf } from '@angular/common';
-import { AnimatedBackgroundComponent } from './animated-background.component';
 
 @Component({
   selector: 'ui-intro-hero',
@@ -8,7 +7,7 @@ import { AnimatedBackgroundComponent } from './animated-background.component';
   styleUrl: './intro-hero.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgForOf, AnimatedBackgroundComponent]
+  imports: [NgForOf]
 })
 export class IntroHeroComponent {
   @Input() title: string = 'Discover. Explore. Connect.';

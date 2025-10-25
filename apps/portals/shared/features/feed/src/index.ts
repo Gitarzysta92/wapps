@@ -8,8 +8,15 @@ export * from './presentation/feed-items/suite-teaser/suite-teaser-feed-item.com
 export * from './presentation/feed-items/discussion-topic/discussion-topic-feed-item.component';
 export * from './presentation/feed-container.component';
 
+// Models
+export * from './presentation/models/feed-item.interface';
+
 // Services
-export * from './presentation/services/news-feed-old.service';
+export * from './presentation/services/news-feed.service';
+
+// Ports
+export * from './presentation/ports/feed-provider.port';
+
 
 // Mappers
 export * from './presentation/mappers/feed-item.mapper';
