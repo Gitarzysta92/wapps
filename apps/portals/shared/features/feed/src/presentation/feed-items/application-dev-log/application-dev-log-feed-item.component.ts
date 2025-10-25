@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { IFeedItem, IFeedItemComponent } from '../../models/feed-item.interface';
+import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
-
+import type { ApplicationDevLogFeedItem } from '@domains/feed';
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
 @Component({
@@ -27,27 +27,26 @@ export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-
 })
 export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
   @Input() ctaPath = "";
-  @Input() item!: IFeedItem & { title: string, subtitle: string };
+  @Input() item!: ApplicationDevLogFeedItem;
 
   getApplicationSlug(): string {
-    console.log(this.item.params)
-    return this.item.params?.['applicationSlug'];
+    return this.item.appSlug;
   }
 
   getApplicationName(): string {
-    return this.item.params?.['applicationName'] || 'Application';
+    return this.item.appName;
   }
 
   getVersion(): string {
-    return this.item.params?.['version'] || '1.0.0';
+    return this.item.version;
   }
 
   getDescription(): string {
-    return this.item.params?.['description'] || 'New version released';
+    return this.item.description;
   }
 
   getReleaseDate(): string {
-    const date = this.item.params?.['releaseDate'];
+    const date = this.item.releaseDate;
     if (date) {
       return new Date(date).toLocaleDateString('en-US', { 
         month: 'long', 
@@ -63,11 +62,11 @@ export class ApplicationDevLogFeedItemComponent implements IFeedItemComponent {
   }
 
   getChanges(): string[] {
-    return this.item.params?.['changes'] || [];
+    return this.item.changes.map(change => change.description);
   }
 
   getChangeType(): 'major' | 'minor' | 'patch' {
-    return this.item.params?.['changeType'] || 'minor';
+    return this.item.changes[0].type as 'major' | 'minor' | 'patch';
   }
 
   getChangeTypeLabel(): string {

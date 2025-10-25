@@ -4,7 +4,7 @@ import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
-import { AppDto } from '@domains/catalog/record';
+import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
   selector: 'app-topic',
@@ -30,7 +30,7 @@ export class ApplicationTopicPageComponent {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  private _buildMockFromSlug(slug: string): AppDto {
+  private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
       .split('-')
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))

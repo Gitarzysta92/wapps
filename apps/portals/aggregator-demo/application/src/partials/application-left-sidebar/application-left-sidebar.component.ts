@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { AppDto } from '../../../../../../../libs/domains/catalog/record/src';
+import { AppRecordDto } from '../../../../../../../libs/domains/catalog/record/src';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { NavigationDeclaration } from '@ui/navigation';
 import { RoutePathPipe } from '@ui/routing';
@@ -35,7 +35,7 @@ export class ApplicationLeftSidebarPartialComponent {
     return { exact: path === '' };
   }
 
-  public buildMockFromSlug(slug: string): AppDto {
+  public buildMockFromSlug(slug: string): AppRecordDto {
     const name = (slug ?? '')
       .split('-')
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))

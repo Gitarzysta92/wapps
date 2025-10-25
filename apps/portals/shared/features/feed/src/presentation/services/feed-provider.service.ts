@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { FeedItemDto } from '@domains/feed';
-import { IFeedItem, FeedItemPriority } from '../models/feed-item.interface';
+import { IFeedItem } from '../models/feed-item.interface';
+import { IFeedProviderPort, IFeedPage } from '../ports/feed-provider.port';
 
 import { ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR } from '../feed-items/article-highlight/article-highlight-feed-item.component';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '../feed-items/application-health/application-health-feed-item.component';
@@ -11,67 +12,33 @@ import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '../feed-items/applicatio
 import { SUITE_TEASER_FEED_ITEM_SELECTOR } from '../feed-items/suite-teaser/suite-teaser-feed-item.component';
 import { DISCUSSION_TOPIC_FEED_ITEM_SELECTOR } from '../feed-items/discussion-topic/discussion-topic-feed-item.component';
 
-export interface INewsFeedPage {
-  items: IFeedItem[];
-  hasMore: boolean;
-  nextPage?: number;
-}
-
 @Injectable()
-export class NewsFeedService {
-  private readonly _feedItems$ = new BehaviorSubject<IFeedItem[]>([]);
-  private readonly _loading$ = new BehaviorSubject<boolean>(false);
-  private readonly _hasMore$ = new BehaviorSubject<boolean>(true);
-  
-  private _currentPage = 0;
-  private readonly _pageSize = 10;
+export class FeedProviderService implements IFeedProviderPort {
 
-  public readonly feedItems$ = this._feedItems$.asObservable();
-  public readonly loading$ = this._loading$.asObservable();
-  public readonly hasMore$ = this._hasMore$.asObservable();
-
-  constructor() {
-    // Load initial page
-    this.loadNextPage();
-  }
-
-  public loadNextPage(): void {
-    if (this._loading$.value || !this._hasMore$.value) {
-      return;
-    }
-
-    this._loading$.next(true);
-
-    // Simulate API call with delay
-    this.getFeedPage(this._currentPage, this._pageSize)
-      .subscribe(page => {
-        const currentItems = this._feedItems$.value;
-        const newItems = [...currentItems, ...page.items];
-        
-        this._feedItems$.next(newItems);
-        this._hasMore$.next(page.hasMore);
-        this._currentPage++;
-        this._loading$.next(false);
-      });
-  }
-
-  public refresh(): void {
-    this._currentPage = 0;
-    this._feedItems$.next([]);
-    this._hasMore$.next(true);
-    this.loadNextPage();
-  }
-
-  private getFeedPage(page: number, size: number): Observable<INewsFeedPage> {
-    // Simulate API call - in real app, this would be an HTTP request
+  public getFeedPage(page: number, size: number): Observable<IFeedPage> {
+    // In a real application, this would make an HTTP request to your API
+    // For now, we'll simulate the API call with mock data
     const mockDtos = this.generateMockFeedItemDtos(page, size);
     const hasMore = page < 5; // Simulate 5 pages of data
 
     return of({
-      items: mockDtos.map(dto => dto),
+      items: mockDtos.map(dto => this.mapDtoToFeedItem(dto)),
       hasMore,
       nextPage: hasMore ? page + 1 : undefined
     });
+  }
+
+  private mapDtoToFeedItem(dto: FeedItemDto): IFeedItem {
+    return {
+      id: dto.id,
+      type: dto.type,
+      timestamp: dto.timestamp,
+      params: {
+        title: dto.title,
+        subtitle: dto.subtitle,
+        ...this.generateMetadataForType(dto.type, dto.id)
+      }
+    };
   }
 
   private generateMockFeedItemDtos(page: number, size: number): FeedItemDto[] {
@@ -88,10 +55,6 @@ export class NewsFeedService {
         title: this.getRandomArticleTitle(),
         subtitle: this.getRandomAppName(),
         timestamp: new Date(Date.now() - (itemId * 2 * 60 * 60 * 1000)), // Each item 2 hours older
-        params: {
-          priority: this.mapPriorityToDomain(this.getRandomPriority()),
-          ...this.generateMetadataForType(itemType, itemId)
-        }
       });
     }
 
@@ -111,22 +74,14 @@ export class NewsFeedService {
     return types[Math.floor(Math.random() * types.length)];
   }
 
-  private getRandomPriority(): FeedItemPriority {
-    const priorities = [
-      FeedItemPriority.LOW,
-      FeedItemPriority.MEDIUM,
-      FeedItemPriority.MEDIUM, // More medium priority
-      FeedItemPriority.HIGH,
-    ];
-    return priorities[Math.floor(Math.random() * priorities.length)];
-  }
-
-  private generateMetadataForType(type: string, itemId: number): Record<string, any> {
+  private generateMetadataForType(type: string, itemId: string): Record<string, unknown> {
+    const numericId = parseInt(itemId.split('-').pop() || '0');
+    
     switch (type) {
       case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR:
         return {
-          title: `Article ${itemId + 1}: ${this.getRandomArticleTitle()}`,
-          excerpt: `This is a sample excerpt for article ${itemId + 1}. It provides a brief overview of the content and encourages readers to learn more.`,
+          title: `Article ${numericId + 1}: ${this.getRandomArticleTitle()}`,
+          excerpt: `This is a sample excerpt for article ${numericId + 1}. It provides a brief overview of the content and encourages readers to learn more.`,
           author: this.getRandomAuthor(),
           category: this.getRandomCategory(),
           coverImage: {
@@ -531,21 +486,5 @@ export class NewsFeedService {
     const status = this.getRandomHealthStatus();
     const statusMessages = messages[status as keyof typeof messages];
     return statusMessages[Math.floor(Math.random() * statusMessages.length)];
-  }
-
-
-  private mapPriorityToDomain(presentationPriority: FeedItemPriority): string {
-    switch (presentationPriority) {
-      case FeedItemPriority.LOW:
-        return 'low';
-      case FeedItemPriority.MEDIUM:
-        return 'medium';
-      case FeedItemPriority.HIGH:
-        return 'high';
-      case FeedItemPriority.URGENT:
-        return 'urgent';
-      default:
-        return 'medium';
-    }
   }
 }

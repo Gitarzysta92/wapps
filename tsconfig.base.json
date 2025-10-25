@@ -139,6 +139,9 @@
       "@portals/shared/features/tags": [
         "apps/portals/shared/features/tags/src/index.ts"
       ],
+      "@portals/shared/data": [
+        "apps/portals/shared/data/src/index.ts"
+      ],
       "@primitives": ["libs/primitives/src/index.ts"],
       "@primitives/*": ["libs/primitives/src/*"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],

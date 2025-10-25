@@ -5,7 +5,7 @@ import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
-import { AppDto } from '@domains/catalog/record';
+import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
   selector: 'app-overview-section',
@@ -57,7 +57,7 @@ export class OverviewSectionComponent {
     return 1234;
   }
 
-  private _buildMockFromSlug(slug: string): AppDto {
+  private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
       .split('-')
       .map(s => s.charAt(0).toUpperCase() + s.slice(1))

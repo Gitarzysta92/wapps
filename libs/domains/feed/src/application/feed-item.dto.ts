@@ -3,6 +3,8 @@ export type FeedItemDto = {
   type: string;
   title: string;
   subtitle: string;
-  params: { [key: string]: unknown };
   timestamp: Date;
 }
+
+
+

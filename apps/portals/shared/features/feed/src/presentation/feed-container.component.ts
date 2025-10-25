@@ -1,5 +1,5 @@
 import { Component, ContentChild, inject, TemplateRef } from "@angular/core";
-import { NewsFeedService } from "./services/news-feed-old.service";
+import { NewsFeedService } from "./services/news-feed.service";
 import { ContentFeedComponent, ContentFeedItemVm } from '@ui/content-feed';
 import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs";
