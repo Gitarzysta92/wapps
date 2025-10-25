@@ -547,6 +547,7 @@ export const feed = [
     subtitle: 'Join the conversation about how to optimize application performance?',
     timestamp: new Date('2024-01-16T13:00:00Z'),
     appSlug: 'photo-snap',
+    topicSlug: 'how-to-optimize-application-performance',
     discussionData: {
       topic: 'How to optimize application performance?',
       messages: [
@@ -575,6 +576,7 @@ export const feed = [
     subtitle: 'Join the conversation about best practices for user authentication',
     timestamp: new Date('2024-01-13T10:30:00Z'),
     appSlug: 'speedy-vpn',
+    topicSlug: 'best-practices-for-user-authentication',
     discussionData: {
       topic: 'Best practices for user authentication',
       messages: [
@@ -603,6 +605,7 @@ export const feed = [
     subtitle: 'Join the conversation about database design patterns discussion',
     timestamp: new Date('2024-01-10T14:20:00Z'),
     appSlug: 'budget-buddy',
+    topicSlug: 'database-design-patterns-discussion',
     discussionData: {
       topic: 'Database design patterns discussion',
       messages: [

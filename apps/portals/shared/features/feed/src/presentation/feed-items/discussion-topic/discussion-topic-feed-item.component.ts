@@ -32,6 +32,10 @@ export class DiscussionTopicFeedItemComponent implements IFeedItemComponent {
     return this.item.appSlug;
   }
 
+  getTopicSlug(): string {
+    return this.item.topicSlug;
+  }
+
   getDiscussionData(): DiscussionData {
     // Convert the DTO discussion data to the UI component expected format
     return {

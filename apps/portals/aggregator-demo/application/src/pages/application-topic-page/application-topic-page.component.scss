@@ -6,45 +6,26 @@
   padding: 0;
 }
 
-// App Header Section
-.app-header-section {
+// Topic Header Section
+.topic-header-section {
   background: $color-bg;
   border-bottom: $border-width-thin solid $color-border;
   padding: $space-6 0;
 }
 
-.app-header {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: $space-6;
-  align-items: flex-start;
+.topic-header {
   @include grid-container($container-lg);
 }
 
-.app-icon-title {
+.breadcrumb {
   display: flex;
-  gap: $space-4;
-  align-items: flex-start;
-}
-
-.app-icon {
-  flex-shrink: 0;
-}
-
-.app-info {
-  display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: $space-2;
+  margin-bottom: $space-4;
 }
 
-.app-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
-}
-
-.developer-link {
-  @include text($font-size-md, $font-weight-medium);
+.breadcrumb-link {
+  @include text($font-size-sm, $font-weight-medium);
   color: $color-primary-600;
   text-decoration: none;
   
@@ -53,66 +34,70 @@
   }
 }
 
-.rating-section {
+.breadcrumb-separator {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.breadcrumb-current {
+  @include text($font-size-sm, $font-weight-medium);
+  color: $color-text-muted;
+}
+
+.topic-title {
+  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+}
+
+.topic-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topic-author {
   display: flex;
   align-items: center;
   gap: $space-2;
 }
 
-.rating-stars {
+.author-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-info {
   display: flex;
+  flex-direction: column;
   gap: $space-0_5;
 }
 
-.star-icon {
-  color: $color-accent-500;
-  font-size: $font-size-sm;
-}
-
-.rating-text {
-  @include text($font-size-sm, $font-weight-medium);
+.author-name {
+  @include text($font-size-sm, $font-weight-bold);
   color: $color-text-strong;
 }
 
-.reviews-count {
+.topic-time {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.topic-stats {
+  display: flex;
+  gap: $space-3;
+}
+
+.replies-count,
+.views-count {
   @include text($font-size-sm);
   color: $color-text-muted;
 }
 
-.app-labels {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  align-items: flex-end;
-}
-
-.label {
-  font-size: $font-size-xs;
-}
-
-.app-actions {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  align-items: flex-end;
-}
-
-.install-btn {
-  min-width: 120px;
-}
-
-.action-btn {
-  min-width: 100px;
-}
-
-.action-icon {
-  margin-right: $space-1;
-}
-
-// Main Content Layout (6:2 ratio)
+// Main Content Layout
 .content-layout {
-  display: grid;
-  grid-template-columns: 6fr 2fr;
+  display: flex;
+  flex-direction: column;
   gap: $space-6;
   padding: $space-6 0;
   min-height: 60vh;
@@ -121,7 +106,9 @@
 .main-content {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: $space-6;
+  width: 100%;
+  max-width: 100%;
 }
 
 .aside-content {
@@ -131,6 +118,169 @@
   position: sticky;
   top: $space-6;
   height: fit-content;
+}
+
+// Discussion Content Section
+.discussion-content-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.discussion-content {
+  padding: $space-6 0;
+}
+
+.discussion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.discussion-body {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  
+  p {
+    margin: 0 0 $space-4 0;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Replies Section
+.replies-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.section-title {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-6 0 0 0;
+}
+
+.title-icon {
+  font-size: $font-size-2xl;
+  color: $color-primary-600;
+}
+
+.replies-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin: $space-4 0;
+}
+
+.reply-item {
+  padding: $space-4;
+  background: $color-bg-muted;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.reply-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.reply-author {
+  display: flex;
+  flex-direction: column;
+  gap: $space-0_5;
+}
+
+.reply-time {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.reply-content {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  
+  p {
+    margin: 0 0 $space-3 0;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  pre {
+    background: $color-bg;
+    border: $border-width-thin solid $color-border;
+    border-radius: $radius-sm;
+    padding: $space-3;
+    margin: $space-3 0;
+    overflow-x: auto;
+    
+    code {
+      @include text($font-size-sm, $font-weight-regular);
+      color: $color-text;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    }
+  }
+}
+
+// Reply Form
+.reply-form {
+  margin-top: $space-6;
+  padding: $space-6;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+}
+
+.form-title {
+  @include text($font-size-lg, $font-weight-bold);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.reply-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: $space-3;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-sm;
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  background: $color-bg;
+  resize: vertical;
+  
+  &:focus {
+    outline: none;
+    border-color: $color-primary-600;
+  }
+  
+  &::placeholder {
+    color: $color-text-muted;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: $space-3;
+  justify-content: flex-end;
 }
 
 // Aside Cards
@@ -156,29 +306,7 @@
   gap: $space-3;
 }
 
-// Navigation Links in Aside
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-2 $space-3;
-  border-radius: $radius-sm;
-  text-decoration: none;
-  color: $color-text;
-  @include text($font-size-md, $font-weight-medium);
-  transition: background-color $duration-200;
-  
-  &:hover {
-    background: $color-bg-muted;
-    color: $color-primary-600;
-  }
-}
-
-// Detail Rows in Aside
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.related-discussion {
   padding: $space-2 0;
   border-bottom: $border-width-thin solid $color-bg-muted;
   
@@ -187,371 +315,20 @@
   }
 }
 
-.detail-label {
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-text-muted;
-}
-
-.detail-value {
-  @include text($font-size-sm, $font-weight-regular);
+.related-title {
+  @include text($font-size-sm, $font-weight-bold);
   color: $color-text-strong;
+  margin: 0 0 $space-1 0;
 }
 
-// Full Width Buttons
-.full-width-btn {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-// Developer Info in Aside
-.developer-info {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.dev-name {
-  @include text($font-size-md, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.dev-email,
-.dev-address {
-  @include text($font-size-sm);
-  color: $color-text-muted;
-}
-
-// Section Styling
-.section-content {
-  padding: $space-6 0;
-}
-
-.section-title {
-  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0 0 $space-4 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.title-icon {
-  font-size: $font-size-2xl;
-  color: $color-primary-600;
-}
-
-// Teaser Section
-.teaser-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.cover-image {
-  width: 100%;
-  margin-bottom: $space-4;
-  border-radius: $radius-md;
-  overflow: hidden;
-}
-
-.teaser-info {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-}
-
-.app-category {
-  width: fit-content;
-}
-
-.app-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.app-name {
-  @include text($font-size-xl, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
-}
-
-.app-description {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  margin: 0;
-}
-
-.app-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-}
-
-.score-container {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  @include text($font-size-md, $font-weight-medium);
-  color: $color-text;
-}
-
-.score-stars {
-  display: flex;
-  gap: $space-0_5;
-  
-  .star-icon {
-    color: $color-text-muted;
-    font-size: $font-size-md;
-    
-    &.filled {
-      color: $color-accent-500;
-    }
-  }
-}
-
-.score-value {
-  @include text($font-size-md, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.reviews-text {
-  @include text($font-size-sm);
-  color: $color-text-muted;
-}
-
-// Health Section
-.health-section {
-  background: $color-bg-muted;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.services-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-  margin: $space-4 0;
-}
-
-// Development Log Section
-.log-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.dev-log-container {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-  background: $color-bg-muted;
-  padding: $space-6;
-  border-radius: $radius-md;
-}
-
-.change-type-chip {
-  width: fit-content;
-}
-
-.dev-log-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $space-6;
-}
-
-.version-column {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.version-header {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.version-icon {
-  color: $color-primary-600;
-  font-size: $font-size-lg;
-}
-
-.version-number {
-  @include text($font-size-xl, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
-}
-
-.release-date {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  @include text($font-size-sm);
-  color: $color-text-muted;
-}
-
-.date-icon {
-  font-size: $font-size-sm;
-}
-
-.version-description {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  margin: 0;
-}
-
-.changes-column {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.changes-title {
-  @include text($font-size-lg, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.changes-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.change-item {
-  display: flex;
-  align-items: flex-start;
-  gap: $space-2;
-  @include text($font-size-sm, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-}
-
-.check-icon {
-  color: $color-accent-500;
-  font-size: $font-size-sm;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.dev-log-cta {
-  width: fit-content;
-}
-
-// Review Section
-.review-section {
-  background: $color-bg-muted;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.review-container {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: $space-6;
-  background: $color-bg;
-  padding: $space-6;
-  border-radius: $radius-md;
-}
-
-.reviewer-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $space-2;
-  text-align: center;
-}
-
-.reviewer-name {
-  @include text($font-size-md, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.reviewer-meta {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-}
-
-.reviewer-role {
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-text-muted;
-}
-
-.review-date {
+.related-stats {
   @include text($font-size-xs);
   color: $color-text-muted;
 }
 
-.review-column {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.application-name {
-  @include text($font-size-lg, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
-}
-
-.testimonial {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  font-style: italic;
-  margin: 0;
-}
-
-.rating-container {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.rating-value {
-  @include text($font-size-lg, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.review-cta {
-  width: fit-content;
-}
-
-// Discussions Section
-.discussions-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.discussions-container {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-}
-
-.discussions-intro {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  margin: 0;
-}
-
-.discussions-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $space-4;
-  padding: $space-8;
-  background: $color-bg-muted;
-  border-radius: $radius-md;
-  text-align: center;
-}
-
-.placeholder-icon {
-  font-size: 48px;
-  color: $color-text-muted;
+.full-width-btn {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 // Responsive Design
@@ -565,31 +342,21 @@
     position: static;
     order: -1;
   }
-  
-  .dev-log-columns {
-    grid-template-columns: 1fr;
-  }
-  
-  .review-container {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
-  .app-header {
-    grid-template-columns: 1fr;
-    gap: $space-4;
-    text-align: center;
+  .topic-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-3;
   }
   
-  .app-labels,
-  .app-actions {
-    align-items: center;
+  .topic-stats {
+    align-self: flex-end;
   }
   
-  .app-actions {
-    flex-direction: row;
-    justify-content: center;
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
-

@@ -1,0 +1,202 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Page Layout
+.page-layout {
+  @include grid-container($container-lg);
+  padding: 0;
+}
+
+// Main Content Layout
+.content-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $space-6;
+  padding: $space-6 0;
+  min-height: 60vh;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// Section Styling
+.section-content {
+  padding: $space-6 0;
+}
+
+.section-title {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.title-icon {
+  font-size: $font-size-2xl;
+  color: $color-primary-600;
+}
+
+// Discussions Section
+.discussions-section {
+  background: $color-bg;
+  border-bottom: $border-width-thin solid $color-border;
+}
+
+.discussions-container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.discussions-intro {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0;
+}
+
+.discussions-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.discussion-item {
+  padding: $space-4;
+  background: $color-bg-muted;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+  transition: all $duration-200;
+  cursor: pointer;
+  position: relative;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+    border-color: $color-primary-600;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.discussion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $space-3;
+}
+
+.discussion-meta {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.author-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-0_5;
+}
+
+.author-name {
+  @include text($font-size-sm, $font-weight-bold);
+  color: $color-text-strong;
+}
+
+.discussion-time {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.discussion-stats {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  text-align: right;
+}
+
+.replies-count,
+.views-count {
+  @include text($font-size-xs);
+  color: $color-text-muted;
+}
+
+.discussion-title {
+  @include text($font-size-lg, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-2 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.pin-icon {
+  color: $color-primary-600;
+  font-size: $font-size-sm;
+}
+
+.discussion-excerpt {
+  @include text($font-size-md, $font-weight-regular, $line-height-loose);
+  color: $color-text;
+  margin: 0 0 $space-3 0;
+}
+
+.discussion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.discussion-arrow {
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  opacity: 0;
+  transition: opacity $duration-200;
+}
+
+.arrow-icon {
+  color: $color-primary-600;
+  font-size: $font-size-md;
+}
+
+.discussion-item:hover .discussion-arrow {
+  opacity: 1;
+}
+
+.discussions-actions {
+  display: flex;
+  gap: $space-3;
+  justify-content: center;
+  margin-top: $space-4;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .discussion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-2;
+  }
+  
+  .discussion-stats {
+    text-align: left;
+    flex-direction: row;
+    gap: $space-3;
+  }
+  
+  .discussions-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

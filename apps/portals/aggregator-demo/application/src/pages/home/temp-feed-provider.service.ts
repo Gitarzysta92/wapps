@@ -214,6 +214,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
 
   private createDiscussionTopicFeedItem(app: AppRecordDto): DiscussionTopicFeedItem {
     const topic = DISCUSSION_TOPICS_DATA[Math.floor(Math.random() * DISCUSSION_TOPICS_DATA.length)];
+    const topicSlug = topic.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     return {
       id: this.generateUniqueId(`discussion-topic-${app.id}`),
@@ -222,6 +223,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
       title: `Discussion: ${topic}`,
       subtitle: `Join the conversation about ${topic.toLowerCase()}`,
       appSlug: app.slug,
+      topicSlug: topicSlug,
       discussionData: {
         topic: topic,
         messages: [
