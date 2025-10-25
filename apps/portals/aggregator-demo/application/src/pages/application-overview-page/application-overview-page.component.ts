@@ -1,11 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AsyncPipe, DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
+import { StatusBannerComponent } from '@ui/status-banner';
 import { AppRecordDto } from '@domains/catalog/record';
+import { NAVIGATION } from '../../../navigation';
 
 @Component({
   selector: 'app-application-overview-page',
@@ -14,13 +16,16 @@ import { AppRecordDto } from '@domains/catalog/record';
     AsyncPipe,
     DecimalPipe,
     NgFor,
+    NgIf,
+    RouterLink,
     TuiButton,
     TuiIcon,
     TuiLink,
     TuiAvatar,
     TuiBadge,
     TuiChip,
-    CoverImageComponent
+    CoverImageComponent,
+    StatusBannerComponent
   ],
   templateUrl: './application-overview-page.component.html',
   styleUrl: './application-overview-page.component.scss'
@@ -33,6 +38,11 @@ export class ApplicationOverviewPageComponent {
     map(slug => this._buildMockFromSlug(slug)),
     shareReplay({ bufferSize: 1, refCount: false })
   );
+
+  // Navigation paths
+  readonly HEALTH_PATH = NAVIGATION.applicationHealth.path;
+  readonly REVIEWS_PATH = NAVIGATION.applicationReviews.path;
+  readonly TIMELINE_PATH = NAVIGATION.applicationTimeline.path;
 
   getCategory(): string {
     return 'Productivity';
@@ -55,6 +65,43 @@ export class ApplicationOverviewPageComponent {
 
   getReviewsCount(): number {
     return 1234;
+  }
+
+  // Health status methods
+  getHealthStatus(): 'operational' | 'degraded' | 'outage' {
+    return 'operational';
+  }
+
+  getHealthStatusMessage(): string {
+    return 'All Systems Operational';
+  }
+
+  getCurrentTimestamp(): Date {
+    return new Date();
+  }
+
+  // Latest review methods
+  getLatestReviewerName(): string {
+    return 'Sarah Johnson';
+  }
+
+  getLatestReviewerRole(): string {
+    return 'Product Manager';
+  }
+
+  getLatestTestimonial(): string {
+    return 'Excellent application with great features!';
+  }
+
+  getLatestReviewDate(): string {
+    return new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  }
+
+  getLatestRating(): number {
+    return 4.8;
   }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {

@@ -94,4 +94,111 @@
       </div>
     </div>
   </section>
+
+  <!-- Quick Access Shortcuts -->
+  <section class="shortcuts-section">
+    <h2 class="section-title">
+      <tui-icon icon="@tui.zap" class="title-icon"></tui-icon>
+      Quick Access
+    </h2>
+    <div class="shortcuts-grid">
+      <a 
+        *ngIf="app$ | async as app"
+        [routerLink]="HEALTH_PATH.replace(':appSlug', app.slug)"
+        class="shortcut-card">
+        <div class="shortcut-icon health-icon">
+          <tui-icon icon="@tui.heart-pulse"></tui-icon>
+        </div>
+        <div class="shortcut-content">
+          <h3 class="shortcut-title">Health Status</h3>
+          <p class="shortcut-description">View system status and uptime</p>
+        </div>
+        <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
+      </a>
+
+      <a 
+        *ngIf="app$ | async as app"
+        [routerLink]="REVIEWS_PATH.replace(':appSlug', app.slug)"
+        class="shortcut-card">
+        <div class="shortcut-icon reviews-icon">
+          <tui-icon icon="@tui.star"></tui-icon>
+        </div>
+        <div class="shortcut-content">
+          <h3 class="shortcut-title">Reviews</h3>
+          <p class="shortcut-description">Read user testimonials</p>
+        </div>
+        <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
+      </a>
+
+      <a 
+        *ngIf="app$ | async as app"
+        [routerLink]="TIMELINE_PATH.replace(':appSlug', app.slug)"
+        class="shortcut-card">
+        <div class="shortcut-icon timeline-icon">
+          <tui-icon icon="@tui.timeline"></tui-icon>
+        </div>
+        <div class="shortcut-content">
+          <h3 class="shortcut-title">Timeline</h3>
+          <p class="shortcut-description">Recent updates and activity</p>
+        </div>
+        <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
+      </a>
+    </div>
+  </section>
+
+  <!-- Health & Reviews Preview -->
+  <section class="preview-section">
+    <!-- Health Status Card -->
+    <div class="preview-card">
+      <div class="preview-card-header">
+        <h3 class="preview-card-title">
+          <tui-icon icon="@tui.heart-pulse"></tui-icon>
+          System Health
+        </h3>
+        <a 
+          *ngIf="app$ | async as app"
+          [routerLink]="HEALTH_PATH.replace(':appSlug', app.slug)"
+          tuiLink 
+          size="s">
+          View Details
+        </a>
+      </div>
+      <ui-status-banner
+        [status]="getHealthStatus()"
+        [message]="getHealthStatusMessage()"
+        [timestamp]="getCurrentTimestamp()">
+      </ui-status-banner>
+    </div>
+
+    <!-- Latest Review Card -->
+    <div class="preview-card">
+      <div class="preview-card-header">
+        <h3 class="preview-card-title">
+          <tui-icon icon="@tui.star"></tui-icon>
+          Latest Review
+        </h3>
+        <a 
+          *ngIf="app$ | async as app"
+          [routerLink]="REVIEWS_PATH.replace(':appSlug', app.slug)"
+          tuiLink 
+          size="s">
+          View All Reviews
+        </a>
+      </div>
+      <div class="review-preview">
+        <div class="review-header">
+          <tui-avatar src="AI" size="m" />
+          <div class="reviewer-info">
+            <div class="reviewer-name">{{ getLatestReviewerName() }}</div>
+            <div class="reviewer-role">{{ getLatestReviewerRole() }} · {{ getLatestReviewDate() }}</div>
+          </div>
+          <div class="review-rating">
+            <tui-icon icon="@tui.star" class="star-filled"></tui-icon>
+            <span>{{ getLatestRating().toFixed(1) }}</span>
+          </div>
+        </div>
+        <p class="review-text">"{{ getLatestTestimonial() }}"</p>
+      </div>
+    </div>
+  </section>
 </main>
