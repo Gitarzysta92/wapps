@@ -1,12 +1,12 @@
 
 <nav class="sidebar-nav">
-  @for (item of navigationItems; track item.id) {
+  @for (item of navigation; track item.id) {
     <a
       class="nav-item"
       tuiButton
       appearance="ghost"
-      type="button"
-      [routerLink]="['/', item.path]"
+      type="button" 
+      [routerLink]="[item.path]"
       routerLinkActive="active"
       [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
       [title]="item.label">

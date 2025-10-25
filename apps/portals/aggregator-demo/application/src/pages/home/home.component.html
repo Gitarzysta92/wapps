@@ -60,7 +60,8 @@
         @case (feedItemType.APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR) {
           <application-dev-log-feed-item 
             class="feed-item"
-            [item]="item">
+            [item]="item"
+            [ctaPath]="">
           </application-dev-log-feed-item>
         }
         @case (feedItemType.SUITE_TEASER_FEED_ITEM_SELECTOR) {
@@ -72,7 +73,8 @@
         @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
           <discussion-topic-feed-item 
             class="feed-item"
-            [item]="item">
+            [item]="item"
+            [ctaPath]="navigation.topic.path">
           </discussion-topic-feed-item>
         }
         @default {

@@ -8,12 +8,12 @@
   </header>  
 }
 
-@if (leftSidebarComponent$ | async; as cmp) {
+
+
+@if (leftSidebarComponent$ | async; as leftSidebarV2) {
   <aside class="container sidebar left">
     <ng-container 
-      *ngComponentOutlet="cmp; inputs: { 
-        isExpanded: isLeftSidebarExpanded$ | async
-      }">
+      *ngComponentOutlet="leftSidebarV2.component; inputs: leftSidebarV2.inputs">
     </ng-container>
   </aside>
 }

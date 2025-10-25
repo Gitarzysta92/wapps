@@ -1,15 +1,13 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { map } from 'rxjs';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AppDto } from '../../../../../../../libs/domains/catalog/record/src';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { NavigationDeclaration } from '@ui/navigation';
+import { RoutePathPipe } from '@ui/routing';
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: string;
-  section: string;
-}
 
 @Component({
   selector: 'application-left-sidebar',
@@ -20,65 +18,42 @@ interface MenuItem {
     CommonModule,
     RouterModule,
     TuiButton,
-    TuiIcon
+    TuiIcon,
+    TuiAvatar,
+    RoutePathPipe
   ]
 })
 export class ApplicationLeftSidebarPartialComponent {
-  private readonly _route = inject(ActivatedRoute);
-  
+
+  @Input() appSlug: string | undefined;
   @Input() isExpanded = false;
+  @Input() navigation: NavigationDeclaration[] = [];
   @Output() toggleExpansion = new EventEmitter<void>();
 
-  // Get the app slug from route params to construct proper navigation links
-  public readonly appSlug$ = this._route.paramMap.pipe(
-    map(params => params.get('appSlug') ?? '1')
-  );
+  public getRouterLinkActiveOptions(path: string): { exact: boolean } {
+    // Use exact matching for home route (empty path) to avoid matching all routes
+    return { exact: path === '' };
+  }
 
-  public readonly menuItems: MenuItem[] = [
-    {
-      id: 'home',
-      label: 'Home',
-      icon: '@tui.home',
-      section: 'home'
-    },
-    {
-      id: 'overview',
-      label: 'Overview',
-      icon: '@tui.box',
-      section: 'overview'
-    },
-    {
-      id: 'health',
-      label: 'Health',
-      icon: '@tui.heart-pulse',
-      section: 'health'
-    },
-    {
-      id: 'log',
-      label: 'Dev Log',
-      icon: '@tui.git-commit',
-      section: 'log'
-    },
-    {
-      id: 'review',
-      label: 'Reviews',
-      icon: '@tui.star',
-      section: 'review'
-    },
-    {
-      id: 'discussions',
-      label: 'Discussions',
-      icon: '@tui.message-circle',
-      section: 'discussions'
-    }
-  ];
-
-  public getNavigationPath(appSlug: string, section: string): string[] {
-    // Special case: home redirects to the main home page
-    if (section === 'home') {
-      return ['/'];
-    }
-    return ['/app', appSlug, section];
+  public buildMockFromSlug(slug: string): AppDto {
+    const name = (slug ?? '')
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(' ');
+    return {
+      id: slug,
+      slug,
+      name,
+      logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+      isPwa: true,
+      rating: 4.7,
+      tagIds: [],
+      categoryId: 0,
+      platformIds: [],
+      reviewNumber: 1234,
+      updateDate: new Date(),
+      listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
+    };
   }
 }
 

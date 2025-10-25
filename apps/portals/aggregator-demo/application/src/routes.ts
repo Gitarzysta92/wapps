@@ -9,7 +9,7 @@ import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
-import { NAVIGATION } from "./navigation";
+import { APPLICATION_VIEW_MAIN_NAVIGATION, HOME_VIEW_MAIN_NAVIGATION, NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
 import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
@@ -40,67 +40,99 @@ export const routes: Routes = [
         data: {
           breadcrumb: NAVIGATION.home.label,
           header: null,
-          leftSidebar: LeftSidebarPartialComponent,
+          leftSidebar: {
+            component: LeftSidebarPartialComponent,
+            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug`,
-        redirectTo: `${NAVIGATION.applicationDetails.path}/:appSlug/overview`,
+        path: NAVIGATION.applicationOverview.path,
+        redirectTo: NAVIGATION.applicationOverview.path.replace('/overview', ''),
         pathMatch: 'full'
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug/overview`,
+        path: `${NAVIGATION.applicationOverview.path}`,
         loadComponent: () => import('./pages/application-details-page/sections/overview/overview-section.component').then(m => m.OverviewSectionComponent),
         data: {
           breadcrumb: 'Overview',
           header: null,
-          leftSidebar: ApplicationLeftSidebarPartialComponent,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug/health`,
+        path: NAVIGATION.applicationHealth.path,
         loadComponent: () => import('./pages/application-details-page/sections/health/health-section.component').then(m => m.HealthSectionComponent),
         data: {
           breadcrumb: 'Health',
           header: null,
-          leftSidebar: ApplicationLeftSidebarPartialComponent,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug/log`,
+        path: NAVIGATION.applicationDevLog.path,
         loadComponent: () => import('./pages/application-details-page/sections/log/log-section.component').then(m => m.LogSectionComponent),
         data: {
           breadcrumb: 'Dev Log',
           header: null,
-          leftSidebar: ApplicationLeftSidebarPartialComponent,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug/review`,
+        path: NAVIGATION.applicationReviews.path,
         loadComponent: () => import('./pages/application-details-page/sections/review/review-section.component').then(m => m.ReviewSectionComponent),
         data: {
           breadcrumb: 'Review',
           header: null,
-          leftSidebar: ApplicationLeftSidebarPartialComponent,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: `${NAVIGATION.applicationDetails.path}/:appSlug/discussions`,
+        path: NAVIGATION.applicationTopics.path,
         loadComponent: () => import('./pages/application-details-page/sections/discussions/discussions-section.component').then(m => m.DiscussionsSectionComponent),
         data: {
           breadcrumb: 'Discussions',
           header: null,
-          leftSidebar: ApplicationLeftSidebarPartialComponent,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
+          rightSidebar: RightSidebarPartialComponent,
+          footer: FooterPartialComponent
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.applicationTopic.path,
+        loadComponent: () => import('./pages/application-topic-page/application-topic-page.component').then(m => m.ApplicationTopicPageComponent),
+        data: {
+          breadcrumb: 'Discussion',
+          header: null,
+          leftSidebar: {
+            component: ApplicationLeftSidebarPartialComponent,
+            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
@@ -111,7 +143,10 @@ export const routes: Routes = [
         data: {
           breadcrumb: NAVIGATION.applications.label,
           header: HeaderPartialComponent,
-          leftSidebar: LeftSidebarPartialComponent,
+          leftSidebar: {
+            component: LeftSidebarPartialComponent,
+            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
@@ -122,7 +157,10 @@ export const routes: Routes = [
         data: {
           breadcrumb: NAVIGATION.suites.label,
           header: HeaderPartialComponent,
-          leftSidebar: LeftSidebarPartialComponent,
+          leftSidebar: {
+            component: LeftSidebarPartialComponent,
+            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,
@@ -143,7 +181,10 @@ export const routes: Routes = [
         data: {
           breadcrumb: NAVIGATION.articles.label,
           header: HeaderPartialComponent,
-          leftSidebar: LeftSidebarPartialComponent,
+          leftSidebar: {
+            component: LeftSidebarPartialComponent,
+            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+          },
           rightSidebar: RightSidebarPartialComponent,
           footer: FooterPartialComponent
         } as IAppShellRouteData & IBreadcrumbRouteData,

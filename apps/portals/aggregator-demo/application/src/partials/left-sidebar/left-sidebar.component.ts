@@ -1,9 +1,8 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { NavigationService } from '@ui/navigation';
-import { Menu } from '../../navigation';
+import { NavigationDeclaration } from '@ui/navigation';
 
 @Component({
   selector: 'left-sidebar',
@@ -18,23 +17,10 @@ import { Menu } from '../../navigation';
   ]
 })
 export class LeftSidebarPartialComponent {
-  private readonly navigationService = inject(NavigationService);
 
   @Input() isExpanded = false;
+  @Input() navigation: NavigationDeclaration[] = [];
   @Output() toggleExpansion = new EventEmitter<void>();
-
-  public get navigationItems() {
-    const config = this.navigationService.config;
-    const allItems = Object.values(config).filter(item => typeof item === 'object' && item !== null);
-    
-    // Exclude items that appear in user panels
-    const userPanelIds = new Set<number>([
-      ...this.navigationService.getNavigationFor(Menu.UserPanelPrimary).map(i => i.id),
-      ...this.navigationService.getNavigationFor(Menu.UserPanelSecondary).map(i => i.id)
-    ]);
-    
-    return allItems.filter(i => !userPanelIds.has(i.id));
-  }
 
   public getRouterLinkActiveOptions(path: string): { exact: boolean } {
     // Use exact matching for home route (empty path) to avoid matching all routes

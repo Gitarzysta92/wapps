@@ -7,7 +7,7 @@ import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { AppDto } from '@domains/catalog/record';
 
 @Component({
-  selector: 'app-discussions-section',
+  selector: 'app-topic',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -18,9 +18,10 @@ import { AppDto } from '@domains/catalog/record';
     TuiAvatar,
     TuiBadge
   ],
-  templateUrl: './discussions-section.component.html',
+  templateUrl: './application-topic-page.component.html',
+  styleUrl: './application-topic-page.component.scss'
 })
-export class DiscussionsSectionComponent {
+export class ApplicationTopicPageComponent {
   private readonly _route = inject(ActivatedRoute);
 
   public readonly app$ = this._route.paramMap.pipe(

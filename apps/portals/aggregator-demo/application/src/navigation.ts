@@ -115,13 +115,62 @@ export const NAVIGATION = {
     slots: [
     ]
   },
-  applicationDetails: {
-    id: 12,
-    path: 'app',
-    label: 'Application Details',
+  applicationOverview: {
+    id: 13,
+    path: 'app/:appSlug/overview',
+    label: 'Overview',
     icon: '@tui.box',
-    slots: [
-      { id: Menu.Main, order: 4 }
-    ]
+    slots: []
   },
+  applicationHealth: {
+    id: 14,
+    path: 'app/:appSlug/health',
+    label: 'Health',
+    icon: '@tui.heart-pulse',
+    slots: []
+  },
+  applicationDevLog: {
+    id: 15,
+    path: 'app/:appSlug/devlog',
+    label: 'Dev log',
+    icon: '@tui.git-commit',
+    slots: []
+  },
+  applicationReviews: {
+    id: 16,
+    path: 'app/:appSlug/reviews',
+    label: 'Reviews',
+    icon: '@tui.star',
+    slots: []
+  },
+  applicationTopics: {
+    id: 17,
+    path: 'app/:appSlug/topics',
+    label: 'Topics',
+    icon: '@tui.message-circle',
+    slots: []
+  },
+  applicationTopic: {
+    id: 18,
+    path: 'app/:appSlug/topics/:topicSlug',
+    label: 'Topic',
+    icon: '@tui.message-circle',
+    slots: []
+  }
 }
+
+export const HOME_VIEW_MAIN_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.applications,
+  NAVIGATION.suites,
+  NAVIGATION.articles,
+]
+
+
+export const APPLICATION_VIEW_MAIN_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.applicationOverview,
+  NAVIGATION.applicationReviews,
+  NAVIGATION.applicationHealth,
+  NAVIGATION.applicationTopics
+]

@@ -19,7 +19,7 @@ import { provideMultiSearchFeature } from '@portals/shared/features/multi-search
 import { provideTagsFeature } from '@portals/shared/features/tags';
 import { provideSmartSearchFeature } from '@portals/shared/features/smart-search';
 import { NAVIGATION } from './navigation';
-import { APP_SHELL_STATE } from './shells/app-shell/app-shell.component';
+import { APP_SHELL_STATE_PROVIDER } from './shells/app-shell/app-shell.component';
 import { GlobalStateService } from './state/global-state.service';
 
 
@@ -52,7 +52,7 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     {
       providers: [
         GlobalStateService,
-        { provide: APP_SHELL_STATE, useExisting: GlobalStateService }
+        { provide: APP_SHELL_STATE_PROVIDER, useExisting: GlobalStateService }
       ]
     }
   )
