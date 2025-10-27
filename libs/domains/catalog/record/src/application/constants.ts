@@ -1,0 +1,1 @@
+export const RECORD_SUBDOMAIN_SLUG = 'record';

@@ -10,6 +10,10 @@ export enum Menu {
   FooterFourth = 'footer-fourth'
 }
 
+export const ROUTE_PARAMS = {
+  appSlug: ':appSlug',
+  topicSlug: ':topicSlug',
+}
 
 export const NAVIGATION = {
   home: {
@@ -117,49 +121,49 @@ export const NAVIGATION = {
   },
   applicationOverview: {
     id: 13,
-    path: 'app/:appSlug/overview',
+    path: `app/${ROUTE_PARAMS.appSlug}/overview`,
     label: 'Overview',
     icon: '@tui.box',
     slots: []
   },
   applicationHealth: {
     id: 14,
-    path: 'app/:appSlug/health',
+    path: `app/${ROUTE_PARAMS.appSlug}/health`,
     label: 'Health',
     icon: '@tui.heart-pulse',
     slots: []
   },
   applicationDevLog: {
     id: 15,
-    path: 'app/:appSlug/devlog',
+    path: `app/${ROUTE_PARAMS.appSlug}/devlog`,
     label: 'Dev log',
     icon: '@tui.git-commit',
     slots: []
   },
   applicationReviews: {
     id: 16,
-    path: 'app/:appSlug/reviews',
+    path: `app/${ROUTE_PARAMS.appSlug}/reviews`,
     label: 'Reviews',
     icon: '@tui.star',
     slots: []
   },
   applicationTopics: {
     id: 17,
-    path: 'app/:appSlug/topics',
+    path: `app/${ROUTE_PARAMS.appSlug}/topics`,
     label: 'Topics',
     icon: '@tui.message-circle',
     slots: []
   },
   applicationTopic: {
     id: 18,
-    path: 'app/:appSlug/topics/:topicSlug',
+    path: `app/${ROUTE_PARAMS.appSlug}/topics/${ROUTE_PARAMS.topicSlug}`,
     label: 'Topic',
     icon: '@tui.message-circle',
     slots: []
   },
   applicationTimeline: {
     id: 18,
-    path: 'app/:appSlug/timeline',
+    path: `app/${ROUTE_PARAMS.appSlug}/timeline`,
     label: 'Timeline',
     icon: '@tui.list-ordered',
     slots: []

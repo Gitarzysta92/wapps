@@ -45,6 +45,7 @@ export class ApplicationLeftSidebarPartialComponent {
       id: slug,
       slug,
       name,
+      description: `${name} description`,
       logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       isPwa: true,
       rating: 4.7,
