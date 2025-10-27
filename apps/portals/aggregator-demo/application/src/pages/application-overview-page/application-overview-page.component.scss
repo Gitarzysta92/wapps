@@ -1,5 +1,96 @@
 @use 'ui/design-system/src/styles' as *;
 
+.section-title {
+  @include text($font-size-xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.header-section {
+  margin-top: $space-10;
+  .cover-image {
+    display: block;
+    height: 300px;
+  }
+}
+
+.basic-info-section {
+  margin-top: $space-4;
+  display: flex;
+  flex-direction: row;
+  .category-column, .tag-column {
+    div {
+      padding: $space-2;
+      width: 100%;
+      font-weight: $font-weight-bold;
+    }
+  }
+  .app-tag, .app-category {
+    margin-right: $space-2;
+  }
+  .app-category {
+    margin-right: $space-4;
+  }
+}
+
+.quick-access-section {
+  margin-top: $space-10;
+}
+
+.overview-section {
+  margin-top: $space-10;
+}
+
+
+.preview-section {
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $space-4;
+    margin-top: $space-4;
+  }
+}
+
+.latest-reviews-section {
+  margin-top: $space-10;
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $space-4;
+    margin-top: $space-4;
+  }
+}
+
+.health-status-section {
+  margin-top: $space-10;
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $space-4;
+    margin-top: $space-4;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Page Layout
 .page-layout {
   @include grid-container($container-lg);
@@ -8,8 +99,6 @@
 
 // App Header Section
 .app-header-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
   padding: $space-6 0;
 }
 
@@ -105,10 +194,6 @@
   margin-right: $space-1;
 }
 
-// Section Styling
-.overview-section {
-  padding: $space-6 0;
-}
 
 .section-content {
   display: flex;
@@ -116,25 +201,14 @@
   gap: $space-6;
 }
 
-.section-title {
-  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-}
+
 
 .title-icon {
   font-size: $font-size-2xl;
   color: $color-primary-600;
 }
 
-.cover-image {
-  width: 100%;
-  border-radius: $radius-md;
-  overflow: hidden;
-}
+
 
 .overview-info {
   display: flex;
@@ -280,12 +354,6 @@
 }
 
 // Preview Section
-.preview-section {
-  padding: $space-6 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: $space-4;
-}
 
 .preview-card {
   padding: $space-5;
@@ -355,15 +423,4 @@
   color: $color-text;
   margin: 0;
   font-style: italic;
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .shortcuts-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .preview-section {
-    grid-template-columns: 1fr;
-  }
 }

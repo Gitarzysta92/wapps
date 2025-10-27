@@ -1,14 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgFor, NgIf } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
+import { map, shareReplay, startWith, switchMap } from 'rxjs';
 import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { AppRecordDto } from '@domains/catalog/record';
-import { NAVIGATION } from '../../navigation';
+import { NAVIGATION, ROUTE_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';
+import { OVERVIEW_PROVIDER } from '@portals/shared/features/overview';
+
 
 @Component({
   selector: 'app-application-overview-page',
@@ -34,9 +36,30 @@ import { RoutePathPipe } from '@ui/routing';
 })
 export class ApplicationOverviewPageComponent {
   private readonly _route = inject(ActivatedRoute);
+  private readonly _overviewProvider = inject(OVERVIEW_PROVIDER);
+
+  public readonly overviewVm$ = this._route.paramMap.pipe(
+    map(p => p.get(ROUTE_PARAMS.appSlug)),
+    map(slug => {
+      if (slug === undefined || slug === null) {
+        throw new Error('Missing required route param: appSlug');
+      }
+      return slug;
+    }),
+    switchMap(slug =>
+      this._overviewProvider.getOverview(slug)
+        .pipe(
+          map(result => result.ok ?
+            { ...result.value, isLoading: false } :
+            { isLoading: false, error: result.error }),
+          startWith({ isLoading: false }),
+        )
+    ),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
 
   public readonly app$ = this._route.paramMap.pipe(
-    map(p => p.get('appSlug') ?? 'unknown'),
+    map(p => p.get(ROUTE_PARAMS.appSlug) ?? 'unknown'),
     map(slug => this._buildMockFromSlug(slug)),
     shareReplay({ bufferSize: 1, refCount: false })
   );
@@ -115,6 +138,7 @@ export class ApplicationOverviewPageComponent {
       id: slug,
       slug,
       name,
+      description: `${name} description`,
       logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       isPwa: true,
       rating: 4.7,

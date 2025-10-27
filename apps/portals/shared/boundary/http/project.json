@@ -1,0 +1,39 @@
+{
+  "name": "portals-shared-boundary-http",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "id",
+  "sourceRoot": "apps/portals/shared/boundary/http",
+  "tags": ["type:boundary", "scope:http"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/boundary/http",
+        "main": "apps/portals/shared/boundary/http/src/index.ts",
+        "tsConfig": "apps/portals/shared/boundary/http/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/boundary/http/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/boundary/http/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

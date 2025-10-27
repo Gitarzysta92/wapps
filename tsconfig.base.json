@@ -62,6 +62,7 @@
       "@domains/customer/my-profile": [
         "libs/domains/customer/my-profile/src/index.ts"
       ],
+      "@domains/discussion": ["libs/domains/discussion/src/index.ts"],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
       "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/identity": ["libs/domains/identity/src/index.ts"],
@@ -70,6 +71,7 @@
       ],
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
+      "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
       "@features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
       ],
@@ -87,6 +89,15 @@
       ],
       "@portals/cross-cutting/environment": [
         "apps/portals/shared/cross-cutting/environment/src/index.ts"
+      ],
+      "@portals/shared/boundary/http": [
+        "apps/portals/shared/boundary/http/src/index.ts"
+      ],
+      "@portals/shared/boundary/navigation": [
+        "apps/portals/shared/boundary/navigation/src/index.ts"
+      ],
+      "@portals/shared/boundary/routing": [
+        "apps/portals/shared/boundary/routing/src/index.ts"
       ],
       "@portals/cross-cutting/theming": [
         "apps/portals/shared/cross-cutting/theming/src/index.ts"
@@ -117,6 +128,9 @@
       ],
       "@portals/shared/features/multi-search": [
         "apps/portals/shared/features/multi-search/src/index.ts"
+      ],
+      "@portals/shared/features/overview": [
+        "apps/portals/shared/features/overview/src/index.ts"
       ],
       "@portals/shared/features/platform": [
         "apps/portals/shared/features/platform/src/index.ts"
