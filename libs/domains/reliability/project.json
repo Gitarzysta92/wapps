@@ -1,0 +1,39 @@
+{
+  "name": "domains-reliability",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/reliability/src",
+  "tags": ["type:domain", "scope:reliability"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/reliability",
+        "main": "libs/domains/reliability/src/index.ts",
+        "tsConfig": "libs/domains/reliability/tsconfig.lib.json",
+        "assets": ["libs/domains/reliability/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domains/reliability/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

@@ -1,0 +1,39 @@
+{
+  "name": "domains-monetization",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/monetization/src",
+  "tags": ["type:domain", "scope:monetization"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/monetization",
+        "main": "libs/domains/monetization/src/index.ts",
+        "tsConfig": "libs/domains/monetization/tsconfig.lib.json",
+        "assets": ["libs/domains/monetization/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domains/monetization/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+
