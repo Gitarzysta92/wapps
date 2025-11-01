@@ -1,1103 +1,257 @@
 import { CategoryDto } from "@domains/catalog/category"
 
-
-
 export const CATEGORIES: CategoryDto[] = [
-  {
-    "id": 1,
-    "slug": "work-productivity",
-    "name": "Work & Productivity",
-    "childs": [
-      {
-        "id": 2,
-        "slug": "ai-notetakers",
-        "name": "AI Notetakers",
-        "childs": []
-      },
-      {
-        "id": 3,
-        "slug": "ad-blockers",
-        "name": "Ad blockers",
-        "childs": []
-      },
-      {
-        "id": 4,
-        "slug": "app-switcher",
-        "name": "App switcher",
-        "childs": []
-      },
-      {
-        "id": 5,
-        "slug": "calendar-apps",
-        "name": "Calendar apps",
-        "childs": []
-      },
-      {
-        "id": 6,
-        "slug": "customer-support-tools",
-        "name": "Customer support tools",
-        "childs": []
-      },
-      {
-        "id": 7,
-        "slug": "e-signature-apps",
-        "name": "E-signature apps",
-        "childs": []
-      },
-      {
-        "id": 8,
-        "slug": "email-clients",
-        "name": "Email clients",
-        "childs": []
-      },
-      {
-        "id": 9,
-        "slug": "file-storage-and-sharing-apps",
-        "name": "File storage and sharing apps",
-        "childs": []
-      },
-      {
-        "id": 10,
-        "slug": "hiring-software",
-        "name": "Hiring software",
-        "childs": []
-      },
-      {
-        "id": 11,
-        "slug": "knowledge-base-software",
-        "name": "Knowledge base software",
-        "childs": []
-      },
-      {
-        "id": 12,
-        "slug": "legal-services",
-        "name": "Legal services",
-        "childs": []
-      },
-      {
-        "id": 13,
-        "slug": "meeting-software",
-        "name": "Meeting software",
-        "childs": []
-      },
-      {
-        "id": 14,
-        "slug": "note-and-writing-apps",
-        "name": "Note and writing apps",
-        "childs": []
-      },
-      {
-        "id": 15,
-        "slug": "pdf-editor",
-        "name": "PDF Editor",
-        "childs": []
-      },
-      {
-        "id": 16,
-        "slug": "password-managers",
-        "name": "Password managers",
-        "childs": []
-      },
-      {
-        "id": 17,
-        "slug": "presentation-software",
-        "name": "Presentation Software",
-        "childs": []
-      },
-      {
-        "id": 18,
-        "slug": "product-demo",
-        "name": "Product demo",
-        "childs": []
-      },
-      {
-        "id": 19,
-        "slug": "project-management-software",
-        "name": "Project management software",
-        "childs": []
-      },
-      {
-        "id": 20,
-        "slug": "resume-tools",
-        "name": "Resume tools",
-        "childs": []
-      },
-      {
-        "id": 21,
-        "slug": "scheduling-software",
-        "name": "Scheduling software",
-        "childs": []
-      },
-      {
-        "id": 22,
-        "slug": "screenshots-and-screen-recording-apps",
-        "name": "Screenshots and screen recording apps",
-        "childs": []
-      },
-      {
-        "id": 23,
-        "slug": "search",
-        "name": "Search",
-        "childs": []
-      },
-      {
-        "id": 24,
-        "slug": "spreadsheets",
-        "name": "Spreadsheets",
-        "childs": []
-      },
-      {
-        "id": 25,
-        "slug": "team-collaboration-software",
-        "name": "Team collaboration software",
-        "childs": []
-      },
-      {
-        "id": 26,
-        "slug": "time-tracking-apps",
-        "name": "Time tracking apps",
-        "childs": []
-      },
-      {
-        "id": 27,
-        "slug": "video-conferencing",
-        "name": "Video conferencing",
-        "childs": []
-      },
-      {
-        "id": 28,
-        "slug": "virtual-office-platforms",
-        "name": "Virtual office platforms",
-        "childs": []
-      },
-      {
-        "id": 29,
-        "slug": "web-browsers",
-        "name": "Web browsers",
-        "childs": []
-      },
-      {
-        "id": 30,
-        "slug": "writing-assistants",
-        "name": "Writing assistants",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 31,
-    "slug": "engineering-development",
-    "name": "Engineering & Development",
-    "childs": [
-      {
-        "id": 32,
-        "slug": "ab-testing-tools",
-        "name": "A/B testing tools",
-        "childs": []
-      },
-      {
-        "id": 33,
-        "slug": "ai-coding-assistants",
-        "name": "AI Coding Assistants",
-        "childs": []
-      },
-      {
-        "id": 34,
-        "slug": "authentication-identity-tools",
-        "name": "Authentication & identity tools",
-        "childs": []
-      },
-      {
-        "id": 35,
-        "slug": "automation-tools",
-        "name": "Automation tools",
-        "childs": []
-      },
-      {
-        "id": 36,
-        "slug": "content-management-systems",
-        "name": "Content Management Systems",
-        "childs": []
-      },
-      {
-        "id": 37,
-        "slug": "cloud-computing-platforms",
-        "name": "Cloud Computing Platforms",
-        "childs": []
-      },
-      {
-        "id": 38,
-        "slug": "code-review-tools",
-        "name": "Code Review Tools",
-        "childs": []
-      },
-      {
-        "id": 39,
-        "slug": "code-editors",
-        "name": "Code editors",
-        "childs": []
-      },
-      {
-        "id": 40,
-        "slug": "command-line-tools",
-        "name": "Command line tools",
-        "childs": []
-      },
-      {
-        "id": 41,
-        "slug": "data-analysis-tools",
-        "name": "Data analysis tools",
-        "childs": []
-      },
-      {
-        "id": 42,
-        "slug": "data-visualization-tools",
-        "name": "Data visualization tools",
-        "childs": []
-      },
-      {
-        "id": 43,
-        "slug": "databases-and-backend-frameworks",
-        "name": "Databases and backend frameworks",
-        "childs": []
-      },
-      {
-        "id": 44,
-        "slug": "git-clients",
-        "name": "Git clients",
-        "childs": []
-      },
-      {
-        "id": 45,
-        "slug": "headless-cms-software",
-        "name": "Headless CMS software",
-        "childs": []
-      },
-      {
-        "id": 46,
-        "slug": "issue-tracking-software",
-        "name": "Issue tracking software",
-        "childs": []
-      },
-      {
-        "id": 47,
-        "slug": "membership-software",
-        "name": "Membership software",
-        "childs": []
-      },
-      {
-        "id": 48,
-        "slug": "no-code-platforms",
-        "name": "No-code platforms",
-        "childs": []
-      },
-      {
-        "id": 49,
-        "slug": "security-compliance-tools",
-        "name": "Security & compliance tools",
-        "childs": []
-      },
-      {
-        "id": 50,
-        "slug": "standup-bots",
-        "name": "Standup bots",
-        "childs": []
-      },
-      {
-        "id": 51,
-        "slug": "static-site-generators",
-        "name": "Static site generators",
-        "childs": []
-      },
-      {
-        "id": 52,
-        "slug": "testing-and-qa-software",
-        "name": "Testing and QA software",
-        "childs": []
-      },
-      {
-        "id": 53,
-        "slug": "unified-api",
-        "name": "Unified API",
-        "childs": []
-      },
-      {
-        "id": 54,
-        "slug": "vpn-client",
-        "name": "VPN client",
-        "childs": []
-      },
-      {
-        "id": 55,
-        "slug": "video-hosting-platforms",
-        "name": "Video hosting platforms",
-        "childs": []
-      },
-      {
-        "id": 56,
-        "slug": "web-hosting-services",
-        "name": "Web hosting services",
-        "childs": []
-      },
-      {
-        "id": 57,
-        "slug": "website-analytics",
-        "name": "Website analytics",
-        "childs": []
-      },
-      {
-        "id": 58,
-        "slug": "website-builders",
-        "name": "Website builders",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 59,
-    "slug": "design-creative",
-    "name": "Design & Creative",
-    "childs": [
-      {
-        "id": 60,
-        "slug": "3d-animation",
-        "name": "3D & Animation",
-        "childs": []
-      },
-      {
-        "id": 61,
-        "slug": "background-removal-tools",
-        "name": "Background removal tools",
-        "childs": []
-      },
-      {
-        "id": 62,
-        "slug": "camera-apps",
-        "name": "Camera apps",
-        "childs": []
-      },
-      {
-        "id": 63,
-        "slug": "design-inspiration-websites",
-        "name": "Design inspiration websites",
-        "childs": []
-      },
-      {
-        "id": 64,
-        "slug": "design-mockups",
-        "name": "Design mockups",
-        "childs": []
-      },
-      {
-        "id": 65,
-        "slug": "design-resources",
-        "name": "Design resources",
-        "childs": []
-      },
-      {
-        "id": 66,
-        "slug": "digital-whiteboards",
-        "name": "Digital whiteboards",
-        "childs": []
-      },
-      {
-        "id": 67,
-        "slug": "graphic-design-tools",
-        "name": "Graphic design tools",
-        "childs": []
-      },
-      {
-        "id": 68,
-        "slug": "icon-sets",
-        "name": "Icon sets",
-        "childs": []
-      },
-      {
-        "id": 69,
-        "slug": "interface-design-tools",
-        "name": "Interface design tools",
-        "childs": []
-      },
-      {
-        "id": 70,
-        "slug": "mobile-editing-apps",
-        "name": "Mobile editing apps",
-        "childs": []
-      },
-      {
-        "id": 71,
-        "slug": "photo-editing",
-        "name": "Photo editing",
-        "childs": []
-      },
-      {
-        "id": 72,
-        "slug": "podcasting",
-        "name": "Podcasting",
-        "childs": []
-      },
-      {
-        "id": 73,
-        "slug": "social-audio-apps",
-        "name": "Social audio apps",
-        "childs": []
-      },
-      {
-        "id": 74,
-        "slug": "space-design-apps",
-        "name": "Space design apps",
-        "childs": []
-      },
-      {
-        "id": 75,
-        "slug": "stock-photo-sites",
-        "name": "Stock photo sites",
-        "childs": []
-      },
-      {
-        "id": 76,
-        "slug": "ui-frameworks",
-        "name": "UI frameworks",
-        "childs": []
-      },
-      {
-        "id": 77,
-        "slug": "user-research",
-        "name": "User research",
-        "childs": []
-      },
-      {
-        "id": 78,
-        "slug": "video-editing",
-        "name": "Video editing",
-        "childs": []
-      },
-      {
-        "id": 79,
-        "slug": "wallpapers",
-        "name": "Wallpapers",
-        "childs": []
-      },
-      {
-        "id": 80,
-        "slug": "wireframing",
-        "name": "Wireframing",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 81,
-    "slug": "finance",
-    "name": "Finance",
-    "childs": [
-      {
-        "id": 82,
-        "slug": "accounting-software",
-        "name": "Accounting software",
-        "childs": []
-      },
-      {
-        "id": 83,
-        "slug": "budgeting-apps",
-        "name": "Budgeting apps",
-        "childs": []
-      },
-      {
-        "id": 84,
-        "slug": "credit-score-tools",
-        "name": "Credit score tools",
-        "childs": []
-      },
-      {
-        "id": 85,
-        "slug": "financial-planning",
-        "name": "Financial planning",
-        "childs": []
-      },
-      {
-        "id": 86,
-        "slug": "fundraising-resources",
-        "name": "Fundraising resources",
-        "childs": []
-      },
-      {
-        "id": 87,
-        "slug": "investing",
-        "name": "Investing",
-        "childs": []
-      },
-      {
-        "id": 88,
-        "slug": "invoicing-tools",
-        "name": "Invoicing tools",
-        "childs": []
-      },
-      {
-        "id": 89,
-        "slug": "money-transfer",
-        "name": "Money transfer",
-        "childs": []
-      },
-      {
-        "id": 90,
-        "slug": "neobanks",
-        "name": "Neobanks",
-        "childs": []
-      },
-      {
-        "id": 91,
-        "slug": "online-banking",
-        "name": "Online banking",
-        "childs": []
-      },
-      {
-        "id": 92,
-        "slug": "payroll-software",
-        "name": "Payroll software",
-        "childs": []
-      },
-      {
-        "id": 93,
-        "slug": "remote-workforce-tools",
-        "name": "Remote workforce tools",
-        "childs": []
-      },
-      {
-        "id": 94,
-        "slug": "retirement-planning",
-        "name": "Retirement planning",
-        "childs": []
-      },
-      {
-        "id": 95,
-        "slug": "savings-apps",
-        "name": "Savings apps",
-        "childs": []
-      },
-      {
-        "id": 96,
-        "slug": "startup-financial-planning",
-        "name": "Startup financial planning",
-        "childs": []
-      },
-      {
-        "id": 97,
-        "slug": "stock-trading-platforms",
-        "name": "Stock trading platforms",
-        "childs": []
-      },
-      {
-        "id": 98,
-        "slug": "tax-preparation",
-        "name": "Tax preparation",
-        "childs": []
-      },
-      {
-        "id": 99,
-        "slug": "treasury-management-platforms",
-        "name": "Treasury management platforms",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 100,
-    "slug": "social-community",
-    "name": "Social & Community",
-    "childs": [
-      {
-        "id": 101,
-        "slug": "blogging-platforms",
-        "name": "Blogging platforms",
-        "childs": []
-      },
-      {
-        "id": 102,
-        "slug": "community-management",
-        "name": "Community management",
-        "childs": []
-      },
-      {
-        "id": 103,
-        "slug": "dating-apps",
-        "name": "Dating apps",
-        "childs": []
-      },
-      {
-        "id": 104,
-        "slug": "link-in-bio-tools",
-        "name": "Link in bio tools",
-        "childs": []
-      },
-      {
-        "id": 105,
-        "slug": "live-streaming-platforms",
-        "name": "Live streaming platforms",
-        "childs": []
-      },
-      {
-        "id": 106,
-        "slug": "messaging-apps",
-        "name": "Messaging apps",
-        "childs": []
-      },
-      {
-        "id": 107,
-        "slug": "microblogging-platforms",
-        "name": "Microblogging platforms",
-        "childs": []
-      },
-      {
-        "id": 108,
-        "slug": "newsletter-platforms",
-        "name": "Newsletter platforms",
-        "childs": []
-      },
-      {
-        "id": 109,
-        "slug": "photo-sharing",
-        "name": "Photo sharing",
-        "childs": []
-      },
-      {
-        "id": 110,
-        "slug": "professional-networking-platforms",
-        "name": "Professional networking platforms",
-        "childs": []
-      },
-      {
-        "id": 111,
-        "slug": "safety-and-privacy-platforms",
-        "name": "Safety and Privacy platforms",
-        "childs": []
-      },
-      {
-        "id": 112,
-        "slug": "social-networking",
-        "name": "Social Networking",
-        "childs": []
-      },
-      {
-        "id": 113,
-        "slug": "social-bookmarking",
-        "name": "Social bookmarking",
-        "childs": []
-      },
-      {
-        "id": 114,
-        "slug": "video-and-voice-calling",
-        "name": "Video and Voice calling",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 115,
-    "slug": "marketing-sales",
-    "name": "Marketing & Sales",
-    "childs": [
-      {
-        "id": 116,
-        "slug": "advertising-tools",
-        "name": "Advertising tools",
-        "childs": []
-      },
-      {
-        "id": 117,
-        "slug": "affiliate-marketing",
-        "name": "Affiliate marketing",
-        "childs": []
-      },
-      {
-        "id": 118,
-        "slug": "best-seo-tools",
-        "name": "Best SEO tools",
-        "childs": []
-      },
-      {
-        "id": 119,
-        "slug": "business-intelligence-software",
-        "name": "Business intelligence software",
-        "childs": []
-      },
-      {
-        "id": 120,
-        "slug": "crm-software",
-        "name": "CRM software",
-        "childs": []
-      },
-      {
-        "id": 121,
-        "slug": "customer-loyalty-platforms",
-        "name": "Customer loyalty platforms",
-        "childs": []
-      },
-      {
-        "id": 122,
-        "slug": "email-marketing",
-        "name": "Email marketing",
-        "childs": []
-      },
-      {
-        "id": 123,
-        "slug": "influencer-marketing-platforms",
-        "name": "Influencer marketing platforms",
-        "childs": []
-      },
-      {
-        "id": 124,
-        "slug": "keyword-research-tools",
-        "name": "Keyword research tools",
-        "childs": []
-      },
-      {
-        "id": 125,
-        "slug": "landing-page-builders",
-        "name": "Landing page builders",
-        "childs": []
-      },
-      {
-        "id": 126,
-        "slug": "lead-generation-software",
-        "name": "Lead generation software",
-        "childs": []
-      },
-      {
-        "id": 127,
-        "slug": "marketing-automation-platforms",
-        "name": "Marketing automation platforms",
-        "childs": []
-      },
-      {
-        "id": 128,
-        "slug": "sales-training",
-        "name": "Sales Training",
-        "childs": []
-      },
-      {
-        "id": 129,
-        "slug": "social-media-management-tools",
-        "name": "Social media management tools",
-        "childs": []
-      },
-      {
-        "id": 130,
-        "slug": "social-media-scheduling-tools",
-        "name": "Social media scheduling tools",
-        "childs": []
-      },
-      {
-        "id": 131,
-        "slug": "survey-and-form-builders",
-        "name": "Survey and form builders",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 132,
-    "slug": "ai",
-    "name": "AI",
-    "childs": [
-      {
-        "id": 133,
-        "slug": "ai-characters",
-        "name": "AI Characters",
-        "childs": []
-      },
-      {
-        "id": 134,
-        "slug": "ai-chatbots",
-        "name": "AI Chatbots",
-        "childs": []
-      },
-      {
-        "id": 135,
-        "slug": "ai-content-detection",
-        "name": "AI Content Detection",
-        "childs": []
-      },
-      {
-        "id": 136,
-        "slug": "ai-databases",
-        "name": "AI Databases",
-        "childs": []
-      },
-      {
-        "id": 137,
-        "slug": "ai-generative-art",
-        "name": "AI Generative Art",
-        "childs": []
-      },
-      {
-        "id": 138,
-        "slug": "ai-headshot-generators",
-        "name": "AI Headshot Generators",
-        "childs": []
-      },
-      {
-        "id": 139,
-        "slug": "ai-infrastructure-tools",
-        "name": "AI Infrastructure Tools",
-        "childs": []
-      },
-      {
-        "id": 140,
-        "slug": "ai-metrics-and-evaluation",
-        "name": "AI Metrics and Evaluation",
-        "childs": []
-      },
-      {
-        "id": 141,
-        "slug": "ai-voice-generation-software",
-        "name": "AI Voice Generation Software",
-        "childs": []
-      },
-      {
-        "id": 142,
-        "slug": "avatar-generators",
-        "name": "Avatar generators",
-        "childs": []
-      },
-      {
-        "id": 143,
-        "slug": "chatgpt-prompts",
-        "name": "ChatGPT Prompts",
-        "childs": []
-      },
-      {
-        "id": 144,
-        "slug": "llms",
-        "name": "LLMs",
-        "childs": []
-      },
-      {
-        "id": 145,
-        "slug": "predictive-ai",
-        "name": "Predictive AI",
-        "childs": []
-      },
-      {
-        "id": 146,
-        "slug": "text-to-speech",
-        "name": "Text-to-Speech",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 147,
-    "slug": "health-fitness",
-    "name": "Health & Fitness",
-    "childs": [
-      {
-        "id": 148,
-        "slug": "activity-tracking",
-        "name": "Activity tracking",
-        "childs": []
-      },
-      {
-        "id": 149,
-        "slug": "camping-apps",
-        "name": "Camping apps",
-        "childs": []
-      },
-      {
-        "id": 150,
-        "slug": "health-insurance",
-        "name": "Health Insurance",
-        "childs": []
-      },
-      {
-        "id": 151,
-        "slug": "hiking-apps",
-        "name": "Hiking apps",
-        "childs": []
-      },
-      {
-        "id": 152,
-        "slug": "medical",
-        "name": "Medical",
-        "childs": []
-      },
-      {
-        "id": 153,
-        "slug": "meditation-apps",
-        "name": "Meditation apps",
-        "childs": []
-      },
-      {
-        "id": 154,
-        "slug": "mental-health",
-        "name": "Mental Health",
-        "childs": []
-      },
-      {
-        "id": 155,
-        "slug": "senior-care",
-        "name": "Senior care",
-        "childs": []
-      },
-      {
-        "id": 156,
-        "slug": "sleep-apps",
-        "name": "Sleep apps",
-        "childs": []
-      },
-      {
-        "id": 157,
-        "slug": "therapy-apps",
-        "name": "Therapy apps",
-        "childs": []
-      },
-      {
-        "id": 158,
-        "slug": "workout-platforms",
-        "name": "Workout platforms",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 159,
-    "slug": "travel",
-    "name": "Travel",
-    "childs": [
-      {
-        "id": 160,
-        "slug": "flight-booking-apps",
-        "name": "Flight booking apps",
-        "childs": []
-      },
-      {
-        "id": 161,
-        "slug": "hotel-booking-app",
-        "name": "Hotel booking app",
-        "childs": []
-      },
-      {
-        "id": 162,
-        "slug": "maps-and-gps",
-        "name": "Maps and GPS",
-        "childs": []
-      },
-      {
-        "id": 163,
-        "slug": "outdoors-platforms",
-        "name": "Outdoors platforms",
-        "childs": []
-      },
-      {
-        "id": 164,
-        "slug": "short-term-rentals",
-        "name": "Short term rentals",
-        "childs": []
-      },
-      {
-        "id": 165,
-        "slug": "travel-insurance",
-        "name": "Travel Insurance",
-        "childs": []
-      },
-      {
-        "id": 166,
-        "slug": "travel-planning",
-        "name": "Travel Planning",
-        "childs": []
-      },
-      {
-        "id": 167,
-        "slug": "travel-apps",
-        "name": "Travel apps",
-        "childs": []
-      },
-      {
-        "id": 168,
-        "slug": "weather-apps",
-        "name": "Weather apps",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 169,
-    "slug": "web3",
-    "name": "Web3",
-    "childs": [
-      {
-        "id": 170,
-        "slug": "crypto-exchanges",
-        "name": "Crypto exchanges",
-        "childs": []
-      },
-      {
-        "id": 171,
-        "slug": "crypto-tools",
-        "name": "Crypto tools",
-        "childs": []
-      },
-      {
-        "id": 172,
-        "slug": "crypto-wallets",
-        "name": "Crypto wallets",
-        "childs": []
-      },
-      {
-        "id": 173,
-        "slug": "daos",
-        "name": "DAOs",
-        "childs": []
-      },
-      {
-        "id": 174,
-        "slug": "defi",
-        "name": "Defi",
-        "childs": []
-      },
-      {
-        "id": 175,
-        "slug": "nft-creation-tools",
-        "name": "NFT creation tools",
-        "childs": []
-      },
-      {
-        "id": 176,
-        "slug": "nft-marketplaces",
-        "name": "NFT marketplaces",
-        "childs": []
-      }
-    ]
-  },
-  {
-    "id": 177,
-    "slug": "ecommerce",
-    "name": "Ecommerce",
-    "childs": [
-      {
-        "id": 178,
-        "slug": "ecommerce-platforms",
-        "name": "Ecommerce platforms",
-        "childs": []
-      },
-      {
-        "id": 179,
-        "slug": "marketplace-sites",
-        "name": "Marketplace sites",
-        "childs": []
-      },
-      {
-        "id": 180,
-        "slug": "payment-processors",
-        "name": "Payment processors",
-        "childs": []
-      },
-      {
-        "id": 181,
-        "slug": "shopify-apps",
-        "name": "Shopify Apps",
-        "childs": []
-      }
-    ]
-  }
+  // Level 0 (root categories)
+  { id: 1, name: "Work & Productivity", slug: "work-productivity", parentId: null, rootId: null, depth: 0 },
+  { id: 31, name: "Engineering & Development", slug: "engineering-development", parentId: null, rootId: null, depth: 0 },
+  { id: 59, name: "Design & Creative", slug: "design-creative", parentId: null, rootId: null, depth: 0 },
+  { id: 81, name: "Finance", slug: "finance", parentId: null, rootId: null, depth: 0 },
+  { id: 100, name: "Social & Community", slug: "social-community", parentId: null, rootId: null, depth: 0 },
+  { id: 115, name: "Marketing & Sales", slug: "marketing-sales", parentId: null, rootId: null, depth: 0 },
+  { id: 132, name: "AI", slug: "ai", parentId: null, rootId: null, depth: 0 },
+  { id: 147, name: "Health & Fitness", slug: "health-fitness", parentId: null, rootId: null, depth: 0 },
+  { id: 159, name: "Travel", slug: "travel", parentId: null, rootId: null, depth: 0 },
+  { id: 169, name: "Web3", slug: "web3", parentId: null, rootId: null, depth: 0 },
+  { id: 177, name: "Ecommerce", slug: "ecommerce", parentId: null, rootId: null, depth: 0 },
+  
+  // Work & Productivity children (depth: 1)
+  { id: 2, name: "AI Notetakers", slug: "ai-notetakers", parentId: 1, rootId: 1, depth: 1 },
+  { id: 3, name: "Ad blockers", slug: "ad-blockers", parentId: 1, rootId: 1, depth: 1 },
+  { id: 4, name: "App switcher", slug: "app-switcher", parentId: 1, rootId: 1, depth: 1 },
+  { id: 5, name: "Calendar apps", slug: "calendar-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 6, name: "Customer support tools", slug: "customer-support-tools", parentId: 1, rootId: 1, depth: 1 },
+  { id: 7, name: "E-signature apps", slug: "e-signature-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 8, name: "Email clients", slug: "email-clients", parentId: 1, rootId: 1, depth: 1 },
+  { id: 9, name: "File storage and sharing apps", slug: "file-storage-and-sharing-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 10, name: "Hiring software", slug: "hiring-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 11, name: "Knowledge base software", slug: "knowledge-base-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 12, name: "Legal services", slug: "legal-services", parentId: 1, rootId: 1, depth: 1 },
+  { id: 13, name: "Meeting software", slug: "meeting-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 14, name: "Note and writing apps", slug: "note-and-writing-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 15, name: "PDF Editor", slug: "pdf-editor", parentId: 1, rootId: 1, depth: 1 },
+  { id: 16, name: "Password managers", slug: "password-managers", parentId: 1, rootId: 1, depth: 1 },
+  { id: 17, name: "Presentation Software", slug: "presentation-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 18, name: "Product demo", slug: "product-demo", parentId: 1, rootId: 1, depth: 1 },
+  { id: 19, name: "Project management software", slug: "project-management-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 20, name: "Resume tools", slug: "resume-tools", parentId: 1, rootId: 1, depth: 1 },
+  { id: 21, name: "Scheduling software", slug: "scheduling-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 22, name: "Screenshots and screen recording apps", slug: "screenshots-and-screen-recording-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 23, name: "Search", slug: "search", parentId: 1, rootId: 1, depth: 1 },
+  { id: 24, name: "Spreadsheets", slug: "spreadsheets", parentId: 1, rootId: 1, depth: 1 },
+  { id: 25, name: "Team collaboration software", slug: "team-collaboration-software", parentId: 1, rootId: 1, depth: 1 },
+  { id: 26, name: "Time tracking apps", slug: "time-tracking-apps", parentId: 1, rootId: 1, depth: 1 },
+  { id: 27, name: "Video conferencing", slug: "video-conferencing", parentId: 1, rootId: 1, depth: 1 },
+  { id: 28, name: "Virtual office platforms", slug: "virtual-office-platforms", parentId: 1, rootId: 1, depth: 1 },
+  { id: 29, name: "Web browsers", slug: "web-browsers", parentId: 1, rootId: 1, depth: 1 },
+  { id: 30, name: "Writing assistants", slug: "writing-assistants", parentId: 1, rootId: 1, depth: 1 },
+  
+  // Engineering & Development children (depth: 1)
+  { id: 32, name: "A/B testing tools", slug: "ab-testing-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 33, name: "AI Coding Assistants", slug: "ai-coding-assistants", parentId: 31, rootId: 31, depth: 1 },
+  { id: 34, name: "Authentication & identity tools", slug: "authentication-identity-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 35, name: "Automation tools", slug: "automation-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 36, name: "Content Management Systems", slug: "content-management-systems", parentId: 31, rootId: 31, depth: 1 },
+  { id: 37, name: "Cloud Computing Platforms", slug: "cloud-computing-platforms", parentId: 31, rootId: 31, depth: 1 },
+  { id: 38, name: "Code Review Tools", slug: "code-review-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 39, name: "Code editors", slug: "code-editors", parentId: 31, rootId: 31, depth: 1 },
+  { id: 40, name: "Command line tools", slug: "command-line-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 41, name: "Data analysis tools", slug: "data-analysis-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 42, name: "Data visualization tools", slug: "data-visualization-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 43, name: "Databases and backend frameworks", slug: "databases-and-backend-frameworks", parentId: 31, rootId: 31, depth: 1 },
+  { id: 44, name: "Git clients", slug: "git-clients", parentId: 31, rootId: 31, depth: 1 },
+  { id: 45, name: "Headless CMS software", slug: "headless-cms-software", parentId: 31, rootId: 31, depth: 1 },
+  { id: 46, name: "Issue tracking software", slug: "issue-tracking-software", parentId: 31, rootId: 31, depth: 1 },
+  { id: 47, name: "Membership software", slug: "membership-software", parentId: 31, rootId: 31, depth: 1 },
+  { id: 48, name: "No-code platforms", slug: "no-code-platforms", parentId: 31, rootId: 31, depth: 1 },
+  { id: 49, name: "Security & compliance tools", slug: "security-compliance-tools", parentId: 31, rootId: 31, depth: 1 },
+  { id: 50, name: "Standup bots", slug: "standup-bots", parentId: 31, rootId: 31, depth: 1 },
+  { id: 51, name: "Static site generators", slug: "static-site-generators", parentId: 31, rootId: 31, depth: 1 },
+  { id: 52, name: "Testing and QA software", slug: "testing-and-qa-software", parentId: 31, rootId: 31, depth: 1 },
+  { id: 53, name: "Unified API", slug: "unified-api", parentId: 31, rootId: 31, depth: 1 },
+  { id: 54, name: "VPN client", slug: "vpn-client", parentId: 31, rootId: 31, depth: 1 },
+  { id: 55, name: "Video hosting platforms", slug: "video-hosting-platforms", parentId: 31, rootId: 31, depth: 1 },
+  { id: 56, name: "Web hosting services", slug: "web-hosting-services", parentId: 31, rootId: 31, depth: 1 },
+  { id: 57, name: "Website analytics", slug: "website-analytics", parentId: 31, rootId: 31, depth: 1 },
+  { id: 58, name: "Website builders", slug: "website-builders", parentId: 31, rootId: 31, depth: 1 },
+  
+  // Design & Creative children (depth: 1)
+  { id: 60, name: "3D & Animation", slug: "3d-animation", parentId: 59, rootId: 59, depth: 1 },
+  { id: 61, name: "Background removal tools", slug: "background-removal-tools", parentId: 59, rootId: 59, depth: 1 },
+  { id: 62, name: "Camera apps", slug: "camera-apps", parentId: 59, rootId: 59, depth: 1 },
+  { id: 63, name: "Design inspiration websites", slug: "design-inspiration-websites", parentId: 59, rootId: 59, depth: 1 },
+  { id: 64, name: "Design mockups", slug: "design-mockups", parentId: 59, rootId: 59, depth: 1 },
+  { id: 65, name: "Design resources", slug: "design-resources", parentId: 59, rootId: 59, depth: 1 },
+  { id: 66, name: "Digital whiteboards", slug: "digital-whiteboards", parentId: 59, rootId: 59, depth: 1 },
+  { id: 67, name: "Graphic design tools", slug: "graphic-design-tools", parentId: 59, rootId: 59, depth: 1 },
+  { id: 68, name: "Icon sets", slug: "icon-sets", parentId: 59, rootId: 59, depth: 1 },
+  { id: 69, name: "Interface design tools", slug: "interface-design-tools", parentId: 59, rootId: 59, depth: 1 },
+  { id: 70, name: "Mobile editing apps", slug: "mobile-editing-apps", parentId: 59, rootId: 59, depth: 1 },
+  { id: 71, name: "Photo editing", slug: "photo-editing", parentId: 59, rootId: 59, depth: 1 },
+  { id: 72, name: "Podcasting", slug: "podcasting", parentId: 59, rootId: 59, depth: 1 },
+  { id: 73, name: "Social audio apps", slug: "social-audio-apps", parentId: 59, rootId: 59, depth: 1 },
+  { id: 74, name: "Space design apps", slug: "space-design-apps", parentId: 59, rootId: 59, depth: 1 },
+  { id: 75, name: "Stock photo sites", slug: "stock-photo-sites", parentId: 59, rootId: 59, depth: 1 },
+  { id: 76, name: "UI frameworks", slug: "ui-frameworks", parentId: 59, rootId: 59, depth: 1 },
+  { id: 77, name: "User research", slug: "user-research", parentId: 59, rootId: 59, depth: 1 },
+  { id: 78, name: "Video editing", slug: "video-editing", parentId: 59, rootId: 59, depth: 1 },
+  { id: 79, name: "Wallpapers", slug: "wallpapers", parentId: 59, rootId: 59, depth: 1 },
+  { id: 80, name: "Wireframing", slug: "wireframing", parentId: 59, rootId: 59, depth: 1 },
+  
+  // Finance children (depth: 1)
+  { id: 82, name: "Accounting software", slug: "accounting-software", parentId: 81, rootId: 81, depth: 1 },
+  { id: 83, name: "Budgeting apps", slug: "budgeting-apps", parentId: 81, rootId: 81, depth: 1 },
+  { id: 84, name: "Credit score tools", slug: "credit-score-tools", parentId: 81, rootId: 81, depth: 1 },
+  { id: 85, name: "Financial planning", slug: "financial-planning", parentId: 81, rootId: 81, depth: 1 },
+  { id: 86, name: "Fundraising resources", slug: "fundraising-resources", parentId: 81, rootId: 81, depth: 1 },
+  { id: 87, name: "Investing", slug: "investing", parentId: 81, rootId: 81, depth: 1 },
+  { id: 88, name: "Invoicing tools", slug: "invoicing-tools", parentId: 81, rootId: 81, depth: 1 },
+  { id: 89, name: "Money transfer", slug: "money-transfer", parentId: 81, rootId: 81, depth: 1 },
+  { id: 90, name: "Neobanks", slug: "neobanks", parentId: 81, rootId: 81, depth: 1 },
+  { id: 91, name: "Online banking", slug: "online-banking", parentId: 81, rootId: 81, depth: 1 },
+  { id: 92, name: "Payroll software", slug: "payroll-software", parentId: 81, rootId: 81, depth: 1 },
+  { id: 93, name: "Remote workforce tools", slug: "remote-workforce-tools", parentId: 81, rootId: 81, depth: 1 },
+  { id: 94, name: "Retirement planning", slug: "retirement-planning", parentId: 81, rootId: 81, depth: 1 },
+  { id: 95, name: "Savings apps", slug: "savings-apps", parentId: 81, rootId: 81, depth: 1 },
+  { id: 96, name: "Startup financial planning", slug: "startup-financial-planning", parentId: 81, rootId: 81, depth: 1 },
+  { id: 97, name: "Stock trading platforms", slug: "stock-trading-platforms", parentId: 81, rootId: 81, depth: 1 },
+  { id: 98, name: "Tax preparation", slug: "tax-preparation", parentId: 81, rootId: 81, depth: 1 },
+  { id: 99, name: "Treasury management platforms", slug: "treasury-management-platforms", parentId: 81, rootId: 81, depth: 1 },
+  
+  // Social & Community children (depth: 1)
+  { id: 101, name: "Blogging platforms", slug: "blogging-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 102, name: "Community management", slug: "community-management", parentId: 100, rootId: 100, depth: 1 },
+  { id: 103, name: "Dating apps", slug: "dating-apps", parentId: 100, rootId: 100, depth: 1 },
+  { id: 104, name: "Link in bio tools", slug: "link-in-bio-tools", parentId: 100, rootId: 100, depth: 1 },
+  { id: 105, name: "Live streaming platforms", slug: "live-streaming-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 106, name: "Messaging apps", slug: "messaging-apps", parentId: 100, rootId: 100, depth: 1 },
+  { id: 107, name: "Microblogging platforms", slug: "microblogging-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 108, name: "Newsletter platforms", slug: "newsletter-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 109, name: "Photo sharing", slug: "photo-sharing", parentId: 100, rootId: 100, depth: 1 },
+  { id: 110, name: "Professional networking platforms", slug: "professional-networking-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 111, name: "Safety and Privacy platforms", slug: "safety-and-privacy-platforms", parentId: 100, rootId: 100, depth: 1 },
+  { id: 112, name: "Social Networking", slug: "social-networking", parentId: 100, rootId: 100, depth: 1 },
+  { id: 113, name: "Social bookmarking", slug: "social-bookmarking", parentId: 100, rootId: 100, depth: 1 },
+  { id: 114, name: "Video and Voice calling", slug: "video-and-voice-calling", parentId: 100, rootId: 100, depth: 1 },
+  
+  // Marketing & Sales children (depth: 1)
+  { id: 116, name: "Advertising tools", slug: "advertising-tools", parentId: 115, rootId: 115, depth: 1 },
+  { id: 117, name: "Affiliate marketing", slug: "affiliate-marketing", parentId: 115, rootId: 115, depth: 1 },
+  { id: 118, name: "Best SEO tools", slug: "best-seo-tools", parentId: 115, rootId: 115, depth: 1 },
+  { id: 119, name: "Business intelligence software", slug: "business-intelligence-software", parentId: 115, rootId: 115, depth: 1 },
+  { id: 120, name: "CRM software", slug: "crm-software", parentId: 115, rootId: 115, depth: 1 },
+  { id: 121, name: "Customer loyalty platforms", slug: "customer-loyalty-platforms", parentId: 115, rootId: 115, depth: 1 },
+  { id: 122, name: "Email marketing", slug: "email-marketing", parentId: 115, rootId: 115, depth: 1 },
+  { id: 123, name: "Influencer marketing platforms", slug: "influencer-marketing-platforms", parentId: 115, rootId: 115, depth: 1 },
+  { id: 124, name: "Keyword research tools", slug: "keyword-research-tools", parentId: 115, rootId: 115, depth: 1 },
+  { id: 125, name: "Landing page builders", slug: "landing-page-builders", parentId: 115, rootId: 115, depth: 1 },
+  { id: 126, name: "Lead generation software", slug: "lead-generation-software", parentId: 115, rootId: 115, depth: 1 },
+  { id: 127, name: "Marketing automation platforms", slug: "marketing-automation-platforms", parentId: 115, rootId: 115, depth: 1 },
+  { id: 128, name: "Sales Training", slug: "sales-training", parentId: 115, rootId: 115, depth: 1 },
+  { id: 129, name: "Social media management tools", slug: "social-media-management-tools", parentId: 115, rootId: 115, depth: 1 },
+  { id: 130, name: "Social media scheduling tools", slug: "social-media-scheduling-tools", parentId: 115, rootId: 115, depth: 1 },
+  { id: 131, name: "Survey and form builders", slug: "survey-and-form-builders", parentId: 115, rootId: 115, depth: 1 },
+  
+  // AI children (depth: 1)
+  { id: 133, name: "AI Characters", slug: "ai-characters", parentId: 132, rootId: 132, depth: 1 },
+  { id: 134, name: "AI Chatbots", slug: "ai-chatbots", parentId: 132, rootId: 132, depth: 1 },
+  { id: 135, name: "AI Content Detection", slug: "ai-content-detection", parentId: 132, rootId: 132, depth: 1 },
+  { id: 136, name: "AI Databases", slug: "ai-databases", parentId: 132, rootId: 132, depth: 1 },
+  { id: 137, name: "AI Generative Art", slug: "ai-generative-art", parentId: 132, rootId: 132, depth: 1 },
+  { id: 138, name: "AI Headshot Generators", slug: "ai-headshot-generators", parentId: 132, rootId: 132, depth: 1 },
+  { id: 139, name: "AI Infrastructure Tools", slug: "ai-infrastructure-tools", parentId: 132, rootId: 132, depth: 1 },
+  { id: 140, name: "AI Metrics and Evaluation", slug: "ai-metrics-and-evaluation", parentId: 132, rootId: 132, depth: 1 },
+  { id: 141, name: "AI Voice Generation Software", slug: "ai-voice-generation-software", parentId: 132, rootId: 132, depth: 1 },
+  { id: 142, name: "Avatar generators", slug: "avatar-generators", parentId: 132, rootId: 132, depth: 1 },
+  { id: 143, name: "ChatGPT Prompts", slug: "chatgpt-prompts", parentId: 132, rootId: 132, depth: 1 },
+  { id: 144, name: "LLMs", slug: "llms", parentId: 132, rootId: 132, depth: 1 },
+  { id: 145, name: "Predictive AI", slug: "predictive-ai", parentId: 132, rootId: 132, depth: 1 },
+  { id: 146, name: "Text-to-Speech", slug: "text-to-speech", parentId: 132, rootId: 132, depth: 1 },
+  
+  // Health & Fitness children (depth: 1)
+  { id: 148, name: "Activity tracking", slug: "activity-tracking", parentId: 147, rootId: 147, depth: 1 },
+  { id: 149, name: "Camping apps", slug: "camping-apps", parentId: 147, rootId: 147, depth: 1 },
+  { id: 150, name: "Health Insurance", slug: "health-insurance", parentId: 147, rootId: 147, depth: 1 },
+  { id: 151, name: "Hiking apps", slug: "hiking-apps", parentId: 147, rootId: 147, depth: 1 },
+  { id: 152, name: "Medical", slug: "medical", parentId: 147, rootId: 147, depth: 1 },
+  { id: 153, name: "Meditation apps", slug: "meditation-apps", parentId: 147, rootId: 147, depth: 1 },
+  { id: 154, name: "Mental Health", slug: "mental-health", parentId: 147, rootId: 147, depth: 1 },
+  { id: 155, name: "Senior care", slug: "senior-care", parentId: 147, rootId: 147, depth: 1 },
+  { id: 156, name: "Sleep apps", slug: "sleep-apps", parentId: 147, rootId: 147, depth: 1 },
+  { id: 157, name: "Therapy apps", slug: "therapy-apps", parentId: 147, rootId: 147, depth: 1 },
+  { id: 158, name: "Workout platforms", slug: "workout-platforms", parentId: 147, rootId: 147, depth: 1 },
+  
+  // Travel children (depth: 1)
+  { id: 160, name: "Flight booking apps", slug: "flight-booking-apps", parentId: 159, rootId: 159, depth: 1 },
+  { id: 161, name: "Hotel booking app", slug: "hotel-booking-app", parentId: 159, rootId: 159, depth: 1 },
+  { id: 162, name: "Maps and GPS", slug: "maps-and-gps", parentId: 159, rootId: 159, depth: 1 },
+  { id: 163, name: "Outdoors platforms", slug: "outdoors-platforms", parentId: 159, rootId: 159, depth: 1 },
+  { id: 164, name: "Short term rentals", slug: "short-term-rentals", parentId: 159, rootId: 159, depth: 1 },
+  { id: 165, name: "Travel Insurance", slug: "travel-insurance", parentId: 159, rootId: 159, depth: 1 },
+  { id: 166, name: "Travel Planning", slug: "travel-planning", parentId: 159, rootId: 159, depth: 1 },
+  { id: 167, name: "Travel apps", slug: "travel-apps", parentId: 159, rootId: 159, depth: 1 },
+  { id: 168, name: "Weather apps", slug: "weather-apps", parentId: 159, rootId: 159, depth: 1 },
+  
+  // Web3 children (depth: 1)
+  { id: 170, name: "Crypto exchanges", slug: "crypto-exchanges", parentId: 169, rootId: 169, depth: 1 },
+  { id: 171, name: "Crypto tools", slug: "crypto-tools", parentId: 169, rootId: 169, depth: 1 },
+  { id: 172, name: "Crypto wallets", slug: "crypto-wallets", parentId: 169, rootId: 169, depth: 1 },
+  { id: 173, name: "DAOs", slug: "daos", parentId: 169, rootId: 169, depth: 1 },
+  { id: 174, name: "Defi", slug: "defi", parentId: 169, rootId: 169, depth: 1 },
+  { id: 175, name: "NFT creation tools", slug: "nft-creation-tools", parentId: 169, rootId: 169, depth: 1 },
+  { id: 176, name: "NFT marketplaces", slug: "nft-marketplaces", parentId: 169, rootId: 169, depth: 1 },
+  
+  // Ecommerce children (depth: 1)
+  { id: 178, name: "Ecommerce platforms", slug: "ecommerce-platforms", parentId: 177, rootId: 177, depth: 1 },
+  { id: 179, name: "Marketplace sites", slug: "marketplace-sites", parentId: 177, rootId: 177, depth: 1 },
+  { id: 180, name: "Payment processors", slug: "payment-processors", parentId: 177, rootId: 177, depth: 1 },
+  { id: 181, name: "Shopify Apps", slug: "shopify-apps", parentId: 177, rootId: 177, depth: 1 },
 ]
+
+export const CATEGORY_DICTIONARY = {
+  workProductivity: CATEGORIES[0], aiNotetakers: CATEGORIES[11], adBlockers: CATEGORIES[12], appSwitcher: CATEGORIES[13], calendarApps: CATEGORIES[14],
+  customerSupportTools: CATEGORIES[15], esignatureApps: CATEGORIES[16], emailClients: CATEGORIES[17], fileStorageAndSharingApps: CATEGORIES[18],
+  hiringSoftware: CATEGORIES[19], knowledgeBaseSoftware: CATEGORIES[20], legalServices: CATEGORIES[21], meetingSoftware: CATEGORIES[22],
+  noteAndWritingApps: CATEGORIES[23], pdfEditor: CATEGORIES[24], passwordManagers: CATEGORIES[25], presentationSoftware: CATEGORIES[26],
+  productDemo: CATEGORIES[27], projectManagementSoftware: CATEGORIES[28], resumeTools: CATEGORIES[29], schedulingSoftware: CATEGORIES[30],
+  screenshotsAndScreenRecordingApps: CATEGORIES[31], search: CATEGORIES[32], spreadsheets: CATEGORIES[33], teamCollaborationSoftware: CATEGORIES[34],
+  timeTrackingApps: CATEGORIES[35], videoConferencing: CATEGORIES[36], virtualOfficePlatforms: CATEGORIES[37], webBrowsers: CATEGORIES[38],
+  writingAssistants: CATEGORIES[39], engineeringDevelopment: CATEGORIES[1], abTestingTools: CATEGORIES[40], aiCodingAssistants: CATEGORIES[41],
+  authenticationIdentityTools: CATEGORIES[42], automationTools: CATEGORIES[43], contentManagementSystems: CATEGORIES[44], cloudComputingPlatforms: CATEGORIES[45],
+  codeReviewTools: CATEGORIES[46], codeEditors: CATEGORIES[47], commandLineTools: CATEGORIES[48], dataAnalysisTools: CATEGORIES[49],
+  dataVisualizationTools: CATEGORIES[50], databasesAndBackendFrameworks: CATEGORIES[51], gitClients: CATEGORIES[52], headlessCmsSoftware: CATEGORIES[53],
+  issueTrackingSoftware: CATEGORIES[54], membershipSoftware: CATEGORIES[55], nocodePlatforms: CATEGORIES[56], securityComplianceTools: CATEGORIES[57],
+  standupBots: CATEGORIES[58], staticSiteGenerators: CATEGORIES[59], testingAndQaSoftware: CATEGORIES[60], unifiedApi: CATEGORIES[61],
+  vpnClient: CATEGORIES[62], videoHostingPlatforms: CATEGORIES[63], webHostingServices: CATEGORIES[64], websiteAnalytics: CATEGORIES[65],
+  websiteBuilders: CATEGORIES[66], designCreative: CATEGORIES[2], threeDAnimation: CATEGORIES[67], backgroundRemovalTools: CATEGORIES[68],
+  cameraApps: CATEGORIES[69], designInspirationWebsites: CATEGORIES[70], designMockups: CATEGORIES[71], designResources: CATEGORIES[72],
+  digitalWhiteboards: CATEGORIES[73], graphicDesignTools: CATEGORIES[74], iconSets: CATEGORIES[75], interfaceDesignTools: CATEGORIES[76],
+  mobileEditingApps: CATEGORIES[77], photoEditing: CATEGORIES[78], podcasting: CATEGORIES[79], socialAudioApps: CATEGORIES[80],
+  spaceDesignApps: CATEGORIES[81], stockPhotoSites: CATEGORIES[82], uiFrameworks: CATEGORIES[83], userResearch: CATEGORIES[84],
+  videoEditing: CATEGORIES[85], wallpapers: CATEGORIES[86], wireframing: CATEGORIES[87], finance: CATEGORIES[3], accountingSoftware: CATEGORIES[88],
+  budgetingApps: CATEGORIES[89], creditScoreTools: CATEGORIES[90], financialPlanning: CATEGORIES[91], fundraisingResources: CATEGORIES[92],
+  investing: CATEGORIES[93], invoicingTools: CATEGORIES[94], moneyTransfer: CATEGORIES[95], neobanks: CATEGORIES[96], onlineBanking: CATEGORIES[97],
+  payrollSoftware: CATEGORIES[98], remoteWorkforceTools: CATEGORIES[99], retirementPlanning: CATEGORIES[100], savingsApps: CATEGORIES[101],
+  startupFinancialPlanning: CATEGORIES[102], stockTradingPlatforms: CATEGORIES[103], taxPreparation: CATEGORIES[104],
+  treasuryManagementPlatforms: CATEGORIES[105], socialCommunity: CATEGORIES[4], bloggingPlatforms: CATEGORIES[106], communityManagement: CATEGORIES[107],
+  datingApps: CATEGORIES[108], linkInBioTools: CATEGORIES[109], liveStreamingPlatforms: CATEGORIES[110], messagingApps: CATEGORIES[111],
+  microbloggingPlatforms: CATEGORIES[112], newsletterPlatforms: CATEGORIES[113], photoSharing: CATEGORIES[114],
+  professionalNetworkingPlatforms: CATEGORIES[115], safetyAndPrivacyPlatforms: CATEGORIES[116], socialNetworking: CATEGORIES[117],
+  socialBookmarking: CATEGORIES[118], videoAndVoiceCalling: CATEGORIES[119], marketingSales: CATEGORIES[5], advertisingTools: CATEGORIES[120],
+  affiliateMarketing: CATEGORIES[121], bestSeoTools: CATEGORIES[122], businessIntelligenceSoftware: CATEGORIES[123], crmSoftware: CATEGORIES[124],
+  customerLoyaltyPlatforms: CATEGORIES[125], emailMarketing: CATEGORIES[126], influencerMarketingPlatforms: CATEGORIES[127],
+  keywordResearchTools: CATEGORIES[128], landingPageBuilders: CATEGORIES[129], leadGenerationSoftware: CATEGORIES[130],
+  marketingAutomationPlatforms: CATEGORIES[131], salesTraining: CATEGORIES[132], socialMediaManagementTools: CATEGORIES[133],
+  socialMediaSchedulingTools: CATEGORIES[134], surveyAndFormBuilders: CATEGORIES[135], ai: CATEGORIES[6], aiCharacters: CATEGORIES[136],
+  aiChatbots: CATEGORIES[137], aiContentDetection: CATEGORIES[138], aiDatabases: CATEGORIES[139], aiGenerativeArt: CATEGORIES[140],
+  aiHeadshotGenerators: CATEGORIES[141], aiInfrastructureTools: CATEGORIES[142], aiMetricsAndEvaluation: CATEGORIES[143],
+  aiVoiceGenerationSoftware: CATEGORIES[144], avatarGenerators: CATEGORIES[145], chatgptPrompts: CATEGORIES[146], llms: CATEGORIES[147],
+  predictiveAi: CATEGORIES[148], textToSpeech: CATEGORIES[149], healthFitness: CATEGORIES[7], activityTracking: CATEGORIES[150],
+  campingApps: CATEGORIES[151], healthInsurance: CATEGORIES[152], hikingApps: CATEGORIES[153], medical: CATEGORIES[154], meditationApps: CATEGORIES[155],
+  mentalHealth: CATEGORIES[156], seniorCare: CATEGORIES[157], sleepApps: CATEGORIES[158], therapyApps: CATEGORIES[159], workoutPlatforms: CATEGORIES[160],
+  travel: CATEGORIES[8], flightBookingApps: CATEGORIES[161], hotelBookingApp: CATEGORIES[162], mapsAndGps: CATEGORIES[163],
+  outdoorsPlatforms: CATEGORIES[164], shortTermRentals: CATEGORIES[165], travelInsurance: CATEGORIES[166], travelPlanning: CATEGORIES[167],
+  travelApps: CATEGORIES[168], weatherApps: CATEGORIES[169], web3: CATEGORIES[9], cryptoExchanges: CATEGORIES[170], cryptoTools: CATEGORIES[171],
+  cryptoWallets: CATEGORIES[172], daos: CATEGORIES[173], defi: CATEGORIES[174], nftCreationTools: CATEGORIES[175], nftMarketplaces: CATEGORIES[176],
+  ecommerce: CATEGORIES[10], ecommercePlatforms: CATEGORIES[177], marketplaceSites: CATEGORIES[178], paymentProcessors: CATEGORIES[179],
+  shopifyApps: CATEGORIES[180],
+}

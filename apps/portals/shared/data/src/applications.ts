@@ -19,13 +19,13 @@ const PHOTO_SNAP:
   logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
   isPwa: true,
   rating: 4.6,
-  tagIds: [71, 11, 12], // Photo editing, Web Development, Mobile Development
-  categoryId: 71, // Photo editing
-  platformIds: [0, 1], // Web, Mobile
+  tagIds: [71, 11, 12],
+  categoryId: 71,
+  platformIds: [0, 1],
   reviewNumber: 1234,
   updateDate: new Date(),
   listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-  deviceIds: [1, 2, 3], // iPhone, Android, Desktop
+  deviceIds: [1, 2, 3],
   references: [
     {
       id: 1,

@@ -1,14 +1,158 @@
 import { 
   ApplicationDevLogFeedItem, 
-  ApplicationTeaserFeedItem, 
-  ApplicationHealthFeedItem, 
+  ApplicationTeaserFeedItemDto, 
+  ApplicationHealthFeedItemDto, 
   ApplicationReviewFeedItem, 
   ArticleHighlightFeedItem, 
   DiscussionTopicFeedItem, 
   SuiteTeaserFeedItem 
 } from "@domains/feed";
+import { CATEGORY_DICTIONARY } from "./categories";
+import { TAG_DICTIONARY } from "./tags";
 
-export const feed = [
+
+export const FEED_ITEM_EXAMPLES = [
+
+  // Application Teaser Feed Item Example
+  {
+    id: 'app-teaser-1',
+    type: 'application-teaser-feed-item',
+    title: 'Quick Task',
+    subtitle: 'Discover Quick Task - a powerful application for your needs',
+    timestamp: new Date('2024-01-13T14:20:00Z'),
+    appSlug: 'quick-task',
+    appId: '2',
+    appName: 'Quick Task',
+    description: 'Discover Quick Task - a powerful application for your needs',
+    category: CATEGORY_DICTIONARY.workProductivity,
+    tags: [
+      TAG_DICTIONARY.blockchain,
+      TAG_DICTIONARY.dataScience
+    ],
+    coverImage: {
+      url: 'https://picsum.photos/500',
+      alt: 'Quick Task logo'
+    },
+    aggregatedScore: 4.7,
+    reviewsCount: 350,
+  } as ApplicationTeaserFeedItemDto,
+
+  // Application Dev Log Feed Item Example
+  {
+    id: 'dev-log-1',
+    type: 'application-dev-log-feed-item',
+    title: 'Photo Snap',
+    subtitle: 'Major update with AI-powered features',
+    timestamp: new Date('2024-01-15T10:30:00Z'),
+    appSlug: 'photo-snap',
+    appName: 'Photo Snap',
+    version: '2.1.0',
+    description: 'Major update introducing AI-powered photo enhancement and batch processing capabilities',
+    releaseDate: new Date('2024-01-15T10:30:00Z'),
+    changes: [
+      { description: 'Added AI-powered photo enhancement', type: 'feature' },
+      { description: 'Implemented batch processing', type: 'feature' },
+      { description: 'Fixed memory leak in large file processing', type: 'bugfix' },
+      { description: 'Improved user interface responsiveness', type: 'improvement' }
+    ]
+  } as ApplicationDevLogFeedItem,
+
+
+
+  // Application Health Feed Item Example
+  {
+    id: 'app-health-1',
+    type: 'application-health-feed-item',
+    title: 'Photo Snap Health Status',
+    subtitle: 'All systems operational',
+    timestamp: new Date('2024-01-14T09:15:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    overallStatus: 'operational',
+    statusMessage: 'All systems operational',
+    services: [
+      {
+        name: 'Photo Snap',
+        status: 'operational',
+        uptime: 99,
+        hasInfo: true
+      }
+    ],
+    notices: [
+      {
+        type: 'info',
+        title: 'Service Update',
+        message: 'Scheduled maintenance completed',
+        timestamp: new Date('2024-01-13T23:00:00Z')
+      }
+    ]
+  } as ApplicationHealthFeedItemDto,
+
+  // Application Review Feed Item Example
+  {
+    id: 'app-review-1',
+    type: 'application-review-feed-item',
+    title: 'Jane Doe reviewed Photo Snap',
+    subtitle: 'Absolutely love the new AI features!',
+    timestamp: new Date('2024-01-16T16:10:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    rating: 4.8,
+    reviewerName: 'Jane Doe',
+    reviewerRole: 'Photographer',
+    reviewerAvatar: '',
+    testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
+    appName: 'Photo Snap',
+    reviewDate: '2024-01-16T16:10:00Z',
+    helpfulCount: 42
+  } as ApplicationReviewFeedItem,
+
+  // Article Highlight Feed Item Example
+  {
+    id: 'article-highlight-1',
+    type: 'article-highlight-feed-item',
+    title: 'Boost Your Productivity With Quick Task',
+    subtitle: 'Explore top tips to work smarter in 2024.',
+    timestamp: new Date('2024-01-10T08:00:00Z'),
+    excerpt: 'Explore top tips to work smarter in 2024 and how Quick Task helps you organize your workflow like a pro.',
+    author: 'Sarah Novak',
+    category: 'Productivity',
+    coverImage: {
+      url: 'https://via.placeholder.com/400x200/4f46e5/ffffff?text=Featured+Article',
+      alt: 'Boost Your Productivity With Quick Task'
+    }
+  } as ArticleHighlightFeedItem,
+
+  // Discussion Topic Feed Item Example
+  {
+    id: 'discussion-topic-1',
+    type: 'discussion-topic-feed-item',
+    title: 'Discussion: Collaboration Tools',
+    subtitle: 'Join the conversation about collaboration tools',
+    timestamp: new Date('2024-01-11T12:45:00Z'),
+    appSlug: 'quick-task',
+    topicSlug: 'collaboration-tools',
+    discussionData: {
+      topic: 'Collaboration Tools',
+      messages: [
+        {
+          id: 1,
+          author: 'John Developer',
+          content: 'What are your favorite features for collaboration?',
+          timestamp: new Date('2024-01-11T12:00:00Z')
+        }
+      ]
+    },
+    participantsCount: 12,
+    viewsCount: 70
+  } as DiscussionTopicFeedItem,
+
+];
+
+
+
+
+export const RANDOMIZED_FEED_ITEMS = [
   // Application Dev Log Items (5 items)
   {
     id: 'dev-log-1',
@@ -115,17 +259,18 @@ export const feed = [
     appId: '5240D028-840D-4344-9B24-6B1DB81071BA',
     appName: 'Fit Track',
     description: 'Professional fitness tracking application with advanced analytics and workout planning',
-    category: 'Health & Fitness',
-    tags: ['Fitness', 'Health', 'Sports', 'Wellness'],
+    category: CATEGORY_DICTIONARY.healthFitness,
+    tags: [
+      TAG_DICTIONARY.health,
+      TAG_DICTIONARY.productivity
+    ],
     coverImage: {
       url: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       alt: 'Fit Track logo'
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
-    categoryLink: '/category/148',
-    reviewsLink: '/reviews/fit-track'
-  } as ApplicationTeaserFeedItem,
+  } as ApplicationTeaserFeedItemDto,
 
   {
     id: 'teaser-2',
@@ -137,17 +282,18 @@ export const feed = [
     appId: '9E2882B0-2CF4-445E-A7C8-03FF9FFA0FD0',
     appName: 'Shop Ease',
     description: 'Comprehensive ecommerce platform with inventory management and payment processing',
-    category: 'Business',
-    tags: ['E-commerce', 'Business', 'Sales', 'Management'],
+    category: CATEGORY_DICTIONARY.ecommerce,
+    tags: [
+      TAG_DICTIONARY.ecommerce,
+      TAG_DICTIONARY.sales
+    ],
     coverImage: {
       url: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       alt: 'Shop Ease logo'
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
-    categoryLink: '/category/178',
-    reviewsLink: '/reviews/shop-ease'
-  } as ApplicationTeaserFeedItem,
+  } as ApplicationTeaserFeedItemDto,
 
   {
     id: 'teaser-3',
@@ -159,17 +305,18 @@ export const feed = [
     appId: '43301C93-54B4-4EC4-80C9-9C169E0768BC',
     appName: 'Photo Snap',
     description: 'Professional photo editing with AI-powered enhancement and batch processing',
-    category: 'Photography',
-    tags: ['Photography', 'Photo Editing', 'AI'],
+    category: CATEGORY_DICTIONARY.photoEditing,
+    tags: [
+      TAG_DICTIONARY.ai,
+      TAG_DICTIONARY.productivity
+    ],
     coverImage: {
       url: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       alt: 'Photo Snap logo'
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
-    categoryLink: '/category/71',
-    reviewsLink: '/reviews/photo-snap'
-  } as ApplicationTeaserFeedItem,
+  } as ApplicationTeaserFeedItemDto,
 
   {
     id: 'teaser-4',
@@ -181,17 +328,18 @@ export const feed = [
     appId: '8EEDE19C-22A3-4916-8C44-9F8CC391A7CC',
     appName: 'Quick Task',
     description: 'Streamlined project management with real-time collaboration and task tracking',
-    category: 'Productivity',
-    tags: ['Productivity', 'Project Management', 'Collaboration'],
+    category: CATEGORY_DICTIONARY.projectManagementSoftware,
+    tags: [
+      TAG_DICTIONARY.productivity,
+      TAG_DICTIONARY.web
+    ],
     coverImage: {
       url: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       alt: 'Quick Task logo'
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
-    categoryLink: '/category/19',
-    reviewsLink: '/reviews/quick-task'
-  } as ApplicationTeaserFeedItem,
+  } as ApplicationTeaserFeedItemDto,
 
   {
     id: 'teaser-5',
@@ -203,17 +351,18 @@ export const feed = [
     appId: '65F52175-30CE-412A-8B52-FAD6F7C7D933',
     appName: 'Speedy VPN',
     description: 'High-performance VPN with military-grade encryption and global server network',
-    category: 'Security',
-    tags: ['VPN', 'Security', 'Privacy', 'Networking'],
+    category: CATEGORY_DICTIONARY.engineeringDevelopment,
+    tags: [
+      TAG_DICTIONARY.security,
+      TAG_DICTIONARY.networking
+    ],
     coverImage: {
       url: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
       alt: 'Speedy VPN logo'
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
-    categoryLink: '/category/54',
-    reviewsLink: '/reviews/speedy-vpn'
-  } as ApplicationTeaserFeedItem,
+  } as ApplicationTeaserFeedItemDto,
 
   // Application Health Items (5 items)
   {
@@ -247,7 +396,7 @@ export const feed = [
       }
     ],
     notices: []
-  } as ApplicationHealthFeedItem,
+  } as ApplicationHealthFeedItemDto,
 
   {
     id: 'health-2',
@@ -287,7 +436,7 @@ export const feed = [
         timestamp: new Date('2024-01-16T08:30:00Z')
       }
     ]
-  } as ApplicationHealthFeedItem,
+  } as ApplicationHealthFeedItemDto,
 
   {
     id: 'health-3',
@@ -327,7 +476,7 @@ export const feed = [
         timestamp: new Date('2024-01-15T10:00:00Z')
       }
     ]
-  } as ApplicationHealthFeedItem,
+  } as ApplicationHealthFeedItemDto,
 
   {
     id: 'health-4',
@@ -360,7 +509,7 @@ export const feed = [
       }
     ],
     notices: []
-  } as ApplicationHealthFeedItem,
+  } as ApplicationHealthFeedItemDto,
 
   {
     id: 'health-5',
@@ -400,7 +549,7 @@ export const feed = [
         timestamp: new Date('2024-01-14T09:00:00Z')
       }
     ]
-  } as ApplicationHealthFeedItem,
+  } as ApplicationHealthFeedItemDto,
 
   // Application Review Items (5 items)
   {

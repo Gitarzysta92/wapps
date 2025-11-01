@@ -1,11 +1,11 @@
-<content-feed-item
-  icon="@tui.box"
-  [item]="item">
+<content-feed-item-blank>
+  <ui-cover-image
+    class="cover-image"
+    [image]="getCoverImage()"
+    backdrop>
+  </ui-cover-image>
   <div class="item-content" content>
-    <ui-cover-image
-      class="cover-image"
-      [image]="getCoverImage()">
-    </ui-cover-image>
+
     <div class="app-info">
       <tui-chip 
         class="app-category" 
@@ -13,6 +13,10 @@
         {{ getCategory() }}
       </tui-chip>
       <div class="app-content">
+        <tui-avatar 
+        [src]="'@tui.mastercard' | tuiIcon"
+        size="s"
+      />
         <h3 class="app-name">{{ getApplicationName() }}</h3>
         <p class="app-description">{{ getDescription() }}</p>
         <div class="app-tags">
@@ -30,7 +34,7 @@
         tuiButton 
         size="s" 
         appearance="primary"
-        [routerLink]="ctaPath | routePath:{ appSlug: getApplicationSlug() }">
+        [routerLink]="item.appLink| routePath:{ appSlug: getApplicationSlug() }">
           <tui-icon icon="@tui.grid"/>
           Application overview
       </a>
@@ -58,5 +62,5 @@
         <span class="reviews-count">({{ getReviewsCount() }} reviews)</span>
     </button>
   </div>
-</content-feed-item>
+</content-feed-item-blank>
 

@@ -1,19 +1,19 @@
 <ui-animated-background class="shell-background"></ui-animated-background>
 
-@if (headerComponent$ | async; as cmp) {
+@if (headerComponent$ | async; as header) {
   <header class="container container-header">
     <ng-container 
-      *ngComponentOutlet="cmp; inputs: { }">
+      *ngComponentOutlet="header.component; inputs: header.inputs">
     </ng-container>
   </header>  
 }
 
 
 
-@if (leftSidebarComponent$ | async; as leftSidebarV2) {
+@if (leftSidebarComponent$ | async; as leftSidebar) {
   <aside class="container sidebar left">
     <ng-container 
-      *ngComponentOutlet="leftSidebarV2.component; inputs: leftSidebarV2.inputs">
+      *ngComponentOutlet="leftSidebar.component; inputs: leftSidebar.inputs">
     </ng-container>
   </aside>
 }
@@ -22,19 +22,17 @@
   <router-outlet></router-outlet>
 </main>
 
-@if (rightSidebarComponent$ | async; as cmp) {
+@if (rightSidebarComponent$ | async; as rightSidebar) {
   <aside class="container sidebar right">
     <ng-container 
-      *ngComponentOutlet="cmp; inputs: { 
-        isExpanded: isRightSidebarExpanded$ | async
-      }">
+      *ngComponentOutlet="rightSidebar.component; inputs: rightSidebar.inputs">
     </ng-container>
   </aside>
 }
 
 
-@if (footerComponent$ | async; as cmp) {
+@if (footerComponent$ | async; as footer) {
   <footer class="container container-footer">
-    <ng-container *ngComponentOutlet="cmp"></ng-container>
+    <ng-container *ngComponentOutlet="footer.component; inputs: footer.inputs"></ng-container>
   </footer>
 }

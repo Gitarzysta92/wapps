@@ -4,7 +4,7 @@ import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
 import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from '@portals/shared/features/multi-search';
 import { SearchMockDataService, ListingSearchService } from '@portals/shared/features/search';
-import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN } from '@portals/shared/features/feed';
+import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN, ApplicationHealthFeedItemVM, ApplicationTeaserFeedItemVM } from '@portals/shared/features/feed';
 import { HomePageStateService } from "./home-page-state.service";
 import { TempFeedProviderService } from "./temp-feed-provider.service";
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
@@ -18,6 +18,16 @@ import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
+import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
+import { of } from "rxjs";
+import { buildRoutePath } from '@portals/shared/boundary/navigation';
+
+
+type RegisteredFeedItem = Array<
+  ApplicationHealthFeedItemVM & { type: typeof APPLICATION_HEALTH_FEED_ITEM_SELECTOR } |
+  ApplicationTeaserFeedItemVM & { type: typeof APPLICATION_TEASER_FEED_ITEM_SELECTOR }
+>
+
 
 @Component({
   selector: 'home-page',
@@ -46,7 +56,35 @@ import { NAVIGATION } from "../../navigation";
     TempFeedProviderService,
     { provide: MULTISEARCH_RESULTS_PROVIER, useClass: ListingSearchService },
     { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
-    { provide: FEED_PROVIDER_TOKEN, useClass: TempFeedProviderService }
+    {
+      provide: FEED_PROVIDER_TOKEN, useValue: {
+      getFeedPage: () => of({
+        ok: true,
+        value: {
+          items: (FEED_ITEM_EXAMPLES as RegisteredFeedItem).map(i => {
+    
+            switch (i.type) {
+              case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
+                i.appLink = buildRoutePath(NAVIGATION.applicationHealth.path, { appSlug: i.appSlug });
+                break;
+              case APPLICATION_TEASER_FEED_ITEM_SELECTOR:
+                i.appLink = buildRoutePath(NAVIGATION.application.path, { appSlug: i.appSlug });
+                i.category.link = buildRoutePath(NAVIGATION.categories.path, { categorySlug: i.category.slug });
+                i.tags.forEach(t => {
+                  t.link = buildRoutePath(NAVIGATION.tags.path, { tagSlug: t.slug });
+                });
+                i.reviewsLink = buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: i.appSlug });
+                break;
+              default:
+                //throw new Error(`Unknown feed item type: ${i.type}`);
+            }
+            return i;
+          }),
+          hasMore: true,
+          nextPage: 1
+        }
+      })
+    }}
   ]
 })
 export class HomePageComponent {

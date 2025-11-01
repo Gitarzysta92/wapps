@@ -2,13 +2,19 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ICategoriesProvider, CategoryDto } from "@domains/catalog/category";
 import { Result } from "@standard";
+import { CATEGORIES } from "@portals/shared/data";
 
 @Injectable()
 export class CategoryApiService implements ICategoriesProvider {
   getCategories(): Observable<Result<CategoryDto[], Error>> {
     return of({
       ok: true,
-      value:  [
+      value: CATEGORIES
+    })
+  }
+  
+  /* OLD: removed hardcoded data
+    value:  [
         {
           "id": 1,
           "name": "Work & Productivity",
@@ -1109,4 +1115,5 @@ export class CategoryApiService implements ICategoriesProvider {
       ]
     })
   }
+  */
 }

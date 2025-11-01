@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import type { ContentFeedItemVm } from './content-feed-item.vm';
+import type { ContentFeedItemVm } from '../content-feed-item.vm';
 import { TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 
@@ -18,3 +18,5 @@ export class ContentFeedItemComponent {
   @Input() item: ContentFeedItemVm | undefined;
   @Input() icon: string | undefined;
 }
+
+

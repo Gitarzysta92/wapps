@@ -43,7 +43,7 @@
 <nav class="navigation_section">
   @if (!isAuthenticated) {
     <ul>
-      @for (item of navigationPrimary; track item.id) {
+      @for (item of navigationPrimary; track item.path) {
         <li>
           <button
           appearance="flat"
@@ -62,7 +62,7 @@
   }
   @else {
   <ul>
-    @for (item of navigationPrimary; track item.id) {
+    @for (item of navigationPrimary; track item.path) {
       <li>
         <a
           [routerLink]="['/', item.path]"
@@ -88,7 +88,7 @@
 <nav class="navigation_section">
   @if (!isAuthenticated) {
     <ul>
-      @for (item of navigationSecondary; track item.id) {
+      @for (item of navigationSecondary; track item.path) {
         <li>
           <a
             [routerLink]="['/', item.path]"
@@ -106,7 +106,7 @@
     </ul>
   } @else {
     <ul>
-      @for (item of navigationSecondary; track item.id) {
+      @for (item of navigationSecondary; track item.path) {
         <li>
           <a
             [routerLink]="['/', item.path]"

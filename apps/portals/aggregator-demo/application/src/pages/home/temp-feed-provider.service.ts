@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { IFeedProviderPort, IFeedPage } from '@portals/shared/features/feed';
 import { APPLICATIONS } from '@portals/shared/data';
-import { feed } from '@portals/shared/data';
+import { Result } from '@standard';
+
 import { 
   ARTICLES_DATA, 
   DISCUSSION_TOPICS_DATA, 
@@ -12,7 +13,7 @@ import {
   TESTIMONIALS_DATA, 
   HEALTH_STATUS_MESSAGES_DATA 
 } from '@portals/shared/data';
-import { ApplicationDevLogFeedItem, ApplicationTeaserFeedItem, ApplicationHealthFeedItem, ApplicationReviewFeedItem, ArticleHighlightFeedItem, DiscussionTopicFeedItem, SuiteTeaserFeedItem } from '@domains/feed';
+import { ApplicationDevLogFeedItem, ApplicationTeaserFeedItemDto, ApplicationHealthFeedItemDto, ApplicationReviewFeedItem, ArticleHighlightFeedItem, DiscussionTopicFeedItem, SuiteTeaserFeedItem, FeedItemDto } from '@domains/feed';
 import { AppRecordDto } from '@domains/catalog/record';
 import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
@@ -26,7 +27,7 @@ import { SUITE_TEASER_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
 export class TempFeedProviderService implements IFeedProviderPort {
   private static idCounter = 0;
 
-  public getFeedPage(page: number, size: number): Observable<IFeedPage> {
+  public getFeedPage(page: number, size: number): Observable<Result<IFeedPage, Error>> {
     // Use the static data from @portals/shared/data
     const allFeedItems = this.generateFeedItemsFromData();
     
@@ -37,68 +38,45 @@ export class TempFeedProviderService implements IFeedProviderPort {
     const hasMore = endIndex < allFeedItems.length;
 
     return of({
-      items: pageItems,
-      hasMore,
-      nextPage: hasMore ? page + 1 : undefined
+      ok: true,
+      value: {
+        items: pageItems,
+        hasMore,
+        nextPage: hasMore ? page + 1 : undefined
+      }
     });
   }
 
-  private generateFeedItemsFromData(): (ApplicationDevLogFeedItem | ApplicationTeaserFeedItem | ApplicationHealthFeedItem | ApplicationReviewFeedItem | ArticleHighlightFeedItem | DiscussionTopicFeedItem | SuiteTeaserFeedItem)[] {
-    const feedItems: (ApplicationDevLogFeedItem | ApplicationTeaserFeedItem | ApplicationHealthFeedItem | ApplicationReviewFeedItem | ArticleHighlightFeedItem | DiscussionTopicFeedItem | SuiteTeaserFeedItem)[] = [];
+  private generateFeedItemsFromData(): FeedItemDto[] {
+    const feedItems: FeedItemDto[] = [];
+    const isRandom = false
 
-    // Add items from the static feed data
-    feed.forEach((item) => {
-      // Filter by type and create appropriate feed items
-      if (item.type === 'application-dev-log-feed-item') {
-        feedItems.push(this.createDevLogFeedItem(item as ApplicationDevLogFeedItem));
-      } else if (item.type === 'application-teaser-feed-item') {
-        feedItems.push(item as ApplicationTeaserFeedItem);
-      } else if (item.type === 'application-health-feed-item') {
-        feedItems.push(item as ApplicationHealthFeedItem);
-      } else if (item.type === 'application-review-feed-item') {
-        feedItems.push(item as ApplicationReviewFeedItem);
-      } else if (item.type === 'article-highlight-feed-item') {
-        feedItems.push(item as ArticleHighlightFeedItem);
-      } else if (item.type === 'discussion-topic-feed-item') {
-        feedItems.push(item as DiscussionTopicFeedItem);
-      } else if (item.type === 'suite-teaser-feed-item') {
-        feedItems.push(item as SuiteTeaserFeedItem);
-      }
-    });
-
-    // Generate additional feed items based on applications data
     APPLICATIONS.forEach((app) => {
-      // Create application teaser items
       feedItems.push(this.createApplicationTeaserFeedItem(app));
 
-      // Create application health items (randomly)
-      if (Math.random() > 0.7) {
+      if (isRandom && Math.random() > 0.7) {
         feedItems.push(this.createApplicationHealthFeedItem(app));
       }
 
-      // Create application review items (randomly)
-      if (Math.random() > 0.8) {
+      if (isRandom && Math.random() > 0.8) {
         feedItems.push(this.createApplicationReviewFeedItem(app));
       }
 
-      // Create discussion topic items (randomly)
-      if (Math.random() > 0.9) {
+      if (isRandom && Math.random() > 0.9) {
         feedItems.push(this.createDiscussionTopicFeedItem(app));
       }
     });
 
-    // Add some article highlights (randomly)
+    
     if (Math.random() > 0.5) {
       feedItems.push(this.createArticleHighlightFeedItem());
     }
 
-    // Add some suite teasers (randomly)
     if (Math.random() > 0.6) {
       feedItems.push(this.createSuiteTeaserFeedItem());
     }
 
-    // Sort by timestamp (newest first)
-    return feedItems.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return isRandom ? feedItems : feedItems.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
 
   private createDevLogFeedItem(item: ApplicationDevLogFeedItem): ApplicationDevLogFeedItem {
@@ -117,7 +95,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
     };
   }
 
-  private createApplicationTeaserFeedItem(app: AppRecordDto): ApplicationTeaserFeedItem {
+  private createApplicationTeaserFeedItem(app: AppRecordDto): ApplicationTeaserFeedItemDto {
     return {
       id: this.generateUniqueId(`app-teaser-${app.id}`),
       type: APPLICATION_TEASER_FEED_ITEM_SELECTOR,
@@ -128,20 +106,20 @@ export class TempFeedProviderService implements IFeedProviderPort {
       appId: String(app.id),
       appName: app.name,
       description: `Discover ${app.name} - a powerful application for your needs`,
-      category: this.getCategoryName(app.categoryId),
-      tags: this.getTagNames(app.tagIds),
+      // category: this.getCategoryName(app.categoryId),
+      // tags: this.getTagNames(app.tagIds),
       coverImage: {
         url: app.logo,
         alt: `${app.name} logo`
       },
       aggregatedScore: app.rating,
       reviewsCount: app.reviewNumber,
-      categoryLink: `/category/${app.categoryId}`,
-      reviewsLink: `/reviews/${app.slug}`
-    };
+      // categoryLink: `/category/${app.categoryId}`,
+      // reviewsLink: `/reviews/${app.slug}`
+    } as any;
   }
 
-  private createApplicationHealthFeedItem(app: AppRecordDto): ApplicationHealthFeedItem {
+  private createApplicationHealthFeedItem(app: AppRecordDto): ApplicationHealthFeedItemDto {
     const healthStatus = this.getRandomHealthStatus();
     const statusMessage = this.getRandomHealthMessage();
     

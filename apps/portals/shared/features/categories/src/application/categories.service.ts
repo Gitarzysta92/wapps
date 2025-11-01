@@ -24,7 +24,7 @@ export class CategoriesService implements ICategoriesProvider {
   }
 
   public getCategoryChildren(categoryId: number): Observable<CategoryDto[]> {
-    return this._getCategories().pipe(map(cs => cs.find(c => c.id === categoryId)?.childs ?? []))
+    return this._getCategories().pipe(map(cs => cs.filter(c => c.parentId === categoryId)))
   }
 
   public getCategory(categoryId: number): Observable<CategoryDto> {

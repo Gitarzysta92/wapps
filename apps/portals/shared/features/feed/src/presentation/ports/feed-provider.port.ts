@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFeedItem } from '../models/feed-item.interface';
+import { Result } from '@standard';
 
 export interface IFeedPage {
   items: IFeedItem[];
@@ -9,7 +10,7 @@ export interface IFeedPage {
 }
 
 export interface IFeedProviderPort {
-  getFeedPage(page: number, size: number): Observable<IFeedPage>;
+  getFeedPage(page: number, size: number): Observable<Result<IFeedPage, Error>>;
 }
 
 export const FEED_PROVIDER_TOKEN = new InjectionToken<IFeedProviderPort>('FeedProviderPort');

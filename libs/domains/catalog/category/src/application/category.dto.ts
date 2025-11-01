@@ -1,6 +1,15 @@
-export type CategoryDto = {
+export type CategoryTreeDto = {
   id: number;
   slug: string;
   name: string;
-  childs: CategoryDto[];
+  childs: CategoryTreeDto[];
+}
+
+export type CategoryDto = {
+  id: number; 
+  name: string;
+  slug: string;
+  parentId: number | null;
+  rootId: number | null;
+  depth: number;
 }

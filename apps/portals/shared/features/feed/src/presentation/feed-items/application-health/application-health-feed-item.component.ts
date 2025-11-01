@@ -7,10 +7,13 @@ import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-it
 import { NoticesSectionComponent, Notice } from '@ui/notices-section';
 import { NgFor } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { RoutePathPipe } from '@ui/routing';
-import type { ApplicationHealthFeedItem } from '@domains/feed';
+import type { ApplicationHealthFeedItemDto } from '@domains/feed';
 
 export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-item';
+
+export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'category' | 'tags'> & {
+  appLink: string;
+}
 
 @Component({
   selector: APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
@@ -27,12 +30,10 @@ export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-it
     RouterLink,
     TuiButton,
     TuiIcon,
-    RoutePathPipe
   ]
 })
 export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
-  @Input() ctaPath = "";
-  @Input() item!: ApplicationHealthFeedItem;
+  @Input() item!: ApplicationHealthFeedItemVM;
 
   getApplicationSlug(): string {
     return this.item.appSlug;

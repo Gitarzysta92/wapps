@@ -14,7 +14,7 @@ export type Notice = {
   timestamp: Date;
 };
 
-export type ApplicationHealthFeedItem = {
+export type ApplicationHealthFeedItemDto = {
   appSlug: string;
   appId: string;
   overallStatus: 'operational' | 'degraded' | 'outage';

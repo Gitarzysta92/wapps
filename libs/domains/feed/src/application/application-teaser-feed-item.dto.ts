@@ -5,16 +5,20 @@ export type CoverImageDto = {
   alt: string;
 };
 
-export type ApplicationTeaserFeedItem = {
+export type ApplicationTeaserFeedItemDto = {
   appSlug: string;
   appId: string;
   appName: string;
   description: string;
-  category: string;
-  tags: string[];
+  category: {
+    name: string;
+    slug: string;
+  };
+  tags: {
+    name: string;
+    slug: string
+  }[];
   coverImage: CoverImageDto;
   aggregatedScore: number;
   reviewsCount: number;
-  categoryLink: string;
-  reviewsLink: string;
 } & FeedItemDto;

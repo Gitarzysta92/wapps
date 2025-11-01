@@ -19,7 +19,7 @@ export class CategoriesService {
   }
 
   public getCategoryChildren(categoryId: number): Observable<CategoryDto[]> {
-    return this.getCategories().pipe(map(cs => cs.find(c => c.id === categoryId)?.childs ?? []))
+    return this.getCategories().pipe(map(cs => cs.filter(c => c.parentId === categoryId)))
   }
 
   public getCategory(categoryId: number): Observable<CategoryDto> {

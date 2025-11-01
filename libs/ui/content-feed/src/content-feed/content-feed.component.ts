@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TuiLoader } from '@taiga-ui/core';
 import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 import { Subscription } from 'rxjs';
-import { ContentFeedItemVm } from './content-feed-item.vm';
+import { ContentFeedItemVm } from '../content-feed-item.vm';
 
 @Component({
   selector: 'content-feed',
@@ -46,3 +46,5 @@ export class ContentFeedComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 }
+
+

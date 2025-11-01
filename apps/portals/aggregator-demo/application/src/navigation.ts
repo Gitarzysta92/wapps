@@ -1,172 +1,183 @@
-export enum Menu {
-  Main = 'main',
-  UserPanelPrimary = 'user-panel-primary',
-  UserPanelSecondary = 'user-panel-secondary',
-  GuestPanelPrimary = 'guest-panel-primary',
-  GuestPanelSecondary = 'guest-panel-secondary',
-  FooterFirst = 'footer-first',
-  FooterSecond = 'footer-second',
-  FooterThird = 'footer-third',
-  FooterFourth = 'footer-fourth'
-}
-
 export const ROUTE_PARAMS = {
   appSlug: ':appSlug',
   topicSlug: ':topicSlug',
+  categorySlug: ':categorySlug',
+  tagSlug: ':tagSlug',
+  suiteSlug: ':suiteSlug',
+  articleSlug: ':articleSlug',
+  reviewSlug: ':reviewSlug'
 }
 
 export const NAVIGATION = {
   home: {
-    id: 1,
     path: '',
     label: 'Home',
     icon: '@tui.home',
-    slots: [
-      { id: Menu.Main, order: 1 }
-    ]
   },
-  applications: {
-    id: 2,
-    path: 'applications',
-    label: 'Applications',
-    icon: '@tui.layout-grid',
-    slots: [
-      { id: Menu.Main, order: 1 },
-      { id: Menu.FooterFirst, order: 1 }
-    ]
+  myProfile: {
+    path: 'my/profile',
+    label: 'My profile',
+    icon: '@tui.user',
   },
-  suites: {
-    id: 3,
-    path: 'suites',
-    label: 'Suites',
-    icon: '@tui.briefcase-business',
-    slots: [
-      { id: Menu.Main, order: 2 },
-    ]
-  },
-  articles: {
-    id: 4,
-    path: 'articles',
-    label: 'Articles',
-    icon: '@tui.newspaper',
-    slots: [
-      { id: Menu.Main, order: 3 },
-    ]
-  },
-  favourites: {
-    id: 5,
-    path: 'favourites',
+  myfavourites: {
+    path: 'my/favourites',
     label: 'Favourites',
     icon: '@tui.folder-heart',
-    slots: [
-      { id: Menu.UserPanelPrimary, order: 2 },
-      { id: Menu.FooterFirst, order: 2 }
-    ]
-  },
-  mySuites: {
-    id: 6,
-    path: 'my-suites',
-    label: 'My suites',
-    icon: '@tui.book-copy',
-    slots: [
-      { id: Menu.UserPanelPrimary, order: 3 },
-      { id: Menu.FooterFirst, order: 3 }
-    ]
-  },
-  myApps: {
-    id: 7,
-    path: 'my-apps',
-    label: 'My apps',
-    icon: '@tui.app-window',
-    slots: [
-      { id: Menu.UserPanelPrimary, order: 4 },
-      { id: Menu.FooterFirst, order: 4 }
-    ]
-  },
-  ownership: {
-    id: 8,
-    path: 'ownership',
-    label: 'Ownership',
-    icon: '@tui.link',
-    slots: [
-      { id: Menu.UserPanelPrimary, order: 5 },
-      { id: Menu.FooterFirst, order: 5 }
-    ]
   },
   settings: {
-    id: 9,
     path: 'settings',
     label: 'Settings',
     icon: '@tui.settings',
-    slots: [
-      { id: Menu.UserPanelSecondary, order: 6 },
-      { id: Menu.FooterFirst, order: 6 }
-    ]
+  },
+  settingsUser: {
+    path: 'settings/user',
+    label: 'User settings',
+    icon: '@tui.settings',
+  },
+  settingsProfile: {
+    path: 'settings/profile',
+    label: 'Profile settings',
+    icon: '@tui.settings',
+  },
+  suites: {
+    path: 'suites',
+    label: 'Suites',
+    icon: '@tui.briefcase-business',
+  },
+  suite: {
+    path: `suites/${ROUTE_PARAMS.suiteSlug}`,
+    label: 'Suite',
+    icon: '@tui.briefcase-business',
+  },
+  mySuites: {
+    path: `my/suites/${ROUTE_PARAMS.suiteSlug}`,
+    label: 'My suites',
+    icon: '@tui.book-copy',
+  },
+  createSuite: {
+    path: `suites/create`,
+    label: 'Create suite',
+    icon: '@tui.briefcase-business',
+  },
+  favouriteSuites: {
+    path: `my/favourites/suites`, 
+    label: 'Favourite suites',
+    icon: '@tui.folder-heart',
+  },
+  articles: {
+    path: 'articles',
+    label: 'Articles',
+    icon: '@tui.newspaper',
+  },
+  article: {
+    path: `articles/${ROUTE_PARAMS.articleSlug}`,
+    label: 'Article',
+    icon: '@tui.newspaper',
+  },
+  applications: {
+    path: 'app',
+    label: 'Applications',
+    icon: '@tui.layout-grid',
+  },
+  application: {
+    path: `apps/${ROUTE_PARAMS.appSlug}`,
+    label: 'Application',
+    icon: '@tui.box',
+  },
+  applicationOverview: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/overview`,
+    label: 'Overview',
+    icon: '@tui.box',
+  },
+  applicationHealth: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/health`,
+    label: 'Health',
+    icon: '@tui.heart-pulse',
+  },
+  applicationDevLog: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/devlog`,
+    label: 'Dev log',
+    icon: '@tui.git-commit',
+  },
+  applicationReviews: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/reviews`,
+    label: 'Reviews',
+    icon: '@tui.star',
+  },
+  applicationReview: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/review/${ROUTE_PARAMS.reviewSlug}`,
+    label: 'Reviews',
+    icon: '@tui.star',
+  },
+  applicationTopics: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/topics`,
+    label: 'Topics',
+    icon: '@tui.message-circle',
+  },
+  applicationTopic: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/topics/${ROUTE_PARAMS.topicSlug}`,
+    label: 'Topic',
+    icon: '@tui.message-circle',
+  },
+  applicationTimeline: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/timeline`,
+    label: 'Timeline',
+    icon: '@tui.list-ordered',
+  },
+  favouriteApplications: {
+    path: `my/favourites/apps`, 
+    label: 'Favourite applications',
+    icon: '@tui.folder-heart',
+  },
+  myApplications: {
+    path: `my/apps`, 
+    label: 'Favourite applications',
+    icon: '@tui.folder-heart',
+  },
+  registerApplication: {
+    path: `apps/register`, 
+    label: 'Register application',
+    icon: '@tui.folder-heart',
+  },
+  claimApplicationOwnership: {
+    path: `apps/ownership/${ROUTE_PARAMS.appSlug}`, 
+    label: 'Claim application ownership',
+    icon: '@tui.folder-heart',
   },
   categories: {
-    id: 10,
-    path: 'category',
+    path: `categories`,
     label: 'Categories',
     icon: '@tui.folder',
-    slots: [
-    ]
+  },
+  category: {
+    path: `categories/${ROUTE_PARAMS.categorySlug}`,
+    label: 'Categories',
+    icon: '@tui.folder',
+  },
+  searchByCategory: {
+    path: `categories/${ROUTE_PARAMS.categorySlug}/search/`,
+    label: 'Search by category',
+    icon: '@tui.folder',
   },
   tags: {
-    id: 11,
     path: 'tags',
     label: 'Tags',
     icon: '@tui.tag',
-    slots: [
-    ]
   },
-  applicationOverview: {
-    id: 13,
-    path: `app/${ROUTE_PARAMS.appSlug}/overview`,
-    label: 'Overview',
-    icon: '@tui.box',
-    slots: []
+  tag: {
+    path: `tags/${ROUTE_PARAMS.tagSlug}`,
+    label: 'Tag',
+    icon: '@tui.tag',
   },
-  applicationHealth: {
-    id: 14,
-    path: `app/${ROUTE_PARAMS.appSlug}/health`,
-    label: 'Health',
-    icon: '@tui.heart-pulse',
-    slots: []
+  searchByTag: {
+    path: `tags/${ROUTE_PARAMS.tagSlug}/search/`,
+    label: 'Search by tag',
+    icon: '@tui.tag',
   },
-  applicationDevLog: {
-    id: 15,
-    path: `app/${ROUTE_PARAMS.appSlug}/devlog`,
-    label: 'Dev log',
-    icon: '@tui.git-commit',
-    slots: []
-  },
-  applicationReviews: {
-    id: 16,
-    path: `app/${ROUTE_PARAMS.appSlug}/reviews`,
-    label: 'Reviews',
-    icon: '@tui.star',
-    slots: []
-  },
-  applicationTopics: {
-    id: 17,
-    path: `app/${ROUTE_PARAMS.appSlug}/topics`,
-    label: 'Topics',
-    icon: '@tui.message-circle',
-    slots: []
-  },
-  applicationTopic: {
-    id: 18,
-    path: `app/${ROUTE_PARAMS.appSlug}/topics/${ROUTE_PARAMS.topicSlug}`,
-    label: 'Topic',
-    icon: '@tui.message-circle',
-    slots: []
-  },
-  applicationTimeline: {
-    id: 18,
-    path: `app/${ROUTE_PARAMS.appSlug}/timeline`,
-    label: 'Timeline',
-    icon: '@tui.list-ordered',
-    slots: []
+  search: {
+    path: `search`,
+    label: 'Search',
+    icon: '@tui.search',
   }
 }
 
@@ -179,10 +190,52 @@ export const HOME_VIEW_MAIN_NAVIGATION = [
 
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
+  NAVIGATION.home,
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationTimeline,
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationHealth,
   NAVIGATION.applicationTopics,
+]
+
+
+export const FOOTER_MAIN_NAVIGATION = [
   NAVIGATION.home,
+  NAVIGATION.applications,
+  NAVIGATION.suites,
+  NAVIGATION.articles,  
+  NAVIGATION.myfavourites,
+  NAVIGATION.mySuites,
+]
+
+export const FOOTER_SECONDARY_NAVIGATION = [
+  NAVIGATION.myApplications,
+  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.settings,
+  NAVIGATION.categories,
+  NAVIGATION.tags,
+]
+
+export const FOOTER_TERTIARY_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.applications,
+  NAVIGATION.suites,
+  NAVIGATION.articles,  
+  NAVIGATION.myfavourites,
+  NAVIGATION.mySuites,
+  NAVIGATION.myApplications,
+  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.settings,
+]
+
+export const FOOTER_QUATERNARY_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.applications,
+  NAVIGATION.suites,
+  NAVIGATION.articles,  
+  NAVIGATION.myfavourites,
+  NAVIGATION.mySuites,
+  NAVIGATION.myApplications,
+  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.settings,
 ]

@@ -1,12 +1,16 @@
 @use 'ui/design-system/src/styles' as *;
 
+:host {
+  height: 500px;
+}
+
 .item-content {
+  margin-top: auto;
   padding: var(--tui-padding-m) 0;
 }
 
 .app-info {
   position: relative;
-
   background: #ffffff;
   border-radius: 15px;
   padding: 30px 30px 15px 30px;
@@ -48,9 +52,7 @@
 .cover-image {
   display: block;
   width: 100%;
-  height: 250px;
   object-fit: cover;
-  border-radius: 0;
 }
 
 .app-category {

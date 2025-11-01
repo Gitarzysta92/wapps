@@ -30,3 +30,36 @@ export const TAGS: TagDto[] = [
   { id: 26, slug: "Social", name: "Social" },
   { id: 27, slug: "Other", name: "Other" },
 ]
+
+
+
+export const TAG_DICTIONARY = {
+  web: TAGS[0],
+  mobile: TAGS[1],
+  desktop: TAGS[2],
+  ai: TAGS[3],
+  machineLearning: TAGS[4],
+  dataScience: TAGS[5],
+  cloud: TAGS[6],
+  devOps: TAGS[7],
+  security: TAGS[8],
+  networking: TAGS[9],
+  database: TAGS[10],
+  webDevelopment: TAGS[11],
+  mobileDevelopment: TAGS[12],
+  desktopDevelopment: TAGS[13],
+  gameDevelopment: TAGS[14],
+  vrDevelopment: TAGS[15],
+  arDevelopment: TAGS[16],
+  blockchain: TAGS[17],
+  ecommerce: TAGS[18],
+  marketing: TAGS[19],
+  sales: TAGS[20],
+  finance: TAGS[21],
+  education: TAGS[22],
+  health: TAGS[23],
+  entertainment: TAGS[24],
+  productivity: TAGS[25],
+  social: TAGS[26],
+  other: TAGS[27],
+}

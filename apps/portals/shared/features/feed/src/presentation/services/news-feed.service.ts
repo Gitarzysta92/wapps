@@ -1,4 +1,4 @@
-import { Injectable, OnInit, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IFeedItem } from '../models/feed-item.interface';
 import { FEED_PROVIDER_TOKEN } from '../ports/feed-provider.port';
@@ -29,10 +29,10 @@ export class NewsFeedService {
     this._feedProvider.getFeedPage(this._currentPage, this._pageSize)
       .subscribe(page => {
         const currentItems = this._feedItems$.value;
-        const newItems = [...currentItems, ...page.items];
+        const newItems = [...currentItems, ...page.ok ? page.value.items : []];
         
         this._feedItems$.next(newItems);
-        this._hasMore$.next(page.hasMore);
+        this._hasMore$.next(page.ok && page.value.hasMore);
         this._currentPage++;
         this._loading$.next(false);
       });
