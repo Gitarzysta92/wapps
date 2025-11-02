@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
-import { SearchResultGroupVM, SearchResultVM } from '@ui/search-results';
 import { AddTypeToArray, Result } from "@standard";
+import { DiscoverySearchResultDto, DiscoverySearchResultGroupDto } from "@domains/discovery";
 
 export interface IMultiSearchState {
   queryParamMap$: Observable<{ [key: string]: string }>;
@@ -14,10 +14,10 @@ export interface IMultiSearchResultsProvider {
 }
 
 
-type MultiSearchResultGroupVM = Omit<SearchResultGroupVM, 'entries'> &
-{ entries: AddTypeToArray<SearchResultGroupVM['entries'], { link: string }> }
+type MultiSearchResultGroupVM = Omit<DiscoverySearchResultGroupDto, 'entries'> &
+{ entries: AddTypeToArray<DiscoverySearchResultGroupDto['entries'], { link: string }> }
 
 
-export type MultiSearchResultVM = Omit<SearchResultVM, 'groups'> & {
+export type MultiSearchResultVM = Omit<DiscoverySearchResultDto, 'groups'> & {
   groups: Array<MultiSearchResultGroupVM & { link: string }>
 }

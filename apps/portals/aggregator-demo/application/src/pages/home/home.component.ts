@@ -19,9 +19,10 @@ import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_MOCK_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
-import { delay, map, of, tap } from "rxjs";
+import { EntityType } from '@domains/discovery';
+import type { DiscoverySearchResultEntryDto } from '@domains/discovery';
+import { delay, of, tap } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
-import { provideTypedClass } from "@ui/misc";
 import { FILTERS } from "../../filters";
 
 type RegisteredFeedItem = Array<
@@ -114,13 +115,51 @@ type RegisteredFeedItem = Array<
     {
       provide: MULTISEARCH_RESULTS_PROVIER,
       useValue: ({
-        getRecentSearches: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as MultiSearchResultVM })
+        getRecentSearches: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
           .pipe(
-            tap(r => )
+            tap(result => {
+              if (result.ok) {
+                result.value.groups.forEach(group => {
+                  group.link = buildRoutePath(NAVIGATION.search.path, { search: group.type });
+                  group.entries.forEach(entry => {
+                    switch (group.type) {
+                      case EntityType.Application:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
+                        break;
+                      case EntityType.Article:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
+                        break;
+                      case EntityType.Suite:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
+                        break;
+                    }
+                  });
+                });
+              }
+            }),
           ),
-        search: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as MultiSearchResultVM })
+        search: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
           .pipe(
-            tap(r => ),
+            tap(result => {
+              if (result.ok) {
+                result.value.groups.forEach(group => {
+                  group.link = buildRoutePath(NAVIGATION.search.path, { search: group.type });
+                  group.entries.forEach(entry => {
+                    switch (group.type) {
+                      case EntityType.Application:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
+                        break;
+                      case EntityType.Article:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
+                        break;
+                      case EntityType.Suite:
+                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
+                        break;
+                    }
+                  });
+                });
+              }
+            }),
             delay(1000),
           )
       })
