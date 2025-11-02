@@ -1,5 +1,5 @@
 import { InjectionToken } from "@angular/core";
-import { ValidationMessages } from "./validation-messages";
+import { ValidationMessagesVM } from "./validation-messages.vm";
 
 
-export const VALIDATION_MESSAGES = new InjectionToken<ValidationMessages>('VALIDATION_MESSAGES');
+export const VALIDATION_MESSAGES = new InjectionToken<ValidationMessagesVM>('VALIDATION_MESSAGES');

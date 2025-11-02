@@ -2,7 +2,7 @@ import { ApplicationConfig } from "@angular/core";
 import { VALIDATION_MESSAGES } from "@ui/registration";
 import { REGISTRATION_HANDLER } from "./application/registration-handler.token";
 import { IdentityRegistrationApiService } from "./infrastructure/identity-registration-api.service";
-import { ValidationMessages as RegistrationValidationMessages } from "@ui/registration";
+import { ValidationMessagesVM as RegistrationValidationMessages } from "@ui/registration";
 
 
 

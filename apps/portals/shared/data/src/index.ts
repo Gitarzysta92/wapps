@@ -10,6 +10,9 @@ export * from './categories';
 // Devices data
 export * from './devices';
 
+// Discovery data
+export * from './discovery';
+
 // Feed data
 export * from './feed';
 
@@ -24,3 +27,4 @@ export * from './tags';
 
 // Validation messages
 export * from './validation-messages';
+

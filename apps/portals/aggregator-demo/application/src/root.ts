@@ -7,7 +7,6 @@ import {
   provideIdentityLoginFeature
 } from '@portals/shared/features/identity';
 import { provideIdentityManagementFeature } from '@portals/shared/features/identity';
-import { VALIDATION_MESSAGES } from './data/validation-messages';
 import { provideCategoryFeature } from '@portals/shared/features/categories';
 import { provideFilterFeature } from '@portals/shared/features/filtering';
 import { provideListingFeature } from '@portals/shared/features/listing';
@@ -22,18 +21,19 @@ import { provideOverviewFeature } from '@portals/shared/features/overview';
 import { NAVIGATION } from './navigation';
 import { APP_SHELL_STATE_PROVIDER } from './shells/app-shell/app-shell.component';
 import { GlobalStateService } from './state/global-state.service';
+import { LOGIN_VALIDATION_MESSAGES, PASSWORD_RESET_VALIDATION_MESSAGES, REGISTRATION_VALIDATION_MESSAGES } from '@portals/shared/data';
 
 
 export const APPLICATION_ROOT = mergeApplicationConfig(
     provideIdentityLoginFeature({
-      validationMessages: VALIDATION_MESSAGES
+      validationMessages: LOGIN_VALIDATION_MESSAGES
     }),
     provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
-      validationMessages: VALIDATION_MESSAGES
+      validationMessages: REGISTRATION_VALIDATION_MESSAGES
     }),
     providePasswordResetRequestFeature({
-      validationMessages: VALIDATION_MESSAGES
+      validationMessages: PASSWORD_RESET_VALIDATION_MESSAGES
     }),
     provideProfileFeature(),
     provideCategoryFeature({

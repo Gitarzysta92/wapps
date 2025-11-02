@@ -1,4 +1,4 @@
-import { ValidationMessages as RegistrationValidationMessages } from "@ui/registration";
+import { ValidationMessagesVM as RegistrationValidationMessages } from "@ui/registration";
 import { ValidationMessages as PasswordResetValidationMessages } from "@ui/password-reset";
 
 export const PASSWORD_RESET_VALIDATION_MESSAGES: PasswordResetValidationMessages = {

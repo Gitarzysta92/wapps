@@ -1,4 +1,4 @@
 export { RegistrationFormComponent } from './registration-form/registration-form.component';
-export type { ValidationMessages } from './validation-messages';
+export type { ValidationMessagesVM } from './validation-messages.vm';
 export { VALIDATION_MESSAGES } from './validation-messages.port';
 

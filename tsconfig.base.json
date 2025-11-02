@@ -62,6 +62,7 @@
       "@domains/customer/my-profile": [
         "libs/domains/customer/my-profile/src/index.ts"
       ],
+      "@domains/discovery": ["libs/domains/discovery/src/index.ts"],
       "@domains/discussion": ["libs/domains/discussion/src/index.ts"],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
       "@domains/feed": ["libs/domains/feed/src/index.ts"],

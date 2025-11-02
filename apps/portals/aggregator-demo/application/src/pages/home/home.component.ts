@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { CommonModule, NgIf } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
-import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER, MULTISEARCH_ACCEPTED_QUERY_PARAM } from '@portals/shared/features/multi-search';
+import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER, MULTISEARCH_ACCEPTED_QUERY_PARAM, MultiSearchResultVM } from '@portals/shared/features/multi-search';
 import { SearchMockDataService } from '@portals/shared/features/search';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN, ApplicationHealthFeedItemVM, ApplicationTeaserFeedItemVM, ApplicationReviewFeedItemVM, ApplicationDevLogFeedItemVM, SuiteTeaserFeedItemVM, DiscussionTopicFeedItemVM, ArticleHighlightFeedItemVM } from '@portals/shared/features/feed';
 import { HomePageStateService } from "./home-page-state.service";
@@ -18,11 +18,10 @@ import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
-import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
-import { of } from "rxjs";
+import { DISCOVERY_MOCK_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
+import { delay, map, of, tap } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { provideTypedClass } from "@ui/misc";
-import { MultiSearchService } from "@portals/shared/features/multi-search";
 import { FILTERS } from "../../filters";
 
 type RegisteredFeedItem = Array<
@@ -61,7 +60,6 @@ type RegisteredFeedItem = Array<
     SearchMockDataService,
     NewsFeedService,
     TempFeedProviderService,
-    provideTypedClass(MULTISEARCH_RESULTS_PROVIER, MultiSearchService),
     { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
     { provide: MULTISEARCH_ACCEPTED_QUERY_PARAM, useValue: FILTERS.search },
     {
@@ -111,7 +109,22 @@ type RegisteredFeedItem = Array<
           nextPage: 1
         }
       })
-    }}
+      }
+    },
+    {
+      provide: MULTISEARCH_RESULTS_PROVIER,
+      useValue: ({
+        getRecentSearches: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as MultiSearchResultVM })
+          .pipe(
+            tap(r => )
+          ),
+        search: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as MultiSearchResultVM })
+          .pipe(
+            tap(r => ),
+            delay(1000),
+          )
+      })
+    }
   ]
 })
 export class HomePageComponent {

@@ -1,4 +1,4 @@
-export type ValidationMessages = {
+export type ValidationMessagesVM = {
   nickname: {
     type: string;
     message: string;

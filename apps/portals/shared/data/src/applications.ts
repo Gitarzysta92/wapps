@@ -5,7 +5,7 @@ import { AppOwnershipDto } from "@domains/catalog/ownership";
 import { AppMonetizationDto } from "@domains/catalog/pricing";
 import { AppReferencesDto } from "@domains/catalog/references";
 
-const PHOTO_SNAP:
+export const PHOTO_SNAP:
   AppRecordDto &
   AppEstimatedUserSpanDto &
   AppCompatibilityDto &
@@ -50,7 +50,7 @@ const PHOTO_SNAP:
   },
 }
 
-const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
+export const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
   id: '8EEDE19C-22A3-4916-8C44-9F8CC391A7CC',
   slug: 'quick-task',
   name: 'Quick Task',

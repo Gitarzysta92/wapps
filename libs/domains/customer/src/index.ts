@@ -1,2 +1,2 @@
-export * from './my-profile';
-export * from './ports';
+export * from './my-profile/application/models/my-profile.dto';
+export * from './guest-profile/guest-profile.dto';
