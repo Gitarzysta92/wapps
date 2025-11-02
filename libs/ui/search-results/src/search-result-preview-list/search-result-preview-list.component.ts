@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
     TuiAvatar,
 } from '@taiga-ui/kit';
@@ -14,6 +15,7 @@ import { SearchResultGroupVM } from '../search-result.vm';
     FormsModule,
     TuiAvatar,
     TuiCell,
+    RouterLink,
   ],
   templateUrl: 'search-result-preview-list.component.html',
   styleUrl: 'search-result-preview-list.component.scss',

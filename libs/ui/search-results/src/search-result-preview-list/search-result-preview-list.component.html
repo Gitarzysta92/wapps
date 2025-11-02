@@ -3,7 +3,7 @@
     <span>{{ group.name }}</span>
     @for (entry of group.entries; track entry.id) {
       <li tuiCell>
-        <a routerLink="">
+        <a [routerLink]="entry.link">
           <tui-avatar [src]="entry.coverImageUrl" />
           <span>{{ entry.name }}</span>
         </a>  

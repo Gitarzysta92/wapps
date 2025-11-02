@@ -20,8 +20,7 @@ import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_MOCK_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 import { EntityType } from '@domains/discovery';
-import type { DiscoverySearchResultEntryDto } from '@domains/discovery';
-import { delay, of, tap } from "rxjs";
+import { delay, map, of } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { FILTERS } from "../../filters";
 
@@ -117,48 +116,98 @@ type RegisteredFeedItem = Array<
       useValue: ({
         getRecentSearches: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
           .pipe(
-            tap(result => {
+            map(result => {
               if (result.ok) {
-                result.value.groups.forEach(group => {
-                  group.link = buildRoutePath(NAVIGATION.search.path, { search: group.type });
-                  group.entries.forEach(entry => {
-                    switch (group.type) {
-                      case EntityType.Application:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
-                        break;
-                      case EntityType.Article:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
-                        break;
-                      case EntityType.Suite:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
-                        break;
-                    }
-                  });
+                const groups = result.value.groups.map((group, groupIndex) => {
+                  let groupName = 'Unknown';
+                  switch (group.type) {
+                    case EntityType.Application:
+                      groupName = 'Applications';
+                      break;
+                    case EntityType.Article:
+                      groupName = 'Articles';
+                      break;
+                    case EntityType.Suite:
+                      groupName = 'Suites';
+                      break;
+                  }
+                  return {
+                    ...group,
+                    id: groupIndex,
+                    name: groupName,
+                    link: buildRoutePath(NAVIGATION.search.path, { search: group.type }),
+                    entries: group.entries.map((entry, entryIndex) => {
+                      let entryLink = '';
+                      switch (group.type) {
+                        case EntityType.Application:
+                          entryLink = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
+                          break;
+                        case EntityType.Article:
+                          entryLink = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
+                          break;
+                        case EntityType.Suite:
+                          entryLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
+                          break;
+                      }
+                      return {
+                        ...entry,
+                        id: entryIndex,
+                        link: entryLink
+                      };
+                    })
+                  };
                 });
+                return { ok: true as const, value: { ...result.value, groups } };
               }
+              return result;
             }),
           ),
         search: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
           .pipe(
-            tap(result => {
+            map(result => {
               if (result.ok) {
-                result.value.groups.forEach(group => {
-                  group.link = buildRoutePath(NAVIGATION.search.path, { search: group.type });
-                  group.entries.forEach(entry => {
-                    switch (group.type) {
-                      case EntityType.Application:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
-                        break;
-                      case EntityType.Article:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
-                        break;
-                      case EntityType.Suite:
-                        (entry as DiscoverySearchResultEntryDto & { link: string }).link = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
-                        break;
-                    }
-                  });
+                const groups = result.value.groups.map((group, groupIndex) => {
+                  let groupName = 'Unknown';
+                  switch (group.type) {
+                    case EntityType.Application:
+                      groupName = 'Applications';
+                      break;
+                    case EntityType.Article:
+                      groupName = 'Articles';
+                      break;
+                    case EntityType.Suite:
+                      groupName = 'Suites';
+                      break;
+                  }
+                  return {
+                    ...group,
+                    id: groupIndex,
+                    name: groupName,
+                    link: buildRoutePath(NAVIGATION.search.path, { search: group.type }),
+                    entries: group.entries.map((entry, entryIndex) => {
+                      let entryLink = '';
+                      switch (group.type) {
+                        case EntityType.Application:
+                          entryLink = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
+                          break;
+                        case EntityType.Article:
+                          entryLink = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
+                          break;
+                        case EntityType.Suite:
+                          entryLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
+                          break;
+                      }
+                      return {
+                        ...entry,
+                        id: entryIndex,
+                        link: entryLink
+                      };
+                    })
+                  };
                 });
+                return { ok: true as const, value: { ...result.value, groups } };
               }
+              return result;
             }),
             delay(1000),
           )
