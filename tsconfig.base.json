@@ -71,6 +71,7 @@
         "libs/domains/identity/authentication/src/index.ts"
       ],
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
+      "@domains/publication/article": ["libs/domains/publication/article/src/index.ts"],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
       "@features/categories": [

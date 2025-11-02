@@ -4,6 +4,9 @@ export * from './test-data';
 // Applications data
 export * from './applications';
 
+// Articles data
+export * from './articles';
+
 // Categories data
 export * from './categories';
 
