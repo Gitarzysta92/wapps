@@ -52,9 +52,9 @@ export const SUITES_DATA = [
     description: 'Complete productivity tools for modern teams',
     category: 'Productivity',
     apps: [
-      { name: 'Task Manager Pro', logo: 'https://via.placeholder.com/64x64/10b981/ffffff?text=TM', description: 'Advanced task management' },
-      { name: 'Time Tracker', logo: 'https://via.placeholder.com/64x64/3b82f6/ffffff?text=TT', description: 'Time tracking and analytics' },
-      { name: 'Team Chat', logo: 'https://via.placeholder.com/64x64/8b5cf6/ffffff?text=TC', description: 'Collaborative communication' }
+      { name: 'Task Manager Pro', logo: 'https://picsum.photos/seed/tm/64/64', description: 'Advanced task management' },
+      { name: 'Time Tracker', logo: 'https://picsum.photos/seed/tt/64/64', description: 'Time tracking and analytics' },
+      { name: 'Team Chat', logo: 'https://picsum.photos/seed/tc/64/64', description: 'Collaborative communication' }
     ]
   },
   {
@@ -62,9 +62,9 @@ export const SUITES_DATA = [
     description: 'Essential tools for software developers',
     category: 'Development',
     apps: [
-      { name: 'Code Editor', logo: 'https://via.placeholder.com/64x64/ef4444/ffffff?text=CE', description: 'Advanced code editing' },
-      { name: 'Git Manager', logo: 'https://via.placeholder.com/64x64/f59e0b/ffffff?text=GM', description: 'Git repository management' },
-      { name: 'API Tester', logo: 'https://via.placeholder.com/64x64/06b6d4/ffffff?text=AT', description: 'API testing and debugging' }
+      { name: 'Code Editor', logo: 'https://picsum.photos/seed/ce/64/64', description: 'Advanced code editing' },
+      { name: 'Git Manager', logo: 'https://picsum.photos/seed/gm/64/64', description: 'Git repository management' },
+      { name: 'API Tester', logo: 'https://picsum.photos/seed/at/64/64', description: 'API testing and debugging' }
     ]
   },
   {
@@ -72,9 +72,9 @@ export const SUITES_DATA = [
     description: 'Professional design tools for creatives',
     category: 'Design',
     apps: [
-      { name: 'Vector Designer', logo: 'https://via.placeholder.com/64x64/ec4899/ffffff?text=VD', description: 'Vector graphics creation' },
-      { name: 'Photo Editor', logo: 'https://via.placeholder.com/64x64/14b8a6/ffffff?text=PE', description: 'Professional photo editing' },
-      { name: 'UI Prototyper', logo: 'https://via.placeholder.com/64x64/8b5cf6/ffffff?text=UP', description: 'Interactive UI prototyping' }
+      { name: 'Vector Designer', logo: 'https://picsum.photos/seed/vd/64/64', description: 'Vector graphics creation' },
+      { name: 'Photo Editor', logo: 'https://picsum.photos/seed/pe/64/64', description: 'Professional photo editing' },
+      { name: 'UI Prototyper', logo: 'https://picsum.photos/seed/up/64/64', description: 'Interactive UI prototyping' }
     ]
   },
   {
@@ -82,9 +82,9 @@ export const SUITES_DATA = [
     description: 'Data analysis and visualization tools',
     category: 'Analytics',
     apps: [
-      { name: 'Data Explorer', logo: 'https://via.placeholder.com/64x64/3b82f6/ffffff?text=DE', description: 'Data exploration and analysis' },
-      { name: 'Chart Builder', logo: 'https://via.placeholder.com/64x64/10b981/ffffff?text=CB', description: 'Interactive chart creation' },
-      { name: 'Report Generator', logo: 'https://via.placeholder.com/64x64/f59e0b/ffffff?text=RG', description: 'Automated report generation' }
+      { name: 'Data Explorer', logo: 'https://picsum.photos/seed/de/64/64', description: 'Data exploration and analysis' },
+      { name: 'Chart Builder', logo: 'https://picsum.photos/seed/cb/64/64', description: 'Interactive chart creation' },
+      { name: 'Report Generator', logo: 'https://picsum.photos/seed/rg/64/64', description: 'Automated report generation' }
     ]
   }
 ];

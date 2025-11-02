@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { TuiIcon } from '@taiga-ui/core';
 import { StatusBannerComponent } from '@ui/status-banner';
 import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
 import { NoticesSectionComponent, Notice } from '@ui/notices-section';
@@ -13,14 +12,8 @@ import { AppRecordDto } from '@domains/catalog/record';
   selector: 'app-application-health-page',
   standalone: true,
   imports: [
-    AsyncPipe,
-    DecimalPipe,
     NgFor,
-    TuiButton,
     TuiIcon,
-    TuiLink,
-    TuiAvatar,
-    TuiBadge,
     StatusBannerComponent,
     ServiceStatusItemComponent,
     NoticesSectionComponent

@@ -1,0 +1,16 @@
+@for (group of result(); track group.name) {
+  <li>
+    <span>{{ group.name }}</span>
+    @for (entry of group.entries; track entry.id) {
+      <li tuiCell>
+        <a routerLink="">
+          <tui-avatar [src]="entry.coverImageUrl" />
+          <span>{{ entry.name }}</span>
+        </a>  
+      </li>
+    } 
+  </li>
+} 
+@empty {
+  <li>There are no items.</li>
+}

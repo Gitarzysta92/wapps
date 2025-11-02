@@ -12,7 +12,7 @@ export class ProfileApiServiceAdapter implements IProfileApiService {
       id: id,
       name: "Default User",
       email: "user@example.com",
-      avatarUrl: "https://via.placeholder.com/150"
+      avatarUrl: "https://picsum.photos/seed/avatar/150/150"
     });
   }
 

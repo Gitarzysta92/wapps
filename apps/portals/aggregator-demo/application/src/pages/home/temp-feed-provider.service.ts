@@ -184,7 +184,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
       author: article.author,
       category: article.category,
       coverImage: {
-        url: 'https://via.placeholder.com/400x200/4f46e5/ffffff?text=Featured+Article',
+        url: 'https://picsum.photos/seed/article/400/200',
         alt: article.title
       }
     };

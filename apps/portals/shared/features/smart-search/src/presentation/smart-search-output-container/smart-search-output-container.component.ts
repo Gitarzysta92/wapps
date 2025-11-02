@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, Input } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
 import { first, map, of, switchMap, tap, Subject, takeUntil, from } from "rxjs";
-import { FullSearchRedirectComponent, SearchResultList, SearchResultListSkeleton } from "@ui/search-results";
+import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton } from "@ui/search-results";
 import { SMART_SEARCH_STATE_PROVIDER, SMART_SEARCH_CONFIG, SMART_SEARCH_RESULTS_PROVIDER } from "../../application/smart-search.constants";
 import { ISmartSearchResult } from "../../smart-search.interface";
 
@@ -16,7 +16,7 @@ import { ISmartSearchResult } from "../../smart-search.interface";
     CommonModule,
     FullSearchRedirectComponent,
     SearchResultListSkeleton,
-    SearchResultList,
+    SearchResultPreviewList,
     TuiLoader,
   ],
 })

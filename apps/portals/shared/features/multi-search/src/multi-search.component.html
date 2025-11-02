@@ -14,43 +14,23 @@
         @if (loadingResults) {
           <ul search-result-list-skeleton></ul>
         }
-        @else if (searchResult && searchResult.groups.length > 0) {
+        @else if (searchResult && searchResult.groups && searchResult.groups.length > 0) {
           <a [full-search-redirect]="searchResult.itemsNumber"></a>
-          <ul [search-result-list]="searchResult.groups"></ul>
+          <ul [search-result-preview-list]="searchResult.groups"></ul>
         }
         @else {
-          No results
+          <p>No results</p>
         }
       }
       @else {   
-        Recent searches:
-        <ul [search-result-list]="recentSearches.groups"></ul>
+        @let recentSearches = recentSearches$ | async;
+        @if (recentSearches && recentSearches.groups && recentSearches.groups.length > 0) {
+          Recent searches:
+          <ul [search-result-preview-list]="recentSearches.groups"></ul>
+        } @else {
+          <p>No recent searches</p>
+        }
       }
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-<!-- <div *ngFor="let record of searchResult">
-  <div class="dropdown">
-    asdasdasd
-    <tui-avatar
-        size="l"
-        [src]="avatarUrl"
-    />
-    <div class="text">
-        <div class="label">Taiga UI developer</div>
-        <div class="name">Alex Inkin</div>
-        <div class="account">a.inkin</div>
-    </div>
-  </div>
-</div> -->

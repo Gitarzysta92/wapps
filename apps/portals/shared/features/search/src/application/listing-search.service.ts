@@ -12,7 +12,7 @@ export class ListingSearchService {
   private readonly _mockDataService = inject(SearchMockDataService);
 
   search(term: string): Observable<SearchResultDto> {
-    console.log(term)
+
     return of(this._mockDataService.getAppListingSearchRecords()).pipe(delay(3000))
   }
 

@@ -16,10 +16,10 @@ export class StatusBannerComponent {
 
   getStatusIcon(): string {
     switch (this.status) {
-      case 'operational': return 'tuiIconCheckCircle';
-      case 'degraded': return 'tuiIconAlertTriangle';
-      case 'outage': return 'tuiIconXCircle';
-      default: return 'tuiIconCheckCircle';
+      case 'operational': return '@tui.check-circle';
+      case 'degraded': return '@tui.alert-triangle';
+      case 'outage': return '@tui.x-circle';
+      default: return '@tui.check-circle';
     }
   }
 }

@@ -7,7 +7,7 @@
       }
       @else if (searchResult && searchResult.groups && searchResult.groups.length > 0) {
         <a [full-search-redirect]="searchResult.itemsNumber || 0"></a>
-        <ul [search-result-list]="searchResult.groups"></ul>
+        <ul [search-result-preview-list]="searchResult.groups"></ul>
         
         @if (searchResult.suggestions && searchResult.suggestions.length > 0) {
           <div class="smart-suggestions">
@@ -64,12 +64,12 @@
         
         @if (smartRecommendations && smartRecommendations.groups && smartRecommendations.groups.length > 0) {
           <h4>Smart Recommendations:</h4>
-          <ul [search-result-list]="smartRecommendations.groups"></ul>
+          <ul [search-result-preview-list]="smartRecommendations.groups"></ul>
         }
         
         <div class="recent-searches">
           <h4>Recent searches:</h4>
-          <ul [search-result-list]="recentSearches"></ul>
+          <ul [search-result-preview-list]="recentSearches"></ul>
         </div>
       </div>
     }

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { NgIf } from '@angular/common';
 import type { CoverImageDto } from './cover-image.dto';
 
 @Component({
@@ -7,7 +6,6 @@ import type { CoverImageDto } from './cover-image.dto';
   templateUrl: './cover-image.component.html',
   styleUrl: './cover-image.component.scss',
   standalone: true,
-  imports: [NgIf]
 })
 export class CoverImageComponent {
   @Input() image?: CoverImageDto;

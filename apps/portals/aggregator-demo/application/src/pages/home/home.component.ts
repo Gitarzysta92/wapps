@@ -21,6 +21,8 @@ import { NAVIGATION } from "../../navigation";
 import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 import { of } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
+import { provideTypedClass } from "@ui/misc";
+import { MultiSearchService } from "@portals/shared/features/multi-search";
 
 type RegisteredFeedItem = Array<
   ApplicationHealthFeedItemVM & { type: typeof APPLICATION_HEALTH_FEED_ITEM_SELECTOR } |
@@ -58,7 +60,7 @@ type RegisteredFeedItem = Array<
     SearchMockDataService,
     NewsFeedService,
     TempFeedProviderService,
-    { provide: MULTISEARCH_RESULTS_PROVIER, useClass: ListingSearchService },
+    provideTypedClass(MULTISEARCH_RESULTS_PROVIER, MultiSearchService),
     { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
     {
       provide: FEED_PROVIDER_TOKEN, useValue: {

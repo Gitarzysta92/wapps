@@ -1,35 +1,23 @@
-import { ParamMap } from "@angular/router";
 import { Observable } from "rxjs";
+import { SearchResultGroupVM, SearchResultVM } from '@ui/search-results';
+import { AddTypeToArray, Result } from "@standard";
 
 export interface IMultiSearchState {
-  queryParamMap$: Observable<ParamMap>;
+  queryParamMap$: Observable<{ [key: string]: string }>;
   setQueryParams(p: { [key: string]: string }): void;
 }
 
 
 export interface IMultiSearchResultsProvider {
-  getRecentSearches(): IMultiSearchResult;
-  search(p: string): Observable<IMultiSearchResult>;
-  buildSearchString(p: ParamMap): string | null
+  getRecentSearches(): Observable<Result<MultiSearchResultVM>>;
+  search(p: { [key: string]: string }): Observable<Result<MultiSearchResultVM>>;
 }
 
 
-export interface IMultiSearchResult {
-  itemsNumber: number;
-  groups: IMultiSearchResultGroup[];
-}
+type MultiSearchResultGroupVM = Omit<SearchResultGroupVM, 'entries'> &
+{ entries: AddTypeToArray<SearchResultGroupVM['entries'], { link: string }> }
 
 
-export interface IMultiSearchResultGroup {
-  id: number;
-  name: string;
-  entries: IMultiSearchResultEntry[];
-}
-
-
-export interface IMultiSearchResultEntry {
-  id: number;
-  groupId: number;
-  name: string;
-  description: string;
+export type MultiSearchResultVM = Omit<SearchResultVM, 'groups'> & {
+  groups: Array<MultiSearchResultGroupVM & { link: string }>
 }

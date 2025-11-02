@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { ListingSearchService, SearchMockDataService } from "@portals/shared/features/search";
-import { StickyElementDirective } from "@ui/misc";
+import { provideTypedClass, StickyElementDirective } from "@ui/misc";
 import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "@portals/shared/features/multi-search";
 import { HomePageStateService } from "./home-page-state.service";
 
@@ -16,8 +16,8 @@ import { HomePageStateService } from "./home-page-state.service";
   ],
   providers: [
     SearchMockDataService,
-    { provide: MULTISEARCH_RESULTS_PROVIER, useClass: ListingSearchService },
-    { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService }
+    provideTypedClass(MULTISEARCH_RESULTS_PROVIER, ListingSearchService),
+    provideTypedClass(MULTISEARCH_STATE_PROVIDER, HomePageStateService)
   ]
 })
 export class HomePageComponent {}

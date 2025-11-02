@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, DecimalPipe, NgFor } from '@angular/common';
+import { AsyncPipe, NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiChip } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({
@@ -11,13 +11,9 @@ import { AppRecordDto } from '@domains/catalog/record';
   standalone: true,
   imports: [
     AsyncPipe,
-    DecimalPipe,
     NgFor,
     TuiButton,
     TuiIcon,
-    TuiLink,
-    TuiAvatar,
-    TuiBadge,
     TuiChip
   ],
   templateUrl: './application-devlog-page.component.html',
