@@ -29,7 +29,6 @@ export class CommonSidebarPartialComponent {
   // TODO: excessive memory allocation,
   // by creating a new object for each call
   public getRouterLinkActiveOptions(path: string): IsActiveMatchOptions {
-    console.log(path);
     return { 
       paths: path === '' ? 'exact' : 'subset',
       queryParams: 'ignored',

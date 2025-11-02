@@ -1,7 +1,7 @@
 <div class="search-container" [class.focused]="isFocused">
   <search-bar
     [initialValue]="initialValue$ | async"
-    (onSearch)="state.setQueryParams($event)"
+    (onSearch)="onSearchChange($event)"
     (onFocus)="onFocusChange($event)">
     <tui-loader *ngIf="loadingResults && isFocused"/>
   </search-bar>

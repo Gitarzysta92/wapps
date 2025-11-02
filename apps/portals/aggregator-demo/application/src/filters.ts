@@ -1,10 +1,11 @@
 export const FILTERS = {
-  platform: "platform",
-  category: "category",
-  tag: "tag",
-  page: "page",
-  device: "device",
-  monetization: "monetization",
-  social: "social",
-  estimatedUsers: "estimated-users"
+  platform: "platform" as const,
+  category: "category" as const,
+  tag: "tag" as const,
+  page: "page" as const,
+  device: "device" as const,
+  monetization: "monetization" as const,
+  social: "social" as const,
+  estimatedUsers: "estimated-users" as const,
+  search: "search" as const
 }

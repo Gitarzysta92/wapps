@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angul
 import { TuiLoader } from "@taiga-ui/core";
 import { first, map, of, startWith, switchMap, tap } from "rxjs";
 import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton } from "@ui/search-results";
-import { MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
+import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
 
 @Component({
@@ -25,12 +25,14 @@ export class MultiSearchComponent {
 
   public readonly state = inject(MULTISEARCH_STATE_PROVIDER);
   private readonly _searchResultsProvider = inject(MULTISEARCH_RESULTS_PROVIER);
+  private readonly _acceptedQueryParam = inject(MULTISEARCH_ACCEPTED_QUERY_PARAM);
 
   public isFocused = false;
   public loadingResults = false;
   
   public readonly searchResults$ = this.state.queryParamMap$.pipe(
     tap(p => this.loadingResults = !!p),
+    map(p => ({ [this._acceptedQueryParam]: p[this._acceptedQueryParam] })),
     switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [] } })),
     map(r => r.ok ? r.value : { itemsNumber: 0, groups: [] }),
     startWith({ itemsNumber: 0, groups: [] }),
@@ -57,6 +59,10 @@ export class MultiSearchComponent {
     this.isFocused = false;
   }
 
+  public onSearchChange(search: string | null): void {
+    this.state.setQueryParams({ [this._acceptedQueryParam]: search });
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
@@ -68,7 +74,7 @@ export class MultiSearchComponent {
   }
 
   private _mapToSearchString(p: { [key: string]: string; }): string {
-    return Object.entries(p).map(([key, value]) => `${key}:${value}`).join(' ');
+    return p[this._acceptedQueryParam] ?? '';
   }
 
 }

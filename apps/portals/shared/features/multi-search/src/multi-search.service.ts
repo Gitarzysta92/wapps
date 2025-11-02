@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
-import { ParamMap } from "@angular/router";
 import { IMultiSearchResultsProvider, MultiSearchResultVM, } from "./multi-search.interface";
 import { Result } from "@standard";
 
@@ -65,10 +64,7 @@ export class MultiSearchService implements IMultiSearchResultsProvider {
   }
 
   getRecentSearches(): Observable<Result<MultiSearchResultVM>> {
-    return of({ ok: true as const, value: this._mockData }).pipe(delay(1000));
+    return of({ ok: true as const, value: this._mockData })
   }
 
-  buildSearchString(p: ParamMap): string | null {
-    return p.get('phrase');
-  }
 }

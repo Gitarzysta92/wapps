@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { IMultiSearchState } from "@portals/shared/features/multi-search";
 import { ActivatedRoute, Router } from "@angular/router";
 import { map } from "rxjs";
+import { FILTERS } from "../../filters";
 
 
 @Injectable()
@@ -25,11 +26,12 @@ export class HomePageStateService implements IMultiSearchState {
   );
   
   public setQueryParams(p: { [key: symbol]: string; }): void {
-    if ('phrase' in p && typeof p.phrase === 'string') {
-      if (!p.phrase || p.phrase.length <= 0) {
+    console.log(p);
+    if (FILTERS.search in p && typeof p.search === 'string') {
+      if (!p.search || p.search.length <= 0) {
         this._router.navigate([], { queryParams: {}})
       } else {
-        this._router.navigate([], { queryParams: { pharse: p.phrase }})
+        this._router.navigate([], { queryParams: { [FILTERS.search]: p.search }})
       }
     }
   }

@@ -2,8 +2,8 @@ import { Component } from "@angular/core";
 import { CommonModule, NgIf } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
-import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from '@portals/shared/features/multi-search';
-import { SearchMockDataService, ListingSearchService } from '@portals/shared/features/search';
+import { MultiSearchComponent, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER, MULTISEARCH_ACCEPTED_QUERY_PARAM } from '@portals/shared/features/multi-search';
+import { SearchMockDataService } from '@portals/shared/features/search';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN, ApplicationHealthFeedItemVM, ApplicationTeaserFeedItemVM, ApplicationReviewFeedItemVM, ApplicationDevLogFeedItemVM, SuiteTeaserFeedItemVM, DiscussionTopicFeedItemVM, ArticleHighlightFeedItemVM } from '@portals/shared/features/feed';
 import { HomePageStateService } from "./home-page-state.service";
 import { TempFeedProviderService } from "./temp-feed-provider.service";
@@ -23,6 +23,7 @@ import { of } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { provideTypedClass } from "@ui/misc";
 import { MultiSearchService } from "@portals/shared/features/multi-search";
+import { FILTERS } from "../../filters";
 
 type RegisteredFeedItem = Array<
   ApplicationHealthFeedItemVM & { type: typeof APPLICATION_HEALTH_FEED_ITEM_SELECTOR } |
@@ -62,6 +63,7 @@ type RegisteredFeedItem = Array<
     TempFeedProviderService,
     provideTypedClass(MULTISEARCH_RESULTS_PROVIER, MultiSearchService),
     { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
+    { provide: MULTISEARCH_ACCEPTED_QUERY_PARAM, useValue: FILTERS.search },
     {
       provide: FEED_PROVIDER_TOKEN, useValue: {
       getFeedPage: () => of({

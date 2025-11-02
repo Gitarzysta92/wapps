@@ -3,3 +3,4 @@ import { IMultiSearchResultsProvider, IMultiSearchState } from "./multi-search.i
 
 export const MULTISEARCH_RESULTS_PROVIER = new InjectionToken<IMultiSearchResultsProvider>('MULTISEARCH_RESULTS_PROVIER');
 export const MULTISEARCH_STATE_PROVIDER = new InjectionToken<IMultiSearchState>('MULTISEARCH_STATE_PROVIDER');
+export const MULTISEARCH_ACCEPTED_QUERY_PARAM = new InjectionToken<string>('MULTISEARCH_ACCEPTED_QUERY_PARAMS');
