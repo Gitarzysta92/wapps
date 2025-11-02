@@ -10,7 +10,7 @@ import { FILTERS } from "./filters";
 import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, HOME_VIEW_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
-import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
+import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
 import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
@@ -36,7 +36,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.home ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -316,7 +316,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -348,7 +348,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -388,7 +388,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.suite ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -419,7 +419,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.createSuite ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -452,7 +452,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -484,7 +484,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -524,7 +524,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.articles, NAVIGATION.article ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -579,7 +579,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.applications, NAVIGATION.registerApplication ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -656,7 +656,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -686,7 +686,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag, NAVIGATION.searchByTag ],
           header: null,
           leftSidebar: {
-            component: LeftSidebarPartialComponent,
+            component: CommonSidebarPartialComponent,
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {

@@ -61,11 +61,11 @@ export class MultiSearchService implements IMultiSearchResultsProvider {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   search(_term: { [key: string]: string }): Observable<Result<MultiSearchResultVM>> {
-    return of({ ok: true as const, value: this._mockData }).pipe(delay(3000));
+    return of({ ok: true as const, value: this._mockData }).pipe(delay(1000));
   }
 
   getRecentSearches(): Observable<Result<MultiSearchResultVM>> {
-    return of({ ok: true as const, value: this._mockData }).pipe(delay(3000));
+    return of({ ok: true as const, value: this._mockData }).pipe(delay(1000));
   }
 
   buildSearchString(p: ParamMap): string | null {
