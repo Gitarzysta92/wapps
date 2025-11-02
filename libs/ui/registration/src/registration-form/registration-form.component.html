@@ -5,7 +5,7 @@
     <tui-textfield
       tuiHintContent="Type 5 letters or more"
       [tuiTextfieldCleaner]="true"
-      tuiTextfieldIconLeft="@tui.user">
+      iconStart="@tui.user">
       <input tuiTextfield type="text" formControlName="nickname" />
       <ng-container *ngIf="registrationForm.get('nickname')?.valid">
         <ng-container *ngTemplateOutlet="success"></ng-container>
@@ -19,11 +19,11 @@
   </div>
 
   <div class="form-field">
+    Email
     <tui-textfield
       tuiHintContent="Type 8 letters or more"
       [tuiTextfieldCleaner]="true"
-      tuiTextfieldIconLeft="@tui.mail">
-      Email
+      iconStart="@tui.mail">
       <input tuiTextfield type="text" formControlName="email" />
       <ng-container *ngIf="registrationForm.get('email')?.valid">
         <ng-container *ngTemplateOutlet="success"></ng-container>
@@ -37,12 +37,11 @@
   </div>
 
   <div class="form-field">
+    Password
     <tui-textfield
       tuiHintContent="Type 5 letters or more"
-      formControlName="password"
-      type="password"
-      tuiTextfieldIconLeft="@tui.lock">
-      Password
+      iconStart="@tui.lock">
+      <input tuiTextfield type="password" formControlName="password" />
       <tui-icon tuiPassword />
     </tui-textfield>
     <input-validation 
@@ -54,10 +53,8 @@
 
   <div class="form-field">
     <tui-textfield
-      formControlName="passwordConfirmation"
-      type="password"
-      tuiTextfieldIconLeft="@tui.lock">
-      Password confirmation
+      iconStart="@tui.lock">
+      <input tuiTextfield type="password" formControlName="passwordConfirmation" />
     </tui-textfield>
     <input-validation 
       class="error-container" 

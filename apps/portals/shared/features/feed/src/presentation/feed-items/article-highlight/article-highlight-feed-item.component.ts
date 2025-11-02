@@ -8,6 +8,10 @@ import type { ArticleHighlightFeedItem } from '@domains/feed';
 
 export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item';
 
+export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> & {
+  articleLink: string;
+}
+
 @Component({
   selector: ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
   templateUrl: './article-highlight-feed-item.component.html',

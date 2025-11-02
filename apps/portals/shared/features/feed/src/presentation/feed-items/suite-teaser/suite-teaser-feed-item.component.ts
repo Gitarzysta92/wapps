@@ -8,6 +8,10 @@ import type { SuiteTeaserFeedItem, SuiteApp } from '@domains/feed';
 
 export const SUITE_TEASER_FEED_ITEM_SELECTOR = 'suite-teaser-feed-item';
 
+export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
+  suiteLink: string;
+}
+
 @Component({
   selector: SUITE_TEASER_FEED_ITEM_SELECTOR,
   templateUrl: './suite-teaser-feed-item.component.html',

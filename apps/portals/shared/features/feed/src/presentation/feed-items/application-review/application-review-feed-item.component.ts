@@ -10,6 +10,10 @@ import type { ApplicationReviewFeedItem } from '@domains/feed';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
+export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never> & {
+  appLink: string;
+}
+
 @Component({
   selector: APPLICATION_REVIEW_FEED_ITEM_SELECTOR,
   templateUrl: './application-review-feed-item.component.html',

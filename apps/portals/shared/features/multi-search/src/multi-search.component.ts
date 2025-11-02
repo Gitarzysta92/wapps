@@ -25,8 +25,8 @@ export class MultiSearchComponent {
   public readonly state = inject(MULTISEARCH_STATE_PROVIDER);
   private readonly _searchResultsProvider = inject(MULTISEARCH_RESULTS_PROVIER);
 
-  public isFocused: boolean = false;
-  public loadingResults: boolean = false;
+  public isFocused = false;
+  public loadingResults = false;
 
   private readonly _searchPharse = this.state.queryParamMap$.pipe(
     map(p => this._searchResultsProvider.buildSearchString(p)))

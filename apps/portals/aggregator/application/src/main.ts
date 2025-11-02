@@ -3,7 +3,6 @@ import { createAppConfig } from './app-config';
 import { mergeApplicationConfig } from '@angular/core';
 // import { appConfigCSR } from './app-config.csr';
 import { routes } from './routes';
-import { AppRootComponent } from './components/app-root.component';
 import { provideProfileFeature } from '@portals/shared/features/profile';
 import {
   provideIdentityRegistrationFeature,
@@ -23,6 +22,7 @@ import { provideTagsFeature } from '@portals/shared/features/tags';
 import { MY_PROFILE_DEFAULT } from './data/my-profile-default';
 import { FILTERS } from './filters';
 import { NAVIGATION } from './navigation';
+import { AppRootComponent } from './app-root.component';
 
 
 
@@ -32,7 +32,9 @@ bootstrapApplication(AppRootComponent,
     createAppConfig({
       routes: routes
     }),
-    provideIdentityLoginFeature(),
+    provideIdentityLoginFeature({
+      validationMessages: VALIDATION_MESSAGES
+    }),
     provideIdentityRegistrationFeature({
       validationMessages: VALIDATION_MESSAGES
     }),

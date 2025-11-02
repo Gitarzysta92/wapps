@@ -198,6 +198,30 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.applicationTopics,
 ]
 
+export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
+  NAVIGATION.myProfile,
+  NAVIGATION.myfavourites,
+  NAVIGATION.mySuites,
+  NAVIGATION.myApplications,
+  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.settings,
+]
+
+export const AUTHENTICATED_USER_SECONDARY_NAVIGATION = [
+  NAVIGATION.myApplications,
+  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.settings,
+  NAVIGATION.categories,
+  NAVIGATION.tags,
+]
+
+export const UNAUTHENTICATED_USER_MAIN_NAVIGATION = [
+  NAVIGATION.myfavourites,
+]
+
+export const UNAUTHENTICATED_USER_SECONDARY_NAVIGATION = [
+  NAVIGATION.settings,
+]
 
 export const FOOTER_MAIN_NAVIGATION = [
   NAVIGATION.home,

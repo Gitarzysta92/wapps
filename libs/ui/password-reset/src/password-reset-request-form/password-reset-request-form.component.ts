@@ -1,6 +1,6 @@
 import { Component, inject, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
-import { TuiTextfieldComponent, TuiTextfieldOptionsDirective } from "@taiga-ui/core";
+import { TuiTextfield, TuiTextfieldComponent, TuiTextfieldOptionsDirective } from "@taiga-ui/core";
 import { InputValidationComponent } from "@ui/form";
 import { TuiHint, TuiIcon } from "@taiga-ui/core";
 import { NgIf, NgTemplateOutlet } from "@angular/common";
@@ -17,6 +17,7 @@ import { VALIDATION_MESSAGES } from "../validation-messages.port";
     TuiTextfieldComponent,
     TuiIcon,
     TuiHint,
+    TuiTextfield,
     InputValidationComponent,
     TuiTextfieldOptionsDirective,
     NgTemplateOutlet,

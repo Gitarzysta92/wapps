@@ -9,6 +9,10 @@ import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
+export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never> & {
+  appLink: string;
+}
+
 @Component({
   selector: APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR,
   templateUrl: './application-dev-log-feed-item.component.html',

@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken } from '@angular/core';
 import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
-import { CommonModule, NgComponentOutlet } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { filter, startWith, map, distinctUntilChanged, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
+import { SafeComponentOutletDirective } from '@ui/misc';
 
 export interface IAppShellRouteData {
   header: {
@@ -51,7 +52,7 @@ export const APP_SHELL_STATE_PROVIDER = new InjectionToken<IAppShellState>('APP_
     RouterModule,
     CommonModule,
     AsyncPipe,
-    NgComponentOutlet,
+    SafeComponentOutletDirective,
     AnimatedBackgroundComponent,
   ],
   hostDirectives: [

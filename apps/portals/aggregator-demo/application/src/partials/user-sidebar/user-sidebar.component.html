@@ -1,4 +1,6 @@
 @let isAuthenticated = authService?.isAuthenticated$ | async;
+@let primaryNav = getCurrentNavigationPrimary(isAuthenticated ?? false);
+@let secondaryNav = getCurrentNavigationSecondary(isAuthenticated ?? false);
 
 <!-- User Profile Section -->
 <section class="user-profile_section">
@@ -43,7 +45,7 @@
 <nav class="navigation_section">
   @if (!isAuthenticated) {
     <ul>
-      @for (item of navigationPrimary; track item.path) {
+      @for (item of primaryNav; track item.path) {
         <li>
           <button
           appearance="flat"
@@ -62,7 +64,7 @@
   }
   @else {
   <ul>
-    @for (item of navigationPrimary; track item.path) {
+    @for (item of primaryNav; track item.path) {
       <li>
         <a
           [routerLink]="['/', item.path]"
@@ -88,7 +90,7 @@
 <nav class="navigation_section">
   @if (!isAuthenticated) {
     <ul>
-      @for (item of navigationSecondary; track item.path) {
+      @for (item of secondaryNav; track item.path) {
         <li>
           <a
             [routerLink]="['/', item.path]"
@@ -106,7 +108,7 @@
     </ul>
   } @else {
     <ul>
-      @for (item of navigationSecondary; track item.path) {
+      @for (item of secondaryNav; track item.path) {
         <li>
           <a
             [routerLink]="['/', item.path]"
@@ -129,8 +131,6 @@
 
 
 
-
-
 <!-- Theme Section -->
 <div class="theme_section">
   <theme-toggle></theme-toggle> 
@@ -138,3 +138,4 @@
     <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
   </span>
 </div>
+

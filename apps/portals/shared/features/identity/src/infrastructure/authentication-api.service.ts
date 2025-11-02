@@ -11,6 +11,7 @@ export class AuthenticationApiService implements IAuthenticationHandler {
   
   public authenticate(c: { login: string, password: string }): Observable<Result<string, Error>> {
     if (c.password === 'test123') {
+      console.log('authenticate', c);
       return of({
         ok: true as const,
         value: "87C230D1-43B9-4F22-88E6-8BCECCBC9F20",

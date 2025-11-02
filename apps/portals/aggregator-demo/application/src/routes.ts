@@ -7,12 +7,12 @@ import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
-import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, HOME_VIEW_MAIN_NAVIGATION, NAVIGATION } from "./navigation";
+import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, HOME_VIEW_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
 import { LeftSidebarPartialComponent } from "./partials/left-sidebar/left-sidebar.component";
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
-import { RightSidebarPartialComponent } from "./partials/right-sidebar/right-sidebar.component";
+import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
@@ -40,7 +40,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -69,7 +75,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -93,7 +105,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -117,7 +135,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -141,7 +165,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -165,7 +195,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -189,7 +225,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -213,7 +255,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -237,7 +285,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -266,7 +320,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -292,7 +352,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -326,7 +392,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -351,7 +423,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -378,7 +456,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -404,7 +488,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -438,7 +528,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -487,7 +583,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -528,7 +630,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -552,7 +660,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -576,7 +690,13 @@ export const routes: Routes = [
             inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -599,7 +719,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -623,7 +749,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,
@@ -647,7 +779,13 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: RightSidebarPartialComponent,
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
           },
           footer: {
             component: FooterPartialComponent,

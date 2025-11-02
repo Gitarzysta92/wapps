@@ -1,8 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { NavigationDeclaration } from '@ui/navigation';
+import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 
 @Component({
   selector: 'left-sidebar',
@@ -13,13 +14,15 @@ import { NavigationDeclaration } from '@ui/navigation';
     CommonModule,
     RouterModule,
     TuiButton,
-    TuiIcon
+    TuiIcon,
+    TuiAvatar,
+    TuiIconPipe
   ]
 })
 export class LeftSidebarPartialComponent {
 
   @Input() isExpanded = false;
-  @Input() navigation: NavigationDeclaration[] = [];
+  @Input() navigation: NavigationDeclarationDto[] = [];
   @Output() toggleExpansion = new EventEmitter<void>();
 
   public getRouterLinkActiveOptions(path: string): { exact: boolean } {

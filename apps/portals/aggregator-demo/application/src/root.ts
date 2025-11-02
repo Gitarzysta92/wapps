@@ -25,7 +25,9 @@ import { GlobalStateService } from './state/global-state.service';
 
 
 export const APPLICATION_ROOT = mergeApplicationConfig(
-    provideIdentityLoginFeature(),
+    provideIdentityLoginFeature({
+      validationMessages: VALIDATION_MESSAGES
+    }),
     provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
       validationMessages: VALIDATION_MESSAGES

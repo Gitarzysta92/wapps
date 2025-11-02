@@ -9,6 +9,11 @@ import type { DiscussionTopicFeedItem } from '@domains/feed';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
 
+export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
+  appLink: string;
+  topicLink: string;
+}
+
 @Component({
   selector: DISCUSSION_TOPIC_FEED_ITEM_SELECTOR,
   templateUrl: './discussion-topic-feed-item.component.html',

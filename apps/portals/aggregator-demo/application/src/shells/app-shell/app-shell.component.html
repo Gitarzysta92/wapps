@@ -3,7 +3,8 @@
 @if (headerComponent$ | async; as header) {
   <header class="container container-header">
     <ng-container 
-      *ngComponentOutlet="header.component; inputs: header.inputs">
+      [safeComponentOutlet]="header.component"
+      [safeComponentOutletInputs]="header.inputs">
     </ng-container>
   </header>  
 }
@@ -13,7 +14,8 @@
 @if (leftSidebarComponent$ | async; as leftSidebar) {
   <aside class="container sidebar left">
     <ng-container 
-      *ngComponentOutlet="leftSidebar.component; inputs: leftSidebar.inputs">
+      [safeComponentOutlet]="leftSidebar.component"
+      [safeComponentOutletInputs]="leftSidebar.inputs">
     </ng-container>
   </aside>
 }
@@ -25,7 +27,8 @@
 @if (rightSidebarComponent$ | async; as rightSidebar) {
   <aside class="container sidebar right">
     <ng-container 
-      *ngComponentOutlet="rightSidebar.component; inputs: rightSidebar.inputs">
+      [safeComponentOutlet]="rightSidebar.component"
+      [safeComponentOutletInputs]="rightSidebar.inputs">
     </ng-container>
   </aside>
 }
@@ -33,6 +36,9 @@
 
 @if (footerComponent$ | async; as footer) {
   <footer class="container container-footer">
-    <ng-container *ngComponentOutlet="footer.component; inputs: footer.inputs"></ng-container>
+    <ng-container 
+      [safeComponentOutlet]="footer.component"
+      [safeComponentOutletInputs]="footer.inputs">
+    </ng-container>
   </footer>
 }

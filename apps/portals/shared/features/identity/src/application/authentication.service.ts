@@ -13,7 +13,7 @@ export class AuthenticationService {
   public get token$(): Observable<string | null> { return this._tokenStorage.token$ }
   
   private readonly _tokenStorage = inject(AuthenticationStorage);
-  private readonly _authenticationProvider = inject(AUTHENTICATION_HANDLER);
+  private readonly _authenticationHandler = inject(AUTHENTICATION_HANDLER);
 
   public isAuthenticated$ = this._tokenStorage.token$.pipe(map(t => !!t))
 
@@ -22,8 +22,9 @@ export class AuthenticationService {
   }
 
   public authenticate(c: CredentialsDto): Observable<Result<string | null, Error>> {
-    return this._authenticationProvider.authenticate(c)
+    return this._authenticationHandler.authenticate(c)
       .pipe(tap(r => {
+        console.log('authenticate result', r);
         if (r.ok) {
           this._tokenStorage.setToken(r.value);
         }

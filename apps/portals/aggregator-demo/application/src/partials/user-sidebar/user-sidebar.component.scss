@@ -1,6 +1,7 @@
 :host {
   width: 200px;
   display: block;
+  padding-top: 100px;
 }
 
 hr {
@@ -12,7 +13,6 @@ hr {
 
 
 .user-profile_section {
-  margin-top: 100px;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -74,3 +74,4 @@ hr {
   width: 100%;
   gap: 0.5rem;
 }
+

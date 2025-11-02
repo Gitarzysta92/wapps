@@ -1,6 +1,8 @@
 :host {
   display: flex;
-  justify-content: end;
+  flex-direction: column;
+  align-items: end;
+  padding-top: 100px;
 }
 
 .sidebar-nav {

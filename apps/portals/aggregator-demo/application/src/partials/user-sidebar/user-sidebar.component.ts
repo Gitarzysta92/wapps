@@ -7,11 +7,12 @@ import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective 
 import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile';
 import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.component';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { RoutedDialogButton } from '@ui/routable-dialog';
 
 @Component({
-  selector: 'right-sidebar',
-  templateUrl: './right-sidebar.component.html',
-  styleUrl: './right-sidebar.component.scss',
+  selector: 'user-sidebar',
+  templateUrl: './user-sidebar.component.html',
+  styleUrl: './user-sidebar.component.scss',
   standalone: true,
   imports: [
     CommonModule,
@@ -20,23 +21,36 @@ import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
     TuiIcon,
     ThemeToggleComponent,
     MyProfileAvatarComponent,
-    MyProfileNameComponent
+    MyProfileNameComponent,
+    RoutedDialogButton
   ],
   hostDirectives: [
     ThemingDescriptorDirective
   ]
 })
-export class RightSidebarPartialComponent implements IAppShellSidebarComponent {
+export class UserSidebarPartialComponent implements IAppShellSidebarComponent {
 
   @Input() isExpanded = false;
   @Input() navigationPrimary: NavigationDeclarationDto[] = [];
   @Input() navigationSecondary: NavigationDeclarationDto[] = [];
+  @Input() unauthenticatedNavigationPrimary: NavigationDeclarationDto[] = [];
+  @Input() unauthenticatedNavigationSecondary: NavigationDeclarationDto[] = [];
   @Output() toggleExpansion = new EventEmitter<void>();
 
   public readonly authService = inject(AuthenticationService, { optional: true });
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
 
+  // Get current navigation based on authentication status
+  public getCurrentNavigationPrimary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {
+    return isAuthenticated ? this.navigationPrimary : this.unauthenticatedNavigationPrimary;
+  }
+
+  public getCurrentNavigationSecondary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {
+    return isAuthenticated ? this.navigationSecondary : this.unauthenticatedNavigationSecondary;
+  }
+
   public onToggleClick(): void {
     this.toggleExpansion.emit();
   }
 }
+

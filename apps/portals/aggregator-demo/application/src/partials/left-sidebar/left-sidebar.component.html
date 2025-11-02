@@ -1,6 +1,13 @@
 
+<section class="portal-logo">
+   <tui-avatar 
+    [src]="'@tui.mastercard' | tuiIcon"
+    size="xl"
+  />
+</section>
+
 <nav class="sidebar-nav">
-  @for (item of navigation; track item.id) {
+  @for (item of navigation; track item.path) {
     <a
       class="nav-item"
       tuiButton
