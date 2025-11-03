@@ -1,14 +1,27 @@
 @for (group of result(); track group.name) {
   <li>
-    <span>{{ group.name }}</span><a [routerLink]="group.link">View all</a>
+    <a class="group-header" 
+      [iconStart]="group.icon"
+      iconEnd="@tui.chevron-right" 
+      tuiLink 
+      [routerLink]="group.link">
+      <span class="group-name">{{ group.name }}</span>
+      <span>View all</span>
+    </a>
+    <ul class="result-entries">
     @for (entry of group.entries; track entry.id) {
-      <li tuiCell>
-        <a [routerLink]="entry.link">
-          <tui-avatar [src]="entry.coverImageUrl" />
-          <span>{{ entry.name }}</span>
+      <li>
+        <a
+          class="result-entry" 
+          tuiLink 
+          [routerLink]="entry.link"
+          iconEnd="@tui.chevron-right" >
+          <tui-avatar size="s" [src]="entry.coverImageUrl" />
+          <span class="entry-name">{{ entry.name }}</span>
         </a>  
       </li>
-    } 
+    }
+    </ul>
   </li>
 } 
 @empty {

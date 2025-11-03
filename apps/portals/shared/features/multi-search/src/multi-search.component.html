@@ -15,8 +15,12 @@
             <ul search-result-list-skeleton></ul>
           }
           @else if (searchResult.groups && searchResult.groups.length > 0) {
-            <a [full-search-redirect]="searchResult.itemsNumber"></a>
-            <ul [search-result-preview-list]="searchResult.groups"></ul>
+            <a class="full-search-redirect" 
+              [full-search-redirect]="searchResult.itemsNumber">
+            </a>
+            <ul class="preview-list" 
+              [search-result-preview-list]="searchResult.groups">
+            </ul>
           }
           @else {
             <p>No results</p>

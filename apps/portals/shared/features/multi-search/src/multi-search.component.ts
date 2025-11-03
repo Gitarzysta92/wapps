@@ -91,6 +91,7 @@ export class MultiSearchComponent {
           id: groupIndex,
           link: group.link,
           name: groupName,
+          icon: this._getIcon(group.type),
           entries: group.entries.map((entry, entryIndex) => ({
             id: entryIndex,
             groupId: groupIndex,
@@ -104,6 +105,7 @@ export class MultiSearchComponent {
     };
   }
 
+  //TODO: code smell
   private _getGroupName(type: EntityType): string {
     switch (type) {
       case EntityType.Application:
@@ -112,6 +114,19 @@ export class MultiSearchComponent {
         return 'Articles';
       case EntityType.Suite:
         return 'Suites';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  private _getIcon(type: EntityType): string {
+    switch (type) {
+      case EntityType.Application:
+        return '@tui.layout-grid';
+      case EntityType.Article:
+        return '@tui.newspaper';
+      case EntityType.Suite:
+        return '@tui.briefcase-business';
       default:
         return 'Unknown';
     }
