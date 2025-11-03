@@ -7,6 +7,7 @@ import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEA
 import { SearchBarComponent } from "@ui/search-bar";
 import { MultiSearchResultVM, MultiSearchRecentSearchesVM } from "./multi-search.interface";
 import { EntityType } from "@domains/discovery";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "multi-search",
@@ -22,6 +23,7 @@ import { EntityType } from "@domains/discovery";
     SearchResultPreviewList,
     RecentSearchesList,
     TuiLoader,
+    RouterLink,
   ],
 })
 export class MultiSearchComponent {
@@ -37,8 +39,8 @@ export class MultiSearchComponent {
     tap(p => this.loadingResults = !!p[this._acceptedQueryParam]),
     map(p => ({ [this._acceptedQueryParam]: p[this._acceptedQueryParam] })),
     switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [], link: "", query: {} } })),
-    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [], link: "" } as SearchResultVM),
-    startWith({ itemsNumber: 0, groups: [], link: "" } as SearchResultVM),
+    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
+    startWith({ itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
     tap(() => this.loadingResults = false)
   )
 
@@ -87,6 +89,7 @@ export class MultiSearchComponent {
     return {
       itemsNumber: result.itemsNumber,
       link: result.link,
+      query: result.query,
       groups: result.groups.map((group, groupIndex) => {
         return {
           id: groupIndex,

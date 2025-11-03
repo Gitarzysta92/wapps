@@ -166,7 +166,7 @@ type RegisteredFeedItem = Array<
           .pipe(
             map(result => {
               if (result.ok) {
-                result.value.link = NAVIGATION.search.path + buildQueryString(result.value.query);
+                result.value.link = NAVIGATION.search.path;
                 const groups = result.value.groups.map((group, groupIndex) => {
                   let groupName = 'Unknown';
                   switch (group.type) {

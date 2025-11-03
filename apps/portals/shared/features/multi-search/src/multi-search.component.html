@@ -17,7 +17,8 @@
           @else if (searchResult.groups && searchResult.groups.length > 0) {
             <a class="full-search-redirect" 
               [full-search-redirect]="searchResult.itemsNumber"
-              [link]="searchResult.link">
+              [routerLink]="searchResult.link"
+              [queryParams]="searchResult.query">
             </a>
             <ul class="preview-list" 
               [search-result-preview-list]="searchResult.groups">

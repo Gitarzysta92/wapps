@@ -1,7 +1,8 @@
 export type SearchResultVM = {
+  query: { [key: string]: string };
   itemsNumber: number;
   groups: SearchResultGroupVM[];
-  link?: string;
+  link: string;
 }
 
 export type SearchResultGroupVM = {
