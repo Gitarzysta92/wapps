@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, of, map } from "rxjs";
 import { Result } from "@standard";
-import { IDevicesProvider, DeviceDto } from "@domains/catalog/compatibility";
+import { IDevicesProvider, DeviceDto, IPlatformsProvider, PlatformDto } from "@domains/catalog/compatibility";
 
 @Injectable()
-export class DeviceApiService implements IDevicesProvider {
+export class DeviceApiService implements IDevicesProvider, IPlatformsProvider {
 
   public getDevices(): Observable<Result<DeviceDto[], Error>> {
     return of({
@@ -17,6 +17,21 @@ export class DeviceApiService implements IDevicesProvider {
         { id: 4, name: "Tv" }
       ],
     })
+  }
+
+  public getPlatforms(): Observable<Result<PlatformDto[], Error>> {
+    // For DeviceService compatibility, return devices as platforms
+    return this.getDevices().pipe(
+      map(result => {
+        if (result.ok) {
+          return {
+            ok: true as const,
+            value: result.value.map(device => ({ id: device.id, name: device.name }))
+          } as Result<PlatformDto[], Error>;
+        }
+        return result as Result<PlatformDto[], Error>;
+      })
+    );
   }
   
 }

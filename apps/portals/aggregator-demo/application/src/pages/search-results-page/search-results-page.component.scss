@@ -1,0 +1,145 @@
+@use 'ui/design-system/src/styles' as *;
+
+.container {
+  @include grid-container($container-lg);
+  padding: $space-6 0;
+}
+
+h1 {
+  @include text($font-size-2xl, $font-weight-bold, $line-height-tight);
+  color: $color-text-strong;
+  margin: 0 0 $space-4 0;
+}
+
+.info-badge {
+  display: inline-block;
+  margin-right: $space-2;
+  margin-bottom: $space-3;
+  padding: $space-2 $space-3;
+  background: $color-bg-muted;
+  border-radius: $radius-sm;
+  
+  p {
+    margin: 0;
+    @include text($font-size-sm);
+    color: $color-text;
+  }
+  
+  strong {
+    color: $color-text-muted;
+  }
+}
+
+.filters-section {
+  margin-bottom: $space-6;
+  padding: $space-4;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  
+  h2 {
+    margin-bottom: $space-3;
+    @include text($font-size-lg, $font-weight-bold);
+    color: $color-text-strong;
+  }
+  
+  button {
+    margin-bottom: $space-2;
+  }
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-6;
+  padding-bottom: $space-3;
+  border-bottom: $border-width-thin solid $color-border;
+  
+  h2 {
+    margin: 0;
+    @include text($font-size-xl, $font-weight-bold);
+    color: $color-text-strong;
+  }
+}
+
+.sorting-controls {
+  display: flex;
+  align-items: center;
+  @include text($font-size-sm);
+  color: $color-text-muted;
+}
+
+.listing-section {
+  width: 100%;
+}
+
+.items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin-bottom: $space-6;
+}
+
+.item-card {
+  display: block;
+  padding: $space-4;
+  background: $color-bg;
+  border: $border-width-thin solid $color-border;
+  border-radius: $radius-md;
+  transition: box-shadow $duration-200, transform $duration-200;
+  box-shadow: $shadow-sm;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+  
+  h3 {
+    margin: 0 0 $space-2 0;
+    @include text($font-size-lg, $font-weight-bold);
+    color: $color-text-strong;
+  }
+  
+  .description {
+    margin: 0 0 $space-3 0;
+    @include text($font-size-md, $font-weight-regular, $line-height-loose);
+    color: $color-text;
+  }
+  
+  .item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .category {
+      padding: $space-1 $space-3;
+      background: $color-blue-50;
+      color: $color-primary-600;
+      border-radius: $radius-full;
+      @include text($font-size-xs, $font-weight-medium);
+    }
+    
+    .rating {
+      color: $color-accent-500;
+      @include text($font-size-sm, $font-weight-bold);
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $space-4;
+  padding: $space-6 0;
+  
+  .page-info {
+    padding: 0 $space-3;
+    @include text($font-size-sm, $font-weight-medium);
+    color: $color-text-muted;
+  }
+}
+
