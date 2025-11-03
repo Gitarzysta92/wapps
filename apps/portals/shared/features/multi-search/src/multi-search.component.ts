@@ -1,10 +1,12 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
-import { first, map, of, startWith, switchMap, tap } from "rxjs";
-import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton } from "@ui/search-results";
+import { first, map, Observable, of, startWith, switchMap, tap } from "rxjs";
+import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton, SearchResultVM } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
+import { MultiSearchResultVM } from "./multi-search.interface";
+import { EntityType } from "@domains/discovery";
 
 @Component({
   selector: "multi-search",
@@ -30,12 +32,12 @@ export class MultiSearchComponent {
   public isFocused = false;
   public loadingResults = false;
   
-  public readonly searchResults$ = this.state.queryParamMap$.pipe(
+  public readonly searchResults$: Observable<SearchResultVM> = this.state.queryParamMap$.pipe(
     tap(p => this.loadingResults = !!p),
     map(p => ({ [this._acceptedQueryParam]: p[this._acceptedQueryParam] })),
     switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [] } })),
-    map(r => r.ok ? r.value : { itemsNumber: 0, groups: [] }),
-    startWith({ itemsNumber: 0, groups: [] }),
+    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [] } as SearchResultVM),
+    startWith({ itemsNumber: 0, groups: [] } as SearchResultVM),
     tap(() => this.loadingResults = false)
   )
 
@@ -46,13 +48,14 @@ export class MultiSearchComponent {
 
   public readonly initialValue$ = this._searchPharse.pipe(first());
 
-  public readonly recentSearches$ = this._searchResultsProvider.getRecentSearches().pipe(
-    map(r => r.ok ? r.value : { itemsNumber: 0, groups: [] }),
-    startWith({ itemsNumber: 0, groups: [] }),
+  public readonly recentSearches$: Observable<SearchResultVM> = this._searchResultsProvider.getRecentSearches().pipe(
+    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [] } as SearchResultVM),
+    startWith({ itemsNumber: 0, groups: [] } as SearchResultVM),
   )
 
   public onFocusChange(focused: boolean): void {
-    this.isFocused = focused;
+    console.log('onFocusChange', focused);
+    this.isFocused = true;
   }
 
   public closeDropdown(): void {
@@ -65,6 +68,8 @@ export class MultiSearchComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
     const target = event.target as HTMLElement;
     const searchContainer = target.closest('.search-container');
     
@@ -75,6 +80,40 @@ export class MultiSearchComponent {
 
   private _mapToSearchString(p: { [key: string]: string; }): string {
     return p[this._acceptedQueryParam] ?? '';
+  }
+
+  private _mapToSearchResultVM(result: MultiSearchResultVM): SearchResultVM {
+    return {
+      itemsNumber: result.itemsNumber,
+      groups: result.groups.map((group, groupIndex) => {
+        const groupName = this._getGroupName(group.type);
+        return {
+          id: groupIndex,
+          name: groupName,
+          entries: group.entries.map((entry, entryIndex) => ({
+            id: entryIndex,
+            groupId: groupIndex,
+            name: entry.name,
+            description: '', // Description not available in DTO
+            coverImageUrl: entry.coverImageUrl,
+            link: entry.link
+          }))
+        };
+      })
+    };
+  }
+
+  private _getGroupName(type: EntityType): string {
+    switch (type) {
+      case EntityType.Application:
+        return 'Applications';
+      case EntityType.Article:
+        return 'Articles';
+      case EntityType.Suite:
+        return 'Suites';
+      default:
+        return 'Unknown';
+    }
   }
 
 }

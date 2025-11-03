@@ -15,4 +15,5 @@ export type SearchResultEntryVM = {
   name: string;
   description: string;
   coverImageUrl: string;
+  link: string;
 }

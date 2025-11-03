@@ -5,7 +5,7 @@ import {
     TuiAvatar,
 } from '@taiga-ui/kit';
 import { TuiCell } from '@taiga-ui/layout';
-import { SearchResultGroupVM } from '../search-result.vm';
+import { SearchResultGroupVM, SearchResultEntryVM } from '../search-result.vm';
  
 
 @Component({

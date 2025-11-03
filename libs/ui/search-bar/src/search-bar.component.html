@@ -5,8 +5,8 @@
         iconStart="@tui.search"
         tuiTextfieldSize="l">
         <input
-          (focus)="onFocus.emit(true)"
-          (blur)="onFocus.emit(false)"
+          (focusin)="onFocus.emit(true)"
+          (focusout)="onFocus.emit(false)"
           formControlName="search" 
           placeholder="Search" 
           tuiTextfield />
