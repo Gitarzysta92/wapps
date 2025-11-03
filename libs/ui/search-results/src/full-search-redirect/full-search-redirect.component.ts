@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, HostBinding} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TuiIcon, TuiTitle} from '@taiga-ui/core';
 import {
@@ -24,4 +24,10 @@ import {TuiCell} from '@taiga-ui/layout';
 })
 export class FullSearchRedirectComponent {
   public readonly resultsNumber = input<number | null>(null, { alias: 'full-search-redirect' });
+  public readonly link = input<string | null>(null);
+
+  @HostBinding('attr.href')
+  protected get href(): string | null {
+    return this.link() ?? null;
+  }
 }

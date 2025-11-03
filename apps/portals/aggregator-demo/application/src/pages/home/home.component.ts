@@ -7,7 +7,8 @@ import {
   MULTISEARCH_RESULTS_PROVIER,
   MULTISEARCH_STATE_PROVIDER,
   MULTISEARCH_ACCEPTED_QUERY_PARAM,
-  MultiSearchResultVM
+  MultiSearchResultVM,
+  MultiSearchRecentSearchesVM
 } from '@portals/shared/features/multi-search';
 import { SearchMockDataService } from '@portals/shared/features/search';
 import {
@@ -41,10 +42,10 @@ import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
-import { DISCOVERY_MOCK_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
+import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 import { EntityType } from '@domains/discovery';
-import { delay, map, of } from "rxjs";
-import { buildRoutePath } from '@portals/shared/boundary/navigation';
+import { delay, map, of, tap } from "rxjs";
+import { buildRoutePath, buildQueryString } from '@portals/shared/boundary/navigation';
 import { FILTERS } from "../../filters";
 
 type RegisteredFeedItem = Array<
@@ -137,58 +138,35 @@ type RegisteredFeedItem = Array<
     {
       provide: MULTISEARCH_RESULTS_PROVIER,
       useValue: ({
-        getRecentSearches: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
+        getRecentSearches: () => of({ ok: true, value: DISCOVERY_RECENT_SEARCHES_DATA })
           .pipe(
             map(result => {
               if (result.ok) {
-                const groups = result.value.groups.map((group, groupIndex) => {
-                  let groupName = 'Unknown';
-                  switch (group.type) {
-                    case EntityType.Application:
-                      groupName = 'Applications';
-                      break;
-                    case EntityType.Article:
-                      groupName = 'Articles';
-                      break;
-                    case EntityType.Suite:
-                      groupName = 'Suites';
-                      break;
-                  }
-                  return {
-                    ...group,
-                    id: groupIndex,
-                    name: groupName,
-                    link: buildRoutePath(NAVIGATION.search.path, { search: group.type }),
-                    entries: group.entries.map((entry, entryIndex) => {
-                      let entryLink = '';
-                      switch (group.type) {
-                        case EntityType.Application:
-                          entryLink = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
-                          break;
-                        case EntityType.Article:
-                          entryLink = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
-                          break;
-                        case EntityType.Suite:
-                          entryLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
-                          break;
-                      }
+                const searchParam = FILTERS.search;
+                return {
+                  ok: true as const,
+                  value: {
+                    searches: result.value.searches.map((search) => {
+                      const searchQuery = search.query[searchParam] || '';
                       return {
-                        ...entry,
-                        id: entryIndex,
-                        link: entryLink
+                        ...search,
+                        name: searchQuery,
+                        link: NAVIGATION.search.path
                       };
                     })
-                  };
-                });
-                return { ok: true as const, value: { ...result.value, groups } };
+                  } as MultiSearchRecentSearchesVM
+                };
               }
               return result;
             }),
+            delay(100),
+            tap(console.log)
           ),
-        search: () => of({ ok: true, value: DISCOVERY_MOCK_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
+        search: () => of({ ok: true, value: DISCOVERY_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
           .pipe(
             map(result => {
               if (result.ok) {
+                result.value.link = NAVIGATION.search.path + buildQueryString(result.value.query);
                 const groups = result.value.groups.map((group, groupIndex) => {
                   let groupName = 'Unknown';
                   switch (group.type) {

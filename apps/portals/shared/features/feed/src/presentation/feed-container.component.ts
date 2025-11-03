@@ -2,7 +2,7 @@ import { Component, ContentChild, inject, OnInit, TemplateRef } from "@angular/c
 import { NewsFeedService } from "./services/news-feed.service";
 import { ContentFeedComponent, ContentFeedItemVm } from '@ui/content-feed';
 import { AsyncPipe } from "@angular/common";
-import { map, tap } from "rxjs";
+import { map } from "rxjs";
 import { IFeedItem } from "./models/feed-item.interface";
 
 @Component({
@@ -22,7 +22,7 @@ export class FeedContainerComponent implements OnInit {
   private readonly _newsFeedService = inject(NewsFeedService);
 
   public feedItems$ = this._newsFeedService.feedItems$
-    .pipe(tap(console.log),map(i => i as (IFeedItem & ContentFeedItemVm)[]));
+    .pipe(map(i => i as (IFeedItem & ContentFeedItemVm)[]));
 
   ngOnInit(): void {
     this.loadNextItems()

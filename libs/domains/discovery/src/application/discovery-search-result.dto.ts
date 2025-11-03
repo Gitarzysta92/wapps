@@ -1,6 +1,15 @@
 import { EntityType } from "./constants";
 
+
+export type DiscoveryRecentSearchesDto = {
+  searches: Array<{
+    query: { [key: string]: string };
+  }>;
+}
+
+
 export type DiscoverySearchResultDto = {
+  query: { [key: string]: string };
   itemsNumber: number;
   groups: DiscoverySearchResultGroupDto[];
 }

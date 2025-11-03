@@ -1,0 +1,15 @@
+@for (search of searches(); track search.link) {
+  <li>
+    <a
+      class="recent-search-item" 
+      tuiLink 
+      [routerLink]="search.link"
+      [queryParams]="search.query"
+      iconEnd="@tui.chevron-right" >
+      <span class="search-name">{{ search.name }}</span>
+    </a>  
+  </li>
+}
+@empty {
+  <li>There are no recent searches.</li>
+}

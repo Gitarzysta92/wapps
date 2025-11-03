@@ -1,6 +1,7 @@
 export type SearchResultVM = {
   itemsNumber: number;
   groups: SearchResultGroupVM[];
+  link?: string;
 }
 
 export type SearchResultGroupVM = {
