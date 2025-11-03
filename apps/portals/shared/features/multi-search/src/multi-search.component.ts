@@ -89,6 +89,7 @@ export class MultiSearchComponent {
         const groupName = this._getGroupName(group.type);
         return {
           id: groupIndex,
+          link: group.link,
           name: groupName,
           entries: group.entries.map((entry, entryIndex) => ({
             id: entryIndex,

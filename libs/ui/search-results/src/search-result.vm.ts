@@ -6,6 +6,7 @@ export type SearchResultVM = {
 export type SearchResultGroupVM = {
   id: number;
   name: string;
+  link: string;
   entries: SearchResultEntryVM[];
 }
 

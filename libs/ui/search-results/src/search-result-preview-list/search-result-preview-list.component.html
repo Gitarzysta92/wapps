@@ -1,6 +1,6 @@
 @for (group of result(); track group.name) {
   <li>
-    <span>{{ group.name }}</span>
+    <span>{{ group.name }}</span><a [routerLink]="group.link">View all</a>
     @for (entry of group.entries; track entry.id) {
       <li tuiCell>
         <a [routerLink]="entry.link">
