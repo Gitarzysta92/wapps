@@ -1,0 +1,29 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  padding: $space-2 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+}
+
+.recent-search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: $space-1 $space-5;
+  border-radius: var(--tui-radius-m);
+
+  &:hover {
+    background-color: var(--color-bg-soft);
+  }
+
+  .search-name {
+    padding-left: $space-2;
+    flex-grow: 2;
+  }
+  a {
+    width: 100%;
+  }
+}

@@ -1,9 +1,13 @@
-import { DiscoverySearchResultDto, EntityType } from '@domains/discovery';
+import { DiscoveryRecentSearchesDto, DiscoverySearchResultDto, EntityType } from '@domains/discovery';
 import { PHOTO_SNAP, QUICK_TASK } from './applications';
 import { SAMPLE_ARTICLE, TECH_ARTICLE } from './articles';
 
-export const DISCOVERY_MOCK_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
+
+export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
   itemsNumber: 6,
+  query: {
+    search: 'photo snap'
+  },
   groups: [
     {
       type: EntityType.Application,
@@ -37,3 +41,19 @@ export const DISCOVERY_MOCK_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
     },
   ]
 };
+
+
+export const DISCOVERY_RECENT_SEARCHES_DATA: DiscoveryRecentSearchesDto = {
+  searches: [
+    {
+      query: {
+        search: 'photo snap'
+      }
+    },
+    {
+      query: {
+        search: 'quick task'
+      }
+    }
+  ]
+}

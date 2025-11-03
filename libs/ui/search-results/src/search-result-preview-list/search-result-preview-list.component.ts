@@ -6,6 +6,7 @@ import {
 } from '@taiga-ui/kit';
 import { TuiCell } from '@taiga-ui/layout';
 import { SearchResultGroupVM } from '../search-result.vm';
+import { TuiLink } from '@taiga-ui/core';
  
 
 @Component({
@@ -16,10 +17,14 @@ import { SearchResultGroupVM } from '../search-result.vm';
     TuiAvatar,
     TuiCell,
     RouterLink,
+    TuiLink
   ],
   templateUrl: 'search-result-preview-list.component.html',
   styleUrl: 'search-result-preview-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'results-group'
+  }
 })
 export class SearchResultPreviewList {
   public readonly result = input.required<SearchResultGroupVM[]>({ alias: 'search-result-preview-list' });

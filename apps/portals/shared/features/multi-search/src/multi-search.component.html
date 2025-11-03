@@ -2,7 +2,7 @@
   <search-bar
     [initialValue]="initialValue$ | async"
     (onSearch)="onSearchChange($event)"
-    (onFocus)="onFocusChange($event)">
+    (onFocus)="onFocusChange()">
     <tui-loader *ngIf="loadingResults && isFocused"/>
   </search-bar>
   
@@ -15,8 +15,14 @@
             <ul search-result-list-skeleton></ul>
           }
           @else if (searchResult.groups && searchResult.groups.length > 0) {
-            <a [full-search-redirect]="searchResult.itemsNumber"></a>
-            <ul [search-result-preview-list]="searchResult.groups"></ul>
+            <a class="full-search-redirect" 
+              [full-search-redirect]="searchResult.itemsNumber"
+              [routerLink]="searchResult.link"
+              [queryParams]="searchResult.query">
+            </a>
+            <ul class="preview-list" 
+              [search-result-preview-list]="searchResult.groups">
+            </ul>
           }
           @else {
             <p>No results</p>
@@ -25,9 +31,11 @@
       }
       @else {   
         @let recentSearches = (recentSearches$ | async);
-        @if (recentSearches && recentSearches.groups && recentSearches.groups.length > 0) {
-          Recent searches:
-          <ul [search-result-preview-list]="recentSearches.groups"></ul>
+        @if (recentSearches && recentSearches.searches && recentSearches.searches.length > 0) {
+          <div class="recent-searches">
+            <h4>Recent searches:</h4>
+            <ul [recent-searches-list]="recentSearches.searches"></ul>
+          </div>
         } @else {
           <p>No recent searches</p>
         }

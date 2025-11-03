@@ -2,11 +2,12 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
 import { first, map, Observable, of, startWith, switchMap, tap } from "rxjs";
-import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton, SearchResultVM } from "@ui/search-results";
+import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton, SearchResultVM, RecentSearchesList } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
-import { MultiSearchResultVM } from "./multi-search.interface";
+import { MultiSearchResultVM, MultiSearchRecentSearchesVM } from "./multi-search.interface";
 import { EntityType } from "@domains/discovery";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "multi-search",
@@ -20,7 +21,9 @@ import { EntityType } from "@domains/discovery";
     FullSearchRedirectComponent,
     SearchResultListSkeleton,
     SearchResultPreviewList,
+    RecentSearchesList,
     TuiLoader,
+    RouterLink,
   ],
 })
 export class MultiSearchComponent {
@@ -33,11 +36,11 @@ export class MultiSearchComponent {
   public loadingResults = false;
   
   public readonly searchResults$: Observable<SearchResultVM> = this.state.queryParamMap$.pipe(
-    tap(p => this.loadingResults = !!p),
+    tap(p => this.loadingResults = !!p[this._acceptedQueryParam]),
     map(p => ({ [this._acceptedQueryParam]: p[this._acceptedQueryParam] })),
-    switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [] } })),
-    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [] } as SearchResultVM),
-    startWith({ itemsNumber: 0, groups: [] } as SearchResultVM),
+    switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [], link: "", query: {} } })),
+    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
+    startWith({ itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
     tap(() => this.loadingResults = false)
   )
 
@@ -48,13 +51,12 @@ export class MultiSearchComponent {
 
   public readonly initialValue$ = this._searchPharse.pipe(first());
 
-  public readonly recentSearches$: Observable<SearchResultVM> = this._searchResultsProvider.getRecentSearches().pipe(
-    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [] } as SearchResultVM),
-    startWith({ itemsNumber: 0, groups: [] } as SearchResultVM),
+  public readonly recentSearches$: Observable<MultiSearchRecentSearchesVM | null> = this._searchResultsProvider.getRecentSearches().pipe(
+    map(r => r.ok ? r.value : null),
+    startWith(null as MultiSearchRecentSearchesVM | null),
   )
-
-  public onFocusChange(focused: boolean): void {
-    console.log('onFocusChange', focused);
+  
+  public onFocusChange(): void {
     this.isFocused = true;
   }
 
@@ -82,15 +84,18 @@ export class MultiSearchComponent {
     return p[this._acceptedQueryParam] ?? '';
   }
 
+  //TODO: code smell
   private _mapToSearchResultVM(result: MultiSearchResultVM): SearchResultVM {
     return {
       itemsNumber: result.itemsNumber,
+      link: result.link,
+      query: result.query,
       groups: result.groups.map((group, groupIndex) => {
-        const groupName = this._getGroupName(group.type);
         return {
           id: groupIndex,
           link: group.link,
-          name: groupName,
+          name: this._getGroupName(group.type),
+          icon: this._getIcon(group.type),
           entries: group.entries.map((entry, entryIndex) => ({
             id: entryIndex,
             groupId: groupIndex,
@@ -104,6 +109,7 @@ export class MultiSearchComponent {
     };
   }
 
+  //TODO: code smell
   private _getGroupName(type: EntityType): string {
     switch (type) {
       case EntityType.Application:
@@ -112,6 +118,19 @@ export class MultiSearchComponent {
         return 'Articles';
       case EntityType.Suite:
         return 'Suites';
+      default:
+        return 'Unknown';
+    }
+  }
+//TODO: code smell
+  private _getIcon(type: EntityType): string {
+    switch (type) {
+      case EntityType.Application:
+        return '@tui.layout-grid';
+      case EntityType.Article:
+        return '@tui.newspaper';
+      case EntityType.Suite:
+        return '@tui.briefcase-business';
       default:
         return 'Unknown';
     }

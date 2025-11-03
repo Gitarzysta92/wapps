@@ -4,4 +4,5 @@
 export * from './breadcrumbs-route-data.interface';
 export * from './navigation.dto';
 export * from './build-route-path';
+export * from './build-query';
 export * from './route-path.pipe';

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TuiIcon, TuiTitle} from '@taiga-ui/core';
 import {
