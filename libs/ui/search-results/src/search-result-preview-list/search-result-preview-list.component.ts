@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import {
     TuiAvatar,
 } from '@taiga-ui/kit';
-import { TuiCell } from '@taiga-ui/layout';
 import { SearchResultGroupVM } from '../search-result.vm';
 import { TuiLink } from '@taiga-ui/core';
  
@@ -15,7 +14,6 @@ import { TuiLink } from '@taiga-ui/core';
   imports: [
     FormsModule,
     TuiAvatar,
-    TuiCell,
     RouterLink,
     TuiLink
   ],

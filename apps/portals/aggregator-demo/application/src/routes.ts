@@ -14,6 +14,7 @@ import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
 import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
+import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 
@@ -609,15 +610,37 @@ export const routes: Routes = [
         data: { breadcrumb: [ NAVIGATION.claimApplicationOwnership ] },
       },
       {
-        path: NAVIGATION.search.path,
+        // INFO: custom matcher is used to mitigate 
+        // unnecessary component instantiation
+        // for related dynamic routes
+        matcher: searchResultsMatcher,
         loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
-        data: { breadcrumb: [ NAVIGATION.search ] },
-        children: [
-          {
-            path: 'page/:page',
-            loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
+        data: {
+          breadcrumb: [ NAVIGATION.search ],
+          header: null,
+          leftSidebar: {
+            component: CommonSidebarPartialComponent,
+            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+          },
+          rightSidebar: {
+            component: UserSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
           }
-        ]
+        } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
         path: NAVIGATION.tags.path,

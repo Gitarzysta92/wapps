@@ -8,7 +8,6 @@ import { combineLatest, map } from 'rxjs';
 })
 export class RouteDrivenContainerDirective {
 
-  @Output() onUpdate: EventEmitter<{ [key: string]: Set<string> }> = new EventEmitter()
 
   private readonly _route = inject(ActivatedRoute);
 
@@ -19,9 +18,6 @@ export class RouteDrivenContainerDirective {
     map(([q, p]) => this._combineParamMaps(q, p)),
   )
   
-  public update(params: { [key: string]: Set<string> }): void {
-    this.onUpdate.next(params);
-  }
 
   private _combineParamMaps(p: ParamMap, q: ParamMap): { [key: string]: Set<string> } {
     const map: { [key: string]: Set<string> } = {};

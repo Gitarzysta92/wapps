@@ -10,7 +10,7 @@ import { provideIdentityManagementFeature } from '@portals/shared/features/ident
 import { provideCategoryFeature } from '@portals/shared/features/categories';
 import { provideFilterFeature } from '@portals/shared/features/filtering';
 import { provideListingFeature } from '@portals/shared/features/listing';
-import { provideCompatibilityFeature } from '@portals/shared/features/compatibility';
+import { provideCompatibilityFeature, provideListingPlatformFeature } from '@portals/shared/features/compatibility';
 import { provideListingMonetizationFeature } from '@portals/shared/features/pricing';
 import { provideSocialsFeature } from '@portals/shared/features/social';
 import { provideUserStatisticPlatformFeature } from '@portals/shared/features/metrics';
@@ -45,6 +45,7 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     provideFilterFeature(),
     // appConfigCSR,
     provideListingFeature(),
+    provideListingPlatformFeature(),
     provideCompatibilityFeature(),
     provideListingMonetizationFeature(),
     provideSocialsFeature(),

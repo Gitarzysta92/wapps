@@ -28,6 +28,15 @@ export * from './platforms';
 // Tags data
 export * from './tags';
 
+// Option data for filters
+export * from './category-options';
+export * from './platform-options';
+export * from './device-options';
+export * from './monetization-options';
+export * from './social-options';
+export * from './estimated-user-span-options';
+export * from './tag-options';
+
 // Validation messages
 export * from './validation-messages';
 

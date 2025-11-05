@@ -1,0 +1,12 @@
+@for (f of vm?.selectedFilters || []; track f.id) {
+  <label class="dropdown-item">
+    <input 
+      type="checkbox" 
+      tuiCheckbox 
+      [checked]="f.isSelected" 
+      (click)="toggle($event, f)" />
+    <span>{{ f.name }}</span>
+  </label>
+}
+
+

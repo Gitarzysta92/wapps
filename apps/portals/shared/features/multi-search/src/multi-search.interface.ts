@@ -4,7 +4,7 @@ import { DiscoveryRecentSearchesDto, DiscoverySearchResultDto, DiscoverySearchRe
 
 
 
-export interface IMultiSearchState {
+export interface IMultiSearchState {  
   queryParamMap$: Observable<{ [key: string]: string }>;
   setQueryParams(p: { [key: string]: string | null }): void;
 }
