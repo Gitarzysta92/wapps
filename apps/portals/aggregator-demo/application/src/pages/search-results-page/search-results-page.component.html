@@ -1,36 +1,92 @@
-<section class="container">
-  <h1>{{ config.title }}</h1>
-  
-  <div *ngIf="selectedCategory" class="info-badge">
-    <p><strong>Category:</strong> {{ selectedCategory }}</p>
-  </div>
-  
-  <div *ngIf="selectedTag" class="info-badge">
-    <p><strong>Tag:</strong> {{ selectedTag }}</p>
-  </div>
-  
-  <div *ngIf="currentPage > 1" class="info-badge">
-    <p><strong>Page:</strong> {{ currentPage }} of {{ totalPages }}</p>
-  </div>
-  
-  <div *ngIf="config.showFilters" class="filters-section">
-    <h2>Active filters</h2>
-    <filters-bar (onUpdate)="filterParams.next($event)"></filters-bar>
-    <filters-panel></filters-panel>
-  </div>
+<section>  
+  <h2>Active filters</h2>
+
+  <tui-chip
+    appearance="accent"
+    iconStart="@tui.shopping-cart"
+    iconEnd="@tui.chevron-down"
+  >
+    <div >Category:</div>
+    <div tuiFade>asdasdasdasdasdasdasdasd</div>
+  </tui-chip>
+
+  <tui-chip
+  appearance="accent"
+  iconStart="@tui.shopping-cart"
+  iconEnd="@tui.chevron-down"
+>
+  <div>Search:</div>
+  <div tuiFade>asdasdasdasdasdasdasdasd</div>
+</tui-chip>
+
 </section>
 
+
+@let categoryOptions = categoryOptions$ | async;
+@let platformOptions = platformOptions$ | async;
+
+
+@let filters = filters$ | async;
+<filter-group 
+  [filters]="filters" 
+  (change)="setQueryParams($event)">
+  @for (f of filters; track f.key) {
+    @if (f.key === FILTERS.category) {
+      <searchable-multiselect
+        #filter="filter"
+        [filter]="f" 
+        [selectedOptions]="f.options"
+        [options]="categoryOptions || []"
+        placeholder="Select categories"
+        groupLabel="Categories"
+        (change)="filter.updateMany($event)">
+      </searchable-multiselect>
+    }
+    @else if (f.key === FILTERS.platform) {
+      <multiselect-dropdown
+        #filter="filter"
+        [filter]="f" 
+        [selectedOptions]="f.options"
+        [items]="platformOptions || []"
+        (change)="filter.updateMany($event)">
+      </multiselect-dropdown>
+    }
+    @else if (f.key === FILTERS.search) {
+      <text-search-input
+        #filter="filter"
+        [filter]="f" 
+        [selectedOptions]="f.options"
+        placeholder="Search..."
+        (change)="filter.updateMany($event)">
+      </text-search-input>
+    }
+  } 
+</filter-group>
+
+<searchable-multiselect
+
+[options]="categoryOptions || []"
+placeholder="Select categories"
+groupLabel="Categories">
+</searchable-multiselect>
+
+<multiselect-dropdown
+
+[items]="platformOptions || []">
+</multiselect-dropdown>
+
+<!-- 
 <section class="container">
   <div class="results-header">
     <h2>Results ({{ items.length }} items)</h2>
     <div *ngIf="config.showSorting" class="sorting-controls">
-      <!-- <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select> -->
+      <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select>
       <p>Sort options would go here</p>
     </div>
   </div>
   
   <div *ngIf="config.showListing" class="listing-section">
-    <!-- <app-listing (onUpdate)="listingParams.next($event)"></app-listing> -->
+    <app-listing (onUpdate)="listingParams.next($event)"></app-listing>
     <div class="items-grid">
       <a *ngFor="let item of items" [routerLink]="['/', item.id]" class="item-card">
         <h3>{{ item.name }}</h3>
@@ -48,4 +104,6 @@
       <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
     </div>
   </div>
-</section>
+</section> -->
+
+<!-- | toFilterOptionsList: f.options -->

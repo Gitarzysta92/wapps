@@ -1,179 +1,144 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { FILTERS } from '../../filters';
-import { ActivatedRoute, Router, RouterLink, UrlSegment } from '@angular/router';
-import { TuiButton } from '@taiga-ui/core';
-import { combineLatest, filter, map, startWith, Subject } from 'rxjs';
-import { FiltersBarComponent } from '../../partials/filters-bar/filters-bar.component';
-import { FiltersPanelComponent } from '../../partials/filters-panel/filters-panel.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FilterDirective, FilterGroupComponent, FilterVm, FilterOptionVm } from '@ui/filters';
+import { MultiselectDropdownComponent, SearchableMultiselectComponent, TextSearchInputComponent } from '@ui/form';
+import { RouteDrivenContainerDirective } from '@ui/routing';
+import { tap, map, of } from 'rxjs';
+import { 
+  CATEGORY_OPTION_PROVIDER,
+  PLATFORM_OPTION_PROVIDER,
+  DEVICE_OPTION_PROVIDER,
+  MONETIZATION_OPTION_PROVIDER,
+  SOCIAL_OPTION_PROVIDER,
+  ESTIMATED_USER_SPAN_OPTION_PROVIDER,
+  TAG_OPTION_PROVIDER,
+  ParamMapToFilterVmListMapper
+} from '@portals/shared/features/filtering';
+import {
+  CATEGORY_OPTIONS,
+  PLATFORM_OPTIONS,
+  DEVICE_OPTIONS,
+  MONETIZATION_OPTIONS,
+  SOCIAL_OPTIONS,
+  ESTIMATED_USER_SPAN_OPTIONS,
+  TAG_OPTIONS
+} from '@portals/shared/data';
+import { TuiAvatar, TuiChip, TuiFade } from '@taiga-ui/kit';
 
-export interface ResultsPageConfig {
-  title: string;
-  filterKey?: string;
-  showFilters?: boolean;
-  showSorting?: boolean;
-  showListing?: boolean;
-}
 
 @Component({
   selector: 'search-results-page',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    TuiButton,
-    FiltersBarComponent,
-    FiltersPanelComponent
+    FilterDirective,
+    FilterGroupComponent,
+    MultiselectDropdownComponent,
+    SearchableMultiselectComponent,
+    TextSearchInputComponent,
+    AsyncPipe,
+    TuiChip,
+    TuiFade,
+    // PlatformListContainerDirective,
+    // ToFilterOptionsList,
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
+  hostDirectives: [
+    RouteDrivenContainerDirective
+  ],
   host: {
     'class': 'fluid-container'
-  }
+  },
+  providers: [
+    {
+      provide: CATEGORY_OPTION_PROVIDER,
+      useValue: {
+        getCategoryOptions: () => of({ ok: true as const, value: CATEGORY_OPTIONS })
+      }
+    },
+    {
+      provide: PLATFORM_OPTION_PROVIDER,
+      useValue: {
+        getPlatformOptions: () => of({ ok: true as const, value: PLATFORM_OPTIONS })
+      }
+    },
+    {
+      provide: DEVICE_OPTION_PROVIDER,
+      useValue: {
+        getDeviceOptions: () => of({ ok: true as const, value: DEVICE_OPTIONS })
+      }
+    },
+    {
+      provide: MONETIZATION_OPTION_PROVIDER,
+      useValue: {
+        getMonetizationOptions: () => of({ ok: true as const, value: MONETIZATION_OPTIONS })
+      }
+    },
+    {
+      provide: SOCIAL_OPTION_PROVIDER,
+      useValue: {
+        getSocialOptions: () => of({ ok: true as const, value: SOCIAL_OPTIONS })
+      }
+    },
+    {
+      provide: ESTIMATED_USER_SPAN_OPTION_PROVIDER,
+      useValue: {
+        getEstimatedUserSpanOptions: () => of({ ok: true as const, value: ESTIMATED_USER_SPAN_OPTIONS })
+      }
+    },
+    {
+      provide: TAG_OPTION_PROVIDER,
+      useValue: {
+        getTagOptions: () => of({ ok: true as const, value: TAG_OPTIONS })
+      }
+    },
+  ]
 })
-export class SearchResultsPageComponent implements OnInit {
+export class SearchResultsPageComponent {
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
-  
-  public readonly filterKey = FILTERS;
-  public readonly filterParams = new Subject<{ [key: string]: string[]; }>();
-  public readonly listingParams = new Subject<{ page: string; }>();
-  public readonly sortingParam = new Subject<{ sort: string; }>();
+  private readonly _filtersContainer = inject(RouteDrivenContainerDirective, { self: true });
+  private readonly _paramMapToFilterVmListMapper = inject(ParamMapToFilterVmListMapper);
+  public readonly FILTERS = FILTERS;
 
-  public config: ResultsPageConfig = {
-    title: 'Results',
-    showFilters: true,
-    showSorting: true,
-    showListing: true
-  };
+  public readonly filters$ = this._filtersContainer.params$
+    .pipe(
+      map(ps => this._paramMapToFilterVmListMapper.map(ps)),
+      tap(console.log)
+    )
 
-  // Mock data for display
-  public items = [
-    { id: 1, name: 'Sample App 1', description: 'A great application for productivity', category: 'Productivity', rating: 4.5 },
-    { id: 2, name: 'Sample App 2', description: 'Entertainment application', category: 'Entertainment', rating: 4.2 },
-    { id: 3, name: 'Sample App 3', description: 'Educational tool', category: 'Education', rating: 4.8 },
-    { id: 4, name: 'Sample App 4', description: 'Social networking platform', category: 'Social', rating: 4.0 },
-    { id: 5, name: 'Sample App 5', description: 'Photo editing software', category: 'Graphics', rating: 4.6 },
-    { id: 6, name: 'Sample App 6', description: 'Video streaming service', category: 'Entertainment', rating: 4.3 },
-  ];
+  public readonly categoryOptions$ = inject(CATEGORY_OPTION_PROVIDER).getCategoryOptions().pipe(
+    map(result => result.ok ? result.value.map(c => ({
+      name: c.name,
+      value: c.slug,
+      isSelected: false
+    } as FilterOptionVm)) : [])
+  );
+  public readonly platformOptions$ = inject(PLATFORM_OPTION_PROVIDER).getPlatformOptions().pipe(
+    map(result => result.ok ? result.value.map(p => ({
+      name: p.name,
+      value: p.slug || String(p.id),
+      isSelected: false
+    } as FilterOptionVm)) : [])
+  );
+  public readonly deviceOptions$ = inject(DEVICE_OPTION_PROVIDER).getDeviceOptions();
+  public readonly monetizationOptions$ = inject(MONETIZATION_OPTION_PROVIDER).getMonetizationOptions();
+  public readonly socialOptions$ = inject(SOCIAL_OPTION_PROVIDER).getSocialOptions();
+  public readonly estimatedUserSpanOptions$ = inject(ESTIMATED_USER_SPAN_OPTION_PROVIDER).getEstimatedUserSpanOptions();
+  public readonly tagOptions$ = inject(TAG_OPTION_PROVIDER).getTagOptions();
 
-  public currentPage = 1;
-  public totalPages = 5;
-  public selectedCategory: string | null = null;
-  public selectedTag: string | null = null;
-
-  public ngOnInit(): void {
-    this._determineConfigFromRoute();
-    this._extractRouteParameters();
-    this._handleNavigationOnRouteChange();
-  }
-
-  private _extractRouteParameters(): void {
-    // Extract page number
-    this._route.params.subscribe(params => {
-      if (params['page']) {
-        this.currentPage = parseInt(params['page'], 10);
+  public setQueryParams(p: FilterVm[]): void {
+    if ('phrase' in p && typeof p.phrase === 'string') {
+      if (!p.phrase || p.phrase.length <= 0) {
+        this._router.navigate([], { queryParams: {}})
+      } else {
+        this._router.navigate([], { queryParams: { pharse: p.phrase }})
       }
-      if (params[FILTERS.category]) {
-        this.selectedCategory = params[FILTERS.category];
-      }
-      if (params[FILTERS.tag]) {
-        this.selectedTag = params[FILTERS.tag];
-      }
-    });
-  }
-
-  private _determineConfigFromRoute(): void {
-    const path = this._route.snapshot.routeConfig?.path || '';
-    
-    // Determine configuration based on the route
-    if (path.includes('category')) {
-      this.config = {
-        title: 'Categories',
-        filterKey: FILTERS.category,
-        showFilters: true,
-        showSorting: true,
-        showListing: true
-      };
-    } else if (path.includes('tag')) {
-      this.config = {
-        title: 'Tags',
-        filterKey: FILTERS.tag,
-        showFilters: true,
-        showSorting: true,
-        showListing: true
-      };
-    } else if (path.includes('applications')) {
-      this.config = {
-        title: 'Applications',
-        showFilters: true,
-        showSorting: true,
-        showListing: true
-      };
-    } else if (path.includes('suites')) {
-      this.config = {
-        title: 'Suites',
-        showFilters: true,
-        showSorting: true,
-        showListing: true
-      };
-    } else if (path.includes('articles')) {
-      this.config = {
-        title: 'Articles',
-        showFilters: false,
-        showSorting: true,
-        showListing: true
-      };
     }
   }
-
-  private _handleNavigationOnRouteChange(): void {
-    combineLatest([
-      this.filterParams.pipe(startWith(undefined)),
-      this.listingParams.pipe(startWith(undefined)),
-      this.sortingParam.pipe(startWith(undefined)),
-      this._route.url.pipe(map(() => this._route.routeConfig?.path?.split('/') ?? [])),
-      this._route.url
-    ]).pipe(
-      filter(([f, l, s]) => !!f || !!l || !!s)
-    ).subscribe(([
-      filters = {},
-      listing = {},
-      sorting = {},
-      config,
-      url
-    ]) => {
-      const segments = this._buildSegments(url, config, listing, filters);
-      const queryParams = this._buildQuery(config, { ...filters, ...listing, ...sorting });
-      this._router.navigate(segments, { queryParams });
-    });
-  }
-
-  private _buildSegments(
-    routeSegments: UrlSegment[],
-    routeConfigSegments: string[],
-    paramValues: { [key: string]: string; },
-    fallbackParamValues: { [key: string]: string[]; }
-  ): string[] {
-    return routeConfigSegments.map((p, i) => {
-      const isParam = p.startsWith(':');
-      const key = p.replace(':', '');
-      const value = paramValues[key] ?? fallbackParamValues[key];
-      if (isParam && value) {
-        return value;
-      }
-      return routeSegments[i]?.path || '';
-    });
-  }
-
-  private _buildQuery(
-    routeConfigSegments: string[],
-    values: { [key: string]: string; }
-  ): { [key: string]: string; } {
-    const params = routeConfigSegments.filter(s => s.startsWith(':'));
-    return Object.fromEntries(
-      Object.entries(values)
-        .filter(([k]) => !params.some(p => p.includes(k)))
-    );
-  }
+   
+ 
 }

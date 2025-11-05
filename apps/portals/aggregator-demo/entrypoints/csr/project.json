@@ -3,7 +3,7 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-        "sourceRoot": "apps/portals/aggregator-demo/entrypoints/csr/src",
+  "sourceRoot": "apps/portals/aggregator-demo/entrypoints/csr/src",
   "tags": ["type:app"],
   "targets": {
     "build": {
