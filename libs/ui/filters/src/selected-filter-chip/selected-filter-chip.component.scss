@@ -1,0 +1,52 @@
+:host {
+  display: inline-block;
+}
+
+.chip-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin: -0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  tui-icon {
+    flex-shrink: 0;
+  }
+
+  .filter-name {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .filter-value {
+    white-space: nowrap;
+    
+    &.empty {
+      opacity: 0.6;
+      font-style: italic;
+    }
+  }
+}
+
+.chip-right {
+  cursor: pointer;
+  padding: 0.25rem;
+  margin: -0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+  flex: 1;
+  min-width: 2rem;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+

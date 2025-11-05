@@ -1,0 +1,10 @@
+<tui-chip appearance="accent" iconEnd="@tui.chevron-down">
+  <div class="chip-left" (click)="onCloseClick($event)">
+    <tui-icon icon="@tui.circle-x" size="xs"></tui-icon>
+    <span class="filter-name">{{ name }}:</span>
+    <span class="filter-value" [class.empty]="selectedCount() === 0">{{ displayText() }}</span>
+  </div>
+  <div class="chip-right" tuiFade (click)="onOpenClick($event)"></div>
+</tui-chip>
+
+

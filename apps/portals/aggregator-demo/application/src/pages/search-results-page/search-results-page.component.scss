@@ -1,11 +1,13 @@
 @use 'ui/design-system/src/styles' as *;
 
 
-[tuiFade] {
-  flex: 1 1 auto;
-}
 
 tui-chip {
   margin: 0.5rem;
   max-inline-size: 9rem;
+}
+
+
+.dropdown-panel {
+  width: 250px;
 }
