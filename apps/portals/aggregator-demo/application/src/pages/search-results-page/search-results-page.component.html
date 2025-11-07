@@ -41,7 +41,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search categories...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)">
+                (selectionChange)="onFilterSelectionChange(f.key, $event)">
               </multiselect-list>
             }
             @case (FILTERS.platform) {
@@ -49,7 +49,7 @@
                 [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)">
+                (selectionChange)="onFilterSelectionChange(f.key, $event)">
               </multiselect-list>
             }
             @case (FILTERS.device) {
@@ -58,7 +58,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search devices...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
+                (selectionChange)="onFilterSelectionChange(f.key, $event)"
               />
             }
             @case (FILTERS.monetization) {
@@ -67,7 +67,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search monetization...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
+                (selectionChange)="onFilterSelectionChange(f.key, $event)"
               />
             }
             @case (FILTERS.social) {
@@ -76,7 +76,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search social...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
+                (selectionChange)="onFilterSelectionChange(f.key, $event)"
               />
             }
             @case (FILTERS.estimatedUsers) {
@@ -85,7 +85,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search user ranges...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
+                (selectionChange)="onFilterSelectionChange(f.key, $event)"
               />
             }
             @case (FILTERS.tag) {
@@ -94,7 +94,7 @@
                 [selectedOptions]="f.options"
                 [placeholder]="'Search tags...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
+                (selectionChange)="onFilterSelectionChange(f.key, $event)"
               />
             }
             @case (FILTERS.search) {

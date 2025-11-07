@@ -23,7 +23,7 @@ export class MultiselectListComponent<O extends SearchableOption, S extends Sear
   @Input() placeholder: string = '';
   @Input() groupLabel: string = '';
   
-  @Output() change: EventEmitter<O[]> = new EventEmitter();
+  @Output() selectionChange: EventEmitter<O[]> = new EventEmitter();
 
   public searchQuery: string = '';
 
@@ -50,7 +50,7 @@ export class MultiselectListComponent<O extends SearchableOption, S extends Sear
       currentlySelected.push(item as unknown as S);
     }
     
-    this.change.emit(currentlySelected as unknown as O[]);
+    this.selectionChange.emit(currentlySelected as unknown as O[]);
   }
 }
 

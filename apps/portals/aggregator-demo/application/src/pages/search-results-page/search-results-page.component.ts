@@ -128,7 +128,6 @@ export class SearchResultsPageComponent {
       name: f.name,
       options: f.options.filter(o => o.isSelected),
     }))),
-    tap(ps => console.log(ps)),
   ); 
 
   private readonly FILTERS_OPTIONS: FilterDefinition[] = [
