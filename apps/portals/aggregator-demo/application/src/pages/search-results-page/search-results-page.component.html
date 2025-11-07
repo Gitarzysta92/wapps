@@ -1,33 +1,32 @@
 <filters-bar></filters-bar>
 
+<section class="section__sorting">
+  <div class="sorting-controls">
+    <sorting-select (onUpdate)="onSortingChange($event)"></sorting-select>
+  </div>
+</section>
 
-<!-- 
-<section class="container">
+<section class="section__separator"></section>
+
+<section class="section__results">
   <div class="results-header">
     <h2>Results ({{ items.length }} items)</h2>
-    <div *ngIf="config.showSorting" class="sorting-controls">
-      <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select>
-      <p>Sort options would go here</p>
+  </div>
+  
+  <div class="items-grid">
+    <div *ngFor="let item of items" class="item-card">
+      <h3>{{ item.name }}</h3>
+      <p class="description">{{ item.description }}</p>
+      <div class="item-meta">
+        <span class="category">{{ item.category }}</span>
+        <span class="rating">★ {{ item.rating }}</span>
+      </div>
     </div>
   </div>
   
-  <div *ngIf="config.showListing" class="listing-section">
-    <app-listing (onUpdate)="listingParams.next($event)"></app-listing>
-    <div class="items-grid">
-      <a *ngFor="let item of items" [routerLink]="['/', item.id]" class="item-card">
-        <h3>{{ item.name }}</h3>
-        <p class="description">{{ item.description }}</p>
-        <div class="item-meta">
-          <span class="category">{{ item.category }}</span>
-          <span class="rating">★ {{ item.rating }}</span>
-        </div>
-      </a>
-    </div>
-    
-    <div class="pagination">
-      <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
-      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
-    </div>
+  <div class="pagination">
+    <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
   </div>
-</section> -->
+</section>
