@@ -98,6 +98,9 @@
       "@portals/shared/boundary/navigation": [
         "apps/portals/shared/boundary/navigation/src/index.ts"
       ],
+      "@portals/shared/partials/filters-bar": [
+        "apps/portals/shared/partials/filters-bar/src/index.ts"
+      ],
       "@portals/shared/boundary/routing": [
         "apps/portals/shared/boundary/routing/src/index.ts"
       ],

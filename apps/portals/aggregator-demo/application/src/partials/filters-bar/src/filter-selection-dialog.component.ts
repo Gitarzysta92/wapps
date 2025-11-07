@@ -4,7 +4,7 @@ import { FilterOptionVm } from '@ui/filters';
 import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
 import { SearchableOption } from '@ui/form';
-import { FilterContentComponent } from '../../components/filter-content/filter-content.component';
+import { FilterContentComponent } from './filter-content.component';
 
 export interface FilterSelectionDialogData {
   filterId: string;
