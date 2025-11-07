@@ -6,3 +6,4 @@ export interface IEstimatedUserSpanOptionProvider {
   getEstimatedUserSpanOptions(): Observable<Result<EstimatedUserSpanOptionDto[], Error>>;
 }
 
+

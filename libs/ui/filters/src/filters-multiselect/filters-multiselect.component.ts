@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiCheckbox } from '@taiga-ui/kit';
 
 export type FiltersMultiselectVM = {
@@ -9,25 +10,28 @@ export type FiltersMultiselectVM = {
 @Component({
   selector: 'filters-multiselect',
   standalone: true,
-  imports: [FormsModule, TuiCheckbox],
+  imports: [
+    FormsModule,
+    TuiAppearance,
+    TuiCheckbox,
+    TuiButton
+  ],
   templateUrl: './filters-multiselect.component.html',
   styleUrl: './filters-multiselect.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiltersMultiselectComponent {
 
-  @Input() vm: FiltersMultiselectVM | null = null;
-  @Output() activate = new EventEmitter<string>();
-  @Output() deactivate = new EventEmitter<string>();
-
-  toggle(e: Event, t: { id: string; name: string; isSelected: boolean; }) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (t.isSelected) {
-      this.deactivate.emit(t.id);
-    } else {
-      this.activate.emit(t.id);
-    }
+  @Input() activeFilters: { id: string, name: string, isSelected: boolean }[] = [];
+  @Input() availableFilters: { id: string, name: string, isSelected: boolean }[] = [];
+  @Output() activated = new EventEmitter<string>();
+  @Output() deactivated = new EventEmitter<string>();
+  
+  public activate(f: { id: string, name: string, isSelected: boolean }): void {
+    this.activated.emit(f.id);
+  }
+  public deactivate(f: { id: string, name: string, isSelected: boolean }): void {
+    this.deactivated.emit(f.id);
   }
 }
 

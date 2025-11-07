@@ -1,0 +1,60 @@
+<div class="filter-dropdown">
+  <!-- @if (hasSelection()) {
+    <div class="filter-dropdown__selected">
+      <div class="filter-dropdown__selected-list">
+        @for (option of selected(); track option.value) {
+          <tui-chip appearance="secondary" size="s">{{ option.name }}</tui-chip>
+        }
+      </div>
+    </div>
+  } -->
+
+  <!-- <div class="filter-dropdown__search">
+    <tui-textfield>
+      <input
+        tuiTextfield
+        type="text"
+        [placeholder]="'Search ' + filterName.toLowerCase() + '...'"
+        [(ngModel)]="searchPhrase"
+      />
+    </tui-textfield>
+  </div> -->
+
+  <div class="filter-dropdown__options-list">
+    @for (option of filteredOptions(); track option.value) {
+      <label class="filter-dropdown__option" (click)="toggleOption(option)">
+        <input
+          tuiCheckbox
+          type="checkbox"
+          [checked]="isSelected(option)"
+          (click)="$event.stopPropagation()"
+        />
+        <span class="filter-dropdown__option-label">{{ option.name }}</span>
+      </label>
+    } @empty {
+      <p class="filter-dropdown__no-results">No matching options found.</p>
+    }
+  </div>
+
+  <div class="filter-dropdown__actions">
+    <button
+      tuiButton
+      appearance="flat"
+      type="button"
+      size="s"
+      (click)="onCancel()"
+    >
+      Cancel
+    </button>
+    <button
+      tuiButton
+      appearance="primary"
+      type="button"
+      size="s"
+      (click)="onApply()"
+    >
+      Apply
+    </button>
+  </div>
+</div>
+

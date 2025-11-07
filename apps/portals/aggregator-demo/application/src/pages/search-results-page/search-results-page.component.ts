@@ -1,12 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Injector } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { FILTERS } from '../../filters';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FilterDirective, FilterGroupComponent, FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent, FiltersMultiselectVM } from '@ui/filters';
+import { FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
 import { map } from 'rxjs/operators';
-import { MultiselectDropdownComponent, SearchableMultiselectComponent, TextSearchInputComponent } from '@ui/form';
 import { RouteDrivenContainerDirective } from '@ui/routing';
-import { of } from 'rxjs';
+import { combineLatest, firstValueFrom, of } from 'rxjs';
 import { 
   CATEGORY_OPTION_PROVIDER,
   PLATFORM_OPTION_PROVIDER,
@@ -26,32 +25,36 @@ import {
   ESTIMATED_USER_SPAN_OPTIONS,
   TAG_OPTIONS
 } from '@portals/shared/data';
-import { TuiChip, TuiFade, TuiCheckbox } from '@taiga-ui/kit';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiDialogService } from '@taiga-ui/core';
 import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
+import { FilterDropdownContentComponent } from '../../partials/filter-dropdown-content/filter-dropdown-content.component';
+import { FilterSelectionDialogComponent, FilterSelectionDialogResult } from '../../dialogs/filter-selection-dialog/filter-selection-dialog.component';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
+type FilterOptionSource = {
+  name: string;
+  slug: string;
+};
+
+type FilterDefinition = {
+  key: string;
+  name: string;
+  options: FilterOptionSource[];
+};
 
 @Component({
   selector: 'search-results-page',
   standalone: true,
   imports: [
     CommonModule,
-    FilterDirective,
-    FilterGroupComponent,
-    MultiselectDropdownComponent,
-    SearchableMultiselectComponent,
-    TextSearchInputComponent,
     AsyncPipe,
-    TuiChip,
-    TuiFade,
-    TuiIcon,
+    TuiButton,
     SelectedFilterChipComponent,
     TuiDropdownOpen,
     TuiDropdownDirective,
-    TuiCheckbox,
+    TuiAppearance,
     FiltersMultiselectComponent,
-    // PlatformListContainerDirective,
-    // ToFilterOptionsList,
+    FilterDropdownContentComponent,
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
@@ -107,68 +110,86 @@ import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives
   ]
 })
 export class SearchResultsPageComponent {
+  private readonly _injector = inject(Injector);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
-  private readonly _filtersContainer = inject(RouteDrivenContainerDirective, { self: true });
+  private readonly _filtersProvider = inject(RouteDrivenContainerDirective, { self: true });
   private readonly _paramMapToFilterVmListMapper = inject(ParamMapToFilterVmListMapper);
+  private readonly _dialogService = inject(TuiDialogService);
   public readonly FILTERS = FILTERS;
 
-  // DEV: simple static filters for development
-  public readonly filters$ = of<FilterVm[]>([
+
+  public readonly filters$ = this._filtersProvider.params$.pipe(
+    map(ps => this._paramMapToFilterVmListMapper.map(ps)),
+    map(fs => fs.filter(f => f.options.some(o => o.isSelected))),
+    map(fs => fs.map(f => ({
+      key: f.key,
+      name: f.name,
+      options: f.options.filter(o => o.isSelected),
+    }))),
+  ); 
+
+  private readonly FILTERS_OPTIONS: FilterDefinition[] = [
     {
       key: this.FILTERS.category,
       name: 'Category',
-      options: [
-        { name: 'Games', value: 'games', isSelected: false },
-        { name: 'Social', value: 'social', isSelected: false },
-        { name: 'Productivity', value: 'productivity', isSelected: false },
-      ],
+      options: CATEGORY_OPTIONS as FilterOptionSource[],
     },
+    
     {
       key: this.FILTERS.platform,
       name: 'Platform',
-      options: [
-        { name: 'iOS', value: 'ios', isSelected: false },
-        { name: 'Android', value: 'android', isSelected: false },
-        { name: 'Web', value: 'web', isSelected: false },
-      ],
+      options: PLATFORM_OPTIONS as FilterOptionSource[],
     },
     {
-      key: this.FILTERS.search,
-      name: 'Search',
-      options: [
-        { name: 'example', value: 'example', isSelected: false },
-      ],
+      key: this.FILTERS.device,
+      name: 'Device',
+      options: DEVICE_OPTIONS as FilterOptionSource[],
     },
-  ]);
+    {
+      key: this.FILTERS.monetization,
+      name: 'Monetization',
+      options: MONETIZATION_OPTIONS as FilterOptionSource[],
+    },
+    {
+      key: this.FILTERS.social,
+      name: 'Social',
+      options: SOCIAL_OPTIONS as FilterOptionSource[],
+    },
+    {
+      key: this.FILTERS.estimatedUsers,
+      name: 'Estimated Users',
+      options: ESTIMATED_USER_SPAN_OPTIONS as FilterOptionSource[],
+    },
+    {
+      key: this.FILTERS.tag,
+      name: 'Tag',
+      options: TAG_OPTIONS as FilterOptionSource[],
+    },
+  ];
 
-  // DEV: static options for development
-  public readonly categoryOptions$ = of<FilterOptionVm[]>([
-    { name: 'Games', value: 'games', isSelected: false },
-    { name: 'Social', value: 'social', isSelected: false },
-    { name: 'Productivity', value: 'productivity', isSelected: false },
-  ]);
-  public readonly platformOptions$ = of<FilterOptionVm[]>([
-    { name: 'iOS', value: 'ios', isSelected: false },
-    { name: 'Android', value: 'android', isSelected: false },
-    { name: 'Web', value: 'web', isSelected: false },
-  ]);
+  public readonly allFiltersOptions$ = of(this.FILTERS_OPTIONS).pipe(
+    map(fs => fs.map(f => ({
+      id: f.key,
+      name: f.name,
+      isSelected: false,
+    }))),
+  );
 
-  public readonly filtersMultiselectVm$ = this.filters$
+  public readonly activeFiltersOptions$ = this.filters$.pipe(
+    map(fs => fs.map(f => ({
+      id: f.key,
+      name: f.name,
+      isSelected: true,
+    }))),
+  );
+  
+  public readonly availableFiltersOptions$ = combineLatest([this.allFiltersOptions$, this.activeFiltersOptions$])
     .pipe(
-      map((fs) => ({
-        selectedFilters: (fs ?? []).map(f => ({
-          id: f.key,
-          name: f.name,
-          isSelected: (f.options ?? []).some(o => o.isSelected)
-        }))
-      } as FiltersMultiselectVM))
-    );
-  public readonly deviceOptions$ = inject(DEVICE_OPTION_PROVIDER).getDeviceOptions();
-  public readonly monetizationOptions$ = inject(MONETIZATION_OPTION_PROVIDER).getMonetizationOptions();
-  public readonly socialOptions$ = inject(SOCIAL_OPTION_PROVIDER).getSocialOptions();
-  public readonly estimatedUserSpanOptions$ = inject(ESTIMATED_USER_SPAN_OPTION_PROVIDER).getEstimatedUserSpanOptions();
-  public readonly tagOptions$ = inject(TAG_OPTION_PROVIDER).getTagOptions();
+      map(([all, active]) => all.filter(f => !active.some(a => a.id === f.id))),
+    )
+
+
 
   public setQueryParams(p: FilterVm[]): void {
     if ('phrase' in p && typeof p.phrase === 'string') {
@@ -180,31 +201,174 @@ export class SearchResultsPageComponent {
     }
   }
   
-  public categoryDropdownOpen = false;
-  public onOpenCategory(): void { this.categoryDropdownOpen = true; }
-  public onCloseCategory(): void { this.categoryDropdownOpen = false; }
-
-  public platformDropdownOpen = false;
-  public onOpenPlatform(): void { this.platformDropdownOpen = true; }
-  public onClosePlatform(): void { this.platformDropdownOpen = false; }
-
-  public searchDropdownOpen = false;
-  public onOpenSearch(): void { this.searchDropdownOpen = true; }
-  public onCloseSearch(): void { this.searchDropdownOpen = false; }
-
   public addFilterDropdownOpen = false;
+  public openFilterDropdowns: { [filterId: string]: boolean } = {};
 
   public hasSelected(filter: FilterVm): boolean {
     return (filter.options ?? []).some(o => !!o.isSelected);
   }
 
-  public onActivateFilter(filterId: string): void {
-    console.debug('activate filter', filterId);
+  public isFilterDropdownOpen(filterId: string): boolean {
+    return !!this.openFilterDropdowns[filterId];
+  }
+
+  public setFilterDropdownOpen(filterId: string, open: boolean): void {
+    this.openFilterDropdowns[filterId] = open;
+  }
+
+  public async onActivateFilter(filterId: string): Promise<void> {
+    const definition = this._findFilterDefinition(filterId);
+    if (!definition) {
+      console.warn(`Filter definition not found for id ${filterId}`);
+      return;
+    }
+
+    this.addFilterDropdownOpen = false;
+
+    const selectedValues = await firstValueFrom(
+      this._filtersProvider.params$.pipe(
+        map(params => Array.from(params[filterId] ?? []))
+      )
+    );
+
+    const dialogData = {
+      filterId,
+      filterName: definition.name,
+      options: this._mapFilterOptions(definition, selectedValues),
+    };
+
+    this._dialogService.open<FilterSelectionDialogResult | undefined>(
+      new PolymorpheusComponent(FilterSelectionDialogComponent, this._injector),
+      {
+        size: 'l',
+        data: dialogData,
+      }
+    ).subscribe(result => {
+      if (!result) {
+        return;
+      }
+      this._applyFilterSelection(result);
+    });
+  }
+
+  public onOpenFilterDropdown(filterId: string): void {
+    this.setFilterDropdownOpen(filterId, true);
+  }
+
+  public onCloseFilterDropdown(filterId: string): void {
+    this.setFilterDropdownOpen(filterId, false);
+  }
+
+  public getFilterOptions(filterId: string): FilterOptionVm[] {
+    const definition = this._findFilterDefinition(filterId);
+    if (!definition) {
+      return [];
+    }
+
+    const selectedValuesSet = new Set<string>();
+    this._filtersProvider.params$.pipe(
+      map(params => Array.from(params[filterId] ?? []))
+    ).subscribe(values => {
+      values.forEach(v => selectedValuesSet.add(v));
+    });
+
+    return this._mapFilterOptions(definition, Array.from(selectedValuesSet));
+  }
+
+  public onFilterSelectionChange(filterId: string, selected: FilterOptionVm[]): void {
+    const values = selected.map(o => o.value);
+    const queryParams = values.length > 0
+      ? { [filterId]: values }
+      : { [filterId]: null };
+
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 
   public onDeactivateFilter(filterId: string): void {
-    console.debug('deactivate filter', filterId);
+    this._clearFilterSelection(filterId);
   }
    
  
+  public getFilterDefinition(filterId: string): FilterDefinition | undefined {
+    return this._findFilterDefinition(filterId);
+  }
+
+  private _findFilterDefinition(filterId: string): FilterDefinition | undefined {
+    return this.FILTERS_OPTIONS.find(f => f.key === filterId);
+  }
+
+  private _mapFilterOptions(definition: FilterDefinition, selectedValues: string[]): FilterOptionVm[] {
+    const selected = new Set(selectedValues);
+    return definition.options.map(option => ({
+      name: option.name,
+      value: option.slug,
+      isSelected: selected.has(option.slug),
+    }));
+  }
+
+  private _applyFilterSelection(result: FilterSelectionDialogResult): void {
+    const values = result.selected.map(o => o.value);
+    const queryParams = values.length > 0
+      ? { [result.filterId]: values }
+      : { [result.filterId]: null };
+
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private _clearFilterSelection(filterId: string): void {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: { [filterId]: null },
+      queryParamsHandling: 'merge',
+    });
+  }
 }
+
+
+
+  // // DEV: simple static filters for development
+  // public readonly filters$ = of<FilterVm[]>([
+  //   {
+  //     key: this.FILTERS.category,
+  //     name: 'Category',
+  //     options: [
+  //       { name: 'Games', value: 'games', isSelected: true },
+  //       { name: 'Social', value: 'social', isSelected: true },
+  //       { name: 'Productivity', value: 'productivity', isSelected: false },
+  //     ],
+  //   },
+  //   {
+  //     key: this.FILTERS.platform,
+  //     name: 'Platform',
+  //     options: [
+  //       { name: 'iOS', value: 'ios', isSelected: true },
+  //       { name: 'Android', value: 'android', isSelected: true },
+  //       { name: 'Web', value: 'web', isSelected: true },  
+  //     ],
+  //   },
+  //   {
+  //     key: this.FILTERS.search,
+  //     name: 'Search',
+  //     options: [
+  //       { name: 'example', value: 'example', isSelected: true },
+  //     ],
+  //   },
+  // ]);
+  // public readonly filtersMultiselectVm$ = this.filters$
+  //   .pipe(
+  //     map((fs) => 
+  //       (fs ?? []).map(f => ({
+  //         id: f.key,
+  //           name: f.name,
+  //           isSelected: (f.options ?? []).some(o => o.isSelected)
+  //       }))
+  //     )
+  //   );

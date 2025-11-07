@@ -1,51 +1,53 @@
-<section>  
-  <h2>Active filters</h2>
-  <div 
-    class="add-filter-trigger"
+<section class="filters-section">  
+  <button
+    class="add-filter-button"
+    tuiButton
+    type="button"
+    size="s"
+    appearance="primary"
+    iconStart="@tui.funnel-plus"
     [tuiDropdown]="addFilterDropdown"
     [(tuiDropdownOpen)]="addFilterDropdownOpen">
-    <tui-icon icon="@tui.plus" size="s"></tui-icon>
-  </div>
+    Manage filters
+  </button>
   <ng-template #addFilterDropdown>
     <div class="dropdown-panel">
       <filters-multiselect 
-        [vm]="filtersMultiselectVm$ | async"
-        (activate)="onActivateFilter($event)"
-        (deactivate)="onDeactivateFilter($event)">
+        [availableFilters]="availableFiltersOptions$ | async"
+        [activeFilters]="activeFiltersOptions$ | async"
+        (activated)="onActivateFilter($event)"
+        (deactivated)="onDeactivateFilter($event)">
       </filters-multiselect>
     </div>
   </ng-template>
-  
-  @let categoryOptions = categoryOptions$ | async;
-  @let platformOptions = platformOptions$ | async;
+
   @let filters = filters$ | async;
-  <div 
-    [tuiDropdown]="categoryDropdown" 
-    [(tuiDropdownOpen)]="categoryDropdownOpen">
+  @for (f of filters; track f.key) {
     <selected-filter-chip 
-      name="Category" 
-      [selectedOptions]="[]"
-      (open)="onOpenCategory()"
-      (close)="onCloseCategory()"
-    />
-  </div>
+      [name]="f.name" 
+      [selectedOptions]="f.options"
+      (open)="onOpenFilterDropdown(f.key)"
+      (close)="onCloseFilterDropdown(f.key)"
+      (remove)="onDeactivateFilter(f.key)"
+      [tuiDropdown]="filterDropdownTemplate"
+      [(tuiDropdownOpen)]="openFilterDropdowns[f.key]"
+    >
+      <ng-template #filterDropdownTemplate>
+        <div class="dropdown-panel">
+          <filter-dropdown-content
+            [filterId]="f.key"
+            [filterName]="getFilterDefinition(f.key)?.name || f.key"
+            [options]="getFilterOptions(f.key)"
+            (selectionChange)="onFilterSelectionChange(f.key, $event)"
+            (close)="onCloseFilterDropdown(f.key)"
+          />
+        </div>
+      </ng-template>
+    </selected-filter-chip>
+  }
 
-  <ng-template #categoryDropdown>
-    <div class="dropdown-panel">
-      @for (f of filters; track f.key) {
-        <tui-chip appearance="accent" iconEnd="@tui.chevron-down"></tui-chip>
-      }
-      <searchable-multiselect
-        [options]="categoryOptions"
-        placeholder="Select categories"
-        groupLabel="Categories">
-      </searchable-multiselect>
 
-    </div>
-  </ng-template>
-
-
-  <div 
+  <!-- <div 
     [tuiDropdown]="platformDropdown" 
     [(tuiDropdownOpen)]="platformDropdownOpen">
     <selected-filter-chip 
@@ -78,11 +80,10 @@
   </div>
   <ng-template #searchDropdown>
     <div class="dropdown-panel">
-      <!-- Search has a single value -->
       <input type="text" placeholder="Type to search..." />
     </div>
   </ng-template>
-
+ -->
 
 
 

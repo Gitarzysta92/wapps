@@ -1,12 +1,33 @@
-@for (f of vm?.selectedFilters || []; track f.id) {
-  <label class="dropdown-item">
-    <input 
-      type="checkbox" 
-      tuiCheckbox 
-      [checked]="f.isSelected" 
-      (click)="toggle($event, f)" />
-    <span>{{ f.name }}</span>
-  </label>
-}
+<h2>Active filters</h2>
+<div class="active-filters"> 
+  @for (f of activeFilters || []; track f.id) {
+    <button
+      class="add-filter-button"
+      tuiButton
+      type="button" 
+      size="s"
+      appearance="primary"
+      iconStart="@tui.check"
+      iconEnd="@tui.x"
+      (click)="deactivate(f)">
+      <span>{{ f.name }}</span>
+    </button>
+  }
+</div>
 
-
+<hr>
+<h2>Available filters</h2>
+<div class="filters-multiselect"> 
+  @for (f of availableFilters || []; track f.id) { 
+    <button
+      class="add-filter-button"
+      tuiButton
+      type="button" 
+      size="s"
+      appearance="secondary"
+      iconEnd="@tui.plus"
+      (click)="activate(f)">
+      <span>{{ f.name }}</span>
+    </button>
+  }
+</div>

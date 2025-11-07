@@ -10,4 +10,20 @@ tui-chip {
 
 .dropdown-panel {
   width: 250px;
+  padding: $space-4;
+}
+
+
+.filters-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-6;
+  padding: $space-4;
+  border-radius: $radius-md;
+}
+
+.add-filter-button {
+  padding: 0 $space-4;
 }

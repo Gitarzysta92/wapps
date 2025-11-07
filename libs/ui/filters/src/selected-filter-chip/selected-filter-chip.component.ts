@@ -17,7 +17,7 @@ export class SelectedFilterChipComponent {
   @Input() selectedOptions: ReadonlyArray<FilterOptionVm> = [];
 
   @Output() open = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  @Output() remove = new EventEmitter<void>();
 
   public readonly selectedNames = computed(() =>
     (this.selectedOptions || []).filter(o => !!o.isSelected).map(o => o.name)
@@ -43,7 +43,7 @@ export class SelectedFilterChipComponent {
 
   onCloseClick(event: MouseEvent): void {
     event.stopPropagation();
-    this.close.emit();
+    this.remove.emit();
   }
 }
 

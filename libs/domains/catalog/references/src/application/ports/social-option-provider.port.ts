@@ -6,3 +6,4 @@ export interface ISocialOptionProvider {
   getSocialOptions(): Observable<Result<SocialOptionDto[], Error>>;
 }
 
+

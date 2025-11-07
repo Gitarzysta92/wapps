@@ -6,3 +6,4 @@ export interface IMonetizationOptionProvider {
   getMonetizationOptions(): Observable<Result<MonetizationOptionDto[], Error>>;
 }
 
+

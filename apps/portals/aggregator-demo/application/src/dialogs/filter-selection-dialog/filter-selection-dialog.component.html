@@ -1,0 +1,67 @@
+<div class="dialog">
+  <header class="dialog__header">
+    <h2>{{ filterName }}</h2>
+  </header>
+
+  <section class="dialog__body">
+    <div class="dialog__search">
+      <tui-textfield>
+        <input
+          tuiTextfield
+          type="text"
+          [placeholder]="placeholder"
+          [(ngModel)]="searchPhrase"
+        />
+      </tui-textfield>
+    </div>
+
+    <div class="dialog__options-list">
+      @for (option of filteredOptions(); track option.value) {
+        <label class="dialog__option" (click)="toggleOption(option)">
+          <input
+            tuiCheckbox
+            type="checkbox"
+            [checked]="isSelected(option)"
+            (click)="$event.stopPropagation()"
+          />
+          <span class="dialog__option-label">{{ option.name }}</span>
+        </label>
+      } @empty {
+        <p class="dialog__no-results">No matching options found.</p>
+      }
+    </div>
+
+    <div class="dialog__selected">
+      <h3>Selected ({{ selected().length }})</h3>
+      @if (hasSelection()) {
+        <div class="dialog__selected-list">
+          @for (option of selected(); track option.value) {
+            <tui-chip appearance="secondary">{{ option.name }}</tui-chip>
+          }
+        </div>
+      } @else {
+        <p class="dialog__selected-empty">No filters selected.</p>
+      }
+    </div>
+  </section>
+
+  <footer class="dialog__actions">
+    <button
+      tuiButton
+      appearance="flat"
+      type="button"
+      (click)="onCancel()"
+    >
+      Cancel
+    </button>
+    <button
+      tuiButton
+      appearance="primary"
+      type="button"
+      (click)="onApply()"
+    >
+      Apply
+    </button>
+  </footer>
+</div>
+
