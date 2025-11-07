@@ -43,26 +43,18 @@
                 [groupLabel]="f.name"
                 (change)="onFilterSelectionChange(f.key, $event)">
               </multiselect-list>
-              <!-- <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
-                [selectedOptions]="f.options"
-                [placeholder]="'Search categories...'"
-                [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
-              /> -->
             }
             @case (FILTERS.platform) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
-                [placeholder]="'Search platforms...'"
                 [groupLabel]="f.name"
-                (change)="onFilterSelectionChange(f.key, $event)"
-              />
+                (change)="onFilterSelectionChange(f.key, $event)">
+              </multiselect-list>
             }
             @case (FILTERS.device) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search devices...'"
                 [groupLabel]="f.name"
@@ -70,8 +62,8 @@
               />
             }
             @case (FILTERS.monetization) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search monetization...'"
                 [groupLabel]="f.name"
@@ -79,8 +71,8 @@
               />
             }
             @case (FILTERS.social) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search social...'"
                 [groupLabel]="f.name"
@@ -88,8 +80,8 @@
               />
             }
             @case (FILTERS.estimatedUsers) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search user ranges...'"
                 [groupLabel]="f.name"
@@ -97,11 +89,18 @@
               />
             }
             @case (FILTERS.tag) {
-              <searchable-multiselect
-                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search tags...'"
                 [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.search) {
+              <text-search-input
+                [selectedOptions]="f.options"
+                [placeholder]="'Search...'"
                 (change)="onFilterSelectionChange(f.key, $event)"
               />
             }
@@ -113,7 +112,7 @@
       </ng-template>
     </selected-filter-chip>
   }
-
+</section>
 
   <!-- <div 
     [tuiDropdown]="platformDropdown" 

@@ -1,38 +1,40 @@
+@use 'ui/design-system/src/styles' as *;
+
 .multiselect-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: $space-3;
 
   .search-input {
     width: 100%;
   }
 
   .group-label {
-    font-weight: 600;
-    font-size: 0.875rem;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
     color: var(--tui-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-top: 0.25rem;
+    margin-top: $space-1;
   }
 
   .items-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: $space-2;
 
     &::-webkit-scrollbar {
-      width: 6px;
+      width: $space-2;
     }
 
     &::-webkit-scrollbar-track {
       background: var(--tui-background-neutral-1);
-      border-radius: 3px;
+      border-radius: $space-1;
     }
 
     &::-webkit-scrollbar-thumb {
       background: var(--tui-background-neutral-2);
-      border-radius: 3px;
+      border-radius: $space-1;
 
       &:hover {
         background: var(--tui-text-tertiary);
@@ -42,7 +44,7 @@
     .item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: $space-2;
       cursor: pointer;
       user-select: none;
       width: 100%;

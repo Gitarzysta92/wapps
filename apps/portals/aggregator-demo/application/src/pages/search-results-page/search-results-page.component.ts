@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
 import { map } from 'rxjs/operators';
 import { RouteDrivenContainerDirective } from '@ui/routing';
-import { MultiselectListComponent, SearchableMultiselectComponent, SearchableOption } from '@ui/form';
+import { MultiselectListComponent, SearchableMultiselectComponent, SearchableOption, TextSearchInputComponent } from '@ui/form';
 import { combineLatest, firstValueFrom, of } from 'rxjs';
 import { 
   CATEGORY_OPTION_PROVIDER,
@@ -56,6 +56,7 @@ type FilterDefinition = {
     FiltersMultiselectComponent,
     MultiselectListComponent,
     SearchableMultiselectComponent,
+    TextSearchInputComponent,
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
@@ -167,6 +168,11 @@ export class SearchResultsPageComponent {
       name: 'Tag',
       options: TAG_OPTIONS as FilterOptionSource[],
     },
+    {
+      key: this.FILTERS.search,
+      name: 'Search',
+      options: [{ id: 0, name: 'Search', slug: 'search' } as FilterOptionSource],
+    }
   ];
 
   readonly FILTERS_OPTIONS_DICTIONARY = {
@@ -177,6 +183,7 @@ export class SearchResultsPageComponent {
     [this.FILTERS.social]: mapToSearchableOption(SOCIAL_OPTIONS),
     [this.FILTERS.estimatedUsers]: mapToSearchableOption(ESTIMATED_USER_SPAN_OPTIONS),
     [this.FILTERS.tag]: mapToSearchableOption(TAG_OPTIONS),
+    [this.FILTERS.search]: mapToSearchableOption([{ id: 0, name: 'Search', slug: 'search' }]),
   };
 
   public readonly allFiltersOptions$ = of(this.FILTERS_OPTIONS).pipe(
