@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
 import { map } from 'rxjs/operators';
 import { RouteDrivenContainerDirective } from '@ui/routing';
+import { SearchableMultiselectComponent, SearchableOption } from '@ui/form';
 import { combineLatest, firstValueFrom, of } from 'rxjs';
 import { 
   CATEGORY_OPTION_PROVIDER,
@@ -27,7 +28,6 @@ import {
 } from '@portals/shared/data';
 import { TuiAppearance, TuiButton, TuiDialogService } from '@taiga-ui/core';
 import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
-import { FilterDropdownContentComponent } from '../../partials/filter-dropdown-content/filter-dropdown-content.component';
 import { FilterSelectionDialogComponent, FilterSelectionDialogResult } from '../../dialogs/filter-selection-dialog/filter-selection-dialog.component';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
@@ -54,7 +54,7 @@ type FilterDefinition = {
     TuiDropdownDirective,
     TuiAppearance,
     FiltersMultiselectComponent,
-    FilterDropdownContentComponent,
+    SearchableMultiselectComponent,
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
@@ -168,6 +168,16 @@ export class SearchResultsPageComponent {
     },
   ];
 
+  readonly FILTERS_OPTIONS_DICTIONARY = {
+    [this.FILTERS.category]: mapToSearchableOption(CATEGORY_OPTIONS),
+    [this.FILTERS.platform]: mapToSearchableOption(PLATFORM_OPTIONS),
+    [this.FILTERS.device]: mapToSearchableOption(DEVICE_OPTIONS),
+    [this.FILTERS.monetization]: mapToSearchableOption(MONETIZATION_OPTIONS),
+    [this.FILTERS.social]: mapToSearchableOption(SOCIAL_OPTIONS),
+    [this.FILTERS.estimatedUsers]: mapToSearchableOption(ESTIMATED_USER_SPAN_OPTIONS),
+    [this.FILTERS.tag]: mapToSearchableOption(TAG_OPTIONS),
+  };
+
   public readonly allFiltersOptions$ = of(this.FILTERS_OPTIONS).pipe(
     map(fs => fs.map(f => ({
       id: f.key,
@@ -259,23 +269,8 @@ export class SearchResultsPageComponent {
     this.setFilterDropdownOpen(filterId, false);
   }
 
-  public getFilterOptions(filterId: string): FilterOptionVm[] {
-    const definition = this._findFilterDefinition(filterId);
-    if (!definition) {
-      return [];
-    }
 
-    const selectedValuesSet = new Set<string>();
-    this._filtersProvider.params$.pipe(
-      map(params => Array.from(params[filterId] ?? []))
-    ).subscribe(values => {
-      values.forEach(v => selectedValuesSet.add(v));
-    });
-
-    return this._mapFilterOptions(definition, Array.from(selectedValuesSet));
-  }
-
-  public onFilterSelectionChange(filterId: string, selected: FilterOptionVm[]): void {
+  public onFilterSelectionChange(filterId: string, selected: SearchableOption[]): void {
     const values = selected.map(o => o.value);
     const queryParams = values.length > 0
       ? { [filterId]: values }
@@ -332,43 +327,12 @@ export class SearchResultsPageComponent {
   }
 }
 
-
-
-  // // DEV: simple static filters for development
-  // public readonly filters$ = of<FilterVm[]>([
-  //   {
-  //     key: this.FILTERS.category,
-  //     name: 'Category',
-  //     options: [
-  //       { name: 'Games', value: 'games', isSelected: true },
-  //       { name: 'Social', value: 'social', isSelected: true },
-  //       { name: 'Productivity', value: 'productivity', isSelected: false },
-  //     ],
-  //   },
-  //   {
-  //     key: this.FILTERS.platform,
-  //     name: 'Platform',
-  //     options: [
-  //       { name: 'iOS', value: 'ios', isSelected: true },
-  //       { name: 'Android', value: 'android', isSelected: true },
-  //       { name: 'Web', value: 'web', isSelected: true },  
-  //     ],
-  //   },
-  //   {
-  //     key: this.FILTERS.search,
-  //     name: 'Search',
-  //     options: [
-  //       { name: 'example', value: 'example', isSelected: true },
-  //     ],
-  //   },
-  // ]);
-  // public readonly filtersMultiselectVm$ = this.filters$
-  //   .pipe(
-  //     map((fs) => 
-  //       (fs ?? []).map(f => ({
-  //         id: f.key,
-  //           name: f.name,
-  //           isSelected: (f.options ?? []).some(o => o.isSelected)
-  //       }))
-  //     )
-  //   );
+function mapToSearchableOption(options: { id: number; name: string; slug: string }[]): SearchableOption[] {
+  return options.map(c => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    isSelected: false,
+    value: c.slug,
+  }));
+}

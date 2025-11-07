@@ -45,7 +45,7 @@ import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 import { EntityType } from '@domains/discovery';
 import { delay, map, of, tap } from "rxjs";
-import { buildRoutePath, buildQueryString } from '@portals/shared/boundary/navigation';
+import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { FILTERS } from "../../filters";
 
 type RegisteredFeedItem = Array<

@@ -34,13 +34,74 @@
     >
       <ng-template #filterDropdownTemplate>
         <div class="dropdown-panel">
-          <filter-dropdown-content
-            [filterId]="f.key"
-            [filterName]="getFilterDefinition(f.key)?.name || f.key"
-            [options]="getFilterOptions(f.key)"
-            (selectionChange)="onFilterSelectionChange(f.key, $event)"
-            (close)="onCloseFilterDropdown(f.key)"
-          />
+          @switch (f.key) {
+            @case (FILTERS.category) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search categories...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.platform) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search platforms...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.device) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search devices...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.monetization) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search monetization...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.social) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search social...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.estimatedUsers) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search user ranges...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @case (FILTERS.tag) {
+              <searchable-multiselect
+                [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search tags...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)"
+              />
+            }
+            @default {
+              <p>Unknown filter: {{ f.key }}</p>
+            }
+          }
         </div>
       </ng-template>
     </selected-filter-chip>
