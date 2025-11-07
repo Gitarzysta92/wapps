@@ -4,7 +4,9 @@
     <span class="filter-name">{{ name }}:</span>
   </div>
   <div class="chip-right" tuiFade (click)="onOpenClick($event)">
-    <span class="filter-value" [class.empty]="selectedCount() === 0">{{ displayText() }}</span>
+    <span class="filter-value" [class.empty]="selectedCount() === 0">
+      {{ displayText() }}
+    </span>
   </div>
 </tui-chip>
 

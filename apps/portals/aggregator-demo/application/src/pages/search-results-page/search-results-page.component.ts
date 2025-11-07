@@ -3,9 +3,9 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { FILTERS } from '../../filters';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { RouteDrivenContainerDirective } from '@ui/routing';
-import { MultiselectListComponent, SearchableMultiselectComponent, SearchableOption, TextSearchInputComponent } from '@ui/form';
+import { MultiselectListComponent, SearchableOption, TextSearchInputComponent } from '@ui/form';
 import { combineLatest, firstValueFrom, of } from 'rxjs';
 import { 
   CATEGORY_OPTION_PROVIDER,
@@ -55,7 +55,6 @@ type FilterDefinition = {
     TuiAppearance,
     FiltersMultiselectComponent,
     MultiselectListComponent,
-    SearchableMultiselectComponent,
     TextSearchInputComponent,
   ],
   templateUrl: './search-results-page.component.html',
@@ -129,6 +128,7 @@ export class SearchResultsPageComponent {
       name: f.name,
       options: f.options.filter(o => o.isSelected),
     }))),
+    tap(ps => console.log(ps)),
   ); 
 
   private readonly FILTERS_OPTIONS: FilterDefinition[] = [
