@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { FilterOptionVm } from '@ui/filters';
-import { TuiButton, TuiDialogContext, TuiTextfield, TuiTextfieldComponent } from '@taiga-ui/core';
-import { TuiCheckbox, TuiChip } from '@taiga-ui/kit';
+import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
+import { MultiselectListComponent } from '@ui/form';
 
 export interface FilterSelectionDialogData {
   filterId: string;
@@ -25,12 +24,8 @@ export interface FilterSelectionDialogResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
     TuiButton,
-    TuiChip,
-    TuiTextfield,
-    TuiTextfieldComponent,
-    TuiCheckbox,
+    MultiselectListComponent,
   ],
 })
 export class FilterSelectionDialogComponent {
@@ -39,34 +34,15 @@ export class FilterSelectionDialogComponent {
 
   public readonly options = this._data.options;
   public readonly filterName = this._data.filterName;
-  public readonly selected = signal<FilterOptionVm[]>(this._data.options.filter(o => o.isSelected));
+  public readonly filterId = this._data.filterId;
   public readonly placeholder = `Search ${this._data.filterName.toLowerCase()}...`;
-  public searchPhrase = signal<string>('');
 
-  public readonly hasSelection = computed(() => this.selected().length > 0);
-
-  public readonly filteredOptions = computed(() => {
-    const phrase = this.searchPhrase().trim().toLowerCase();
-    if (!phrase) {
-      return this.options;
-    }
-    return this.options.filter(opt => opt.name.toLowerCase().includes(phrase));
-  });
-
-  public isSelected(option: FilterOptionVm): boolean {
-    return this.selected().some(s => s.value === option.value);
+  public onSelectionChange(selected: FilterOptionVm[]): void {
+    // Store the selection for when Apply is clicked
+    this._selectedOptions = selected;
   }
 
-  public toggleOption(option: FilterOptionVm): void {
-    const currentSelected = this.selected();
-    const isCurrentlySelected = currentSelected.some(s => s.value === option.value);
-    
-    if (isCurrentlySelected) {
-      this.selected.set(currentSelected.filter(s => s.value !== option.value));
-    } else {
-      this.selected.set([...currentSelected, option]);
-    }
-  }
+  private _selectedOptions: FilterOptionVm[] = this._data.options.filter(o => o.isSelected);
 
   public onCancel(): void {
     this._context.completeWith(undefined);
@@ -75,7 +51,7 @@ export class FilterSelectionDialogComponent {
   public onApply(): void {
     this._context.completeWith({
       filterId: this._data.filterId,
-      selected: this.selected(),
+      selected: this._selectedOptions,
     });
   }
 

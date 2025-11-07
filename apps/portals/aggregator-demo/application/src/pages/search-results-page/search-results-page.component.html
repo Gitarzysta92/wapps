@@ -114,45 +114,6 @@
   }
 </section>
 
-  <!-- <div 
-    [tuiDropdown]="platformDropdown" 
-    [(tuiDropdownOpen)]="platformDropdownOpen">
-    <selected-filter-chip 
-      name="Platform" 
-      [selectedOptions]="[]"
-      (open)="onOpenPlatform()"
-      (close)="onClosePlatform()"
-    />
-  </div>
-  <ng-template #platformDropdown>
-    <div class="dropdown-panel">
-      @for (f of filters; track f.key) {
-        <tui-chip appearance="accent" iconEnd="@tui.chevron-down"></tui-chip>
-      }
-      <multiselect-dropdown
-        [items]="platformOptions">
-      </multiselect-dropdown>
-    </div>
-  </ng-template>
-
-  <div 
-    [tuiDropdown]="searchDropdown" 
-    [(tuiDropdownOpen)]="searchDropdownOpen">
-    <selected-filter-chip 
-      name="Search" 
-      [selectedOptions]="[]"
-      (open)="onOpenSearch()"
-      (close)="onCloseSearch()"
-    />
-  </div>
-  <ng-template #searchDropdown>
-    <div class="dropdown-panel">
-      <input type="text" placeholder="Type to search..." />
-    </div>
-  </ng-template>
- -->
-
-
 
 <!-- 
 <section class="container">
@@ -184,59 +145,3 @@
     </div>
   </div>
 </section> -->
-
-<!-- | toFilterOptionsList: f.options -->
-
-
-
-
-
-<!-- 
-@let filters = filters$ | async;
-<filter-group 
-  [filters]="filters" 
-  (change)="setQueryParams($event)">
-  @for (f of filters; track f.key) {
-    @if (f.key === FILTERS.category) {
-      <searchable-multiselect
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        [options]="categoryOptions || []"
-        placeholder="Select categories"
-        groupLabel="Categories"
-        (change)="filter.updateMany($event)">
-      </searchable-multiselect>
-    }
-    @else if (f.key === FILTERS.platform) {
-      <multiselect-dropdown
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        [items]="platformOptions || []"
-        (change)="filter.updateMany($event)">
-      </multiselect-dropdown>
-    }
-    @else if (f.key === FILTERS.search) {
-      <text-search-input
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        placeholder="Search..."
-        (change)="filter.updateMany($event)">
-      </text-search-input>
-    }
-  } 
-</filter-group>
-
-<searchable-multiselect
-
-[options]="categoryOptions || []"
-placeholder="Select categories"
-groupLabel="Categories">
-</searchable-multiselect>
-
-<multiselect-dropdown
-
-[items]="platformOptions || []">
-</multiselect-dropdown> -->
