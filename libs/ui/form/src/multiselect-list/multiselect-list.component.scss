@@ -1,0 +1,52 @@
+.multiselect-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .search-input {
+    width: 100%;
+  }
+
+  .group-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--tui-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+  }
+
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--tui-background-neutral-1);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--tui-background-neutral-2);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--tui-text-tertiary);
+      }
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+    }
+  }
+}
+

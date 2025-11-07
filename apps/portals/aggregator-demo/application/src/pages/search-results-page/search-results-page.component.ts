@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
 import { map } from 'rxjs/operators';
 import { RouteDrivenContainerDirective } from '@ui/routing';
-import { SearchableMultiselectComponent, SearchableOption } from '@ui/form';
+import { MultiselectListComponent, SearchableMultiselectComponent, SearchableOption } from '@ui/form';
 import { combineLatest, firstValueFrom, of } from 'rxjs';
 import { 
   CATEGORY_OPTION_PROVIDER,
@@ -54,6 +54,7 @@ type FilterDefinition = {
     TuiDropdownDirective,
     TuiAppearance,
     FiltersMultiselectComponent,
+    MultiselectListComponent,
     SearchableMultiselectComponent,
   ],
   templateUrl: './search-results-page.component.html',

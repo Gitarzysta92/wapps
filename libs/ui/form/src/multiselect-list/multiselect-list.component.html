@@ -1,0 +1,20 @@
+<div class="multiselect-list">
+  
+  @if (groupLabel) {
+    <div class="group-label">{{ groupLabel }}</div>
+  }
+  
+  <div class="items-list">
+    @for (item of filteredItems; track item.value) {
+      <label tuiCheckbox class="item">
+        <input
+          tuiCheckbox
+          type="checkbox"
+          [ngModel]="isSelected(item)"
+          (ngModelChange)="toggleItem(item, $event)"
+        />
+        <span class="item-name">{{ item.name }}</span>
+      </label>
+    }
+  </div>
+</div>

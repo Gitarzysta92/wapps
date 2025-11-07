@@ -36,13 +36,20 @@
         <div class="dropdown-panel">
           @switch (f.key) {
             @case (FILTERS.category) {
-              <searchable-multiselect
+              <multiselect-list
+                [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+                [selectedOptions]="f.options"
+                [placeholder]="'Search categories...'"
+                [groupLabel]="f.name"
+                (change)="onFilterSelectionChange(f.key, $event)">
+              </multiselect-list>
+              <!-- <searchable-multiselect
                 [options]="FILTERS_OPTIONS_DICTIONARY[f.key]"
                 [selectedOptions]="f.options"
                 [placeholder]="'Search categories...'"
                 [groupLabel]="f.name"
                 (change)="onFilterSelectionChange(f.key, $event)"
-              />
+              /> -->
             }
             @case (FILTERS.platform) {
               <searchable-multiselect
