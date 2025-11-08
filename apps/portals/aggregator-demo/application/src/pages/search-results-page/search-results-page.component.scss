@@ -96,18 +96,48 @@
     }
   }
   
-  .pagination {
+  .load-more-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: $space-4;
     padding: $space-4 0;
     width: 100%;
     
-    .page-info {
-      padding: 0 $space-3;
+    &.load-more-top {
+      margin-bottom: $space-4;
+    }
+    
+    &.load-more-bottom {
+      margin-top: $space-4;
+    }
+    
+    button {
+      min-width: 200px;
+    }
+  }
+  
+  .page-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: $space-6 0;
+    position: relative;
+    
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--tui-border-normal);
+    }
+    
+    .separator-label {
+      padding: 0 $space-4;
       @include text($font-size-sm, $font-weight-medium);
       color: var(--tui-text-tertiary);
+      background: var(--feed-radial-gradient);
+      white-space: nowrap;
     }
   }
 }

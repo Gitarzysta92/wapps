@@ -5,6 +5,19 @@ import { FiltersBarComponent } from '../../partials/filters-bar/src';
 import { SortingSelectComponent } from '../../partials/sorting-select/sorting-select.component';
 import { TuiButton } from '@taiga-ui/core';
 
+interface SearchResultItem {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  rating: string;
+}
+
+interface PageData {
+  pageNumber: number;
+  items: SearchResultItem[];
+}
+
 @Component({
   selector: 'search-results-page',
   standalone: true,
@@ -24,18 +37,84 @@ import { TuiButton } from '@taiga-ui/core';
   },
 })
 export class SearchResultsPageComponent {
-  // Mock data for display
-  public items = [
-    { id: 1, name: 'Sample App 1', description: 'A great application for productivity', category: 'Productivity', rating: 4.5 },
-    { id: 2, name: 'Sample App 2', description: 'Entertainment application', category: 'Entertainment', rating: 4.2 },
-    { id: 3, name: 'Sample App 3', description: 'Educational tool', category: 'Education', rating: 4.8 },
-    { id: 4, name: 'Sample App 4', description: 'Social networking platform', category: 'Social', rating: 4.0 },
-    { id: 5, name: 'Sample App 5', description: 'Photo editing software', category: 'Graphics', rating: 4.6 },
-    { id: 6, name: 'Sample App 6', description: 'Video streaming service', category: 'Entertainment', rating: 4.3 },
-  ];
-
-  public currentPage = 1;
+  // Track loaded pages with their items
+  public loadedPages = new Map<number, SearchResultItem[]>();
+  public firstLoadedPage = 1;
+  public lastLoadedPage = 1;
   public totalPages = 5;
+  public itemsPerPage = 6;
+
+  constructor() {
+    // Load initial page
+    this.loadPage(1);
+  }
+
+  // Get all items from loaded pages in order
+  public get allLoadedItems(): PageData[] {
+    const pages: PageData[] = [];
+    for (let i = this.firstLoadedPage; i <= this.lastLoadedPage; i++) {
+      const items = this.loadedPages.get(i);
+      if (items) {
+        pages.push({ pageNumber: i, items });
+      }
+    }
+    return pages;
+  }
+
+  public get canLoadPrevious(): boolean {
+    return this.firstLoadedPage > 1;
+  }
+
+  public get canLoadNext(): boolean {
+    return this.lastLoadedPage < this.totalPages;
+  }
+
+  public get totalLoadedItems(): number {
+    let count = 0;
+    this.loadedPages.forEach(items => count += items.length);
+    return count;
+  }
+
+  public loadPreviousPage(): void {
+    if (this.canLoadPrevious) {
+      const pageToLoad = this.firstLoadedPage - 1;
+      this.loadPage(pageToLoad);
+      this.firstLoadedPage = pageToLoad;
+    }
+  }
+
+  public loadNextPage(): void {
+    if (this.canLoadNext) {
+      const pageToLoad = this.lastLoadedPage + 1;
+      this.loadPage(pageToLoad);
+      this.lastLoadedPage = pageToLoad;
+    }
+  }
+
+  private loadPage(pageNumber: number): void {
+    // Mock API call - generate items for this page
+    const items = this.generateMockItems(pageNumber, this.itemsPerPage);
+    this.loadedPages.set(pageNumber, items);
+  }
+
+  private generateMockItems(page: number, count: number): SearchResultItem[] {
+    const startId = (page - 1) * count + 1;
+    const categories = ['Productivity', 'Entertainment', 'Education', 'Social', 'Graphics', 'Business', 'Tools', 'Games'];
+    const items: SearchResultItem[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const id = startId + i;
+      items.push({
+        id,
+        name: `Sample App ${id}`,
+        description: `Description for application ${id}`,
+        category: categories[id % categories.length],
+        rating: (3.5 + Math.random() * 1.5).toFixed(1),
+      });
+    }
+
+    return items;
+  }
 
   public onSortingChange(event: { sort: string }): void {
     console.log('Sorting changed:', event);

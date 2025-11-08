@@ -10,23 +10,39 @@
 
 <section class="section__results">
   <div class="results-header">
-    <h2>Results ({{ items.length }} items)</h2>
+    <h2>Results ({{ totalLoadedItems }} items)</h2>
   </div>
   
-  <div class="items-grid">
-    <div *ngFor="let item of items" class="item-card">
-      <h3>{{ item.name }}</h3>
-      <p class="description">{{ item.description }}</p>
-      <div class="item-meta">
-        <span class="category">{{ item.category }}</span>
-        <span class="rating">★ {{ item.rating }}</span>
+  <!-- Load More (Previous) Button at Top -->
+  <div *ngIf="canLoadPrevious" class="load-more-container load-more-top">
+    <button tuiButton appearance="secondary" (click)="loadPreviousPage()">
+      Load Previous Page
+    </button>
+  </div>
+  
+  <!-- Items grouped by pages with separators -->
+  <ng-container *ngFor="let pageData of allLoadedItems; let isFirst = first; let isLast = last">
+    <!-- Page separator (not shown before first page) -->
+    <div *ngIf="!isFirst" class="page-separator">
+      <span class="separator-label">Page {{ pageData.pageNumber }}</span>
+    </div>
+    
+    <div class="items-grid">
+      <div *ngFor="let item of pageData.items" class="item-card">
+        <h3>{{ item.name }}</h3>
+        <p class="description">{{ item.description }}</p>
+        <div class="item-meta">
+          <span class="category">{{ item.category }}</span>
+          <span class="rating">★ {{ item.rating }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
   
-  <div class="pagination">
-    <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
-    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-    <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
+  <!-- Load More (Next) Button at Bottom -->
+  <div *ngIf="canLoadNext" class="load-more-container load-more-bottom">
+    <button tuiButton appearance="secondary" (click)="loadNextPage()">
+      Load More
+    </button>
   </div>
 </section>
