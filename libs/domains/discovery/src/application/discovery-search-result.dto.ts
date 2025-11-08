@@ -60,4 +60,5 @@ export type DiscoverySearchResultSuiteItemDto = {
   commentsNumber: number;
   authorName: string;
   authorAvatarUrl: string;
+  tags: TagDto[];
 } & DiscoverySearchResultEntryDto;

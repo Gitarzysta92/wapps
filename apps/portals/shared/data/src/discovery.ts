@@ -26,7 +26,11 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
           numberOfApps: 6,
           commentsNumber: 78,
           authorName: 'Creative Studio',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png'
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
         }
       ]
     },
@@ -140,7 +144,11 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           numberOfApps: 8,
           commentsNumber: 156,
           authorName: 'Productivity Team',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png'
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
         },
         {
           type: DiscoverySearchResultType.Suite,
@@ -150,7 +158,11 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           numberOfApps: 5,
           commentsNumber: 92,
           authorName: 'Wellness Group',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png'
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
         },
         {
           type: DiscoverySearchResultType.Suite,
@@ -160,7 +172,11 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           numberOfApps: 12,
           commentsNumber: 234,
           authorName: 'Business Solutions Inc',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png'
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
         }
       ]
     },

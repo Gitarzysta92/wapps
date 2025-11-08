@@ -17,8 +17,15 @@
           tuiLink 
           [routerLink]="entry.link"
           iconEnd="@tui.chevron-right" >
-          <tui-avatar size="xs" [src]="entry.coverImageUrl" />
-          <span class="entry-name">{{ entry.name }}</span>
+          @if (customContent()) {
+            <ng-container *ngTemplateOutlet="customContent(); context: { $implicit: entry }" />
+          } 
+          @else {
+            <tui-avatar size="xs" [src]="entry.coverImageUrl" />
+            <span class="entry-name">
+              {{ entry.name }}
+            </span>
+          }
         </a>
       </li>
     }

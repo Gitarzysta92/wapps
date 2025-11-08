@@ -90,13 +90,19 @@ export class MultiSearchComponent {
           link: group.link,
           name: this._getGroupName(group.type),
           icon: this._getIcon(group.type),
+          type: this._getTypeName(group.type),
           entries: group.entries.map((entry, entryIndex) => ({
             id: entryIndex,
             groupId: groupIndex,
+            type: this._getTypeName(group.type),
             name: entry.name,
             description: '', // Description not available in DTO
             coverImageUrl: entry.coverImageUrl,
-            link: entry.link
+            link: entry.link,
+            rating: 'rating' in entry ? entry.rating : undefined,
+            authorName: 'authorName' in entry ? entry.authorName : undefined,
+            authorAvatarUrl: 'authorAvatarUrl' in entry ? entry.authorAvatarUrl : undefined,
+            tags: 'tags' in entry ? entry.tags : undefined as any,
           }))
         };
       })
@@ -116,7 +122,22 @@ export class MultiSearchComponent {
         return 'Unknown';
     }
   }
-//TODO: code smell -> coupling
+
+  //TODO: code smell -> coupling
+  private _getTypeName(type: DiscoverySearchResultType): string {
+    switch (type) {
+      case DiscoverySearchResultType.Application:
+        return 'Application';
+      case DiscoverySearchResultType.Article:
+        return 'Article';
+      case DiscoverySearchResultType.Suite:
+        return 'Suite';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  //TODO: code smell -> coupling
   private _getIcon(type: DiscoverySearchResultType): string {
     switch (type) {
       case DiscoverySearchResultType.Application:

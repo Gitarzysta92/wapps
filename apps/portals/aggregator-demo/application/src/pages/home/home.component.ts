@@ -83,7 +83,7 @@ type RegisteredFeedItem = Array<
     TuiBadgedContent,
     FeedContainerComponent,
     NgIf,
-    DiscussionComponent
+    DiscussionComponent,
   ],
   providers: [
     SearchMockDataService,
