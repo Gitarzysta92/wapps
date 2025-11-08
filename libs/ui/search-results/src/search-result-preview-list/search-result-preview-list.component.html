@@ -3,7 +3,8 @@
     <a class="group-header" 
       [iconStart]="group.icon"
       iconEnd="@tui.chevron-right" 
-      tuiLink 
+      tuiLink
+      appearance="action-soft"
       [routerLink]="group.link">
       <span class="group-name">{{ group.name }}</span>
       <span>View all</span>
@@ -18,7 +19,7 @@
           iconEnd="@tui.chevron-right" >
           <tui-avatar size="xs" [src]="entry.coverImageUrl" />
           <span class="entry-name">{{ entry.name }}</span>
-        </a>  
+        </a>
       </li>
     }
     </ul>

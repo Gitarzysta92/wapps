@@ -15,7 +15,7 @@ import { TuiLink } from '@taiga-ui/core';
     FormsModule,
     TuiAvatar,
     RouterLink,
-    TuiLink
+    TuiLink,
   ],
   templateUrl: 'search-result-preview-list.component.html',
   styleUrl: 'search-result-preview-list.component.scss',

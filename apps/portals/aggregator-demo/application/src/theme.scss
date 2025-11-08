@@ -25,6 +25,16 @@ body.light {
 
 
   --feed-radial-gradient2: linear-gradient(270deg, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
+  
+  // Action-soft appearance
+  --tui-text-action-soft: #{$color-text-weaker};
+  --tui-text-action-soft-hover: #{$color-text-weaker};
+  --tui-text-action-soft-active: #{$color-primary-700};
+  --tui-background-action-soft: rgba(255, 255, 255, 0.7);
+  --tui-background-action-soft-hover: rgba(255, 255, 255, 0.85);
+  --tui-background-action-soft-active: rgba(255, 255, 255, 0.95);
+  --tui-border-action-soft: rgba(255, 255, 255, 0.3);
+  --tui-border-action-soft-focus: #{$color-primary-600};
 }
 
 [tuiTheme='light'] {
@@ -36,6 +46,34 @@ body.light {
   --tui-link-hover: #{$color-text-strong};
   --tui-text-action: #{$color-text};
   --tui-text-action-hover: #{$color-text-strong};
+  
+  // Button/Appearance colors
+  --tui-primary: #{$color-primary-600};
+  --tui-primary-hover: #{$color-primary-700};
+  --tui-primary-active: #{$color-primary-700};
+  --tui-primary-text: #{$color-white};
+  
+  --tui-secondary: #{$color-bg-subtle};
+  --tui-secondary-hover: #{$color-border};
+  --tui-secondary-active: #{$color-border-strong};
+  --tui-secondary-text: #{$color-text-strong};
+  
+  --tui-accent: #{$color-accent-500};
+  --tui-accent-hover: #{$color-accent-600};
+  --tui-accent-text: #{$color-white};
+  
+  // Status colors for appearances
+  --tui-positive: #{$color-accent-500};
+  --tui-positive-hover: #{$color-accent-600};
+  --tui-negative: #ef4444;
+  --tui-negative-hover: #dc2626;
+  --tui-warning: #f59e0b;
+  --tui-warning-hover: #d97706;
+  --tui-info: #{$color-blue-600};
+  --tui-info-hover: #0056b3;
+  --tui-neutral: #{$color-bg-subtle};
+  --tui-neutral-hover: #{$color-border};
+  
   //--t-shadow: 
 }
 
@@ -61,6 +99,16 @@ body.dark {
   --feed-radial-gradient: radial-gradient(ellipse at top, #{$color-gray-800} 0%, #{$color-surface} 50%, #{$color-bg-inverse} 100%);
 
   --feed-radial-gradient2: linear-gradient(0deg, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
+  
+  // Action-soft appearance
+  --tui-text-action-soft: #{$color-text-light};
+  --tui-text-action-soft-hover: #{$color-white};
+  --tui-text-action-soft-active: #{$color-indigo-400};
+  --tui-background-action-soft: rgba(55, 65, 81, 0.7);
+  --tui-background-action-soft-hover: rgba(55, 65, 81, 0.85);
+  --tui-background-action-soft-active: rgba(55, 65, 81, 0.95);
+  --tui-border-action-soft: rgba(255, 255, 255, 0.1);
+  --tui-border-action-soft-focus: #{$color-primary-600};
 }
 
 [tuiTheme='dark'] {
@@ -72,5 +120,33 @@ body.dark {
   --tui-link-hover: #{$color-text-light};
   --tui-text-action: #{$color-text-muted};
   --tui-text-action-hover: #{$color-text-light};
+  
+  // Button/Appearance colors
+  --tui-primary: #{$color-primary-600};
+  --tui-primary-hover: #{$color-primary-700};
+  --tui-primary-active: #{$color-primary-700};
+  --tui-primary-text: #{$color-white};
+  
+  --tui-secondary: #{$color-gray-700};
+  --tui-secondary-hover: #{$color-gray-600};
+  --tui-secondary-active: #{$color-gray-600};
+  --tui-secondary-text: #{$color-text-light};
+  
+  --tui-accent: #{$color-accent-500};
+  --tui-accent-hover: #{$color-accent-600};
+  --tui-accent-text: #{$color-white};
+  
+  // Status colors for appearances
+  --tui-positive: #{$color-accent-500};
+  --tui-positive-hover: #{$color-accent-600};
+  --tui-negative: #ef4444;
+  --tui-negative-hover: #dc2626;
+  --tui-warning: #f59e0b;
+  --tui-warning-hover: #d97706;
+  --tui-info: #{$color-blue-600};
+  --tui-info-hover: #0056b3;
+  --tui-neutral: #{$color-gray-700};
+  --tui-neutral-hover: #{$color-gray-600};
+  
   //--t-shadow
 }
