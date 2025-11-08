@@ -1,27 +1,31 @@
-<filters-bar></filters-bar>
-
-<section class="section__sorting">
-  <div class="sorting-controls">
-    <sorting-select (onUpdate)="onSortingChange($event)"></sorting-select>
-  </div>
+<section class="section__filters">
+  <filters-bar></filters-bar>
 </section>
 
 <section class="section__separator"></section>
 
 <section class="section__results">
+  
+  <div class="results-container">
+    
+  </div>
+
   <div class="results-header">
-    <h2>Results ({{ totalLoadedItems }} items)</h2>
+    <h2>Applications ({{ paginationService.totalLoadedItems }} items)</h2>
+    <button tuiButton appearance="secondary" (click)="paginationService.loadNextPage()">
+      Load More
+    </button>
   </div>
   
   <!-- Load More (Previous) Button at Top -->
-  <div *ngIf="canLoadPrevious" class="load-more-container load-more-top">
-    <button tuiButton appearance="secondary" (click)="loadPreviousPage()">
+  <div *ngIf="paginationService.canLoadPrevious" class="load-more-container load-more-top">
+    <button tuiButton appearance="secondary" (click)="paginationService.loadPreviousPage()">
       Load Previous Page
     </button>
   </div>
   
   <!-- Items grouped by pages with separators -->
-  <ng-container *ngFor="let pageData of allLoadedItems; let isFirst = first; let isLast = last">
+  <ng-container *ngFor="let pageData of paginationService.allLoadedItems; let isFirst = first; let isLast = last">
     <!-- Page separator (not shown before first page) -->
     <div *ngIf="!isFirst" class="page-separator">
       <span class="separator-label">Page {{ pageData.pageNumber }}</span>
@@ -39,10 +43,4 @@
     </div>
   </ng-container>
   
-  <!-- Load More (Next) Button at Bottom -->
-  <div *ngIf="canLoadNext" class="load-more-container load-more-bottom">
-    <button tuiButton appearance="secondary" (click)="loadNextPage()">
-      Load More
-    </button>
-  </div>
 </section>

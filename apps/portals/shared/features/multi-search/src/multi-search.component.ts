@@ -6,7 +6,7 @@ import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListS
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
 import { MultiSearchResultVM, MultiSearchRecentSearchesVM } from "./multi-search.interface";
-import { EntityType } from "@domains/discovery";
+import { DiscoverySearchResultType } from "@domains/discovery";
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -109,27 +109,27 @@ export class MultiSearchComponent {
     };
   }
 
-  //TODO: code smell
-  private _getGroupName(type: EntityType): string {
+  //TODO: code smell -> coupling
+  private _getGroupName(type: DiscoverySearchResultType): string {
     switch (type) {
-      case EntityType.Application:
+      case DiscoverySearchResultType.Application:
         return 'Applications';
-      case EntityType.Article:
+      case DiscoverySearchResultType.Article:
         return 'Articles';
-      case EntityType.Suite:
+      case DiscoverySearchResultType.Suite:
         return 'Suites';
       default:
         return 'Unknown';
     }
   }
-//TODO: code smell
-  private _getIcon(type: EntityType): string {
+//TODO: code smell -> coupling
+  private _getIcon(type: DiscoverySearchResultType): string {
     switch (type) {
-      case EntityType.Application:
+      case DiscoverySearchResultType.Application:
         return '@tui.layout-grid';
-      case EntityType.Article:
+      case DiscoverySearchResultType.Article:
         return '@tui.newspaper';
-      case EntityType.Suite:
+      case DiscoverySearchResultType.Suite:
         return '@tui.briefcase-business';
       default:
         return 'Unknown';

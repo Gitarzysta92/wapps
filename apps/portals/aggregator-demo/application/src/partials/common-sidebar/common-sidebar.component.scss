@@ -1,12 +1,16 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: flex;
   flex-direction: column;
   align-items: end;
-  padding-top: 100px;
 }
 
-.sidebar-nav {
-  padding: 1rem 0;
+.portal-logo {
+  height: $size-content-xxs;
+  padding: $space-4 0;
+  display: flex;
+  align-items: end;
 }
 
 .nav-item {
@@ -14,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0.75rem 1rem;
+  padding: 0 1rem;
   text-decoration: none;
   color: var(--tui-text-01);
   transition: background-color 0.2s;

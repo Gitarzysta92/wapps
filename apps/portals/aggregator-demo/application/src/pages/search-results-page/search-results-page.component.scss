@@ -1,25 +1,25 @@
 @use 'ui/design-system/src/styles' as *;
 
-// Sorting section
-.section__sorting {
+.section__filters {
+  position: sticky;
+  top: 0;
   display: flex;
-  justify-content: flex-end;
-  padding: $space-4 $space-4 0 $space-4;
+  padding: $space-4 0;
   
   .sorting-controls {
     min-width: 250px;
   }
 }
 
-// Separator
 .section__separator {
   height: 1px;
   background: var(--tui-border-normal);
-  margin: $space-5 $space-4;
+  margin: 0 $space-4;
 }
 
 // Results section - following home page feed conventions
 .section__results {
+  margin-top: $space-4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,12 +29,15 @@
   background: var(--feed-radial-gradient);
   
   .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
     margin-bottom: $space-5;
     
     h2 {
       margin: 0;
-      @include text($font-size-xl, $font-weight-bold);
+      @include text($font-size-md, $font-weight-bold);
       color: var(--tui-text-primary);
       text-align: center;
     }

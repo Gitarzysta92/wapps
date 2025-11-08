@@ -1,0 +1,128 @@
+// Component sizing tokens for consistent dimensions across UI elements
+// Following 4px base unit scale (aligned with spacing system)
+
+// ============================================================================
+// Icon Sizes
+// ============================================================================
+$size-icon-xs: 1rem;      // 16px
+$size-icon-sm: 1.25rem;   // 20px
+$size-icon-md: 1.5rem;    // 24px
+$size-icon-lg: 2rem;      // 32px
+$size-icon-xl: 2.5rem;    // 40px
+$size-icon-2xl: 3rem;     // 48px
+
+// ============================================================================
+// Avatar Sizes
+// ============================================================================
+$size-avatar-xs: 1.5rem;  // 24px
+$size-avatar-sm: 2rem;    // 32px
+$size-avatar-md: 2.5rem;  // 40px
+$size-avatar-lg: 3rem;    // 48px
+$size-avatar-xl: 4rem;    // 64px
+$size-avatar-2xl: 6rem;   // 96px
+
+// ============================================================================
+// Button & Input Heights (Interactive Controls)
+// ============================================================================
+$size-control-xs: 1.75rem; // 28px
+$size-control-sm: 2rem;    // 32px
+$size-control-md: 2.5rem;  // 40px
+$size-control-lg: 3rem;    // 48px
+$size-control-xl: 3.5rem;  // 56px
+
+// ============================================================================
+// Badge & Chip Sizes
+// ============================================================================
+$size-badge-sm: 1.25rem;  // 20px
+$size-badge-md: 1.5rem;   // 24px
+$size-badge-lg: 2rem;     // 32px
+
+// ============================================================================
+// Card Widths (Common Component Widths)
+// ============================================================================
+$size-card-xs: 16rem;     // 256px
+$size-card-sm: 20rem;     // 320px
+$size-card-md: 24rem;     // 384px
+$size-card-lg: 28rem;     // 448px
+$size-card-xl: 32rem;     // 512px
+
+// ============================================================================
+// Content Widths (Text Blocks, Forms, Prose)
+// ============================================================================
+$size-content-xxs: 12rem;  // 192px  - Narrow forms
+$size-content-xs: 20rem;  // 320px  - Narrow forms
+$size-content-sm: 24rem;  // 384px  - Mobile content
+$size-content-md: 28rem;  // 448px  - Small forms
+$size-content-lg: 32rem;  // 512px  - Standard forms
+$size-content-xl: 36rem;  // 576px  - Wide forms
+$size-content-2xl: 42rem; // 672px  - Optimal prose width
+$size-content-3xl: 48rem; // 768px  - Wide prose
+$size-content-4xl: 56rem; // 896px  - Extra wide content
+$size-content-full: 100%; // Full width
+
+// ============================================================================
+// Sidebar & Drawer Widths
+// ============================================================================
+$size-drawer-sm: 16rem;   // 256px
+$size-drawer-md: 20rem;   // 320px
+$size-drawer-lg: 24rem;   // 384px
+$size-drawer-xl: 28rem;   // 448px
+
+// ============================================================================
+// Modal Widths
+// ============================================================================
+$size-modal-sm: 20rem;    // 320px
+$size-modal-md: 28rem;    // 448px
+$size-modal-lg: 36rem;    // 576px
+$size-modal-xl: 48rem;    // 768px
+$size-modal-2xl: 64rem;   // 1024px
+$size-modal-full: 90vw;   // Nearly full viewport
+
+// ============================================================================
+// Minimum Touch Targets (Accessibility)
+// ============================================================================
+$size-touch-min: 2.75rem; // 44px - Minimum WCAG touch target
+
+// ============================================================================
+// SCSS Map for Programmatic Access
+// ============================================================================
+$sizing-scale: (
+  // Icons
+  'icon-xs': $size-icon-xs,
+  'icon-sm': $size-icon-sm,
+  'icon-md': $size-icon-md,
+  'icon-lg': $size-icon-lg,
+  'icon-xl': $size-icon-xl,
+  'icon-2xl': $size-icon-2xl,
+  
+  // Avatars
+  'avatar-xs': $size-avatar-xs,
+  'avatar-sm': $size-avatar-sm,
+  'avatar-md': $size-avatar-md,
+  'avatar-lg': $size-avatar-lg,
+  'avatar-xl': $size-avatar-xl,
+  'avatar-2xl': $size-avatar-2xl,
+  
+  // Controls
+  'control-xs': $size-control-xs,
+  'control-sm': $size-control-sm,
+  'control-md': $size-control-md,
+  'control-lg': $size-control-lg,
+  'control-xl': $size-control-xl,
+  
+  // Badges
+  'badge-sm': $size-badge-sm,
+  'badge-md': $size-badge-md,
+  'badge-lg': $size-badge-lg,
+  
+  // Touch target
+  'touch-min': $size-touch-min,
+);
+
+// ============================================================================
+// Helper Function
+// ============================================================================
+@function size($key) {
+  @return map-get($sizing-scale, $key);
+}
+
