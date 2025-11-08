@@ -4,6 +4,12 @@ import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
 import { TuiButton } from '@taiga-ui/core';
 import { SearchResultsPageService } from './search-results-page.service';
+import { 
+  DiscoverySearchResultType, 
+  DiscoverySearchResultApplicationItemDto,
+  DiscoverySearchResultArticleItemDto,
+  DiscoverySearchResultSuiteItemDto 
+} from '@domains/discovery';
 
 @Component({
   selector: 'search-results-page',
@@ -25,9 +31,28 @@ import { SearchResultsPageService } from './search-results-page.service';
 })
 export class SearchResultsPageComponent {
   protected readonly paginationService = inject(SearchResultsPageService);
+  protected readonly DiscoverySearchResultType = DiscoverySearchResultType;
 
   public onSortingChange(event: { sort: string }): void {
     console.log('Sorting changed:', event);
     // Handle sorting logic here
+  }
+
+  protected asApplication(
+    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
+  ): DiscoverySearchResultApplicationItemDto {
+    return entry as DiscoverySearchResultApplicationItemDto;
+  }
+
+  protected asArticle(
+    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
+  ): DiscoverySearchResultArticleItemDto {
+    return entry as DiscoverySearchResultArticleItemDto;
+  }
+
+  protected asSuite(
+    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
+  ): DiscoverySearchResultSuiteItemDto {
+    return entry as DiscoverySearchResultSuiteItemDto;
   }
 }
