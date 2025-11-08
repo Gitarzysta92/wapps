@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { TuiAvatar, TuiBadge, TuiRating } from '@taiga-ui/kit';
+import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import {
   FullSearchRedirectComponent,
   SearchResultPreviewList,
@@ -23,7 +23,6 @@ import {
     SearchResultPreviewList,
     SearchResultListSkeleton,
     TuiBadge,
-    TuiRating,
     TuiAvatar,
   ],
   styles: [`
