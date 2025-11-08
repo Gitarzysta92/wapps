@@ -27,14 +27,16 @@ export interface SearchableOption {
     TuiTextfieldControllerModule,
   ],
 })
-export class SearchableMultiselectComponent<T extends SearchableOption> {
-  @Input() selectedOptions: T[] = [];
+export class SearchableMultiselectComponent<O extends SearchableOption, S extends SearchableOption & { isSelected: boolean }> {
+  @Input() selectedOptions: S[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @Input() placeholder: string = '';
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @Input() groupLabel: string = '';
   
-  options = input.required<T[]>();
+  options = input.required<O[]>();
   
-  @Output() change: EventEmitter<T[]> = new EventEmitter();
+  @Output() change: EventEmitter<O[]> = new EventEmitter();
 
   public readonly searchPhrase$: Subject<string | null> = new Subject();
 
@@ -56,8 +58,8 @@ export class SearchableMultiselectComponent<T extends SearchableOption> {
     this.searchPhrase$.next(e);
   }
 
-  public stringifyItem = (item: T): string => item.name;
+  public stringifyItem = (item: O): string => item.name;
 
-  public identityMatcher = (a: T, b: T): boolean => a.value === b.value;
+  public identityMatcher = (a: O, b: O): boolean => a.value === b.value;
 }
 

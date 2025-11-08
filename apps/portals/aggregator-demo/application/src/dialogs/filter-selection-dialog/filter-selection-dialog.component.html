@@ -1,0 +1,36 @@
+<div class="dialog">
+  <header class="dialog__header">
+    <h2>{{ filterName }}</h2>
+  </header>
+
+  <section class="dialog__body">
+    <filter-content
+      [filterId]="filterId"
+      [filterName]="filterName"
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      (selectionChange)="onSelectionChange($event)">
+    </filter-content>
+  </section>
+
+  <footer class="dialog__actions">
+    <button
+      tuiButton
+      appearance="flat"
+      type="button"
+      (click)="onCancel()"
+    >
+      Cancel
+    </button>
+    <button
+      tuiButton
+      appearance="primary"
+      type="button"
+      (click)="onApply()"
+    >
+      Apply
+    </button>
+  </footer>
+</div>
+

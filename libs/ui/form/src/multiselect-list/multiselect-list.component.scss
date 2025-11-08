@@ -1,0 +1,54 @@
+@use 'ui/design-system/src/styles' as *;
+
+.multiselect-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  .search-input {
+    width: 100%;
+  }
+
+  .group-label {
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
+    color: var(--tui-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: $space-1;
+  }
+
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+
+    &::-webkit-scrollbar {
+      width: $space-2;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--tui-background-neutral-1);
+      border-radius: $space-1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--tui-background-neutral-2);
+      border-radius: $space-1;
+
+      &:hover {
+        background: var(--tui-text-tertiary);
+      }
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+    }
+  }
+}
+

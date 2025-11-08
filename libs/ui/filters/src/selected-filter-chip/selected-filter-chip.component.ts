@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TuiChip, TuiFade } from '@taiga-ui/kit';
 import { TuiIcon } from '@taiga-ui/core';
@@ -14,13 +14,13 @@ import type { FilterOptionVm } from '../models/filter.vm';
 })
 export class SelectedFilterChipComponent {
   @Input({ required: true }) name!: string;
-  @Input() selectedOptions: ReadonlyArray<FilterOptionVm> = [];
+  public selectedOptions = input<ReadonlyArray<FilterOptionVm>>([]);
 
   @Output() open = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  @Output() remove = new EventEmitter<void>();
 
   public readonly selectedNames = computed(() =>
-    (this.selectedOptions || []).filter(o => !!o.isSelected).map(o => o.name)
+    (this.selectedOptions() || []).filter(o => !!o.isSelected).map(o => o.name)
   );
 
   public readonly selectedCount = computed(() => this.selectedNames().length);
@@ -43,7 +43,7 @@ export class SelectedFilterChipComponent {
 
   onCloseClick(event: MouseEvent): void {
     event.stopPropagation();
-    this.close.emit();
+    this.remove.emit();
   }
 }
 

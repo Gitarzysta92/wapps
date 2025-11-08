@@ -13,7 +13,6 @@
       <tui-opt-group [label]="groupLabel" tuiMultiSelectGroup>
         <button
           *ngFor="let item of searchResults"
-          tuiOption
           type="button"
           [value]="item"
         >
@@ -23,7 +22,7 @@
     } @else {
       @let items = allOptions$ | async;
       <tui-opt-group [label]="groupLabel" tuiMultiSelectGroup>
-        <button *ngFor="let item of items" tuiOption type="button" [value]="item">
+        <button *ngFor="let item of items" type="button" [value]="item">
           <span [style.flex]="1">{{ item.name }}</span>
         </button>
       </tui-opt-group>

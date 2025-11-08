@@ -1,0 +1,50 @@
+<section class="filters-section">  
+  <button
+    class="add-filter-button"
+    tuiButton
+    type="button"
+    size="s"
+    appearance="primary"
+    iconStart="@tui.funnel-plus"
+    [tuiDropdown]="addFilterDropdown"
+    [(tuiDropdownOpen)]="addFilterDropdownOpen">
+    Manage filters
+  </button>
+  <ng-template #addFilterDropdown>
+    <div class="dropdown-panel">
+      <filters-multiselect 
+        [availableFilters]="availableFiltersOptions$ | async"
+        [activeFilters]="activeFiltersOptions$ | async"
+        (activated)="onActivateFilter($event)"
+        (deactivated)="onDeactivateFilter($event)">
+      </filters-multiselect>
+    </div>
+  </ng-template>
+
+  @let filters = filters$ | async;
+  @for (f of filters; track f.key) {
+    <selected-filter-chip 
+      [name]="f.name" 
+      [selectedOptions]="f.options"
+      (open)="onOpenFilterDropdown(f.key)"
+      (close)="onCloseFilterDropdown(f.key)"
+      (remove)="onDeactivateFilter(f.key)"
+      [tuiDropdown]="filterDropdownTemplate"
+      [(tuiDropdownOpen)]="openFilterDropdowns[f.key]"
+    >
+      <ng-template #filterDropdownTemplate>
+        <div class="dropdown-panel">
+          <filter-content
+            [filterId]="f.key"
+            [filterName]="f.name"
+            [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+            [selectedOptions]="getSelectedOptionsWithFlag(f.key, f.options)"
+            [placeholder]="getPlaceholder(f.key)"
+            (selectionChange)="onFilterSelectionChange(f.key, $event)">
+          </filter-content>
+        </div>
+      </ng-template>
+    </selected-filter-chip>
+  }
+</section>
+

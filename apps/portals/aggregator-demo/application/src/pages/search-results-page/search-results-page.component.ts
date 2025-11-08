@@ -1,57 +1,31 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { FILTERS } from '../../filters';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FilterDirective, FilterGroupComponent, FilterVm, FilterOptionVm, SelectedFilterChipComponent, FiltersMultiselectComponent, FiltersMultiselectVM } from '@ui/filters';
-import { map } from 'rxjs/operators';
-import { MultiselectDropdownComponent, SearchableMultiselectComponent, TextSearchInputComponent } from '@ui/form';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouteDrivenContainerDirective } from '@ui/routing';
-import { of } from 'rxjs';
-import { 
-  CATEGORY_OPTION_PROVIDER,
-  PLATFORM_OPTION_PROVIDER,
-  DEVICE_OPTION_PROVIDER,
-  MONETIZATION_OPTION_PROVIDER,
-  SOCIAL_OPTION_PROVIDER,
-  ESTIMATED_USER_SPAN_OPTION_PROVIDER,
-  TAG_OPTION_PROVIDER,
-  ParamMapToFilterVmListMapper
-} from '@portals/shared/features/filtering';
-import {
-  CATEGORY_OPTIONS,
-  PLATFORM_OPTIONS,
-  DEVICE_OPTIONS,
-  MONETIZATION_OPTIONS,
-  SOCIAL_OPTIONS,
-  ESTIMATED_USER_SPAN_OPTIONS,
-  TAG_OPTIONS
-} from '@portals/shared/data';
-import { TuiChip, TuiFade, TuiCheckbox } from '@taiga-ui/kit';
-import { TuiIcon } from '@taiga-ui/core';
-import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
+import { FiltersBarComponent } from '../../partials/filters-bar/src';
+import { SortingSelectComponent } from '../../partials/sorting-select/sorting-select.component';
+import { TuiButton } from '@taiga-ui/core';
 
+interface SearchResultItem {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  rating: string;
+}
+
+interface PageData {
+  pageNumber: number;
+  items: SearchResultItem[];
+}
 
 @Component({
   selector: 'search-results-page',
   standalone: true,
   imports: [
     CommonModule,
-    FilterDirective,
-    FilterGroupComponent,
-    MultiselectDropdownComponent,
-    SearchableMultiselectComponent,
-    TextSearchInputComponent,
-    AsyncPipe,
-    TuiChip,
-    TuiFade,
-    TuiIcon,
-    SelectedFilterChipComponent,
-    TuiDropdownOpen,
-    TuiDropdownDirective,
-    TuiCheckbox,
-    FiltersMultiselectComponent,
-    // PlatformListContainerDirective,
-    // ToFilterOptionsList,
+    FiltersBarComponent,
+    SortingSelectComponent,
+    TuiButton,
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
@@ -61,150 +35,89 @@ import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives
   host: {
     'class': 'fluid-container'
   },
-  providers: [
-    {
-      provide: CATEGORY_OPTION_PROVIDER,
-      useValue: {
-        getCategoryOptions: () => of({ ok: true as const, value: CATEGORY_OPTIONS })
-      }
-    },
-    {
-      provide: PLATFORM_OPTION_PROVIDER,
-      useValue: {
-        getPlatformOptions: () => of({ ok: true as const, value: PLATFORM_OPTIONS })
-      }
-    },
-    {
-      provide: DEVICE_OPTION_PROVIDER,
-      useValue: {
-        getDeviceOptions: () => of({ ok: true as const, value: DEVICE_OPTIONS })
-      }
-    },
-    {
-      provide: MONETIZATION_OPTION_PROVIDER,
-      useValue: {
-        getMonetizationOptions: () => of({ ok: true as const, value: MONETIZATION_OPTIONS })
-      }
-    },
-    {
-      provide: SOCIAL_OPTION_PROVIDER,
-      useValue: {
-        getSocialOptions: () => of({ ok: true as const, value: SOCIAL_OPTIONS })
-      }
-    },
-    {
-      provide: ESTIMATED_USER_SPAN_OPTION_PROVIDER,
-      useValue: {
-        getEstimatedUserSpanOptions: () => of({ ok: true as const, value: ESTIMATED_USER_SPAN_OPTIONS })
-      }
-    },
-    {
-      provide: TAG_OPTION_PROVIDER,
-      useValue: {
-        getTagOptions: () => of({ ok: true as const, value: TAG_OPTIONS })
-      }
-    },
-  ]
 })
 export class SearchResultsPageComponent {
-  private readonly _router = inject(Router);
-  private readonly _route = inject(ActivatedRoute);
-  private readonly _filtersContainer = inject(RouteDrivenContainerDirective, { self: true });
-  private readonly _paramMapToFilterVmListMapper = inject(ParamMapToFilterVmListMapper);
-  public readonly FILTERS = FILTERS;
+  // Track loaded pages with their items
+  public loadedPages = new Map<number, SearchResultItem[]>();
+  public firstLoadedPage = 1;
+  public lastLoadedPage = 1;
+  public totalPages = 5;
+  public itemsPerPage = 6;
 
-  // DEV: simple static filters for development
-  public readonly filters$ = of<FilterVm[]>([
-    {
-      key: this.FILTERS.category,
-      name: 'Category',
-      options: [
-        { name: 'Games', value: 'games', isSelected: false },
-        { name: 'Social', value: 'social', isSelected: false },
-        { name: 'Productivity', value: 'productivity', isSelected: false },
-      ],
-    },
-    {
-      key: this.FILTERS.platform,
-      name: 'Platform',
-      options: [
-        { name: 'iOS', value: 'ios', isSelected: false },
-        { name: 'Android', value: 'android', isSelected: false },
-        { name: 'Web', value: 'web', isSelected: false },
-      ],
-    },
-    {
-      key: this.FILTERS.search,
-      name: 'Search',
-      options: [
-        { name: 'example', value: 'example', isSelected: false },
-      ],
-    },
-  ]);
+  constructor() {
+    // Load initial page
+    this.loadPage(1);
+  }
 
-  // DEV: static options for development
-  public readonly categoryOptions$ = of<FilterOptionVm[]>([
-    { name: 'Games', value: 'games', isSelected: false },
-    { name: 'Social', value: 'social', isSelected: false },
-    { name: 'Productivity', value: 'productivity', isSelected: false },
-  ]);
-  public readonly platformOptions$ = of<FilterOptionVm[]>([
-    { name: 'iOS', value: 'ios', isSelected: false },
-    { name: 'Android', value: 'android', isSelected: false },
-    { name: 'Web', value: 'web', isSelected: false },
-  ]);
-
-  public readonly filtersMultiselectVm$ = this.filters$
-    .pipe(
-      map((fs) => ({
-        selectedFilters: (fs ?? []).map(f => ({
-          id: f.key,
-          name: f.name,
-          isSelected: (f.options ?? []).some(o => o.isSelected)
-        }))
-      } as FiltersMultiselectVM))
-    );
-  public readonly deviceOptions$ = inject(DEVICE_OPTION_PROVIDER).getDeviceOptions();
-  public readonly monetizationOptions$ = inject(MONETIZATION_OPTION_PROVIDER).getMonetizationOptions();
-  public readonly socialOptions$ = inject(SOCIAL_OPTION_PROVIDER).getSocialOptions();
-  public readonly estimatedUserSpanOptions$ = inject(ESTIMATED_USER_SPAN_OPTION_PROVIDER).getEstimatedUserSpanOptions();
-  public readonly tagOptions$ = inject(TAG_OPTION_PROVIDER).getTagOptions();
-
-  public setQueryParams(p: FilterVm[]): void {
-    if ('phrase' in p && typeof p.phrase === 'string') {
-      if (!p.phrase || p.phrase.length <= 0) {
-        this._router.navigate([], { queryParams: {}})
-      } else {
-        this._router.navigate([], { queryParams: { pharse: p.phrase }})
+  // Get all items from loaded pages in order
+  public get allLoadedItems(): PageData[] {
+    const pages: PageData[] = [];
+    for (let i = this.firstLoadedPage; i <= this.lastLoadedPage; i++) {
+      const items = this.loadedPages.get(i);
+      if (items) {
+        pages.push({ pageNumber: i, items });
       }
     }
-  }
-  
-  public categoryDropdownOpen = false;
-  public onOpenCategory(): void { this.categoryDropdownOpen = true; }
-  public onCloseCategory(): void { this.categoryDropdownOpen = false; }
-
-  public platformDropdownOpen = false;
-  public onOpenPlatform(): void { this.platformDropdownOpen = true; }
-  public onClosePlatform(): void { this.platformDropdownOpen = false; }
-
-  public searchDropdownOpen = false;
-  public onOpenSearch(): void { this.searchDropdownOpen = true; }
-  public onCloseSearch(): void { this.searchDropdownOpen = false; }
-
-  public addFilterDropdownOpen = false;
-
-  public hasSelected(filter: FilterVm): boolean {
-    return (filter.options ?? []).some(o => !!o.isSelected);
+    return pages;
   }
 
-  public onActivateFilter(filterId: string): void {
-    console.debug('activate filter', filterId);
+  public get canLoadPrevious(): boolean {
+    return this.firstLoadedPage > 1;
   }
 
-  public onDeactivateFilter(filterId: string): void {
-    console.debug('deactivate filter', filterId);
+  public get canLoadNext(): boolean {
+    return this.lastLoadedPage < this.totalPages;
   }
-   
- 
+
+  public get totalLoadedItems(): number {
+    let count = 0;
+    this.loadedPages.forEach(items => count += items.length);
+    return count;
+  }
+
+  public loadPreviousPage(): void {
+    if (this.canLoadPrevious) {
+      const pageToLoad = this.firstLoadedPage - 1;
+      this.loadPage(pageToLoad);
+      this.firstLoadedPage = pageToLoad;
+    }
+  }
+
+  public loadNextPage(): void {
+    if (this.canLoadNext) {
+      const pageToLoad = this.lastLoadedPage + 1;
+      this.loadPage(pageToLoad);
+      this.lastLoadedPage = pageToLoad;
+    }
+  }
+
+  private loadPage(pageNumber: number): void {
+    // Mock API call - generate items for this page
+    const items = this.generateMockItems(pageNumber, this.itemsPerPage);
+    this.loadedPages.set(pageNumber, items);
+  }
+
+  private generateMockItems(page: number, count: number): SearchResultItem[] {
+    const startId = (page - 1) * count + 1;
+    const categories = ['Productivity', 'Entertainment', 'Education', 'Social', 'Graphics', 'Business', 'Tools', 'Games'];
+    const items: SearchResultItem[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const id = startId + i;
+      items.push({
+        id,
+        name: `Sample App ${id}`,
+        description: `Description for application ${id}`,
+        category: categories[id % categories.length],
+        rating: (3.5 + Math.random() * 1.5).toFixed(1),
+      });
+    }
+
+    return items;
+  }
+
+  public onSortingChange(event: { sort: string }): void {
+    console.log('Sorting changed:', event);
+    // Handle sorting logic here
+  }
 }

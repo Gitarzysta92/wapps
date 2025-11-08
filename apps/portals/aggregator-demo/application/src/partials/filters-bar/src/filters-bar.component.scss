@@ -1,0 +1,17 @@
+.filters-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.add-filter-button {
+  // Add any specific styling for the add filter button
+}
+
+.dropdown-panel {
+  padding: 1rem;
+  min-width: 300px;
+  max-width: 400px;
+}
+

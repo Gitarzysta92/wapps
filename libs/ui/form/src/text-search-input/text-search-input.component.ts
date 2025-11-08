@@ -21,7 +21,7 @@ import { debounceTime, Subject, takeUntil } from 'rxjs';
 export class TextSearchInputComponent implements OnInit, OnDestroy, OnChanges {
   @Input() selectedOptions: FilterOptionVm[] = [];
   @Input() placeholder: string = 'Search...';
-  @Output() change: EventEmitter<FilterOptionVm[]> = new EventEmitter();
+  @Output() textChange: EventEmitter<FilterOptionVm[]> = new EventEmitter();
 
   public searchValue: string = '';
   private readonly _searchSubject = new Subject<string>();
@@ -39,7 +39,7 @@ export class TextSearchInputComponent implements OnInit, OnDestroy, OnChanges {
       const options: FilterOptionVm[] = value 
         ? [{ name: value, value: value, isSelected: true }]
         : [];
-      this.change.emit(options);
+      this.textChange.emit(options);
     });
   }
 

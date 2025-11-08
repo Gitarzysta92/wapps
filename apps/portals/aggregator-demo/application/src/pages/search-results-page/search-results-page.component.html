@@ -1,174 +1,48 @@
-<section>  
-  <h2>Active filters</h2>
-  <div 
-    class="add-filter-trigger"
-    [tuiDropdown]="addFilterDropdown"
-    [(tuiDropdownOpen)]="addFilterDropdownOpen">
-    <tui-icon icon="@tui.plus" size="s"></tui-icon>
+<filters-bar></filters-bar>
+
+<section class="section__sorting">
+  <div class="sorting-controls">
+    <sorting-select (onUpdate)="onSortingChange($event)"></sorting-select>
   </div>
-  <ng-template #addFilterDropdown>
-    <div class="dropdown-panel">
-      <filters-multiselect 
-        [vm]="filtersMultiselectVm$ | async"
-        (activate)="onActivateFilter($event)"
-        (deactivate)="onDeactivateFilter($event)">
-      </filters-multiselect>
-    </div>
-  </ng-template>
-  
-  @let categoryOptions = categoryOptions$ | async;
-  @let platformOptions = platformOptions$ | async;
-  @let filters = filters$ | async;
-  <div 
-    [tuiDropdown]="categoryDropdown" 
-    [(tuiDropdownOpen)]="categoryDropdownOpen">
-    <selected-filter-chip 
-      name="Category" 
-      [selectedOptions]="[]"
-      (open)="onOpenCategory()"
-      (close)="onCloseCategory()"
-    />
-  </div>
+</section>
 
-  <ng-template #categoryDropdown>
-    <div class="dropdown-panel">
-      @for (f of filters; track f.key) {
-        <tui-chip appearance="accent" iconEnd="@tui.chevron-down"></tui-chip>
-      }
-      <searchable-multiselect
-        [options]="categoryOptions"
-        placeholder="Select categories"
-        groupLabel="Categories">
-      </searchable-multiselect>
+<section class="section__separator"></section>
 
-    </div>
-  </ng-template>
-
-
-  <div 
-    [tuiDropdown]="platformDropdown" 
-    [(tuiDropdownOpen)]="platformDropdownOpen">
-    <selected-filter-chip 
-      name="Platform" 
-      [selectedOptions]="[]"
-      (open)="onOpenPlatform()"
-      (close)="onClosePlatform()"
-    />
-  </div>
-  <ng-template #platformDropdown>
-    <div class="dropdown-panel">
-      @for (f of filters; track f.key) {
-        <tui-chip appearance="accent" iconEnd="@tui.chevron-down"></tui-chip>
-      }
-      <multiselect-dropdown
-        [items]="platformOptions">
-      </multiselect-dropdown>
-    </div>
-  </ng-template>
-
-  <div 
-    [tuiDropdown]="searchDropdown" 
-    [(tuiDropdownOpen)]="searchDropdownOpen">
-    <selected-filter-chip 
-      name="Search" 
-      [selectedOptions]="[]"
-      (open)="onOpenSearch()"
-      (close)="onCloseSearch()"
-    />
-  </div>
-  <ng-template #searchDropdown>
-    <div class="dropdown-panel">
-      <!-- Search has a single value -->
-      <input type="text" placeholder="Type to search..." />
-    </div>
-  </ng-template>
-
-
-
-
-<!-- 
-<section class="container">
+<section class="section__results">
   <div class="results-header">
-    <h2>Results ({{ items.length }} items)</h2>
-    <div *ngIf="config.showSorting" class="sorting-controls">
-      <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select>
-      <p>Sort options would go here</p>
-    </div>
+    <h2>Results ({{ totalLoadedItems }} items)</h2>
   </div>
   
-  <div *ngIf="config.showListing" class="listing-section">
-    <app-listing (onUpdate)="listingParams.next($event)"></app-listing>
+  <!-- Load More (Previous) Button at Top -->
+  <div *ngIf="canLoadPrevious" class="load-more-container load-more-top">
+    <button tuiButton appearance="secondary" (click)="loadPreviousPage()">
+      Load Previous Page
+    </button>
+  </div>
+  
+  <!-- Items grouped by pages with separators -->
+  <ng-container *ngFor="let pageData of allLoadedItems; let isFirst = first; let isLast = last">
+    <!-- Page separator (not shown before first page) -->
+    <div *ngIf="!isFirst" class="page-separator">
+      <span class="separator-label">Page {{ pageData.pageNumber }}</span>
+    </div>
+    
     <div class="items-grid">
-      <a *ngFor="let item of items" [routerLink]="['/', item.id]" class="item-card">
+      <div *ngFor="let item of pageData.items" class="item-card">
         <h3>{{ item.name }}</h3>
         <p class="description">{{ item.description }}</p>
         <div class="item-meta">
           <span class="category">{{ item.category }}</span>
           <span class="rating">★ {{ item.rating }}</span>
         </div>
-      </a>
+      </div>
     </div>
-    
-    <div class="pagination">
-      <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
-      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
-    </div>
+  </ng-container>
+  
+  <!-- Load More (Next) Button at Bottom -->
+  <div *ngIf="canLoadNext" class="load-more-container load-more-bottom">
+    <button tuiButton appearance="secondary" (click)="loadNextPage()">
+      Load More
+    </button>
   </div>
-</section> -->
-
-<!-- | toFilterOptionsList: f.options -->
-
-
-
-
-
-<!-- 
-@let filters = filters$ | async;
-<filter-group 
-  [filters]="filters" 
-  (change)="setQueryParams($event)">
-  @for (f of filters; track f.key) {
-    @if (f.key === FILTERS.category) {
-      <searchable-multiselect
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        [options]="categoryOptions || []"
-        placeholder="Select categories"
-        groupLabel="Categories"
-        (change)="filter.updateMany($event)">
-      </searchable-multiselect>
-    }
-    @else if (f.key === FILTERS.platform) {
-      <multiselect-dropdown
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        [items]="platformOptions || []"
-        (change)="filter.updateMany($event)">
-      </multiselect-dropdown>
-    }
-    @else if (f.key === FILTERS.search) {
-      <text-search-input
-        #filter="filter"
-        [filter]="f" 
-        [selectedOptions]="f.options"
-        placeholder="Search..."
-        (change)="filter.updateMany($event)">
-      </text-search-input>
-    }
-  } 
-</filter-group>
-
-<searchable-multiselect
-
-[options]="categoryOptions || []"
-placeholder="Select categories"
-groupLabel="Categories">
-</searchable-multiselect>
-
-<multiselect-dropdown
-
-[items]="platformOptions || []">
-</multiselect-dropdown> -->
+</section>

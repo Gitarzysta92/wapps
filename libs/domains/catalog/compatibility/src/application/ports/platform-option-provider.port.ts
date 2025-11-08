@@ -6,3 +6,5 @@ export interface IPlatformOptionProvider {
   getPlatformOptions(): Observable<Result<PlatformOptionDto[], Error>>;
 }
 
+
+
