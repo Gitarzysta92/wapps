@@ -30,6 +30,12 @@ body.light {
 [tuiTheme='light'] {
   --tui-background-elevation-1: #{$color-bg};
   --alt-text-color: #{$color-text-weaker};
+  
+  // Link colors
+  --tui-link: #{$color-text};
+  --tui-link-hover: #{$color-text-strong};
+  --tui-text-action: #{$color-text};
+  --tui-text-action-hover: #{$color-text-strong};
   //--t-shadow: 
 }
 
@@ -60,5 +66,11 @@ body.dark {
 [tuiTheme='dark'] {
   --tui-background-elevation-1: #{$color-surface};
   --alt-text-color: #{$color-text-weaker};
+  
+  // Link colors
+  --tui-link: #{$color-text-muted};
+  --tui-link-hover: #{$color-text-light};
+  --tui-text-action: #{$color-text-muted};
+  --tui-text-action-hover: #{$color-text-light};
   //--t-shadow
 }

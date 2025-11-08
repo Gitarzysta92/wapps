@@ -2,12 +2,11 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
 import { first, map, Observable, of, startWith, switchMap, tap } from "rxjs";
-import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton, SearchResultVM, RecentSearchesList } from "@ui/search-results";
+import { SearchResultVM } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
 import { MultiSearchResultVM, MultiSearchRecentSearchesVM } from "./multi-search.interface";
 import { DiscoverySearchResultType } from "@domains/discovery";
-import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "multi-search",
@@ -18,12 +17,7 @@ import { RouterLink } from "@angular/router";
   imports: [
     CommonModule,
     SearchBarComponent,
-    FullSearchRedirectComponent,
-    SearchResultListSkeleton,
-    SearchResultPreviewList,
-    RecentSearchesList,
     TuiLoader,
-    RouterLink,
   ],
 })
 export class MultiSearchComponent {

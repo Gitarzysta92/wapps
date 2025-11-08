@@ -6,40 +6,14 @@
     <tui-loader *ngIf="loadingResults && isFocused"/>
   </search-bar>
   
-  <div class="dropdown" *ngIf="isFocused">
-    <div class="multisearch-result">
-      @if (searchPhraseProvided$ | async) {
-        @let searchResult = (searchResults$ | async);
-        @if (searchResult) {
-          @if (loadingResults) {
-            <ul search-result-list-skeleton></ul>
-          }
-          @else if (searchResult.groups && searchResult.groups.length > 0) {
-            <a class="full-search-redirect" 
-              [full-search-redirect]="searchResult.itemsNumber"
-              [routerLink]="searchResult.link"
-              [queryParams]="searchResult.query">
-            </a>
-            <ul class="preview-list" 
-              [search-result-preview-list]="searchResult.groups">
-            </ul>
-          }
-          @else {
-            <p>No results</p>
-          }
-        }
-      }
-      @else {   
-        @let recentSearches = (recentSearches$ | async);
-        @if (recentSearches && recentSearches.searches && recentSearches.searches.length > 0) {
-          <div class="recent-searches">
-            <h4>Recent searches:</h4>
-            <ul [recent-searches-list]="recentSearches.searches"></ul>
-          </div>
-        } @else {
-          <p>No recent searches</p>
-        }
-      }
-    </div>
-  </div>
+<div class="dropdown" *ngIf="isFocused">
+   <div class="multisearch-result">
+     @if (searchPhraseProvided$ | async) {
+       <ng-content select="[search-results]"></ng-content>
+     }
+     @else {   
+       <ng-content select="[recent-searches]"></ng-content>
+     }
+   </div>
+ </div>
 </div>

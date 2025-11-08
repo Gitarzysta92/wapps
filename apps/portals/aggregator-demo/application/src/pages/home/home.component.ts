@@ -10,6 +10,8 @@ import {
   MultiSearchResultVM,
   MultiSearchRecentSearchesVM
 } from '@portals/shared/features/multi-search';
+import { HomeSearchResultsComponent } from './home-search-results.component';
+import { HomeRecentSearchesComponent } from './home-recent-searches.component';
 import { SearchMockDataService } from '@portals/shared/features/search';
 import {
   NewsFeedService,
@@ -67,6 +69,8 @@ type RegisteredFeedItem = Array<
   imports: [
     CommonModule,
     MultiSearchComponent,
+    HomeSearchResultsComponent,
+    HomeRecentSearchesComponent,
     ArticleHighlightFeedItemComponent,
     ApplicationHealthFeedItemComponent,
     ApplicationReviewFeedItemComponent,
