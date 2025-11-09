@@ -25,7 +25,11 @@ body.light {
 
 
   --feed-radial-gradient2: linear-gradient(270deg, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
-  
+
+
+
+  --tui-background-container-inactive:  rgba(230, 230, 230, 0.759);
+
   // Action-soft appearance
   --tui-text-action-soft: #{$color-text-weaker};
   --tui-text-action-soft-hover: #{$color-text-weaker};

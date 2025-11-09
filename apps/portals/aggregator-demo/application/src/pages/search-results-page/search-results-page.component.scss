@@ -179,3 +179,19 @@
     white-space: nowrap;
   }
 }
+
+
+
+.skeleton {
+  width: 250px;
+  height: 20px;
+}
+
+.item-card--skeleton {
+  pointer-events: none;
+}
+
+
+.section__results--skeleton {
+  background: var(--tui-background-container-inactive);
+}

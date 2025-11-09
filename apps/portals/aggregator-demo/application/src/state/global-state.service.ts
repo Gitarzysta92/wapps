@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IAppShellState } from '../shells/app-shell/app-shell.component';
+import { DiscoverySearchResultType } from '@domains/discovery';
 
 export interface GlobalState {
   isLoading: boolean;
@@ -25,6 +26,8 @@ export class GlobalStateService implements IAppShellState {
 
   public readonly state = this._state.asReadonly();
   public readonly userPanelOpen$ = this._userPanelOpen$.asObservable();
+
+  public readonly activeSection$ = new BehaviorSubject<DiscoverySearchResultType | null>(null);
 
   public setLoading(loading: boolean): void {
     this._state.update(current => ({ ...current, isLoading: loading }));

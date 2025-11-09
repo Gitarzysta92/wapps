@@ -1,0 +1,100 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: $space-4 0;
+}
+
+.portal-logo {
+  display: flex;
+  justify-content: center;
+  padding: $space-4;
+  margin-bottom: $space-6;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: 0 $space-3;
+  
+  .nav-section-title {
+    padding: $space-2 $space-3;
+    margin-bottom: $space-2;
+    @include text($font-size-xs, $font-weight-bold);
+    color: var(--tui-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: $space-3;
+    border-radius: $radius-sm;
+    transition: all $duration-200;
+    cursor: pointer;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 0;
+      background: var(--tui-status-primary);
+      border-radius: 0 $radius-sm $radius-sm 0;
+      transition: height $duration-200;
+    }
+
+    &:hover {
+      background: var(--tui-background-elevation-1);
+      transform: translateX(2px);
+    }
+
+    &.active {
+      background: var(--tui-background-elevation-1);
+      
+      &::before {
+        height: 60%;
+      }
+
+      .nav-label {
+        color: var(--tui-status-primary);
+        font-weight: $font-weight-bold;
+      }
+
+      .nav-icon tui-icon {
+        color: var(--tui-status-primary);
+      }
+    }
+
+    .nav-label {
+      flex: 1;
+      text-align: left;
+      @include text($font-size-sm, $font-weight-medium);
+      color: var(--tui-text-primary);
+      transition: all $duration-200;
+    }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: $space-2;
+      
+      tui-icon {
+        color: var(--tui-text-tertiary);
+        transition: color $duration-200;
+      }
+    }
+  }
+}
+

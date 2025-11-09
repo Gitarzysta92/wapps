@@ -1,0 +1,32 @@
+
+<section class="portal-logo">
+  <tui-avatar 
+    [src]="'@tui.mastercard' | tuiIcon"
+    size="xl"
+  />
+</section>
+
+<nav class="sidebar-nav">
+  <div class="nav-section-title">Results</div>
+  @for (item of navigationItems; track item.type) {
+    <button
+      class="nav-item"
+      tuiButton
+      appearance="ghost"
+      type="button" 
+      [class.active]="isActive(item.type)"
+      (click)="scrollToSection(item.type)"
+      [title]="item.label">
+      <span class="nav-label">{{ item.label }}</span>
+      <div class="nav-icon">
+        <tui-icon
+          [icon]="item.icon"
+          [style.height.rem]="1.2"
+          [style.width.rem]="1.2"
+          [style.display]="'inline-block'"
+          [style.visibility]="'visible'"/>
+      </div>
+    </button>
+  }
+</nav>
+

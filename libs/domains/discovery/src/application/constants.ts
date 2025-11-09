@@ -1,5 +1,5 @@
 export enum DiscoverySearchResultType {
-  Article,
-  Suite,
-  Application
+  Article = 'article',
+  Suite = 'suite',
+  Application = 'application',
 }

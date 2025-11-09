@@ -4,42 +4,82 @@
 
 <section class="section__separator"></section>
 
-<div class="results-header-global">
-  <h2>Search Results ({{ paginationService.totalLoadedItems }} items)</h2>
-  <button tuiButton appearance="secondary" (click)="paginationService.loadNextPage()">
-    Load More
-  </button>
-</div>
+@let resultsData = resultsData$ | async;
 
-<div *ngIf="paginationService.canLoadPrevious" class="load-more-container load-more-top">
-  <button tuiButton appearance="secondary" (click)="paginationService.loadPreviousPage()">
-    Load Previous Page
-  </button>
-</div>
+@if (resultsData && !resultsData.isLoading) {
+  @for (group of resultsData.groups; track group.type) {
+    <section 
+      class="section__results" 
+      [id]="group.type"
+      (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
+      <h3>{{ group.type }}</h3>
+      <span class="group-count">{{ group.entries.length }} items</span>
+      @for (entry of group.entries; track entry.name) {
+        <div class="item-card">
+          <h4>{{ entry.name }}</h4>
+          <div class="item-meta">
+            <span class="type-badge">{{ entry.type }}</span>
+          </div>
+        </div>
+      }
+    </section>
+  }
+} @else {
+  @for (skeleton of [1, 2, 3]; track skeleton) {
+    <section class="section__results section__results--skeleton">
+      <div class="group-header">
+        <h3 [tuiSkeleton]="true" class="skeleton"></h3>
+        <span [tuiSkeleton]="true" class="skeleton"></span>
+      </div>
+      
+      <div class="items-grid">
+        @for (card of [1, 2, 3, 4]; track card) {
+          <div class="item-card item-card--skeleton">
+            <h4 [tuiSkeleton]="true" class="skeleton"></h4>
+            <div class="item-meta">
+              <span [tuiSkeleton]="true" class="skeleton"></span>
+              <span [tuiSkeleton]="true" class="skeleton"></span>
+              <span [tuiSkeleton]="true" class="skeleton"></span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+}
 
-<ng-container *ngFor="let pageData of paginationService.allLoadedItems; let isFirst = first; let isLast = last">    
+
+
+
+
+
+<!-- 
+<ng-container *ngFor="let groups of resultsData.groups; let isFirst = first; let isLast = last">    
   <ng-container *ngFor="let group of pageData.data.groups">
-    <section class="section__results">
+    <section 
+      class="section__results" 
+      [id]="getSectionId(group.type)"
+      #suitesSection
+      [attr.data-section]="'suites'">
       <div class="group-header">
         <h3 [ngSwitch]="group.type">
           <ng-container *ngSwitchCase="DiscoverySearchResultType.Article">Articles</ng-container>
           <ng-container *ngSwitchCase="DiscoverySearchResultType.Suite">Suites</ng-container>
           <ng-container *ngSwitchCase="DiscoverySearchResultType.Application">Applications</ng-container>
         </h3>
-        <span class="group-count">{{ group.entries.length }} items</span>
-      </div>
-      
+        <span class="gount">{{ group.entries.length }} items</span>
+      </div> 
       <div class="items-grid">
         <div *ngFor="let entry of group.entries" class="item-card">
           <h4>{{ entry.name }}</h4>
           <div class="item-meta">
             <ng-container [ngSwitch]="group.type">
-              <ng-container *ngSwitchCase="DiscoverySearchResultType.Article">
-                <span class="type-badge">Article</span>
-                <span>by {{ asArticle(entry).authorName }}</span>
-                <span>💬 {{ entry.commentsNumber }}</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="DiscoverySearchResultType.Suite">
+              <ng-container *ngSwitchCase="DiscoverySearchResultTypcle">
+                <span class=">Article</span>
+                <span>by {{ icle(entry).authorName }}</span>
+          <span>💬 {{ .commentsNumber }}</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="DiscoverySearchResultType.Suite">
                 <span class="type-badge">Suite</span>
                 <span>{{ asSuite(entry).numberOfApps }} apps</span>
                 <span>by {{ asSuite(entry).authorName }}</span>
@@ -57,4 +97,4 @@
       </div>
     </section>
   </ng-container>
-</ng-container>
+</ng-container> -->
