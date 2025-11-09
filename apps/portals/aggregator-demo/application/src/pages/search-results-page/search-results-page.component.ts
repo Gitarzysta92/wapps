@@ -1,13 +1,10 @@
-import { Component, inject, ElementRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
-import { TuiButton } from '@taiga-ui/core';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { SearchResultsPageService } from './search-results-page.service';
-import { SearchResultsPageStateService } from './search-results-page-state.service';
 import { 
-  DiscoverySearchResultType, 
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
   DiscoverySearchResultSuiteItemDto, 
@@ -24,7 +21,6 @@ import { GlobalStateService } from '../../state/global-state.service';
   imports: [
     CommonModule,
     FiltersBarComponent,
-    TuiButton,
     TuiSkeleton,
     IntersectDirective
   ],
@@ -42,7 +38,7 @@ import { GlobalStateService } from '../../state/global-state.service';
 })
 export class SearchResultsPageComponent {
 
-  private readonly _stateService = inject(GlobalStateService);
+  private readonly _globalState = inject(GlobalStateService);
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
     .pipe(
@@ -52,13 +48,20 @@ export class SearchResultsPageComponent {
   
 
 
+  constructor() {
+    // Subscribe to resultsData$ and push it to the global state service
+    this.resultsData$.subscribe(data => {
+      this._globalState.setSearchResultsData(data);
+    });
+  }
+
   public onVisibilityChange(
     isVisible: boolean,
     element: Element,
     group: DiscoverySearchResultGroupDto
   ): void {
     if (isVisible) {
-      this._stateService.activeSection$.next(group.type);
+      this._globalState.activeSection$.next(group.type);
     }
   }
 

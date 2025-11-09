@@ -1,13 +1,17 @@
 import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IAppShellState } from '../shells/app-shell/app-shell.component';
-import { DiscoverySearchResultType } from '@domains/discovery';
+import { DiscoverySearchResultType, DiscoverySearchResultDto } from '@domains/discovery';
 
 export interface GlobalState {
   isLoading: boolean;
   currentTheme: 'light' | 'dark';
   userPreferences: Record<string, any>;
   userPanelOpen: boolean;
+}
+
+export interface SearchResultsData extends DiscoverySearchResultDto {
+  isLoading: boolean;
 }
 
 @Injectable()
@@ -28,6 +32,17 @@ export class GlobalStateService implements IAppShellState {
   public readonly userPanelOpen$ = this._userPanelOpen$.asObservable();
 
   public readonly activeSection$ = new BehaviorSubject<DiscoverySearchResultType | null>(null);
+  
+  public readonly searchResultsData$ = new BehaviorSubject<SearchResultsData>({
+    itemsNumber: 0,
+    groups: [],
+    query: {},
+    isLoading: true
+  });
+  
+  public setSearchResultsData(data: SearchResultsData): void {
+    this.searchResultsData$.next(data);
+  }
 
   public setLoading(loading: boolean): void {
     this._state.update(current => ({ ...current, isLoading: loading }));

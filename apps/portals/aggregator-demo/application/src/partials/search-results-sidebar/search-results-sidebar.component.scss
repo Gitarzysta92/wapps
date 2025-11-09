@@ -3,98 +3,94 @@
 :host {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
-  padding: $space-4 0;
+  align-items: end;
 }
 
 .portal-logo {
+  height: $size-content-xxs;
+  padding: $space-4 0;
   display: flex;
-  justify-content: center;
-  padding: $space-4;
-  margin-bottom: $space-6;
+  align-items: end;
 }
 
-.sidebar-nav {
+.nav-item {
+  width: 250px;
   display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  padding: 0 $space-3;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1rem;
+  text-decoration: none;
+  color: var(--tui-text-01);
+  transition: background-color 0.2s;
+  cursor: pointer;
   
-  .nav-section-title {
-    padding: $space-2 $space-3;
-    margin-bottom: $space-2;
-    @include text($font-size-xs, $font-weight-bold);
-    color: var(--tui-text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .nav-icon {
+    transition: transform 0.1s;
+    transform: translate(0px);
   }
 
-  .nav-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: $space-3;
-    border-radius: $radius-sm;
-    transition: all $duration-200;
-    cursor: pointer;
-    position: relative;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 0;
-      background: var(--tui-status-primary);
-      border-radius: 0 $radius-sm $radius-sm 0;
-      transition: height $duration-200;
-    }
+  .nav-label {
+    transition: transform 0.1s;
+    transform: translate(0px);
+  }
 
-    &:hover {
-      background: var(--tui-background-elevation-1);
-      transform: translateX(2px);
-    }
-
-    &.active {
-      background: var(--tui-background-elevation-1);
-      
-      &::before {
-        height: 60%;
-      }
-
-      .nav-label {
-        color: var(--tui-status-primary);
-        font-weight: $font-weight-bold;
-      }
-
-      .nav-icon tui-icon {
-        color: var(--tui-status-primary);
-      }
-    }
-
-    .nav-label {
-      flex: 1;
-      text-align: left;
-      @include text($font-size-sm, $font-weight-medium);
-      color: var(--tui-text-primary);
-      transition: all $duration-200;
-    }
-
+  &:hover {
+    background: var(--feed-radial-gradient2);
     .nav-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: $space-2;
-      
-      tui-icon {
-        color: var(--tui-text-tertiary);
-        transition: color $duration-200;
-      }
+      transform: translate(10px);
     }
+    .nav-label {
+      transform: translate(10px);
+    }
+  }
+  
+  &.active {
+    background: var(--feed-radial-gradient2);
+    color: var(--tui-text-on-primary);
   }
 }
 
+.nav-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.nav-count {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+// Skeleton styles
+.nav-item--skeleton {
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+  gap: 0.75rem;
+  height: 2.75rem;
+  pointer-events: none;
+  cursor: default;
+  
+  .nav-label {
+    width: 120px;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+  }
+  
+  .nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.25rem;
+  }
+}
