@@ -6,7 +6,7 @@ import { SearchMockDataService } from "../infrastructure/search-mock-data.servic
 import { SearchResultDto } from "@domains/catalog/search";
 
 @Injectable()
-export class ListingSearchService {
+export class ListingSearchService  {
 
   private readonly _httpClient = inject(HttpClient);
   private readonly _mockDataService = inject(SearchMockDataService);

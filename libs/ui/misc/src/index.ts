@@ -5,3 +5,4 @@ export * from './out-of-viewport.directive';
 export * from './outside-click.directive';
 export * from './safe-component-outlet.directive';
 export * from './provide-typed.helper';
+export * from './intersect.directive';

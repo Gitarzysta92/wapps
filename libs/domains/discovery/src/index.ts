@@ -1,2 +1,10 @@
-export type { DiscoverySearchResultDto, DiscoverySearchResultEntryDto, DiscoverySearchResultGroupDto, DiscoveryRecentSearchesDto } from './application/discovery-search-result.dto';
-export { EntityType } from './application/constants';
+export type { 
+  DiscoverySearchResultDto, 
+  DiscoverySearchResultEntryDto, 
+  DiscoverySearchResultGroupDto, 
+  DiscoveryRecentSearchesDto,
+  DiscoverySearchResultApplicationItemDto,
+  DiscoverySearchResultArticleItemDto,
+  DiscoverySearchResultSuiteItemDto
+} from './application/discovery-search-result.dto';
+export { DiscoverySearchResultType } from './application/constants';

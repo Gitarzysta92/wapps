@@ -13,6 +13,7 @@ import { HeaderPartialComponent } from "./partials/header/header.component";
 import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
 import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
+import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component"; 
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
 import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
@@ -619,8 +620,8 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.search ],
           header: null,
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            component: SearchResultsSidebarComponent,
+            inputs: {}
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,

@@ -1,4 +1,6 @@
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import {
   TuiDropdown,
 } from '@taiga-ui/core';
@@ -8,6 +10,12 @@ import {
 import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER, MultiSearchComponent } from '@portals/shared/features/multi-search';
+import { 
+  FullSearchRedirectComponent, 
+  SearchResultPreviewList, 
+  SearchResultListSkeleton, 
+  RecentSearchesList 
+} from '@ui/search-results';
 import { SearchMockDataService, ListingSearchService } from '@portals/shared/features/search';
 import { HomePageStateService } from '../../pages/home/home-page-state.service';
 
@@ -18,7 +26,13 @@ import { HomePageStateService } from '../../pages/home/home-page-state.service';
   styleUrl: 'header-v2.component.scss',
   standalone: true,
   imports: [
+    CommonModule,
+    RouterLink,
     MultiSearchComponent,
+    FullSearchRedirectComponent,
+    SearchResultPreviewList,
+    SearchResultListSkeleton,
+    RecentSearchesList,
     TuiDropdown,
     TuiBadgedContent,
   ],

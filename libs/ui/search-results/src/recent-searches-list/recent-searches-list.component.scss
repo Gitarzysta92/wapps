@@ -1,10 +1,28 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  padding: $space-2 0;
+  padding: 0;
   margin: 0;
   list-style: none;
   width: 100%;
+}
+
+.group-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--tui-radius-m);
+  font-size: $font-size-xs;
+  padding: $space-2 $space-5;
+  border-bottom: 1px solid  var(--color-bg-subtle);
+  tui-icon{
+   font-size: $font-size-lg;
+  }
+  .search-name {
+    padding-left: $space-2;
+    flex-grow: 2;
+  }
 }
 
 .recent-search-item {
@@ -12,8 +30,9 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: $space-1 $space-5;
+  padding: $space-2 $space-5;
   border-radius: var(--tui-radius-m);
+  font-size: $font-size-xs;
 
   &:hover {
     background-color: var(--color-bg-soft);
@@ -22,8 +41,5 @@
   .search-name {
     padding-left: $space-2;
     flex-grow: 2;
-  }
-  a {
-    width: 100%;
   }
 }

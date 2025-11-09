@@ -10,6 +10,8 @@ import {
   MultiSearchResultVM,
   MultiSearchRecentSearchesVM
 } from '@portals/shared/features/multi-search';
+import { HomeSearchResultsComponent } from './home-search-results.component';
+import { HomeRecentSearchesComponent } from './home-recent-searches.component';
 import { SearchMockDataService } from '@portals/shared/features/search';
 import {
   NewsFeedService,
@@ -43,7 +45,8 @@ import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
-import { EntityType } from '@domains/discovery';
+
+import { DiscoverySearchResultType } from '@domains/discovery';
 import { delay, map, of, tap } from "rxjs";
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { FILTERS } from "../../filters";
@@ -66,6 +69,8 @@ type RegisteredFeedItem = Array<
   imports: [
     CommonModule,
     MultiSearchComponent,
+    HomeSearchResultsComponent,
+    HomeRecentSearchesComponent,
     ArticleHighlightFeedItemComponent,
     ApplicationHealthFeedItemComponent,
     ApplicationReviewFeedItemComponent,
@@ -78,7 +83,7 @@ type RegisteredFeedItem = Array<
     TuiBadgedContent,
     FeedContainerComponent,
     NgIf,
-    DiscussionComponent
+    DiscussionComponent,
   ],
   providers: [
     SearchMockDataService,
@@ -170,13 +175,13 @@ type RegisteredFeedItem = Array<
                 const groups = result.value.groups.map((group, groupIndex) => {
                   let groupName = 'Unknown';
                   switch (group.type) {
-                    case EntityType.Application:
+                    case DiscoverySearchResultType.Application:
                       groupName = 'Applications';
                       break;
-                    case EntityType.Article:
+                    case DiscoverySearchResultType.Article:
                       groupName = 'Articles';
                       break;
-                    case EntityType.Suite:
+                    case DiscoverySearchResultType.Suite:
                       groupName = 'Suites';
                       break;
                   }
@@ -188,13 +193,13 @@ type RegisteredFeedItem = Array<
                     entries: group.entries.map((entry, entryIndex) => {
                       let entryLink = '';
                       switch (group.type) {
-                        case EntityType.Application:
+                        case DiscoverySearchResultType.Application:
                           entryLink = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
                           break;
-                        case EntityType.Article:
+                        case DiscoverySearchResultType.Article:
                           entryLink = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
                           break;
-                        case EntityType.Suite:
+                        case DiscoverySearchResultType.Suite:
                           entryLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
                           break;
                       }

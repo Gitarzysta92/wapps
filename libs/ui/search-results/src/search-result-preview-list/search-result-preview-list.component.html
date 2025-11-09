@@ -3,7 +3,8 @@
     <a class="group-header" 
       [iconStart]="group.icon"
       iconEnd="@tui.chevron-right" 
-      tuiLink 
+      tuiLink
+      appearance="action-soft"
       [routerLink]="group.link">
       <span class="group-name">{{ group.name }}</span>
       <span>View all</span>
@@ -16,9 +17,16 @@
           tuiLink 
           [routerLink]="entry.link"
           iconEnd="@tui.chevron-right" >
-          <tui-avatar size="s" [src]="entry.coverImageUrl" />
-          <span class="entry-name">{{ entry.name }}</span>
-        </a>  
+          @if (customContent()) {
+            <ng-container *ngTemplateOutlet="customContent(); context: { $implicit: entry }" />
+          } 
+          @else {
+            <tui-avatar size="xs" [src]="entry.coverImageUrl" />
+            <span class="entry-name">
+              {{ entry.name }}
+            </span>
+          }
+        </a>
       </li>
     }
     </ul>

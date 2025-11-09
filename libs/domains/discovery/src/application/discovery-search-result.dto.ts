@@ -1,4 +1,5 @@
-import { EntityType } from "./constants";
+import { CategoryDto, TagDto } from "./auxiliary.dto";
+import { DiscoverySearchResultType } from "./constants";
 
 
 export type DiscoveryRecentSearchesDto = {
@@ -15,12 +16,49 @@ export type DiscoverySearchResultDto = {
 }
 
 export type DiscoverySearchResultGroupDto = {
-  type: EntityType
-  entries: DiscoverySearchResultEntryDto[];
+  type: DiscoverySearchResultType
+  entries: Array<
+    DiscoverySearchResultArticleItemDto |
+    DiscoverySearchResultApplicationItemDto | 
+    DiscoverySearchResultSuiteItemDto
+  >;
 }
 
 export type DiscoverySearchResultEntryDto = {
+  type: DiscoverySearchResultType;
   name: string;
   slug: string;
   coverImageUrl: string;
 }
+
+
+export type DiscoverySearchResultArticleItemDto = {
+  title: string;
+  slug: string;
+  coverImageUrl: string;
+  commentsNumber: number;
+  authorName: string;
+  authorAvatarUrl: string;
+  tags: TagDto[];
+} & DiscoverySearchResultEntryDto;
+
+export type DiscoverySearchResultApplicationItemDto = {
+  name: string;
+  slug: string;
+  coverImageUrl: string;
+  rating: number;
+  commentsNumber: number;
+  category: CategoryDto;
+  tags: TagDto[];
+} & DiscoverySearchResultEntryDto;
+
+export type DiscoverySearchResultSuiteItemDto = {
+  name: string;
+  slug: string;
+  coverImageUrl: string;
+  numberOfApps: number;
+  commentsNumber: number;
+  authorName: string;
+  authorAvatarUrl: string;
+  tags: TagDto[];
+} & DiscoverySearchResultEntryDto;

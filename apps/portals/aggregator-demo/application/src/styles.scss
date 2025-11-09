@@ -57,3 +57,22 @@ tui-dropdown:has(user-panel), tui-dropdown:has(guest-panel) {
 button tui-loader {
   margin-left: -24px;
 }
+
+// Custom action-soft appearance
+[tuiAppearance][data-appearance='action-soft'] {
+  color: var(--tui-text-action-soft);
+  background: var(--tui-background-action-soft);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--tui-border-action-soft);
+  --tui-border-focus: var(--tui-border-action-soft-focus);
+
+  &:hover {
+    color: var(--tui-text-action-soft-hover);
+    background: var(--tui-background-action-soft-hover);
+  }
+
+  &:active {
+    color: var(--tui-text-action-soft-active);
+    background: var(--tui-background-action-soft-active);
+  }
+}

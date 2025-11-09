@@ -1,12 +1,22 @@
+<div tuiAppearance="action-soft" class="group-header">
+  <tui-icon size="xs" icon="@tui.history"></tui-icon>
+  <span class="search-name">Recent</span>
+</div>
 @for (search of searches(); track search.link) {
   <li>
     <a
       class="recent-search-item" 
       tuiLink 
+      appearance="action-soft"
       [routerLink]="search.link"
       [queryParams]="search.query"
+      [iconStart]="search.icon || '@tui.search'"
       iconEnd="@tui.chevron-right" >
-      <span class="search-name">{{ search.name }}</span>
+      @if (customContent()) {
+        <ng-container *ngTemplateOutlet="customContent(); context: { $implicit: search }" />
+      } @else {
+        <span class="search-name">{{ search.name }}</span>
+      }
     </a>  
   </li>
 }

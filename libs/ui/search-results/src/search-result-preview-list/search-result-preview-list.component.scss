@@ -36,15 +36,16 @@
 
 
 .result-entries {
-  padding: $space-2 0;
+  padding: 0 0 $space-2 0;
 
   .result-entry {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: $space-1 $space-5;
+    padding: $space-2 $space-5;
     border-radius: var(--tui-radius-m);
+    font-size: $font-size-sm;
 
     &:hover {
       background-color: var(--color-bg-soft);

@@ -1,5 +1,5 @@
-export enum EntityType {
-  Article,
-  Suite,
-  Application
+export enum DiscoverySearchResultType {
+  Article = 'article',
+  Suite = 'suite',
+  Application = 'application',
 }

@@ -3,7 +3,18 @@
 </section>
 
 <section class="section_quick-search">
-  <multi-search></multi-search>
+  <multi-search #multiSearch>
+    <home-search-results 
+      search-results
+      [searchResults$]="multiSearch.searchResults$"
+      [loadingResults]="multiSearch.loadingResults">
+    </home-search-results>
+    
+    <home-recent-searches 
+      recent-searches
+      [recentSearches$]="multiSearch.recentSearches$">
+    </home-recent-searches>
+  </multi-search>
 </section>
 
 <section class="section__feed-heading">

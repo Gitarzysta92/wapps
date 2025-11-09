@@ -2,12 +2,11 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
 import { TuiLoader } from "@taiga-ui/core";
 import { first, map, Observable, of, startWith, switchMap, tap } from "rxjs";
-import { FullSearchRedirectComponent, SearchResultPreviewList, SearchResultListSkeleton, SearchResultVM, RecentSearchesList } from "@ui/search-results";
+import { SearchResultVM } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
 import { MultiSearchResultVM, MultiSearchRecentSearchesVM } from "./multi-search.interface";
-import { EntityType } from "@domains/discovery";
-import { RouterLink } from "@angular/router";
+import { DiscoverySearchResultType } from "@domains/discovery";
 
 @Component({
   selector: "multi-search",
@@ -18,12 +17,7 @@ import { RouterLink } from "@angular/router";
   imports: [
     CommonModule,
     SearchBarComponent,
-    FullSearchRedirectComponent,
-    SearchResultListSkeleton,
-    SearchResultPreviewList,
-    RecentSearchesList,
     TuiLoader,
-    RouterLink,
   ],
 })
 export class MultiSearchComponent {
@@ -96,40 +90,61 @@ export class MultiSearchComponent {
           link: group.link,
           name: this._getGroupName(group.type),
           icon: this._getIcon(group.type),
+          type: this._getTypeName(group.type),
           entries: group.entries.map((entry, entryIndex) => ({
             id: entryIndex,
             groupId: groupIndex,
+            type: this._getTypeName(group.type),
             name: entry.name,
             description: '', // Description not available in DTO
             coverImageUrl: entry.coverImageUrl,
-            link: entry.link
+            link: entry.link,
+            rating: 'rating' in entry ? entry.rating : undefined,
+            authorName: 'authorName' in entry ? entry.authorName : undefined,
+            authorAvatarUrl: 'authorAvatarUrl' in entry ? entry.authorAvatarUrl : undefined,
+            tags: 'tags' in entry ? entry.tags : undefined as any,
           }))
         };
       })
     };
   }
 
-  //TODO: code smell
-  private _getGroupName(type: EntityType): string {
+  //TODO: code smell -> coupling
+  private _getGroupName(type: DiscoverySearchResultType): string {
     switch (type) {
-      case EntityType.Application:
+      case DiscoverySearchResultType.Application:
         return 'Applications';
-      case EntityType.Article:
+      case DiscoverySearchResultType.Article:
         return 'Articles';
-      case EntityType.Suite:
+      case DiscoverySearchResultType.Suite:
         return 'Suites';
       default:
         return 'Unknown';
     }
   }
-//TODO: code smell
-  private _getIcon(type: EntityType): string {
+
+  //TODO: code smell -> coupling
+  private _getTypeName(type: DiscoverySearchResultType): string {
     switch (type) {
-      case EntityType.Application:
+      case DiscoverySearchResultType.Application:
+        return 'Application';
+      case DiscoverySearchResultType.Article:
+        return 'Article';
+      case DiscoverySearchResultType.Suite:
+        return 'Suite';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  //TODO: code smell -> coupling
+  private _getIcon(type: DiscoverySearchResultType): string {
+    switch (type) {
+      case DiscoverySearchResultType.Application:
         return '@tui.layout-grid';
-      case EntityType.Article:
+      case DiscoverySearchResultType.Article:
         return '@tui.newspaper';
-      case EntityType.Suite:
+      case DiscoverySearchResultType.Suite:
         return '@tui.briefcase-business';
       default:
         return 'Unknown';

@@ -1,0 +1,44 @@
+
+<section class="portal-logo">
+  <tui-avatar 
+    [src]="'@tui.mastercard' | tuiIcon"
+    size="xl"
+  />
+</section>
+
+<nav class="sidebar-nav">
+  @if (isLoading()) {
+    <!-- Skeleton loaders -->
+    @for (skeleton of [1, 2, 3]; track skeleton) {
+      <div class="nav-item nav-item--skeleton" aria-hidden="true">
+        <span class="nav-label" [tuiSkeleton]="true"></span>
+        <div class="nav-icon" [tuiSkeleton]="true"></div>
+      </div>
+    }
+  } @else {
+    <!-- Dynamic navigation items -->
+    @for (item of navigationItems(); track item.type) {
+      <button
+        class="nav-item"
+        tuiButton
+        appearance="ghost"
+        type="button" 
+        [class.active]="isActive(item.type)"
+        (click)="scrollToSection(item.type)"
+        [title]="item.label">
+        <span class="nav-label">
+          {{ item.label }}
+          <span class="nav-count">({{ item.count }})</span>
+        </span>
+        <div class="nav-icon">
+          <tui-icon
+            [icon]="item.icon"
+            [style.height.rem]="1.2"
+            [style.width.rem]="1.2"
+            [style.display]="'inline-block'"
+            [style.visibility]="'visible'"/>
+        </div>
+      </button>
+    }
+  }
+</nav>
