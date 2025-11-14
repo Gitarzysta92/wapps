@@ -5,6 +5,8 @@ import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
 import { DiscoverySearchResultType, DiscoverySearchResultGroupDto } from '@domains/discovery';
 import { GlobalStateService } from '../../state/global-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NAVIGATION } from '../../navigation';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'search-results-sidebar',
@@ -18,7 +20,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
     TuiIcon,
     TuiAvatar,
     TuiIconPipe,
-    TuiSkeleton
+    TuiSkeleton,
+    RouterLink
   ]
 })
 export class SearchResultsSidebarComponent {
@@ -30,6 +33,8 @@ export class SearchResultsSidebarComponent {
   protected readonly resultsData = toSignal(this.globalState.searchResultsData$, { 
     initialValue: { itemsNumber: 0, groups: [], query: {}, isLoading: true }
   });
+
+  HOME = NAVIGATION.home;
 
   // Map of type to icon
   private readonly iconMap: Record<DiscoverySearchResultType, string> = {

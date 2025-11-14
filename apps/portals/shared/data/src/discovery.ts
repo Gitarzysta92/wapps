@@ -30,6 +30,14 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo }
           ]
         }
       ]
@@ -148,6 +156,16 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
           ]
         },
         {
@@ -162,6 +180,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
           ]
         },
         {
@@ -176,6 +201,20 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
           ]
         }
       ]

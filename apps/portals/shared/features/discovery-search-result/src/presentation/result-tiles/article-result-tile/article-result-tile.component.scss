@@ -1,0 +1,87 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  height: 450px;
+}
+
+.item-content {
+  margin-top: auto;
+  padding: var(--tui-padding-m) 0;
+}
+
+.article-info {
+  position: relative;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 30px 30px 15px 30px;
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 40px);
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-padding-s);
+  margin-bottom: var(--tui-padding-m);
+}
+
+.author-avatar {
+  flex-shrink: 0;
+}
+
+.author-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+}
+
+.article-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--tui-text-01);
+  margin: 0 0 var(--tui-padding-m) 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tui-padding-xs);
+  margin-bottom: var(--tui-padding-m);
+}
+
+.article-tag {
+  font-size: 12px;
+}
+
+.cover-image {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+.article-cta {
+  width: 100%;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: var(--tui-background-base-alt);
+  color: var(--tui-background-accent-opposite-pressed);
+  padding: $space-1 30px $space-1 30px;
+  border-radius: $radius-sm;
+  gap: var(--tui-padding-m);
+}
+
+.action-btn {
+  flex-shrink: 0;
+}
+

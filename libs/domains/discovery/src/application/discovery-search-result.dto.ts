@@ -61,4 +61,9 @@ export type DiscoverySearchResultSuiteItemDto = {
   authorName: string;
   authorAvatarUrl: string;
   tags: TagDto[];
+  applications?: Array<{
+    name: string;
+    slug: string;
+    avatarUrl: string;
+  }>;
 } & DiscoverySearchResultEntryDto;

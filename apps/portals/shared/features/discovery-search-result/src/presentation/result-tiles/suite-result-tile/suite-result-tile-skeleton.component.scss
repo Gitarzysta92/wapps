@@ -1,0 +1,113 @@
+@use 'ui/design-system/src/styles' as *;
+
+
+.suite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.suite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.suite-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-2;
+  flex: 1;
+}
+
+.suite-name-skeleton {
+  width: 60%;
+  height: 1.75rem;
+  border-radius: 4px;
+}
+
+.suite-category-skeleton {
+  width: 120px;
+  height: 1.25rem;
+  border-radius: 12px;
+}
+
+.suite-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn-skeleton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+}
+
+.suite-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.suite-tag-skeleton {
+  width: 60px;
+  height: 1.25rem;
+  border-radius: 12px;
+}
+
+.suite-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.suite-apps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.apps-avatars {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.app-avatar-skeleton {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.suite-divider {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0.5rem 0;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-label-skeleton {
+  width: 50px;
+  height: 1rem;
+  border-radius: 4px;
+}
+
+.author-avatar-skeleton {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
+
+.author-name-skeleton {
+  width: 100px;
+  height: 1rem;
+  border-radius: 4px;
+}
+

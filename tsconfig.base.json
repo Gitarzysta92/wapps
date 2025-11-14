@@ -113,6 +113,9 @@
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"
       ],
+      "@portals/shared/features/discovery-search-result": [
+        "apps/portals/shared/features/discovery-search-result/src/index.ts"
+      ],
       "@portals/shared/features/discussion": [
         "apps/portals/shared/features/discussion/src/index.ts"
       ],

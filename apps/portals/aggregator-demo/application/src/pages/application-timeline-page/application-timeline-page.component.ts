@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
+import { map, of, shareReplay } from 'rxjs';
 import { TuiIcon } from '@taiga-ui/core';
-import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN } from '@portals/shared/features/feed';
+import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN, ApplicationTeaserFeedItemVM, ApplicationDevLogFeedItemVM, ApplicationHealthFeedItemVM, ApplicationReviewFeedItemVM, ArticleHighlightFeedItemVM, DiscussionTopicFeedItemVM, SuiteTeaserFeedItemVM } from '@portals/shared/features/feed';
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
 import { ApplicationHealthFeedItemComponent } from '@portals/shared/features/feed';
 import { ApplicationReviewFeedItemComponent } from '@portals/shared/features/feed';
@@ -14,6 +14,21 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { AppRecordDto } from '@domains/catalog/record';
 import { ApplicationTimelineFeedProviderService } from './application-timeline-feed-provider.service';
+import { buildRoutePath } from '@portals/shared/boundary/navigation';
+import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
+import { NAVIGATION } from '../../navigation';
+
+type RegisteredFeedItem = Array<
+  ApplicationHealthFeedItemVM & { type: typeof APPLICATION_HEALTH_FEED_ITEM_SELECTOR } |
+  ApplicationTeaserFeedItemVM & { type: typeof APPLICATION_TEASER_FEED_ITEM_SELECTOR } |
+  ApplicationReviewFeedItemVM & { type: typeof APPLICATION_REVIEW_FEED_ITEM_SELECTOR } |
+  ApplicationDevLogFeedItemVM & { type: typeof APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } |
+  SuiteTeaserFeedItemVM & { type: typeof SUITE_TEASER_FEED_ITEM_SELECTOR } |
+  DiscussionTopicFeedItemVM & { type: typeof DISCUSSION_TOPIC_FEED_ITEM_SELECTOR } |
+  ArticleHighlightFeedItemVM & { type: typeof ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR }
+>
+
+
 
 @Component({
   selector: 'app-application-timeline-page',
@@ -35,7 +50,55 @@ import { ApplicationTimelineFeedProviderService } from './application-timeline-f
   providers: [
     NewsFeedService,
     ApplicationTimelineFeedProviderService,
-    { provide: FEED_PROVIDER_TOKEN, useClass: ApplicationTimelineFeedProviderService }
+     {
+          provide: FEED_PROVIDER_TOKEN, useValue: {
+          getFeedPage: () => of({
+            ok: true,
+            value: {
+              items: (FEED_ITEM_EXAMPLES as RegisteredFeedItem).map(i => {
+        
+                switch (i.type) {
+                  case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
+                    i.appLink = buildRoutePath(NAVIGATION.applicationHealth.path, { appSlug: i.appSlug });
+                    break;
+                  case APPLICATION_TEASER_FEED_ITEM_SELECTOR:
+                    i.appLink = buildRoutePath(NAVIGATION.application.path, { appSlug: i.appSlug });
+                    i.category.link = buildRoutePath(NAVIGATION.categories.path, { categorySlug: i.category.slug });
+                    i.tags.forEach(t => {
+                      t.link = buildRoutePath(NAVIGATION.tags.path, { tagSlug: t.slug });
+                    });
+                    i.reviewsLink = buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: i.appSlug });
+                    break;
+                  case APPLICATION_REVIEW_FEED_ITEM_SELECTOR:
+                    i.appLink = buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: i.appSlug });
+                    break;
+                  case APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR:
+                    i.appLink = buildRoutePath(NAVIGATION.applicationDevLog.path, { appSlug: i.appSlug });
+                    break;
+                  case SUITE_TEASER_FEED_ITEM_SELECTOR:
+                    i.suiteLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: i.suiteTitle.toLowerCase().replace(/\s+/g, '-') });
+                    break;
+                  case DISCUSSION_TOPIC_FEED_ITEM_SELECTOR:
+                    i.appLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
+                    i.topicLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
+                    break;
+                  case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR: {
+                    // Extract slug from title or use a default pattern
+                    const articleSlug = (i.title || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                    i.articleLink = buildRoutePath(NAVIGATION.article.path, { articleSlug });
+                    break;
+                  }
+                  default:
+                    //throw new Error(`Unknown feed item type: ${i.type}`);
+                }
+                return i;
+              }),
+              hasMore: true,
+              nextPage: 1
+            }
+          })
+          }
+        },
   ]
 })
 export class ApplicationTimelinePageComponent {

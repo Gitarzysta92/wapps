@@ -21,17 +21,10 @@ body {
   color: var(--tui-text-primary);
   -webkit-tap-highlight-color: transparent;
   --t-root-top: 0;
-  //  background: var(--feed-radial-gradient);
   padding: 0;
   margin: 0;
 
-  &.light {
-    //background: radial-gradient(ellipse 600px 400px at top, #ffffff, #e7ecff);
-  }
-
-  &.dark {
-    background: radial-gradient(ellipse 600px 400px at top, #ffffff, #e7ecff);
-  }
+  background: --body-background;
 }
 
 // Required by some Taiga UI components

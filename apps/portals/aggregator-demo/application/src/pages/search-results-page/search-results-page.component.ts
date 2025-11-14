@@ -8,12 +8,26 @@ import {
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
   DiscoverySearchResultSuiteItemDto, 
-  DiscoverySearchResultGroupDto
+  DiscoverySearchResultGroupDto,
+  DiscoverySearchResultType
 } from '@domains/discovery';
 import { delay, map, of, startWith } from 'rxjs';
 import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
+import { 
+  ArticleResultTileComponent,
+  ApplicationResultTileComponent,
+  SuiteResultTileComponent,
+  ArticleResultTileSkeletonComponent,
+  ApplicationResultTileSkeletonComponent,
+  SuiteResultTileSkeletonComponent,
+  type ArticleResultTileVM,
+  type ApplicationResultTileVM,
+  type SuiteResultTileVM
+} from '@portals/shared/features/discovery-search-result';
+import { TuiButton } from '@taiga-ui/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'search-results-page',
@@ -22,7 +36,15 @@ import { GlobalStateService } from '../../state/global-state.service';
     CommonModule,
     FiltersBarComponent,
     TuiSkeleton,
-    IntersectDirective
+    IntersectDirective,
+    ArticleResultTileComponent,
+    ApplicationResultTileComponent,
+    SuiteResultTileComponent,
+    ArticleResultTileSkeletonComponent,
+    ApplicationResultTileSkeletonComponent,
+    SuiteResultTileSkeletonComponent,
+    TuiButton,
+    RouterLink
   ],
   providers: [
     SearchResultsPageService
@@ -37,12 +59,11 @@ import { GlobalStateService } from '../../state/global-state.service';
   },
 })
 export class SearchResultsPageComponent {
-
   private readonly _globalState = inject(GlobalStateService);
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
     .pipe(
-      delay(4000),
+      delay(1000),
       map(d => Object.assign({}, d, { isLoading: false })),
       startWith({ itemsNumber: 0, groups: [], link: "", query: {}, isLoading: true }));
   
@@ -65,21 +86,53 @@ export class SearchResultsPageComponent {
     }
   }
 
-  protected asApplication(
-    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
-  ): DiscoverySearchResultApplicationItemDto {
-    return entry as DiscoverySearchResultApplicationItemDto;
+  protected readonly DiscoverySearchResultType = DiscoverySearchResultType;
+
+  protected toArticleVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): ArticleResultTileVM {
+    const articleEntry = entry as DiscoverySearchResultArticleItemDto;
+    return {
+      ...articleEntry,
+      tags: articleEntry.tags.map(tag => ({ 
+        ...tag, 
+        link: `/search?tag=${tag.slug}` 
+      })),
+      articleLink: `/articles/${articleEntry.slug}`,
+      commentsLink: `/articles/${articleEntry.slug}#comments`
+    };
   }
 
-  protected asArticle(
-    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
-  ): DiscoverySearchResultArticleItemDto {
-    return entry as DiscoverySearchResultArticleItemDto;
+  protected toApplicationVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): ApplicationResultTileVM {
+    const appEntry = entry as DiscoverySearchResultApplicationItemDto;
+    return {
+      ...appEntry,
+      category: {
+        ...appEntry.category,
+        link: `/search?category=${appEntry.category.slug}`
+      },
+      tags: appEntry.tags.map(tag => ({ 
+        ...tag, 
+        link: `/search?tag=${tag.slug}` 
+      })),
+      applicationLink: `/app/${appEntry.slug}/overview`,
+      reviewsLink: `/app/${appEntry.slug}/reviews`
+    };
   }
 
-  protected asSuite(
-    entry: DiscoverySearchResultApplicationItemDto | DiscoverySearchResultArticleItemDto | DiscoverySearchResultSuiteItemDto
-  ): DiscoverySearchResultSuiteItemDto {
-    return entry as DiscoverySearchResultSuiteItemDto;
+  protected toSuiteVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): SuiteResultTileVM {
+    const suiteEntry = entry as DiscoverySearchResultSuiteItemDto;
+    return {
+      ...suiteEntry,
+      tags: suiteEntry.tags.map(tag => ({ 
+        ...tag, 
+        link: `/search?tag=${tag.slug}` 
+      })),
+      suiteLink: `/suites/${suiteEntry.slug}`,
+      commentsLink: `/suites/${suiteEntry.slug}#comments`
+    };
+  }
+
+  protected onSaveSuite(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
+    // TODO: Implement save suite functionality
+    console.log('Save suite:', entry);
   }
 }

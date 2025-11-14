@@ -1,0 +1,52 @@
+<content-feed-item-blank>
+  <ui-cover-image
+    class="cover-image"
+    [image]="getCoverImage()"
+    backdrop>
+  </ui-cover-image>
+  <div class="item-content" content>
+    <div class="article-info">
+      <div class="author-info">
+        <tui-avatar
+          [src]="getAuthorAvatarUrl()"
+          size="s"
+          class="author-avatar">
+        </tui-avatar>
+        <span class="author-name">{{ getAuthorName() }}</span>
+      </div>
+      <div class="article-content">
+        <h3 class="article-title">{{ getTitle() }}</h3>
+        <div class="article-tags">
+          <tui-chip 
+            *ngFor="let tag of getTags()"
+            class="article-tag" 
+            size="s"
+            appearance="secondary">
+            {{ tag }}
+          </tui-chip>
+        </div>
+      </div>
+      <a
+        class="article-cta" 
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="item.articleLink | routePath:{ articleSlug: getSlug() }">
+          <tui-icon icon="@tui.book-open-text"/>
+          Read Article
+      </a>
+    </div>
+  </div>
+  <div class="item-actions" footer>
+    <button 
+      class="action-btn"
+      tuiButton
+      size="s"
+      appearance="flat"
+      [routerLink]="getCommentsLink()">
+        <tui-icon icon="@tui.messages-square" />
+        {{ getCommentsNumber() }} Comments
+    </button>
+  </div>
+</content-feed-item-blank>
+

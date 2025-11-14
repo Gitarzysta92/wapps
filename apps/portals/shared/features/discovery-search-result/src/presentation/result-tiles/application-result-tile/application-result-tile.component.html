@@ -1,0 +1,60 @@
+<content-feed-item-blank>
+  <ui-cover-image
+    class="cover-image"
+    [image]="getCoverImage()"
+    backdrop>
+  </ui-cover-image>
+  <div class="item-content" content>
+    <div class="app-info">
+      <tui-chip 
+        class="app-category" 
+        appearance="primary">
+        {{ getCategory() }}
+      </tui-chip>
+      <div class="app-content">
+        <h3 class="app-name">{{ getName() }}</h3>
+        <div class="app-tags">
+          <tui-chip 
+            *ngFor="let tag of getTags()"
+            class="app-tag" 
+            size="s"
+            appearance="secondary">
+            {{ tag }}
+          </tui-chip>
+        </div>
+      </div>
+      <a
+        class="app-cta" 
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="item.applicationLink | routePath:{ appSlug: getSlug() }">
+          <tui-icon icon="@tui.grid"/>
+          View Application
+      </a>
+    </div>
+  </div>
+  <div class="item-actions" footer>
+    <div class="score-container">
+      Rating:
+      <div class="score-stars">
+        <tui-icon 
+          *ngFor="let star of [1,2,3,4,5]"
+          [icon]="star <= getRating() ? '@tui.star' : '@tui.star'"
+          [class.filled]="star <= getRating()"
+          class="star-icon" />
+      </div>
+      <span class="score-value">{{ getRating().toFixed(1) }}/5</span>
+    </div>
+    <button 
+      class="action-btn"
+      tuiButton
+      size="s"
+      appearance="flat"
+      [routerLink]="getReviewsLink()">
+        <tui-icon icon="@tui.message-circle" />
+        {{ getCommentsNumber() }} Reviews
+    </button>
+  </div>
+</content-feed-item-blank>
+

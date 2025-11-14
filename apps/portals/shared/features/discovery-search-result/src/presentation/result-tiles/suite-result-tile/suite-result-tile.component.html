@@ -1,0 +1,64 @@
+<div class="suite-info">
+
+  <div class="suite-header">
+    <div class="suite-title">
+      <h3 >{{ getName() }}</h3>
+      <tui-chip 
+        class="suite-category" 
+        appearance="primary"
+        size="xs">
+        {{ getNumberOfApps() }} Applications
+      </tui-chip>
+    </div>
+    <div class="suite-actions">
+      <ng-content name="actions"></ng-content>
+    </div>
+  </div>
+
+  <div>
+    <tui-chip 
+      *ngFor="let tag of getTags()"
+      class="suite-tag" 
+      size="xs"
+      appearance="secondary">
+      {{ tag }}
+    </tui-chip>
+  </div>
+
+  <div class="suite-content">
+    <div class="suite-apps" *ngIf="hasApplications()">
+      <div class="apps-avatars">
+        <tui-avatar
+          *ngFor="let app of getApplications(); let i = index"
+          [src]="app.avatarUrl"
+          [tuiHint]="app.name"
+          size="m"
+          class="app-avatar">
+        </tui-avatar>
+      </div>
+    </div>
+  </div>
+
+  <hr class="suite-divider">
+
+  <div class="author-info">
+    author:
+    <tui-avatar
+      [src]="getAuthorAvatarUrl()"
+      size="xs"
+      class="author-avatar">
+    </tui-avatar>
+    <span class="author-name">{{ getAuthorName() }}</span>
+  </div>
+
+  <!-- <a
+    class="suite-cta" 
+    tuiButton 
+    size="s" 
+    appearance="primary"
+    [routerLink]="item.suiteLink | routePath:{ suiteSlug: getSlug() }">
+      <tui-icon icon="@tui.layout-grid"/>
+      Explore Suite
+  </a> -->
+</div>
+

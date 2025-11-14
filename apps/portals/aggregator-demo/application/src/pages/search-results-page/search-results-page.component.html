@@ -1,4 +1,4 @@
-<section class="section__filters">
+  <section class="section__filters">
   <filters-bar></filters-bar>
 </section>
 
@@ -12,43 +12,97 @@
       class="section__results" 
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
-      <h3>{{ group.type }}</h3>
-      <span class="group-count">{{ group.entries.length }} items</span>
-      @for (entry of group.entries; track entry.name) {
-        <div class="item-card">
-          <h4>{{ entry.name }}</h4>
-          <div class="item-meta">
-            <span class="type-badge">{{ entry.type }}</span>
-          </div>
-        </div>
-      }
+      <div class="group-header">
+        <h3>
+          {{ group.type }}
+          <span class="group-count">{{ group.entries.length }} items</span>
+        </h3>
+        <button 
+          tuiButton 
+          appearance="primary" 
+          size="xs">
+          Load more
+        </button>
+      </div>
+      <div class="items-grid">
+        @for (entry of group.entries; track entry.name) {
+          @switch (group.type) {
+            @case (DiscoverySearchResultType.Article) {
+              <ng-container *ngTemplateOutlet="articleTile; context: { entry }"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Application) {
+              <ng-container *ngTemplateOutlet="applicationTile; context: { entry }"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Suite) {
+              <ng-container *ngTemplateOutlet="suiteTile; context: { entry }"></ng-container>
+            }
+          }
+        }
+      </div>
     </section>
   }
-} @else {
-  @for (skeleton of [1, 2, 3]; track skeleton) {
-    <section class="section__results section__results--skeleton">
+}
+@else {
+  @for (groupType of [
+    DiscoverySearchResultType.Suite, 
+    DiscoverySearchResultType.Article, 
+    DiscoverySearchResultType.Application
+  ]; track groupType) {
+    <section class="section__results">
       <div class="group-header">
-        <h3 [tuiSkeleton]="true" class="skeleton"></h3>
-        <span [tuiSkeleton]="true" class="skeleton"></span>
+        <h3 [tuiSkeleton]="true" style="width: 100px; height: 25px;"></h3>
+        <button tuiButton size="xs" [tuiSkeleton]="true" style="width: 100px; height: 25px;"></button>
       </div>
-      
       <div class="items-grid">
-        @for (card of [1, 2, 3, 4]; track card) {
-          <div class="item-card item-card--skeleton">
-            <h4 [tuiSkeleton]="true" class="skeleton"></h4>
-            <div class="item-meta">
-              <span [tuiSkeleton]="true" class="skeleton"></span>
-              <span [tuiSkeleton]="true" class="skeleton"></span>
-              <span [tuiSkeleton]="true" class="skeleton"></span>
-            </div>
-          </div>
+        @for (entry of [1, 2, 3]; track entry) {
+          @switch (groupType) {
+            @case (DiscoverySearchResultType.Article) {
+              <article-result-tile-skeleton class="item-card-skeleton"></article-result-tile-skeleton>
+            }
+            @case (DiscoverySearchResultType.Application) {
+              <application-result-tile-skeleton class="item-card-skeleton"></application-result-tile-skeleton>
+            }
+            @case (DiscoverySearchResultType.Suite) {
+              <suite-result-tile-skeleton class="item-card-skeleton"></suite-result-tile-skeleton>
+            }
+          }
         }
       </div>
     </section>
   }
 }
 
+<ng-template #articleTile let-entry="entry">
+  <article-result-tile
+    class="item-card" 
+    [item]="toArticleVM(entry)">
+  </article-result-tile>
+</ng-template>
 
+<ng-template #applicationTile let-entry="entry">
+  <application-result-tile
+    class="item-card"
+    [item]="toApplicationVM(entry)">
+  </application-result-tile>
+</ng-template>
+
+<ng-template #suiteTile let-entry="entry">
+  <suite-result-tile
+    routerLink=""
+    class="item-card"
+    [item]="toSuiteVM(entry)">
+    <div name="actions">
+      <button
+        tuiButton
+        appearance="flat"
+        iconStart="@tui.heart"
+        size="s"
+        appearance="primary"
+        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveSuite(entry)">
+      </button>
+    </div>
+  </suite-result-tile>
+</ng-template>
 
 
 

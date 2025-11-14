@@ -9,6 +9,7 @@ body.light {
     rgba(249, 250, 251, 0.8) 50%, 
     rgba(249, 250, 251, 0) 100%);
   
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
   --sidebar-gradient: linear-gradient(135deg, #{$color-bg-muted} 0%, #{$color-border} 100%);
   --header-gradient: linear-gradient(90deg, #{$color-white} 0%, #{$color-bg-muted} 100%);
   --primary-gradient: linear-gradient(45deg, #{$color-primary-600} 0%, #{$color-purple-600} 100%);
@@ -87,6 +88,8 @@ body.dark {
     #{$color-surface} 0%, 
     rgba(31, 41, 55, 0.8) 50%, 
     rgba(31, 41, 55, 0) 100%);
+
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
   
   --sidebar-gradient: linear-gradient(135deg, #{$color-gray-700} 0%, #{$color-gray-600} 100%);
   --header-gradient: linear-gradient(90deg, #{$color-bg-inverse} 0%, #{$color-surface} 100%);
@@ -103,6 +106,7 @@ body.dark {
   --feed-radial-gradient: radial-gradient(ellipse at top, #{$color-gray-800} 0%, #{$color-surface} 50%, #{$color-bg-inverse} 100%);
 
   --feed-radial-gradient2: linear-gradient(0deg, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
+  
   
   // Action-soft appearance
   --tui-text-action-soft: #{$color-text-light};
