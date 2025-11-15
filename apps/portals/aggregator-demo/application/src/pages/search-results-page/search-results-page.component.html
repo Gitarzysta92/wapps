@@ -9,10 +9,6 @@
 
 <section class="section__separator"></section>
 
-<section class="section__results-header">
-  <h1>Discover</h1>
-</section>
-
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
   @for (group of resultsData.groups; track group.type) {
