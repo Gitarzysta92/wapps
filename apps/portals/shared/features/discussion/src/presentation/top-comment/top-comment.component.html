@@ -11,10 +11,17 @@
       <ng-content select="[slot='author-info']"></ng-content>
     </div>
     <div class="upvotes">
-      <span>{{ comment.upvotes }}</span>
-      <tui-icon
-        icon="@tui.thumbs-up"
-        class="upvote-icon"/>
+      <tui-chip>
+        <span>{{ comment.upvotes }}</span>
+        <tui-icon
+          icon="@tui.thumbs-up"
+          class="upvote-icon"/>
+      </tui-chip>
+      <tui-chip>
+        <tui-icon
+          icon="@tui.award"
+          class="upvote-icon"/>
+      </tui-chip>
     </div>
   </div>
   

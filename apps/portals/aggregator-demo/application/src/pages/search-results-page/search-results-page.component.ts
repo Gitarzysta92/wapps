@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
-import { TuiBadgedContent, TuiBadgeNotification, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadgedContent, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
 import { 
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
@@ -28,7 +28,7 @@ import {
 import { TuiButton } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { DiscussionIndicatorComponent } from '@ui/discussion';
-import { TopCommentComponent } from '@portals/shared/features/discussion';
+import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/features/discussion';
 
 @Component({
   selector: 'search-results-page',
@@ -48,9 +48,9 @@ import { TopCommentComponent } from '@portals/shared/features/discussion';
     RouterLink,
     DiscussionIndicatorComponent,
     TopCommentComponent,
+    BadgedContentComponent,
     TuiChip,
-    TuiBadgedContent,
-    TuiBadgeNotification
+    TuiBadgedContent
   ],
 
   templateUrl: './search-results-page.component.html',

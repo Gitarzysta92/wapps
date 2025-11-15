@@ -112,7 +112,13 @@
     </div>
     <div slot="footer">
       @if (vm.topComment) {
-
+        <badged-content>
+          <!-- <tui-chip
+            slot="top-badge"
+            size="xs"
+            appearance="primary-soft">
+            Top Comment
+          </tui-chip> -->
           <top-comment
             class="top-comment"
             [comment]="vm.topComment">
@@ -126,7 +132,7 @@
               </tui-chip>
             }
           </top-comment>
-
+        </badged-content>
       }
     </div>
   </suite-result-tile>
