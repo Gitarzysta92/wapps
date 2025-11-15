@@ -38,7 +38,15 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
             { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
             { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
             { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo }
-          ]
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         }
       ]
     },
@@ -166,7 +174,15 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
             { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
             { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ]
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         },
         {
           type: DiscoverySearchResultType.Suite,
@@ -187,7 +203,15 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
             { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
             { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ]
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         },
         {
           type: DiscoverySearchResultType.Suite,
@@ -215,7 +239,15 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
             { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
             { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ]
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         }
       ]
     },

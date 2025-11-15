@@ -87,11 +87,12 @@
 </ng-template>
 
 <ng-template #suiteTile let-entry="entry">
+  @let vm = toSuiteVM(entry);
   <suite-result-tile
     routerLink=""
     class="item-card"
-    [item]="toSuiteVM(entry)">
-    <div name="actions">
+    [item]="vm">
+    <div slot="top-bar">
       <button
         tuiButton
         appearance="flat"
@@ -101,8 +102,48 @@
         (click)="$event.preventDefault(); $event.stopPropagation(); onSaveSuite(entry)">
       </button>
     </div>
+    <div slot="bottom-bar">
+      <tui-chip size="xs" appearance="action-soft">
+        <discussion-indicator
+          [commentsCount]="entry.commentsNumber"
+          (click)="$event.preventDefault(); $event.stopPropagation()">
+        </discussion-indicator>
+      </tui-chip>
+    </div>
+    <div slot="footer">
+      @if (vm.topComment) {
+
+          <top-comment
+            class="top-comment"
+            [comment]="vm.topComment">
+            @for (badge of vm.topComment.authorBadges; track badge) {
+              <tui-chip
+                slot="author-info"
+                size="xs"
+                [iconStart]="badge.icon"
+                [appearance]="badge.appearance">
+                {{ badge.name }}
+              </tui-chip>
+            }
+          </top-comment>
+
+      }
+    </div>
   </suite-result-tile>
 </ng-template>
+
+<!-- @tui.badge-check -->
+
+
+<!-- <tui-badged-content>
+  @if (newMessagesCount > 0) {
+    <tui-badge-notification
+      tuiSlot="top"
+      size="s">
+      {{ newMessagesCount }}
+    </tui-badge-notification>
+  }
+</tui-badged-content> -->
 
 
 

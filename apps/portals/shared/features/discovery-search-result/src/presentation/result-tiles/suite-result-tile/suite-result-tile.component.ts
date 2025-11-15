@@ -1,15 +1,18 @@
-import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiHint } from '@taiga-ui/core';
 import { NgForOf, NgIf } from '@angular/common';
 import type { DiscoverySearchResultSuiteItemDto } from '@domains/discovery';
+import type { TopCommentVM } from '@portals/shared/features/discussion';
+import { VotingIndicatorComponent } from '@ui/voting';
 
 export const SUITE_RESULT_TILE_SELECTOR = 'suite-result-tile';
 
-export type SuiteResultTileVM = Omit<DiscoverySearchResultSuiteItemDto, 'tags'> & {
+export type SuiteResultTileVM = Omit<DiscoverySearchResultSuiteItemDto, 'tags' | 'topComment'> & {
   tags: Array<DiscoverySearchResultSuiteItemDto['tags'][0] & { link: string }>;
   suiteLink: string;
   commentsLink: string;
+  topComment?: TopCommentVM;
 }
 
 @Component({
@@ -23,13 +26,13 @@ export type SuiteResultTileVM = Omit<DiscoverySearchResultSuiteItemDto, 'tags'> 
     TuiAvatar,
     TuiHint,
     NgForOf,
+    TuiButton,
     NgIf,
+    VotingIndicatorComponent,
   ]
 })
 export class SuiteResultTileComponent {
   @Input() item!: SuiteResultTileVM;
-
-  @Output() 
 
   getName(): string {
     return this.item.name;
@@ -77,6 +80,16 @@ export class SuiteResultTileComponent {
 
   hasApplications(): boolean {
     return !!this.item.applications && this.item.applications.length > 0;
+  }
+
+  getUpvotesCount(): number {
+    // TODO: Add upvotes field to SuiteResultTileVM when voting data is available
+    return 0;
+  }
+
+  getDownvotesCount(): number {
+    // TODO: Add downvotes field to SuiteResultTileVM when voting data is available
+    return 0;
   }
 }
 

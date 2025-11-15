@@ -1,26 +1,19 @@
 @use 'ui/design-system/src/styles' as *;
 
-
 .suite-header {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--tui-padding-s);
-  margin: var(--tui-padding-s) 0;
+  gap: $space-2;
+  margin: $space-2 0;
   .suite-title {
-    margin:0;
+    margin: 0;
   }
 }
 
-.suite-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .suite-content {
-  padding: var(--tui-padding-m) 0;
+  padding: $space-4 0;
 }
 
 .suite-info {
@@ -31,14 +24,14 @@
 
 .suite-divider {
   width: 100%;
-  border: 1px solid var(--tui-border-normal);
+  border: $border-width-thin solid var(--tui-border-normal);
 }
 
 .author-info {
   display: flex;
   align-items: center;
-  gap: var(--tui-padding-s);
-  margin: var(--tui-padding-s) 0;
+  gap: $space-2;
+  margin: $space-2 0;
 }
 
 .author-avatar {
@@ -46,78 +39,49 @@
 }
 
 .author-name {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
   color: var(--tui-text-01);
 }
 
 .suite-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
   color: var(--tui-text-01);
-  margin: 0 0 var(--tui-padding-s) 0;
-  line-height: 1.4;
+  margin: 0 0 $space-2 0;
+  line-height: $line-height-tight;
   display: flex;
-  gap: var(--tui-padding-s);
+  gap: $space-2;
 }
 
-.suite-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--tui-padding-xs);
-  font-size: 13px;
-  color: var(--tui-text-03);
-  font-weight: 500;
-  margin-bottom: var(--tui-padding-m);
-
-  .meta-icon {
-    font-size: 16px;
-  }
-}
-
-
-.apps-avatars {
-  display: flex;
+.suite-apps {
+  display: inline-flex;
   flex-wrap: wrap;
   gap: $space-1;
   align-items: center;
+  padding: $space-2;
+  border-radius: $radius-sm;
+  margin-bottom: $space-2;
 }
 
-.app-avatar {
-  display: block;
-  flex-shrink: 0;
-  margin-right: var(--tui-padding-xs);
-  transition: transform 0.2s ease;
-}
+
+.suite-tag {
+  font-size: $font-size-xs;
+} 
 
 .suite-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tui-padding-xs);
-  margin-bottom: var(--tui-padding-m);
+  gap: $space-1;
+  margin-bottom: $space-2;
 }
 
-.suite-tag {
-  font-size: 12px;
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
 }
 
-.suite-cta {
+.cta-button {
   width: 100%;
 }
-
-.item-actions {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  background-color: var(--tui-background-base-alt);
-  color: var(--tui-background-accent-opposite-pressed);
-  padding: $space-1 30px $space-1 30px;
-  border-radius: $radius-sm;
-  gap: var(--tui-padding-m);
-}
-
-.action-btn {
-  flex-shrink: 0;
-}
-

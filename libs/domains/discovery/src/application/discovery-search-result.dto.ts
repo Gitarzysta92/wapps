@@ -61,9 +61,28 @@ export type DiscoverySearchResultSuiteItemDto = {
   authorName: string;
   authorAvatarUrl: string;
   tags: TagDto[];
-  applications?: Array<{
+  applications: Array<{
     name: string;
     slug: string;
     avatarUrl: string;
   }>;
+  // THOUGHT: potential imlicit coupling
+  // drive and observe
+  topReview: {
+    rate: number;
+    content: string;
+    authorName: string;
+    authorAvatarUrl: string;
+  } | null,
+  // DD: not optional (?) because
+  // it is more verbose when you actually
+  // have to specify explicitly is additionall
+  // content exits. More bytes, but also more informative.
+  topComment: {
+    content: string;
+    authorName: string;
+    authorAvatarUrl: string;
+    date: string;
+    upvotes: number;
+  } | null;
 } & DiscoverySearchResultEntryDto;

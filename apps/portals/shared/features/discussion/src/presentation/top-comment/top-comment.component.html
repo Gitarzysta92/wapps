@@ -1,0 +1,24 @@
+<div class="top-comment">
+  <div class="comment-header">
+    <tui-avatar
+      [src]="comment.authorAvatarUrl"
+      size="xs"
+      class="author-avatar">
+      {{ comment.authorName.substring(0, 2).toUpperCase() }}
+    </tui-avatar>
+    <div class="author-info">
+      <span class="author-name">{{ comment.authorName }}</span>
+      <ng-content select="[slot='author-info']"></ng-content>
+    </div>
+    <div class="upvotes">
+      <span>{{ comment.upvotes }}</span>
+      <tui-icon
+        icon="@tui.thumbs-up"
+        class="upvote-icon"/>
+    </div>
+  </div>
+  
+  <p class="comment-content">{{ comment.content }}</p>
+  
+</div>
+

@@ -1,0 +1,23 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: $space-1;
+
+  tui-icon {
+    flex-shrink: 0;
+    font-size: $font-size-md;
+  }
+
+  span {
+    font-weight: $font-weight-bold;
+  }
+}
+
+
+:host span, :host tui-icon {
+  line-height: $line-height-normal;
+}
+

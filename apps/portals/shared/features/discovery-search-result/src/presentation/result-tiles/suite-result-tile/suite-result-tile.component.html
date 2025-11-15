@@ -11,11 +11,21 @@
       </tui-chip>
     </div>
     <div class="suite-actions">
-      <ng-content name="actions"></ng-content>
+      <ng-content select="[slot='top-bar']"></ng-content>
     </div>
   </div>
 
-  <div>
+  <!-- <div class="author-info">
+    author:
+    <tui-avatar
+      [src]="getAuthorAvatarUrl()"
+      size="xs"
+      class="author-avatar">
+    </tui-avatar>
+    <span class="author-name">{{ getAuthorName() }}</span>
+  </div> -->
+
+  <div class="suite-tags">
     <tui-chip 
       *ngFor="let tag of getTags()"
       class="suite-tag" 
@@ -25,40 +35,32 @@
     </tui-chip>
   </div>
 
-  <div class="suite-content">
-    <div class="suite-apps" *ngIf="hasApplications()">
-      <div class="apps-avatars">
-        <tui-avatar
-          *ngFor="let app of getApplications(); let i = index"
-          [src]="app.avatarUrl"
-          [tuiHint]="app.name"
-          size="m"
-          class="app-avatar">
-        </tui-avatar>
-      </div>
-    </div>
+  <div class="suite-apps">
+    @for (app of getApplications(); track app.slug) {
+      <tui-avatar
+        class="app-avatar"
+        [src]="app.avatarUrl"
+        [tuiHint]="app.name"
+        size="m">
+      </tui-avatar>
+    }
   </div>
 
   <hr class="suite-divider">
 
-  <div class="author-info">
-    author:
-    <tui-avatar
-      [src]="getAuthorAvatarUrl()"
-      size="xs"
-      class="author-avatar">
-    </tui-avatar>
-    <span class="author-name">{{ getAuthorName() }}</span>
+  <div class="bottom-bar">
+    <tui-chip size="xs" appearance="action-soft">
+      <voting-indicator
+        [upvotesCount]="getUpvotesCount()"
+        [downvotesCount]="getDownvotesCount()">
+      </voting-indicator>
+    </tui-chip>
+    <ng-content select="[slot='bottom-bar']"></ng-content>
   </div>
 
-  <!-- <a
-    class="suite-cta" 
-    tuiButton 
-    size="s" 
-    appearance="primary"
-    [routerLink]="item.suiteLink | routePath:{ suiteSlug: getSlug() }">
-      <tui-icon icon="@tui.layout-grid"/>
-      Explore Suite
-  </a> -->
+  <div class="suite-footer">
+    <ng-content select="[slot='footer']"></ng-content>
+  </div>
+
 </div>
 

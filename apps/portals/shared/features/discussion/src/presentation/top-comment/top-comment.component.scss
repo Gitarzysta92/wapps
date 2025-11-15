@@ -1,0 +1,77 @@
+@use 'ui/design-system/src/styles' as *;
+
+.top-comment {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.author-avatar {
+  flex-shrink: 0;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-1;
+  flex: 1;
+  
+  .author-name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: var(--tui-text-primary);
+    line-height: $line-height-tight;
+  }
+  
+  .comment-date {
+    font-size: $font-size-xs;
+    color: var(--tui-text-secondary);
+    line-height: $line-height-tight;
+  }
+}
+
+.comment-content {
+  margin: 0;
+  line-height: $line-height-normal;
+  color: var(--tui-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // what is this?
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.comment-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+  margin-top: $space-1;
+}
+
+.upvotes {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+  font-weight: $font-weight-bold;
+  
+  .upvote-icon {
+    color: var(--tui-text-action);
+    font-size: $font-size-sm;
+  }
+}
+
+.view-discussion {
+  margin-left: auto;
+}
+

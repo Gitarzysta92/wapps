@@ -161,3 +161,21 @@
 .section__results--skeleton {
   background: var(--tui-background-container-inactive);
 }
+
+
+[slot="bottom-bar"] {
+  padding: $space-2 0;
+}
+
+.top-comment {
+  // TODO: make mixin from this styles
+  // for standard container
+  display: block;
+  background: var(--card-gradient-secondary);
+  padding: $space-4;
+  border-radius: $radius-sm;
+}
+
+[slot="author-info"] {
+  pointer-events: none;
+}

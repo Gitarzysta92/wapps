@@ -2,8 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
-import { TuiSkeleton } from '@taiga-ui/kit';
-import { SearchResultsPageService } from './search-results-page.service';
+import { TuiBadgedContent, TuiBadgeNotification, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
 import { 
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
@@ -28,6 +27,8 @@ import {
 } from '@portals/shared/features/discovery-search-result';
 import { TuiButton } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
+import { DiscussionIndicatorComponent } from '@ui/discussion';
+import { TopCommentComponent } from '@portals/shared/features/discussion';
 
 @Component({
   selector: 'search-results-page',
@@ -44,11 +45,14 @@ import { RouterLink } from '@angular/router';
     ApplicationResultTileSkeletonComponent,
     SuiteResultTileSkeletonComponent,
     TuiButton,
-    RouterLink
+    RouterLink,
+    DiscussionIndicatorComponent,
+    TopCommentComponent,
+    TuiChip,
+    TuiBadgedContent,
+    TuiBadgeNotification
   ],
-  providers: [
-    SearchResultsPageService
-  ],
+
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
   hostDirectives: [
@@ -127,7 +131,15 @@ export class SearchResultsPageComponent {
         link: `/search?tag=${tag.slug}` 
       })),
       suiteLink: `/suites/${suiteEntry.slug}`,
-      commentsLink: `/suites/${suiteEntry.slug}#comments`
+      commentsLink: `/suites/${suiteEntry.slug}#comments`,
+      topComment: suiteEntry.topComment ? {
+        ...suiteEntry.topComment,
+        discussionLink: `/suites/${suiteEntry.slug}#comments`,
+        authorBadges: [
+          { name: 'verified', icon: '@tui.badge-check', appearance: 'primary-soft' },
+          { name: 'premium', icon: '@tui.rocket', appearance: 'premium-soft' }
+        ]
+      } : undefined
     };
   }
 
