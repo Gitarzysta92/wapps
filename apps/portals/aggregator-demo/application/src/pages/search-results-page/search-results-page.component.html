@@ -1,28 +1,32 @@
-  <section class="section__filters">
+<section class="section__filters">
   <filters-bar></filters-bar>
 </section>
 
 <section class="section__separator"></section>
 
 @let resultsData = resultsData$ | async;
-
 @if (resultsData && !resultsData.isLoading) {
   @for (group of resultsData.groups; track group.type) {
-    <section 
+    <section
+      badged-content
       class="section__results" 
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
-      <div class="group-header">
-        <h3>
-          {{ group.type }}
-          <span class="group-count">{{ group.entries.length }} items</span>
-        </h3>
-        <button 
+      <div class="group-header" slot="top-badge">
+        @let label = getGroupLabel(group.type);
+        <tui-chip 
+          size="s"
+          appearance="section-primary"
+          [iconStart]="label.icon">
+          {{ label.value }}
+        </tui-chip>
+        <!-- <button 
           tuiButton 
           appearance="primary" 
           size="xs">
-          Load more
-        </button>
+            Show all results ({{ group.entries.length }}) 
+            <tui-icon icon="@tui.chevron-right"></tui-icon>
+        </button> -->
       </div>
       <div class="items-grid">
         @for (entry of group.entries; track entry.name) {
@@ -39,6 +43,14 @@
           }
         }
       </div>
+      <button
+        class="show-all-results-button"
+        tuiButton 
+        appearance="primary" 
+        size="s">
+          Show all results ({{ group.entries.length }}) 
+          <tui-icon icon="@tui.chevron-right"></tui-icon>
+      </button>
     </section>
   }
 }
@@ -112,90 +124,20 @@
     </div>
     <div slot="footer">
       @if (vm.topComment) {
-        <badged-content>
-          <!-- <tui-chip
-            slot="top-badge"
-            size="xs"
-            appearance="primary-soft">
-            Top Comment
-          </tui-chip> -->
-          <top-comment
-            class="top-comment"
-            [comment]="vm.topComment">
-            @for (badge of vm.topComment.authorBadges; track badge) {
-              <tui-chip
-                slot="author-info"
-                size="xs"
-                [iconStart]="badge.icon"
-                [appearance]="badge.appearance">
-                {{ badge.name }}
-              </tui-chip>
-            }
-          </top-comment>
-        </badged-content>
+        <top-comment
+          class="top-comment"
+          [comment]="vm.topComment">
+          @for (badge of vm.topComment.authorBadges; track badge) {
+            <tui-chip
+              slot="author-info"
+              size="xs"
+              [iconStart]="badge.icon"
+              [appearance]="badge.appearance">
+              {{ badge.name }}
+            </tui-chip>
+          }
+        </top-comment>
       }
     </div>
   </suite-result-tile>
 </ng-template>
-
-<!-- @tui.badge-check -->
-
-
-<!-- <tui-badged-content>
-  @if (newMessagesCount > 0) {
-    <tui-badge-notification
-      tuiSlot="top"
-      size="s">
-      {{ newMessagesCount }}
-    </tui-badge-notification>
-  }
-</tui-badged-content> -->
-
-
-
-
-<!-- 
-<ng-container *ngFor="let groups of resultsData.groups; let isFirst = first; let isLast = last">    
-  <ng-container *ngFor="let group of pageData.data.groups">
-    <section 
-      class="section__results" 
-      [id]="getSectionId(group.type)"
-      #suitesSection
-      [attr.data-section]="'suites'">
-      <div class="group-header">
-        <h3 [ngSwitch]="group.type">
-          <ng-container *ngSwitchCase="DiscoverySearchResultType.Article">Articles</ng-container>
-          <ng-container *ngSwitchCase="DiscoverySearchResultType.Suite">Suites</ng-container>
-          <ng-container *ngSwitchCase="DiscoverySearchResultType.Application">Applications</ng-container>
-        </h3>
-        <span class="gount">{{ group.entries.length }} items</span>
-      </div> 
-      <div class="items-grid">
-        <div *ngFor="let entry of group.entries" class="item-card">
-          <h4>{{ entry.name }}</h4>
-          <div class="item-meta">
-            <ng-container [ngSwitch]="group.type">
-              <ng-container *ngSwitchCase="DiscoverySearchResultTypcle">
-                <span class=">Article</span>
-                <span>by {{ icle(entry).authorName }}</span>
-          <span>💬 {{ .commentsNumber }}</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="DiscoverySearchResultType.Suite">
-                <span class="type-badge">Suite</span>
-                <span>{{ asSuite(entry).numberOfApps }} apps</span>
-                <span>by {{ asSuite(entry).authorName }}</span>
-                <span>💬 {{ entry.commentsNumber }}</span>
-              </ng-container>
-              <ng-container *ngSwitchCase="DiscoverySearchResultType.Application">
-                <span class="type-badge">Application</span>
-                <span class="category">{{ asApplication(entry).category.name }}</span>
-                <span class="rating">★ {{ asApplication(entry).rating.toFixed(1) }}</span>
-                <span>💬 {{ entry.commentsNumber }}</span>
-              </ng-container>
-            </ng-container>
-          </div>
-        </div>
-      </div>
-    </section>
-  </ng-container>
-</ng-container> -->

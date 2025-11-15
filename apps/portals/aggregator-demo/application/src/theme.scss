@@ -47,6 +47,7 @@ body.light {
   --tui-background-elevation-1: #{$color-bg};
   --alt-text-color: #{$color-text-weaker};
 
+  --tui-text-secondary-inverse: #{$color-text-strong};
   --tui-text-primary-inverse: #{$color-blue-50};
   
   // Link colors
@@ -67,7 +68,7 @@ body.light {
   --tui-secondary-text: #{$color-text-strong};
   
   --tui-accent: #{$color-accent-500};
-  --tui-accent-primary: #8fbbf0;
+  --tui-accent-primary: #{$color-purple-50};
   --tui-accent-secondary: #8fbbf0;
   --tui-accent-hover: #{$color-accent-600};
   --tui-accent-text: #{$color-white};

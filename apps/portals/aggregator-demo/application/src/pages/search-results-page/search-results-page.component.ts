@@ -25,7 +25,7 @@ import {
   type ApplicationResultTileVM,
   type SuiteResultTileVM
 } from '@portals/shared/features/discovery-search-result';
-import { TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { DiscussionIndicatorComponent } from '@ui/discussion';
 import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/features/discussion';
@@ -50,6 +50,7 @@ import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/fea
     TopCommentComponent,
     BadgedContentComponent,
     TuiChip,
+    TuiIcon,
     TuiBadgedContent
   ],
 
@@ -63,6 +64,7 @@ import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/fea
   },
 })
 export class SearchResultsPageComponent {
+
   private readonly _globalState = inject(GlobalStateService);
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
@@ -146,5 +148,14 @@ export class SearchResultsPageComponent {
   protected onSaveSuite(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
     // TODO: Implement save suite functionality
     console.log('Save suite:', entry);
+  }
+
+  getGroupLabel(arg0: DiscoverySearchResultType) {
+    const labelMap: Record<DiscoverySearchResultType, { icon: string, value: string }> = {
+      [DiscoverySearchResultType.Suite]: { icon: '@tui.briefcase-business', value: 'Suites' },
+      [DiscoverySearchResultType.Application]: { icon: '@tui.layout-grid', value: 'Applications' },
+      [DiscoverySearchResultType.Article]: { icon: '@tui.newspaper', value: 'Articles' }
+    };
+    return labelMap[arg0];
   }
 }

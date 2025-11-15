@@ -6,19 +6,8 @@
 }
 
 .badge-slot {
-  position: absolute;
-  top: calc(-1 * var(--tui-padding-xs));
-  left: $space-6;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  pointer-events: none;
-  z-index: 1;
-  transform: translateY(-50%);
-  
-  ::ng-deep > * {
-    pointer-events: auto;
-  }
+  width: 100%;
+  position: relative;
 }
 
 .content-slot {

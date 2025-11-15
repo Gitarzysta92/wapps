@@ -105,3 +105,8 @@ button tui-loader {
     background: var(--accent-gradient);
   }
 }
+
+[tuiAppearance][data-appearance='section-primary'] {
+  color: var(--tui-text-secondary-inverse);
+  background: var(--tui-accent-primary);
+}

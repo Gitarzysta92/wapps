@@ -20,7 +20,7 @@
 
 // Results section - following home page feed conventions
 .section__results {
-  margin-top: $space-4;
+  margin-top: $space-12;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,17 +31,27 @@
   width: 100%;
   
   .group-header {
+    position: absolute;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: absolute;
+    top: -50px;
     padding: $space-3 $space-6;
     margin-bottom: $space-3;
     width: 100%;
     
-    h3 {
+    .group-header-title {
       margin: 0;
       @include text($font-size-lg, $font-weight-bold);
       color: var(--tui-text-primary);
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      tui-icon {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+      }
     }
     
     .group-count {
@@ -180,7 +190,7 @@
   pointer-events: none;
 }
 
-
-// [slot="footer"] {
-//   margin-top: $space-4;
-// }
+.show-all-results-button {
+  margin-top: $space-4;
+  width: 100%;
+}

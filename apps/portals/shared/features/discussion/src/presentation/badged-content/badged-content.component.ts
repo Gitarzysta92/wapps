@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-  selector: 'badged-content',
+  selector: '* [badged-content], badged-content',
   templateUrl: './badged-content.component.html',
   styleUrl: './badged-content.component.scss',
   standalone: true,
