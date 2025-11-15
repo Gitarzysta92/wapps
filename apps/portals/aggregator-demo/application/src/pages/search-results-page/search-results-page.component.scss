@@ -4,13 +4,28 @@
   position: sticky;
   top: 0;
   display: flex;
-  padding: $space-4 0;
+  padding: $space-4;
   z-index: 1;
   
   .sorting-controls {
     min-width: 250px;
   }
 }
+
+.section__results-header {
+  padding: 0 $space-4;
+  margin-top: $space-4;
+  h1 {
+    @include text($font-size-2xl, $font-weight-bold);
+    color: var(--tui-text-primary);
+  }
+}
+
+
+.section__breadcrumbs {
+  margin-top: $space-4;
+}
+
 
 .section__separator {
   height: 1px;
@@ -195,14 +210,3 @@
   width: 100%;
 }
 
-.section__results-header {
-  margin-top: $space-4;
-  h1 {
-    @include text($font-size-2xl, $font-weight-bold);
-    color: var(--tui-text-primary);
-  }
-}
-
-.section__breadcrumbs {
-  margin-top: $space-4;
-}
