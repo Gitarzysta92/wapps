@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
 import { TuiBadgedContent, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
@@ -29,6 +30,8 @@ import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { DiscussionIndicatorComponent } from '@ui/discussion';
 import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/features/discussion';
+import { BreadcrumbsComponent } from '@ui/breadcrumbs';
+import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 
 @Component({
   selector: 'search-results-page',
@@ -51,7 +54,9 @@ import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/fea
     BadgedContentComponent,
     TuiChip,
     TuiIcon,
-    TuiBadgedContent
+    TuiBadgedContent,
+    BreadcrumbsComponent,
+    AsyncPipe
   ],
 
   templateUrl: './search-results-page.component.html',
@@ -66,12 +71,17 @@ import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/fea
 export class SearchResultsPageComponent {
 
   private readonly _globalState = inject(GlobalStateService);
+  private readonly _route = inject(ActivatedRoute);
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
     .pipe(
       delay(1000),
       map(d => Object.assign({}, d, { isLoading: false })),
       startWith({ itemsNumber: 0, groups: [], link: "", query: {}, isLoading: true }));
+
+  protected readonly breadcrumbs$ = this._route.data.pipe(
+    map((data) => (data as IBreadcrumbRouteData)?.breadcrumb || [])
+  );
   
 
 

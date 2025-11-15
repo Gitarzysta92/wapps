@@ -617,7 +617,7 @@ export const routes: Routes = [
         matcher: searchResultsMatcher,
         loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.search ],
+          breadcrumb: [ NAVIGATION.home,NAVIGATION.search ],
           header: null,
           leftSidebar: {
             component: SearchResultsSidebarComponent,

@@ -191,6 +191,7 @@
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
+      "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
       "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
       "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],

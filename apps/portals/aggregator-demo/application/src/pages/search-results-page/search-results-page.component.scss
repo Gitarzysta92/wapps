@@ -194,3 +194,15 @@
   margin-top: $space-4;
   width: 100%;
 }
+
+.section__results-header {
+  margin-top: $space-4;
+  h1 {
+    @include text($font-size-2xl, $font-weight-bold);
+    color: var(--tui-text-primary);
+  }
+}
+
+.section__breadcrumbs {
+  margin-top: $space-4;
+}

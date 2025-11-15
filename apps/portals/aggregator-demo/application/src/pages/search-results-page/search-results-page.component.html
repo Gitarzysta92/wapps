@@ -1,8 +1,17 @@
+<section class="section__breadcrumbs">
+  @let breadcrumbs = breadcrumbs$ | async;
+  <ui-breadcrumbs [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
+</section>
+
 <section class="section__filters">
   <filters-bar></filters-bar>
 </section>
 
 <section class="section__separator"></section>
+
+<section class="section__results-header">
+  <h1>Discover</h1>
+</section>
 
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
