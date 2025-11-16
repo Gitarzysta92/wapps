@@ -1,0 +1,23 @@
+<div class="top-review">
+  <div class="review-header">
+    <tui-avatar
+      [src]="review.authorAvatarUrl"
+      size="xs"
+      class="author-avatar">
+      {{ review.authorName.substring(0, 2).toUpperCase() }}
+    </tui-avatar>
+    <div class="author-info">
+      <span class="author-name">{{ review.authorName }}</span>
+      <ng-content select="[slot='author-info']"></ng-content>
+    </div>
+    <div class="rating">
+      <tui-chip size="xs" appearance="action-soft">
+        <tui-icon icon="@tui.star"></tui-icon>
+        <span class="rate">{{ review.rate | number:'1.1-1' }}</span>
+      </tui-chip>
+    </div>
+  </div>
+  <p class="review-content">{{ review.content }}</p>
+</div>
+
+

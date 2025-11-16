@@ -97,9 +97,44 @@
 </ng-template>
 
 <ng-template #applicationTile let-entry="entry">
+  @let vm = toApplicationVM(entry);
   <application-result-tile
     class="item-card"
     [item]="toApplicationVM(entry)">
+    <div slot="top-bar">
+      <button
+        tuiButton
+        iconStart="@tui.heart"
+        size="s"
+        appearance="primary"
+        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveApplication(entry)">
+      </button>
+    </div>
+    <div slot="bottom-bar">
+      <tui-chip size="xs" appearance="action-soft">
+        <discussion-indicator
+          [commentsCount]="entry.commentsNumber"
+          (click)="$event.preventDefault(); $event.stopPropagation()">
+        </discussion-indicator>
+      </tui-chip>
+    </div>
+    <div slot="footer">
+      @if (vm.topReview) {
+        <top-review
+          class="top-comment"
+          [review]="vm.topReview">
+          <!-- @for (badge of vm.topReview.authorBadges; track badge) {
+            <tui-chip
+              slot="author-info"
+              size="xs"
+              [iconStart]="badge.icon"
+              [appearance]="badge.appearance">
+              {{ badge.name }}
+            </tui-chip>
+          } -->
+        </top-review>
+      }
+    </div>
   </application-result-tile>
 </ng-template>
 
@@ -112,7 +147,6 @@
     <div slot="top-bar">
       <button
         tuiButton
-        appearance="flat"
         iconStart="@tui.heart"
         size="s"
         appearance="primary"

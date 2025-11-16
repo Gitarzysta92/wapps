@@ -50,6 +50,14 @@ export type DiscoverySearchResultApplicationItemDto = {
   commentsNumber: number;
   category: CategoryDto;
   tags: TagDto[];
+  // THOUGHT: potential imlicit coupling
+  // drive and observe
+  topReview: {
+    rate: number;
+    content: string;
+    authorName: string;
+    authorAvatarUrl: string;
+  } | null,
 } & DiscoverySearchResultEntryDto;
 
 export type DiscoverySearchResultSuiteItemDto = {
@@ -66,14 +74,6 @@ export type DiscoverySearchResultSuiteItemDto = {
     slug: string;
     avatarUrl: string;
   }>;
-  // THOUGHT: potential imlicit coupling
-  // drive and observe
-  topReview: {
-    rate: number;
-    content: string;
-    authorName: string;
-    authorAvatarUrl: string;
-  } | null,
   // DD: not optional (?) because
   // it is more verbose when you actually
   // have to specify explicitly is additionall

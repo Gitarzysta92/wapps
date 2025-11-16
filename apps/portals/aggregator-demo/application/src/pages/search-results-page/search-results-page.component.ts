@@ -24,7 +24,8 @@ import {
   SuiteResultTileSkeletonComponent,
   type ArticleResultTileVM,
   type ApplicationResultTileVM,
-  type SuiteResultTileVM
+  type SuiteResultTileVM,
+  TopReviewComponent
 } from '@portals/shared/features/discovery-search-result';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
@@ -32,7 +33,6 @@ import { DiscussionIndicatorComponent } from '@ui/discussion';
 import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
-
 @Component({
   selector: 'search-results-page',
   standalone: true,
@@ -51,6 +51,7 @@ import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
     RouterLink,
     DiscussionIndicatorComponent,
     TopCommentComponent,
+    TopReviewComponent,
     BadgedContentComponent,
     TuiChip,
     TuiIcon,
@@ -158,6 +159,11 @@ export class SearchResultsPageComponent {
   protected onSaveSuite(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
     // TODO: Implement save suite functionality
     console.log('Save suite:', entry);
+  }
+
+  protected onSaveApplication(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
+    // TODO: Implement save application functionality
+    console.log('Save application:', entry);
   }
 
   getGroupLabel(arg0: DiscoverySearchResultType) {

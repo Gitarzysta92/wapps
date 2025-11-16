@@ -45,8 +45,7 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
             authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
             date: '2024-01-15T10:30:00Z',
             upvotes: 24
-          },
-          topReview: null
+          }
         }
       ]
     },
@@ -67,7 +66,13 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         {
           type: DiscoverySearchResultType.Application,
@@ -84,7 +89,8 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: null
         }
       ]
     },
@@ -166,7 +172,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -183,7 +195,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -200,7 +218,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.finance.slug, name: TAG_DICTIONARY.finance.name },
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -217,7 +241,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.health.slug, name: TAG_DICTIONARY.health.name },
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -234,7 +259,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.health.slug, name: TAG_DICTIONARY.health.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -251,7 +277,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.security.slug, name: TAG_DICTIONARY.security.name },
             { slug: TAG_DICTIONARY.networking.slug, name: TAG_DICTIONARY.networking.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -268,7 +295,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.ecommerce.slug, name: TAG_DICTIONARY.ecommerce.name },
             { slug: TAG_DICTIONARY.finance.slug, name: TAG_DICTIONARY.finance.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         }
       ]
     },
