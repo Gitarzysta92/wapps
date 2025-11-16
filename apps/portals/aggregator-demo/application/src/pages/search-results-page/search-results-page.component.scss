@@ -100,7 +100,11 @@
     background: var(--tui-background-base);
     position: relative;
     padding: $space-6 $space-6 0 $space-6;
-    
+
+    &.blank {
+      padding: 0;
+    }
+
     &:hover {
       box-shadow: $shadow-lg;
       transform: translateY(-2px);

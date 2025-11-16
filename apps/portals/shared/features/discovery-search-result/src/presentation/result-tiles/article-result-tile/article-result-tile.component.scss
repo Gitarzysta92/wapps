@@ -1,22 +1,19 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  height: 450px;
+  height: 250px;
 }
 
 .item-content {
   margin-top: auto;
-  padding: var(--tui-padding-m) 0;
 }
 
 .article-info {
   position: relative;
   background: #ffffff;
   border-radius: 15px;
-  padding: 30px 30px 15px 30px;
-  left: 20px;
-  right: 20px;
-  width: calc(100% - 40px);
+  padding: $space-6 $space-6 $space-2 $space-6;
+  width: 100%;
 }
 
 .author-info {

@@ -15,6 +15,10 @@
         <tui-icon icon="@tui.star"></tui-icon>
         <span class="rate">{{ review.rate | number:'1.1-1' }}</span>
       </tui-chip>
+      <tui-chip size="xs" appearance="action-soft">
+        <tui-icon icon="@tui.award"></tui-icon>
+        <span class="rate">Top review</span>
+      </tui-chip>
     </div>
   </div>
   <p class="review-content">{{ review.content }}</p>

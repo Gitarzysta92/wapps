@@ -15,6 +15,41 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
     search: 'photo snap'
   },
   groups: [
+      {
+      type: DiscoverySearchResultType.Article,
+      entries: [  
+        {
+          type: DiscoverySearchResultType.Article,
+          name: SAMPLE_ARTICLE.title,
+          title: SAMPLE_ARTICLE.title,
+          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
+          slug: SAMPLE_ARTICLE.slug,
+          commentsNumber: 42,
+          authorName: SAMPLE_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
+        },
+        {
+          type: DiscoverySearchResultType.Article,
+          name: TECH_ARTICLE.title,
+          title: TECH_ARTICLE.title,
+          coverImageUrl: TECH_ARTICLE.coverImageUrl,
+          slug: TECH_ARTICLE.slug,
+          commentsNumber: 87,
+          authorName: TECH_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
+        }
+      ]
+    },
     {
       type: DiscoverySearchResultType.Suite,
       entries: [
@@ -94,41 +129,6 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
         }
       ]
     },
-    {
-      type: DiscoverySearchResultType.Article,
-      entries: [  
-        {
-          type: DiscoverySearchResultType.Article,
-          name: SAMPLE_ARTICLE.title,
-          title: SAMPLE_ARTICLE.title,
-          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
-          slug: SAMPLE_ARTICLE.slug,
-          commentsNumber: 42,
-          authorName: SAMPLE_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
-        },
-        {
-          type: DiscoverySearchResultType.Article,
-          name: TECH_ARTICLE.title,
-          title: TECH_ARTICLE.title,
-          coverImageUrl: TECH_ARTICLE.coverImageUrl,
-          slug: TECH_ARTICLE.slug,
-          commentsNumber: 87,
-          authorName: TECH_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
-        }
-      ]
-    },
   ]
 };
 
@@ -155,6 +155,53 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
   },
   itemsNumber: 18,
   groups: [
+    {
+      type: DiscoverySearchResultType.Article,
+      entries: [
+        {
+          type: DiscoverySearchResultType.Article,
+          name: SAMPLE_ARTICLE.title,
+          title: SAMPLE_ARTICLE.title,
+          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
+          slug: SAMPLE_ARTICLE.slug,
+          commentsNumber: 42,
+          authorName: SAMPLE_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name }
+          ]
+        },
+        {
+          type: DiscoverySearchResultType.Article,
+          name: TECH_ARTICLE.title,
+          title: TECH_ARTICLE.title,
+          coverImageUrl: TECH_ARTICLE.coverImageUrl,
+          slug: TECH_ARTICLE.slug,
+          commentsNumber: 87,
+          authorName: TECH_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.ai.slug, name: TAG_DICTIONARY.ai.name },
+            { slug: TAG_DICTIONARY.cloud.slug, name: TAG_DICTIONARY.cloud.name }
+          ]
+        },
+        {
+          type: DiscoverySearchResultType.Article,
+          name: DESIGN_ARTICLE.title,
+          title: DESIGN_ARTICLE.title,
+          coverImageUrl: DESIGN_ARTICLE.coverImageUrl,
+          slug: DESIGN_ARTICLE.slug,
+          commentsNumber: 53,
+          authorName: DESIGN_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name },
+            { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
+          ]
+        }
+      ]
+    },
     {
       type: DiscoverySearchResultType.Application,
       entries: [
@@ -399,54 +446,6 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             upvotes: 24
           },
           topReview: null
-        }
-      ]
-    },
-
-    {
-      type: DiscoverySearchResultType.Article,
-      entries: [
-        {
-          type: DiscoverySearchResultType.Article,
-          name: SAMPLE_ARTICLE.title,
-          title: SAMPLE_ARTICLE.title,
-          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
-          slug: SAMPLE_ARTICLE.slug,
-          commentsNumber: 42,
-          authorName: SAMPLE_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name }
-          ]
-        },
-        {
-          type: DiscoverySearchResultType.Article,
-          name: TECH_ARTICLE.title,
-          title: TECH_ARTICLE.title,
-          coverImageUrl: TECH_ARTICLE.coverImageUrl,
-          slug: TECH_ARTICLE.slug,
-          commentsNumber: 87,
-          authorName: TECH_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.ai.slug, name: TAG_DICTIONARY.ai.name },
-            { slug: TAG_DICTIONARY.cloud.slug, name: TAG_DICTIONARY.cloud.name }
-          ]
-        },
-        {
-          type: DiscoverySearchResultType.Article,
-          name: DESIGN_ARTICLE.title,
-          title: DESIGN_ARTICLE.title,
-          coverImageUrl: DESIGN_ARTICLE.coverImageUrl,
-          slug: DESIGN_ARTICLE.slug,
-          commentsNumber: 53,
-          authorName: DESIGN_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name },
-            { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
         }
       ]
     },

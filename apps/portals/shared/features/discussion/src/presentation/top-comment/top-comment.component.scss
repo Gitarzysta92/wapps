@@ -62,11 +62,9 @@
   align-items: center;
   gap: $space-1;
   font-size: $font-size-xs;
-  color: var(--tui-text-secondary);
   font-weight: $font-weight-bold;
   
   .upvote-icon {
-    color: var(--tui-text-action);
     font-size: $font-size-sm;
   }
 }
