@@ -45,6 +45,7 @@
 
 .article-excerpt {
   padding: $space-2 0;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
 }
 
 .article-tags {
