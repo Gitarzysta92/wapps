@@ -34,6 +34,7 @@ export type DiscoverySearchResultEntryDto = {
 
 export type DiscoverySearchResultArticleItemDto = {
   title: string;
+  excerpt: string;
   slug: string;
   coverImageUrl: string;
   commentsNumber: number;

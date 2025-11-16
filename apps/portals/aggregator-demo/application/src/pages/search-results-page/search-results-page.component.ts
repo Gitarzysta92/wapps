@@ -12,7 +12,7 @@ import {
   DiscoverySearchResultType
 } from '@domains/discovery';
 import { delay, map, of, startWith } from 'rxjs';
-import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
+import { DISCOVERY_SEARCH_RESULTS_DATA, ARTICLES } from '@portals/shared/data';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
 import { 
@@ -114,7 +114,8 @@ export class SearchResultsPageComponent {
         link: `/search?tag=${tag.slug}` 
       })),
       articleLink: `/articles/${articleEntry.slug}`,
-      commentsLink: `/articles/${articleEntry.slug}#comments`
+      commentsLink: `/articles/${articleEntry.slug}#comments`,
+      excerpt: articleEntry.excerpt
     };
   }
 
@@ -171,6 +172,11 @@ export class SearchResultsPageComponent {
   protected onSaveApplication(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
     // TODO: Implement save application functionality
     console.log('Save application:', entry);
+  }
+
+  protected onSaveArticle(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
+    // TODO: Implement save article functionality
+    console.log('Save article:', entry);
   }
 
   getGroupLabel(arg0: DiscoverySearchResultType) {

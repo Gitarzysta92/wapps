@@ -21,6 +21,7 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
         {
           type: DiscoverySearchResultType.Article,
           name: SAMPLE_ARTICLE.title,
+          excerpt: SAMPLE_ARTICLE.excerpt,
           title: SAMPLE_ARTICLE.title,
           coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
           slug: SAMPLE_ARTICLE.slug,
@@ -36,6 +37,7 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
         {
           type: DiscoverySearchResultType.Article,
           name: TECH_ARTICLE.title,
+          excerpt: TECH_ARTICLE.excerpt,
           title: TECH_ARTICLE.title,
           coverImageUrl: TECH_ARTICLE.coverImageUrl,
           slug: TECH_ARTICLE.slug,
@@ -161,6 +163,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
         {
           type: DiscoverySearchResultType.Article,
           name: SAMPLE_ARTICLE.title,
+          excerpt: SAMPLE_ARTICLE.excerpt,
           title: SAMPLE_ARTICLE.title,
           coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
           slug: SAMPLE_ARTICLE.slug,
@@ -175,6 +178,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
         {
           type: DiscoverySearchResultType.Article,
           name: TECH_ARTICLE.title,
+          excerpt: TECH_ARTICLE.excerpt,
           title: TECH_ARTICLE.title,
           coverImageUrl: TECH_ARTICLE.coverImageUrl,
           slug: TECH_ARTICLE.slug,
@@ -189,6 +193,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
         {
           type: DiscoverySearchResultType.Article,
           name: DESIGN_ARTICLE.title,
+          excerpt: DESIGN_ARTICLE.excerpt,
           title: DESIGN_ARTICLE.title,
           coverImageUrl: DESIGN_ARTICLE.coverImageUrl,
           slug: DESIGN_ARTICLE.slug,

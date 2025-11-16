@@ -19,7 +19,7 @@
 .author-info {
   display: flex;
   align-items: center;
-  gap: var(--tui-padding-s);
+  gap: $space-1;
   margin-bottom: var(--tui-padding-m);
 }
 
@@ -37,23 +37,23 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--tui-text-01);
-  margin: 0 0 var(--tui-padding-m) 0;
-  line-height: 1.4;
+  margin-bottom: $space-2;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
+}
+
+.article-excerpt {
+  padding: $space-2 0;
 }
 
 .article-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tui-padding-xs);
-  margin-bottom: var(--tui-padding-m);
+  gap: $space-1;
 }
 
 .article-tag {
-  font-size: 12px;
 }
 
 .cover-image {
@@ -81,4 +81,3 @@
 .action-btn {
   flex-shrink: 0;
 }
-

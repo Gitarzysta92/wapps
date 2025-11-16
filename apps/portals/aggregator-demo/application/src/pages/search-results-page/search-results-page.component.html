@@ -90,9 +90,33 @@
 }
 
 <ng-template #articleTile let-entry="entry">
+  @let vm = toArticleVM(entry);
   <article-result-tile
     class="item-card blank" 
-    [item]="toArticleVM(entry)">
+    [item]="vm">
+    <div slot="top-bar">
+      <button
+        tuiButton
+        iconStart="@tui.heart"
+        size="s"
+        appearance="primary"
+        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveArticle(entry)">
+      </button>
+    </div>
+    <tui-chip 
+      size="xs" 
+      [iconStart]="'@tui.badge-check'"
+      slot="user-badges"
+      appearance="primary-soft">
+      verified
+    </tui-chip>
+    <tui-chip 
+      size="xs" 
+      [iconStart]="'@tui.rocket'" 
+      slot="user-badges"
+      appearance="premium-soft">
+      premium
+    </tui-chip>
   </article-result-tile>
 </ng-template>
 

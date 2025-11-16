@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
-import { RoutePathPipe } from '@ui/routing';
 import type { DiscoverySearchResultArticleItemDto } from '@domains/discovery';
 import { ContentFeedItemBlankComponent } from '@ui/content-feed';
 
@@ -14,6 +12,7 @@ export type ArticleResultTileVM = Omit<DiscoverySearchResultArticleItemDto, 'tag
   tags: Array<DiscoverySearchResultArticleItemDto['tags'][0] & { link: string }>;
   articleLink: string;
   commentsLink: string;
+  excerpt?: string;
 }
 
 @Component({
@@ -26,12 +25,10 @@ export type ArticleResultTileVM = Omit<DiscoverySearchResultArticleItemDto, 'tag
     ContentFeedItemBlankComponent,
     CoverImageComponent,
     TuiChip,
-    TuiButton,
     TuiIcon,
     TuiAvatar,
     NgForOf,
-    RouterLink,
-    RoutePathPipe
+    
   ]
 })
 export class ArticleResultTileComponent {
@@ -50,6 +47,11 @@ export class ArticleResultTileComponent {
       url: this.item.coverImageUrl,
       alt: this.item.title
     };
+  }
+
+  getExcerpt(): string | null {
+    // Excerpt is optional on VM
+    return (this.item as unknown as { excerpt?: string })?.excerpt ?? null;
   }
 
   getCommentsNumber(): number {
