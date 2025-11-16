@@ -150,108 +150,6 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
   itemsNumber: 18,
   groups: [
     {
-      type: DiscoverySearchResultType.Suite,
-      entries: [
-        {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Complete Productivity Suite',
-          slug: 'complete-productivity-suite',
-          coverImageUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800',
-          numberOfApps: 8,
-          commentsNumber: 156,
-          authorName: 'Productivity Team',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ],
-          applications: [
-            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
-            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
-            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
-            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
-            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
-            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ],
-          topComment: {
-            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
-            authorName: 'Sarah Johnson',
-            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-            date: '2024-01-15T10:30:00Z',
-            upvotes: 24
-          },
-          topReview: null
-        },
-        {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Health & Wellness Collection',
-          slug: 'health-wellness-collection',
-          coverImageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-          numberOfApps: 5,
-          commentsNumber: 92,
-          authorName: 'Wellness Group',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ],
-          applications: [
-            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
-            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
-            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
-            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ],
-          topComment: {
-            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
-            authorName: 'Sarah Johnson',
-            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-            date: '2024-01-15T10:30:00Z',
-            upvotes: 24
-          },
-          topReview: null
-        },
-        {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Business Essentials Pack',
-          slug: 'business-essentials-pack',
-          coverImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
-          numberOfApps: 12,
-          commentsNumber: 234,
-          authorName: 'Business Solutions Inc',
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ],
-          applications: [
-            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
-            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
-            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
-            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
-            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
-            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
-            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
-            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
-            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
-            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
-          ],
-          topComment: {
-            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
-            authorName: 'Sarah Johnson',
-            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-            date: '2024-01-15T10:30:00Z',
-            upvotes: 24
-          },
-          topReview: null
-        }
-      ]
-    },
-    {
       type: DiscoverySearchResultType.Application,
       entries: [
         { 
@@ -374,6 +272,109 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
         }
       ]
     },
+    {
+      type: DiscoverySearchResultType.Suite,
+      entries: [
+        {
+          type: DiscoverySearchResultType.Suite,
+          name: 'Complete Productivity Suite',
+          slug: 'complete-productivity-suite',
+          coverImageUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800',
+          numberOfApps: 8,
+          commentsNumber: 156,
+          authorName: 'Productivity Team',
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
+        },
+        {
+          type: DiscoverySearchResultType.Suite,
+          name: 'Health & Wellness Collection',
+          slug: 'health-wellness-collection',
+          coverImageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+          numberOfApps: 5,
+          commentsNumber: 92,
+          authorName: 'Wellness Group',
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
+        },
+        {
+          type: DiscoverySearchResultType.Suite,
+          name: 'Business Essentials Pack',
+          slug: 'business-essentials-pack',
+          coverImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
+          numberOfApps: 12,
+          commentsNumber: 234,
+          authorName: 'Business Solutions Inc',
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
+        }
+      ]
+    },
+
     {
       type: DiscoverySearchResultType.Article,
       entries: [

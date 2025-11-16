@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
-import { TuiChip } from '@taiga-ui/kit';
+import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
@@ -32,7 +32,9 @@ export type ApplicationResultTileVM = Omit<DiscoverySearchResultApplicationItemD
     NgForOf,
     RouterLink,
     RoutePathPipe,
-    TuiIconPipe
+    TuiIconPipe,
+    TuiAvatar,
+    TuiIconPipe,
   ]
 })
 export class ApplicationResultTileComponent {

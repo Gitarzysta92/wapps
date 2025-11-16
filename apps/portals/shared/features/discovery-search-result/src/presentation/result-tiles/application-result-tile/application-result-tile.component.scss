@@ -1,52 +1,38 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  height: 450px;
+  position: relative;
 }
 
-.item-content {
-  margin-top: auto;
-  padding: var(--tui-padding-m) 0;
+.app-content {
+  display: flex;
+  flex-direction: row;
+  gap: var(--tui-padding-m);
 }
+
 
 .app-info {
   position: relative;
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 30px 30px 15px 30px;
-  left: 20px;
-  right: 20px;
-  width: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: $space-2;
 }
 
 .app-name {
   font-size: 18px;
   font-weight: 600;
   color: var(--tui-text-01);
-  margin: 0 0 var(--tui-padding-m) 0;
-  line-height: 1.4;
 }
 
 .app-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tui-padding-xs);
-  margin-bottom: var(--tui-padding-m);
+  gap: $space-2;
 }
 
 .app-tag {
   font-size: 12px;
-}
-
-.cover-image {
-  display: block;
-  width: 100%;
-  object-fit: cover;
-}
-
-.app-category {
-  position: absolute;
-  top: -15px;
 }
 
 .app-cta {

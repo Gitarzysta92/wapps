@@ -98,6 +98,8 @@
     cursor: pointer;
     border-radius: $radius-md;
     background: var(--tui-background-base);
+    position: relative;
+    padding: $space-6;
     
     &:hover {
       box-shadow: $shadow-lg;
