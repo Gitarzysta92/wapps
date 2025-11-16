@@ -4,12 +4,28 @@
   position: sticky;
   top: 0;
   display: flex;
-  padding: $space-4 0;
+  padding: $space-4;
+  z-index: 1;
   
   .sorting-controls {
     min-width: 250px;
   }
 }
+
+.section__results-header {
+  padding: 0 $space-4;
+  margin-top: $space-4;
+  h1 {
+    @include text($font-size-2xl, $font-weight-bold);
+    color: var(--tui-text-primary);
+  }
+}
+
+
+.section__breadcrumbs {
+  margin-top: $space-4;
+}
+
 
 .section__separator {
   height: 1px;
@@ -17,46 +33,9 @@
   margin: 0 $space-4;
 }
 
-// Global results header
-.results-header-global {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-top: $space-4;
-  margin-bottom: $space-5;
-  padding: 0 $space-4;
-  
-  h2 {
-    margin: 0;
-    @include text($font-size-xl, $font-weight-bold);
-    color: var(--tui-text-primary);
-  }
-}
-
-.load-more-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: $space-4;
-  width: 100%;
-  
-  &.load-more-top {
-    margin-bottom: $space-4;
-  }
-  
-  &.load-more-bottom {
-    margin-top: $space-4;
-  }
-  
-  button {
-    min-width: 200px;
-  }
-}
-
 // Results section - following home page feed conventions
 .section__results {
-  margin-top: $space-4;
+  margin-top: $space-8;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,18 +46,27 @@
   width: 100%;
   
   .group-header {
+    position: absolute;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: $space-3;
-    margin-bottom: $space-4;
-    border-bottom: 2px solid var(--tui-border-normal);
+    position: absolute;
+    top: -50px;
+    padding: $space-3 $space-6;
+    margin-bottom: $space-3;
     width: 100%;
     
-    h3 {
+    .group-header-title {
       margin: 0;
       @include text($font-size-lg, $font-weight-bold);
       color: var(--tui-text-primary);
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      tui-icon {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+      }
     }
     
     .group-count {
@@ -96,18 +84,27 @@
     gap: $space-4;
     width: 100%;
   }
+
+  .item-card-skeleton {
+    width: 100%;
+    height: 100%;
+    border-radius: $radius-md;
+    background: var(--tui-background-base);
+  }
   
   .item-card {
-    display: block;
-    padding: $space-4;
-    background-color: var(--tui-background-elevation-1);
-    border-radius: $radius-sm;
     box-shadow: $shadow-md;
     transition: box-shadow $duration-200, transform $duration-200;
-    text-decoration: none;
-    color: inherit;
     cursor: pointer;
-    
+    border-radius: $radius-md;
+    background: var(--tui-background-base);
+    position: relative;
+    padding: $space-6 $space-6 0 $space-6;
+
+    &.blank {
+      padding: 0;
+    }
+
     &:hover {
       box-shadow: $shadow-lg;
       transform: translateY(-2px);
@@ -195,3 +192,27 @@
 .section__results--skeleton {
   background: var(--tui-background-container-inactive);
 }
+
+
+[slot="bottom-bar"] {
+  padding: $space-2 0;
+}
+
+.top-comment {
+  // TODO: make mixin from this styles
+  // for standard container
+  display: block;
+  background: var(--card-gradient-secondary);
+  padding: $space-4;
+  border-radius: $radius-sm;
+}
+
+[slot="author-info"] {
+  pointer-events: none;
+}
+
+.show-all-results-button {
+  margin-top: $space-4;
+  width: 100%;
+}
+

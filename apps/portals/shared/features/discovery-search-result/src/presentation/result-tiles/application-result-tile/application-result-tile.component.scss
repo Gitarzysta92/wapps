@@ -1,0 +1,58 @@
+@use 'ui/design-system/src/styles' as *;
+
+.app-header {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: top;
+  gap: $space-2;
+}
+
+.app-content {
+  display: flex;
+  flex-direction: row;
+  gap: var(--tui-padding-m);
+  margin-bottom: $space-2;
+}
+
+
+.app-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: $space-2;
+  flex-grow: 2;
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tui-text-01);
+  display: inline;
+}
+
+.app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.app-tag {
+  font-size: 12px;
+}
+
+.app-divider {
+  width: 100%;
+  border: $border-width-thin solid var(--tui-border-normal);
+}
+
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.app-footer:has(*) {
+  margin-bottom: $space-4;
+}

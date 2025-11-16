@@ -1,0 +1,25 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol class="breadcrumbs__list">
+    @for (crumb of breadcrumbs(); track crumb.path; let last = $last) {
+      <li class="breadcrumbs__item">
+        @if (last) {
+          <span class="breadcrumbs__current">
+            @if (crumb.icon) {
+              <tui-icon class="breadcrumbs__icon" [icon]="crumb.icon"></tui-icon>
+            }
+            <span class="breadcrumbs__label">{{ crumb.label }}</span>
+          </span>
+        } @else {
+          <a [routerLink]="crumb.path" class="breadcrumbs__link">
+            @if (crumb.icon) {
+              <tui-icon class="breadcrumbs__icon" [icon]="crumb.icon"></tui-icon>
+            }
+            <span class="breadcrumbs__label">{{ crumb.label }}</span>
+          </a>
+          <tui-icon icon="@tui.chevron-right" class="breadcrumbs__separator"></tui-icon>
+        }
+      </li>
+    }
+  </ol>
+</nav>
+

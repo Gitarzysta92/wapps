@@ -16,6 +16,25 @@
       </div>
     }
   } @else {
+    <a
+      class="nav-item"
+      tuiButton
+      appearance="ghost"
+      type="button" 
+      [routerLink]="HOME.path"
+      routerLinkActive="active"
+      [title]="HOME.label">
+      <span class="nav-label">{{ HOME.label }}</span>
+      <div class="nav-icon">
+        <tui-icon
+          [icon]="HOME.icon"
+          [style.height.rem]="1.2"
+          [style.width.rem]="1.2"
+          [style.display]="'inline-block'"
+          [style.visibility]="'visible'"/>
+      </div>
+    </a>
+
     <!-- Dynamic navigation items -->
     @for (item of navigationItems(); track item.type) {
       <button

@@ -1,0 +1,58 @@
+@use 'ui/design-system/src/styles' as *;
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbs__item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.breadcrumbs__link {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  color: $color-text-muted;
+  text-decoration: none;
+  transition: color $duration-200 $ease-in-out;
+
+  &:hover {
+    color: $color-text-strong;
+    text-decoration: underline;
+  }
+}
+
+.breadcrumbs__current {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  color: $color-text-strong;
+  font-weight: $font-weight-medium;
+}
+
+.breadcrumbs__icon {
+  flex-shrink: 0;
+  font-size: $size-icon-xs;
+}
+
+.breadcrumbs__separator {
+  color: $color-text-muted;
+  flex-shrink: 0;
+}
+
+.breadcrumbs__label {
+  white-space: nowrap;
+}

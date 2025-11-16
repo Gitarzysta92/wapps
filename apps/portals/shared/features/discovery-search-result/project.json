@@ -1,0 +1,39 @@
+{
+  "name": "portals-shared-features-discovery-search-result",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "disc",
+  "sourceRoot": "apps/portals/shared/features/discovery-search-result",
+  "tags": ["type:discovery", "scope:search"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/discovery-search-result",
+        "main": "apps/portals/shared/features/discovery-search-result/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/discovery-search-result/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/discovery-search-result/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/discovery-search-result/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

@@ -21,17 +21,10 @@ body {
   color: var(--tui-text-primary);
   -webkit-tap-highlight-color: transparent;
   --t-root-top: 0;
-  //  background: var(--feed-radial-gradient);
   padding: 0;
   margin: 0;
 
-  &.light {
-    //background: radial-gradient(ellipse 600px 400px at top, #ffffff, #e7ecff);
-  }
-
-  &.dark {
-    background: radial-gradient(ellipse 600px 400px at top, #ffffff, #e7ecff);
-  }
+  background: --body-background;
 }
 
 // Required by some Taiga UI components
@@ -75,4 +68,45 @@ button tui-loader {
     color: var(--tui-text-action-soft-active);
     background: var(--tui-background-action-soft-active);
   }
+}
+
+
+[tuiAppearance][data-appearance='primary-soft'] {
+  color: var(--tui-text-primary-inverse);
+  background: var(--tui-accent-secondary);
+  backdrop-filter: blur(10px);
+  --tui-border-focus: var(--tui-primary);
+
+  &:hover {
+    color: var(--tui-primary-hover);
+    background: var(--tui-secondary-hover);
+  }
+
+  &:active {
+    color: var(--tui-primary-active);
+    background: var(--tui-secondary-active);
+  }
+}
+
+
+[tuiAppearance][data-appearance='premium-soft'] {
+  color: var(--tui-primary-text);
+  background: var(--primary-gradient);
+  backdrop-filter: blur(10px);
+  --tui-border-focus: var(--tui-accent);
+
+  &:hover {
+    color: var(--tui-primary-text);
+    background: var(--indigo-gradient);
+  }
+
+  &:active {
+    color: var(--tui-primary-text);
+    background: var(--accent-gradient);
+  }
+}
+
+[tuiAppearance][data-appearance='section-primary'] {
+  color: var(--tui-text-secondary-inverse);
+  background: var(--tui-accent-primary);
 }

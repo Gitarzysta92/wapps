@@ -1,0 +1,40 @@
+<content-feed-item-blank>
+  <div class="top-bar" top-bar>
+    <ng-content select="[slot='top-bar']"></ng-content>
+  </div>
+  <ui-cover-image
+    class="cover-image"
+    [image]="getCoverImage()"
+    backdrop>
+  </ui-cover-image>
+  <div class="item-content" content>
+    <div class="article-info">
+      <div class="article-content">
+        <h3 class="article-title">{{ getTitle() }}</h3>
+        <div class="article-tags">
+          <tui-chip 
+            *ngFor="let tag of getTags()"
+            class="article-tag" 
+            size="xs"
+            appearance="secondary">
+            {{ tag }}
+          </tui-chip>
+        </div>
+        <div class="article-excerpt">
+          {{ getExcerpt() }}
+        </div>
+      </div>
+      <div class="author-info">
+        <span>Author:</span>
+        <tui-avatar
+          [src]="getAuthorAvatarUrl()"
+          size="xs"
+          class="author-avatar">
+        </tui-avatar>
+        <span class="author-name">{{ getAuthorName() }}</span>
+        <ng-content select="[slot='user-badges']"></ng-content>
+      </div>
+    </div>
+  </div>
+</content-feed-item-blank>
+

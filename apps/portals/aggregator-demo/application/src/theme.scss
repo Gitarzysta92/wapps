@@ -9,12 +9,14 @@ body.light {
     rgba(249, 250, 251, 0.8) 50%, 
     rgba(249, 250, 251, 0) 100%);
   
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
   --sidebar-gradient: linear-gradient(135deg, #{$color-bg-muted} 0%, #{$color-border} 100%);
   --header-gradient: linear-gradient(90deg, #{$color-white} 0%, #{$color-bg-muted} 100%);
   --primary-gradient: linear-gradient(45deg, #{$color-primary-600} 0%, #{$color-purple-600} 100%);
   
   --overlay-gradient: linear-gradient(180deg, #{$rgba-white-90} 0%, rgba(255, 255, 255, 0) 100%);
   --card-gradient: linear-gradient(145deg, #{$color-white} 0%, #{$color-bg-muted} 100%);
+  --card-gradient-secondary: linear-gradient(180deg, #{$color-sky-25}, transparent);
   
   --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
@@ -44,6 +46,9 @@ body.light {
 [tuiTheme='light'] {
   --tui-background-elevation-1: #{$color-bg};
   --alt-text-color: #{$color-text-weaker};
+
+  --tui-text-secondary-inverse: #{$color-text-strong};
+  --tui-text-primary-inverse: #{$color-blue-50};
   
   // Link colors
   --tui-link: #{$color-text};
@@ -63,6 +68,8 @@ body.light {
   --tui-secondary-text: #{$color-text-strong};
   
   --tui-accent: #{$color-accent-500};
+  --tui-accent-primary: #{$color-purple-50};
+  --tui-accent-secondary: #8fbbf0;
   --tui-accent-hover: #{$color-accent-600};
   --tui-accent-text: #{$color-white};
   
@@ -87,6 +94,8 @@ body.dark {
     #{$color-surface} 0%, 
     rgba(31, 41, 55, 0.8) 50%, 
     rgba(31, 41, 55, 0) 100%);
+
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
   
   --sidebar-gradient: linear-gradient(135deg, #{$color-gray-700} 0%, #{$color-gray-600} 100%);
   --header-gradient: linear-gradient(90deg, #{$color-bg-inverse} 0%, #{$color-surface} 100%);
@@ -94,6 +103,7 @@ body.dark {
   
   --overlay-gradient: linear-gradient(180deg, rgba(17, 24, 39, 0.9) 0%, rgba(17, 24, 39, 0) 100%);
   --card-gradient: linear-gradient(145deg, #{$color-surface} 0%, #{$color-gray-700} 100%);
+  --card-gradient-secondary: linear-gradient(180deg, #{$color-sky-25}, transparent);
   
   --accent-gradient: linear-gradient(45deg, #{$color-accent-500} 0%, #{$color-accent-600} 100%);
   --indigo-gradient: linear-gradient(135deg, #{$color-indigo-400} 0%, #{$color-purple-600} 100%);
@@ -103,6 +113,7 @@ body.dark {
   --feed-radial-gradient: radial-gradient(ellipse at top, #{$color-gray-800} 0%, #{$color-surface} 50%, #{$color-bg-inverse} 100%);
 
   --feed-radial-gradient2: linear-gradient(0deg, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
+  
   
   // Action-soft appearance
   --tui-text-action-soft: #{$color-text-light};

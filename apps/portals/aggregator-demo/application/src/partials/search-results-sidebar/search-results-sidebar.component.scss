@@ -23,6 +23,7 @@
   color: var(--tui-text-01);
   transition: background-color 0.2s;
   cursor: pointer;
+  font-weight: $font-weight-regular;
   
   .nav-icon {
     transition: transform 0.1s;
@@ -47,6 +48,7 @@
   &.active {
     background: var(--feed-radial-gradient2);
     color: var(--tui-text-on-primary);
+    font-weight: $font-weight-bold;
   }
 }
 
@@ -58,7 +60,6 @@
 
 .nav-label {
   font-size: 0.875rem;
-  font-weight: 500;
   display: flex;
   gap: 0.25rem;
   align-items: center;

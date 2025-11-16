@@ -15,6 +15,43 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
     search: 'photo snap'
   },
   groups: [
+      {
+      type: DiscoverySearchResultType.Article,
+      entries: [  
+        {
+          type: DiscoverySearchResultType.Article,
+          name: SAMPLE_ARTICLE.title,
+          excerpt: SAMPLE_ARTICLE.excerpt,
+          title: SAMPLE_ARTICLE.title,
+          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
+          slug: SAMPLE_ARTICLE.slug,
+          commentsNumber: 42,
+          authorName: SAMPLE_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
+        },
+        {
+          type: DiscoverySearchResultType.Article,
+          name: TECH_ARTICLE.title,
+          excerpt: TECH_ARTICLE.excerpt,
+          title: TECH_ARTICLE.title,
+          coverImageUrl: TECH_ARTICLE.coverImageUrl,
+          slug: TECH_ARTICLE.slug,
+          commentsNumber: 87,
+          authorName: TECH_ARTICLE.author,
+          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          tags: [
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ]
+        }
+      ]
+    },
     {
       type: DiscoverySearchResultType.Suite,
       entries: [
@@ -30,7 +67,22 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          applications: [
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          }
         }
       ]
     },
@@ -51,7 +103,13 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         {
           type: DiscoverySearchResultType.Application,
@@ -68,42 +126,8 @@ export const DISCOVERY_SEARCH_PREVIEW_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
-        }
-      ]
-    },
-    {
-      type: DiscoverySearchResultType.Article,
-      entries: [  
-        {
-          type: DiscoverySearchResultType.Article,
-          name: SAMPLE_ARTICLE.title,
-          title: SAMPLE_ARTICLE.title,
-          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
-          slug: SAMPLE_ARTICLE.slug,
-          commentsNumber: 42,
-          authorName: SAMPLE_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
-        },
-        {
-          type: DiscoverySearchResultType.Article,
-          name: TECH_ARTICLE.title,
-          title: TECH_ARTICLE.title,
-          coverImageUrl: TECH_ARTICLE.coverImageUrl,
-          slug: TECH_ARTICLE.slug,
-          commentsNumber: 87,
-          authorName: TECH_ARTICLE.author,
-          authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
-          tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: null
         }
       ]
     },
@@ -134,48 +158,51 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
   itemsNumber: 18,
   groups: [
     {
-      type: DiscoverySearchResultType.Suite,
+      type: DiscoverySearchResultType.Article,
       entries: [
         {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Complete Productivity Suite',
-          slug: 'complete-productivity-suite',
-          coverImageUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800',
-          numberOfApps: 8,
-          commentsNumber: 156,
-          authorName: 'Productivity Team',
+          type: DiscoverySearchResultType.Article,
+          name: SAMPLE_ARTICLE.title,
+          excerpt: SAMPLE_ARTICLE.excerpt,
+          title: SAMPLE_ARTICLE.title,
+          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
+          slug: SAMPLE_ARTICLE.slug,
+          commentsNumber: 42,
+          authorName: SAMPLE_ARTICLE.author,
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name }
           ]
         },
         {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Health & Wellness Collection',
-          slug: 'health-wellness-collection',
-          coverImageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-          numberOfApps: 5,
-          commentsNumber: 92,
-          authorName: 'Wellness Group',
+          type: DiscoverySearchResultType.Article,
+          name: TECH_ARTICLE.title,
+          excerpt: TECH_ARTICLE.excerpt,
+          title: TECH_ARTICLE.title,
+          coverImageUrl: TECH_ARTICLE.coverImageUrl,
+          slug: TECH_ARTICLE.slug,
+          commentsNumber: 87,
+          authorName: TECH_ARTICLE.author,
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+            { slug: TAG_DICTIONARY.ai.slug, name: TAG_DICTIONARY.ai.name },
+            { slug: TAG_DICTIONARY.cloud.slug, name: TAG_DICTIONARY.cloud.name }
           ]
         },
         {
-          type: DiscoverySearchResultType.Suite,
-          name: 'Business Essentials Pack',
-          slug: 'business-essentials-pack',
-          coverImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
-          numberOfApps: 12,
-          commentsNumber: 234,
-          authorName: 'Business Solutions Inc',
+          type: DiscoverySearchResultType.Article,
+          name: DESIGN_ARTICLE.title,
+          excerpt: DESIGN_ARTICLE.excerpt,
+          title: DESIGN_ARTICLE.title,
+          coverImageUrl: DESIGN_ARTICLE.coverImageUrl,
+          slug: DESIGN_ARTICLE.slug,
+          commentsNumber: 53,
+          authorName: DESIGN_ARTICLE.author,
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
-            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+            { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name },
+            { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
           ]
         }
       ]
@@ -197,7 +224,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           tags: [
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -214,7 +247,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
             { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -231,7 +270,13 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.finance.slug, name: TAG_DICTIONARY.finance.name },
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
+          ],
+          topReview: {
+            rate: PHOTO_SNAP.rating,
+            content: 'This app is amazing! I use it every day and it has completely transformed my workflow.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+          }
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -248,7 +293,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.health.slug, name: TAG_DICTIONARY.health.name },
             { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -265,7 +311,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.health.slug, name: TAG_DICTIONARY.health.name },
             { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -282,7 +329,8 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.security.slug, name: TAG_DICTIONARY.security.name },
             { slug: TAG_DICTIONARY.networking.slug, name: TAG_DICTIONARY.networking.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         },
         { 
           type: DiscoverySearchResultType.Application,
@@ -299,54 +347,110 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { slug: TAG_DICTIONARY.ecommerce.slug, name: TAG_DICTIONARY.ecommerce.name },
             { slug: TAG_DICTIONARY.finance.slug, name: TAG_DICTIONARY.finance.name },
             { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name }
-          ]
+          ],
+          topReview: null
         }
       ]
     },
     {
-      type: DiscoverySearchResultType.Article,
+      type: DiscoverySearchResultType.Suite,
       entries: [
         {
-          type: DiscoverySearchResultType.Article,
-          name: SAMPLE_ARTICLE.title,
-          title: SAMPLE_ARTICLE.title,
-          coverImageUrl: SAMPLE_ARTICLE.coverImageUrl,
-          slug: SAMPLE_ARTICLE.slug,
-          commentsNumber: 42,
-          authorName: SAMPLE_ARTICLE.author,
+          type: DiscoverySearchResultType.Suite,
+          name: 'Complete Productivity Suite',
+          slug: 'complete-productivity-suite',
+          coverImageUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800',
+          numberOfApps: 8,
+          commentsNumber: 156,
+          authorName: 'Productivity Team',
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.productivity.slug, name: TAG_DICTIONARY.productivity.name },
-            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name }
-          ]
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         },
         {
-          type: DiscoverySearchResultType.Article,
-          name: TECH_ARTICLE.title,
-          title: TECH_ARTICLE.title,
-          coverImageUrl: TECH_ARTICLE.coverImageUrl,
-          slug: TECH_ARTICLE.slug,
-          commentsNumber: 87,
-          authorName: TECH_ARTICLE.author,
+          type: DiscoverySearchResultType.Suite,
+          name: 'Health & Wellness Collection',
+          slug: 'health-wellness-collection',
+          coverImageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+          numberOfApps: 5,
+          commentsNumber: 92,
+          authorName: 'Wellness Group',
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.ai.slug, name: TAG_DICTIONARY.ai.name },
-            { slug: TAG_DICTIONARY.cloud.slug, name: TAG_DICTIONARY.cloud.name }
-          ]
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         },
         {
-          type: DiscoverySearchResultType.Article,
-          name: DESIGN_ARTICLE.title,
-          title: DESIGN_ARTICLE.title,
-          coverImageUrl: DESIGN_ARTICLE.coverImageUrl,
-          slug: DESIGN_ARTICLE.slug,
-          commentsNumber: 53,
-          authorName: DESIGN_ARTICLE.author,
+          type: DiscoverySearchResultType.Suite,
+          name: 'Business Essentials Pack',
+          slug: 'business-essentials-pack',
+          coverImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
+          numberOfApps: 12,
+          commentsNumber: 234,
+          authorName: 'Business Solutions Inc',
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
           tags: [
-            { slug: TAG_DICTIONARY.web.slug, name: TAG_DICTIONARY.web.name },
-            { slug: TAG_DICTIONARY.mobile.slug, name: TAG_DICTIONARY.mobile.name }
-          ]
+            { slug: TAG_DICTIONARY.webDevelopment.slug, name: TAG_DICTIONARY.webDevelopment.name },
+            { slug: TAG_DICTIONARY.mobileDevelopment.slug, name: TAG_DICTIONARY.mobileDevelopment.name }
+          ],
+          applications: [
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
+            { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
+            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
+            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
+            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
+            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+          ],
+          topComment: {
+            content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
+            authorName: 'Sarah Johnson',
+            authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
+            date: '2024-01-15T10:30:00Z',
+            upvotes: 24
+          },
+          topReview: null
         }
       ]
     },

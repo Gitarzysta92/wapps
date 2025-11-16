@@ -194,6 +194,7 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationTimeline,
   NAVIGATION.applicationReviews,
+  NAVIGATION.applicationDevLog,
   NAVIGATION.applicationHealth,
   NAVIGATION.applicationTopics,
 ]

@@ -113,6 +113,9 @@
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"
       ],
+      "@portals/shared/features/discovery-search-result": [
+        "apps/portals/shared/features/discovery-search-result/src/index.ts"
+      ],
       "@portals/shared/features/discussion": [
         "apps/portals/shared/features/discussion/src/index.ts"
       ],
@@ -188,9 +191,11 @@
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
+      "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
       "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
-      "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"]
+      "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],
+      "@ui/voting": ["libs/ui/voting/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

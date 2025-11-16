@@ -1,0 +1,89 @@
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import type { CoverImageDto } from '@ui/cover-image';
+import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
+import { TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { NgForOf } from '@angular/common';
+import type { DiscoverySearchResultApplicationItemDto } from '@domains/discovery';
+import { VotingIndicatorComponent } from '@ui/voting';
+import { TopReviewVM } from '../../top-review/top-review.component';
+
+export const APPLICATION_RESULT_TILE_SELECTOR = 'application-result-tile';
+
+export type ApplicationResultTileVM = Omit<DiscoverySearchResultApplicationItemDto, 'category' | 'tags'> & {
+  category: DiscoverySearchResultApplicationItemDto['category'] & { link: string };
+  tags: Array<DiscoverySearchResultApplicationItemDto['tags'][0] & { link: string }>;
+  applicationLink: string;
+  reviewsLink: string;
+  topReview: TopReviewVM | null;
+}
+
+@Component({
+  selector: APPLICATION_RESULT_TILE_SELECTOR,
+  templateUrl: './application-result-tile.component.html',
+  styleUrl: './application-result-tile.component.scss',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TuiChip,
+    NgForOf,
+    TuiAvatar,
+    TuiIconPipe,
+    VotingIndicatorComponent,
+    TuiIcon
+  ]
+})
+export class ApplicationResultTileComponent {
+  @Input() item!: ApplicationResultTileVM;
+
+  getName(): string {
+    return this.item.name;
+  }
+
+  getSlug(): string {
+    return this.item.slug;
+  }
+
+  getCoverImage(): CoverImageDto {
+    return {
+      url: this.item.coverImageUrl,
+      alt: this.item.name
+    };
+  }
+
+  getRating(): number {
+    return this.item.rating;
+  }
+
+  getCommentsNumber(): number {
+    return this.item.commentsNumber;
+  }
+
+  getCategory(): string {
+    return this.item.category.name;
+  }
+
+  getCategoryLink(): string {
+    return this.item.category.link;
+  }
+
+  getTags(): string[] {
+    return this.item.tags.map(tag => tag.name);
+  }
+
+  getApplicationLink(): string {
+    return this.item.applicationLink;
+  }
+
+  getReviewsLink(): string {
+    return this.item.reviewsLink;
+  }
+
+  getUpvotesCount(): number {
+    return 0;
+  }
+
+  getDownvotesCount(): number {
+    return 0;
+  }
+}
+
