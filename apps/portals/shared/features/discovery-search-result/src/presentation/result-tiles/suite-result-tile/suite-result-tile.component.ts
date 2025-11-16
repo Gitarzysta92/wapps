@@ -12,7 +12,7 @@ export type SuiteResultTileVM = Omit<DiscoverySearchResultSuiteItemDto, 'tags' |
   tags: Array<DiscoverySearchResultSuiteItemDto['tags'][0] & { link: string }>;
   suiteLink: string;
   commentsLink: string;
-  topComment?: TopCommentVM;
+  topComment: TopCommentVM | null;
 }
 
 @Component({

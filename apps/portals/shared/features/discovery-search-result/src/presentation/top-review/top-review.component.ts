@@ -8,6 +8,7 @@ export interface TopReviewVM {
   content: string;
   authorName: string;
   authorAvatarUrl: string;
+  authorBadges: Array<{ name: string; icon: string; appearance: string }>;
 }
 
 @Component({

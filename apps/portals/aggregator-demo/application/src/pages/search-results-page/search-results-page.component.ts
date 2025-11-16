@@ -131,7 +131,14 @@ export class SearchResultsPageComponent {
         link: `/search?tag=${tag.slug}` 
       })),
       applicationLink: `/app/${appEntry.slug}/overview`,
-      reviewsLink: `/app/${appEntry.slug}/reviews`
+      reviewsLink: `/app/${appEntry.slug}/reviews`,
+      topReview: appEntry.topReview ? {
+        ...appEntry.topReview,
+        authorBadges: [
+          { name: 'verified', icon: '@tui.badge-check', appearance: 'primary-soft' },
+          { name: 'premium', icon: '@tui.rocket', appearance: 'premium-soft' }
+        ]
+      } : null
     };
   }
 
@@ -152,7 +159,7 @@ export class SearchResultsPageComponent {
           { name: 'verified', icon: '@tui.badge-check', appearance: 'primary-soft' },
           { name: 'premium', icon: '@tui.rocket', appearance: 'premium-soft' }
         ]
-      } : undefined
+      } : null
     };
   }
 

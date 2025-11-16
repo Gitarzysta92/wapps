@@ -7,6 +7,12 @@
       <h3 class="app-name">
         {{ getName() }}
       </h3>
+      <span>
+        <tui-chip size="xs" appearance="action-soft">
+          <tui-icon icon="@tui.star"></tui-icon>
+          <span class="rate">{{ getRating().toFixed(1) }}</span>
+        </tui-chip>
+      </span>
     </div>
     <div class="app-tags">
       <tui-chip 

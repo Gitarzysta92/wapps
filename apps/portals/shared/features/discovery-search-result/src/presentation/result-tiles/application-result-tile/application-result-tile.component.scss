@@ -29,6 +29,7 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--tui-text-01);
+  display: inline;
 }
 
 .app-tags {
@@ -52,7 +53,6 @@
   gap: $space-2;
 }
 
-.app-footer {
-  margin-top: $space-2;
+.app-footer:has(*) {
+  margin-bottom: $space-4;
 }
-

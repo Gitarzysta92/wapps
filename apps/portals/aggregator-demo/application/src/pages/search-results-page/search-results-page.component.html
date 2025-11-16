@@ -123,7 +123,7 @@
         <top-review
           class="top-comment"
           [review]="vm.topReview">
-          <!-- @for (badge of vm.topReview.authorBadges; track badge) {
+          @for (badge of vm.topReview.authorBadges; track badge) {
             <tui-chip
               slot="author-info"
               size="xs"
@@ -131,7 +131,7 @@
               [appearance]="badge.appearance">
               {{ badge.name }}
             </tui-chip>
-          } -->
+          }
         </top-review>
       }
     </div>

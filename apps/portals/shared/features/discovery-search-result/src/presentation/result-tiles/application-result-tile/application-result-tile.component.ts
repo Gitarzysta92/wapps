@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import type { CoverImageDto } from '@ui/cover-image';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
-import { TuiIconPipe } from '@taiga-ui/core';
+import { TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import type { DiscoverySearchResultApplicationItemDto } from '@domains/discovery';
 import { VotingIndicatorComponent } from '@ui/voting';
+import { TopReviewVM } from '../../top-review/top-review.component';
 
 export const APPLICATION_RESULT_TILE_SELECTOR = 'application-result-tile';
 
@@ -13,6 +14,7 @@ export type ApplicationResultTileVM = Omit<DiscoverySearchResultApplicationItemD
   tags: Array<DiscoverySearchResultApplicationItemDto['tags'][0] & { link: string }>;
   applicationLink: string;
   reviewsLink: string;
+  topReview: TopReviewVM | null;
 }
 
 @Component({
@@ -27,6 +29,7 @@ export type ApplicationResultTileVM = Omit<DiscoverySearchResultApplicationItemD
     TuiAvatar,
     TuiIconPipe,
     VotingIndicatorComponent,
+    TuiIcon
   ]
 })
 export class ApplicationResultTileComponent {

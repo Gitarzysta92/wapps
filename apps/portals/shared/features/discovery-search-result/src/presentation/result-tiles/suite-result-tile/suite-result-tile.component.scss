@@ -80,3 +80,7 @@
 .cta-button {
   width: 100%;
 }
+
+.suite-footer:has(*) {
+  margin-bottom: $space-4;
+}
