@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
+import type { CoverImageDto } from '@ui/cover-image';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
-import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiIconPipe } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
-import { RoutePathPipe } from '@ui/routing';
 import type { DiscoverySearchResultApplicationItemDto } from '@domains/discovery';
-import { ContentFeedItemBlankComponent } from '@ui/content-feed';
+import { VotingIndicatorComponent } from '@ui/voting';
 
 export const APPLICATION_RESULT_TILE_SELECTOR = 'application-result-tile';
 
@@ -24,17 +22,11 @@ export type ApplicationResultTileVM = Omit<DiscoverySearchResultApplicationItemD
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemBlankComponent,
-    CoverImageComponent,
     TuiChip,
-    TuiButton,
-    TuiIcon,
     NgForOf,
-    RouterLink,
-    RoutePathPipe,
-    TuiIconPipe,
     TuiAvatar,
     TuiIconPipe,
+    VotingIndicatorComponent,
   ]
 })
 export class ApplicationResultTileComponent {
@@ -81,6 +73,14 @@ export class ApplicationResultTileComponent {
 
   getReviewsLink(): string {
     return this.item.reviewsLink;
+  }
+
+  getUpvotesCount(): number {
+    return 0;
+  }
+
+  getDownvotesCount(): number {
+    return 0;
   }
 }
 

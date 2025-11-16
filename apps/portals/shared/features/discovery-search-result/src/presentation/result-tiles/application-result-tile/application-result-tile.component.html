@@ -26,6 +26,21 @@
   </div>
 </div>
 
+<hr class="app-divider">
+
+<div class="bottom-bar">
+  <tui-chip size="xs" appearance="action-soft">
+    <voting-indicator
+      [upvotesCount]="getUpvotesCount()"
+      [downvotesCount]="getDownvotesCount()">
+    </voting-indicator>
+  </tui-chip>
+  <ng-content select="[slot='bottom-bar']"></ng-content>
+</div>
+
+<div class="app-footer">
+  <ng-content select="[slot='footer']"></ng-content>
+</div>
 
 <!-- <a
   class="app-cta" 

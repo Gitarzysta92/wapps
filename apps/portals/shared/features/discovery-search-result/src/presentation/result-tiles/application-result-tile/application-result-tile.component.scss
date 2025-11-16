@@ -35,51 +35,18 @@
   font-size: 12px;
 }
 
-.app-cta {
+.app-divider {
   width: 100%;
+  border: $border-width-thin solid var(--tui-border-normal);
 }
 
-.item-actions {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--tui-background-base-alt);
-  color: var(--tui-background-accent-opposite-pressed);
-  padding: $space-1 30px $space-1 30px;
-  border-radius: $radius-sm;
-  gap: var(--tui-padding-m);
-}
-
-.score-container {
+.bottom-bar {
   display: flex;
   align-items: center;
-  gap: var(--tui-padding-xs);
-  flex: 1;
+  gap: $space-2;
 }
 
-.score-stars {
-  display: flex;
-  gap: 2px;
-
-  .star-icon {
-    font-size: 16px;
-    color: var(--tui-text-04);
-    
-    &.filled {
-      color: #FFC107;
-    }
-  }
-}
-
-.score-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--tui-text-01);
-  margin-left: var(--tui-padding-xs);
-}
-
-.action-btn {
-  flex-shrink: 0;
+.app-footer {
+  margin-top: $space-2;
 }
 
