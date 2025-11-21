@@ -8,6 +8,10 @@ import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { SafeComponentOutletDirective } from '@ui/misc';
 
 export interface IAppShellRouteData {
+  topBar: {
+    component: Type<unknown>,
+    inputs?: Record<symbol, unknown>
+  } | null;
   header: {
     component: Type<IAppShellHeaderComponent>,
     inputs?: Record<symbol, unknown>
@@ -21,6 +25,10 @@ export interface IAppShellRouteData {
     inputs?: Record<symbol, unknown>
   } | null;
   footer: {
+    component: Type<unknown>,
+    inputs?: Record<symbol, unknown>
+  } | null;
+  bottomBar: {
     component: Type<unknown>,
     inputs?: Record<symbol, unknown>
   } | null;
@@ -74,7 +82,16 @@ export class AppShellComponent {
     map(() =>  this._route.firstChild?.snapshot as ActivatedRouteSnapshot)
   );
 
-
+  public readonly topBarComponent$ = this._routeData.pipe(
+    distinctUntilChanged((p, c) => p.component === c.component),
+    map(s => ({
+      component: (s.data as IAppShellRouteData).topBar?.component,
+      inputs: {
+        ...((s.data as IAppShellRouteData).topBar?.inputs ?? {}),
+        ...s.params
+      }
+    }))
+  );
 
   public readonly headerComponent$ = this._routeData.pipe(
     distinctUntilChanged((p, c) => p.component === c.component),
@@ -126,6 +143,17 @@ export class AppShellComponent {
       component: (s.data as IAppShellRouteData).footer?.component,
       inputs: {
         ...(s.data as IAppShellRouteData).footer?.inputs,
+        ...s.params
+      }
+    }))
+  );
+
+  public readonly bottomBarComponent$ = this._routeData.pipe(
+    distinctUntilChanged((p, c) => p.component === c.component),
+    map(s => ({
+      component: (s.data as IAppShellRouteData).bottomBar?.component,
+      inputs: {
+        ...((s.data as IAppShellRouteData).bottomBar?.inputs ?? {}),
         ...s.params
       }
     }))

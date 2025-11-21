@@ -1,0 +1,26 @@
+<nav class="mobile-bottom-nav" aria-label="Primary mobile navigation">
+  @if (navigation?.length) {
+    <div class="mobile-bottom-nav__items">
+      @for (item of navigation; track trackByNavigationPath) {
+        <a
+          class="mobile-bottom-nav__item"
+          tuiButton
+          appearance="flat"
+          size="m"
+          [routerLink]="[item.path]"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
+          [title]="item.label"
+          [attr.aria-label]="item.label">
+          <span class="mobile-bottom-nav__icon">
+            <tui-icon [icon]="item.icon || '@tui.menu'"></tui-icon>
+          </span>
+          <span class="mobile-bottom-nav__label">{{ item.label }}</span>
+        </a>
+      }
+    </div>
+  }
+</nav>
+
+
+

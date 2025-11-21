@@ -16,6 +16,10 @@
   //padding: $space-5 $space-4;
   // border-radius: $radius-sm;
   // background: var(--feed-radial-gradient);
+
+  @media #{$layout-breakpoint-md} {
+    position: initial;
+  }
   multi-search {
     width: 100%;
     display: block;

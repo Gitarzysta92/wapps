@@ -181,7 +181,14 @@ export const NAVIGATION = {
   }
 }
 
-export const HOME_VIEW_MAIN_NAVIGATION = [
+export const DESKTOP_MAIN_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.applications,
+  NAVIGATION.suites,
+  NAVIGATION.articles,
+]
+
+export const MOBILE_MAIN_NAVIGATION = [
   NAVIGATION.home,
   NAVIGATION.applications,
   NAVIGATION.suites,

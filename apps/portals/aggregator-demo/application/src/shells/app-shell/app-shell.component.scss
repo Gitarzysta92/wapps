@@ -13,16 +13,14 @@
   z-index: 0;
 }
 
-.container-header {
+.header {
   position: sticky;
   top: 0;
   @include main-width();
   margin: 0 auto;
 }
 
-.container-footer {
-  position: sticky;
-  top: 0;
+.footer {
   @include main-width();
   margin: 0 auto;
 }
@@ -35,18 +33,41 @@
   &.left {
     left: 0;
     @include sidebar-width();
+
+    @media #{$layout-breakpoint-md} {
+      .sidebar-inner {
+        transform: translate(calc(40px - 100%),0);
+      }
+    }
   }
 
   &.right {
     right: 0;
     @include sidebar-width();
+    @media #{$layout-breakpoint-md} {
+      .sidebar-inner {
+        transform: translate(calc(100% - 40px),0);
+      }
+    }
   }
 }
 
- .container {
-    &.main {
-      position: relative;
-      margin: 0 auto;
-      @include main-width();
-    }
+.container {
+  &.main {
+    position: relative;
+    margin: 0 auto;
+    @include main-width();
   }
+}
+
+.top-bar {
+  position:fixed;
+  top: 0;
+  width: 100%;
+}
+
+.bottom-bar {
+  position:fixed;
+  bottom: 0;
+  width: 100%;
+}

@@ -7,10 +7,11 @@ import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
-import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, HOME_VIEW_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION } from "./navigation";
+import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
 import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
+import { CommonMobileBottomBarPartialComponent } from "./partials/common-mobile-bottom-bar/common-mobile-bottom-bar.component";
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
 import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
 import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component"; 
@@ -37,9 +38,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.home ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: DESKTOP_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -72,6 +78,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationOverview ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -102,6 +113,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationHealth ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -132,6 +148,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDevLog ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -162,6 +183,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -192,6 +218,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews, NAVIGATION.applicationReview ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -222,6 +253,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -252,6 +288,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics, NAVIGATION.applicationTopic ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -282,6 +323,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTimeline ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -313,13 +359,18 @@ export const routes: Routes = [
         matcher: applicationsMatcher,
         loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.applications ],
+          breadcrumb: [NAVIGATION.applications],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           header: {
             component: HeaderPartialComponent,
           },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -345,13 +396,18 @@ export const routes: Routes = [
         path: NAVIGATION.suites.path,
         loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.suites ],
+          breadcrumb: [NAVIGATION.suites],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           header: {
             component: HeaderPartialComponent,
           },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -389,9 +445,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.suite ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -420,9 +481,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.createSuite ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -449,13 +515,18 @@ export const routes: Routes = [
         canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.favouriteSuites ],
+          breadcrumb: [NAVIGATION.favouriteSuites],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           header: {
             component: HeaderPartialComponent,
           },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -481,13 +552,18 @@ export const routes: Routes = [
         path: NAVIGATION.articles.path,
         loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.articles ],
+          breadcrumb: [NAVIGATION.articles],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           header: {
             component: HeaderPartialComponent,
           },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -525,9 +601,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.articles, NAVIGATION.article ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -580,9 +661,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.applications, NAVIGATION.registerApplication ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -619,6 +705,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.home,NAVIGATION.search ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: SearchResultsSidebarComponent,
             inputs: {}
@@ -649,6 +740,11 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.tags ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: ApplicationLeftSidebarPartialComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
@@ -679,9 +775,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,
@@ -709,9 +810,14 @@ export const routes: Routes = [
         data: {
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag, NAVIGATION.searchByTag ],
           header: null,
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
-            inputs: { navigation: HOME_VIEW_MAIN_NAVIGATION }
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
             component: UserSidebarPartialComponent,

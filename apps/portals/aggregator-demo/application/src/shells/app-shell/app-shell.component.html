@@ -1,7 +1,16 @@
 <ui-animated-background class="shell-background"></ui-animated-background>
 
+@if (topBarComponent$ | async; as topBar) {
+  <div class="container top-bar">
+    <ng-container 
+      [safeComponentOutlet]="topBar.component"
+      [safeComponentOutletInputs]="topBar.inputs">
+    </ng-container>
+  </div>  
+}
+
 @if (headerComponent$ | async; as header) {
-  <header class="container container-header">
+  <header class="container header">
     <ng-container 
       [safeComponentOutlet]="header.component"
       [safeComponentOutletInputs]="header.inputs">
@@ -10,13 +19,14 @@
 }
 
 
-
 @if (leftSidebarComponent$ | async; as leftSidebar) {
   <aside class="container sidebar left">
-    <ng-container 
-      [safeComponentOutlet]="leftSidebar.component"
-      [safeComponentOutletInputs]="leftSidebar.inputs">
-    </ng-container>
+    <div class="sidebar-inner">
+      <ng-container 
+        [safeComponentOutlet]="leftSidebar.component"
+        [safeComponentOutletInputs]="leftSidebar.inputs">
+      </ng-container>
+    </div>
   </aside>
 }
 
@@ -26,19 +36,31 @@
 
 @if (rightSidebarComponent$ | async; as rightSidebar) {
   <aside class="container sidebar right">
-    <ng-container 
-      [safeComponentOutlet]="rightSidebar.component"
-      [safeComponentOutletInputs]="rightSidebar.inputs">
-    </ng-container>
+    <div class="sidebar-inner">
+      <ng-container 
+        [safeComponentOutlet]="rightSidebar.component"
+        [safeComponentOutletInputs]="rightSidebar.inputs">
+      </ng-container>
+    </div>
   </aside>
 }
 
 
 @if (footerComponent$ | async; as footer) {
-  <footer class="container container-footer">
+  <footer class="container footer">
     <ng-container 
       [safeComponentOutlet]="footer.component"
       [safeComponentOutletInputs]="footer.inputs">
     </ng-container>
   </footer>
+}
+
+
+@if (bottomBarComponent$ | async; as bottomBar) {
+  <div class="container bottom-bar">
+    <ng-container 
+      [safeComponentOutlet]="bottomBar.component"
+      [safeComponentOutletInputs]="bottomBar.inputs">
+    </ng-container>
+  </div>  
 }

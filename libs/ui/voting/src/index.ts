@@ -1,2 +1,1 @@
-export * from './voting-indicator';
-
+export { VotingIndicatorComponent } from './voting-indicator/voting-indicator.component';
