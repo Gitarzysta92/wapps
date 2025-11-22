@@ -1,24 +1,31 @@
 @use 'ui/design-system/src/styles' as *;
 
+:host {
+  display: block;
+}
+
 .user-profile_section {
   height: $size-content-xxs;
 }
 
-
 .section_intro {
   height: $size-content-xxs;
+  // @media #{$layout-breakpoint-sm} {
+  //   display: none;
+  // }
 }
 
 .section_quick-search {
   position: sticky;
   top: $space-4;
-  z-index: 2;
-  //padding: $space-5 $space-4;
+  z-index: $z-base-overlay;
+  //padding: $space-5 $space-4; 
   // border-radius: $radius-sm;
   // background: var(--feed-radial-gradient);
 
   @media #{$layout-breakpoint-md} {
-    position: initial;
+    position: relative;
+    top: 0;
   }
   multi-search {
     width: 100%;
@@ -51,6 +58,7 @@
 
 .feed-item {
   display: block;
+  overflow: hidden;
   background-color: var(--tui-background-elevation-1);
   border-radius: $radius-sm;
   box-shadow: $shadow-md;

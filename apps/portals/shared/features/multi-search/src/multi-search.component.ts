@@ -64,12 +64,12 @@ export class MultiSearchComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
     const target = event.target as HTMLElement;
     const searchContainer = target.closest('.search-container');
     
     if (!searchContainer && this.isFocused) {
+      event.preventDefault();
+      event.stopPropagation();
       this.closeDropdown();
     }
   }

@@ -75,15 +75,13 @@ export class GlobalStateService implements IAppShellState {
   }
 
   public isLeftSidebarExpanded$ = new BehaviorSubject(false);
-
   public toggleLeftSidebar(): void {
     this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
   }
 
   public isRightSidebarExpanded$ = new BehaviorSubject(false);
-
   public toggleRightSidebar(): void {
-    this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
+    this.isRightSidebarExpanded$.next(!this.isRightSidebarExpanded$.value);
   }
 
 }

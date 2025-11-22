@@ -26,8 +26,6 @@ export type SuiteResultTileVM = Omit<DiscoverySearchResultSuiteItemDto, 'tags' |
     TuiAvatar,
     TuiHint,
     NgForOf,
-    TuiButton,
-    NgIf,
     VotingIndicatorComponent,
   ]
 })

@@ -1,10 +1,11 @@
 
-<section class="portal-logo">
-   <tui-avatar 
+<div class="portal-logo-wrapper">
+  <tui-avatar
+    class="portal-logo" 
     [src]="'@tui.mastercard' | tuiIcon"
     size="xl"
   />
-</section>
+</div>
 
 <nav class="sidebar-nav">
   @for (item of navigation; track item.path) {

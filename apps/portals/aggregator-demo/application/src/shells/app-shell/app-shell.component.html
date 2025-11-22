@@ -1,3 +1,6 @@
+
+<!-- TODO: shell should allow to define dedicated
+ background for each usecase. Use content projection for this purpose. -->
 <ui-animated-background class="shell-background"></ui-animated-background>
 
 @if (topBarComponent$ | async; as topBar) {
@@ -20,8 +23,22 @@
 
 
 @if (leftSidebarComponent$ | async; as leftSidebar) {
-  <aside class="container sidebar left">
+  <aside 
+    class="container sidebar left" 
+    [class.expanded]="leftSidebar.inputs.isExpanded">
     <div class="sidebar-inner">
+      <button
+        class="toggle-button"
+        tuiButton 
+        appearance="flat" 
+        type="button" 
+        (click)="toggleLeftSidebar()">
+        <tui-icon
+          class="toggle-button-icon"
+          icon="@tui.chevron-left" 
+          [style.height.rem]="1" 
+          [style.width.rem]="1" />
+      </button>
       <ng-container 
         [safeComponentOutlet]="leftSidebar.component"
         [safeComponentOutletInputs]="leftSidebar.inputs">
@@ -35,8 +52,22 @@
 </main>
 
 @if (rightSidebarComponent$ | async; as rightSidebar) {
-  <aside class="container sidebar right">
+  <aside 
+    class="container sidebar right" 
+    [class.expanded]="rightSidebar.inputs.isExpanded">
     <div class="sidebar-inner">
+      <button
+        class="toggle-button"
+        tuiButton 
+        appearance="flat" 
+        type="button" 
+        (click)="toggleRightSidebar()">
+        <tui-icon
+          class="toggle-button-icon"
+          icon="@tui.chevron-right" 
+          [style.height.rem]="1" 
+          [style.width.rem]="1" />
+      </button>
       <ng-container 
         [safeComponentOutlet]="rightSidebar.component"
         [safeComponentOutletInputs]="rightSidebar.inputs">

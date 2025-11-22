@@ -1,9 +1,9 @@
 import { Component, inject, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
 import { NgIf, NgFor } from '@angular/common';
-import { TuiInputModule } from "@taiga-ui/legacy";
 import { LoginFormDto } from "./login-form.dto";
 import { VALIDATION_MESSAGES } from "./validation-messages.port";
+import { TuiIcon, TuiTextfield } from "@taiga-ui/core";
 
 
 
@@ -16,8 +16,9 @@ import { VALIDATION_MESSAGES } from "./validation-messages.port";
     NgIf,
     NgFor,
     ReactiveFormsModule,
-    TuiInputModule,
-  ]
+    TuiTextfield,
+    TuiIcon
+]
 })
 export class LoginFormComponent {
 

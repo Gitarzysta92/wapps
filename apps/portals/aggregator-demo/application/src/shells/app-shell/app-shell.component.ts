@@ -6,6 +6,7 @@ import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { filter, startWith, map, distinctUntilChanged, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { SafeComponentOutletDirective } from '@ui/misc';
+import { TuiIcon } from '@taiga-ui/core';
 
 export interface IAppShellRouteData {
   topBar: {
@@ -44,6 +45,8 @@ export interface IAppShellSidebarComponent {
 }
 
 export interface IAppShellState {
+  toggleRightSidebar(): unknown;
+  toggleLeftSidebar(): unknown;
   isLeftSidebarExpanded$: Observable<boolean>;
   isRightSidebarExpanded$: Observable<boolean>;
 }
@@ -62,6 +65,7 @@ export const APP_SHELL_STATE_PROVIDER = new InjectionToken<IAppShellState>('APP_
     AsyncPipe,
     SafeComponentOutletDirective,
     AnimatedBackgroundComponent,
+    TuiIcon
   ],
   hostDirectives: [
     ThemingDescriptorDirective
@@ -158,5 +162,13 @@ export class AppShellComponent {
       }
     }))
   );
-  
+
+
+  public toggleLeftSidebar(): void {
+    this._shellStateProvider.toggleLeftSidebar();
+  }
+
+  public toggleRightSidebar(): void {
+    this._shellStateProvider.toggleRightSidebar();
+  }
 }

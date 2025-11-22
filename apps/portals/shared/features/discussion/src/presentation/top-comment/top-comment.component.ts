@@ -1,8 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { TuiButton, TuiIcon } from "@taiga-ui/core";
+import { TuiIcon } from "@taiga-ui/core";
 import { TuiAvatar, TuiChip } from "@taiga-ui/kit";
-import { DatePipe } from "@angular/common";
 
 export interface TopCommentVM {
   content: string;
@@ -20,11 +18,8 @@ export interface TopCommentVM {
   styleUrl: './top-comment.component.scss',
   standalone: true,
   imports: [
-    RouterLink,
-    TuiButton,
     TuiIcon,
     TuiAvatar,
-    DatePipe,
     TuiChip
   ]
 })

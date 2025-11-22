@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, IsActiveMatchOptions } from '@angular/router';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
-import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 
 @Component({
   selector: 'common-mobile-bottom-bar',
@@ -14,8 +14,7 @@ import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
     CommonModule,
     RouterModule,
     TuiButton,
-    TuiIcon,
-    TuiIconPipe
+    TuiIcon
   ]
 })
 export class CommonMobileBottomBarPartialComponent {

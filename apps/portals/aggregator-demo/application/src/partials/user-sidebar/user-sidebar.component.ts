@@ -13,6 +13,9 @@ import { RoutedDialogButton } from '@ui/routable-dialog';
   selector: 'user-sidebar',
   templateUrl: './user-sidebar.component.html',
   styleUrl: './user-sidebar.component.scss',
+  host: {
+    '[class.expanded]': 'isExpanded'
+  },
   standalone: true,
   imports: [
     CommonModule,

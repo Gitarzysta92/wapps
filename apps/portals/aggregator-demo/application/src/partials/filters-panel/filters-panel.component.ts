@@ -26,20 +26,7 @@ import { MonetizationListContainerDirective } from '@portals/shared/features/pri
     //   outputs: ['onUpdate']
     // }
   ],
-  imports: [
-    FilterDirective,
-    FilterGroupComponent,
-    ChipCheckboxComponent,
-    AsyncPipe,
-    // PlatformListContainerDirective,
-    CategoryListContainerDirective,
-    DeviceListContainerDirective,
-    MonetizationListContainerDirective,
-    SocialListContainerDirective,
-    EstimatedUserSpanListContainerDirective,
-    TagListContainerDirective,
-    ToFilterOptionsList
-  ],
+  imports: [],
 })
 export class FiltersPanelComponent {
   public readonly filterKey = FILTERS;
