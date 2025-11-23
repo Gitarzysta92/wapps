@@ -1,0 +1,42 @@
+.favorites-container {
+  padding: 1rem;
+}
+
+.favorites-section {
+  margin-bottom: 2rem;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--tui-text-primary);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--tui-border-normal);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.loading,
+.error,
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--tui-text-secondary);
+}
+
+.error {
+  color: var(--tui-status-negative);
+}
+

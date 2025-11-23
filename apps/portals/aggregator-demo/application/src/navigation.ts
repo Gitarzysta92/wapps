@@ -39,6 +39,11 @@ export const NAVIGATION = {
     label: 'Favorites',
     icon: '@tui.folder-heart',
   },
+  myDiscussions: {
+    path: 'me/discussions',
+    label: 'Discussions',
+    icon: '@tui.message-circle',
+  },
   settings: {
     path: 'settings',
     label: 'Settings',
@@ -227,6 +232,7 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
   NAVIGATION.myProfile,
   NAVIGATION.myFavorite,
+  NAVIGATION.myDiscussions,
 ]
 
 export const AUTHENTICATED_USER_SECONDARY_NAVIGATION = [

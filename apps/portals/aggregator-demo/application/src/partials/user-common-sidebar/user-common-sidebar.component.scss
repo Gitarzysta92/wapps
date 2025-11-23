@@ -77,6 +77,25 @@ hr {
   gap: 0.5rem;
 }
 
+.favorites-section {
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--tui-text-secondary);
+    margin: 0;
+    
+    tui-icon {
+      color: var(--tui-status-warning);
+    }
+  }
+}
+
 :host:not(.expanded) {
   .login-button {
     justify-content: flex-start;
@@ -95,6 +114,11 @@ hr {
     .user-profile_section {
       padding-left: $space-3;
     }
+    
+    .favorites-section .section-title span {
+      display: none;
+    }
+    
   }
 }
 

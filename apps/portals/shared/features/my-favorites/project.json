@@ -1,0 +1,39 @@
+{
+  "name": "portals-shared-features-my-favorites",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "my-favorites",
+  "sourceRoot": "apps/portals/shared/features/my-favorites",
+  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/my-favorites",
+        "main": "apps/portals/shared/features/my-favorites/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/my-favorites/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/my-favorites/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/my-favorites/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

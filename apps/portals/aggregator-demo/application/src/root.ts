@@ -22,6 +22,7 @@ import { APP_SHELL_STATE_PROVIDER } from './shells/app-shell/app-shell.component
 import { GlobalStateService } from './state/global-state.service';
 import { LOGIN_VALIDATION_MESSAGES, PASSWORD_RESET_VALIDATION_MESSAGES, REGISTRATION_VALIDATION_MESSAGES } from '@portals/shared/data';
 import { provideMyProfileFeature } from '@portals/shared/features/my-profile';
+import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 
 
 export const APPLICATION_ROOT = mergeApplicationConfig(
@@ -45,6 +46,9 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
         name: 'Guest',
         avatarUrl: 'https://api.myprofile.com'
       }
+    }),
+    provideMyFavoritesFeature({
+      apiBaseUrl: 'https://api.myfavorites.com',
     }),
     provideCategoryFeature({
       path: NAVIGATION.categories.path

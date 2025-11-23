@@ -9,6 +9,7 @@ import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.comp
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { RoutedDialogButton } from '@ui/routable-dialog';
 import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
+import { MyFavoritesGridComponent } from '@portals/shared/features/my-favorites';
 
 @Component({
   selector: 'user-common-sidebar',
@@ -25,7 +26,8 @@ import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
     TuiIcon,
     MyProfileAvatarComponent,
     MyProfileNameComponent,
-    RoutedDialogButton
+    RoutedDialogButton,
+    MyFavoritesGridComponent
   ],
   hostDirectives: [
     ThemingDescriptorDirective

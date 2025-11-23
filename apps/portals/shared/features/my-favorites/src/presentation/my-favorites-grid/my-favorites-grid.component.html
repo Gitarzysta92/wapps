@@ -1,0 +1,35 @@
+@let favApps = favoriteApps$ | async;
+@if (favApps && favApps.length > 0) {
+  <div class="favorites-grid">
+    @for (appSlug of favApps; track appSlug; let idx = $index) {
+      @if (idx < maxItems) {
+        <a
+          [routerLink]="[itemRoutePrefix, appSlug]"
+          class="favorite-app-avatar"
+          [title]="appSlug">
+          <tui-avatar size="m">
+            <img 
+              [src]="'https://api.dicebear.com/7.x/shapes/svg?seed=' + appSlug" 
+              [alt]="appSlug" />
+          </tui-avatar>
+        </a>
+      }
+    }
+  </div>
+} @else {
+  <div class="empty-favorites">
+    <tui-icon icon="@tui.star" [style.height.rem]="2"/>
+    <p class="empty-message">No favorite apps yet</p>
+    <a
+      [routerLink]="[ctaRoute]"
+      appearance="primary"
+      size="s"
+      tuiButton
+      type="button"
+      class="cta-button">
+      <tui-icon icon="@tui.search" [style.height.rem]="1"/>
+      <span>{{ ctaLabel }}</span>
+    </a>
+  </div>
+}
+

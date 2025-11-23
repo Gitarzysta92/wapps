@@ -1,2 +1,1 @@
-// Favorites domain exports
-
+export * from './customer-favorites.dto';

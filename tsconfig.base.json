@@ -157,6 +157,9 @@
       "@portals/shared/features/my-profile": [
         "apps/portals/shared/features/my-profile/src/index.ts"
       ],
+      "@portals/shared/features/my-favorites": [
+        "apps/portals/shared/features/my-favorites/src/index.ts"
+      ],
       "@portals/shared/features/search": [
         "apps/portals/shared/features/search/src/index.ts"
       ],
