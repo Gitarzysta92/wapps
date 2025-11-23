@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { TuiButton, TuiIcon } from "@taiga-ui/core";
-import { TuiBadge, TuiBadgedContent, TuiBadgeNotification } from "@taiga-ui/kit";
+import { TuiIcon } from "@taiga-ui/core";
+import { TuiBadgedContent } from "@taiga-ui/kit";
 
 @Component({
   selector: 'discussion-indicator',
@@ -8,10 +8,8 @@ import { TuiBadge, TuiBadgedContent, TuiBadgeNotification } from "@taiga-ui/kit"
   styleUrl: './discussion-indicator.component.scss',
   standalone: true,
   imports: [
-
     TuiIcon,
-    TuiBadgedContent,
-    TuiBadgeNotification
+    TuiBadgedContent
   ]
 })
 export class DiscussionIndicatorComponent {

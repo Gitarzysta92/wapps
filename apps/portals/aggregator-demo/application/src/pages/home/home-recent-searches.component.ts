@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { RecentSearchesList } from '@ui/search-results';
 import { MultiSearchRecentSearchesVM } from '@portals/shared/features/multi-search';
-import { TuiBadge } from '@taiga-ui/kit';
 
 @Component({
   selector: 'home-recent-searches',
@@ -12,7 +11,6 @@ import { TuiBadge } from '@taiga-ui/kit';
   imports: [
     CommonModule,
     RecentSearchesList,
-    TuiBadge,
   ],
   styles: [`
     .recent-searches-container {

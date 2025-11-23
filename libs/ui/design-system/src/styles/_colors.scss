@@ -1,5 +1,9 @@
 // Central color variables extracted from apps and ui libs
 
+// TODO: colors should not now
+// about ui elements
+// for example it should not now about bg.
+
   // --chat-fade-gradient: linear-gradient(to bottom, 
   //   #{$color-surface} 0%, 
   //   #1f2937cc 50%, 
@@ -19,12 +23,16 @@ $color-blue-600: #007bff;
 
 // Extended palette used by gradients
 $color-indigo-400: #667eea;
+$color-purple-600: #4b49b6;
+$color-purple-400: #a800ff;
 $color-purple-600: #764ba2;
+$color-purple-800: #6d169d;
 $color-blue-50: #e3f2fd;
 $color-purple-50: #f3e5f5;
 $color-sky-50: #e1f5fe;
 $color-sky-25: #eef7fb;
 $color-rose-50: #fce4ec;
+
 
 // Text
 $color-text-strong: #0f172a; // slate-900
@@ -42,6 +50,8 @@ $color-bg-subtle: #f1f3f4;
 $color-bg-soft: #f9f9f9;
 $color-bg-inverse: #111827;
 $color-surface: #1f2937;
+$color-surface-soft: #273444;
+$color-surface-subtle: #3c4d62;
 
 // Borders
 $color-border: #e5e7eb;      // gray-200

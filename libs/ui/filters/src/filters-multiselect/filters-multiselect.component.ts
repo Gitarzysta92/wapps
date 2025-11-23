@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton } from '@taiga-ui/core';
-import { TuiCheckbox } from '@taiga-ui/kit';
 
 export type FiltersMultiselectVM = {
   selectedFilters: { id: string, name: string, isSelected: boolean }[];
@@ -13,7 +12,6 @@ export type FiltersMultiselectVM = {
   imports: [
     FormsModule,
     TuiAppearance,
-    TuiCheckbox,
     TuiButton
   ],
   templateUrl: './filters-multiselect.component.html',

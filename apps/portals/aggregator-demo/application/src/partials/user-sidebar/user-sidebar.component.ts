@@ -13,13 +13,15 @@ import { RoutedDialogButton } from '@ui/routable-dialog';
   selector: 'user-sidebar',
   templateUrl: './user-sidebar.component.html',
   styleUrl: './user-sidebar.component.scss',
+  host: {
+    '[class.expanded]': 'isExpanded'
+  },
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
     TuiButton,
     TuiIcon,
-    ThemeToggleComponent,
     MyProfileAvatarComponent,
     MyProfileNameComponent,
     RoutedDialogButton
@@ -35,7 +37,6 @@ export class UserSidebarPartialComponent implements IAppShellSidebarComponent {
   @Input() navigationSecondary: NavigationDeclarationDto[] = [];
   @Input() unauthenticatedNavigationPrimary: NavigationDeclarationDto[] = [];
   @Input() unauthenticatedNavigationSecondary: NavigationDeclarationDto[] = [];
-  @Output() toggleExpansion = new EventEmitter<void>();
 
   public readonly authService = inject(AuthenticationService, { optional: true });
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
@@ -47,10 +48,6 @@ export class UserSidebarPartialComponent implements IAppShellSidebarComponent {
 
   public getCurrentNavigationSecondary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {
     return isAuthenticated ? this.navigationSecondary : this.unauthenticatedNavigationSecondary;
-  }
-
-  public onToggleClick(): void {
-    this.toggleExpansion.emit();
   }
 }
 

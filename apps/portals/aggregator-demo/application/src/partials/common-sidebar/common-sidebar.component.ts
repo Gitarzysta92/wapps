@@ -10,6 +10,9 @@ import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
   templateUrl: './common-sidebar.component.html',
   styleUrl: './common-sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.expanded]': 'isExpanded'
+  },
   standalone: true,
   imports: [
     CommonModule,
@@ -24,7 +27,6 @@ export class CommonSidebarPartialComponent {
 
   @Input() isExpanded = false;
   @Input() navigation: NavigationDeclarationDto[] = [];
-  @Output() toggleExpansion = new EventEmitter<void>();
 
   // TODO: excessive memory allocation,
   // by creating a new object for each call
@@ -37,7 +39,7 @@ export class CommonSidebarPartialComponent {
      };
   }
 
-  public onToggleClick(): void {
-    this.toggleExpansion.emit();
-  }
+  // public onToggleClick(): void {
+  //   this.toggleExpansion.emit();
+  // }
 }

@@ -20,7 +20,6 @@
 
   .feed-item-content {
     position: relative;
-    z-index: 1;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -28,7 +27,6 @@
 
   .feed-item-footer:has(*) {
     position: relative;
-    z-index: 1;
     border-top: 1px solid var(--tui-base-03);
     margin-top: $space-3;
     padding-top: $space-3;

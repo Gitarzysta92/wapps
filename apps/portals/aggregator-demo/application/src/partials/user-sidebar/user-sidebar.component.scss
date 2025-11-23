@@ -1,8 +1,9 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  width: $sidebar-min-width;
+  width: 100%;
   display: block;
+  width: $size-content-xxs;
 }
 
 hr {
@@ -76,5 +77,25 @@ hr {
   gap: 0.5rem;
 }
 
+:host:not(.expanded) {
+  .login-button {
+    justify-content: flex-start;
+  }
+
+  @media #{$layout-breakpoint-md} {
+
+    button, a {
+      padding-left: $space-7;
+    }
+
+    span {
+      display: none;
+    }
+
+    .user-profile_section {
+      padding-left: $space-3;
+    }
+  }
+}
 
 

@@ -8,7 +8,11 @@ import { AuthenticationService, LoginContainerComponent } from "@portals/shared/
 
 @Component({
   templateUrl: "authentication-dialog.component.html",
-  host: { 'data-component-id': 'auth-dialog' },
+  selector: 'authentication-dialog',
+  host: {
+    'data-component-id': 'auth-dialog',
+    'class': 'dialog'
+  },
   imports: [
     LoginContainerComponent,
     RoutedDialogButton,

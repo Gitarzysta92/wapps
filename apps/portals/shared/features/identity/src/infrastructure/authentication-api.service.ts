@@ -10,6 +10,7 @@ export class AuthenticationApiService implements IAuthenticationHandler {
   private readonly _httpClient = inject(HttpClient);
   
   public authenticate(c: { login: string, password: string }): Observable<Result<string, Error>> {
+    console.log('authenticate', c);
     if (c.password === 'test123') {
       console.log('authenticate', c);
       return of({

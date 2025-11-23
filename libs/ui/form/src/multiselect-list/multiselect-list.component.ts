@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TuiCheckbox } from '@taiga-ui/kit';
-import { TuiTextfield, TuiTextfieldComponent } from '@taiga-ui/core';
+import { TuiTextfield } from '@taiga-ui/core';
 import { TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 
 export interface SearchableOption {
@@ -15,7 +15,7 @@ export interface SearchableOption {
   templateUrl: './multiselect-list.component.html',
   styleUrl: './multiselect-list.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule, TuiCheckbox, TuiTextfield, TuiTextfieldComponent, TuiTextfieldControllerModule],
+  imports: [CommonModule, FormsModule, TuiCheckbox, TuiTextfield, TuiTextfieldControllerModule],
 })
 export class MultiselectListComponent<O extends SearchableOption, S extends SearchableOption & { isSelected: boolean }> {
   @Input() items: O[] = [];

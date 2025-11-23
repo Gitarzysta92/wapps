@@ -1,11 +1,11 @@
 @use 'ui/design-system/src/styles/reset' as *;
 @use 'ui/design-system/src/styles/globals' as *;
 @use 'ui/design-system/src/styles/colors' as *;
-@use 'variables';
+@use 'ui/design-system/src/styles/elevation' as *;
 @use 'theme';
+@use "@taiga-ui/core/styles/taiga-ui-local";
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap');
-@import "@taiga-ui/core/styles/taiga-ui-local";
 
 :host, html {
   width: 100%;
@@ -24,7 +24,11 @@ body {
   padding: 0;
   margin: 0;
 
-  background: --body-background;
+  background: var(--body-background);
+}
+
+tui-dialogs {
+  z-index: $z-modal;
 }
 
 // Required by some Taiga UI components
@@ -51,12 +55,30 @@ button tui-loader {
   margin-left: -24px;
 }
 
+
+//TODO: move this to shared extension
+
 // Custom action-soft appearance
 [tuiAppearance][data-appearance='action-soft'] {
   color: var(--tui-text-action-soft);
   background: var(--tui-background-action-soft);
   backdrop-filter: blur(10px);
   border: 1px solid var(--tui-border-action-soft);
+  --tui-border-focus: var(--tui-border-action-soft-focus);
+
+  &:hover {
+    color: var(--tui-text-action-soft-hover);
+    background: var(--tui-background-action-soft-hover);
+  }
+
+  &:active {
+    color: var(--tui-text-action-soft-active);
+    background: var(--tui-background-action-soft-active);
+  }
+}
+
+[tuiAppearance][data-appearance='link-soft'] {
+  color: var(--tui-text-action-soft);
   --tui-border-focus: var(--tui-border-action-soft-focus);
 
   &:hover {

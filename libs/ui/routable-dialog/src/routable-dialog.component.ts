@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 
 @Component({
   template: `<router-outlet></router-outlet>`,
+  selector: 'routable-dialog',
   standalone: true,
   imports: [
     RouterOutlet,

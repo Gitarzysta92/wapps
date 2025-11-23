@@ -1,0 +1,30 @@
+<nav class="mobile-bottom-nav" aria-label="Primary mobile navigation">
+  @if (navigationPrimary.length) {
+    <div class="mobile-bottom-nav__items">
+      @for (item of navigationPrimary; track item) {
+        <a
+          class="mobile-bottom-nav__item"
+          tuiButton
+          size="m"
+          [routerLink]="[item.path]"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
+          [title]="item.label"
+          [attr.aria-label]="item.label">
+          <span class="mobile-bottom-nav__icon">
+            <tui-icon [icon]="item.icon || '@tui.menu'"></tui-icon>
+          </span>
+        </a>
+      }
+      <a
+        class="mobile-bottom-nav__item"
+        tuiButton
+        size="m"
+        (click)="openDialog()">
+        <span class="mobile-bottom-nav__icon">
+          <tui-icon icon="@tui.circle-ellipsis"></tui-icon>
+        </span>
+      </a>
+    </div>
+  }
+</nav>

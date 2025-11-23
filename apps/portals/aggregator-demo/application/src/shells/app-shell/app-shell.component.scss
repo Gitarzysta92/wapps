@@ -13,40 +13,134 @@
   z-index: 0;
 }
 
-.container-header {
+.header {
   position: sticky;
   top: 0;
-  @include main-width();
   margin: 0 auto;
+  @include main-width();
 }
 
-.container-footer {
-  position: sticky;
-  top: 0;
-  @include main-width();
+.footer {
   margin: 0 auto;
+  @include main-width();
+}
+
+.toggle-button {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  z-index: $z-sticky + 1;
+  display: none;
+  @media #{$layout-breakpoint-md} {
+    display: block;
+  }
 }
 
 .sidebar {
   position: fixed;
   top: 0;
   height: 100vh;
+  z-index: $z-sticky;
+  @include sidebar-width();
+  display: flex;
+
+  .sidebar-inner {
+    width: $size-content-xxs;
+    position: absolute;
+    height: 100%;
+    @media #{$layout-breakpoint-md} {
+      padding: 0 $space-4;
+      box-sizing: content-box;
+      transition: transform 0.2s;
+      // TODO: background color should be configurable, similar to the background color of the shell.
+    }
+  }
+
+  &.left, &.right {
+    .toggle-button-icon {
+      transition: transform 0.2s;
+    }
+  }
+
 
   &.left {
     left: 0;
-    @include sidebar-width();
+    justify-content: end;
+    .sidebar-inner {
+      right: 0;
+      @media #{$layout-breakpoint-md} {
+        transform: translate(calc(-#{$size-content-xxs} + 50px), 0);
+        left: 0;
+        right: initial;
+      }
+    }
+    .toggle-button {
+      right: 0;
+      padding: 0 $space-4 0 0;
+      .toggle-button-icon {
+        transform: rotate(180deg);
+      }
+    }
+    @media #{$layout-breakpoint-md} {
+      &.expanded .sidebar-inner { 
+        transform: translate(0, 0);
+      }
+    }
   }
 
   &.right {
     right: 0;
-    @include sidebar-width();
+    justify-content: start;
+    .sidebar-inner {
+      left: 0;
+      @media #{$layout-breakpoint-md} {
+        transform: translate(calc(#{$size-content-xxs} - 50px), 0);
+        left: initial;
+        right:0;
+      }
+    }
+    .toggle-button {
+      left: 0;
+      padding: 0 0 0 $space-4;
+      .toggle-button-icon {
+        transform: rotate(180deg);
+      }
+    }
+    @media #{$layout-breakpoint-md} {
+      &.expanded .sidebar-inner {
+        transform: translate(0, 0);
+      }
+    }
+  }
+
+  &.expanded .toggle-button .toggle-button-icon {
+    transform: rotate(0deg);
+  }
+
+  &.expanded .sidebar-inner {
+    @media #{$layout-breakpoint-md} {
+      background-color: white
+    }
   }
 }
 
- .container {
-    &.main {
-      position: relative;
-      margin: 0 auto;
-      @include main-width();
-    }
+.container {
+  &.main {
+    position: relative;
+    margin: 0 auto;
+    @include main-width();
+    padding: 0 $space-4;
   }
+}
+
+.top-bar {
+  position:fixed;
+  top: 0;
+  width: 100%;
+}
+
+.bottom-bar {
+  position:fixed;
+  bottom: 0;
+  width: 100%;
+}

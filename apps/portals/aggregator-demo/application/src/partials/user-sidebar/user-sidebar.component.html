@@ -4,26 +4,31 @@
 
 <!-- User Profile Section -->
 <section class="user-profile_section">
-  @if (!isAuthenticated) {
-    <button
-      class="login-button"
-      appearance="primary"
-      tuiButton
-      type="button"
-      routedDialogButton="identity">
-      <tui-icon
-        icon="@tui.log-in"
-        [style.height.rem]="1"/>
-      Log In
-    </button>
-  } @else {
+  @if (isAuthenticated) {
     <div>
       <div my-profile-avatar></div>
       <div my-profile-name></div>
-    </div>
+    </div>    
   }
 </section>
-<hr>
+
+@if (isAuthenticated) {
+  <hr>
+}
+
+@if (!isAuthenticated) {
+  <button
+    class="login-button"
+    appearance="primary"
+    tuiButton
+    type="button"
+    routedDialogButton="identity">
+    <tui-icon
+      icon="@tui.log-in"
+      [style.height.rem]="1"/>
+    <span>Log In</span>
+  </button> 
+}
 
 <!-- Logout Button -->
 <!-- @if (authService) {
@@ -134,10 +139,10 @@
 
 
 <!-- Theme Section -->
-<div class="theme_section">
+<!-- <div class="theme_section">
   <theme-toggle></theme-toggle> 
   <span>
     <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
   </span>
 </div>
-
+ -->

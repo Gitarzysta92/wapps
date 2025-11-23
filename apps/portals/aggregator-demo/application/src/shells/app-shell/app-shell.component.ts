@@ -6,8 +6,13 @@ import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { filter, startWith, map, distinctUntilChanged, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { SafeComponentOutletDirective } from '@ui/misc';
+import { TuiIcon } from '@taiga-ui/core';
 
 export interface IAppShellRouteData {
+  topBar: {
+    component: Type<unknown>,
+    inputs?: Record<symbol, unknown>
+  } | null;
   header: {
     component: Type<IAppShellHeaderComponent>,
     inputs?: Record<symbol, unknown>
@@ -24,6 +29,10 @@ export interface IAppShellRouteData {
     component: Type<unknown>,
     inputs?: Record<symbol, unknown>
   } | null;
+  bottomBar: {
+    component: Type<unknown>,
+    inputs?: Record<symbol, unknown>
+  } | null;
 }
 
 export interface IAppShellHeaderComponent {
@@ -36,6 +45,8 @@ export interface IAppShellSidebarComponent {
 }
 
 export interface IAppShellState {
+  toggleRightSidebar(): unknown;
+  toggleLeftSidebar(): unknown;
   isLeftSidebarExpanded$: Observable<boolean>;
   isRightSidebarExpanded$: Observable<boolean>;
 }
@@ -54,6 +65,7 @@ export const APP_SHELL_STATE_PROVIDER = new InjectionToken<IAppShellState>('APP_
     AsyncPipe,
     SafeComponentOutletDirective,
     AnimatedBackgroundComponent,
+    TuiIcon
   ],
   hostDirectives: [
     ThemingDescriptorDirective
@@ -74,7 +86,16 @@ export class AppShellComponent {
     map(() =>  this._route.firstChild?.snapshot as ActivatedRouteSnapshot)
   );
 
-
+  public readonly topBarComponent$ = this._routeData.pipe(
+    distinctUntilChanged((p, c) => p.component === c.component),
+    map(s => ({
+      component: (s.data as IAppShellRouteData).topBar?.component,
+      inputs: {
+        ...((s.data as IAppShellRouteData).topBar?.inputs ?? {}),
+        ...s.params
+      }
+    }))
+  );
 
   public readonly headerComponent$ = this._routeData.pipe(
     distinctUntilChanged((p, c) => p.component === c.component),
@@ -130,5 +151,24 @@ export class AppShellComponent {
       }
     }))
   );
-  
+
+  public readonly bottomBarComponent$ = this._routeData.pipe(
+    distinctUntilChanged((p, c) => p.component === c.component),
+    map(s => ({
+      component: (s.data as IAppShellRouteData).bottomBar?.component,
+      inputs: {
+        ...((s.data as IAppShellRouteData).bottomBar?.inputs ?? {}),
+        ...s.params
+      }
+    }))
+  );
+
+
+  public toggleLeftSidebar(): void {
+    this._shellStateProvider.toggleLeftSidebar();
+  }
+
+  public toggleRightSidebar(): void {
+    this._shellStateProvider.toggleRightSidebar();
+  }
 }

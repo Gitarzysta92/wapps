@@ -1,0 +1,64 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: none;
+  width: 100%;
+  padding: $space-2;
+  backdrop-filter: blur(48px);
+  border-radius: $radius-md;
+}
+
+@media #{$layout-breakpoint-sm} {
+  :host {
+    display: block;
+  }
+}
+
+.mobile-bottom-nav {
+  width: 100%;
+  background: var(--elevated-background);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--elevated-background-border);
+  border-radius: $radius-md;
+}
+
+.mobile-bottom-nav__items {
+  display: flex;
+  justify-content: space-between;
+  gap: $space-1;
+  padding: $space-2 $space-3 calc($space-2 + env(safe-area-inset-bottom, 0));
+}
+
+.mobile-bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-1;
+  text-decoration: none;
+  color: var(--tui-text-01);
+  border-radius: $space-2;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  background: none;
+
+  tui-icon {
+    font-size: 1.5rem;
+  }
+
+  &:hover:not(.active) {
+    background: var(--main-menu-item-background);
+  }
+
+  &.active {
+    background: var(--main-menu-item-background);
+  }
+}
+
+.mobile-bottom-nav__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+

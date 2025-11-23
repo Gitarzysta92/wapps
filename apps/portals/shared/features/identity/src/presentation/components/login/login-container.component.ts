@@ -25,6 +25,7 @@ export class LoginContainerComponent {
   public isAuthenticating = false;
 
   public authenticate(c: CredentialsDto) {
+    console.log('authenticate', c);
     if (this.isAuthenticating) {
       return
     }

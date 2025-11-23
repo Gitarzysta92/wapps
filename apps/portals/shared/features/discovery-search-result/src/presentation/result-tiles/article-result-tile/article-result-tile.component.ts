@@ -25,7 +25,6 @@ export type ArticleResultTileVM = Omit<DiscoverySearchResultArticleItemDto, 'tag
     ContentFeedItemBlankComponent,
     CoverImageComponent,
     TuiChip,
-    TuiIcon,
     TuiAvatar,
     NgForOf,
     

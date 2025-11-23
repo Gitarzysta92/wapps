@@ -1,10 +1,9 @@
 <form [formGroup]="loginForm" (ngSubmit)="submitForm()">
   <div class="form-field">
-    <tui-input
-      formControlName="login"
-      tuiTextfieldIconLeft="mail">
-      Email
-    </tui-input>
+
+    <tui-textfield iconStart="@tui.mail">
+      <input type="text"  tuiTextfield="email" formControlName="login"/>
+    </tui-textfield>
     <div class="error-container">
       <ng-container *ngFor="let validation of validationMessages.email">
         <div
@@ -20,10 +19,10 @@
   </div>
 
   <div class="form-field">
-    <tui-input
-      formControlName="password">
-      Hasło
-    </tui-input>
+    <tui-textfield iconStart="@tui.lock">
+      <input type="password" tuiTextfield="password" formControlName="password"/>
+    </tui-textfield>
+
     <div class="error-container">
       <ng-container *ngFor="let validation of validationMessages.password">
         <div
