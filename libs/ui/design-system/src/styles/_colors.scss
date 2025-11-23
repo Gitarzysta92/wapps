@@ -1,5 +1,9 @@
 // Central color variables extracted from apps and ui libs
 
+// TODO: colors should not now
+// about ui elements
+// for example it should not now about bg.
+
   // --chat-fade-gradient: linear-gradient(to bottom, 
   //   #{$color-surface} 0%, 
   //   #1f2937cc 50%, 
@@ -46,6 +50,8 @@ $color-bg-subtle: #f1f3f4;
 $color-bg-soft: #f9f9f9;
 $color-bg-inverse: #111827;
 $color-surface: #1f2937;
+$color-surface-soft: #273444;
+$color-surface-subtle: #3c4d62;
 
 // Borders
 $color-border: #e5e7eb;      // gray-200

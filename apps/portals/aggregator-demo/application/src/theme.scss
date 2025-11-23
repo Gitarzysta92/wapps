@@ -93,6 +93,10 @@ body.dark {
     rgba(31, 41, 55, 0) 100%);
 
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
+
+  --elevated-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface-soft}, #{$color-surface-soft});
+  --elevated-background-border: #{$color-surface-subtle};
+
   --feed-background: radial-gradient(ellipse at top, #a800ff 0%, #4b49b6 50%, #6d169d);
   --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
   

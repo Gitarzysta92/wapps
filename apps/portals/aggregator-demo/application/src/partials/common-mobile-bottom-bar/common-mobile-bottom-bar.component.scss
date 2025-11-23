@@ -3,6 +3,9 @@
 :host {
   display: none;
   width: 100%;
+  padding: $space-2;
+  backdrop-filter: blur(48px);
+  border-radius: $radius-md;
 }
 
 @media #{$layout-breakpoint-sm} {
@@ -13,10 +16,10 @@
 
 .mobile-bottom-nav {
   width: 100%;
-  background: rgba(10, 11, 25, 0.9);
+  background: var(--elevated-background);
   backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--elevated-background-border);
+  border-radius: $radius-md;
 }
 
 .mobile-bottom-nav__items {
@@ -37,18 +40,18 @@
   color: var(--tui-text-01);
   border-radius: $space-2;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  background: none;
 
   tui-icon {
     font-size: 1.5rem;
   }
 
   &:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--main-menu-item-background);
   }
 
   &.active {
-    color: var(--tui-text-on-primary);
-    background: var(--feed-radial-gradient2);
+    background: var(--main-menu-item-background);
   }
 }
 

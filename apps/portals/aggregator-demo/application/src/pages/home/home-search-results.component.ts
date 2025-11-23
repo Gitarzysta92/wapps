@@ -54,7 +54,6 @@ import {
       }
       @else if (searchResult.groups && searchResult.groups.length > 0) {
         <a class="full-search-redirect"
-          appearance="link-soft"
           [full-search-redirect]="searchResult.itemsNumber"
           [routerLink]="searchResult.link"
           [queryParams]="searchResult.query">
