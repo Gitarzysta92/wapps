@@ -1,0 +1,86 @@
+@use 'ui/design-system/src/styles' as *;
+
+.my-discussions-page {
+  padding: $space-6;
+  min-height: 100vh;
+  background: var(--body-background);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    margin-bottom: $space-8;
+  }
+
+  &__title {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    margin-bottom: $space-2;
+    line-height: $line-height-tight;
+  }
+
+  &__subtitle {
+    font-size: $font-size-lg;
+    color: var(--alt-text-color);
+    line-height: $line-height-normal;
+  }
+
+  &__loading,
+  &__error {
+    padding: $space-8;
+    text-align: center;
+    color: var(--alt-text-color);
+    border-radius: $radius-md;
+    background: var(--tui-background-elevation-1);
+    border: 1px solid var(--tui-neutral);
+  }
+
+  &__error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--tui-negative);
+    border-color: var(--tui-negative);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+
+  &__card {
+    padding: $space-6;
+    background: var(--tui-background-elevation-1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-lg;
+    }
+  }
+
+  &__card-header {
+    margin-bottom: $space-6;
+    border-bottom: 1px solid var(--tui-neutral);
+    padding-bottom: $space-4;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  &__empty {
+    padding: $space-12;
+    text-align: center;
+    color: var(--alt-text-color);
+    font-size: $font-size-lg;
+    background: var(--tui-secondary);
+    border-radius: $radius-md;
+    border: 2px dashed var(--tui-neutral);
+  }
+}
+

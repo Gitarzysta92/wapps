@@ -647,12 +647,6 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.myFavorite.path,
-        canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
-        data: { breadcrumb: [ NAVIGATION.myFavorite ] },
-      },
-      {
         path: NAVIGATION.mySuites.path,
         canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/my-suites/my-suites.component').then(m => m.MySuitesPageComponent),
@@ -661,7 +655,7 @@ export const routes: Routes = [
       {
         path: NAVIGATION.mefavouriteApplications.path,
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
+        loadComponent: () => import('./pages/favorites/favorites.component').then(m => m.FavoritesPageComponent),
         data: { breadcrumb: [ NAVIGATION.mefavouriteApplications ] },
       },
       {
@@ -965,6 +959,78 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/my-profile-page/my-profile-page.component').then(m => m.MyProfilePageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          header: null,
+          leftSidebar: {
+            component: CommonSidebarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          rightSidebar: {
+            component: UserCommonSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.myFavorite.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/favorites/favorites.component').then(m => m.FavoritesPageComponent),
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.myFavorite],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          header: null,
+          leftSidebar: {
+            component: CommonSidebarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          rightSidebar: {
+            component: UserCommonSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.myDiscussions.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/my-discussions/my-discussions.component').then(m => m.MyDiscussionsPageComponent),
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.myDiscussions],
           topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
