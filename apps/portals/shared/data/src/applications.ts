@@ -16,7 +16,7 @@ export const PHOTO_SNAP:
   slug: 'photo-snap',
   name: 'Photo Snap',
   description: 'Professional photo editing and management tool',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=PhotoSnap&backgroundColor=6366f1',
   isPwa: true,
   rating: 4.6,
   tagIds: [71, 11, 12],
@@ -55,7 +55,7 @@ export const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibili
   slug: 'quick-task',
   name: 'Quick Task',
   description: 'Fast and efficient task management for teams',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/icons/svg?seed=QuickTask&backgroundColor=10b981',
   isPwa: true,
   rating: 4.6,
   tagIds: [25, 11, 12], // Productivity, Web Development, Mobile Development
@@ -94,7 +94,7 @@ const SPEEDY_VPN: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto &
   slug: 'speedy-vpn',
   name: 'Speedy VPN',
   description: 'Secure and fast VPN service for all devices',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=SpeedyVPN&backgroundColor=ef4444',
   isPwa: true,
   rating: 4.6,
   tagIds: [8, 9, 11, 12], // Security, Networking, Web Development, Mobile Development
@@ -133,7 +133,7 @@ const BUDGET_BUDDY: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto
   slug: 'budget-buddy',
   name: 'Budget Buddy',
   description: 'Smart budgeting and finance tracking app',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/icons/svg?seed=BudgetBuddy&backgroundColor=f59e0b',
   isPwa: true,
   rating: 4.6,
   tagIds: [21, 25, 11, 12], // Finance, Productivity, Web Development, Mobile Development
@@ -172,7 +172,7 @@ const MINDFUL: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & Ap
   slug: 'mindful',
   name: 'Mindful',
   description: 'Meditation and mindfulness practice companion',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=Mindful&backgroundColor=8b5cf6',
   isPwa: true,
   rating: 4.6,
   tagIds: [23, 25, 11, 12], // Health, Productivity, Web Development, Mobile Development
@@ -211,7 +211,7 @@ const FIT_TRACK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
   slug: 'fit-track',
   name: 'Fit Track',
   description: 'Comprehensive fitness and activity tracking solution',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/icons/svg?seed=FitTrack&backgroundColor=06b6d4',
   isPwa: true,
   rating: 4.6,
   tagIds: [23, 25, 11, 12], // Health, Productivity, Web Development, Mobile Development
@@ -250,7 +250,7 @@ const SHOP_EASE: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
   slug: 'shop-ease',
   name: 'Shop Ease',
   description: 'Easy and intuitive ecommerce platform',
-  logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+  logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=ShopEase&backgroundColor=ec4899',
   isPwa: true,
   rating: 4.6,
   tagIds: [18, 21, 11, 12], // Ecommerce, Finance, Web Development, Mobile Development

@@ -4,10 +4,14 @@
 <!-- User Profile Section -->
 <section class="user-profile_section">
   @if (isAuthenticated) {
-    <div>
+    <button 
+      class="user-profile-btn"
+      appearance="flat"
+      tuiButton
+      type="button">
       <div my-profile-avatar [avatarPath]="myProfileState?.data?.avatarUrl"></div>
       <div my-profile-name [name]="myProfileState?.data?.name"></div>
-    </div>    
+    </button>
   }
 </section>
 
