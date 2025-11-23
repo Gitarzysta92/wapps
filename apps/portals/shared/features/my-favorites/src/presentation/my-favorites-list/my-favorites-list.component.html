@@ -1,0 +1,64 @@
+@if (isLoading$ | async) {
+  <div class="loading">Loading favorites...</div>
+} @else if (isError$ | async) {
+  <div class="error">Error loading favorites</div>
+} @else {
+  @let favs = favorites$ | async;
+  <div class="favorites-container">
+    @if (favs) {
+      @if (favs.applications.length > 0) {
+        <section class="favorites-section">
+          <h3>Applications</h3>
+          <ul>
+            @for (app of favs.applications; track app) {
+              <li>{{ app }}</li>
+            }
+          </ul>
+        </section>
+      }
+      
+      @if (favs.suites.length > 0) {
+        <section class="favorites-section">
+          <h3>Suites</h3>
+          <ul>
+            @for (suite of favs.suites; track suite) {
+              <li>{{ suite }}</li>
+            }
+          </ul>
+        </section>
+      }
+      
+      @if (favs.articles.length > 0) {
+        <section class="favorites-section">
+          <h3>Articles</h3>
+          <ul>
+            @for (article of favs.articles; track article) {
+              <li>{{ article }}</li>
+            }
+          </ul>
+        </section>
+      }
+      
+      @if (favs.discussions.length > 0) {
+        <section class="favorites-section">
+          <h3>Discussions</h3>
+          <ul>
+            @for (discussion of favs.discussions; track discussion) {
+              <li>{{ discussion }}</li>
+            }
+          </ul>
+        </section>
+      }
+      
+      @if (favs.applications.length === 0 && 
+           favs.suites.length === 0 && 
+           favs.articles.length === 0 && 
+           favs.discussions.length === 0) {
+        <div class="empty-state">
+          <p>No favorites yet. Start adding items to your favorites!</p>
+        </div>
+      }
+    }
+  </div>
+}
+

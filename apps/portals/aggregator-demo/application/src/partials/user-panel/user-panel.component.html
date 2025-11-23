@@ -7,6 +7,8 @@
   <ul>
     @for (item of navigationPrimary; track item.id) {
       <li>
+
+        {{ item.path }} - {{ item.label }}
         <a
           [routerLink]="item.path"
           appearance="action-grayscale"

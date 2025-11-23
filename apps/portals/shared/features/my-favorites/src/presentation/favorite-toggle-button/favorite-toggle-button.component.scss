@@ -1,0 +1,22 @@
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+
+  .icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  &.is-favorite {
+    .icon {
+      color: var(--tui-status-warning);
+    }
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+

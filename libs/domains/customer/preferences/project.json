@@ -1,0 +1,25 @@
+{
+  "name": "domains-customer-preferences",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/customer/preferences/src",
+  "tags": ["type:domain", "scope:customer"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/customer/preferences",
+        "main": "libs/domains/customer/preferences/src/index.ts",
+        "tsConfig": "libs/domains/customer/preferences/tsconfig.lib.json",
+        "assets": ["libs/domains/customer/preferences/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

@@ -1,0 +1,15 @@
+@let isFav = isFavorite$ | async;
+<button 
+  tuiButton
+  type="button"
+  appearance="secondary"
+  size="s"
+  [class.is-favorite]="isFav"
+  (click)="toggleFavorite(isFav ?? false)">
+  @if (isFav) {
+    <span class="icon">★</span> Remove from Favorites
+  } @else {
+    <span class="icon">☆</span> Add to Favorites
+  }
+</button>
+

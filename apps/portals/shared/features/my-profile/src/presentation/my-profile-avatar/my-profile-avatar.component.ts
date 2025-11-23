@@ -1,8 +1,8 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { TuiAvatar, TuiBadgedContent } from "@taiga-ui/kit";
-import { MyProfileService } from "../../../application/my-profile.service";
-import { map, tap } from "rxjs";
+import { map } from "rxjs";
+import { MY_PROFILE_STATE_PROVIDER } from "../../application/my-profile-state-provider.token";
 
 @Component({
   selector: "[my-profile-avatar]",
@@ -16,6 +16,6 @@ import { map, tap } from "rxjs";
 })
 export class MyProfileAvatarComponent {
 
-  public readonly avatarPath$ = inject(MyProfileService).profile$
-    .pipe(map(r => r.avatarUrn as string));
+  public readonly avatarPath$ = inject(MY_PROFILE_STATE_PROVIDER) .myProfile$.pipe(
+    map(r => r.data.avatarUrl as string));
 }

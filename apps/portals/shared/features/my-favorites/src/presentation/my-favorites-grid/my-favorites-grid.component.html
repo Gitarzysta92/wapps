@@ -1,0 +1,23 @@
+@if (vm.hasItems) {
+  <div class="favorites-grid">
+    @for (item of vm.items; track item.slug; let idx = $index) {
+      @if (idx < maxItems) {
+        <a
+          [routerLink]="item.path"
+          class="favorite-app-avatar"
+          [title]="item.title || item.slug">
+          <tui-avatar size="m">
+            <img 
+              [src]="item.avatarUrl || 'https://api.dicebear.com/7.x/shapes/svg?seed=' + item.slug" 
+              [alt]="item.title || item.slug" />
+          </tui-avatar>
+        </a>
+      }
+    }
+  </div>
+} @else {
+  <div class="empty-favorites">
+    <ng-content select="[empty-state]"></ng-content>
+  </div>
+}
+

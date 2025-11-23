@@ -1,4 +1,4 @@
-import { GuestProfileDto } from '@domains/customer'
+import { GuestProfileDto } from '@domains/customer/profiles'
 
 
 

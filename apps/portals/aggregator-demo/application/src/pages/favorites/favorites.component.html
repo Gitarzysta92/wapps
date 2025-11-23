@@ -1,0 +1,46 @@
+<div class="favorites-page">
+  <div class="favorites-page__container">
+    <div class="favorites-page__header">
+      <h1 class="favorites-page__title">My Favorites</h1>
+      <p class="favorites-page__subtitle">Your saved applications and content</p>
+    </div>
+
+    @if (isLoading$ | async) {
+      <div class="favorites-page__loading">
+        <p>Loading favorites...</p>
+      </div>
+    }
+
+    @if (isError$ | async) {
+      <div class="favorites-page__error">
+        <p>Error loading favorites. Please try again.</p>
+      </div>
+    }
+
+    @if (favoritesViewModel$ | async; as favorites) {
+      <div class="favorites-page__content">
+        <div 
+          tuiCardLarge
+          tuiAppearance="floating"
+          class="favorites-page__card"
+        >
+          <header tuiHeader class="favorites-page__card-header">
+            <h2 tuiTitle>Favorite Applications</h2>
+          </header>
+
+          @if (favorites.hasItems) {
+            <my-favorites-grid 
+              [vm]="favorites"
+              class="favorites-page__grid"
+            />
+          } @else {
+            <div class="favorites-page__empty">
+              <p>No favorites yet. Start exploring and save your favorite applications!</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
