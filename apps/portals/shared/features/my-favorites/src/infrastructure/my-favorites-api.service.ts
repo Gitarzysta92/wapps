@@ -1,8 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Result } from "@standard";
-import { Observable, of, map, catchError } from "rxjs";
+import { Observable, of } from "rxjs";
 import { CustomerFavoritesDto } from "@domains/customer/favorites";
+import { APPLICATIONS } from "@portals/shared/data";
 import { MY_FAVORITES_API_BASE_URL_PROVIDER } from "../application/infrastructure-providers.port";
 import { IMyFavoritesProvider } from "../application/my-favorites-provider.port";
 
@@ -14,10 +15,19 @@ export class MyFavoritesApiService implements IMyFavoritesProvider {
   
   public getMyFavorites(): Observable<Result<CustomerFavoritesDto>> {
     // TODO: Replace with actual API call
+    // Mock data using real application slugs
+    const favoriteAppSlugs = [
+      APPLICATIONS[0].slug, // photo-snap
+      APPLICATIONS[2].slug, // speedy-vpn
+      APPLICATIONS[4].slug, // mindful
+      APPLICATIONS[5].slug, // fit-track
+      APPLICATIONS[6].slug, // shop-ease
+    ];
+    
     return of({
       ok: true,
       value: {
-        applications: ["app-1", "app-2"],
+        applications: favoriteAppSlugs,
         suites: ["suite-1"],
         articles: ["article-1", "article-2", "article-3"],
         discussions: ["discussion-1"]

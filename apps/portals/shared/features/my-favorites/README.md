@@ -23,37 +23,80 @@ Displays all user favorites organized by category.
 
 ### MyFavoritesGridComponent
 
-Displays favorite apps as avatars in a grid layout. Perfect for sidebars and compact spaces. This component only renders the avatar grid itself - wrap it in your own section/container for headers and titles.
+A presentational component that displays favorite apps as avatars in a grid layout. Perfect for sidebars and compact spaces. This component follows the container/presentational pattern - it receives data via a view model and uses content projection for the empty state CTA.
+
+**View Model Interface:**
+```typescript
+export interface FavoriteAppItem {
+  slug: string;          // Unique identifier
+  path: string;          // Route path for the item
+  avatarUrl?: string;    // Optional custom avatar URL
+  title?: string;        // Optional title for accessibility
+}
+
+export interface MyFavoritesGridViewModel {
+  items: FavoriteAppItem[];
+  hasItems: boolean;
+}
+```
 
 **Usage:**
+```typescript
+// In your container component
+import { MyFavoritesGridViewModel, MY_FAVORITES_STATE_PROVIDER } from '@portals/shared/features/my-favorites';
+
+export class MyContainerComponent {
+  private favoritesProvider = inject(MY_FAVORITES_STATE_PROVIDER);
+  
+  public favoritesVm$ = this.favoritesProvider.myFavorites$.pipe(
+    map(state => ({
+      items: state.data.applications.map(slug => ({
+        slug,
+        path: `/app/${slug}`,
+        title: slug,
+        avatarUrl: `https://api.dicebear.com/7.x/shapes/svg?seed=${slug}`
+      })),
+      hasItems: state.data.applications.length > 0
+    } as MyFavoritesGridViewModel))
+  );
+}
+```
+
 ```html
+<!-- In your template -->
 <section class="favorites-section">
   <h3 class="section-title">
     <tui-icon icon="@tui.star"/>
     <span>Favorite Apps</span>
   </h3>
-  <my-favorites-grid 
-    [maxItems]="15"
-    ctaRoute="/apps"
-    ctaLabel="Browse Apps"
-    itemRoutePrefix="/app">
-  </my-favorites-grid>
+  
+  @let vm = favoritesVm$ | async;
+  @if (vm) {
+    <my-favorites-grid [vm]="vm" [maxItems]="15">
+      <div empty-state>
+        <tui-icon icon="@tui.star" [style.height.rem]="2"/>
+        <p>No favorite apps yet</p>
+        <a [routerLink]="['/apps']" tuiButton>Browse Apps</a>
+      </div>
+    </my-favorites-grid>
+  }
 </section>
 ```
 
 **Inputs:**
+- `vm` (required): View model containing the items and state
 - `maxItems` (optional): Maximum number of items to display (default: 15)
-- `ctaRoute` (optional): Route for the CTA button when empty (default: '/apps')
-- `ctaLabel` (optional): Label for the CTA button (default: 'Browse Apps')
-- `itemRoutePrefix` (optional): Route prefix for each item (default: '/app')
+
+**Content Projection:**
+- `[empty-state]`: Content to display when there are no items
 
 **Features:**
-- Pure grid component - no section wrapper or header
-- 3-column grid in expanded view
-- 2-column grid in collapsed view
+- Pure presentational component - no direct provider dependencies
+- View model pattern for clean data flow
+- Content projection for flexible empty state CTA
+- 3-column grid layout with centered avatars
 - Avatar display with hover effects
-- Empty state with CTA button
-- Responsive design with `:host-context`
+- Responsive design
 
 ### FavoriteToggleButtonComponent
 

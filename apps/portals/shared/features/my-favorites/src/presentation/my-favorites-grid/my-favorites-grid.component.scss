@@ -1,12 +1,18 @@
+@use 'ui/design-system/src/styles' as *;
+
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, max-content);
   gap: 0.5rem;
   padding: 0.5rem;
+  justify-items: center;
+  align-items: center;
 }
 
 .favorite-app-avatar {
   display: block;
+  width: 100%;
+  aspect-ratio: 1;
   transition: all 0.2s ease;
   cursor: pointer;
   
@@ -50,24 +56,6 @@
     align-items: center;
     gap: 0.375rem;
     margin-top: 0.25rem;
-  }
-}
-
-// Responsive styles for collapsed sidebar
-:host-context(:not(.expanded)) {
-  .favorites-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.375rem;
-    padding: 0.375rem;
-  }
-  
-  .empty-favorites .empty-message,
-  .empty-favorites .cta-button span {
-    display: none;
-  }
-  
-  .empty-favorites {
-    padding: 1rem 0.5rem;
   }
 }
 

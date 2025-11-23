@@ -1,16 +1,15 @@
-@let favApps = favoriteApps$ | async;
-@if (favApps && favApps.length > 0) {
+@if (vm.hasItems) {
   <div class="favorites-grid">
-    @for (appSlug of favApps; track appSlug; let idx = $index) {
+    @for (item of vm.items; track item.slug; let idx = $index) {
       @if (idx < maxItems) {
         <a
-          [routerLink]="[itemRoutePrefix, appSlug]"
+          [routerLink]="item.path"
           class="favorite-app-avatar"
-          [title]="appSlug">
+          [title]="item.title || item.slug">
           <tui-avatar size="m">
             <img 
-              [src]="'https://api.dicebear.com/7.x/shapes/svg?seed=' + appSlug" 
-              [alt]="appSlug" />
+              [src]="item.avatarUrl || 'https://api.dicebear.com/7.x/shapes/svg?seed=' + item.slug" 
+              [alt]="item.title || item.slug" />
           </tui-avatar>
         </a>
       }
@@ -18,18 +17,7 @@
   </div>
 } @else {
   <div class="empty-favorites">
-    <tui-icon icon="@tui.star" [style.height.rem]="2"/>
-    <p class="empty-message">No favorite apps yet</p>
-    <a
-      [routerLink]="[ctaRoute]"
-      appearance="primary"
-      size="s"
-      tuiButton
-      type="button"
-      class="cta-button">
-      <tui-icon icon="@tui.search" [style.height.rem]="1"/>
-      <span>{{ ctaLabel }}</span>
-    </a>
+    <ng-content select="[empty-state]"></ng-content>
   </div>
 }
 

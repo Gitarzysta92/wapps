@@ -100,19 +100,31 @@
       <tui-icon icon="@tui.star" [style.height.rem]="1"/>
       <span>Favorite Apps</span>
     </h3>
-    <my-favorites-grid 
-      [maxItems]="15"
-      ctaRoute="/apps"
-      ctaLabel="Browse Apps"
-      itemRoutePrefix="/app">
-    </my-favorites-grid>
+    @let vm = favoritesGridVm$ | async;
+    @if (vm) {
+      <my-favorites-grid
+        class="favorites-grid"
+        [vm]="vm"
+        [maxItems]="15">
+        <div empty-state>
+          <tui-icon icon="@tui.star" [style.height.rem]="2"/>
+          <p class="empty-message">No favorite apps yet</p>
+          <a
+            [routerLink]="['/apps']"
+            appearance="primary"
+            size="s"
+            tuiButton
+            type="button"
+            class="cta-button">
+            <tui-icon icon="@tui.search" [style.height.rem]="1"/>
+            <span>Browse Apps</span>
+          </a>
+        </div>
+      </my-favorites-grid>
+    }
   </section>
   <hr>
-} @else {
- 
-  <hr>
 }
-
 
 
 

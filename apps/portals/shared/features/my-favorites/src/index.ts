@@ -8,5 +8,6 @@ export * from './infrastructure/my-favorites-api.service';
 export * from './my-favorites.providers';
 export * from './presentation/my-favorites-list/my-favorites-list.component';
 export * from './presentation/my-favorites-grid/my-favorites-grid.component';
+export type { FavoriteAppItem, MyFavoritesGridViewModel } from './presentation/my-favorites-grid/my-favorites-grid.component';
 export * from './presentation/favorite-toggle-button/favorite-toggle-button.component';
 
