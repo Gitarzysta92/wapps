@@ -37,12 +37,12 @@
     transition: transform 0.1s;
     transform: translate(0px);
     @media #{$layout-breakpoint-md} {
-      display: none;
+      visibility: hidden;
     }
   }
 
   &:hover {
-    background: var(--feed-radial-gradient2);
+    background: var(--main-menu-item-background);
     .nav-icon {
       transform: translate(10px);
     }
@@ -52,7 +52,7 @@
   }
   
   &.active {
-    background: var(--feed-radial-gradient2);
+    background: var(--main-menu-item-background);
     color: var(--tui-text-on-primary);
   }
 }

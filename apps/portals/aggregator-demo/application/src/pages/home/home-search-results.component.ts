@@ -46,16 +46,6 @@ import {
       flex-wrap: wrap;
     }
     
-    .author {
-      font-size: 0.875rem;
-      color: var(--tui-text-secondary);
-    }
-    
-    .rating-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
   `],
   template: `
     @if (searchResults$ | async; as searchResult) {
@@ -63,7 +53,8 @@ import {
         <ul search-result-list-skeleton></ul>
       }
       @else if (searchResult.groups && searchResult.groups.length > 0) {
-        <a class="full-search-redirect" 
+        <a class="full-search-redirect"
+          appearance="link-soft"
           [full-search-redirect]="searchResult.itemsNumber"
           [routerLink]="searchResult.link"
           [queryParams]="searchResult.query">
