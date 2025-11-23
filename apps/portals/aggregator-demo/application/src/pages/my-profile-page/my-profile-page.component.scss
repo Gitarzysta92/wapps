@@ -1,0 +1,137 @@
+@use 'ui/design-system/src/styles' as *;
+
+.my-profile-page {
+  padding: $space-6;
+  min-height: 100vh;
+  background: var(--body-background);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    margin-bottom: $space-8;
+  }
+
+  &__title {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    margin-bottom: $space-2;
+    line-height: $line-height-tight;
+  }
+
+  &__subtitle {
+    font-size: $font-size-lg;
+    color: var(--alt-text-color);
+    line-height: $line-height-normal;
+  }
+
+  &__loading,
+  &__error {
+    padding: $space-8;
+    text-align: center;
+    color: var(--alt-text-color);
+    border-radius: $radius-md;
+    background: var(--tui-background-elevation-1);
+    border: 1px solid var(--tui-neutral);
+  }
+
+  &__error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--tui-negative);
+    border-color: var(--tui-negative);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+
+  &__card {
+    padding: $space-6;
+    background: var(--tui-background-elevation-1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-lg;
+    }
+  }
+
+  &__card-header {
+    margin-bottom: $space-6;
+    border-bottom: 1px solid var(--tui-neutral);
+    padding-bottom: $space-4;
+  }
+
+  &__profile-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: $space-6;
+    align-items: start;
+
+    @media #{$tui-mobile} {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+
+  &__avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-4;
+  }
+
+  &__avatar {
+    border: 3px solid var(--tui-primary);
+    box-shadow: $shadow-md;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    padding: $space-4;
+    background: var(--tui-secondary);
+    border-radius: $radius-sm;
+    border: 1px solid var(--tui-neutral);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+      border-color: var(--tui-primary);
+      background: var(--tui-secondary-hover);
+    }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: var(--alt-text-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: $font-size-lg;
+    color: var(--tui-text-primary);
+    margin: 0;
+    line-height: $line-height-normal;
+    font-weight: $font-weight-medium;
+  }
+}
+

@@ -962,8 +962,38 @@ export const routes: Routes = [
       {
         path: NAVIGATION.myProfile.path,
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
-        data: { breadcrumb: [ NAVIGATION.myProfile ] },
+        loadComponent: () => import('./pages/my-profile-page/my-profile-page.component').then(m => m.MyProfilePageComponent),
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          header: null,
+          leftSidebar: {
+            component: CommonSidebarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          rightSidebar: {
+            component: UserCommonSidebarPartialComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
         path: NAVIGATION.settings.path,
