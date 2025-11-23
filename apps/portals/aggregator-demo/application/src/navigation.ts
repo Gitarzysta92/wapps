@@ -14,6 +14,21 @@ export const NAVIGATION = {
     label: 'Home',
     icon: '@tui.home',
   },
+  explore: {
+    path: '',
+    label: 'Explore',
+    icon: '@tui.compass',
+  },
+  discover: {
+    path: 'discover',
+    label: 'Discover',
+    icon: '@tui.search',
+  },
+  learn: {
+    path: 'learn',
+    label: 'Learn',
+    icon: '@tui.book',
+  },
   myProfile: {
     path: 'my/profile',
     label: 'My profile',
@@ -182,17 +197,15 @@ export const NAVIGATION = {
 }
 
 export const DESKTOP_MAIN_NAVIGATION = [
-  NAVIGATION.home,
-  NAVIGATION.applications,
-  NAVIGATION.suites,
-  NAVIGATION.articles,
+  NAVIGATION.explore,
+  NAVIGATION.discover,
+  NAVIGATION.learn,
 ]
 
 export const MOBILE_MAIN_NAVIGATION = [
-  NAVIGATION.home,
-  NAVIGATION.applications,
-  NAVIGATION.suites,
-  NAVIGATION.articles,
+  NAVIGATION.explore,
+  NAVIGATION.discover,
+  NAVIGATION.learn,
 ]
 
 

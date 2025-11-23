@@ -1,0 +1,62 @@
+<section class="user-profile_section">
+  <div my-profile-avatar></div>
+  <div my-profile-name></div>
+</section>
+<hr>
+<nav class="navigation_section">
+  <ul>
+    @for (item of context.data.navigationPrimary; track item.path) {
+      <li>
+        <a
+          [routerLink]="item.path"
+          appearance="action-grayscale"
+          tuiButton
+          type="button">
+          <tui-icon
+            [icon]="item.icon"
+            [style.height.rem]="1"/>
+          {{ item.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+<hr>
+<nav class="navigation_section">
+  <ul>
+    @for (item of context.data.navigationSecondary; track item.path) {
+      <li>
+        <a
+          [routerLink]="item.path"
+          appearance="action-grayscale"
+          tuiButton
+          type="button">
+          <tui-icon
+            [icon]="item.icon"
+            [style.height.rem]="1"/>
+          {{ item.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+<hr>
+<div class="theme_section">
+  <theme-toggle></theme-toggle> 
+  <span>
+    <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
+  </span>
+</div>
+<hr>
+<button
+  class="logout-button"
+  appearance="action-grayscale"
+  tuiButton
+  type="button"
+  (click)="service.unauthenticate()">
+  <tui-icon
+    icon="@tui.log-out"
+    [style.height.rem]="1"/>
+  Log out
+</button>
+

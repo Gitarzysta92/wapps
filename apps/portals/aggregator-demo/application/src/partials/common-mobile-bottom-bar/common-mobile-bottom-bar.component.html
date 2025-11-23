@@ -1,7 +1,7 @@
 <nav class="mobile-bottom-nav" aria-label="Primary mobile navigation">
-  @if (navigation.length) {
+  @if (navigationPrimary.length) {
     <div class="mobile-bottom-nav__items">
-      @for (item of navigation; track item) {
+      @for (item of navigationPrimary; track item) {
         <a
           class="mobile-bottom-nav__item"
           tuiButton
@@ -14,12 +14,17 @@
           <span class="mobile-bottom-nav__icon">
             <tui-icon [icon]="item.icon || '@tui.menu'"></tui-icon>
           </span>
-          <!-- <span class="mobile-bottom-nav__label">{{ item.label }}</span> -->
         </a>
       }
+      <a
+        class="mobile-bottom-nav__item"
+        tuiButton
+        size="m"
+        (click)="openDialog()">
+        <span class="mobile-bottom-nav__icon">
+          <tui-icon icon="@tui.circle-ellipsis"></tui-icon>
+        </span>
+      </a>
     </div>
   }
 </nav>
-
-
-

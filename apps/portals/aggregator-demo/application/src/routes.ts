@@ -19,7 +19,13 @@ import { applicationsMatcher } from "./pages/applications/applications.matcher";
 import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
+import { UserPanelComponent } from "./partials/user-panel/user-panel.component";
+import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
 
+// TODO: check if flat list approach
+// does not influence route matching performance
+// because tree structure can be faster in some cases
+// test form ssr and csr standpoint
 
 export const routes: Routes = [
   {
@@ -41,7 +47,18 @@ export const routes: Routes = [
           topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigationPrimary: MOBILE_MAIN_NAVIGATION,
+              sheetDialog: {
+                component: UserPanelSheetComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                }
+              }
+            }
           },
           leftSidebar: {
             component: CommonSidebarPartialComponent,
