@@ -1,18 +1,19 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { AuthenticationService } from '@portals/shared/features/identity';
-import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
+import { THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile';
 import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.component';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { RoutedDialogButton } from '@ui/routable-dialog';
+import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
 
 @Component({
-  selector: 'user-sidebar',
-  templateUrl: './user-sidebar.component.html',
-  styleUrl: './user-sidebar.component.scss',
+  selector: 'user-common-sidebar',
+  templateUrl: './user-common-sidebar.component.html',
+  styleUrl: './user-common-sidebar.component.scss',
   host: {
     '[class.expanded]': 'isExpanded'
   },
@@ -30,7 +31,7 @@ import { RoutedDialogButton } from '@ui/routable-dialog';
     ThemingDescriptorDirective
   ]
 })
-export class UserSidebarPartialComponent implements IAppShellSidebarComponent {
+export class UserCommonSidebarPartialComponent implements IAppShellSidebarComponent {
 
   @Input() isExpanded = false;
   @Input() navigationPrimary: NavigationDeclarationDto[] = [];
@@ -39,7 +40,10 @@ export class UserSidebarPartialComponent implements IAppShellSidebarComponent {
   @Input() unauthenticatedNavigationSecondary: NavigationDeclarationDto[] = [];
 
   public readonly authService = inject(AuthenticationService, { optional: true });
+  public readonly myProfileStateProvider = inject(MY_PROFILE_STATE_PROVIDER);
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
+
+  public readonly myProfile$ = this.myProfileStateProvider.myProfile$;
 
   // Get current navigation based on authentication status
   public getCurrentNavigationPrimary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {

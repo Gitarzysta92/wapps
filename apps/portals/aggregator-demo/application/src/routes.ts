@@ -13,13 +13,12 @@ import { HeaderPartialComponent } from "./partials/header/header.component";
 import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { CommonMobileBottomBarPartialComponent } from "./partials/common-mobile-bottom-bar/common-mobile-bottom-bar.component";
 import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
-import { UserSidebarPartialComponent } from "./partials/user-sidebar/user-sidebar.component";
+import { UserCommonSidebarPartialComponent } from "./partials/user-common-sidebar/user-common-sidebar.component";
 import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component"; 
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
 import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
-import { UserPanelComponent } from "./partials/user-panel/user-panel.component";
 import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
 
 // TODO: check if flat list approach
@@ -65,7 +64,7 @@ export const routes: Routes = [
             inputs: { navigation: DESKTOP_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -105,7 +104,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -140,7 +139,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -175,7 +174,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -210,7 +209,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -245,7 +244,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -280,7 +279,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -315,7 +314,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -350,7 +349,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -390,7 +389,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -427,7 +426,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -472,7 +471,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -508,7 +507,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -546,7 +545,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -583,7 +582,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -628,7 +627,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -648,10 +647,10 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.myfavourites.path,
+        path: NAVIGATION.myFavorite.path,
         canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
-        data: { breadcrumb: [ NAVIGATION.myfavourites ] },
+        data: { breadcrumb: [ NAVIGATION.myFavorite ] },
       },
       {
         path: NAVIGATION.mySuites.path,
@@ -660,10 +659,10 @@ export const routes: Routes = [
         data: { breadcrumb: [ NAVIGATION.mySuites ] },
       },
       {
-        path: NAVIGATION.favouriteApplications.path,
+        path: NAVIGATION.mefavouriteApplications.path,
         canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/favourites/favourites.component').then(m => m.FavouritesPageComponent),
-        data: { breadcrumb: [ NAVIGATION.favouriteApplications ] },
+        data: { breadcrumb: [ NAVIGATION.mefavouriteApplications ] },
       },
       {
         path: NAVIGATION.myApplications.path,
@@ -688,7 +687,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -732,7 +731,7 @@ export const routes: Routes = [
             inputs: {}
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -767,7 +766,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -802,7 +801,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -837,7 +836,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -866,7 +865,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -896,7 +895,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -926,7 +925,7 @@ export const routes: Routes = [
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
-            component: UserSidebarPartialComponent,
+            component: UserCommonSidebarPartialComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,

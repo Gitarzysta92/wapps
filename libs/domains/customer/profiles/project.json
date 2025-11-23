@@ -1,0 +1,25 @@
+{
+  "name": "domains-customer-profiles",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/customer/profiles/src",
+  "tags": ["type:domain", "scope:customer"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domains/customer/profiles",
+        "main": "libs/domains/customer/profiles/src/index.ts",
+        "tsConfig": "libs/domains/customer/profiles/tsconfig.lib.json",
+        "assets": ["libs/domains/customer/profiles/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

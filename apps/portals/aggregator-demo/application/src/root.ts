@@ -1,6 +1,5 @@
 import { mergeApplicationConfig } from '@angular/core';
 // import { appConfigCSR } from './app-config.csr';
-import { provideProfileFeature } from '@portals/shared/features/profile';
 import {
   provideIdentityRegistrationFeature,
   providePasswordResetRequestFeature,
@@ -22,6 +21,7 @@ import { NAVIGATION } from './navigation';
 import { APP_SHELL_STATE_PROVIDER } from './shells/app-shell/app-shell.component';
 import { GlobalStateService } from './state/global-state.service';
 import { LOGIN_VALIDATION_MESSAGES, PASSWORD_RESET_VALIDATION_MESSAGES, REGISTRATION_VALIDATION_MESSAGES } from '@portals/shared/data';
+import { provideMyProfileFeature } from '@portals/shared/features/my-profile';
 
 
 export const APPLICATION_ROOT = mergeApplicationConfig(
@@ -35,7 +35,17 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     providePasswordResetRequestFeature({
       validationMessages: PASSWORD_RESET_VALIDATION_MESSAGES
     }),
-    provideProfileFeature(),
+
+  // provideProfileFeature(),
+    provideMyProfileFeature({
+      apiBaseUrl: 'https://api.myprofile.com',
+      avatarBaseUrl: 'https://api.myprofile.com',
+      guestProfile: {
+        id: 'guest',
+        name: 'Guest',
+        avatarUrl: 'https://api.myprofile.com'
+      }
+    }),
     provideCategoryFeature({
       path: NAVIGATION.categories.path
     }),

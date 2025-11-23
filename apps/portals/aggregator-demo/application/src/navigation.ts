@@ -30,19 +30,24 @@ export const NAVIGATION = {
     icon: '@tui.book',
   },
   myProfile: {
-    path: 'my/profile',
+    path: 'me/profile',
     label: 'My profile',
     icon: '@tui.user',
   },
-  myfavourites: {
-    path: 'my/favourites',
-    label: 'Favourites',
+  myFavorite: {
+    path: 'me/favorite',
+    label: 'Favorites',
     icon: '@tui.folder-heart',
   },
   settings: {
     path: 'settings',
     label: 'Settings',
     icon: '@tui.settings',
+  },
+  notifications: {
+    path: 'notifications',
+    label: 'Notifications',
+    icon: '@tui.bell',
   },
   settingsUser: {
     path: 'settings/user',
@@ -139,8 +144,8 @@ export const NAVIGATION = {
     label: 'Timeline',
     icon: '@tui.list-ordered',
   },
-  favouriteApplications: {
-    path: `my/favourites/apps`, 
+  mefavouriteApplications: {
+    path: `my/favourite/apps`, 
     label: 'Favourite applications',
     icon: '@tui.folder-heart',
   },
@@ -221,11 +226,7 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
 
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
   NAVIGATION.myProfile,
-  NAVIGATION.myfavourites,
-  NAVIGATION.mySuites,
-  NAVIGATION.myApplications,
-  NAVIGATION.claimApplicationOwnership,
-  NAVIGATION.settings,
+  NAVIGATION.myFavorite,
 ]
 
 export const AUTHENTICATED_USER_SECONDARY_NAVIGATION = [
@@ -237,7 +238,7 @@ export const AUTHENTICATED_USER_SECONDARY_NAVIGATION = [
 ]
 
 export const UNAUTHENTICATED_USER_MAIN_NAVIGATION = [
-  NAVIGATION.myfavourites,
+  NAVIGATION.myFavorite,
 ]
 
 export const UNAUTHENTICATED_USER_SECONDARY_NAVIGATION = [
@@ -249,7 +250,7 @@ export const FOOTER_MAIN_NAVIGATION = [
   NAVIGATION.applications,
   NAVIGATION.suites,
   NAVIGATION.articles,  
-  NAVIGATION.myfavourites,
+  NAVIGATION.myFavorite,
   NAVIGATION.mySuites,
 ]
 
@@ -266,7 +267,7 @@ export const FOOTER_TERTIARY_NAVIGATION = [
   NAVIGATION.applications,
   NAVIGATION.suites,
   NAVIGATION.articles,  
-  NAVIGATION.myfavourites,
+  NAVIGATION.myFavorite,
   NAVIGATION.mySuites,
   NAVIGATION.myApplications,
   NAVIGATION.claimApplicationOwnership,
@@ -278,7 +279,7 @@ export const FOOTER_QUATERNARY_NAVIGATION = [
   NAVIGATION.applications,
   NAVIGATION.suites,
   NAVIGATION.articles,  
-  NAVIGATION.myfavourites,
+  NAVIGATION.myFavorite,
   NAVIGATION.mySuites,
   NAVIGATION.myApplications,
   NAVIGATION.claimApplicationOwnership,

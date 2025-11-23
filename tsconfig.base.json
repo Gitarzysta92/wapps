@@ -58,9 +58,14 @@
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
       "@domains/catalog/metrics": ["libs/domains/catalog/metrics/src/index.ts"],
       "@domains/catalog/contact": ["libs/domains/catalog/contact/src/index.ts"],
-      "@domains/customer": ["libs/domains/customer/src/index.ts"],
-      "@domains/customer/my-profile": [
-        "libs/domains/customer/my-profile/src/index.ts"
+      "@domains/customer/profiles": [
+        "libs/domains/customer/profiles/src/index.ts"
+      ],
+      "@domains/customer/favorites": [
+        "libs/domains/customer/favorites/src/index.ts"
+      ],
+      "@domains/customer/preferences": [
+        "libs/domains/customer/preferences/src/index.ts"
       ],
       "@domains/discovery": ["libs/domains/discovery/src/index.ts"],
       "@domains/discussion": ["libs/domains/discussion/src/index.ts"],
@@ -148,6 +153,9 @@
       ],
       "@portals/shared/features/profile": [
         "apps/portals/shared/features/profile/src/index.ts"
+      ],
+      "@portals/shared/features/my-profile": [
+        "apps/portals/shared/features/my-profile/src/index.ts"
       ],
       "@portals/shared/features/search": [
         "apps/portals/shared/features/search/src/index.ts"

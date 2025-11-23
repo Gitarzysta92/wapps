@@ -6,5 +6,5 @@ import { Component, input } from "@angular/core";
   imports: []
 })
 export class MyProfileNameComponent {
-  public readonly profileName = input<string>();
+  public readonly name = input<string>();
 }
