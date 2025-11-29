@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
-import { TuiIcon } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import type { DiscoverySearchResultArticleItemDto } from '@domains/discovery';
-import { ContentFeedItemBlankComponent } from '@ui/content-feed';
+import { ElevatedCardComponent } from '@ui/layout';
 
 export const ARTICLE_RESULT_TILE_SELECTOR = 'article-result-tile';
 
@@ -22,7 +21,7 @@ export type ArticleResultTileVM = Omit<DiscoverySearchResultArticleItemDto, 'tag
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemBlankComponent,
+    ElevatedCardComponent,
     CoverImageComponent,
     TuiChip,
     TuiAvatar,

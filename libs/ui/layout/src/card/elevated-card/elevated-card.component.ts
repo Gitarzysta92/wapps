@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'elevated-card',
+  selector: 'ui-elevated-card',
   templateUrl: './elevated-card.component.html',
   styleUrl: './elevated-card.component.scss',
   standalone: true,

@@ -7,7 +7,7 @@ import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
-import { ContentFeedItemBlankComponent } from '@ui/content-feed';
+import { ElevatedCardComponent } from '@ui/layout';
 import { AddTypeToArray } from '@standard/utility-types';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
@@ -26,7 +26,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemBlankComponent,
+    ElevatedCardComponent,
     CoverImageComponent,
     TuiChip,
     TuiButton,

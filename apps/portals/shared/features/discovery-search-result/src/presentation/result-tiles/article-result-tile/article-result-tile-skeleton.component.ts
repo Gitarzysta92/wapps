@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiSkeleton } from '@taiga-ui/kit';
-import { ContentFeedItemBlankComponent } from '@ui/content-feed';
+import { ElevatedCardComponent } from '@ui/layout';
 
 export const ARTICLE_RESULT_TILE_SKELETON_SELECTOR = 'article-result-tile-skeleton';
 
@@ -11,7 +11,7 @@ export const ARTICLE_RESULT_TILE_SKELETON_SELECTOR = 'article-result-tile-skelet
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemBlankComponent,
+    ElevatedCardComponent,
     TuiSkeleton
   ]
 })

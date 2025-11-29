@@ -33,7 +33,7 @@ import { DiscussionIndicatorComponent } from '@ui/discussion';
 import { TopCommentComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
-import { MediumCardComponent, TitledSeparatorComponent } from '@ui/layout';
+import { ElevatedCardComponent, MediumCardComponent, TitledSeparatorComponent } from '@ui/layout';
 @Component({
   selector: 'search-results-page',
   standalone: true,
@@ -60,7 +60,8 @@ import { MediumCardComponent, TitledSeparatorComponent } from '@ui/layout';
     BreadcrumbsComponent,
     AsyncPipe,
     TitledSeparatorComponent,
-    MediumCardComponent
+    MediumCardComponent,
+    ElevatedCardComponent
   ],
 
   templateUrl: './search-results-page.component.html',
