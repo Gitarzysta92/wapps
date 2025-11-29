@@ -9,7 +9,7 @@
   overflow: hidden;
   height: 100%;
 
-  .feed-item-backdrop {
+  .card-backdrop {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -18,19 +18,20 @@
     pointer-events: none;
   }
 
-  .feed-item-content {
+  .card-content {
     position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
 
-  .feed-item-footer:has(*) {
+  .card-footer:has(*) {
     position: relative;
     border-top: 1px solid var(--tui-base-03);
     margin-top: $space-3;
     padding-top: $space-3;
   }
 }
+
 
 

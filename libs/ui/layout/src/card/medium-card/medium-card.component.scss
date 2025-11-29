@@ -1,0 +1,80 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  position: relative;
+  border-radius: $radius-md;
+  padding: $space-6 $space-6 0 $space-6;
+}
+
+
+
+
+.medium-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: var(--tui-background-base);
+}
+
+.card-top-bar {
+  padding: $space-2 $space-4;
+}
+
+.card-media {
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-4 $space-6;
+  flex: 1;
+  background: var(--elevated-background);
+  border-radius: $radius-md $radius-md 0 0;
+  margin-top: auto;
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1;
+}
+
+.card-metadata {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: $space-2;
+}
+
+.card-footer {
+  padding: $space-2 $space-4;
+  background: var(--tui-background-base-alt);
+}
+
+// Hide empty slots
+.card-top-bar:empty,
+.card-media:empty,
+.card-header:empty,
+.card-content:empty,
+.card-tags:empty,
+.card-metadata:empty,
+.card-footer:empty {
+  display: none;
+}
+

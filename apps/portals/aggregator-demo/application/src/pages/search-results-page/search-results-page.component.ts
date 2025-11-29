@@ -33,7 +33,7 @@ import { DiscussionIndicatorComponent } from '@ui/discussion';
 import { TopCommentComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
-import { TitledSeparatorComponent } from '@ui/layout';
+import { MediumCardComponent, TitledSeparatorComponent } from '@ui/layout';
 @Component({
   selector: 'search-results-page',
   standalone: true,
@@ -59,7 +59,8 @@ import { TitledSeparatorComponent } from '@ui/layout';
     TuiBadgedContent,
     BreadcrumbsComponent,
     AsyncPipe,
-    TitledSeparatorComponent
+    TitledSeparatorComponent,
+    MediumCardComponent
   ],
 
   templateUrl: './search-results-page.component.html',
