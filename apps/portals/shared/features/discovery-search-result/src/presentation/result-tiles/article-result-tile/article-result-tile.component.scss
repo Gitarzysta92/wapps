@@ -10,7 +10,7 @@
 
 .article-info {
   position: relative;
-  background: #ffffff;
+  background: var(--elevated-background);
   border-radius: 15px;
   padding: $space-6 $space-6 $space-2 $space-6;
   width: 100%;

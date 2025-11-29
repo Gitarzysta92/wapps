@@ -1,0 +1,153 @@
+@use '@taiga-ui/core/styles/taiga-ui-local' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+
+  &[data-alignment="start"] {
+    align-items: flex-start;
+  }
+
+  &[data-alignment="end"] {
+    align-items: flex-end;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    text-decoration: none;
+    color: var(--tui-text-primary);
+    transition: background-color 0.2s;
+    cursor: pointer;
+    
+    .nav-icon {
+      transition: transform 0.1s;
+      transform: translate(0px);
+    }
+  
+    .nav-label {
+      transition: transform 0.1s;
+      transform: translate(0px);
+    }
+
+    &:hover {
+      background: var(--tui-background-accent-1);
+      
+      .nav-icon {
+        transform: translate(10px);
+      }
+      
+      .nav-label {
+        transform: translate(10px);
+      }
+    }
+    
+    &.active {
+      background: var(--tui-background-accent-1);
+      color: var(--tui-text-primary);
+      font-weight: 700;
+    }
+  }
+}
+
+// Align content based on layout direction
+[data-alignment="end"] .nav-item {
+  justify-content: flex-end;
+  
+  .nav-label {
+    order: 1;
+  }
+  
+  .nav-icon {
+    order: 2;
+    margin-left: 0.75rem;
+  }
+}
+
+[data-alignment="start"] .nav-item {
+  justify-content: flex-start;
+  
+  .nav-icon {
+    order: 1;
+    margin-right: 0.75rem;
+  }
+  
+  .nav-label {
+    order: 2;
+  }
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.nav-count {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+// Skeleton styles
+.nav-item--skeleton {
+  width: 250px;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  gap: 0.75rem;
+  height: 2.75rem;
+  pointer-events: none;
+  cursor: default;
+  
+  .nav-label {
+    width: 120px;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+  }
+  
+  .nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.25rem;
+  }
+}
+
+[data-alignment="end"] .nav-item--skeleton {
+  justify-content: flex-end;
+  
+  .nav-label {
+    order: 1;
+  }
+  
+  .nav-icon {
+    order: 2;
+  }
+}
+
+[data-alignment="start"] .nav-item--skeleton {
+  justify-content: flex-start;
+  
+  .nav-icon {
+    order: 1;
+  }
+  
+  .nav-label {
+    order: 2;
+  }
+}
+
+
+

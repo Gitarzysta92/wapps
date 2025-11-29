@@ -170,3 +170,139 @@ body.dark {
   
   //--t-shadow
 }
+
+
+
+
+
+
+
+
+
+
+
+//TODO: move this to shared extension
+
+// Custom action-soft appearance
+[tuiAppearance][data-appearance='action-soft'] {
+  color: var(--tui-text-action-soft);
+  background: var(--tui-background-action-soft);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--tui-border-action-soft);
+  --tui-border-focus: var(--tui-border-action-soft-focus);
+
+  &:hover {
+    color: var(--tui-text-action-soft-hover);
+    background: var(--tui-background-action-soft-hover);
+  }
+
+  &:active {
+    color: var(--tui-text-action-soft-active);
+    background: var(--tui-background-action-soft-active);
+  }
+}
+
+[tuiAppearance][data-appearance='link-soft'] {
+  color: var(--tui-text-action-soft);
+  --tui-border-focus: var(--tui-border-action-soft-focus);
+
+  &:hover {
+    color: var(--tui-text-action-soft-hover);
+    background: var(--tui-background-action-soft-hover);
+  }
+
+  &:active {
+    color: var(--tui-text-action-soft-active);
+    background: var(--tui-background-action-soft-active);
+  }
+}
+
+
+[tuiAppearance][data-appearance='primary-soft'] {
+  color: var(--tui-text-primary-inverse);
+  background: var(--tui-accent-secondary);
+  backdrop-filter: blur(10px);
+  --tui-border-focus: var(--tui-primary);
+
+  &:hover {
+    color: var(--tui-primary-hover);
+    background: var(--tui-secondary-hover);
+  }
+
+  &:active {
+    color: var(--tui-primary-active);
+    background: var(--tui-secondary-active);
+  }
+}
+
+
+[tuiAppearance][data-appearance='premium-soft'] {
+  color: var(--tui-primary-text);
+  background: var(--primary-gradient);
+  backdrop-filter: blur(10px);
+  --tui-border-focus: var(--tui-accent);
+
+  &:hover {
+    color: var(--tui-primary-text);
+    background: var(--indigo-gradient);
+  }
+
+  &:active {
+    color: var(--tui-primary-text);
+    background: var(--accent-gradient);
+  }
+}
+
+[tuiAppearance][data-appearance='section-primary'] {
+  color: var(--tui-text-secondary-inverse);
+  background: var(--tui-accent-primary);
+}
+
+
+[tuiAppearance][data-appearance='navigation-primary'] {
+  padding: $space-4 $space-6;
+  width: $size-content-xxs;
+  text-decoration: none;
+  color: var(--tui-text-primary);
+  transition: transform 0.1s;
+  transform: translate(0px);
+  border-radius: $radius-md;
+  
+  & > * {
+    transition: transform 0.1s;
+    transform: translate(0px);
+  }
+
+  &:hover {
+    transform: translate(10px);
+    background: var(--main-menu-item-background);
+    & > * {
+      transform: translate(10px);
+    }
+  }
+  
+  &.active {
+    background: var(--main-menu-item-background);
+    color: var(--tui-text-on-primary);
+  }
+
+  &.skeleton {
+    width: $size-content-xxs;
+    height: $size-content-xxs;
+    border-radius: $radius-md;
+    background: var(--tui-background-elevation-1);
+  }
+}
+
+
+[tuiAppearance][data-appearance='navigation-primary-skeleton'] {
+  padding: $space-4 $space-6;
+  width: $size-content-xxs;
+  border-radius: $radius-md;
+  
+  &.active {
+    background: var(--main-menu-item-background);
+    // animation: tuiSkeleton ease-in-out calc(var(--tui-duration) * 4) infinite alternate;
+  }
+}
+

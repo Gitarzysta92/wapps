@@ -1,143 +1,42 @@
-@let isAuthenticated = authService?.isAuthenticated$ | async;
-@let primaryNav = getCurrentNavigationPrimary(isAuthenticated ?? false);
-@let myProfileState = myProfile$ | async;
-<!-- User Profile Section -->
-<section class="user-profile_section">
-  @if (isAuthenticated) {
-    <button 
-      class="user-profile-btn"
-      appearance="flat"
+@let profile = profile$ | async;
+
+<div class="user-profile-section">
+  @if (isLoading$ | async) {
+    <div class="profile-loading">
+      <tui-avatar
+        class="user-avatar" 
+        size="xl"
+      />
+    </div>
+  } @else if (profile) {
+    <div class="user-profile">
+      <div my-profile-avatar [avatarPath]="profile.avatarUrl"></div>
+      <div my-profile-name [name]="profile.name" class="user-name"></div>
+    </div>
+  }
+</div>
+
+<nav class="sidebar-nav">
+  @for (item of navigation; track item.path) {
+    <a
+      class="nav-item"
       tuiButton
-      type="button">
-      <div my-profile-avatar [avatarPath]="myProfileState?.data?.avatarUrl"></div>
-      <div my-profile-name [name]="myProfileState?.data?.name"></div>
-    </button>
-  }
-</section>
-
-@if (isAuthenticated) {
-  <hr>
-}
-
-@if (!isAuthenticated) {
-  <button
-    class="login-button"
-    appearance="primary"
-    tuiButton
-    type="button"
-    routedDialogButton="identity">
-    <tui-icon
-      icon="@tui.log-in"
-      [style.height.rem]="1"/>
-    <span>Log In</span>
-  </button> 
-}
-
-<!-- Logout Button -->
-<!-- @if (authService) {
-  <button
-    class="logout-button"
-    appearance="flat"
-    tuiButton
-    type="button"
-    (click)="authService.unauthenticate()"
-    [title]="'Log out'">
-    <tui-icon
-      icon="@tui.log-out"
-      [style.height.rem]="1"/>
-    <span class="nav-label">Log out</span>
-  </button>
-} -->
-
-
-
-<!-- Primary Navigation -->
-<nav class="navigation_section">
-  @if (!isAuthenticated) {
-    <ul>
-      @for (item of primaryNav; track item.path) {
-        <li>
-          {{ item.path }} - {{ item.label }}
-          <button
-            appearance="flat"
-            tuiButton
-            type="button"
-            [title]="item.label"
-            routedDialogButton="identity">
-              <tui-icon
-              [icon]="item.icon"
-              [style.height.rem]="1"/>
-              <span class="nav-label">{{ item.label }}</span>
-          </button>
-        </li>
-      }
-    </ul>
-  }
-  @else {
-  <ul>
-    @for (item of primaryNav; track item.path) {
-      <li>
-        <a
-          [routerLink]="item.path"
-          appearance="flat"
-          tuiButton
-          type="button"
-          [title]="item.label">
-          <tui-icon
-            [icon]="item.icon"
-            [style.height.rem]="1"/>
-          <span class="nav-label">{{ item.label }}</span>
-        </a>
-      </li>
-    }
-  </ul>
+      appearance="ghost"
+      type="button" 
+      [routerLink]="[item.path]"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
+      [title]="item.label">
+      <span class="nav-label">{{ item.label }}</span>
+      <div class="nav-icon">
+        <tui-icon
+          [icon]="item.icon || 'tuiIconSettings'"
+          [style.height.rem]="1.2"
+          [style.width.rem]="1.2"
+          [style.display]="'inline-block'"
+          [style.visibility]="'visible'"/>
+      </div>
+    </a>
   }
 </nav>
-<hr>
-
-
-
-<!-- Favorite Apps Section -->
-@if (isAuthenticated) {
-  <section class="favorites-section">
-    <h3 class="section-title">
-      <tui-icon icon="@tui.star" [style.height.rem]="1"/>
-      <span>Favorite Apps</span>
-    </h3>
-    @let vm = favoritesGridVm$ | async;
-    @if (vm) {
-      <my-favorites-grid
-        class="favorites-grid"
-        [vm]="vm"
-        [maxItems]="15">
-        <div empty-state>
-          <tui-icon icon="@tui.star" [style.height.rem]="2"/>
-          <p class="empty-message">No favorite apps yet</p>
-          <a
-            [routerLink]="['/apps']"
-            appearance="primary"
-            size="s"
-            tuiButton
-            type="button"
-            class="cta-button">
-            <tui-icon icon="@tui.search" [style.height.rem]="1"/>
-            <span>Browse Apps</span>
-          </a>
-        </div>
-      </my-favorites-grid>
-    }
-  </section>
-  <hr>
-}
-
-
-
-<!-- Theme Section -->
-<!-- <div class="theme_section">
-  <theme-toggle></theme-toggle> 
-  <span>
-    <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
-  </span>
-</div>
- -->
 

@@ -1,0 +1,9 @@
+{
+  "name": "@ui/navigation",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@taiga-ui/core": "^4.0.0"
+  }
+}

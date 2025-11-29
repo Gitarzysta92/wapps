@@ -28,5 +28,9 @@ export class MyProfileService implements IMyProfileStateProvider {
         this._profileUpdated$.next();
       }))
   }
+
+  public getProfile(): Observable<ProfileDto> {
+    return this.myProfile$.pipe(map(state => state.data));
+  }
   
 }

@@ -40,3 +40,8 @@ export * from './tag-options';
 // Validation messages
 export * from './validation-messages';
 
+// My profile data
+export * from './profiles';
+
+// Profiles data
+export * from './profiles';

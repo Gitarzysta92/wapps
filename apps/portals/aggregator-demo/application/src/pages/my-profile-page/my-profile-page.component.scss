@@ -1,9 +1,26 @@
 @use 'ui/design-system/src/styles' as *;
 
+.heading {
+  display: flex;
+  align-items: end;
+  height: $size-content-xxs;
+  border-bottom: 1px solid var(--tui-neutral); 
+  padding: $space-4 0; 
+  &__container {
+    height: 80px;
+  }
+  h1 {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    padding: $space-10 0;
+  }
+}
+
+
+
 .my-profile-page {
-  padding: $space-6;
-  min-height: 100vh;
-  background: var(--body-background);
+  margin-top: $size-content-xxs;
+
 
   &__container {
     max-width: 1200px;
@@ -51,7 +68,6 @@
   }
 
   &__card {
-    padding: $space-6;
     background: var(--tui-background-elevation-1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -68,32 +84,8 @@
   }
 
   &__profile-info {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: $space-6;
-    align-items: start;
-
-    @media #{$tui-mobile} {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-  }
-
-  &__avatar-section {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: $space-4;
-  }
-
-  &__avatar {
-    border: 3px solid var(--tui-primary);
-    box-shadow: $shadow-md;
-    transition: transform 0.2s ease;
-
-    &:hover {
-      transform: scale(1.05);
-    }
   }
 
   &__details {

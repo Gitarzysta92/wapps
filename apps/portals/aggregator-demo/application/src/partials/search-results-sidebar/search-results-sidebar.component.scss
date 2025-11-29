@@ -13,85 +13,8 @@
   align-items: end;
 }
 
-.nav-item {
-  width: 250px;
+[navigationItem], [navigationItemSkeleton] {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 1rem;
-  text-decoration: none;
-  color: var(--tui-text-01);
-  transition: background-color 0.2s;
-  cursor: pointer;
-  font-weight: $font-weight-regular;
-  
-  .nav-icon {
-    transition: transform 0.1s;
-    transform: translate(0px);
-  }
-
-  .nav-label {
-    transition: transform 0.1s;
-    transform: translate(0px);
-  }
-
-  &:hover {
-    background: var(--feed-radial-gradient2);
-    .nav-icon {
-      transform: translate(10px);
-    }
-    .nav-label {
-      transform: translate(10px);
-    }
-  }
-  
-  &.active {
-    background: var(--feed-radial-gradient2);
-    color: var(--tui-text-on-primary);
-    font-weight: $font-weight-bold;
-  }
-}
-
-.nav-icon {
-  margin-right: 0.75rem;
-  display: flex;
-  align-items: center;
-}
-
-.nav-label {
-  font-size: 0.875rem;
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.nav-count {
-  font-size: 0.75rem;
-  font-weight: 400;
-  opacity: 0.7;
-}
-
-// Skeleton styles
-.nav-item--skeleton {
-  width: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0.5rem 1rem;
-  gap: 0.75rem;
-  height: 2.75rem;
-  pointer-events: none;
-  cursor: default;
-  
-  .nav-label {
-    width: 120px;
-    height: 1.25rem;
-    border-radius: 0.25rem;
-  }
-  
-  .nav-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.25rem;
-  }
 }

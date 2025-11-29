@@ -1,0 +1,8 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  gap: $space-2;
+  align-items: center;
+  cursor: pointer;
+}

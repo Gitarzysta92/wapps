@@ -29,6 +29,11 @@ export const NAVIGATION = {
     label: 'Learn',
     icon: '@tui.book',
   },
+  overview: {
+    path: 'me/profile',
+    label: 'Overview',
+    icon: '@tui.user',
+  },
   myProfile: {
     path: 'me/profile',
     label: 'My profile',
@@ -43,6 +48,11 @@ export const NAVIGATION = {
     path: 'me/discussions',
     label: 'Discussions',
     icon: '@tui.message-circle',
+  },
+  performance: {
+    path: 'preferences',
+    label: 'Preferences',
+    icon: '@tui.settings',
   },
   settings: {
     path: 'settings',
@@ -218,6 +228,12 @@ export const MOBILE_MAIN_NAVIGATION = [
   NAVIGATION.learn,
 ]
 
+export const DESKTOP_USER_MAIN_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.overview,
+  NAVIGATION.performance,
+  NAVIGATION.settings,
+]
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.home,

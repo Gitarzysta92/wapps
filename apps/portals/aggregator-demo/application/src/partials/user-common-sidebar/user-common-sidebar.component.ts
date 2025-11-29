@@ -1,23 +1,18 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, Input, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { AuthenticationService } from '@portals/shared/features/identity';
-import { THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
-import { MyProfileNameComponent, MyProfileAvatarComponent } from '@ui/my-profile';
-import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.component';
-import { NavigationDeclarationDto, buildRoutePath } from '@portals/shared/boundary/navigation';
-import { RoutedDialogButton } from '@ui/routable-dialog';
-import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
-import { MyFavoritesGridComponent, MY_FAVORITES_STATE_PROVIDER, type MyFavoritesGridViewModel } from '@portals/shared/features/my-favorites';
-import { APPLICATIONS } from '@portals/shared/data';
-import { NAVIGATION } from '../../navigation';
+import { RouterModule, IsActiveMatchOptions } from '@angular/router';
+import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { MyProfileAvatarComponent, MyProfileNameComponent } from '@ui/my-profile';
+import { USER_PROFILE_COMMON_SIDEBAR_PROVIDER } from './user-profile-state-provider.token';
 import { map } from 'rxjs';
 
 @Component({
   selector: 'user-common-sidebar',
   templateUrl: './user-common-sidebar.component.html',
   styleUrl: './user-common-sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.expanded]': 'isExpanded'
   },
@@ -27,52 +22,36 @@ import { map } from 'rxjs';
     RouterModule,
     TuiButton,
     TuiIcon,
+    TuiAvatar,
+    TuiIconPipe,
     MyProfileAvatarComponent,
-    MyProfileNameComponent,
-    RoutedDialogButton,
-    MyFavoritesGridComponent
-  ],
-  hostDirectives: [
-    ThemingDescriptorDirective
+    MyProfileNameComponent
   ]
 })
-export class UserCommonSidebarPartialComponent implements IAppShellSidebarComponent {
+export class UserCommonSidebarComponent {
 
   @Input() isExpanded = false;
-  @Input() navigationPrimary: NavigationDeclarationDto[] = [];
-  @Input() navigationSecondary: NavigationDeclarationDto[] = [];
-  @Input() unauthenticatedNavigationPrimary: NavigationDeclarationDto[] = [];
-  @Input() unauthenticatedNavigationSecondary: NavigationDeclarationDto[] = [];
+  @Input() navigation: NavigationDeclarationDto[] = [];
 
-  public readonly authService = inject(AuthenticationService, { optional: true });
-  public readonly myProfileStateProvider = inject(MY_PROFILE_STATE_PROVIDER);
-  public readonly myFavoritesStateProvider = inject(MY_FAVORITES_STATE_PROVIDER);
-  public readonly theme = inject(THEME_PROVIDER_TOKEN);
+  private readonly profileStateProvider = inject(USER_PROFILE_COMMON_SIDEBAR_PROVIDER);
 
-  public readonly myProfile$ = this.myProfileStateProvider.myProfile$;
-  
-  public readonly favoritesGridVm$ = this.myFavoritesStateProvider.myFavorites$.pipe(
-    map(state => ({
-      items: state.data.applications.map(slug => {
-        const app = APPLICATIONS.find(a => a.slug === slug);
-        return {
-          slug,
-          path: buildRoutePath(NAVIGATION.application.path, { appSlug: slug }),
-          title: app?.name || slug,
-          avatarUrl: app?.logo || `https://api.dicebear.com/7.x/shapes/svg?seed=${slug}`
-        };
-      }),
-      hasItems: state.data.applications.length > 0
-    } as MyFavoritesGridViewModel))
+  public readonly profile$ = this.profileStateProvider.profile$.pipe(
+    map(state => state.data)
   );
 
-  // Get current navigation based on authentication status
-  public getCurrentNavigationPrimary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {
-    return isAuthenticated ? this.navigationPrimary : this.unauthenticatedNavigationPrimary;
-  }
+  public readonly isLoading$ = this.profileStateProvider.profile$.pipe(
+    map(state => state.isLoading)
+  );
 
-  public getCurrentNavigationSecondary(isAuthenticated: boolean | null): NavigationDeclarationDto[] {
-    return isAuthenticated ? this.navigationSecondary : this.unauthenticatedNavigationSecondary;
+  // TODO: excessive memory allocation,
+  // by creating a new object for each call
+  public getRouterLinkActiveOptions(path: string): IsActiveMatchOptions {
+    return { 
+      paths: path === '' ? 'exact' : 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+     };
   }
 }
 

@@ -1,12 +1,18 @@
 import { Component, ChangeDetectionStrategy, Input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
-import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiAppearance, TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiAvatar } from '@taiga-ui/kit';
 import { DiscoverySearchResultType, DiscoverySearchResultGroupDto } from '@domains/discovery';
 import { GlobalStateService } from '../../state/global-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NAVIGATION } from '../../navigation';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { delay } from 'rxjs';
+import { 
+  NavigationListComponent, 
+  NavigationItemSkeletonComponent,
+  NavigationItemComponent,
+} from '@ui/navigation';
 
 @Component({
   selector: 'search-results-sidebar',
@@ -20,8 +26,11 @@ import { RouterLink } from '@angular/router';
     TuiIcon,
     TuiAvatar,
     TuiIconPipe,
-    TuiSkeleton,
-    RouterLink
+    RouterLink,
+    NavigationListComponent,
+    NavigationItemSkeletonComponent,
+    NavigationItemComponent,
+    TuiAppearance,
   ]
 })
 export class SearchResultsSidebarComponent {

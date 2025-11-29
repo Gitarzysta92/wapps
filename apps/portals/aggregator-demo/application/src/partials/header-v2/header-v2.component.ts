@@ -7,7 +7,6 @@ import {
 import {
   TuiBadgedContent,
 } from '@taiga-ui/kit';
-import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER, MultiSearchComponent } from '@portals/shared/features/multi-search';
 import { 
@@ -44,6 +43,5 @@ import { HomePageStateService } from '../../pages/home/home-page-state.service';
 })
 export class HeaderV2PartialComponent {
   public readonly state = inject(GlobalStateService);
-  public readonly navigation = inject(NavigationService).config;
 
 }
