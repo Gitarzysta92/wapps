@@ -3,7 +3,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
-import { TuiBadgedContent, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadge, TuiBadgedContent, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
 import { 
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
@@ -12,7 +12,7 @@ import {
   DiscoverySearchResultType
 } from '@domains/discovery';
 import { delay, map, of, startWith } from 'rxjs';
-import { DISCOVERY_SEARCH_RESULTS_DATA, ARTICLES } from '@portals/shared/data';
+import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
 import { 
@@ -30,9 +30,10 @@ import {
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
 import { DiscussionIndicatorComponent } from '@ui/discussion';
-import { TopCommentComponent, BadgedContentComponent } from '@portals/shared/features/discussion';
+import { TopCommentComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
+import { TitledSeparatorComponent } from '@ui/layout';
 @Component({
   selector: 'search-results-page',
   standalone: true,
@@ -52,12 +53,13 @@ import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
     DiscussionIndicatorComponent,
     TopCommentComponent,
     TopReviewComponent,
-    BadgedContentComponent,
     TuiChip,
     TuiIcon,
+    TuiBadge,
     TuiBadgedContent,
     BreadcrumbsComponent,
-    AsyncPipe
+    AsyncPipe,
+    TitledSeparatorComponent
   ],
 
   templateUrl: './search-results-page.component.html',

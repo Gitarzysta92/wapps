@@ -35,7 +35,6 @@
       <button
         navigationItem
         appearance="navigation-primary"
-        [title]="item.label"
         [class.active]="isActive(item.type)"
         (click)="scrollToSection(item.type)">
         <span>{{ item.label }}</span>

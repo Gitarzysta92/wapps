@@ -7,47 +7,31 @@
   <filters-bar></filters-bar>
 </section>
 
-<section class="section__separator"></section>
-
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
   @for (group of resultsData.groups; track group.type) {
+    @let label = getGroupLabel(group.type);
+    <titled-separator 
+      [text]="label.value" 
+      [icon]="label.icon">
+    </titled-separator>
     <section
-      badged-content
       class="section__results" 
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
-      <div class="group-header" slot="top-badge">
-        @let label = getGroupLabel(group.type);
-        <tui-chip 
-          size="s"
-          appearance="section-primary"
-          [iconStart]="label.icon">
-          {{ label.value }}
-        </tui-chip>
-        <!-- <button 
-          tuiButton 
-          appearance="primary" 
-          size="xs">
-            Show all results ({{ group.entries.length }}) 
-            <tui-icon icon="@tui.chevron-right"></tui-icon>
-        </button> -->
-      </div>
-      <div class="items-grid">
-        @for (entry of group.entries; track entry.name) {
-          @switch (group.type) {
-            @case (DiscoverySearchResultType.Article) {
-              <ng-container *ngTemplateOutlet="articleTile; context: { entry }"></ng-container>
-            }
-            @case (DiscoverySearchResultType.Application) {
-              <ng-container *ngTemplateOutlet="applicationTile; context: { entry }"></ng-container>
-            }
-            @case (DiscoverySearchResultType.Suite) {
-              <ng-container *ngTemplateOutlet="suiteTile; context: { entry }"></ng-container>
-            }
+      @for (entry of group.entries; track entry.name) {
+        @switch (group.type) {
+          @case (DiscoverySearchResultType.Article) {
+            <ng-container *ngTemplateOutlet="articleTile; context: { entry }"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Application) {
+            <ng-container *ngTemplateOutlet="applicationTile; context: { entry }"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Suite) {
+            <ng-container *ngTemplateOutlet="suiteTile; context: { entry }"></ng-container>
           }
         }
-      </div>
+      }
       <button
         class="show-all-results-button"
         tuiButton 
@@ -65,11 +49,8 @@
     DiscoverySearchResultType.Article, 
     DiscoverySearchResultType.Application
   ]; track groupType) {
+    <titled-separator text="Loading"></titled-separator>
     <section class="section__results">
-      <div class="group-header">
-        <h3 [tuiSkeleton]="true" style="width: 100px; height: 25px;"></h3>
-        <button tuiButton size="xs" [tuiSkeleton]="true" style="width: 100px; height: 25px;"></button>
-      </div>
       <div class="items-grid">
         @for (entry of [1, 2, 3]; track entry) {
           @switch (groupType) {
@@ -103,20 +84,18 @@
         (click)="$event.preventDefault(); $event.stopPropagation(); onSaveArticle(entry)">
       </button>
     </div>
-    <tui-chip 
-      size="xs" 
+    <tui-badge 
       [iconStart]="'@tui.badge-check'"
       slot="user-badges"
       appearance="primary-soft">
       verified
-    </tui-chip>
-    <tui-chip 
-      size="xs" 
+    </tui-badge>
+    <tui-badge  
       [iconStart]="'@tui.rocket'" 
       slot="user-badges"
       appearance="premium-soft">
       premium
-    </tui-chip>
+    </tui-badge>
   </article-result-tile>
 </ng-template>
 
