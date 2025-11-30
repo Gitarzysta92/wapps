@@ -4,6 +4,7 @@
   position: relative;
   border-radius: $radius-md;
   background: var(--elevated-background);
+  padding: $space-4 $space-6;
 }
 .card-header {
   display: flex;
@@ -11,13 +12,16 @@
   justify-content: space-between;
 }
 
+.card-title {
+  flex: 1;
+  padding: $space-2 0;
+}
+
 .card-body {
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  padding: $space-4 $space-6;
   flex: 1;
-  margin-top: auto;
 }
 
 .card-bottom-bar {

@@ -23,12 +23,16 @@ import {
   ElevatedCardComponent, 
   ElevatedCardSkeletonComponent,
   MediumCardComponent, 
-  MediumTitleSkeletonComponent,
   CardHeaderComponent,
   TitledSeparatorComponent 
 } from '@ui/layout';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
-import { ExcerptComponent, ExcerptSkeletonComponent } from '@ui/excerpt';
+import { 
+  ExcerptComponent, 
+  ExcerptSkeletonComponent,
+  MediumTitleComponent,
+  MediumTitleSkeletonComponent 
+} from '@ui/content';
 import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '@ui/article-author-info';
 import { CoverImageComponent } from '@ui/cover-image';
 import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals/shared/features/articles';
@@ -54,6 +58,7 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     CommonSectionComponent,
     MediumCardComponent,
     MediumTitleSkeletonComponent,
+    MediumTitleComponent,
     ElevatedCardComponent,
     ElevatedCardSkeletonComponent,
     CardHeaderComponent,
