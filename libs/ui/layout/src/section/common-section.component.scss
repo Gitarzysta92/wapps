@@ -1,0 +1,31 @@
+@use 'ui/design-system/src/styles' as *;
+
+
+:host {
+  border-radius: $radius-sm;
+}
+
+.common-section {
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: $space-6; 
+  }
+
+  &__header,
+  &__content,
+  &__footer {
+    width: 100%;
+    padding: $space-5 $space-4;
+  }
+
+  &__header:not(:has(*)) {
+    display: none;
+  }
+  &__footer:not(:has(*)) {
+    display: none;
+  }
+}
+

@@ -17,21 +17,8 @@
 }
 
 .section__results {
-  margin: $space-4 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; 
-  gap: $space-6;
-  padding: $space-5 $space-4;
-  border-radius: $radius-sm;
   background: var(--feed-background);
-  width: 100%;
-
-  [slot="bottom-bar"] {
-    padding: $space-2 0;
-  }
-
+  margin: $space-4 0;
   .item-card {
     box-shadow: $shadow-md;
     transition: box-shadow $duration-200, transform $duration-200;
@@ -42,12 +29,18 @@
       transform: translateY(-2px);
     }
   }
-  
+  .show-all-results-button {
+    width: 100%;
+  }  
 }
 
 
 
 
+
+[slot="bottom-bar"] {
+  padding: $space-2 0;
+}
 
 .item-card-skeleton {
   width: 100%;
@@ -68,13 +61,3 @@
 [slot="author-info"] {
   pointer-events: none;
 }
-
-.show-all-results-button {
-  width: 100%;
-}
-
-
-
-
-
-

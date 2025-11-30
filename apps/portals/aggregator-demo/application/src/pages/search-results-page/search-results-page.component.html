@@ -16,6 +16,7 @@
       [icon]="label.icon">
     </ui-titled-separator>
     <section
+      commonSection
       class="section__results" 
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
@@ -34,6 +35,7 @@
       }
       <button
         class="show-all-results-button"
+        slot="footer"
         tuiButton 
         appearance="primary" 
         size="s">
@@ -49,22 +51,22 @@
     DiscoverySearchResultType.Article,
   ]; track groupType) {
     <ui-titled-separator text="Loading"></ui-titled-separator>
-    <section class="section__results">
-      <div class="items-grid">
-        @for (entry of [1, 2, 3]; track entry) {
-          @switch (groupType) {
-            @case (DiscoverySearchResultType.Article) {
-              <article-result-tile-skeleton class="item-card-skeleton"></article-result-tile-skeleton>
-            }
-            @case (DiscoverySearchResultType.Application) {
-              <application-result-tile-skeleton class="item-card-skeleton"></application-result-tile-skeleton>
-            }
-            @case (DiscoverySearchResultType.Suite) {
-              <suite-result-tile-skeleton class="item-card-skeleton"></suite-result-tile-skeleton>
-            }
+    <section 
+      class="section__results" 
+      commonSection>
+      @for (entry of [1, 2, 3]; track entry) {
+        @switch (groupType) {
+          @case (DiscoverySearchResultType.Article) {
+            <article-result-tile-skeleton class="item-card-skeleton"></article-result-tile-skeleton>
+          }
+          @case (DiscoverySearchResultType.Application) {
+            <application-result-tile-skeleton class="item-card-skeleton"></application-result-tile-skeleton>
+          }
+          @case (DiscoverySearchResultType.Suite) {
+            <suite-result-tile-skeleton class="item-card-skeleton"></suite-result-tile-skeleton>
           }
         }
-      </div>
+      }
     </section>
   }
 }
