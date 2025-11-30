@@ -1,32 +1,20 @@
-<div class="medium-card">
-  <div class="card-top-bar">
-    <ng-content select="[slot='top-bar']"></ng-content>
+<div class="card-header">
+  <div class="card-title">
+    <ng-content select="[slot='title']"></ng-content>
   </div>
-  
-  <div class="card-media">
-    <ng-content select="[slot='media']"></ng-content>
-  </div>
-  
-  <div class="card-body">
-    <div class="card-header">
-      <ng-content select="[slot='header']"></ng-content>
-    </div>
-    
-    <div class="card-content">
-      <ng-content select="[slot='content']"></ng-content>
-    </div>
-    
-    <div class="card-tags">
-      <ng-content select="[slot='tags']"></ng-content>
-    </div>
-    
-    <div class="card-metadata">
-      <ng-content select="[slot='metadata']"></ng-content>
-    </div>
-  </div>
-  
-  <div class="card-footer">
-    <ng-content select="[slot='footer']"></ng-content>
+  <div class="card-actions">
+    <ng-content select="[slot='actions']"></ng-content>
   </div>
 </div>
 
+<div class="card-body">
+  <ng-content></ng-content>
+</div>
+
+<div class="card-bottom-bar">
+  <ng-content select="[slot='bottom-bar']"></ng-content>
+</div>
+
+<div class="card-footer">
+  <ng-content select="[slot='footer']"></ng-content>
+</div>

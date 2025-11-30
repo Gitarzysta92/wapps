@@ -28,7 +28,7 @@ export type DiscoverySearchResultEntryDto = {
   type: DiscoverySearchResultType;
   name: string;
   slug: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
 }
 
 
@@ -36,7 +36,7 @@ export type DiscoverySearchResultArticleItemDto = {
   title: string;
   excerpt: string;
   slug: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
   commentsNumber: number;
   authorName: string;
   authorAvatarUrl: string;
@@ -46,7 +46,7 @@ export type DiscoverySearchResultArticleItemDto = {
 export type DiscoverySearchResultApplicationItemDto = {
   name: string;
   slug: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
   rating: number;
   commentsNumber: number;
   category: CategoryDto;
@@ -64,7 +64,7 @@ export type DiscoverySearchResultApplicationItemDto = {
 export type DiscoverySearchResultSuiteItemDto = {
   name: string;
   slug: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
   numberOfApps: number;
   commentsNumber: number;
   authorName: string;

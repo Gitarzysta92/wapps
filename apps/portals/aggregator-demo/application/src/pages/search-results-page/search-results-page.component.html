@@ -74,18 +74,14 @@
 <ng-template #articleEntry let-entry="entry">
   @let vm = toArticleVM(entry);
   <ui-elevated-card>
-    <ui-cover-image
-      class="cover-image"
-      [image]="vm.coverImageUrl"
-      slot="backdrop">
-    </ui-cover-image>
+    <ui-cover-image [image]="vm.coverImageUrl" slot="backdrop"/>
     <ui-medium-card>
-      <article-rating [readonly]="true" slot="top-bar" [rating]="vm.rating"/>
-      <h3 uiMediumTitle>{{ vm.title }}</h3>
-      <ui-tags [tags]="vm.tags"></ui-tags>
-      <ui-excerpt [excerpt]="vm.excerpt"/>
-      <article-author-info [author]="vm.author">
-        <profile-badges [badges]="vm.authorBadges"></profile-badges>
+      <article-rating [readonly]="true" slot="actions" [rating]="vm.rating"/>
+      <h3 uiMediumTitle slot="title">{{ vm.title }}</h3>
+      <ui-tags [tags]="vm.tags" slot="tags"></ui-tags>
+      <ui-excerpt [excerpt]="vm.excerpt" slot="excerpt"></ui-excerpt>
+      <article-author-info [author]="vm.author" slot="author">
+        <profile-badges [badges]="vm.authorBadges" slot="badges"></profile-badges>
       </article-author-info>
     </ui-medium-card>
   </ui-elevated-card>

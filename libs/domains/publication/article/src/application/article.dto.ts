@@ -6,7 +6,7 @@ export type ArticleDto = {
   content?: string;
   author: string;
   category: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
   publishedDate: Date;
   updatedDate?: Date;
   tags?: string[];

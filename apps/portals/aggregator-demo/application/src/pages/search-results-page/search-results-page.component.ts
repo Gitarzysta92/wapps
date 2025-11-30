@@ -15,11 +15,6 @@ import { delay, map, of, startWith } from 'rxjs';
 import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
-import { 
-  type ArticleResultTileVM,
-  type ApplicationResultTileVM,
-  type SuiteResultTileVM
-} from '@portals/shared/features/discovery-search-result';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
@@ -126,7 +121,7 @@ export class SearchResultsPageComponent {
 
   protected readonly DiscoverySearchResultType = DiscoverySearchResultType;
 
-  protected toArticleVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): any {
+  protected toArticleVM(entry: DiscoverySearchResultArticleItemDto): any {
     const articleEntry = entry as any;
     return {
       ...articleEntry,
@@ -135,7 +130,7 @@ export class SearchResultsPageComponent {
         name: tag.name,
         link: `/search?tag=${tag.slug}` 
       })),
-      coverImageUrl: articleEntry.coverImageUrl || '',
+      coverImageUrl: articleEntry.coverImageUrl,
       rating: articleEntry.rating || 0,
       author: {
         name: articleEntry.authorName,
