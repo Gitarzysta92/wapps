@@ -73,7 +73,7 @@
 
 <ng-template #articleEntry let-entry="entry">
   @let vm = toArticleVM(entry);
-  <ui-elevated-card>
+  <ui-elevated-card class="item-card">
     <ui-cover-image [image]="vm.coverImageUrl" slot="backdrop"/>
     <ui-medium-card>
       <article-rating [readonly]="true" slot="actions" [rating]="vm.rating"/>
@@ -89,7 +89,7 @@
 
 
 <ng-template #articleEntrySkeleton>
-  <ui-elevated-card-skeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
     <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
     <ui-medium-title-skeleton/>
     <ui-tags-skeleton/>
@@ -103,7 +103,7 @@
 
 <ng-template #applicationEntry let-entry="entry">
   @let vm = toApplicationVM(entry);
-  <ui-medium-card>
+  <ui-medium-card class="item-card">
     <my-favorite-toggle [readonly]="true" slot="top-bar" [item]="vm"/>
     <ui-card-header>
       <app-avatar slot="left-side" [avatar]="vm.avatarUrl"/>
@@ -125,7 +125,7 @@
 
 
 <ng-template #applicationEntrySkeleton>
-  <ui-elevated-card-skeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
     <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
     <ui-medium-title-skeleton/>
     <ui-tags-skeleton/>
@@ -138,7 +138,7 @@
 
 <ng-template #suiteEntry let-entry="entry">
   @let vm = toSuiteVM(entry);
-  <ui-medium-card>
+  <ui-medium-card class="item-card">
     <my-favorite-toggle [readonly]="true" slot="top-bar" [item]="vm"/>
     <h3 uiMediumTitle>
       {{ vm.title }}
@@ -158,7 +158,7 @@
 
 
 <ng-template #suiteEntrySkeleton>
-  <ui-elevated-card-skeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
     <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
     <ui-medium-title-skeleton/>
     <ui-tags-skeleton/>
@@ -166,120 +166,3 @@
     <article-author-info-skeleton/>
   </ui-elevated-card-skeleton>
 </ng-template>
-
-
-
-
-
-<!-- <suite-result-tile
-routerLink=""
-class="item-card"
-[item]="vm">
-<div slot="top-bar">
-  <button
-    tuiButton
-    iconStart="@tui.heart"
-    size="s"
-    appearance="primary"
-    (click)="$event.preventDefault(); $event.stopPropagation(); onSaveSuite(entry)">
-  </button>
-</div>
-<div slot="bottom-bar">
-  <tui-chip size="xs" appearance="action-soft">
-    <discussion-indicator
-      [commentsCount]="entry.commentsNumber"
-      (click)="$event.preventDefault(); $event.stopPropagation()">
-    </discussion-indicator>
-  </tui-chip>
-</div>
-<div slot="footer">
-  @if (vm.topComment) {
-    <top-comment
-      class="top-comment"
-      [comment]="vm.topComment">
-      @for (badge of vm.topComment.authorBadges; track badge) {
-        <tui-chip
-          slot="author-info"
-          size="xs"
-          [iconStart]="badge.icon"
-          [appearance]="badge.appearance">
-          {{ badge.name }}
-        </tui-chip>
-      }
-    </top-comment>
-  }
-</div>
-</suite-result-tile>
- -->
-
-
-
-
-
-<!-- <application-result-tile
-  class="item-card"
-  [item]="toApplicationVM(entry)">
-  <div slot="top-bar">
-    <button
-      tuiButton
-      iconStart="@tui.heart"
-      size="s"
-      appearance="primary"
-      (click)="$event.preventDefault(); $event.stopPropagation(); onSaveApplication(entry)">
-    </button>
-  </div>
-  <div slot="bottom-bar">
-    <tui-chip size="xs" appearance="action-soft">
-      <discussion-indicator
-        [commentsCount]="entry.commentsNumber"
-        (click)="$event.preventDefault(); $event.stopPropagation()">
-      </discussion-indicator>
-    </tui-chip>
-  </div>
-  <div slot="footer">
-    @if (vm.topReview) {
-      <top-review
-        class="top-comment"
-        [review]="vm.topReview">
-        @for (badge of vm.topReview.authorBadges; track badge) {
-          <tui-chip
-            slot="author-info"
-            size="xs"
-            [iconStart]="badge.icon"
-            [appearance]="badge.appearance">
-            {{ badge.name }}
-          </tui-chip>
-        }
-      </top-review>
-    }
-  </div>
-</application-result-tile> -->
-
-
-
-<!-- 
-<article-result-tile
-class="item-card blank" 
-[item]="vm">
-<div slot="top-bar">
-  <button
-    tuiButton
-    iconStart="@tui.heart"
-    size="s"
-    appearance="primary"
-    (click)="$event.preventDefault(); $event.stopPropagation(); onSaveArticle(entry)">
-  </button>
-</div>
-<tui-badge 
-  [iconStart]="'@tui.badge-check'"
-  slot="user-badges"
-  appearance="primary-soft">
-  verified
-</tui-badge>
-<tui-badge  
-  [iconStart]="'@tui.rocket'" 
-  slot="user-badges"
-  appearance="premium-soft">
-  premium
-</tui-badge>
-</article-result-tile> -->

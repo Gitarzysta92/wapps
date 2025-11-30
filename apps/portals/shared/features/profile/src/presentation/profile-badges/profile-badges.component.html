@@ -1,7 +1,9 @@
 <div class="profile-badges">
   @for (badge of badges(); track badge.id) {
     <tui-badge
-      size="s"
+      size="m"
+      [appearance]="badge.color"
+      [iconStart]="badge.icon"
       class="profile-badge">
       {{ badge.name }}
     </tui-badge>

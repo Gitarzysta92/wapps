@@ -80,7 +80,6 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     SuiteAppAvatarsComponent,
     TopReviewCardComponent
   ],
-
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',
   hostDirectives: [
@@ -97,7 +96,7 @@ export class SearchResultsPageComponent {
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
     .pipe(
-      delay(1000),
+      delay(1000000),
       map(d => Object.assign({}, d, { isLoading: false })),
       startWith({ itemsNumber: 0, groups: [], link: "", query: {}, isLoading: true }));
 
@@ -143,7 +142,7 @@ export class SearchResultsPageComponent {
       },
       authorBadges: [
         { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
-        { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
+        { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
       ],
       articleLink: `/articles/${articleEntry.slug}`,
       commentsLink: `/articles/${articleEntry.slug}#comments`,
@@ -181,7 +180,7 @@ export class SearchResultsPageComponent {
         date: new Date().toLocaleDateString(),
         authorBadges: [
           { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
-          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
+          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
         ]
       } : null
     };
@@ -215,7 +214,7 @@ export class SearchResultsPageComponent {
         date: new Date().toLocaleDateString(),
         authorBadges: [
           { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
-          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
+          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
         ]
       } : undefined
     };

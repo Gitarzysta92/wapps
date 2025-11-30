@@ -19,17 +19,22 @@
 .section__results {
   background: var(--feed-background);
   margin: $space-4 0;
-  .item-card {
-    box-shadow: $shadow-md;
-    transition: box-shadow $duration-200, transform $duration-200;
-    cursor: pointer;
-    
-    &:hover {
-      box-shadow: $shadow-lg;
-      transform: translateY(-2px);
-    }
-  }
   .show-all-results-button {
     width: 100%;
   }  
+}
+
+.item-card {
+  box-shadow: $shadow-md;
+  transition: box-shadow $duration-200, transform $duration-200;
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+.item-card-skeleton {
+  width: 100%;
 }
