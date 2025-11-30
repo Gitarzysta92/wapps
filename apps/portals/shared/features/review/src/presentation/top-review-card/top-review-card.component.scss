@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.top-review-card {
+  padding: 1rem;
+  background: var(--tui-background-elevation-1);
+  border-radius: 0.5rem;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.author-name {
+  font-weight: 500;
+}
+
+.review-rating {
+  font-weight: 600;
+  color: var(--tui-text-secondary);
+}
+
+.review-content {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.review-date {
+  font-size: 0.875rem;
+  color: var(--tui-text-tertiary);
+}
+
+

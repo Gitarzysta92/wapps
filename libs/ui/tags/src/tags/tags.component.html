@@ -1,0 +1,12 @@
+<div class="tags-container">
+  @for (tag of tags(); track tag.slug) {
+    <tui-chip 
+      class="tag" 
+      [size]="size()"
+      [appearance]="appearance()">
+      {{ tag.name }}
+    </tui-chip>
+  }
+</div>
+
+

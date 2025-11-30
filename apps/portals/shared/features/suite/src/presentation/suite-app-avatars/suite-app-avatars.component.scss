@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.suite-apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.app-avatar {
+  flex-shrink: 0;
+}
+
+

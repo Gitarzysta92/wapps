@@ -1,0 +1,10 @@
+<div class="profile-badges">
+  @for (badge of badges(); track badge.id) {
+    <tui-badge
+      size="s"
+      class="profile-badge">
+      {{ badge.name }}
+    </tui-badge>
+  }
+</div>
+

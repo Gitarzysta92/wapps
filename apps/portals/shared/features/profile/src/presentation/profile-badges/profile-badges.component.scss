@@ -1,0 +1,15 @@
+:host {
+  display: inline-block;
+}
+
+.profile-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.profile-badge {
+  flex-shrink: 0;
+}
+
+

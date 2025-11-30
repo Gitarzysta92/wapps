@@ -1,0 +1,19 @@
+:host {
+  display: inline-block;
+}
+
+.favorite-toggle {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+

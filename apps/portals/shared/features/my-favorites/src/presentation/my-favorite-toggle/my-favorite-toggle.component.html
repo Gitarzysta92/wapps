@@ -1,0 +1,14 @@
+<button
+  tuiIconButton
+  type="button"
+  appearance="icon"
+  size="s"
+  [disabled]="readonly()"
+  (click)="toggleFavorite()"
+  class="favorite-toggle">
+  <tui-icon 
+    [icon]="isFavorite() ? '@tui.heart-filled' : '@tui.heart'">
+  </tui-icon>
+</button>
+
+

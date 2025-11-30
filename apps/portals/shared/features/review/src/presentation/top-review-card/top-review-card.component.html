@@ -1,0 +1,22 @@
+<div class="top-review-card">
+  <div class="review-header">
+    <tui-avatar
+      [src]="review().authorAvatarUrl"
+      size="xs"
+      class="author-avatar">
+    </tui-avatar>
+    <div class="author-info">
+      <span class="author-name">{{ review().authorName }}</span>
+      <ng-content select="[slot='badges']"></ng-content>
+    </div>
+    <span class="review-rating">★ {{ review().rating.toFixed(1) }}</span>
+  </div>
+  <div class="review-content">
+    {{ review().content }}
+  </div>
+  <div class="review-date">
+    {{ review().date }}
+  </div>
+</div>
+
+

@@ -1,0 +1,15 @@
+:host {
+  display: inline-block;
+}
+
+.discussion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.comments-count {
+  font-weight: 500;
+}
+
+

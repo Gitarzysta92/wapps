@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-header-left {
+  flex-shrink: 0;
+}
+
+.card-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-header-right {
+  flex-shrink: 0;
+}
+
+

@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.elevated-card-skeleton {
+  position: relative;
+  background: var(--tui-background-elevation-1);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-top-bar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+
+.skeleton-backdrop {
+  width: 100%;
+  height: 12rem;
+  border-radius: 0;
+}
+
+.skeleton-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+

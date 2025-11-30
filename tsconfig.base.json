@@ -115,6 +115,12 @@
       "@portals/shared/features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
       ],
+      "@portals/shared/features/app": [
+        "apps/portals/shared/features/app/src/index.ts"
+      ],
+      "@portals/shared/features/articles": [
+        "apps/portals/shared/features/articles/src/index.ts"
+      ],
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"
       ],
@@ -160,6 +166,9 @@
       "@portals/shared/features/my-favorites": [
         "apps/portals/shared/features/my-favorites/src/index.ts"
       ],
+      "@portals/shared/features/review": [
+        "apps/portals/shared/features/review/src/index.ts"
+      ],
       "@portals/shared/features/search": [
         "apps/portals/shared/features/search/src/index.ts"
       ],
@@ -168,6 +177,9 @@
       ],
       "@portals/shared/features/social": [
         "apps/portals/shared/features/social/src/index.ts"
+      ],
+      "@portals/shared/features/suite": [
+        "apps/portals/shared/features/suite/src/index.ts"
       ],
       "@portals/shared/features/tags": [
         "apps/portals/shared/features/tags/src/index.ts"
@@ -202,10 +214,13 @@
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
+      "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
       "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
+      "@ui/excerpt": ["libs/ui/excerpt/src/index.ts"],
       "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
       "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],
+      "@ui/tags": ["libs/ui/tags/src/index.ts"],
       "@ui/voting": ["libs/ui/voting/src/index.ts"]
     }
   },

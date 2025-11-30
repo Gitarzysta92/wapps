@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import type { IFeedItem, IFeedItemComponent } from '../../../feed/src/presentation/models';
+import type { IFeedItem, IFeedItemComponent } from '@portals/shared/features/feed';
 
 @Component({
   selector: 'article-highlight-feed-item',

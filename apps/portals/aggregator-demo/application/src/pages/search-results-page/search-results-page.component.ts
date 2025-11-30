@@ -3,7 +3,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
-import { TuiBadge, TuiBadgedContent, TuiChip, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadgedContent } from '@taiga-ui/kit';
 import { 
   DiscoverySearchResultApplicationItemDto,
   DiscoverySearchResultArticleItemDto,
@@ -16,53 +16,69 @@ import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
 import { 
-  ArticleResultTileComponent,
-  ApplicationResultTileComponent,
-  SuiteResultTileComponent,
-  ArticleResultTileSkeletonComponent,
-  ApplicationResultTileSkeletonComponent,
-  SuiteResultTileSkeletonComponent,
   type ArticleResultTileVM,
   type ApplicationResultTileVM,
-  type SuiteResultTileVM,
-  TopReviewComponent
+  type SuiteResultTileVM
 } from '@portals/shared/features/discovery-search-result';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { RouterLink } from '@angular/router';
-import { DiscussionIndicatorComponent } from '@ui/discussion';
-import { TopCommentComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
-import { CommonSectionComponent, ElevatedCardComponent, MediumCardComponent, TitledSeparatorComponent } from '@ui/layout';
+import { 
+  CommonSectionComponent, 
+  ElevatedCardComponent, 
+  ElevatedCardSkeletonComponent,
+  MediumCardComponent, 
+  MediumTitleSkeletonComponent,
+  CardHeaderComponent,
+  TitledSeparatorComponent 
+} from '@ui/layout';
+import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
+import { ExcerptComponent, ExcerptSkeletonComponent } from '@ui/excerpt';
+import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '@ui/article-author-info';
+import { CoverImageComponent } from '@ui/cover-image';
+import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals/shared/features/articles';
+import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
+import { ProfileBadgesComponent } from '@portals/shared/features/profile';
+import { DiscussionChipComponent } from '@portals/shared/features/discussion';
+import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '@portals/shared/features/app';
+import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';
+import { TopReviewCardComponent } from '@portals/shared/features/review';
 @Component({
   selector: 'search-results-page',
   standalone: true,
   imports: [
     CommonModule,
     FiltersBarComponent,
-    TuiSkeleton,
     IntersectDirective,
-    ArticleResultTileComponent,
-    ApplicationResultTileComponent,
-    SuiteResultTileComponent,
-    ArticleResultTileSkeletonComponent,
-    ApplicationResultTileSkeletonComponent,
-    SuiteResultTileSkeletonComponent,
     TuiButton,
-    RouterLink,
-    DiscussionIndicatorComponent,
-    TopCommentComponent,
-    TopReviewComponent,
-    TuiChip,
     TuiIcon,
-    TuiBadge,
     TuiBadgedContent,
     BreadcrumbsComponent,
     AsyncPipe,
     TitledSeparatorComponent,
     CommonSectionComponent,
     MediumCardComponent,
-    ElevatedCardComponent
+    MediumTitleSkeletonComponent,
+    ElevatedCardComponent,
+    ElevatedCardSkeletonComponent,
+    CardHeaderComponent,
+    CoverImageComponent,
+    TagsComponent,
+    TagsSkeletonComponent,
+    ExcerptComponent,
+    ExcerptSkeletonComponent,
+    ArticleAuthorInfoComponent,
+    ArticleAuthorInfoSkeletonComponent,
+    ArticleRatingComponent,
+    ArticleRatingSkeletonComponent,
+    MyFavoriteToggleComponent,
+    ProfileBadgesComponent,
+    DiscussionChipComponent,
+    AppAvatarComponent,
+    AppRatingComponent,
+    AppVotingChipComponent,
+    SuiteAppAvatarsComponent,
+    TopReviewCardComponent
   ],
 
   templateUrl: './search-results-page.component.html',
@@ -110,62 +126,98 @@ export class SearchResultsPageComponent {
 
   protected readonly DiscoverySearchResultType = DiscoverySearchResultType;
 
-  protected toArticleVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): ArticleResultTileVM {
-    const articleEntry = entry as DiscoverySearchResultArticleItemDto;
+  protected toArticleVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): any {
+    const articleEntry = entry as any;
     return {
       ...articleEntry,
-      tags: articleEntry.tags.map(tag => ({ 
-        ...tag, 
+      tags: articleEntry.tags.map((tag: any) => ({ 
+        slug: tag.slug,
+        name: tag.name,
         link: `/search?tag=${tag.slug}` 
       })),
+      coverImageUrl: articleEntry.coverImageUrl || '',
+      rating: articleEntry.rating || 0,
+      author: {
+        name: articleEntry.authorName,
+        avatarUrl: articleEntry.authorAvatarUrl || ''
+      },
+      authorBadges: [
+        { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+        { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
+      ],
       articleLink: `/articles/${articleEntry.slug}`,
       commentsLink: `/articles/${articleEntry.slug}#comments`,
       excerpt: articleEntry.excerpt
     };
   }
 
-  protected toApplicationVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): ApplicationResultTileVM {
-    const appEntry = entry as DiscoverySearchResultApplicationItemDto;
+  protected toApplicationVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): any {
+    const appEntry = entry as any;
     return {
       ...appEntry,
+      id: appEntry.slug,
+      title: appEntry.name,
+      avatarUrl: appEntry.coverImageUrl || '',
+      rating: appEntry.rating || 0,
       category: {
         ...appEntry.category,
         link: `/search?category=${appEntry.category.slug}`
       },
-      tags: appEntry.tags.map(tag => ({ 
-        ...tag, 
+      tags: appEntry.tags.map((tag: any) => ({ 
+        slug: tag.slug,
+        name: tag.name,
         link: `/search?tag=${tag.slug}` 
       })),
+      voting: {
+        upvotesCount: appEntry.upvotesCount || 0,
+        downvotesCount: appEntry.downvotesCount || 0
+      },
+      commentsNumber: appEntry.commentsNumber || 0,
       applicationLink: `/app/${appEntry.slug}/overview`,
       reviewsLink: `/app/${appEntry.slug}/reviews`,
       topReview: appEntry.topReview ? {
         ...appEntry.topReview,
+        rating: appEntry.topReview.rate || 0,
+        date: new Date().toLocaleDateString(),
         authorBadges: [
-          { name: 'verified', icon: '@tui.badge-check', appearance: 'primary-soft' },
-          { name: 'premium', icon: '@tui.rocket', appearance: 'premium-soft' }
+          { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
         ]
       } : null
     };
   }
 
-  protected toSuiteVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): SuiteResultTileVM {
-    const suiteEntry = entry as DiscoverySearchResultSuiteItemDto;
+  protected toSuiteVM(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): any {
+    const suiteEntry = entry as any;
     return {
       ...suiteEntry,
-      tags: suiteEntry.tags.map(tag => ({ 
-        ...tag, 
+      id: suiteEntry.slug,
+      title: suiteEntry.name,
+      rating: suiteEntry.rating || 0,
+      tags: suiteEntry.tags.map((tag: any) => ({ 
+        slug: tag.slug,
+        name: tag.name,
         link: `/search?tag=${tag.slug}` 
       })),
+      voting: {
+        upvotesCount: suiteEntry.upvotesCount || 0,
+        downvotesCount: suiteEntry.downvotesCount || 0
+      },
+      commentsNumber: suiteEntry.commentsNumber || 0,
+      applications: suiteEntry.applications || [],
       suiteLink: `/suites/${suiteEntry.slug}`,
       commentsLink: `/suites/${suiteEntry.slug}#comments`,
-      topComment: suiteEntry.topComment ? {
-        ...suiteEntry.topComment,
-        discussionLink: `/suites/${suiteEntry.slug}#comments`,
+      topReview: suiteEntry.topComment ? {
+        authorName: suiteEntry.topComment.authorName,
+        authorAvatarUrl: suiteEntry.topComment.authorAvatarUrl || '',
+        rating: 0,
+        content: suiteEntry.topComment.content,
+        date: new Date().toLocaleDateString(),
         authorBadges: [
-          { name: 'verified', icon: '@tui.badge-check', appearance: 'primary-soft' },
-          { name: 'premium', icon: '@tui.rocket', appearance: 'premium-soft' }
+          { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+          { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium' }
         ]
-      } : null
+      } : undefined
     };
   }
 
