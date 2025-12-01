@@ -1,10 +1,22 @@
-<div class="medium-card-skeleton">
-  <div class="skeleton-top-bar">
-    <ng-content select="[slot='top-bar']"></ng-content>
+<div class="card-header">
+  <div class="card-title">
+    <ng-content select="[slot='title']"></ng-content>
   </div>
-  <div class="skeleton-content">
-    <ng-content></ng-content>
+  <div class="card-actions">
+    <ng-content select="[slot='actions']"></ng-content>
   </div>
+</div>
+
+<div class="card-body">
+  <ng-content></ng-content>
+</div>
+
+<div class="card-bottom-bar">
+  <ng-content select="[slot='bottom-bar']"></ng-content>
+</div>
+
+<div class="card-footer">
+  <ng-content select="[slot='footer']"></ng-content>
 </div>
 
 

@@ -47,8 +47,8 @@
 }
 @else {
   @for (groupType of [
-    DiscoverySearchResultType.Suite, 
     DiscoverySearchResultType.Article,
+    DiscoverySearchResultType.Suite, 
   ]; track groupType) {
     <ui-titled-separator text="Loading"></ui-titled-separator>
     <section 
@@ -90,11 +90,13 @@
 
 <ng-template #articleEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
-    <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
-    <ui-medium-title-skeleton/>
-    <ui-tags-skeleton/>
-    <ui-excerpt-skeleton/>
-    <article-author-info-skeleton/>
+    <ui-medium-card-skeleton>
+      <article-rating-skeleton slot="actions"/>
+      <ui-medium-title-skeleton slot="title"/>
+      <ui-tags-skeleton slot="tags"/>
+      <ui-excerpt-skeleton slot="excerpt"/>
+      <article-author-info-skeleton slot="author"/>
+    </ui-medium-card-skeleton>
   </ui-elevated-card-skeleton>
 </ng-template>
 

@@ -11,6 +11,7 @@
 .excerpt-line {
   height: 1rem;
   border-radius: 0.25rem;
+  background: var(--skeleton-background);
   
   &:last-child {
     width: 70%;

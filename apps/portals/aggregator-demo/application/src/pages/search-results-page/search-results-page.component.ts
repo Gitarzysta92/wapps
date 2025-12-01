@@ -24,7 +24,8 @@ import {
   ElevatedCardSkeletonComponent,
   MediumCardComponent, 
   CardHeaderComponent,
-  TitledSeparatorComponent 
+  TitledSeparatorComponent, 
+  MediumCardSkeletonComponent
 } from '@ui/layout';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
 import { 
@@ -78,7 +79,8 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     AppRatingComponent,
     AppVotingChipComponent,
     SuiteAppAvatarsComponent,
-    TopReviewCardComponent
+    TopReviewCardComponent,
+    MediumCardSkeletonComponent
   ],
   templateUrl: './search-results-page.component.html',
   styleUrl: './search-results-page.component.scss',

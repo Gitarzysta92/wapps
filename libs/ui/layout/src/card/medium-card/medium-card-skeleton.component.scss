@@ -1,24 +1,45 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
-  display: block;
+  position: relative;
+  border-radius: $radius-md;
+  background: var(--elevated-background);
+  padding: $space-4 $space-6;
 }
 
-.medium-card-skeleton {
-  background: var(--tui-background-elevation-1);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.skeleton-top-bar {
+.card-header {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.skeleton-content {
+.card-title {
+  flex: 1;
+  padding: $space-2 0;
+}
+
+.card-body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $space-2;
+  flex: 1;
+}
+
+.card-bottom-bar {
+  padding: $space-2 $space-4;
+}
+
+.card-footer {
+  padding: $space-2 $space-4;
+  background: var(--tui-background-base-alt);
+}
+
+// Hide empty slots
+.card-bottom-bar:empty,
+.card-footer:empty,
+.card-actions:empty,
+.card-title:empty {
+  display: none;
 }
 
 

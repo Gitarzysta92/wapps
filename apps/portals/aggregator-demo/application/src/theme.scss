@@ -11,6 +11,7 @@ body.light {
   
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
   --feed-background: radial-gradient(ellipse at top, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
+  --skeleton-background: #{$color-bg-muted};
 
 
   --sidebar-gradient: linear-gradient(135deg, #{$color-bg-muted} 0%, #{$color-border} 100%);
@@ -100,7 +101,8 @@ body.dark {
   --feed-background: radial-gradient(ellipse at top, #a800ff 0%, #4b49b6 50%, #6d169d);
   --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
 
-
+  --skeleton-background: #{$color-surface-subtle};
+  
   --sidebar-gradient: linear-gradient(135deg, #{$color-gray-700} 0%, #{$color-gray-600} 100%);
   --header-gradient: linear-gradient(90deg, #{$color-bg-inverse} 0%, #{$color-surface} 100%);
   --primary-gradient: linear-gradient(45deg, #{$color-primary-600} 0%, #{$color-purple-600} 100%);
