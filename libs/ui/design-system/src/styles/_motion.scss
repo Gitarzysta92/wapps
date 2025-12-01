@@ -16,6 +16,16 @@ $duration-500: 500ms;
   transition-timing-function: $timing;
 }
 
+// Skeleton animation
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;

@@ -9,12 +9,10 @@
   padding: $space-6;
 
   .card-backdrop {
+    @include skeleton-shimmer(var(--skeleton-background-elevated));
     position: absolute;
     inset: 0;
     z-index: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: var(--skeleton-background);
   }
 
   .card-content {
