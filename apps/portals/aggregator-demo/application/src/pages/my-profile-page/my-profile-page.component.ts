@@ -5,6 +5,7 @@ import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
 import { map } from 'rxjs';
+import { ProfileBadgesComponent } from '@portals/shared/features/profile';
 
 @Component({
   selector: 'my-profile-page',
@@ -17,6 +18,7 @@ import { map } from 'rxjs';
     TuiCardLarge,
     TuiHeader,
     TuiAvatar,
+    ProfileBadgesComponent
   ]
 })
 export class MyProfilePageComponent {

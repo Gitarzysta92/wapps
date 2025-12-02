@@ -23,7 +23,6 @@ import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
 import { USER_PROFILE_COMMON_SIDEBAR_PROVIDER } from "./partials/user-common-sidebar/user-profile-state-provider.token";
 import { MyProfileService } from '@portals/shared/features/my-profile';
 import { UserAuxiliarySidebarComponent } from "./partials/user-auxiliary-sidebar/user-auxiliary-sidebar.component";
-import { map } from "rxjs";
 
 
 // TODO: check if flat list approach

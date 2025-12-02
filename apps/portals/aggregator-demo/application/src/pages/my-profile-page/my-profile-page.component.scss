@@ -8,6 +8,10 @@
   padding: $space-4 0; 
   &__container {
     height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
   }
   h1 {
     font-size: $font-size-xl;
