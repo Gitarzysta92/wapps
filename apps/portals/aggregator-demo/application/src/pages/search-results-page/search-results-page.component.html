@@ -106,9 +106,9 @@
 <ng-template #applicationEntry let-entry="entry">
   @let vm = toApplicationVM(entry);
   <ui-medium-card class="item-card">
-    <my-favorite-toggle [readonly]="true" slot="top-bar" [item]="vm"/>
-    <ui-card-header>
-      <app-avatar slot="left-side" [avatar]="vm.avatarUrl"/>
+    <my-favorite-toggle [readonly]="true" slot="actions" [item]="vm"/>
+    <ui-card-header slot="title">
+      <app-avatar slot="left-side" [size]="'xl'" [avatar]="vm.avatarUrl"/>
       <h3 uiMediumTitle>
         {{ vm.title }}
         <app-rating [readonly]="true" [rating]="vm.rating"/>
@@ -118,8 +118,8 @@
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
     @if (vm.topReview) {
-      <top-review-card [review]="vm.topReview">
-        <profile-badges [badges]="vm.topReview.authorBadges"></profile-badges>
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
       </top-review-card>
     }
   </ui-medium-card>
@@ -128,7 +128,7 @@
 
 <ng-template #applicationEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
-    <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
+    <article-rating-skeleton slot="actions"></article-rating-skeleton>
     <ui-medium-title-skeleton/>
     <ui-tags-skeleton/>
     <ui-excerpt-skeleton/>
@@ -141,8 +141,8 @@
 <ng-template #suiteEntry let-entry="entry">
   @let vm = toSuiteVM(entry);
   <ui-medium-card class="item-card">
-    <my-favorite-toggle [readonly]="true" slot="top-bar" [item]="vm"/>
-    <h3 uiMediumTitle>
+    <my-favorite-toggle [readonly]="true" slot="actions" [item]="vm"/>
+    <h3 uiMediumTitle slot="title">
       {{ vm.title }}
       <app-rating [readonly]="true" [rating]="vm.rating"/>
     </h3>
@@ -151,8 +151,8 @@
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
     @if (vm.topReview) {
-      <top-review-card [review]="vm.topReview">
-        <profile-badges [badges]="vm.topReview.authorBadges"></profile-badges>
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
       </top-review-card>
     }
   </ui-medium-card>
@@ -161,7 +161,7 @@
 
 <ng-template #suiteEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
-    <article-rating-skeleton slot="top-bar"></article-rating-skeleton>
+    <article-rating-skeleton slot="actions"></article-rating-skeleton>
     <ui-medium-title-skeleton/>
     <ui-tags-skeleton/>
     <ui-excerpt-skeleton/>

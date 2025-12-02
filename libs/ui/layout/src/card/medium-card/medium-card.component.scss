@@ -4,17 +4,15 @@
   position: relative;
   border-radius: $radius-md;
   background: var(--elevated-background);
-  padding: $space-4 $space-6;
+  padding: $space-6 $space-6;
 }
 .card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
 }
 
 .card-title {
   flex: 1;
-  padding: $space-2 0;
 }
 
 .card-body {
@@ -25,12 +23,12 @@
 }
 
 .card-bottom-bar {
-  padding: $space-2 $space-4;
+  margin-top: $space-2;
+  border-top: 1px solid white;
+  padding: $space-2;
 }
 
 .card-footer {
-  padding: $space-2 $space-4;
-  background: var(--tui-background-base-alt);
 }
 
 // Hide empty slots

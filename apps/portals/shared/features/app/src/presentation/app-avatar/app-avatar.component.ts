@@ -9,7 +9,7 @@ import { TuiAvatar } from '@taiga-ui/kit';
   styleUrl: './app-avatar.component.scss'
 })
 export class AppAvatarComponent {
-  avatar = input.required<string>();
+  avatar = input.required<{ url: string; alt: string }>();
   size = input<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
 }
 
