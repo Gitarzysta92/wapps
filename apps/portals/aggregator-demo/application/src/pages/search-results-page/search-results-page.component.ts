@@ -98,7 +98,7 @@ export class SearchResultsPageComponent {
 
   protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
     .pipe(
-      delay(1000000),
+      delay(1000),
       map(d => Object.assign({}, d, { isLoading: false })),
       startWith({ itemsNumber: 0, groups: [], link: "", query: {}, isLoading: true }));
 

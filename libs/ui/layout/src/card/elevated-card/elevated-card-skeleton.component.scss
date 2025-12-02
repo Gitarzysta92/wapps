@@ -9,10 +9,11 @@
   padding: $space-6;
 
   .card-backdrop {
-    @include skeleton-shimmer(white);
+    @include skeleton-shimmer(var(--skeleton-shimmer-color));
     position: absolute;
     inset: 0;
     z-index: 0;
+    opacity: 0.5;
     background: var(--skeleton-background);
   }
 

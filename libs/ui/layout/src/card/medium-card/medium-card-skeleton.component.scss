@@ -1,7 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  @include skeleton-shimmer(white, 2.5s);
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
   position: relative;
   border-radius: $radius-md;
   background: var(--skeleton-background-elevated);

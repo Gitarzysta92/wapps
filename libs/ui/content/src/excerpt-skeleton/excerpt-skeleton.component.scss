@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: block;
 }
@@ -9,9 +11,10 @@
 }
 
 .excerpt-line {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
   height: 1rem;
   border-radius: 0.25rem;
-  background: var(--skeleton-background);
+  background: var(--skeleton-background-content);
   
   &:last-child {
     width: 70%;

@@ -12,6 +12,7 @@ body.light {
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
   --feed-background: radial-gradient(ellipse at top, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
   --skeleton-background: #{$color-bg-muted};
+  --skeleton-shimmer-color: rgb(138, 149, 174);
 
 
   --sidebar-gradient: linear-gradient(135deg, #{$color-bg-muted} 0%, #{$color-border} 100%);
@@ -102,7 +103,9 @@ body.dark {
   --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
 
   --skeleton-background: #{$color-surface-subtle};
+  --skeleton-background-content: #334458;;
   --skeleton-background-elevated: #{$color-surface-soft};
+  --skeleton-shimmer-color: rgb(121, 128, 141);
 
 
   
