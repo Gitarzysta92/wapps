@@ -17,12 +17,12 @@ $duration-500: 500ms;
 }
 
 // Skeleton animation
-@keyframes skeleton-pulse {
-  0%, 100% {
-    opacity: 1;
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
   }
-  50% {
-    opacity: 0.5;
+  100% {
+    transform: translateX(100%);
   }
 }
 
