@@ -1,12 +1,11 @@
-import { Component, Input, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, IsActiveMatchOptions } from '@angular/router';
-import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
-import { TuiAvatar } from '@taiga-ui/kit';
+import { RouterModule } from '@angular/router';
+import { TuiIcon } from '@taiga-ui/core';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
-import { MyProfileAvatarComponent, MyProfileNameComponent } from '@ui/my-profile';
-import { USER_PROFILE_COMMON_SIDEBAR_PROVIDER } from './user-profile-state-provider.token';
-import { map } from 'rxjs';
+import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
+import { ProfileAvatarComponent, ProfileNameComponent } from '@ui/profile';
+import { NavigationListComponent, NavigationItemComponent } from '@ui/navigation';
 
 @Component({
   selector: 'user-common-sidebar',
@@ -14,44 +13,27 @@ import { map } from 'rxjs';
   styleUrl: './user-common-sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.expanded]': 'isExpanded'
+    '[class.expanded]': 'isExpanded()'
   },
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
-    TuiButton,
     TuiIcon,
-    TuiAvatar,
-    TuiIconPipe,
-    MyProfileAvatarComponent,
-    MyProfileNameComponent
+    ProfileAvatarComponent,
+    ProfileNameComponent,
+    NavigationListComponent,
+    NavigationItemComponent,
   ]
 })
 export class UserCommonSidebarComponent {
 
-  @Input() isExpanded = false;
-  @Input() navigation: NavigationDeclarationDto[] = [];
+  isExpanded = input<boolean>(false);
+  navigation = input<NavigationDeclarationDto[]>([]);
 
-  private readonly profileStateProvider = inject(USER_PROFILE_COMMON_SIDEBAR_PROVIDER);
-
-  public readonly profile$ = this.profileStateProvider.profile$.pipe(
-    map(state => state.data)
-  );
-
-  public readonly isLoading$ = this.profileStateProvider.profile$.pipe(
-    map(state => state.isLoading)
-  );
-
-  // TODO: excessive memory allocation,
-  // by creating a new object for each call
-  public getRouterLinkActiveOptions(path: string): IsActiveMatchOptions {
-    return { 
-      paths: path === '' ? 'exact' : 'subset',
-      queryParams: 'ignored',
-      fragment: 'ignored',
-      matrixParams: 'ignored'
-     };
-  }
+  private readonly myProfileViewStateProvider = inject(MY_PROFILE_VIEW_STATE_PROVIDER);
+  public readonly userProfileAvatar = this.myProfileViewStateProvider.avatar();
+  public readonly userProfileName = this.myProfileViewStateProvider.name();
+   
 }
 

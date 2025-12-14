@@ -1,3 +1,3 @@
-import { ProfileDto } from "./profile.dto";
+import { CustomerProfileDto } from "./profile.dto";
 
-export type GuestProfileDto = ProfileDto
+export type GuestProfileDto = CustomerProfileDto

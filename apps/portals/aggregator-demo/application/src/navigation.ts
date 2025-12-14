@@ -5,7 +5,8 @@ export const ROUTE_PARAMS = {
   tagSlug: ':tagSlug',
   suiteSlug: ':suiteSlug',
   articleSlug: ':articleSlug',
-  reviewSlug: ':reviewSlug'
+  reviewSlug: ':reviewSlug',
+  profileId: ':profileId',
 }
 
 export const NAVIGATION = {
@@ -213,6 +214,11 @@ export const NAVIGATION = {
     path: `search`,
     label: 'Search',
     icon: '@tui.search',
+  },
+  userProfile: {
+    path: `profiles/${ROUTE_PARAMS.profileId}`,
+    label: 'User profile',
+    icon: '@tui.user',
   }
 }
 

@@ -1,0 +1,56 @@
+@let state = state$ | async;
+
+
+@if (state) { 
+  <section class="heading">
+    <div class="heading__container">
+      <h1 class="heading__title">{{ state.data?.name }}</h1>
+      <profile-badges [badges]="state.data?.badges"></profile-badges>
+    </div>
+
+  </section>
+}
+
+<div class="profile-page">
+  <div class="profile-page__container">
+
+    @if (state?.isLoading) {
+      <div class="profile-page__loading">
+        <p>Loading profile...</p>
+      </div>
+    }
+
+    @if (state?.error) {
+      <div class="profile-page__error">
+        <p>Error loading profile. Please try again.</p>
+      </div>
+    }
+
+    @if (state?.data; as profile) {
+      <div class="profile-page__content">
+        <div 
+          class="profile-page__card"
+        >
+          <header tuiHeader class="profile-page__card-header">
+            <h2 tuiTitle>Profile Information</h2>
+          </header>
+
+          <div class="profile-page__profile-info">
+            <div class="profile-page__details">
+              <div class="profile-page__field">
+                <label class="profile-page__label">Name</label>
+                <p class="profile-page__value">{{ profile.name }}</p>
+              </div>
+
+              <div class="profile-page__field">
+                <label class="profile-page__label">User ID</label>
+                <p class="profile-page__value">{{ profile.id }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

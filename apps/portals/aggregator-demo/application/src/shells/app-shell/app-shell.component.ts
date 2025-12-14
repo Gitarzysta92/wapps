@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken, Signal } from '@angular/core';
 import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
@@ -11,27 +11,27 @@ import { TuiIcon } from '@taiga-ui/core';
 export interface IAppShellRouteData {
   topBar: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null;
   header: {
     component: Type<IAppShellHeaderComponent>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null;
   leftSidebar: {
     component: Type<IAppShellSidebarComponent>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null
   rightSidebar: {
     component: Type<IAppShellSidebarComponent>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null;
   footer: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null;
   bottomBar: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
+    inputs?: Record<symbol, unknown | Signal<unknown>>
   } | null;
 }
 
@@ -41,7 +41,7 @@ export interface IAppShellHeaderComponent {
 }
 
 export interface IAppShellSidebarComponent {
-  isExpanded: boolean;
+  isExpanded: Signal<boolean> | boolean;
 }
 
 export interface IAppShellState {
@@ -87,12 +87,12 @@ export class AppShellComponent {
   );
 
   public readonly topBarComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
       component: (s.data as IAppShellRouteData).topBar?.component,
       inputs: {
         ...((s.data as IAppShellRouteData).topBar?.inputs ?? {}),
-        ...s.params
+        ...s.params,
+        ...s.data
       }
     }))
   );
@@ -109,9 +109,7 @@ export class AppShellComponent {
   );
 
   public readonly leftSidebarComponent$ = combineLatest([
-    this._routeData.pipe(
-      distinctUntilChanged((p, c) => p.component === c.component)
-    ),
+    this._routeData,
     this._shellStateProvider.isLeftSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
     component: (s.data as IAppShellRouteData).leftSidebar?.component,
@@ -119,46 +117,46 @@ export class AppShellComponent {
       // TODO: remove unnecessary fallback to empty object creation
       ...((s.data as IAppShellRouteData).leftSidebar?.inputs ?? {}),
       isExpanded,
-      ...s.params
+      ...s.params,
+      ...s.data
     }
   })))
 
   public readonly isLeftSidebarExpanded$ = this._shellStateProvider.isLeftSidebarExpanded$;
 
   public readonly rightSidebarComponent$ = combineLatest([
-    this._routeData.pipe(
-      distinctUntilChanged((p, c) => p.component === c.component)
-    ),
+    this._routeData,
     this._shellStateProvider.isRightSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
     component: (s.data as IAppShellRouteData).rightSidebar?.component,
     inputs: {
       ...((s.data as IAppShellRouteData).rightSidebar?.inputs ?? {}),
       isExpanded,
-      ...s.params
+      ...s.params,
+      ...s.data
     }
   })))
 
   public readonly isRightSidebarExpanded$ = this._shellStateProvider.isRightSidebarExpanded$;
 
   public readonly footerComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
       component: (s.data as IAppShellRouteData).footer?.component,
       inputs: {
         ...(s.data as IAppShellRouteData).footer?.inputs,
-        ...s.params
+        ...s.params,
+        ...s.data
       }
     }))
   );
 
   public readonly bottomBarComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
       component: (s.data as IAppShellRouteData).bottomBar?.component,
       inputs: {
         ...((s.data as IAppShellRouteData).bottomBar?.inputs ?? {}),
-        ...s.params
+        ...s.params,
+        ...s.data
       }
     }))
   );

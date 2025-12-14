@@ -38,7 +38,7 @@ import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '
 import { CoverImageComponent } from '@ui/cover-image';
 import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals/shared/features/articles';
 import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
-import { ProfileBadgesComponent } from '@portals/shared/features/profile';
+import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
 import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '@portals/shared/features/app';
 import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';

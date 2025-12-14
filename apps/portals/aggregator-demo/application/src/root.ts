@@ -23,6 +23,8 @@ import { GlobalStateService } from './state/global-state.service';
 import { LOGIN_VALIDATION_MESSAGES, PASSWORD_RESET_VALIDATION_MESSAGES, REGISTRATION_VALIDATION_MESSAGES } from '@portals/shared/data';
 import { provideMyProfileFeature } from '@portals/shared/features/my-profile';
 import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
+import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
+
 
 
 export const APPLICATION_ROOT = mergeApplicationConfig(
@@ -37,14 +39,14 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
       validationMessages: PASSWORD_RESET_VALIDATION_MESSAGES
     }),
 
-  // provideProfileFeature(),
+    provideUserProfileFeature(),
     provideMyProfileFeature({
       apiBaseUrl: 'https://api.myprofile.com',
       avatarBaseUrl: 'https://api.myprofile.com',
       guestProfile: {
         id: 'guest',
         name: 'Guest',
-        avatarUrl: 'https://api.myprofile.com'
+        avatar: { uri: 'https://api.myprofile.com', alt: 'Guest' }
       }
     }),
     provideMyFavoritesFeature({

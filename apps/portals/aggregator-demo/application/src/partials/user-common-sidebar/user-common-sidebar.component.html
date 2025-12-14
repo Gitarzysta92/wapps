@@ -1,42 +1,21 @@
-@let profile = profile$ | async;
-
 <div class="user-profile-section">
-  @if (isLoading$ | async) {
-    <div class="profile-loading">
-      <tui-avatar
-        class="user-avatar" 
-        size="xl"
-      />
-    </div>
-  } @else if (profile) {
-    <div class="user-profile">
-      <div my-profile-avatar [avatarPath]="profile.avatarUrl"></div>
-      <div my-profile-name [name]="profile.name" class="user-name"></div>
-    </div>
-  }
+  <div class="user-profile">
+    <div profile-avatar [avatarPath]="userProfileAvatar()"></div>
+    <div profile-name [name]="userProfileName()" class="user-name"></div>
+  </div>
 </div>
 
-<nav class="sidebar-nav">
-  @for (item of navigation; track item.path) {
-    <a
-      class="nav-item"
-      tuiButton
-      appearance="ghost"
-      type="button" 
-      [routerLink]="[item.path]"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
-      [title]="item.label">
-      <span class="nav-label">{{ item.label }}</span>
-      <div class="nav-icon">
-        <tui-icon
-          [icon]="item.icon || 'tuiIconSettings'"
-          [style.height.rem]="1.2"
-          [style.width.rem]="1.2"
-          [style.display]="'inline-block'"
-          [style.visibility]="'visible'"/>
-      </div>
+<nav navigationList [alignment]="'start'">
+  @for (item of navigation(); track item.path) {
+    <a #navigationItem
+      navigationItem
+      [routerLink]="item.path"
+      [routerLinkActive]="navigationItem.activeClass"
+      [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">
+      <span slot="center" class="nav-label">{{ item.label }}</span>
+      @if (item.icon) {
+        <tui-icon slot="end" [icon]="item.icon"/>
+      }
     </a>
   }
 </nav>
-

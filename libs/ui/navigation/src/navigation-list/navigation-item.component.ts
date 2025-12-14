@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy} from '@angular/core';
+import { IsActiveMatchOptions } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
 
 @Component({
@@ -12,5 +13,16 @@ import { TuiButton } from '@taiga-ui/core';
     'class': 'nav-item',
   }
 })
-export class NavigationItemComponent {}
+export class NavigationItemComponent {
+  public readonly activeClass = 'active';
+  
+  public getActiveOptions(path: string): IsActiveMatchOptions {
+    return { 
+      paths: path === '' ? 'exact' : 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+     };
+  }
+}
 

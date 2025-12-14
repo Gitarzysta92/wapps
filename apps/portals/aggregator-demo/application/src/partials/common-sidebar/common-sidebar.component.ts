@@ -23,7 +23,7 @@ import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
     TuiIconPipe
   ]
 })
-export class CommonSidebarPartialComponent {
+export class CommonSidebarComponent {
 
   @Input() isExpanded = false;
   @Input() navigation: NavigationDeclarationDto[] = [];

@@ -24,76 +24,15 @@
   transition: transform 0.2s;
 }
 
-.profile-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0.5;
-}
-
-.user-avatar {
-  transition: transform 0.2s;
-}
-
 .user-name {
   font-size: $font-size-xs;
   font-weight: 500;
-  color: var(--tui-text-01);
   text-align: center;
   transition: transform 0.1s;
   
   @media #{$layout-breakpoint-md} {
     visibility: hidden;
   }
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 1rem;
-  text-decoration: none;
-  color: var(--tui-text-01);
-  transition: background-color 0.2s;
-  
-  .nav-icon {
-    transition: transform 0.1s;
-    transform: translate(0px);
-  }
-
-  .nav-label {
-    transition: transform 0.1s;
-    transform: translate(0px);
-    @media #{$layout-breakpoint-md} {
-      visibility: hidden;
-    }
-  }
-
-  &:hover {
-    background: var(--main-menu-item-background);
-    .nav-icon {
-      transform: translate(10px);
-    }
-    .nav-label {
-      transform: translate(10px);
-    }
-  }
-  
-  &.active {
-    background: var(--main-menu-item-background);
-    color: var(--tui-text-on-primary);
-  }
-}
-
-.nav-icon {
-  margin-right: 0.75rem;
-  display: flex;
-  align-items: center;
-}
-
-.nav-label {
-  font-size: 0.875rem;
-  font-weight: 500;
 }
 
 :host.expanded {
@@ -104,7 +43,6 @@
   }
 
   @media #{$layout-breakpoint-md} {
-    .nav-label,
     .user-name {
       display: block;
       visibility: visible;

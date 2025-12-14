@@ -47,25 +47,27 @@
       "@domains/catalog/compatibility": [
         "libs/domains/catalog/compatibility/src/index.ts"
       ],
+      "@domains/catalog/contact": ["libs/domains/catalog/contact/src/index.ts"],
+      "@domains/catalog/metrics": ["libs/domains/catalog/metrics/src/index.ts"],
       "@domains/catalog/ownership": [
         "libs/domains/catalog/ownership/src/index.ts"
       ],
       "@domains/catalog/platform": ["libs/domains/catalog/platform/index.ts"],
       "@domains/catalog/pricing": ["libs/domains/catalog/pricing/src/index.ts"],
       "@domains/catalog/record": ["libs/domains/catalog/record/src/index.ts"],
-      "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
-      "@domains/catalog/references": ["libs/domains/catalog/references/src/index.ts"],
-      "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
-      "@domains/catalog/metrics": ["libs/domains/catalog/metrics/src/index.ts"],
-      "@domains/catalog/contact": ["libs/domains/catalog/contact/src/index.ts"],
-      "@domains/customer/profiles": [
-        "libs/domains/customer/profiles/src/index.ts"
+      "@domains/catalog/references": [
+        "libs/domains/catalog/references/src/index.ts"
       ],
+      "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
+      "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
       "@domains/customer/favorites": [
         "libs/domains/customer/favorites/src/index.ts"
       ],
       "@domains/customer/preferences": [
         "libs/domains/customer/preferences/src/index.ts"
+      ],
+      "@domains/customer/profiles": [
+        "libs/domains/customer/profiles/src/index.ts"
       ],
       "@domains/discovery": ["libs/domains/discovery/src/index.ts"],
       "@domains/discussion": ["libs/domains/discussion/src/index.ts"],
@@ -76,7 +78,9 @@
         "libs/domains/identity/authentication/src/index.ts"
       ],
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
-      "@domains/publication/article": ["libs/domains/publication/article/src/index.ts"],
+      "@domains/publication/article": [
+        "libs/domains/publication/article/src/index.ts"
+      ],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
       "@features/categories": [
@@ -97,29 +101,27 @@
       "@portals/cross-cutting/environment": [
         "apps/portals/shared/cross-cutting/environment/src/index.ts"
       ],
+      "@portals/cross-cutting/theming": [
+        "apps/portals/shared/cross-cutting/theming/src/index.ts"
+      ],
       "@portals/shared/boundary/http": [
         "apps/portals/shared/boundary/http/src/index.ts"
       ],
       "@portals/shared/boundary/navigation": [
         "apps/portals/shared/boundary/navigation/src/index.ts"
       ],
-      "@portals/shared/partials/filters-bar": [
-        "apps/portals/shared/partials/filters-bar/src/index.ts"
-      ],
       "@portals/shared/boundary/routing": [
         "apps/portals/shared/boundary/routing/src/index.ts"
       ],
-      "@portals/cross-cutting/theming": [
-        "apps/portals/shared/cross-cutting/theming/src/index.ts"
-      ],
-      "@portals/shared/features/categories": [
-        "apps/portals/shared/features/categories/src/index.ts"
-      ],
+      "@portals/shared/data": ["apps/portals/shared/data/src/index.ts"],
       "@portals/shared/features/app": [
         "apps/portals/shared/features/app/src/index.ts"
       ],
       "@portals/shared/features/articles": [
         "apps/portals/shared/features/articles/src/index.ts"
+      ],
+      "@portals/shared/features/categories": [
+        "apps/portals/shared/features/categories/src/index.ts"
       ],
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"
@@ -148,6 +150,12 @@
       "@portals/shared/features/multi-search": [
         "apps/portals/shared/features/multi-search/src/index.ts"
       ],
+      "@portals/shared/features/my-favorites": [
+        "apps/portals/shared/features/my-favorites/src/index.ts"
+      ],
+      "@portals/shared/features/my-profile": [
+        "apps/portals/shared/features/my-profile/src/index.ts"
+      ],
       "@portals/shared/features/overview": [
         "apps/portals/shared/features/overview/src/index.ts"
       ],
@@ -157,14 +165,8 @@
       "@portals/shared/features/pricing": [
         "apps/portals/shared/features/pricing/src/index.ts"
       ],
-      "@portals/shared/features/profile": [
-        "apps/portals/shared/features/profile/src/index.ts"
-      ],
-      "@portals/shared/features/my-profile": [
-        "apps/portals/shared/features/my-profile/src/index.ts"
-      ],
-      "@portals/shared/features/my-favorites": [
-        "apps/portals/shared/features/my-favorites/src/index.ts"
+      "@portals/shared/features/user-profile": [
+        "apps/portals/shared/features/user-profile/src/index.ts"
       ],
       "@portals/shared/features/review": [
         "apps/portals/shared/features/review/src/index.ts"
@@ -184,22 +186,26 @@
       "@portals/shared/features/tags": [
         "apps/portals/shared/features/tags/src/index.ts"
       ],
-      "@portals/shared/data": [
-        "apps/portals/shared/data/src/index.ts"
+      "@portals/shared/partials/filters-bar": [
+        "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],
       "@primitives": ["libs/primitives/src/index.ts"],
       "@primitives/*": ["libs/primitives/src/*"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
       "@standard": ["libs/standard/src/index.ts"],
       "@standard/*": ["libs/standard/src/*"],
+      "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
+      "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/chat": ["libs/ui/chat/src/index.ts"],
       "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"],
+      "@ui/content": ["libs/ui/content/src/index.ts"],
       "@ui/content-feed": ["libs/ui/content-feed/src/index.ts"],
+      "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
       "@ui/discussion": ["libs/ui/discussion/src/index.ts"],
       "@ui/filters": ["libs/ui/filters/src/index.ts"],
-      "@ui/intro-hero": ["libs/ui/intro-hero/src/index.ts"],
       "@ui/form": ["libs/ui/form/src/index.ts"],
       "@ui/infinite-scroll": ["libs/ui/infinite-scroll/src/index.ts"],
+      "@ui/intro-hero": ["libs/ui/intro-hero/src/index.ts"],
       "@ui/items-listing": ["libs/ui/items-listing/src/index.ts"],
       "@ui/layout": ["libs/ui/layout/src/index.ts"],
       "@ui/login": ["libs/ui/login/src/index.ts"],
@@ -208,16 +214,13 @@
       "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
       "@ui/navigation": ["libs/ui/navigation/src/index.ts"],
       "@ui/notices-section": ["libs/ui/notices-section/src/index.ts"],
+      "@ui/profile": ["libs/ui/profile/src/index.ts"],
       "@ui/password-reset": ["libs/ui/password-reset/src/index.ts"],
       "@ui/registration": ["libs/ui/registration/src/index.ts"],
       "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
       "@ui/search-bar": ["libs/ui/search-bar/src/index.ts"],
       "@ui/search-results": ["libs/ui/search-results/src/index.ts"],
-      "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
-      "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
-      "@ui/content": ["libs/ui/content/src/index.ts"],
-      "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
       "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
       "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],
       "@ui/tags": ["libs/ui/tags/src/index.ts"],

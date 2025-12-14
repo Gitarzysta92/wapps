@@ -1,4 +1,4 @@
-import { Routes } from "@angular/router";
+import { ResolveFn, Routes } from "@angular/router";
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 import { AuthenticationDialogComponent } from "./dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost-password-dialog.component";
@@ -10,9 +10,8 @@ import { FILTERS } from "./filters";
 import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION, DESKTOP_USER_MAIN_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
-import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
+import { CommonSidebarComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { CommonMobileBottomBarPartialComponent } from "./partials/common-mobile-bottom-bar/common-mobile-bottom-bar.component";
-import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
 
 import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component"; 
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
@@ -20,9 +19,9 @@ import { searchResultsMatcher } from "./pages/search-results-page/search-results
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
-import { USER_PROFILE_COMMON_SIDEBAR_PROVIDER } from "./partials/user-common-sidebar/user-profile-state-provider.token";
-import { MyProfileService } from '@portals/shared/features/my-profile';
 import { UserAuxiliarySidebarComponent } from "./partials/user-auxiliary-sidebar/user-auxiliary-sidebar.component";
+import { UserCommonSidebarComponent } from "./partials/user-common-sidebar/user-common-sidebar.component";
+import { profileAvatarResolver } from "./resolvers/profile-avatar.resolver";
 
 
 // TODO: check if flat list approach
@@ -64,7 +63,7 @@ export const routes: Routes = [
             }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: DESKTOP_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -104,7 +103,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -139,7 +138,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -174,7 +173,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -209,7 +208,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -244,7 +243,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -279,7 +278,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -314,7 +313,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -349,7 +348,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -389,7 +388,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -426,7 +425,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -471,7 +470,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -507,7 +506,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -545,7 +544,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -582,7 +581,7 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -627,7 +626,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -681,7 +680,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -760,7 +759,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -795,7 +794,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -830,7 +829,7 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -859,7 +858,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.categories ],
           header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -889,7 +888,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.category ],
           header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -919,7 +918,7 @@ export const routes: Routes = [
           breadcrumb: [ NAVIGATION.searchByCategory ],
           header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -959,11 +958,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.myProfile.path,
-        canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/my-profile-page/my-profile-page.component').then(m => m.MyProfilePageComponent),
-        providers: [
-          { provide: USER_PROFILE_COMMON_SIDEBAR_PROVIDER, useClass: MyProfileService }
-        ],
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
           topBar: null,
@@ -972,9 +967,11 @@ export const routes: Routes = [
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           header: null,
-          leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: DESKTOP_USER_MAIN_NAVIGATION }
+          leftSidebar: { 
+            component: UserCommonSidebarComponent,
+            inputs: {
+              navigation: DESKTOP_USER_MAIN_NAVIGATION
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -1009,7 +1006,7 @@ export const routes: Routes = [
           },
           header: null,
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           rightSidebar: {
@@ -1045,9 +1042,51 @@ export const routes: Routes = [
           },
           header: null,
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
+            component: CommonSidebarComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
+          rightSidebar: {
+            component: UserAuxiliarySidebarComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.userProfile.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+        resolve: {
+          leftSidebar: (...args: Parameters<ResolveFn<unknown>>) => ({ 
+            component: CommonSidebarComponent,
+            inputs: {
+              avatar: profileAvatarResolver(...args),
+              navigation: DESKTOP_USER_MAIN_NAVIGATION
+            }
+          })
+        },
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
+          topBar: null,
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          header: null,
+          leftSidebar: null,
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
             inputs: {

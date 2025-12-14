@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { TuiTitle } from '@taiga-ui/core';
-import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
-import { TuiAvatar } from '@taiga-ui/kit';
+import { TuiHeader } from '@taiga-ui/layout';
 import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
 import { map } from 'rxjs';
-import { ProfileBadgesComponent } from '@portals/shared/features/profile';
+import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 
 @Component({
   selector: 'my-profile-page',
@@ -15,9 +14,7 @@ import { ProfileBadgesComponent } from '@portals/shared/features/profile';
   imports: [
     AsyncPipe,
     TuiTitle,
-    TuiCardLarge,
     TuiHeader,
-    TuiAvatar,
     ProfileBadgesComponent
   ]
 })
