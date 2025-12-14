@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { CommonModule, NgIf } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
 import {
@@ -41,7 +41,6 @@ import { ApplicationDevLogFeedItemComponent } from '@portals/shared/features/fee
 import { SuiteTeaserFeedItemComponent } from '@portals/shared/features/feed';
 import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed';
 import { FeedContainerComponent } from "@portals/shared/features/feed";
-import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
@@ -82,8 +81,6 @@ type RegisteredFeedItem = Array<
     TuiDropdown,
     TuiBadgedContent,
     FeedContainerComponent,
-    NgIf,
-    DiscussionComponent,
   ],
   providers: [
     SearchMockDataService,

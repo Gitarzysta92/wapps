@@ -20,6 +20,7 @@ export class MyFavoriteToggleComponent {
   item = input.required<FavoriteItem | string>();
   readonly = input<boolean>(false);
   isFavorite = input<boolean>(false);
+  size = input<"s" | "m" | "l" | "xl" | "xs">('s');
   
   protected get itemId(): string {
     const item = this.item();

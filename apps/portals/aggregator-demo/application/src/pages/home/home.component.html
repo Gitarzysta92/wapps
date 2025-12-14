@@ -29,7 +29,6 @@
           <article-highlight-feed-item
             class="feed-item"
             [item]="item">
-            <discussion *ngIf="item.discussion" [data]="item.discussion"></discussion>
           </article-highlight-feed-item>
         }
         @case (feedItemType.APPLICATION_HEALTH_FEED_ITEM_SELECTOR) {

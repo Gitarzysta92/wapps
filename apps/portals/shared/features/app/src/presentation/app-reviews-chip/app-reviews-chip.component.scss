@@ -1,0 +1,9 @@
+.app-reviews-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .reviews-count {
+    opacity: 0.7;
+  }
+}

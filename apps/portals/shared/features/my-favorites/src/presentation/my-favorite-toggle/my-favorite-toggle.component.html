@@ -2,7 +2,7 @@
   tuiIconButton
   type="button"
   appearance="icon"
-  size="s"
+  [size]="size()"
   [disabled]="readonly()"
   (click)="toggleFavorite()"
   class="favorite-toggle">
