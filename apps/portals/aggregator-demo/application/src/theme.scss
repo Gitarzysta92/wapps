@@ -272,6 +272,7 @@ body.dark {
   transition: transform 0.1s;
   transform: translate(0px);
   border-radius: $radius-md;
+  cursor: pointer;
   
   & > * {
     transition: transform 0.1s;
@@ -282,13 +283,14 @@ body.dark {
     transform: translate(10px);
     background: var(--main-menu-item-background);
     & > * {
-      transform: translate(10px);
+      transform: translate(5px);
     }
   }
   
   &.active {
     background: var(--main-menu-item-background);
     color: var(--tui-text-on-primary);
+    font-weight: $font-weight-bold;
   }
 
   &.skeleton {

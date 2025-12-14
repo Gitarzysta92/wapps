@@ -5,34 +5,6 @@
   display: flex;
   align-items: center;
   gap: $space-2;
-  padding: 0 $space-4;
-  text-decoration: none;
-  transition: background-color $duration-200;
-  cursor: pointer;
-
-  .nav-icon {
-    transition: transform $duration-100;
-    transform: translate(0px);
-  }
-
-  .nav-label {
-    transition: transform $duration-100;
-    transform: translate(0px);
-  }
-
-  &:hover {    
-    .nav-icon {
-      transform: translate($space-2_5);
-    }
-    
-    .nav-label {
-      transform: translate($space-2_5);
-    }
-  }
-  
-  &.active {
-    font-weight: $font-weight-bold;
-  }
 }
 
 [data-alignment="end"] :host {
@@ -67,15 +39,12 @@
 }
 
 .nav-label {
-  font-size: $font-size-sm;
   display: flex;
   gap: $space-1;
   align-items: center;
 }
 
 .nav-count {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-regular;
   opacity: 0.7;
 }
 

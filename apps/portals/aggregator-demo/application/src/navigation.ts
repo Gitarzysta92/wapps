@@ -25,9 +25,9 @@ export const NAVIGATION = {
     label: 'Discover',
     icon: '@tui.search',
   },
-  learn: {
-    path: 'learn',
-    label: 'Learn',
+  digest: {
+    path: 'digest',
+    label: 'Digest',
     icon: '@tui.book',
   },
   overview: {
@@ -225,13 +225,13 @@ export const NAVIGATION = {
 export const DESKTOP_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
-  NAVIGATION.learn,
+  NAVIGATION.digest,
 ]
 
 export const MOBILE_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
-  NAVIGATION.learn,
+  NAVIGATION.digest,
 ]
 
 export const DESKTOP_USER_MAIN_NAVIGATION = [

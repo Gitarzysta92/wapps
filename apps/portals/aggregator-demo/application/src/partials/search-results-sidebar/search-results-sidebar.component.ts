@@ -1,13 +1,12 @@
 import { Component, ChangeDetectionStrategy, Input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TuiAppearance, TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
+import { TuiAppearance, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { DiscoverySearchResultType, DiscoverySearchResultGroupDto } from '@domains/discovery';
 import { GlobalStateService } from '../../state/global-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NAVIGATION } from '../../navigation';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { delay } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { 
   NavigationListComponent, 
   NavigationItemSkeletonComponent,
@@ -22,7 +21,6 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    TuiButton,
     TuiIcon,
     TuiAvatar,
     TuiIconPipe,
