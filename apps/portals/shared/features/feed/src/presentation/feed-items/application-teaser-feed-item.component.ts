@@ -61,7 +61,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         padding: 0 18px;
       }
       .cover-image {
-        filter: blur(5px);
+        //filter: blur(5px);
       }
     `
   ],
@@ -116,6 +116,9 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           [reviewsCount]="item.reviewsCount"
           [reviewsLink]="item.reviewsLink"
         />
+        <button tuiButton size="s" appearance="flat">
+          <tui-icon icon="@tui.ellipsis" />
+        </button>
       </div>
     </ui-elevated-card>
   `,
