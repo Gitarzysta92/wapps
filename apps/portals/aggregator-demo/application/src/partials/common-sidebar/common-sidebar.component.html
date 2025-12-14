@@ -1,32 +1,23 @@
-
 <div class="portal-logo-wrapper">
-  <tui-avatar
-    class="portal-logo" 
-    [src]="'@tui.mastercard' | tuiIcon"
-    size="xl"
-  />
+  <!-- <img [src]="profileAvatar()" alt="Profile avatar" /> -->
+  <tui-avatar 
+  [src]="'@tui.mastercard' | tuiIcon"
+  size="xl"
+/>
 </div>
 
-<nav class="sidebar-nav">
-  @for (item of navigation; track item.path) {
-    <a
-      class="nav-item"
-      tuiButton
-      appearance="ghost"
-      type="button" 
-      [routerLink]="[item.path]"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
-      [title]="item.label">
-      <span class="nav-label">{{ item.label }}</span>
-      <div class="nav-icon">
-        <tui-icon
-          [icon]="item.icon || 'tuiIconSettings'"
-          [style.height.rem]="1.2"
-          [style.width.rem]="1.2"
-          [style.display]="'inline-block'"
-          [style.visibility]="'visible'"/>
-      </div>
+<nav navigationList [alignment]="alignment()">
+  @for (item of navigation(); track item.path) {
+    <a #navigationItem
+      navigationItem
+      appearance="navigation-primary"
+      [routerLink]="item.path"
+      [routerLinkActive]="navigationItem.activeClass"
+      [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">
+      <span slot="center" class="nav-label">{{ item.label }}</span>
+      @if (item.icon) {
+        <tui-icon slot="end" [icon]="item.icon"/>
+      }
     </a>
   }
 </nav>
