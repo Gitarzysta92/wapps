@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { NgFor } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
 import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/app';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
@@ -22,18 +21,18 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
-    NgFor,
     RouterLink,
     RoutePathPipe,
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
     AppAvatarComponent,
-    ShareToggleButtonComponent
+    ShareToggleButtonComponent,
+    AppChangelogInfoComponent,
+    AppChangelogDetailsComponent
   ],
   styles: [`
     .medium-card-nested {
@@ -64,27 +63,12 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           title="item.appName"
         />
       </ui-card-header>
-      <div class="version-column">
-        <div class="version-header">
-          <tui-icon icon="@tui.tag" class="version-icon" />
-          <h3 class="version-number">Version {{ item.version }}</h3>
-        </div>
-        <div class="release-date">
-          <tui-icon icon="@tui.calendar" class="date-icon" />
-          <span>{{ item.releaseDate }}</span>
-        </div>
-        <p class="version-description">{{ item.description }}</p>
-      </div>
+      <app-changelog-info [version]="item.version" [releaseDate]="item.releaseDate" [description]="item.description" />
       <ui-medium-card class="medium-card-nested">
         <tui-chip size="s" appearance="action-soft" slot="top-edge">
           <tui-icon icon="@tui.list" /> What's New
         </tui-chip>
-        <ul class="changes-list">
-          <li *ngFor="let change of item.changes" class="change-item">
-            <tui-icon icon="@tui.check" class="check-icon" />
-            <span>{{ change.description }}</span>
-          </li>
-        </ul>
+        <app-changelog-details [changes]="item.changes" />
       </ui-medium-card>
 
       <div class="item-content" content>

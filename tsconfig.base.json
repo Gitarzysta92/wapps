@@ -60,6 +60,9 @@
       ],
       "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
+      "@domains/catalog/versioning": [
+        "libs/domains/catalog/versioning/src/index.ts"
+      ],
       "@domains/customer/favorites": [
         "libs/domains/customer/favorites/src/index.ts"
       ],
@@ -122,6 +125,9 @@
       ],
       "@portals/shared/features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
+      ],
+      "@portals/shared/features/changelog": [
+        "apps/portals/shared/features/changelog/src/index.ts"
       ],
       "@portals/shared/features/compatibility": [
         "apps/portals/shared/features/compatibility/src/index.ts"

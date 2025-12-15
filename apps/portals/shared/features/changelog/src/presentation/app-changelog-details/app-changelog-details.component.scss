@@ -1,0 +1,22 @@
+.changes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.change-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.5;
+}
+
+.check-icon {
+  color: var(--tui-status-positive);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  font-size: 1.25rem;
+}
