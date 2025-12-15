@@ -7,7 +7,6 @@ import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
 import { AddTypeToArray } from '@standard/utility-types';
 import { 
   MediumTitleComponent,
-  ExcerptComponent,
 } from '@ui/content';
 import { TagsComponent } from '@ui/tags';
 import { 
@@ -40,7 +39,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
-    ExcerptComponent,
     TagsComponent,
     AppAvatarComponent,
     AppRatingComponent,
@@ -117,7 +115,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           [reviewsLink]="item.reviewsLink"
         />
         <button tuiButton size="s" appearance="flat">
-          <tui-icon icon="@tui.ellipsis" />
+          <tui-icon icon="@tui.circle-ellipsis" />
         </button>
       </div>
     </ui-elevated-card>

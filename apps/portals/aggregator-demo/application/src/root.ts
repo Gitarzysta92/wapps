@@ -24,6 +24,7 @@ import { LOGIN_VALIDATION_MESSAGES, PASSWORD_RESET_VALIDATION_MESSAGES, REGISTRA
 import { provideMyProfileFeature } from '@portals/shared/features/my-profile';
 import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
+import { provideSharingFeature } from '@portals/shared/features/sharing';
 
 
 
@@ -69,8 +70,11 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     provideTagsFeature(),
     provideMultiSearchFeature(),
     provideSmartSearchFeature(),
-    provideOverviewFeature(),
-    {
+  provideOverviewFeature(),
+    provideSharingFeature({
+      baseUrl: 'https://api.sharing.com'
+    }),
+  {
       providers: [
         GlobalStateService,
         { provide: APP_SHELL_STATE_PROVIDER, useExisting: GlobalStateService }

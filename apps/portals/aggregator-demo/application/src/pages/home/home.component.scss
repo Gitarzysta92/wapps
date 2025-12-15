@@ -59,7 +59,7 @@
 .feed-item {
   display: block;
   overflow: hidden;
-  background-color: var(--tui-background-elevation-1);
+  background: var(--elevated-background);
   border-radius: $radius-sm;
   box-shadow: $shadow-md;
   margin-bottom: $space-5;

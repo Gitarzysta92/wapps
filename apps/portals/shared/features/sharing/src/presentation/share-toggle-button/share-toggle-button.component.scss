@@ -1,0 +1,41 @@
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+
+  .icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  &.is-sharing {
+    .icon {
+      animation: rotate 1s linear infinite;
+    }
+  }
+
+  &.share-success {
+    .icon {
+      color: var(--tui-status-positive);
+    }
+  }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

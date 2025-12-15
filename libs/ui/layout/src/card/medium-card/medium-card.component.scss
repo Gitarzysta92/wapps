@@ -1,6 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
+  display: block;
   position: relative;
   border-radius: $radius-md;
   padding: $space-6 $space-6;
@@ -32,7 +33,8 @@
 .card-bottom-bar:empty,
 .card-footer:empty,
 .card-actions:empty,
-.card-title:empty {
+.card-title:empty,
+.card-top-edge:empty {
   display: none;
 }
 
