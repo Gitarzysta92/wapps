@@ -1,0 +1,31 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-footer-left {
+  flex-shrink: 0;
+}
+
+.card-footer-content {
+  display: flex;
+  flex-direction: column;
+  //gap: $space-2;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-footer-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+

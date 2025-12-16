@@ -35,6 +35,11 @@ export const FEED_ITEM_EXAMPLES = [
     },
     aggregatedScore: 4.7,
     reviewsCount: 350,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   // Application Dev Log Feed Item Example
@@ -54,7 +59,12 @@ export const FEED_ITEM_EXAMPLES = [
       { description: 'Implemented batch processing', type: 'feature' },
       { description: 'Fixed memory leak in large file processing', type: 'bugfix' },
       { description: 'Improved user interface responsiveness', type: 'improvement' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
 
@@ -85,7 +95,12 @@ export const FEED_ITEM_EXAMPLES = [
         message: 'Scheduled maintenance completed',
         timestamp: new Date('2024-01-13T23:00:00Z')
       }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   // Application Review Feed Item Example
@@ -104,7 +119,12 @@ export const FEED_ITEM_EXAMPLES = [
     testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
     appName: 'Photo Snap',
     reviewDate: '2024-01-16T16:10:00Z',
-    helpfulCount: 42
+    helpfulCount: 42,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   // Article Highlight Feed Item Example
@@ -120,6 +140,11 @@ export const FEED_ITEM_EXAMPLES = [
     coverImage: {
       url: 'https://picsum.photos/seed/article1/400/200',
       alt: 'Boost Your Productivity With Quick Task'
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
     }
   } as ArticleHighlightFeedItem,
 
@@ -144,7 +169,12 @@ export const FEED_ITEM_EXAMPLES = [
       ]
     },
     participantsCount: 12,
-    viewsCount: 70
+    viewsCount: 70,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as DiscussionTopicFeedItem,
 
 ];
@@ -170,7 +200,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented batch processing', type: 'feature' },
       { description: 'Fixed memory leak in large file processing', type: 'bugfix' },
       { description: 'Improved user interface responsiveness', type: 'improvement' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -188,7 +223,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Added real-time team collaboration', type: 'feature' },
       { description: 'Improved task synchronization', type: 'improvement' },
       { description: 'Fixed notification delivery issues', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -207,7 +247,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Added kill switch functionality', type: 'feature' },
       { description: 'Improved connection speed by 40%', type: 'performance' },
       { description: 'Fixed DNS leak vulnerability', type: 'security' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -226,7 +271,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented smart goal tracking', type: 'feature' },
       { description: 'Enhanced data visualization', type: 'improvement' },
       { description: 'Fixed sync issues with bank accounts', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -245,7 +295,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented sleep tracking', type: 'feature' },
       { description: 'Enhanced progress analytics', type: 'improvement' },
       { description: 'Fixed audio playback issues', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationDevLogFeedItem,
 
   // Application Teaser Items (5 items)
@@ -270,6 +325,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -292,7 +352,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       alt: 'Shop Ease logo'
     },
     aggregatedScore: 4.6,
-    reviewsCount: 1234,
+    reviewsCount: 1234, 
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -316,6 +381,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -339,6 +409,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -362,6 +437,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   // Application Health Items (5 items)
@@ -395,7 +475,12 @@ export const RANDOMIZED_FEED_ITEMS = [
         hasInfo: false
       }
     ],
-    notices: []
+    notices: [],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -435,7 +520,12 @@ export const RANDOMIZED_FEED_ITEMS = [
         message: 'Response times are slightly elevated due to high load',
         timestamp: new Date('2024-01-16T08:30:00Z')
       }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -475,7 +565,12 @@ export const RANDOMIZED_FEED_ITEMS = [
         message: 'Critical infrastructure issues detected, emergency response activated',
         timestamp: new Date('2024-01-15T10:00:00Z')
       }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -508,7 +603,12 @@ export const RANDOMIZED_FEED_ITEMS = [
         hasInfo: false
       }
     ],
-    notices: []
+    notices: [],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -548,7 +648,12 @@ export const RANDOMIZED_FEED_ITEMS = [
         message: 'Scheduled maintenance completed, monitoring system performance',
         timestamp: new Date('2024-01-14T09:00:00Z')
       }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationHealthFeedItemDto,
 
   // Application Review Items (5 items)
@@ -567,7 +672,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     testimonial: 'This application has transformed our workflow. Highly recommended for teams looking to improve productivity.',
     appName: 'Photo Snap',
     reviewDate: '2024-01-16T10:00:00Z',
-    helpfulCount: 87
+    helpfulCount: 87,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -585,7 +695,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     testimonial: 'Excellent tool with intuitive interface. The features are exactly what we needed for our project.',
     appName: 'Quick Task',
     reviewDate: '2024-01-14T15:30:00Z',
-    helpfulCount: 124
+    helpfulCount: 124,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -603,7 +718,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     testimonial: 'Outstanding performance and reliability. Our team has been using it for months without any issues.',
     appName: 'Speedy VPN',
     reviewDate: '2024-01-11T12:45:00Z',
-    helpfulCount: 156
+    helpfulCount: 156,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -621,7 +741,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     testimonial: 'Great application with solid documentation. Easy to integrate into our existing infrastructure.',
     appName: 'Budget Buddy',
     reviewDate: '2024-01-08T09:20:00Z',
-    helpfulCount: 92
+    helpfulCount: 92,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -639,7 +764,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     testimonial: 'Impressed with the support and regular updates. The development team really cares about user feedback.',
     appName: 'Mindful',
     reviewDate: '2024-01-05T16:10:00Z',
-    helpfulCount: 203
+    helpfulCount: 203,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    }
   } as ApplicationReviewFeedItem,
 
   // Article Highlight Items (3 items)
@@ -655,6 +785,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     coverImage: {
       url: 'https://picsum.photos/seed/architecture/400/200',
       alt: 'Building Scalable Applications'
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
     }
   } as ArticleHighlightFeedItem,
 

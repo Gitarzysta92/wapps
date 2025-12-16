@@ -18,7 +18,7 @@ import { TuiIcon } from '@taiga-ui/core';
   styleUrl: './discussion-chip.component.scss'
 })
 export class DiscussionChipComponent {
-  public readonly commentsCount = input.required<number>();
+  public readonly commentsCount = input<number>(10);
 }
 
 

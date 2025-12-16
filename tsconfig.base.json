@@ -195,6 +195,9 @@
       "@portals/shared/features/user-profile": [
         "apps/portals/shared/features/user-profile/src/index.ts"
       ],
+      "@portals/shared/features/voting": [
+        "apps/portals/shared/features/voting/src/index.ts"
+      ],
       "@portals/shared/partials/filters-bar": [
         "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],

@@ -1,1 +1,1 @@
-export * from './lib/voting/voting.component';
+export * from './presentation/voting-container.directive';

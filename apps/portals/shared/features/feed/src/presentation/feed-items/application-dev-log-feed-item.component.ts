@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
-import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/app';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
@@ -10,6 +10,7 @@ import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portal
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
 import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
 import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
+import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
@@ -17,6 +18,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   appLink: string;
   commentsNumber: number;
   contextMenu: ContextMenuItem[];
+  voting: VotingData;
 }
 
 @Component({
@@ -29,6 +31,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
+    CardFooterComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
     AppChangelogInfoComponent,
@@ -36,7 +39,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     UpvoteChipComponent,
     DownvoteChipComponent,
     DiscussionChipComponent,
-    ContextMenuChipComponent
+    ContextMenuChipComponent,
+    VotingContainerDirective
   ],
   styles: [`
     .changelog-details {
@@ -87,7 +91,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       <ui-card-footer slot="footer">
         <div
           slot="right-side"
-          #votingContainer
+          #votingContainer="votingContainer"
           [votingContainer]="item.voting">
           <upvote-chip
             [count]="votingContainer.upvotesCount()"
@@ -103,8 +107,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           />
         </div>
         <discussion-chip
-          slot="left-side"
-          [commentsCount]="item.commentsNumber ?? 10"
+          slot="right-side"
+          [commentsCount]="item.commentsNumber"
           size="xs"
           appearance="action-soft-flat"
         />

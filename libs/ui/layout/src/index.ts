@@ -4,4 +4,5 @@ export { MediumCardSkeletonComponent } from './card/medium-card/medium-card-skel
 export { ElevatedCardComponent } from './card/elevated-card/elevated-card.component';
 export { ElevatedCardSkeletonComponent } from './card/elevated-card/elevated-card-skeleton.component';
 export { CardHeaderComponent } from './card/card-header/card-header.component';
+export { CardFooterComponent } from './card/card-footer/card-footer.component';
 export { CommonSectionComponent } from './section/common-section.component';

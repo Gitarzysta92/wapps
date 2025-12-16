@@ -6,6 +6,16 @@
   "projectType": "library",
   "tags": ["type:feature", "scope:voting"],
   "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/voting",
+        "main": "apps/portals/shared/features/voting/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/voting/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/voting/*.md"]
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
