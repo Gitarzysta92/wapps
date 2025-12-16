@@ -171,9 +171,6 @@
       "@portals/shared/features/pricing": [
         "apps/portals/shared/features/pricing/src/index.ts"
       ],
-      "@portals/shared/features/user-profile": [
-        "apps/portals/shared/features/user-profile/src/index.ts"
-      ],
       "@portals/shared/features/review": [
         "apps/portals/shared/features/review/src/index.ts"
       ],
@@ -195,6 +192,9 @@
       "@portals/shared/features/tags": [
         "apps/portals/shared/features/tags/src/index.ts"
       ],
+      "@portals/shared/features/user-profile": [
+        "apps/portals/shared/features/user-profile/src/index.ts"
+      ],
       "@portals/shared/partials/filters-bar": [
         "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],
@@ -209,6 +209,7 @@
       "@ui/chat-input": ["libs/ui/chat-input/src/index.ts"],
       "@ui/content": ["libs/ui/content/src/index.ts"],
       "@ui/content-feed": ["libs/ui/content-feed/src/index.ts"],
+      "@ui/context-menu-chip": ["libs/ui/context-menu-chip/src/index.ts"],
       "@ui/cover-image": ["libs/ui/cover-image/src/index.ts"],
       "@ui/discussion": ["libs/ui/discussion/src/index.ts"],
       "@ui/filters": ["libs/ui/filters/src/index.ts"],
@@ -223,8 +224,8 @@
       "@ui/my-profile": ["libs/ui/my-profile/src/index.ts"],
       "@ui/navigation": ["libs/ui/navigation/src/index.ts"],
       "@ui/notices-section": ["libs/ui/notices-section/src/index.ts"],
-      "@ui/profile": ["libs/ui/profile/src/index.ts"],
       "@ui/password-reset": ["libs/ui/password-reset/src/index.ts"],
+      "@ui/profile": ["libs/ui/profile/src/index.ts"],
       "@ui/registration": ["libs/ui/registration/src/index.ts"],
       "@ui/routable-dialog": ["libs/ui/routable-dialog/src/index.ts"],
       "@ui/routing": ["libs/ui/routing/src/index.ts"],
@@ -233,7 +234,8 @@
       "@ui/service-status-item": ["libs/ui/service-status-item/src/index.ts"],
       "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],
       "@ui/tags": ["libs/ui/tags/src/index.ts"],
-      "@ui/voting": ["libs/ui/voting/src/index.ts"]
+      "@ui/voting": ["libs/ui/voting/src/index.ts"],
+      "voting": ["apps/portals/shared/features/voting/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

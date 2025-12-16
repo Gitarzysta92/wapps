@@ -1,6 +1,12 @@
 import { Component, input } from '@angular/core';
 import { TuiIcon } from '@taiga-ui/core';
 
+export type ChangelogInfoData = {
+  version: string;
+  releaseDate: Date;
+  description: string;
+};
+
 @Component({
   selector: 'app-changelog-info',
   standalone: true,
@@ -9,7 +15,5 @@ import { TuiIcon } from '@taiga-ui/core';
   styleUrl: './app-changelog-info.component.scss'
 })
 export class AppChangelogInfoComponent {
-  version = input.required<string>();
-  releaseDate = input.required<Date>();
-  description = input.required<string>();
+  data = input.required<ChangelogInfoData>();
 }

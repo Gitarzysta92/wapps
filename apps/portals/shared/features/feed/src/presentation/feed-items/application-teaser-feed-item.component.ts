@@ -106,7 +106,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           appearance="primary"
           [routerLink]="item.appLink">
           <tui-icon icon="@tui.grid"/>
-          Application overview
+          Discover Application
         </a>
       </ui-medium-card>
       <div slot="footer" class="card-footer">

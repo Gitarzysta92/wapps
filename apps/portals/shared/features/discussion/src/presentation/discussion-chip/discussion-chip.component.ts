@@ -5,12 +5,20 @@ import { TuiIcon } from '@taiga-ui/core';
 @Component({
   selector: 'discussion-chip',
   standalone: true,
-  imports: [TuiChip, TuiIcon],
+  imports: [
+    TuiIcon
+  ],
+  hostDirectives: [
+    {
+      directive: TuiChip,
+      inputs: ['size']
+    },
+  ],
   templateUrl: './discussion-chip.component.html',
   styleUrl: './discussion-chip.component.scss'
 })
 export class DiscussionChipComponent {
-  commentsCount = input.required<number>();
+  public readonly commentsCount = input.required<number>();
 }
 
 

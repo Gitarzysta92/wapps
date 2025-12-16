@@ -1,11 +1,11 @@
 <div class="version-column">
   <div class="version-header">
     <tui-icon icon="@tui.tag" class="version-icon" />
-    <h3 class="version-number">Version {{ version() }}</h3>
+    <h3 class="version-number">Version {{ data().version }}</h3>
   </div>
   <div class="release-date">
     <tui-icon icon="@tui.calendar" class="date-icon" />
-    <span>{{ releaseDate() }}</span>
+    <span>{{ data().releaseDate }}</span>
   </div>
-  <p class="version-description">{{ description() }}</p>
+  <p class="version-description">{{ data().description }}</p>
 </div>

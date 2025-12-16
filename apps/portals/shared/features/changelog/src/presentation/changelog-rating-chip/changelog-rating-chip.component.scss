@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+}
+
+.changelog-rating-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rating-value {
+  font-weight: 500;
+}

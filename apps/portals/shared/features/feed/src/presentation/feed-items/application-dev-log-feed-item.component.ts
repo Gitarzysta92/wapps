@@ -1,19 +1,22 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { TuiChip } from '@taiga-ui/kit';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { RoutePathPipe } from '@ui/routing';
+import { TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
 import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/app';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
+import { DiscussionChipComponent } from '@portals/shared/features/discussion';
+import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
+import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
 export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never> & {
   appLink: string;
+  commentsNumber: number;
+  contextMenu: ContextMenuItem[];
 }
 
 @Component({
@@ -22,25 +25,32 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TuiChip,
-    TuiButton,
     TuiIcon,
-    RouterLink,
-    RoutePathPipe,
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
     AppChangelogInfoComponent,
-    AppChangelogDetailsComponent
+    AppChangelogDetailsComponent,
+    UpvoteChipComponent,
+    DownvoteChipComponent,
+    DiscussionChipComponent,
+    ContextMenuChipComponent
   ],
   styles: [`
-    .medium-card-nested {
-      padding: 1rem;
-      background-color: #8a2be2;
-      border-radius: $radius-sm;
-      box-shadow: $shadow-md;
+    .changelog-details {
+      border: 4px solid #8a2be2;
       margin-top: 1rem;
+    }
+    .changelog-info {
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .footer-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
   `],
   template: `
@@ -63,47 +73,48 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           title="item.appName"
         />
       </ui-card-header>
-      <app-changelog-info [version]="item.version" [releaseDate]="item.releaseDate" [description]="item.description" />
-      <ui-medium-card class="medium-card-nested">
+      <app-changelog-info
+        class="changelog-info"
+        [data]="{ version: item.version, releaseDate: item.releaseDate, description: item.description }"
+      />
+      <ui-medium-card class="changelog-details">
         <tui-chip size="s" appearance="action-soft" slot="top-edge">
-          <tui-icon icon="@tui.list" /> What's New
+          <tui-icon icon="@tui.package-plus" /> What's New
         </tui-chip>
-        <app-changelog-details [changes]="item.changes" />
+        <app-changelog-details [data]="{ changes: item.changes }" />
       </ui-medium-card>
 
-      <div class="item-content" content>
-        <div class="dev-log-container">
-          <a
-            class="dev-log-cta" 
-            tuiButton 
-            size="s" 
-            appearance="primary"
-            [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug }">
-              <tui-icon icon="@tui.external-link"/>
-              View Full Changelog
-          </a>
+      <ui-card-footer slot="footer">
+        <div
+          slot="right-side"
+          #votingContainer
+          [votingContainer]="item.voting">
+          <upvote-chip
+            [count]="votingContainer.upvotesCount()"
+            size="xs"
+            appearance="action-soft-flat"
+            (click)="votingContainer.upvote()"
+          />
+          <downvote-chip
+            [count]="votingContainer.downvotesCount()"
+            size="xs"
+            appearance="action-soft-flat"
+            (click)="votingContainer.downvote()"
+          />
         </div>
-      </div>
-
-      <div slot="footer">
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.download" />
-            Update Now
-        </button>
-         <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.share" />
-            Share
-        </button>
-      </div>
-
+        <discussion-chip
+          slot="left-side"
+          [commentsCount]="item.commentsNumber ?? 10"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+        <context-menu-chip
+          slot="right-side"
+          [contextMenu]="item.contextMenu"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+      </ui-card-footer>
     </ui-medium-card>
   `,
 })

@@ -28,16 +28,9 @@
   padding: $space-2;
 }
 
-// Hide empty slots
-.card-top-bar:empty,
-.card-bottom-bar:empty,
-.card-footer:empty,
-.card-actions:empty,
-.card-title:empty,
-.card-top-edge:empty {
-  display: none;
+:host:has(.card-top-edge:not(:empty)) {
+  padding-top: $space-7;
 }
-
 
 .card-top-edge:not(:empty) {
   position: absolute;
@@ -49,4 +42,25 @@
   width: 100%;
   height: $size-touch-min;
   background: var(--tui-base-03);
-} 
+}
+
+:host:has([slot='footer']) {
+  padding-bottom: $space-3;
+}
+
+.card-footer:has([slot='footer']) {
+  padding-top: $space-3;
+}
+
+
+
+// Hide empty slots
+.card-top-bar:empty,
+.card-bottom-bar:empty,
+.card-footer:empty,
+.card-actions:empty,
+.card-title:empty,
+.card-top-edge:empty {
+  display: none;
+}
+ 

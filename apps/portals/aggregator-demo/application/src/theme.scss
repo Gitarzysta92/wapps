@@ -134,6 +134,9 @@ body.dark {
   --tui-background-action-soft-active: rgba(55, 65, 81, 0.95);
   --tui-border-action-soft: rgba(255, 255, 255, 0.1);
   --tui-border-action-soft-focus: #{$color-primary-600};
+
+  // Action-flat appearance
+  --action-soft-flat-text: #a2aac7;
 }
 
 [tuiTheme='dark'] {
@@ -219,6 +222,20 @@ body.dark {
   &:active {
     color: var(--tui-text-action-soft-active);
     background: var(--tui-background-action-soft-active);
+  }
+}
+
+
+[tuiAppearance][data-appearance='action-soft-flat'] {
+  color: var(--action-soft-flat-text);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--tui-text-action-soft-hover);
+  }
+
+  &:active {
+    color: var(--tui-text-action-soft-active);
   }
 }
 

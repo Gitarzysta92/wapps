@@ -1,5 +1,5 @@
 <ul class="changes-list">
-  <li *ngFor="let change of changes()" class="change-item">
+  <li *ngFor="let change of data().changes" class="change-item">
     <tui-icon icon="@tui.check" class="check-icon" />
     <span>{{ change.description }}</span>
   </li>

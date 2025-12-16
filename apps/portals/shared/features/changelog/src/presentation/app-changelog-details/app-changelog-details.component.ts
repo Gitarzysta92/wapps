@@ -7,6 +7,10 @@ export type ChangeItem = {
   type: unknown;
 };
 
+export type ChangelogDetailsData = {
+  changes: ChangeItem[];
+};
+
 @Component({
   selector: 'app-changelog-details',
   standalone: true,
@@ -15,5 +19,5 @@ export type ChangeItem = {
   styleUrl: './app-changelog-details.component.scss'
 })
 export class AppChangelogDetailsComponent {
-  changes = input.required<ChangeItem[]>();
+  data = input.required<ChangelogDetailsData>();
 }

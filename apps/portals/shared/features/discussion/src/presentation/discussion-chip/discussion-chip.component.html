@@ -1,9 +1,3 @@
-<tui-chip 
-  size="xs" 
-  appearance="action-soft"
-  class="discussion-chip">
-  <tui-icon icon="@tui.message-circle"></tui-icon>
-  <span class="comments-count">{{ commentsCount() }}</span>
-</tui-chip>
-
+<span>{{ commentsCount() }}</span>
+<tui-icon [style.height.rem]="1" icon="@tui.message-square-text"></tui-icon>
 
