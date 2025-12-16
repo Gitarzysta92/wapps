@@ -6,19 +6,40 @@
   transition: all 0.2s ease;
   border-radius: 10px;
 
-  .icon {
-    // font-size: 1.25rem;
-    // line-height: 1;
+  tui-icon {
+    font-size: 1.25rem; // default/medium size
+    line-height: 1;
+  }
+
+  // Correlate icon size with button size
+  &[data-size='xs'] tui-icon {
+    font-size: 0.75rem;
+  }
+
+  &[data-size='s'] tui-icon {
+    font-size: 1rem;
+  }
+
+  &[data-size='m'] tui-icon {
+    font-size: 1.25rem;
+  }
+
+  &[data-size='l'] tui-icon {
+    font-size: 1.5rem;
+  }
+
+  &[data-size='xl'] tui-icon {
+    font-size: 2rem;
   }
 
   &.is-sharing {
-    .icon {
+    tui-icon {
       animation: rotate 1s linear infinite;
     }
   }
 
   &.share-success {
-    .icon {
+    tui-icon {
       color: var(--tui-status-positive);
     }
   }

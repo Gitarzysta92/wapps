@@ -9,7 +9,12 @@ import { SharingService } from "../../application/sharing.service";
   imports: [
     TuiIcon
   ],
-  hostDirectives: [TuiButton],
+  hostDirectives: [
+    {
+      directive: TuiButton,
+      inputs: ['size'] // at minimum, just expose size
+    }
+  ],
   host: {
     'type': 'button',
   }
@@ -19,6 +24,13 @@ export class ShareToggleButtonComponent {
   @HostBinding('disabled')
   get isDisabled(): boolean {
     return !this.canShare || this.isSharing;
+  }
+
+  @Input() size: 'xs' | 's' | 'm' | 'l' | 'xl' = 'm';
+
+  @HostBinding('attr.data-size')
+  get dataSize(): string {
+    return this.size;
   }
 
   @Input({ required: true }) type!: 'applications' | 'suites' | 'articles' | 'discussions';

@@ -31,6 +31,7 @@ import {
   DiscussionTopicFeedItemVM,
   ArticleHighlightFeedItemVM
 } from '@portals/shared/features/feed';
+import { mapAttributionToVM } from '@portals/shared/features/attribution';
 import { HomePageStateService } from "./home-page-state.service";
 import { TempFeedProviderService } from "./temp-feed-provider.service";
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
@@ -112,6 +113,9 @@ type RegisteredFeedItem = Array<
                 break;
               case APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR:
                 i.appLink = buildRoutePath(NAVIGATION.applicationDevLog.path, { appSlug: i.appSlug });
+                if (i.attribution) {
+                  i.attribution = mapAttributionToVM(i.attribution) as any;
+                }
                 break;
               case SUITE_TEASER_FEED_ITEM_SELECTOR:
                 i.suiteLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: i.suiteTitle.toLowerCase().replace(/\s+/g, '-') });

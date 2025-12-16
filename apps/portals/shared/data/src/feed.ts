@@ -7,6 +7,7 @@ import {
   DiscussionTopicFeedItem, 
   SuiteTeaserFeedItem 
 } from "@domains/feed";
+import { AttributionType, ContentNature } from "@domains/publication/attribution";
 import { CATEGORY_DICTIONARY } from "./categories";
 import { TAG_DICTIONARY } from "./tags";
 
@@ -64,6 +65,12 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
     }
   } as ApplicationDevLogFeedItem,
 
@@ -205,6 +212,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4 Turbo',
     }
   } as ApplicationDevLogFeedItem,
 
@@ -228,6 +241,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task Inc.',
+      disclosureRequired: true,
     }
   } as ApplicationDevLogFeedItem,
 
@@ -252,6 +271,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude + Human Review',
     }
   } as ApplicationDevLogFeedItem,
 
@@ -276,6 +301,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ApplicationDevLogFeedItem,
 
@@ -300,6 +330,13 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ADVERTISEMENT,
+      sponsor: 'Wellness Corp',
+      disclosureRequired: true,
+      generatedBy: 'Marketing AI',
     }
   } as ApplicationDevLogFeedItem,
 

@@ -84,6 +84,9 @@
       "@domains/publication/article": [
         "libs/domains/publication/article/src/index.ts"
       ],
+      "@domains/publication/attribution": [
+        "libs/domains/publication/attribution/src/index.ts"
+      ],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
       "@features/categories": [
@@ -176,6 +179,9 @@
       ],
       "@portals/shared/features/search": [
         "apps/portals/shared/features/search/src/index.ts"
+      ],
+      "@portals/shared/features/attribution": [
+        "apps/portals/shared/features/attribution/src/index.ts"
       ],
       "@portals/shared/features/sharing": [
         "apps/portals/shared/features/sharing/src/index.ts"

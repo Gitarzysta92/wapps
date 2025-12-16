@@ -7,10 +7,12 @@
 .card-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .card-header-left {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 }
 

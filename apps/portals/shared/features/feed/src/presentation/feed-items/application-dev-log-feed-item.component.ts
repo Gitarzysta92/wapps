@@ -11,6 +11,7 @@ import { DiscussionChipComponent } from '@portals/shared/features/discussion';
 import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
 import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
 import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
+import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
@@ -19,6 +20,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   commentsNumber: number;
   contextMenu: ContextMenuItem[];
   voting: VotingData;
+  attribution?: AttributionInfoVM;
 }
 
 @Component({
@@ -41,7 +43,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     DownvoteChipComponent,
     DiscussionChipComponent,
     ContextMenuChipComponent,
-    VotingContainerDirective
+    VotingContainerDirective,
+    AttributionInfoBadgeComponent
   ],
   styles: [`
     .changelog-details {
@@ -52,17 +55,26 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       padding: 1rem;
     }
     .changelog-label {
+      display: inline-flex;
+      align-items: center;
       opacity: 0.5;
+      margin-left: 0.5rem;
+    }
+    .changelog-badge {
+      background-color: #8a2be2;
+      color: white;
+    }
+    .changelog-version {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      small {
+        opacity: 0.5;
+      }
     }
   `],
   template: `
     <ui-medium-card class="medium-card">
-    <!-- <tui-chip size="s" slot="top-edge">
-          <tui-icon icon="@tui.git-commit" />
-        </tui-chip> -->
-      <!-- <div slot="top-bar">
-      <tui-badge size="s"><tui-icon icon="@tui.git-commit" /> changelog</tui-badge>
-      </div> -->
       <ui-card-header slot="header">
         <app-avatar
           slot="left-side"
@@ -70,15 +82,13 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           [avatar]="{ url: 'https://picsum.photos/200', alt: item.appName }"/>
         <h3 uiMediumTitle>
           {{ item.appName }}
-          <!-- <app-badges [badges]="item.badges"/> -->
-          <!-- <content-badges [badges]="item.badges"/> -->
           <span class="changelog-label">
             <tui-icon icon="@tui.git-commit" /> Changelog
           </span>
         </h3>
-        <small class="changelog-label">
-          <tui-badge size="s">ver. {{ item.version }}</tui-badge> {{ item.subtitle }}
-        </small>
+        <div class="changelog-version">
+          <tui-badge class="changelog-badge" size="s">ver. {{ item.version }}</tui-badge> <small>{{ item.subtitle }}</small>
+        </div>
         <share-toggle-button
           appearance="action-soft-flat"
           slot="right-side"
@@ -100,6 +110,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       </ui-medium-card>
 
       <ui-card-footer slot="footer">
+      <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
         <div
           slot="right-side"
           #votingContainer="votingContainer"
