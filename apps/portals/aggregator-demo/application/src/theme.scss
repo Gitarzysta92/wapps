@@ -196,10 +196,14 @@ body.dark {
   color: var(--tui-text-action-soft);
   background: var(--tui-background-action-soft);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--tui-border-action-soft);
+  border-radius: $radius-md; // 12px
+  @include transition((transform, opacity), $duration-200, $ease-in-out);
+  //border: 1px solid var(--tui-border-action-soft);
   --tui-border-focus: var(--tui-border-action-soft-focus);
+  cursor: pointer;
 
   &:hover {
+    transform: scale(1.05);
     color: var(--tui-text-action-soft-hover);
     background: var(--tui-background-action-soft-hover);
   }

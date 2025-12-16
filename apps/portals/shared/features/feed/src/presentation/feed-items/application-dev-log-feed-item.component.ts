@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/app';
@@ -28,6 +28,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    TuiButton,
     TuiChip,
     TuiIcon,
     TuiBadge,
@@ -90,13 +91,21 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           <tui-badge class="changelog-badge" size="s">ver. {{ item.version }}</tui-badge> <small>{{ item.subtitle }}</small>
         </div>
         <share-toggle-button
-          appearance="action-soft-flat"
+          appearance="action-soft"
           slot="right-side"
           size="s"
           type="applications"
           slug="item.appSlug"
           title="item.appName"
         />
+        <button
+          tuiButton
+          appearance="action-soft"
+          size="s"
+          slot="right-side"
+        >
+          <tui-icon icon="@tui.circle-arrow-right" />
+        </button>
       </ui-card-header>
       <app-changelog-info
         class="changelog-info"
@@ -110,7 +119,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       </ui-medium-card>
 
       <ui-card-footer slot="footer">
-      <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
+        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
         <div
           slot="right-side"
           #votingContainer="votingContainer"

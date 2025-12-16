@@ -17,6 +17,7 @@ import {
 } from '@portals/shared/features/app';
 import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
 import { ContextMenuChipComponent, ContextMenuItem } from '@ui/context-menu-chip';
+import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 
@@ -26,6 +27,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   reviewsLink: string;
   appLink: string;
   contextMenu: ContextMenuItem[];
+  attribution?: AttributionInfoVM;
 }
 
 @Component({
@@ -49,6 +51,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     AppReviewsChipComponent,
     MyFavoriteToggleComponent,
     ContextMenuChipComponent,
+    AttributionInfoBadgeComponent,
   ],
   styles: [
     `
@@ -57,7 +60,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         border-radius: 10px;
       }
       .card-footer {
-        padding: 6px;
+        padding: 0.2rem 1.5rem;
       }
       .cover-image {
         //filter: blur(5px);
@@ -112,6 +115,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
       </ui-medium-card>
 
       <ui-card-footer slot="footer" class="card-footer">
+        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
         <app-reviews-chip slot="right-side"
           [reviewsCount]="item.reviewsCount"
           [reviewsLink]="item.reviewsLink"

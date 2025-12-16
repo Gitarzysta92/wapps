@@ -1,8 +1,23 @@
-<div class="attribution-badge" [tuiHint]="attribution.tooltipText">
-  <tui-badge 
-    [appearance]="attribution.badgeAppearance"
-    size="s">
-    <tui-icon [icon]="attribution.icon" class="attribution-icon"></tui-icon>
-    <span class="attribution-text">{{ attribution.displayText }}</span>
-  </tui-badge>
+<div class="attribution-badges">
+  <button 
+    type="button"
+    class="info-icon-button"
+    [tuiHint]="infoHintText">
+    <tui-icon 
+      icon="@tui.info" 
+      class="info-icon">
+    </tui-icon>
+  </button>
+  
+  <button 
+    type="button"
+    class="attribution-badge-button"
+    [tuiHint]="attribution.tooltipText">
+    <tui-badge 
+      [appearance]="attribution.badgeAppearance"
+      size="m"
+      class="attribution-badge">
+      <tui-icon [icon]="attribution.icon" class="badge-icon"></tui-icon>
+    </tui-badge>
+  </button>
 </div>

@@ -1,35 +1,33 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: inline-flex;
   align-items: center;
-  padding: 12px;
-  background-color: aquamarine;
-  transition: all 0.2s ease;
-  border-radius: 10px;
-
+  padding: $space-2; // 12px
   tui-icon {
-    font-size: 1.25rem; // default/medium size
+    font-size: $size-icon-sm; // default/medium size (1.25rem)
     line-height: 1;
   }
 
   // Correlate icon size with button size
   &[data-size='xs'] tui-icon {
-    font-size: 0.75rem;
+    font-size: 0.75rem; // Custom size smaller than standard scale
   }
 
   &[data-size='s'] tui-icon {
-    font-size: 1rem;
+    font-size: $size-icon-xs; // 1rem
   }
 
   &[data-size='m'] tui-icon {
-    font-size: 1.25rem;
+    font-size: $size-icon-sm; // 1.25rem
   }
 
   &[data-size='l'] tui-icon {
-    font-size: 1.5rem;
+    font-size: $size-icon-md; // 1.5rem
   }
 
   &[data-size='xl'] tui-icon {
-    font-size: 2rem;
+    font-size: $size-icon-lg; // 2rem
   }
 
   &.is-sharing {
@@ -42,10 +40,6 @@
     tui-icon {
       color: var(--tui-status-positive);
     }
-  }
-
-  &:hover:not(:disabled) {
-    transform: scale(1.05);
   }
 
   &:disabled {

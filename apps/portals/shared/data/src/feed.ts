@@ -40,6 +40,11 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -107,6 +112,11 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -131,6 +141,11 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -152,6 +167,12 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task',
+      disclosureRequired: true,
     }
   } as ArticleHighlightFeedItem,
 
@@ -181,6 +202,11 @@ export const FEED_ITEM_EXAMPLES = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as DiscussionTopicFeedItem,
 
@@ -366,6 +392,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -394,6 +425,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude + Editorial Team',
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -422,6 +459,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -450,6 +493,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task Inc.',
+      disclosureRequired: true,
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -478,6 +527,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ApplicationTeaserFeedItemDto,
 
@@ -517,6 +571,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -562,6 +621,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -607,6 +671,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -645,6 +714,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -690,6 +764,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationHealthFeedItemDto,
 
@@ -714,6 +793,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -737,6 +821,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -760,6 +849,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -783,6 +877,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -806,6 +905,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
     }
   } as ApplicationReviewFeedItem,
 
@@ -827,6 +931,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     voting: {
       upvotes: 10,
       downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ArticleHighlightFeedItem,
 
@@ -842,6 +951,12 @@ export const RANDOMIZED_FEED_ITEMS = [
     coverImage: {
       url: 'https://picsum.photos/seed/webdev/400/200',
       alt: 'Future of Web Development'
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4 + Human Editorial',
     }
   } as ArticleHighlightFeedItem,
 
@@ -857,6 +972,11 @@ export const RANDOMIZED_FEED_ITEMS = [
     coverImage: {
       url: 'https://picsum.photos/seed/security/400/200',
       alt: 'Security Best Practices'
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ArticleHighlightFeedItem,
 
@@ -887,7 +1007,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 23,
-    viewsCount: 156
+    viewsCount: 156,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   {
@@ -916,7 +1041,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 18,
-    viewsCount: 89
+    viewsCount: 89,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   {
@@ -945,7 +1075,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 31,
-    viewsCount: 203
+    viewsCount: 203,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   // Suite Teaser Items (4 items)
@@ -962,7 +1097,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Time Tracker', logo: 'https://picsum.photos/seed/tt/64/64', description: 'Time tracking and analytics' },
       { name: 'Team Chat', logo: 'https://picsum.photos/seed/tc/64/64', description: 'Collaborative communication' }
     ],
-    category: 'Productivity'
+    category: 'Productivity',
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -978,7 +1118,13 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Git Manager', logo: 'https://picsum.photos/seed/gm/64/64', description: 'Git repository management' },
       { name: 'API Tester', logo: 'https://picsum.photos/seed/at/64/64', description: 'API testing and debugging' }
     ],
-    category: 'Development'
+    category: 'Development',
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude AI + Editorial Review',
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -994,7 +1140,14 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Photo Editor', logo: 'https://picsum.photos/seed/pe/64/64', description: 'Professional photo editing' },
       { name: 'UI Prototyper', logo: 'https://picsum.photos/seed/up/64/64', description: 'Interactive UI prototyping' }
     ],
-    category: 'Design'
+    category: 'Design',
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Design Tools Inc.',
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -1010,6 +1163,11 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Chart Builder', logo: 'https://picsum.photos/seed/cb/64/64', description: 'Interactive chart creation' },
       { name: 'Report Generator', logo: 'https://picsum.photos/seed/rg/64/64', description: 'Automated report generation' }
     ],
-    category: 'Analytics'
+    category: 'Analytics',
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as SuiteTeaserFeedItem
 ];

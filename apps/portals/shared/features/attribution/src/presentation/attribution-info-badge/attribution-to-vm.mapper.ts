@@ -7,7 +7,7 @@ export function mapAttributionToVM(attribution: ContentAttributionDto): Attribut
     contentNature: attribution.contentNature,
     verificationLevel: attribution.verificationLevel,
     sponsor: attribution.sponsor,
-    displayText: getDisplayText(attribution),
+    displayText: '', // Not displayed on badge anymore
     icon: getIcon(attribution),
     tooltipText: getTooltipText(attribution),
     badgeAppearance: getBadgeAppearance(attribution)

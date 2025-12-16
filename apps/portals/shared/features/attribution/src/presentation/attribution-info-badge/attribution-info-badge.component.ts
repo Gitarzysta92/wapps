@@ -30,4 +30,6 @@ export type AttributionInfoVM = {
 })
 export class AttributionInfoBadgeComponent {
   @Input({ required: true }) attribution!: AttributionInfoVM;
+  
+  readonly infoHintText = 'Content Attribution Information';
 }
