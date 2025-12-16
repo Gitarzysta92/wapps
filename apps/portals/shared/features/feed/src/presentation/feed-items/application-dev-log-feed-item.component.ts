@@ -63,7 +63,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       <!-- <div slot="top-bar">
       <tui-badge size="s"><tui-icon icon="@tui.git-commit" /> changelog</tui-badge>
       </div> -->
-      <ui-card-header slot="title">
+      <ui-card-header slot="header">
         <app-avatar
           slot="left-side"
           [size]="'m'"

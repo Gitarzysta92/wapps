@@ -7,12 +7,7 @@
   padding: $space-6 $space-6;
 }
 .card-header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.card-title {
-  flex: 1;
+  display: block;
 }
 
 .card-body {
@@ -58,8 +53,6 @@
 .card-top-bar:empty,
 .card-bottom-bar:empty,
 .card-footer:empty,
-.card-actions:empty,
-.card-title:empty,
 .card-top-edge:empty {
   display: none;
 }

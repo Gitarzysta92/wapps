@@ -9,13 +9,7 @@
 }
 
 .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-title {
-  flex: 1;
+  display: block;
   padding: $space-2 0;
 }
 
@@ -37,9 +31,7 @@
 
 // Hide empty slots
 .card-bottom-bar:empty,
-.card-footer:empty,
-.card-actions:empty,
-.card-title:empty {
+.card-footer:empty {
   display: none;
 }
 

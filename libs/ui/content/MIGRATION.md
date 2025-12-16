@@ -48,10 +48,13 @@ Created a new `@ui/content` library to centralize content-styling components, se
 ### Title Directive
 ```typescript
 import { MediumTitleDirective } from '@ui/content';
+import { CardHeaderComponent } from '@ui/layout';
 ```
 
 ```html
-<h3 uiMediumTitle slot="title">{{ article.title }}</h3>
+<ui-card-header slot="header">
+  <h3 uiMediumTitle>{{ article.title }}</h3>
+</ui-card-header>
 ```
 
 ### Excerpt Component

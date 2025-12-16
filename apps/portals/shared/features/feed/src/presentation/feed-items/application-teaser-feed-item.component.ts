@@ -88,7 +88,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           slot="top-edge"
           [category]="item.category"
         />
-        <ui-card-header slot="title">
+        <ui-card-header slot="header">
           <app-avatar 
             slot="left-side" 
             [size]="'xl'" 

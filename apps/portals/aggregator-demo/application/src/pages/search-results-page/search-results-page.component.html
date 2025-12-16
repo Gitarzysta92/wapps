@@ -76,8 +76,10 @@
   <ui-elevated-card class="item-card">
     <ui-cover-image [image]="vm.coverImageUrl" slot="backdrop"/>
     <ui-medium-card>
-      <article-rating [readonly]="true" slot="actions" [rating]="vm.rating"/>
-      <h3 uiMediumTitle slot="title">{{ vm.title }}</h3>
+      <ui-card-header slot="header">
+        <h3 uiMediumTitle>{{ vm.title }}</h3>
+        <article-rating [readonly]="true" slot="right-side" [rating]="vm.rating"/>
+      </ui-card-header>
       <ui-tags [tags]="vm.tags" slot="tags"></ui-tags>
       <ui-excerpt [excerpt]="vm.excerpt" slot="excerpt"></ui-excerpt>
       <article-author-info [author]="vm.author" slot="author">
@@ -91,8 +93,7 @@
 <ng-template #articleEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
     <ui-medium-card-skeleton>
-      <article-rating-skeleton slot="actions"/>
-      <ui-medium-title-skeleton slot="title"/>
+      <ui-medium-title-skeleton slot="header"/>
       <ui-tags-skeleton slot="tags"/>
       <ui-excerpt-skeleton slot="excerpt"/>
       <article-author-info-skeleton slot="author"/>
@@ -106,14 +107,14 @@
 <ng-template #applicationEntry let-entry="entry">
   @let vm = toApplicationVM(entry);
   <ui-medium-card class="item-card">
-    <my-favorite-toggle [readonly]="true" slot="actions" [item]="vm"/>
-    <ui-card-header slot="title">
+    <ui-card-header slot="header">
       <app-avatar slot="left-side" [size]="'xl'" [avatar]="vm.avatarUrl"/>
       <h3 uiMediumTitle>
         {{ vm.title }}
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
       <ui-tags [tags]="vm.tags"></ui-tags>
+      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
     </ui-card-header>
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
@@ -128,8 +129,7 @@
 
 <ng-template #applicationEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
-    <article-rating-skeleton slot="actions"></article-rating-skeleton>
-    <ui-medium-title-skeleton/>
+    <ui-medium-title-skeleton slot="header"/>
     <ui-tags-skeleton/>
     <ui-excerpt-skeleton/>
     <article-author-info-skeleton/>
@@ -141,11 +141,13 @@
 <ng-template #suiteEntry let-entry="entry">
   @let vm = toSuiteVM(entry);
   <ui-medium-card class="item-card">
-    <my-favorite-toggle [readonly]="true" slot="actions" [item]="vm"/>
-    <h3 uiMediumTitle slot="title">
-      {{ vm.title }}
-      <app-rating [readonly]="true" [rating]="vm.rating"/>
-    </h3>
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle>
+        {{ vm.title }}
+        <app-rating [readonly]="true" [rating]="vm.rating"/>
+      </h3>
+      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
+    </ui-card-header>
     <ui-tags [tags]="vm.tags"></ui-tags>
     <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
@@ -161,8 +163,7 @@
 
 <ng-template #suiteEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
-    <article-rating-skeleton slot="actions"></article-rating-skeleton>
-    <ui-medium-title-skeleton/>
+    <ui-medium-title-skeleton slot="header"/>
     <ui-tags-skeleton/>
     <ui-excerpt-skeleton/>
     <article-author-info-skeleton/>
