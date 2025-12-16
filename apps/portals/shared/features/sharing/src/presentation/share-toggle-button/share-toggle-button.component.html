@@ -1,17 +1,3 @@
-<button 
-  tuiButton
-  type="button"
-  appearance="secondary"
-  size="s"
-  [class.is-sharing]="isSharing"
-  [class.share-success]="shareSuccess"
-  [disabled]="!canShare || isSharing"
-  (click)="share()">
-  @if (shareSuccess) {
-    <span class="icon">✓</span> Shared!
-  } @else if (isSharing) {
-    <span class="icon">⟳</span> Sharing...
-  } @else {
-    <span class="icon">↗</span> Share
-  }
-</button>
+<tui-icon 
+  [icon]="shareSuccess ? '@tui.check' : isSharing ? '@tui.loader' : '@tui.share'">
+</tui-icon>

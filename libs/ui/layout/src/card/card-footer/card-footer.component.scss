@@ -7,7 +7,7 @@
 .card-footer {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $space-2;
 }
 
 .card-footer-left {
@@ -17,7 +17,6 @@
 .card-footer-content {
   display: flex;
   flex-direction: column;
-  //gap: $space-2;
   flex: 1;
   min-width: 0;
 }
@@ -26,6 +25,6 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 

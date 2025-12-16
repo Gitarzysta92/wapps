@@ -1,14 +1,5 @@
-<button
-  tuiIconButton
-  type="button"
-  appearance="icon"
-  [size]="size()"
-  [disabled]="readonly()"
-  (click)="toggleFavorite()"
-  class="favorite-toggle">
-  <tui-icon 
-    [icon]="isFavorite() ? '@tui.heart-filled' : '@tui.heart'">
-  </tui-icon>
-</button>
+<tui-icon 
+  [icon]="isFavorite() ? '@tui.heart-filled' : '@tui.heart'">
+</tui-icon>
 
 

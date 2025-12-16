@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent } from '@ui/layout';
+import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent, CardFooterComponent } from '@ui/layout';
 import { CoverImageComponent } from '@ui/cover-image';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
@@ -16,6 +16,7 @@ import {
   AppReviewsChipComponent 
 } from '@portals/shared/features/app';
 import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
+import { ContextMenuChipComponent, ContextMenuItem } from '@ui/context-menu-chip';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 
@@ -24,6 +25,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   tags: AddTypeToArray<ApplicationTeaserFeedItemDto['tags'], { link: string }>;
   reviewsLink: string;
   appLink: string;
+  contextMenu: ContextMenuItem[];
 }
 
 @Component({
@@ -39,12 +41,14 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
+    CardFooterComponent,
     TagsComponent,
     AppAvatarComponent,
     AppRatingComponent,
     AppCategoryChipComponent,
     AppReviewsChipComponent,
     MyFavoriteToggleComponent,
+    ContextMenuChipComponent,
   ],
   styles: [
     `
@@ -53,10 +57,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         border-radius: 10px;
       }
       .card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 18px;
+        padding: 6px;
       }
       .cover-image {
         //filter: blur(5px);
@@ -109,15 +110,22 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           Discover Application
         </a>
       </ui-medium-card>
-      <div slot="footer" class="card-footer">
-        <app-reviews-chip 
+
+      <ui-card-footer slot="footer" class="card-footer">
+        <app-reviews-chip slot="right-side"
           [reviewsCount]="item.reviewsCount"
           [reviewsLink]="item.reviewsLink"
+          size="xs"
+          appearance="action-soft-flat"
         />
-        <button tuiButton size="s" appearance="flat">
-          <tui-icon icon="@tui.circle-ellipsis" />
-        </button>
-      </div>
+        <context-menu-chip
+          slot="right-side"
+          [contextMenu]="item.contextMenu"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+      </ui-card-footer>
+
     </ui-elevated-card>
   `,
 })

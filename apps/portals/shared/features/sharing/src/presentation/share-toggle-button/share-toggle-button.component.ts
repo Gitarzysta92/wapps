@@ -1,5 +1,5 @@
-import { Component, inject, Input } from "@angular/core";
-import { TuiButton } from "@taiga-ui/core";
+import { Component, inject, Input, HostListener, HostBinding } from "@angular/core";
+import { TuiButton, TuiIcon } from "@taiga-ui/core";
 import { SharingService } from "../../application/sharing.service";
 
 @Component({
@@ -7,10 +7,19 @@ import { SharingService } from "../../application/sharing.service";
   templateUrl: 'share-toggle-button.component.html',
   styleUrls: ['share-toggle-button.component.scss'],
   imports: [
-    TuiButton
-  ]
+    TuiIcon
+  ],
+  hostDirectives: [TuiButton],
+  host: {
+    'type': 'button',
+  }
 })
 export class ShareToggleButtonComponent {
+
+  @HostBinding('disabled')
+  get isDisabled(): boolean {
+    return !this.canShare || this.isSharing;
+  }
 
   @Input({ required: true }) type!: 'applications' | 'suites' | 'articles' | 'discussions';
   @Input({ required: true }) slug!: string;
@@ -21,6 +30,7 @@ export class ShareToggleButtonComponent {
   public isSharing = false;
   public shareSuccess = false;
 
+  @HostListener('click')
   public share(): void {
     if (!this.type || !this.slug || !this.title) {
       throw new Error('ShareToggleButtonComponent requires type, slug, and title inputs');

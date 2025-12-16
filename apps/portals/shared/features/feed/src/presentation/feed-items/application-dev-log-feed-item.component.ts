@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TuiChip } from '@taiga-ui/kit';
+import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
@@ -28,6 +28,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   imports: [
     TuiChip,
     TuiIcon,
+    TuiBadge,
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
@@ -49,29 +50,39 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     }
     .changelog-info {
       padding: 1rem;
-      margin-top: 1rem;
     }
-    .footer-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .changelog-label {
+      opacity: 0.5;
     }
   `],
   template: `
     <ui-medium-card class="medium-card">
+    <!-- <tui-chip size="s" slot="top-edge">
+          <tui-icon icon="@tui.git-commit" />
+        </tui-chip> -->
+      <!-- <div slot="top-bar">
+      <tui-badge size="s"><tui-icon icon="@tui.git-commit" /> changelog</tui-badge>
+      </div> -->
       <ui-card-header slot="title">
         <app-avatar
           slot="left-side"
           [size]="'m'"
           [avatar]="{ url: 'https://picsum.photos/200', alt: item.appName }"/>
         <h3 uiMediumTitle>
-          {{ item.appName }} <tui-chip size="s">major update - {{ item.version }}</tui-chip>
+          {{ item.appName }}
+          <!-- <app-badges [badges]="item.badges"/> -->
+          <!-- <content-badges [badges]="item.badges"/> -->
+          <span class="changelog-label">
+            <tui-icon icon="@tui.git-commit" /> Changelog
+          </span>
         </h3>
-        <small>
-          {{ item.subtitle }}
+        <small class="changelog-label">
+          <tui-badge size="s">ver. {{ item.version }}</tui-badge> {{ item.subtitle }}
         </small>
         <share-toggle-button
+          appearance="action-soft-flat"
           slot="right-side"
+          size="s"
           type="applications"
           slug="item.appSlug"
           title="item.appName"

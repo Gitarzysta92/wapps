@@ -1,12 +1,14 @@
-button {
+:host {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  padding: 12px;
+  background-color: aquamarine;
   transition: all 0.2s ease;
+  border-radius: 10px;
 
   .icon {
-    font-size: 1.25rem;
-    line-height: 1;
+    // font-size: 1.25rem;
+    // line-height: 1;
   }
 
   &.is-sharing {
