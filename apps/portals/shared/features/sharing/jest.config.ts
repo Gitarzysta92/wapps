@@ -9,3 +9,4 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../../../../coverage/apps/portals/shared/features/sharing'
 };
+

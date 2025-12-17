@@ -17,3 +17,4 @@ export type ChangelogInfoData = {
 export class AppChangelogInfoComponent {
   data = input.required<ChangelogInfoData>();
 }
+

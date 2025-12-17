@@ -3,9 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgFor } from '@angular/common';
 import { map, shareReplay } from 'rxjs';
 import { TuiIcon } from '@taiga-ui/core';
-import { StatusBannerComponent } from '@ui/status-banner';
-import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
-import { NoticesSectionComponent, Notice } from '@ui/notices-section';
+import { StatusBannerComponent, ServiceStatusItemComponent, type ServiceStatus, NoticesSectionComponent, type Notice } from '@apps/portals/shared/features/health-status';
 import { AppRecordDto } from '@domains/catalog/record';
 
 @Component({

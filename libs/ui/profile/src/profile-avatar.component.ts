@@ -25,3 +25,4 @@ import { TuiAvatar } from "@taiga-ui/kit";
 export class ProfileAvatarComponent {
   public readonly avatarPath = input<string>();
 }
+

@@ -86,12 +86,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         [item]="item.appSlug"
         size="s"
       />
-      <my-favorite-toggle
-        appearance="action-soft"
-        slot="actions"
-        [item]="item.appSlug"
-        size="s"
-      />
       <ui-medium-card class="medium-card">
         <app-category-chip 
           slot="top-edge"

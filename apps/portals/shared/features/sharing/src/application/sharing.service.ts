@@ -20,3 +20,4 @@ export class SharingService {
     return this._sharingProvider.canShare();
   }
 }
+

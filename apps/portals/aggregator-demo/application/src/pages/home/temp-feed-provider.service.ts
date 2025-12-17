@@ -13,7 +13,7 @@ import {
   TESTIMONIALS_DATA, 
   HEALTH_STATUS_MESSAGES_DATA 
 } from '@portals/shared/data';
-import { ApplicationDevLogFeedItem, ApplicationTeaserFeedItemDto, ApplicationHealthFeedItemDto, ApplicationReviewFeedItem, ArticleHighlightFeedItem, DiscussionTopicFeedItem, SuiteTeaserFeedItem, FeedItemDto } from '@domains/feed';
+import { ApplicationDevLogFeedItem, ApplicationTeaserFeedItemDto, ApplicationHealthFeedItemDto, ApplicationHealthStatusCode, NoticeType, ApplicationReviewFeedItem, ArticleHighlightFeedItem, DiscussionTopicFeedItem, SuiteTeaserFeedItem, FeedItemDto } from '@domains/feed';
 import { AppRecordDto } from '@domains/catalog/record';
 import { APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR } from '@portals/shared/features/feed';
@@ -122,6 +122,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
   private createApplicationHealthFeedItem(app: AppRecordDto): ApplicationHealthFeedItemDto {
     const healthStatus = this.getRandomHealthStatus();
     const statusMessage = this.getRandomHealthMessage();
+    const hasNotice = Math.random() > 0.8;
     
     return {
       id: this.generateUniqueId(`app-health-${app.id}`),
@@ -133,18 +134,16 @@ export class TempFeedProviderService implements IFeedProviderPort {
       appId: String(app.id),
       overallStatus: healthStatus,
       statusMessage: statusMessage,
-      services: [{
-        name: app.name,
-        status: healthStatus,
-        uptime: Math.floor(Math.random() * 100),
-        hasInfo: Math.random() > 0.5
-      }],
-      notices: Math.random() > 0.8 ? [{
-        type: 'info' as const,
-        title: 'Service Update',
-        message: 'All systems are running normally',
+      statusesHistory: [
+        { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 86400000 },
+        { status: healthStatus, timestamp: Date.now() }
+      ],
+      notice: {
+        type: hasNotice ? NoticeType.Info : NoticeType.Info,
+        title: hasNotice ? 'Service Update' : 'System Status',
+        message: hasNotice ? 'All systems are running normally' : statusMessage,
         timestamp: new Date()
-      }] : []
+      }
     };
   }
 
@@ -268,19 +267,23 @@ export class TempFeedProviderService implements IFeedProviderPort {
     return tagIds.map(id => tags[id] || `Tag ${id}`).slice(0, 3); // Max 3 tags
   }
 
-  private getRandomHealthStatus(): 'operational' | 'degraded' | 'outage' {
-    const statuses: ('operational' | 'degraded' | 'outage')[] = ['operational', 'degraded', 'outage'];
+  private getRandomHealthStatus(): ApplicationHealthStatusCode {
+    const statuses: ApplicationHealthStatusCode[] = [
+      ApplicationHealthStatusCode.Operational, 
+      ApplicationHealthStatusCode.Degraded, 
+      ApplicationHealthStatusCode.Outage
+    ];
     const weights = [0.8, 0.15, 0.05]; // 80% operational, 15% degraded, 5% outage
     const random = Math.random();
     let cumulative = 0;
-    
+
     for (let i = 0; i < statuses.length; i++) {
       cumulative += weights[i];
       if (random <= cumulative) {
         return statuses[i];
       }
     }
-    return 'operational';
+    return ApplicationHealthStatusCode.Operational;
   }
 
   private getRandomHealthMessage(): string {

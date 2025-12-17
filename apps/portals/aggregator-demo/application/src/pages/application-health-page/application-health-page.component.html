@@ -7,23 +7,23 @@
         System Health
       </h1>
       
-      <ui-status-banner
+      <health-status-banner
         [status]="getOverallStatus()"
         [message]="getStatusMessage()"
         [timestamp]="getCurrentTimestamp()">
-      </ui-status-banner>
+      </health-status-banner>
       
       <div class="services-list">
-        <ui-service-status-item
+        <health-service-status-item
           *ngFor="let service of getServices()"
           [service]="service">
-        </ui-service-status-item>
+        </health-service-status-item>
       </div>
       
-      <ui-notices-section
+      <health-notices-section
         [notices]="getNotices()"
         [showEmptyState]="true">
-      </ui-notices-section>
+      </health-notices-section>
     </div>
   </section>
 </main>

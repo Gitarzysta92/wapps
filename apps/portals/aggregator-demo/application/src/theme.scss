@@ -175,7 +175,10 @@ body.dark {
   --tui-info-hover: #0056b3;
   --tui-neutral: #{$color-gray-700};
   --tui-neutral-hover: #{$color-gray-600};
-  
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-info: #{$color-blue-600};
   //--t-shadow
 }
 

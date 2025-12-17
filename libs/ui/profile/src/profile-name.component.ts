@@ -16,3 +16,4 @@ import { Component, input } from "@angular/core";
 export class ProfileNameComponent {
   public readonly name = input<string>();
 }
+

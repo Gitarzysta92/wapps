@@ -1,14 +1,22 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ContentFeedItemComponent } from '@ui/content-feed';
+import { RouterLink } from '@angular/router';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgFor, NgIf } from '@angular/common';
 import type { SuiteTeaserFeedItem } from '@domains/feed';
+import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { MediumTitleComponent } from '@ui/content';
+import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
+import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
+import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const SUITE_TEASER_FEED_ITEM_SELECTOR = 'suite-teaser-feed-item';
 
 export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
   suiteLink: string;
+  contextMenu: ContextMenuItem[];
+  attribution?: AttributionInfoVM;
 }
 
 @Component({
@@ -16,158 +24,131 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemComponent,
+    MediumCardComponent,
+    CardHeaderComponent,
+    CardFooterComponent,
+    MediumTitleComponent,
+    ShareToggleButtonComponent,
+    MyFavoriteToggleComponent,
+    ContextMenuChipComponent,
+    AttributionInfoBadgeComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
     TuiAvatar,
     NgFor,
-    NgIf
+    NgIf,
+    RouterLink
   ],
-  template: `
-    <content-feed-item
-      icon="@tui.layout-grid"
-      [item]="item">
-      <div class="item-content" content>
-        <div class="suite-container">
-          <tui-chip 
-            class="suite-category" 
-            appearance="primary"
-            size="s">
-            {{ item.category }}
-          </tui-chip>
-          
-          <div class="suite-header">
-            <h3 class="suite-title">{{ item.suiteTitle }}</h3>
-            <p class="suite-description">{{ item.suiteDescription }}</p>
-            <div class="suite-meta">
-              <tui-icon icon="@tui.box" class="meta-icon" />
-              <span class="apps-count">{{ item.apps.length }} Applications</span>
-            </div>
-          </div>
-
-          <div class="apps-grid">
-            <div *ngFor="let app of item.apps" class="app-tile">
-              <tui-avatar
-                size="l"
-                class="app-logo">
-                {{ app.name.substring(0, 2) }}
-              </tui-avatar>
-              <div class="app-info">
-                <div class="app-name">{{ app.name }}</div>
-                <div class="app-description" *ngIf="app.description">
-                  {{ app.description }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            class="suite-cta" 
-            tuiButton 
-            size="s" 
-            appearance="primary">
-              <tui-icon icon="@tui.grid"/>
-              Explore Suite
-          </button>
-        </div>
-      </div>
-
-      <div class="item-actions" footer>
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.bookmark" />
-            Save Suite
-        </button>
-         <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.share" />
-            Share
-        </button>
-      </div>
-    </content-feed-item>
-  `,
   styles: [`
-    .item-content {
-      padding: 1rem;
+    .suite-chip {
+      background-color: var(--tui-status-primary);
+      color: white;
     }
-
-    .suite-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .suite-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .suite-title {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
     .suite-description {
-      margin: 0;
+      margin: 0.5rem 0;
       color: var(--tui-text-secondary);
     }
-
     .suite-meta {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       color: var(--tui-text-secondary);
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
     }
-
     .apps-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
+      margin: 1rem 0;
     }
-
     .app-tile {
       display: flex;
       gap: 1rem;
       padding: 1rem;
       border: 1px solid var(--tui-border-normal);
       border-radius: 8px;
+      background: var(--tui-background-base);
     }
-
     .app-info {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      flex: 1;
     }
-
     .app-name {
       font-weight: 600;
     }
-
     .app-description {
       font-size: 0.875rem;
       color: var(--tui-text-secondary);
     }
+  `],
+  template: `
+    <ui-medium-card class="medium-card">
+      <tui-chip size="s" appearance="primary" slot="top-edge" class="suite-chip">
+        <tui-icon icon="@tui.layout-grid" /> {{ item.category }}
+      </tui-chip>
+      <ui-card-header slot="header">
+        <h3 uiMediumTitle>
+          {{ item.suiteTitle }}
+        </h3>
+        <p class="suite-description">{{ item.suiteDescription }}</p>
+        <div class="suite-meta">
+          <tui-icon icon="@tui.box" />
+          <span>{{ item.apps.length }} Applications</span>
+        </div>
+        <my-favorite-toggle
+          appearance="action-soft"
+          slot="right-side"
+          [item]="item.id"
+          size="s"
+        />
+        <share-toggle-button
+          appearance="action-soft"
+          slot="right-side"
+          size="s"
+          type="suites"
+          [slug]="item.id"
+          [title]="item.suiteTitle"
+        />
+      </ui-card-header>
+      
+      <div class="apps-grid">
+        <div *ngFor="let app of item.apps" class="app-tile">
+          <tui-avatar size="l">
+            {{ app.name.substring(0, 2) }}
+          </tui-avatar>
+          <div class="app-info">
+            <div class="app-name">{{ app.name }}</div>
+            <div class="app-description" *ngIf="app.description">
+              {{ app.description }}
+            </div>
+          </div>
+        </div>
+      </div>
 
-    .item-actions {
-      display: flex;
-      gap: 0.5rem;
-      padding: 1rem;
-      border-top: 1px solid var(--tui-border-normal);
-    }
+      <a
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="item.suiteLink">
+          <tui-icon icon="@tui.grid"/>
+          Explore Suite
+      </a>
 
-    .action-btn {
-      flex: 1;
-    }
-  `]
+      <ui-card-footer slot="footer">
+        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
+        <context-menu-chip
+          slot="right-side"
+          [contextMenu]="item.contextMenu"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+      </ui-card-footer>
+    </ui-medium-card>
+  `,
 })
 export class SuiteTeaserFeedItemComponent {
   @Input() item!: SuiteTeaserFeedItemVM;

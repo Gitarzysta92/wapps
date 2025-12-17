@@ -20,3 +20,4 @@ export class AppCategoryChipComponent {
   size = input<'xs' | 's' | 'm'>('s');
   appearance = input<string>('primary');
 }
+

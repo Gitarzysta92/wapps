@@ -84,7 +84,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="changelog-label">
-            <tui-icon icon="@tui.git-commit" /> Changelog
+            <tui-icon icon="@tui.git-commit" /> changelog
           </span>
         </h3>
         <div class="changelog-version">

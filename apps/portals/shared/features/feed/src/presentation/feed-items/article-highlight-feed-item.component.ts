@@ -1,14 +1,25 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ContentFeedItemComponent } from '@ui/content-feed';
+import { RouterLink } from '@angular/router';
 import { CoverImageComponent } from '@ui/cover-image';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ArticleHighlightFeedItem } from '@domains/feed';
+import { CardHeaderComponent, CardFooterComponent, ElevatedCardComponent } from '@ui/layout';
+import { MediumTitleComponent } from '@ui/content';
+import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
+import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { UpvoteChipComponent } from '@ui/voting';
+import { DiscussionChipComponent } from '@portals/shared/features/discussion';
 
 export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item';
 
 export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> & {
   articleLink: string;
+  contextMenu: ContextMenuItem[];
+  upvotesCount: number;
+  commentsCount: number;
+  attribution?: AttributionInfoVM;
 }
 
 @Component({
@@ -16,110 +27,98 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemComponent,
+    ElevatedCardComponent,
+    CardHeaderComponent,
+    CardFooterComponent,
+    MediumTitleComponent,
     CoverImageComponent,
+    ShareToggleButtonComponent,
+    ContextMenuChipComponent,
+    AttributionInfoBadgeComponent,
+    UpvoteChipComponent,
+    DiscussionChipComponent,
     TuiChip,
     TuiButton,
-    TuiIcon
+    TuiIcon,
+    RouterLink
   ],
-  template: `
-    <content-feed-item
-      icon="@tui.file-text"
-      [item]="item">
-      <div class="item-content" content>
-        <ui-cover-image
-          class="cover-image"
-          [image]="item.coverImage">
-        </ui-cover-image>
-        <div class="article-info">
-          <tui-chip 
-            class="article-category" 
-            appearance="primary">
-            {{ item.category }}
-          </tui-chip>
-          <div class="article-content">
-            <h3 class="article-title">{{ item.title }}</h3>
-            <p class="article-excerpt"><b>{{ item.excerpt }}</b></p>
-            <p class="article-excerpt">{{ item.excerpt }}</p>
-          </div>
-          <button
-            class="article-cta" 
-            tuiButton 
-            size="s" 
-            appearance="primary">
-              <tui-icon icon="@tui.book-open-text"/>
-              Read Article
-          </button>
-        </div>
-      </div>
-      <div class="item-actions" footer>
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.thumbs-up" />
-            30
-        </button>
-         <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.messages-square" />
-            126 Comments
-        </button>
-      </div>
-    </content-feed-item>
-  `,
   styles: [`
-    .item-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .article-category {
+      background-color: var(--tui-status-primary);
+      color: white;
     }
-
-    .cover-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .article-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
     .article-content {
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
     }
-
-    .article-title {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
     .article-excerpt {
       margin: 0;
       color: var(--tui-text-secondary);
+      line-height: 1.6;
     }
+    .cover-image {
+      border-radius: 10px;
+    }
+  `],
+  template: `
+    <ui-elevated-card>
+      <ui-cover-image
+        class="cover-image"
+        [image]="item.coverImage"
+        slot="backdrop">
+      </ui-cover-image>
+      <share-toggle-button
+        slot="actions"
+        appearance="action-soft"
+        size="s"
+        type="articles"
+        [slug]="item.id"
+        [title]="item.title"
+      />
+      
+      <div class="article-content">
+        <tui-chip size="s" appearance="primary" class="article-category">
+          <tui-icon icon="@tui.file-text" /> {{ item.category }}
+        </tui-chip>
+        
+        <h3 uiMediumTitle>{{ item.title }}</h3>
+        <p class="article-excerpt">{{ item.excerpt }}</p>
+        
+        <a
+          tuiButton 
+          size="s" 
+          appearance="primary"
+          [routerLink]="item.articleLink">
+            <tui-icon icon="@tui.book-open-text"/>
+            Read Article
+        </a>
+      </div>
 
-    .item-actions {
-      display: flex;
-      gap: 0.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--tui-border-normal);
-    }
-
-    .action-btn {
-      flex: 1;
-    }
-  `]
+      <ui-card-footer slot="footer">
+        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
+        <upvote-chip
+          slot="right-side"
+          [count]="item.upvotesCount"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+        <discussion-chip
+          slot="right-side"
+          [commentsCount]="item.commentsCount"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+        <context-menu-chip
+          slot="right-side"
+          [contextMenu]="item.contextMenu"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+      </ui-card-footer>
+    </ui-elevated-card>
+  `,
 })
 export class ArticleHighlightFeedItemComponent {
   @Input() item!: ArticleHighlightFeedItemVM;

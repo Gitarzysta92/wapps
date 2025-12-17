@@ -26,3 +26,4 @@ export interface ContextMenuItem {
 export class ContextMenuChipComponent {
   public readonly contextMenu = input.required<ContextMenuItem[]>();
 }
+

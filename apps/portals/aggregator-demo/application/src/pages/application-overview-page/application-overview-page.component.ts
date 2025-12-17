@@ -5,7 +5,7 @@ import { map, shareReplay, startWith, switchMap } from 'rxjs';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { CoverImageComponent, CoverImageDto } from '@ui/cover-image';
-import { StatusBannerComponent } from '@ui/status-banner';
+import { StatusBannerComponent } from '@apps/portals/shared/features/health-status';
 import { AppRecordDto } from '@domains/catalog/record';
 import { NAVIGATION, ROUTE_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';

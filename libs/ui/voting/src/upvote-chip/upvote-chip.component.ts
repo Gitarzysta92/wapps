@@ -18,3 +18,4 @@ import { TuiChip } from '@taiga-ui/kit';
 export class UpvoteChipComponent {
   public readonly count = input.required<number>();
 }
+

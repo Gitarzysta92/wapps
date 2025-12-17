@@ -61,3 +61,4 @@ export class SharingApiService implements ISharingProvider {
            (!!navigator.share || !!navigator.clipboard);
   }
 }
+

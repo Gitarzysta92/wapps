@@ -39,6 +39,9 @@
     "types": [],
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
+      "@apps/portals/shared/features/health-status": [
+        "apps/portals/shared/features/health-status/src/index.ts"
+      ],
       "@cross-cutting/events": ["cross-cutting/events/src/index.ts"],
       "@domains/acquisition": ["libs/domains/acquisition/src/index.ts"],
       "@domains/catalog/category": [
@@ -126,6 +129,9 @@
       "@portals/shared/features/articles": [
         "apps/portals/shared/features/articles/src/index.ts"
       ],
+      "@portals/shared/features/attribution": [
+        "apps/portals/shared/features/attribution/src/index.ts"
+      ],
       "@portals/shared/features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
       ],
@@ -179,9 +185,6 @@
       ],
       "@portals/shared/features/search": [
         "apps/portals/shared/features/search/src/index.ts"
-      ],
-      "@portals/shared/features/attribution": [
-        "apps/portals/shared/features/attribution/src/index.ts"
       ],
       "@portals/shared/features/sharing": [
         "apps/portals/shared/features/sharing/src/index.ts"

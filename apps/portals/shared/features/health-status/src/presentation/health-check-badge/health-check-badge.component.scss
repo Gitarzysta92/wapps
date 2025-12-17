@@ -1,0 +1,29 @@
+@use 'ui/design-system/src/styles' as *;
+:host {
+  display: inline-flex;
+  align-items: center;
+  border-radius: $radius-full;
+  gap: $space-1;
+  padding: 0 $space-2;
+  &.operational {
+    background-color: var(--status-success);
+    color: white;
+  }
+  &.degraded {
+    background-color: var(--status-warning);
+    color: white;
+  }
+  &.outage {
+    background-color: var(--status-error);
+    color: white;
+  }
+  &.info {
+    background-color: var(--status-info);
+    color: white;
+  }
+}
+
+.badge-icon {
+  font-size: 0.875rem;
+}
+

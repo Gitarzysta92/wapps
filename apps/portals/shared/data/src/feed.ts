@@ -1,7 +1,9 @@
 import { 
   ApplicationDevLogFeedItem, 
   ApplicationTeaserFeedItemDto, 
-  ApplicationHealthFeedItemDto, 
+  ApplicationHealthFeedItemDto,
+  ApplicationHealthStatusCode,
+  NoticeType,
   ApplicationReviewFeedItem, 
   ArticleHighlightFeedItem, 
   DiscussionTopicFeedItem, 
@@ -13,6 +15,67 @@ import { TAG_DICTIONARY } from "./tags";
 
 
 export const FEED_ITEM_EXAMPLES = [
+
+  // Application Health Feed Item Example
+  {
+    id: 'app-health-1',
+    type: 'application-health-feed-item',
+    title: 'Photo Snap',
+    subtitle: 'All systems operational',
+    timestamp: new Date('2024-01-14T09:15:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    overallStatus: ApplicationHealthStatusCode.Operational,
+    statusMessage: 'All systems operational',
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
+    ],
+    notice: {
+      type: NoticeType.Info,
+      title: 'Service Update',
+      message: 'Scheduled maintenance completed',
+      timestamp: new Date('2024-01-13T23:00:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as ApplicationHealthFeedItemDto,
 
   // Application Teaser Feed Item Example
   {
@@ -78,47 +141,6 @@ export const FEED_ITEM_EXAMPLES = [
       generatedBy: 'GPT-4',
     }
   } as ApplicationDevLogFeedItem,
-
-
-
-  // Application Health Feed Item Example
-  {
-    id: 'app-health-1',
-    type: 'application-health-feed-item',
-    title: 'Photo Snap Health Status',
-    subtitle: 'All systems operational',
-    timestamp: new Date('2024-01-14T09:15:00Z'),
-    appSlug: 'photo-snap',
-    appId: '1',
-    overallStatus: 'operational',
-    statusMessage: 'All systems operational',
-    services: [
-      {
-        name: 'Photo Snap',
-        status: 'operational',
-        uptime: 99,
-        hasInfo: true
-      }
-    ],
-    notices: [
-      {
-        type: 'info',
-        title: 'Service Update',
-        message: 'Scheduled maintenance completed',
-        timestamp: new Date('2024-01-13T23:00:00Z')
-      }
-    ],
-    commentsNumber: 10,
-    voting: {
-      upvotes: 10,
-      downvotes: 3,
-    },
-    attribution: {
-      attributionType: AttributionType.HUMAN_CREATED,
-      contentNature: ContentNature.ORGANIC,
-      disclosureRequired: false,
-    }
-  } as ApplicationHealthFeedItemDto,
 
   // Application Review Feed Item Example
   {
@@ -544,29 +566,46 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-16T09:00:00Z'),
     appSlug: 'photo-snap',
     appId: '43301C93-54B4-4EC4-80C9-9C169E0768BC',
-    overallStatus: 'operational',
+    overallStatus: ApplicationHealthStatusCode.Operational,
     statusMessage: 'All systems are running smoothly with optimal performance metrics.',
-    services: [
-      {
-        name: 'Photo Processing API',
-        uptime: 99.9,
-        status: 'operational',
-        hasInfo: true
-      },
-      {
-        name: 'AI Enhancement Service',
-        uptime: 99.8,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Storage Service',
-        uptime: 100,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
     ],
-    notices: [],
+    notice: {
+      type: NoticeType.Info,
+      title: 'System Status',
+      message: 'All systems operational',
+      timestamp: new Date('2024-01-16T09:00:00Z')
+    },
     commentsNumber: 10,
     voting: {
       upvotes: 10,
@@ -587,36 +626,46 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-15T11:30:00Z'),
     appSlug: 'quick-task',
     appId: '8EEDE19C-22A3-4916-8C44-9F8CC391A7CC',
-    overallStatus: 'degraded',
+    overallStatus: ApplicationHealthStatusCode.Degraded,
     statusMessage: 'Some services are experiencing minor performance issues.',
-    services: [
-      {
-        name: 'Task Management API',
-        uptime: 98.5,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Real-time Sync',
-        uptime: 97.2,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Notification Service',
-        uptime: 99.1,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'warning',
-        title: 'Performance Notice',
-        message: 'Response times are slightly elevated due to high load',
-        timestamp: new Date('2024-01-16T08:30:00Z')
-      }
-    ],
+    notice: {
+      type: NoticeType.Warning,
+      title: 'Performance Notice',
+      message: 'Response times are slightly elevated due to high load',
+      timestamp: new Date('2024-01-16T08:30:00Z')
+    },
     commentsNumber: 10,
     voting: {
       upvotes: 10,
@@ -637,36 +686,46 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-14T14:15:00Z'),
     appSlug: 'speedy-vpn',
     appId: '65F52175-30CE-412A-8B52-FAD6F7C7D933',
-    overallStatus: 'outage',
+    overallStatus: ApplicationHealthStatusCode.Outage,
     statusMessage: 'Critical infrastructure issues detected, emergency response activated.',
-    services: [
-      {
-        name: 'VPN Gateway',
-        uptime: 85.2,
-        status: 'outage',
-        hasInfo: true
-      },
-      {
-        name: 'Authentication Service',
-        uptime: 92.1,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'DNS Resolution',
-        uptime: 88.7,
-        status: 'outage',
-        hasInfo: true
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'error',
-        title: 'Service Disruption',
-        message: 'Critical infrastructure issues detected, emergency response activated',
-        timestamp: new Date('2024-01-15T10:00:00Z')
-      }
-    ],
+    notice: {
+      type: NoticeType.Error,
+      title: 'Service Disruption',
+      message: 'Critical infrastructure issues detected, emergency response activated',
+      timestamp: new Date('2024-01-15T10:00:00Z')
+    },
     commentsNumber: 10,
     voting: {
       upvotes: 10,
@@ -687,29 +746,46 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-13T16:45:00Z'),
     appSlug: 'budget-buddy',
     appId: '3AE9FCCA-A167-4DB0-BF86-4FAA9E44C6FC',
-    overallStatus: 'operational',
+    overallStatus: ApplicationHealthStatusCode.Operational,
     statusMessage: 'All systems are running smoothly with optimal performance metrics.',
-    services: [
-      {
-        name: 'Budget Analytics API',
-        uptime: 99.95,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Bank Integration',
-        uptime: 99.8,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'AI Insights Engine',
-        uptime: 99.9,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
     ],
-    notices: [],
+    notice: {
+      type: NoticeType.Info,
+      title: 'System Status',
+      message: 'All systems operational',
+      timestamp: new Date('2024-01-13T16:45:00Z')
+    },
     commentsNumber: 10,
     voting: {
       upvotes: 10,
@@ -730,36 +806,46 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-12T12:20:00Z'),
     appSlug: 'mindful',
     appId: '2952422F-E640-4FBE-8F0A-C9506F6E8CFD',
-    overallStatus: 'degraded',
+    overallStatus: ApplicationHealthStatusCode.Degraded,
     statusMessage: 'Some services are experiencing minor performance issues.',
-    services: [
-      {
-        name: 'Meditation Streaming',
-        uptime: 98.8,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Progress Tracking',
-        uptime: 99.2,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Sleep Analytics',
-        uptime: 97.9,
-        status: 'degraded',
-        hasInfo: true
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'info',
-        title: 'Maintenance Notice',
-        message: 'Scheduled maintenance completed, monitoring system performance',
-        timestamp: new Date('2024-01-14T09:00:00Z')
-      }
-    ],
+    notice: {
+      type: NoticeType.Info,
+      title: 'Maintenance Notice',
+      message: 'Scheduled maintenance completed, monitoring system performance',
+      timestamp: new Date('2024-01-14T09:00:00Z')
+    },
     commentsNumber: 10,
     voting: {
       upvotes: 10,

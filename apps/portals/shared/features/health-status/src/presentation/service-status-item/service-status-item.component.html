@@ -1,0 +1,30 @@
+<div class="service-status-item">
+  <div class="service-header">
+    <div class="service-name">
+      <span class="name">{{ service.name }}</span>
+      <tui-icon 
+        *ngIf="service.hasInfo" 
+        icon="@tui.info" 
+        class="info-icon">
+      </tui-icon>
+    </div>
+    <div class="uptime-percentage">{{ service.uptime }}%</div>
+  </div>
+  
+  <div class="status-bar-container">
+    <div class="status-bar" [class]="'status-' + service.status">
+      <div class="status-indicators">
+        <div 
+          *ngFor="let day of getStatusDays()" 
+          class="status-day"
+          [class]="'day-' + day.status">
+        </div>
+      </div>
+    </div>
+    <div class="time-labels">
+      <span class="start-date">45 days ago</span>
+      <span class="end-date">Today</span>
+    </div>
+  </div>
+</div>
+

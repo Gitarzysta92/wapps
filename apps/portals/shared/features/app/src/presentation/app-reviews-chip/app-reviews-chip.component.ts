@@ -16,3 +16,4 @@ export class AppReviewsChipComponent {
   appearance = input<string>('flat');
   readonly = input<boolean>(false);
 }
+

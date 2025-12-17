@@ -54,3 +54,4 @@ Follows the standard feature architecture:
 - Modern browsers with Web Share API support
 - Falls back to clipboard copy for unsupported browsers
 - Requires HTTPS for Web Share API to work
+

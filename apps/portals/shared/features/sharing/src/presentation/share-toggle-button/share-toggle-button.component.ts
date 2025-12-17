@@ -75,3 +75,4 @@ export class ShareToggleButtonComponent {
     return this._sharingService.canShare();
   }
 }
+

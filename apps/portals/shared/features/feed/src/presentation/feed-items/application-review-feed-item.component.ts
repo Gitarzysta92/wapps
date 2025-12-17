@@ -1,16 +1,26 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ContentFeedItemComponent } from '@ui/content-feed';
-import { TuiAvatar } from '@taiga-ui/kit';
+import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgFor } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationReviewFeedItem } from '@domains/feed';
+import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { AppAvatarComponent, AppRatingComponent } from '@portals/shared/features/app';
+import { MediumTitleComponent } from '@ui/content';
+import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
+import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
+import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
 export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never> & {
   appLink: string;
+  contextMenu: ContextMenuItem[];
+  voting: VotingData;
+  attribution?: AttributionInfoVM;
 }
 
 @Component({
@@ -18,21 +28,105 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ContentFeedItemComponent,
+    MediumCardComponent,
+    CardHeaderComponent,
+    CardFooterComponent,
+    MediumTitleComponent,
+    AppAvatarComponent,
+    AppRatingComponent,
+    ShareToggleButtonComponent,
+    ContextMenuChipComponent,
+    AttributionInfoBadgeComponent,
+    UpvoteChipComponent,
+    DownvoteChipComponent,
+    VotingContainerDirective,
     TuiAvatar,
+    TuiChip,
     TuiButton,
     TuiIcon,
     NgFor,
     RouterLink,
     RoutePathPipe
   ],
+  styles: [`
+    .review-chip {
+      background-color: var(--tui-status-warning);
+      color: white;
+    }
+    .review-label {
+      display: inline-flex;
+      align-items: center;
+      opacity: 0.5;
+      margin-left: 0.5rem;
+    }
+    .review-content {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 2rem;
+      padding: 1rem 0;
+    }
+    .reviewer-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+    }
+    .reviewer-name {
+      font-weight: 600;
+    }
+    .reviewer-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.875rem;
+      color: var(--tui-text-secondary);
+    }
+    .review-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .testimonial {
+      margin: 0;
+      font-style: italic;
+      color: var(--tui-text-secondary);
+      padding: 1rem;
+      background: var(--tui-background-neutral-1);
+      border-radius: 8px;
+      border-left: 4px solid var(--tui-status-warning);
+    }
+  `],
   template: `
-    <content-feed-item
-      icon="@tui.star"
-      [item]="item">
-      <div class="item-content" content>
+    <ui-medium-card class="medium-card">
+      <tui-chip size="s" appearance="action-soft" slot="top-edge" class="review-chip">
+        <tui-icon icon="@tui.star" /> User Review
+      </tui-chip>
+      <ui-card-header slot="header">
+        <app-avatar
+          slot="left-side"
+          [size]="'m'"
+          [avatar]="{ url: 'https://picsum.photos/200', alt: item.appName }"/>
+        <h3 uiMediumTitle>
+          {{ item.appName }}
+          <span class="review-label">
+            <tui-icon icon="@tui.message-square" /> Review
+          </span>
+        </h3>
+        <app-rating [readonly]="true" [rating]="item.rating"/>
+        <share-toggle-button
+          appearance="action-soft"
+          slot="right-side"
+          size="s"
+          type="applications"
+          [slug]="item.appSlug"
+          [title]="item.appName"
+        />
+      </ui-card-header>
+      
+      <div class="review-content">
         <div class="reviewer-column">
-          <tui-avatar src="AI" />
+          <tui-avatar src="AI" size="l" />
           <div class="reviewer-name">{{ item.reviewerName }}</div>
           <div class="reviewer-meta">
             <span class="reviewer-role">{{ item.reviewerRole }}</span>
@@ -41,22 +135,8 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         </div>
 
         <div class="review-column">
-          <h3 class="application-name">{{ item.appName }}</h3>
           <p class="testimonial">"{{ item.testimonial }}"</p>
-
-          <div class="rating-container">
-            <span class="rating-value">{{ item.rating.toFixed(1) }}/5</span>
-            <div class="rating-stars">
-              <tui-icon 
-                *ngFor="let star of [1,2,3,4,5]"
-                [icon]="star <= item.rating ? '@tui.star' : '@tui.star'"
-                [class.filled]="star <= item.rating"
-                class="star-icon" />
-            </div>
-          </div>
-
           <a
-            class="review-cta" 
             tuiButton 
             size="s" 
             appearance="primary"
@@ -66,69 +146,35 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           </a>
         </div>
       </div>
-    </content-feed-item>
+
+      <ui-card-footer slot="footer">
+        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
+        <div
+          slot="right-side"
+          #votingContainer="votingContainer"
+          [votingContainer]="item.voting">
+          <upvote-chip
+            [count]="votingContainer.upvotesCount()"
+            size="xs"
+            appearance="action-soft-flat"
+            (click)="votingContainer.upvote()"
+          />
+          <downvote-chip
+            [count]="votingContainer.downvotesCount()"
+            size="xs"
+            appearance="action-soft-flat"
+            (click)="votingContainer.downvote()"
+          />
+        </div>
+        <context-menu-chip
+          slot="right-side"
+          [contextMenu]="item.contextMenu"
+          size="xs"
+          appearance="action-soft-flat"
+        />
+      </ui-card-footer>
+    </ui-medium-card>
   `,
-  styles: [`
-    .item-content {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 2rem;
-      padding: 1rem;
-    }
-
-    .reviewer-column {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      text-align: center;
-    }
-
-    .reviewer-name {
-      font-weight: 600;
-    }
-
-    .reviewer-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.875rem;
-      color: var(--tui-text-secondary);
-    }
-
-    .review-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .application-name {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .testimonial {
-      margin: 0;
-      font-style: italic;
-      color: var(--tui-text-secondary);
-    }
-
-    .rating-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .rating-stars {
-      display: flex;
-      gap: 0.25rem;
-    }
-
-    .star-icon.filled {
-      color: var(--tui-status-warning);
-    }
-  `]
 })
 export class ApplicationReviewFeedItemComponent {
   @Input() item!: ApplicationReviewFeedItemVM;

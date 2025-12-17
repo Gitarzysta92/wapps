@@ -1,4 +1,5 @@
 // Static data for feed item generation
+import { ApplicationHealthStatusCode } from '@domains/feed';
 
 export const ARTICLES_DATA = [
   {
@@ -134,8 +135,8 @@ export const TESTIMONIALS_DATA = [
   'The best investment we\'ve made for our development process. Highly recommend to other teams.'
 ];
 
-export const HEALTH_STATUS_MESSAGES_DATA = {
-  operational: [
+export const HEALTH_STATUS_MESSAGES_DATA: Record<ApplicationHealthStatusCode, string[]> = {
+  [ApplicationHealthStatusCode.Operational]: [
     'All systems operational with excellent performance',
     'Service running smoothly with optimal response times',
     'No issues detected, all metrics within normal range',
@@ -143,7 +144,7 @@ export const HEALTH_STATUS_MESSAGES_DATA = {
     'All services running optimally with fast response times',
     'System performance is outstanding, no issues reported'
   ],
-  degraded: [
+  [ApplicationHealthStatusCode.Degraded]: [
     'High memory usage detected, monitoring closely',
     'Response times slightly elevated, investigating',
     'Minor performance degradation observed',
@@ -151,7 +152,7 @@ export const HEALTH_STATUS_MESSAGES_DATA = {
     'Some services experiencing slower response times',
     'Performance metrics showing slight deviation from normal'
   ],
-  outage: [
+  [ApplicationHealthStatusCode.Outage]: [
     'Service experiencing issues, investigating',
     'Critical error detected, immediate attention required',
     'Service unavailable, emergency response activated',

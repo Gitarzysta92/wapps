@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ContentFeedItemComponent } from '@ui/content-feed';
-import { StatusBannerComponent } from '@ui/status-banner';
-import { ServiceStatusItemComponent } from '@ui/service-status-item';
-import { NoticesSectionComponent } from '@ui/notices-section';
+import { StatusBannerComponent, ServiceStatusItemComponent, NoticesSectionComponent } from '@apps/portals/shared/features/health-status';
 import { NgFor } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationHealthFeedItemDto } from '@domains/feed';
@@ -33,21 +31,21 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
       icon="@tui.heart-pulse"
       [item]="item">
       <div class="item-content" content>
-        <ui-status-banner
+        <health-status-banner
           [status]="item.overallStatus"
           [message]="item.statusMessage"
           [timestamp]="item.timestamp">
-        </ui-status-banner>
+        </health-status-banner>
         
-        <ui-service-status-item
+        <health-service-status-item
           *ngFor="let service of item.services"
           [service]="service">
-        </ui-service-status-item>
+        </health-service-status-item>
         
-        <ui-notices-section
+        <health-notices-section
           [notices]="noticesList"
           [showEmptyState]="true">
-        </ui-notices-section>
+        </health-notices-section>
         
         <a
           class="health-cta" 
