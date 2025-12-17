@@ -55,9 +55,15 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   ],
   styles: [
     `
-      .medium-card, .card-footer, .favorite-toggle {
+      .medium-card, .card-footer {
         background: var(--elevated-background);
         border-radius: 10px;
+      }
+      .card-header {
+        padding: 1rem 0;
+        ui-tags {
+          margin: 0.1rem 0;
+        }
       }
       .card-footer {
         padding: 0.2rem 1.5rem;
@@ -75,23 +81,23 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         slot="backdrop">
       </ui-cover-image>
       <my-favorite-toggle
-        class="favorite-toggle"
         slot="actions"
+        appearance="action-soft"
         [item]="item.appSlug"
-        size="m"
+        size="s"
       />
       <my-favorite-toggle
-        class="favorite-toggle"
+        appearance="action-soft"
         slot="actions"
         [item]="item.appSlug"
-        size="m"
+        size="s"
       />
       <ui-medium-card class="medium-card">
         <app-category-chip 
           slot="top-edge"
           [category]="item.category"
         />
-        <ui-card-header slot="header">
+        <ui-card-header slot="header" class="card-header">
           <app-avatar 
             slot="left-side" 
             [size]="'xl'" 
@@ -102,8 +108,8 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
             <app-rating [readonly]="true" [rating]="item.aggregatedScore"/>
           </h3>
           <ui-tags [tags]="item.tags"></ui-tags>
+          <p>{{ item.description }}</p>
         </ui-card-header>
-        <p>{{ item.description }}</p>
         <a
           tuiButton 
           size="s" 

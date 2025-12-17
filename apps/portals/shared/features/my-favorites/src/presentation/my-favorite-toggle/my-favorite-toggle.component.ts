@@ -12,10 +12,15 @@ export interface FavoriteItem {
 @Component({
   selector: 'my-favorite-toggle',
   standalone: true,
-  imports: [TuiIcon],
-  hostDirectives: [TuiButton],
   templateUrl: './my-favorite-toggle.component.html',
   styleUrl: './my-favorite-toggle.component.scss',
+  imports: [TuiIcon],
+  hostDirectives: [
+    {
+      directive: TuiButton,
+      inputs: ['size']
+    }
+  ],
   host: {
     'type': 'button',
   }
