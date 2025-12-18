@@ -27,8 +27,11 @@ export const FEED_ITEM_EXAMPLES = [
     appId: '1',
     rating: 4.8,
     reviewerName: 'Jane Doe',
-    reviewerRole: 'Photographer',
     reviewerAvatar: '',
+    reviewerRole: 'Photographer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
     testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
     appName: 'Photo Snap',
     reviewDate: '2024-01-16T16:10:00Z',
@@ -872,6 +875,10 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'John Developer',
     reviewerAvatar: '',
     reviewerRole: 'Senior Developer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+      { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
+    ],
     testimonial: 'This application has transformed our workflow. Highly recommended for teams looking to improve productivity.',
     appName: 'Photo Snap',
     reviewDate: '2024-01-16T10:00:00Z',
@@ -900,6 +907,10 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Sarah Engineer',
     reviewerAvatar: '',
     reviewerRole: 'Software Engineer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+      { id: 'expert', name: 'expert', icon: '@tui.star', color: 'warning-soft' }
+    ],
     testimonial: 'Excellent tool with intuitive interface. The features are exactly what we needed for our project.',
     appName: 'Quick Task',
     reviewDate: '2024-01-14T15:30:00Z',
@@ -928,6 +939,9 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Mike Tester',
     reviewerAvatar: '',
     reviewerRole: 'QA Engineer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
     testimonial: 'Outstanding performance and reliability. Our team has been using it for months without any issues.',
     appName: 'Speedy VPN',
     reviewDate: '2024-01-11T12:45:00Z',
@@ -956,6 +970,10 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Emily Architect',
     reviewerAvatar: '',
     reviewerRole: 'Solution Architect',
+    reviewerBadges: [
+      { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' },
+      { id: 'expert', name: 'expert', icon: '@tui.star', color: 'warning-soft' }
+    ],
     testimonial: 'Great application with solid documentation. Easy to integrate into our existing infrastructure.',
     appName: 'Budget Buddy',
     reviewDate: '2024-01-08T09:20:00Z',
@@ -984,6 +1002,9 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'David Admin',
     reviewerAvatar: '',
     reviewerRole: 'System Administrator',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
     testimonial: 'Impressed with the support and regular updates. The development team really cares about user feedback.',
     appName: 'Mindful',
     reviewDate: '2024-01-05T16:10:00Z',

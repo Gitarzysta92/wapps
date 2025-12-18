@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
+import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { NgFor } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationReviewFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
@@ -13,6 +12,8 @@ import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu
 import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
 import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
+import { ReviewAuthorBadgeComponent, ReviewQuoteShortComponent } from '@portals/shared/features/review';
+import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
@@ -40,61 +41,24 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
     UpvoteChipComponent,
     DownvoteChipComponent,
     VotingContainerDirective,
-    TuiAvatar,
+    ReviewAuthorBadgeComponent,
+    ReviewQuoteShortComponent,
+    ProfileBadgesComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
-    NgFor,
     RouterLink,
     RoutePathPipe
   ],
   styles: [`
-    .review-chip {
-      background-color: var(--tui-status-warning);
-      color: white;
-    }
     .review-label {
       display: inline-flex;
       align-items: center;
       opacity: 0.5;
       margin-left: 0.5rem;
     }
-    .review-content {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 2rem;
-      padding: 1rem 0;
-    }
-    .reviewer-column {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      text-align: center;
-    }
-    .reviewer-name {
-      font-weight: 600;
-    }
-    .reviewer-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.875rem;
-      color: var(--tui-text-secondary);
-    }
-    .review-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .testimonial {
-      margin: 0;
-      font-style: italic;
-      color: var(--tui-text-secondary);
-      padding: 1rem;
-      background: var(--tui-background-neutral-1);
-      border-radius: 8px;
-      border-left: 4px solid var(--tui-status-warning);
+    .review-quote-short {
+      margin: 1rem 0;
     }
   `],
   template: `
@@ -107,10 +71,14 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="review-label">
-            <tui-icon icon="@tui.message-square" /> Review
+            review <tui-icon [style.height]="'14px'" icon="@tui.star" /> 
           </span>
         </h3>
-        <app-rating [readonly]="true" [rating]="item.rating"/>
+        <review-author-badge
+          [reviewerName]="item.reviewerName"
+          [reviewDate]="item.reviewDate">
+          <profile-badges slot='badges' [badges]="item.reviewerBadges"></profile-badges>
+        </review-author-badge>
         <share-toggle-button
           appearance="action-soft"
           slot="right-side"
@@ -120,29 +88,19 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           [title]="item.appName"
         />
       </ui-card-header>
-      
-      <div class="review-content">
-        <div class="reviewer-column">
-          <tui-avatar src="AI" size="l" />
-          <div class="reviewer-name">{{ item.reviewerName }}</div>
-          <div class="reviewer-meta">
-            <span class="reviewer-role">{{ item.reviewerRole }}</span>
-            <span class="review-date">{{ item.reviewDate }}</span>
-          </div>
-        </div>
 
-        <div class="review-column">
-          <p class="testimonial">"{{ item.testimonial }}"</p>
-          <a
-            tuiButton 
-            size="s" 
-            appearance="primary"
-            [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug }">
-              <tui-icon icon="@tui.external-link"/>
-              Read Full Review
-          </a>
-        </div>
-      </div>
+      <review-quote-short class="review-quote-short" [quote]="item.testimonial">
+        <app-rating [readonly]="true" [rating]="item.rating"/>
+      </review-quote-short>
+
+      <a
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug }">
+          <tui-icon icon="@tui.external-link"/>
+          Read review
+      </a>
 
       <ui-card-footer slot="footer">
         <attribution-info-badge slot="left-side" [attribution]="item.attribution" />

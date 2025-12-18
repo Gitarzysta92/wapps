@@ -1,0 +1,18 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;  
+  gap: $space-1;
+}
+
+
+.reviewer-name {
+  font-weight: 600;
+}
+
+.reviewer-role,
+.review-date {
+  font-size: 0.875rem;
+  color: var(--tui-text-secondary);
+}

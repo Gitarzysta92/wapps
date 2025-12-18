@@ -1,0 +1,18 @@
+:host {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  font-style: italic;
+  color: var(--tui-text-secondary);
+  padding: 1rem;
+  background: var(--tui-background-neutral-1);
+  border-radius: 8px;
+  border-left: 4px solid var(--tui-status-warning);
+}
+
+.review-quote-container {
+  flex-direction: column;
+  gap: 1rem;
+}

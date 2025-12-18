@@ -5,8 +5,8 @@ export type ApplicationReviewFeedItem = {
   appId: string;
   rating: number;
   reviewerName: string;
-  reviewerAvatar: string;
   reviewerRole: string;
+  reviewerBadges: { id: string; name: string; icon: string; color: string }[];
   testimonial: string;
   appName: string;
   reviewDate: string | Date;

@@ -162,7 +162,10 @@ export class TempFeedProviderService implements IFeedProviderPort {
       rating: app.rating + (Math.random() - 0.5) * 0.5, // Slight variation
       reviewerName: reviewerName,
       reviewerRole: this.getRandomReviewerRole(),
-      reviewerAvatar: '',
+      reviewerBadges: [
+        { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+        { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
+      ],
       testimonial: testimonial,
       appName: app.name,
       reviewDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
