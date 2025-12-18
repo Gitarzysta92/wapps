@@ -17,3 +17,9 @@ export {
 export {
   HealthCheckBadgeComponent,
 } from './presentation/health-check-badge/health-check-badge.component';
+
+// Status History Component
+export {
+  StatusHistoryComponent,
+  type StatusHistoryItem
+} from './presentation/status-history/status-history.component';

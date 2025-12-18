@@ -21,3 +21,4 @@ export class AppCategoryChipComponent {
   appearance = input<string>('primary');
 }
 
+

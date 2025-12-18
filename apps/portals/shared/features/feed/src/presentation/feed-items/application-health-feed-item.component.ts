@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { StatusBannerComponent, ServiceStatusItemComponent, NoticesSectionComponent, HealthCheckBadgeComponent } from '@apps/portals/shared/features/health-status';
-import { NgFor } from '@angular/common';
+import { HealthCheckBadgeComponent, StatusHistoryComponent } from '@apps/portals/shared/features/health-status';
+import { NgIf, DatePipe } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import type { ApplicationHealthFeedItemDto } from '@domains/feed';
@@ -31,21 +30,19 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
     CardHeaderComponent,
     CardFooterComponent,
     MediumTitleComponent,
-    StatusBannerComponent,
-    ServiceStatusItemComponent,
-    NoticesSectionComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
     ContextMenuChipComponent,
     AttributionInfoBadgeComponent,
     DiscussionChipComponent,
     TuiChip,
-    NgFor,
-    RouterLink,
+    NgIf,
+    DatePipe,
     TuiButton,
     TuiIcon,
     TuiBadge,
     HealthCheckBadgeComponent,
+    StatusHistoryComponent,
   ],
   styles: [`
     .health-label {
@@ -58,11 +55,30 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 1rem 0;
     }
     .health-chip {
       background-color: var(--tui-status-info);
       color: white;
+    }
+    .notice-details {
+      border: 4px solid var(--tui-status-info);
+      margin-top: 1rem;
+    }
+    .notice-details.warning {
+      border-color: var(--tui-status-warning);
+    }
+    .notice-details.error {
+      border-color: var(--tui-status-negative);
+    }
+    .notice-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .notice-message {
+      line-height: 1.5;
+    }
+    .status-history {
+      margin: 1.5rem 0 1rem 0;
     }
   `],
   template: `
@@ -82,7 +98,6 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           <!-- TODO: this has to be mapped outside template -->
           <health-check-badge
             [status]="{ code: item.overallStatus, message: item.statusMessage }"/>
-          <!-- <tui-badge class="changelog-badge" size="s"></tui-badge> <small>{{ item.subtitle }}</small> -->
         </div>
         <share-toggle-button
           appearance="action-soft"
@@ -102,23 +117,23 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
         </button>
       </ui-card-header>
       
-      <div class="health-content">        
-        <!-- <health-status-banner
-          [status]="item.overallStatus"
-          [message]="item.statusMessage"
-          [timestamp]="item.timestamp">
-        </health-status-banner>
-        
-        <health-service-status-item
-          *ngFor="let service of item.services"
-          [service]="service">
-        </health-service-status-item>
-        
-        <health-notices-section
-          [notices]="noticesList"
-          [showEmptyState]="true">
-        </health-notices-section> -->
-      </div>
+      <status-history
+        class="status-history"
+        [statusesHistory]="item.statusesHistory" />
+
+      <ui-medium-card 
+        *ngIf="item.notice" 
+        class="notice-details"
+        [class.warning]="item.notice.type === 1"
+        [class.error]="item.notice.type === 2">
+        <tui-chip size="s" appearance="action-soft" slot="top-edge">
+          <tui-icon [icon]="getNoticeIcon(item.notice.type)" /> {{ item.notice.title }}
+        </tui-chip>
+        <div class="notice-content">
+          <p class="notice-message">{{ item.notice.message }}</p>
+          <small style="opacity: 0.5">{{ item.notice.timestamp | date:'medium' }}</small>
+        </div>
+      </ui-medium-card>
 
       <ui-card-footer slot="footer">
         <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
@@ -141,4 +156,12 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
 export class ApplicationHealthFeedItemComponent {
   @Input() item!: ApplicationHealthFeedItemVM;
 
+  getNoticeIcon(type: number): string {
+    switch (type) {
+      case 0: return '@tui.info';
+      case 1: return '@tui.alert-circle';
+      case 2: return '@tui.alert-triangle';
+      default: return '@tui.info';
+    }
+  }
 }

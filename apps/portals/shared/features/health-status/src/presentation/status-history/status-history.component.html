@@ -1,0 +1,11 @@
+<div class="status-history" *ngIf="statusesHistory() && statusesHistory().length > 0">
+  <small class="status-label">Last {{ statusesHistory().length }} days:</small>
+  <div 
+    *ngFor="let statusItem of statusesHistory()" 
+    class="status-dot"
+    [class.operational]="getStatusClass(statusItem.status) === 'operational'"
+    [class.degraded]="getStatusClass(statusItem.status) === 'degraded'"
+    [class.outage]="getStatusClass(statusItem.status) === 'outage'"
+    [title]="'Status: ' + getStatusLabel(statusItem.status) + ' on ' + (statusItem.timestamp | date:'short')">
+  </div>
+</div>

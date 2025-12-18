@@ -26,3 +26,4 @@ export class ProfileAvatarComponent {
   public readonly avatarPath = input<string>();
 }
 
+

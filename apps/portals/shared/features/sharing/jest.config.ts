@@ -10,3 +10,4 @@ export default {
   coverageDirectory: '../../../../../coverage/apps/portals/shared/features/sharing'
 };
 
+

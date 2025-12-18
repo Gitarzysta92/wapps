@@ -6,3 +6,4 @@ export interface ISharingProvider {
   canShare(): boolean;
 }
 
+

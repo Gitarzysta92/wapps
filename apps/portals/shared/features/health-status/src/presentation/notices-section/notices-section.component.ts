@@ -22,3 +22,4 @@ export class NoticesSectionComponent {
   @Input() showEmptyState = true;
 }
 
+

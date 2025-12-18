@@ -55,3 +55,4 @@ Follows the standard feature architecture:
 - Falls back to clipboard copy for unsupported browsers
 - Requires HTTPS for Web Share API to work
 
+
