@@ -175,11 +175,13 @@ export class TempFeedProviderService implements IFeedProviderPort {
 
   private createArticleHighlightFeedItem(): ArticleHighlightFeedItem {
     const article = ARTICLES_DATA[Math.floor(Math.random() * ARTICLES_DATA.length)];
+    const timestamp = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Within last week
     
     return {
       id: this.generateUniqueId('article-highlight'),
       type: ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
-      timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Within last week
+      timestamp: timestamp,
+      publicationDate: timestamp.getTime(),
       title: article.title,
       subtitle: article.excerpt,
       excerpt: article.excerpt,

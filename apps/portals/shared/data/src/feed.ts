@@ -16,6 +16,41 @@ import { TAG_DICTIONARY } from "./tags";
 
 export const FEED_ITEM_EXAMPLES = [
 
+  // Article Highlight Feed Item Example
+  {
+    id: 'article-highlight-1',
+    type: 'article-highlight-feed-item',
+    title: 'Boost Your Productivity With Quick Task',
+    subtitle: 'Explore top tips to work smarter in 2024.',
+    timestamp: new Date('2024-01-10T08:00:00Z'),
+    publicationDate: new Date('2024-01-10T08:00:00Z').getTime(),
+    excerpt: 'Explore top tips to work smarter in 2024 and discover how Quick Task revolutionizes the way you organize your workflow like a true professional. In today\'s fast-paced digital landscape, productivity isn\'t just about working harder—it\'s about working intelligently with the right tools at your fingertips. This comprehensive guide delves deep into cutting-edge productivity methodologies, time management strategies, and organizational frameworks that have been proven to boost efficiency by up to 300%. Learn how to leverage Quick Task\'s powerful features including intelligent task prioritization, collaborative workspaces, automated workflow optimization, and real-time progress tracking to transform your daily operations. We\'ll walk you through advanced techniques for breaking down complex projects into manageable chunks, setting SMART goals that actually get accomplished, eliminating productivity killers like context switching and decision fatigue, and creating sustainable habits that lead to long-term success. Whether you\'re a solo entrepreneur managing multiple ventures, a team leader coordinating distributed teams across time zones, or a busy professional juggling competing priorities, this article provides actionable insights and practical strategies you can implement immediately to reclaim your time, reduce stress, and achieve more in less time while maintaining a healthy work-life balance.',
+    author: 'Sarah Novak',
+    tags: [
+      { slug: 'productivity', name: 'Productivity' },
+      { slug: 'time-management', name: 'Time Management' },
+      { slug: 'organizational-framework', name: 'Organizational Framework' },
+      { slug: 'productivity-methods', name: 'Productivity Methods' },
+      { slug: 'productivity-tools', name: 'Productivity Tools' },
+    ],
+    category: 'Productivity',
+    coverImage: {
+      url: 'https://picsum.photos/seed/article1/400/200',
+      alt: 'Boost Your Productivity With Quick Task'
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task',
+      disclosureRequired: true,
+    }
+  } as ArticleHighlightFeedItem,
+  
   // Application Review Feed Item Example
   {
     id: 'app-review-1',
@@ -175,32 +210,7 @@ export const FEED_ITEM_EXAMPLES = [
   } as ApplicationDevLogFeedItem,
 
 
-  // Article Highlight Feed Item Example
-  {
-    id: 'article-highlight-1',
-    type: 'article-highlight-feed-item',
-    title: 'Boost Your Productivity With Quick Task',
-    subtitle: 'Explore top tips to work smarter in 2024.',
-    timestamp: new Date('2024-01-10T08:00:00Z'),
-    excerpt: 'Explore top tips to work smarter in 2024 and how Quick Task helps you organize your workflow like a pro.',
-    author: 'Sarah Novak',
-    category: 'Productivity',
-    coverImage: {
-      url: 'https://picsum.photos/seed/article1/400/200',
-      alt: 'Boost Your Productivity With Quick Task'
-    },
-    commentsNumber: 10,
-    voting: {
-      upvotes: 10,
-      downvotes: 3,
-    },
-    attribution: {
-      attributionType: AttributionType.HUMAN_CREATED,
-      contentNature: ContentNature.SPONSORED,
-      sponsor: 'Quick Task',
-      disclosureRequired: true,
-    }
-  } as ArticleHighlightFeedItem,
+
 
   // Discussion Topic Feed Item Example
   {
@@ -1028,6 +1038,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'Building Scalable Applications with Modern Architecture',
     subtitle: 'Learn how to design applications that can handle millions of users with modern architectural patterns and best practices.',
     timestamp: new Date('2024-01-15T14:00:00Z'),
+    publicationDate: new Date('2024-01-15T14:00:00Z').getTime(),
     excerpt: 'Learn how to design applications that can handle millions of users with modern architectural patterns and best practices.',
     author: 'Tech Editorial Team',
     category: 'Development',
@@ -1053,6 +1064,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'The Future of Web Development: Trends to Watch',
     subtitle: 'Explore the latest trends in web development including AI integration, edge computing, and new frameworks.',
     timestamp: new Date('2024-01-12T11:30:00Z'),
+    publicationDate: new Date('2024-01-12T11:30:00Z').getTime(),
     excerpt: 'Explore the latest trends in web development including AI integration, edge computing, and new frameworks.',
     author: 'Web Development Team',
     category: 'Technology',
@@ -1074,6 +1086,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'Security Best Practices for Modern Applications',
     subtitle: 'Essential security measures every developer should implement to protect user data and prevent vulnerabilities.',
     timestamp: new Date('2024-01-09T16:45:00Z'),
+    publicationDate: new Date('2024-01-09T16:45:00Z').getTime(),
     excerpt: 'Essential security measures every developer should implement to protect user data and prevent vulnerabilities.',
     author: 'Security Team',
     category: 'Security',

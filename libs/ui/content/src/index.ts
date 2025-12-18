@@ -1,5 +1,6 @@
 // Excerpt components
 export * from './excerpt/excerpt.component';
+export * from './fade-out-excerpt/fade-out-excerpt.component';
 export * from './excerpt-skeleton/excerpt-skeleton.component';
 
 // Title components
