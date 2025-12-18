@@ -91,7 +91,7 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
         <h3 uiMediumTitle>
           {{ item.title }}
           <span class="health-label">
-            <tui-icon icon="@tui.heart-pulse" /> health status 
+            health status <tui-icon [style.height]="'16px'" icon="@tui.heart-pulse" />
           </span>
         </h3>
         <div class="changelog-version">

@@ -16,6 +16,35 @@ import { TAG_DICTIONARY } from "./tags";
 
 export const FEED_ITEM_EXAMPLES = [
 
+  // Application Review Feed Item Example
+  {
+    id: 'app-review-1',
+    type: 'application-review-feed-item',
+    title: 'Jane Doe reviewed Photo Snap',
+    subtitle: 'Absolutely love the new AI features!',
+    timestamp: new Date('2024-01-16T16:10:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    rating: 4.8,
+    reviewerName: 'Jane Doe',
+    reviewerRole: 'Photographer',
+    reviewerAvatar: '',
+    testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
+    appName: 'Photo Snap',
+    reviewDate: '2024-01-16T16:10:00Z',
+    helpfulCount: 42,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as ApplicationReviewFeedItem,
+
   // Application Health Feed Item Example
   {
     id: 'app-health-1',
@@ -142,34 +171,6 @@ export const FEED_ITEM_EXAMPLES = [
     }
   } as ApplicationDevLogFeedItem,
 
-  // Application Review Feed Item Example
-  {
-    id: 'app-review-1',
-    type: 'application-review-feed-item',
-    title: 'Jane Doe reviewed Photo Snap',
-    subtitle: 'Absolutely love the new AI features!',
-    timestamp: new Date('2024-01-16T16:10:00Z'),
-    appSlug: 'photo-snap',
-    appId: '1',
-    rating: 4.8,
-    reviewerName: 'Jane Doe',
-    reviewerRole: 'Photographer',
-    reviewerAvatar: '',
-    testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
-    appName: 'Photo Snap',
-    reviewDate: '2024-01-16T16:10:00Z',
-    helpfulCount: 42,
-    commentsNumber: 10,
-    voting: {
-      upvotes: 10,
-      downvotes: 3,
-    },
-    attribution: {
-      attributionType: AttributionType.HUMAN_CREATED,
-      contentNature: ContentNature.ORGANIC,
-      disclosureRequired: false,
-    }
-  } as ApplicationReviewFeedItem,
 
   // Article Highlight Feed Item Example
   {

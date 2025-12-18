@@ -13,6 +13,9 @@ import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
 import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
 import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 
+//TODO: this has to be changed to application-changelog-feed-item
+
+
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
 export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never> & {
@@ -84,7 +87,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="changelog-label">
-            <tui-icon icon="@tui.git-commit" /> changelog
+            changelog <tui-icon [style.height]="'16px'" icon="@tui.git-commit" />
           </span>
         </h3>
         <div class="changelog-version">

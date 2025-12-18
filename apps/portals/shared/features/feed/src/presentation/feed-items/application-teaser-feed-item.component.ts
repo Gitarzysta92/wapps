@@ -55,6 +55,9 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   ],
   styles: [
     `
+      .medium-card {
+        border-radius: 10px;
+      }
       .medium-card, .card-footer {
         background: var(--elevated-background);
         border-radius: 10px;
@@ -68,18 +71,22 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
       .card-footer {
         padding: 0.2rem 1.5rem;
       }
+      .elevated-card {
+        padding-top: 100px;
+      }
       .cover-image {
         //filter: blur(5px);
       }
     `
   ],
   template: `
-    <ui-elevated-card>
+    <ui-elevated-card class="elevated-card">
       <ui-cover-image
         class="cover-image"
         [image]="item.coverImage"
         slot="backdrop">
       </ui-cover-image>
+      <!-- TODO: this should be moved to the card header -->
       <my-favorite-toggle
         slot="actions"
         appearance="action-soft"

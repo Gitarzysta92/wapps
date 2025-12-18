@@ -99,9 +99,6 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   `],
   template: `
     <ui-medium-card class="medium-card">
-      <tui-chip size="s" appearance="action-soft" slot="top-edge" class="review-chip">
-        <tui-icon icon="@tui.star" /> User Review
-      </tui-chip>
       <ui-card-header slot="header">
         <app-avatar
           slot="left-side"
