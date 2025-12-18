@@ -16,6 +16,40 @@ import { TAG_DICTIONARY } from "./tags";
 
 export const FEED_ITEM_EXAMPLES = [
 
+  // Discussion Topic Feed Item Example
+  {
+    id: 'discussion-topic-1',
+    type: 'discussion-topic-feed-item',
+    title: 'Quick task',
+    subtitle: 'Join the conversation about collaboration tools',
+    timestamp: new Date('2024-01-11T12:45:00Z'),
+    appSlug: 'quick-task',
+    topicSlug: 'collaboration-tools',
+    discussionData: {
+      topic: 'Collaboration Tools',
+      messages: [
+        {
+          id: 1,
+          author: 'John Developer',
+          content: 'What are your favorite features for collaboration?',
+          timestamp: new Date('2024-01-11T12:00:00Z')
+        }
+      ]
+    },
+    participantsCount: 12,
+    viewsCount: 70,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as DiscussionTopicFeedItem,
+
   // Article Highlight Feed Item Example
   {
     id: 'article-highlight-1',
@@ -208,43 +242,6 @@ export const FEED_ITEM_EXAMPLES = [
       generatedBy: 'GPT-4',
     }
   } as ApplicationDevLogFeedItem,
-
-
-
-
-  // Discussion Topic Feed Item Example
-  {
-    id: 'discussion-topic-1',
-    type: 'discussion-topic-feed-item',
-    title: 'Discussion: Collaboration Tools',
-    subtitle: 'Join the conversation about collaboration tools',
-    timestamp: new Date('2024-01-11T12:45:00Z'),
-    appSlug: 'quick-task',
-    topicSlug: 'collaboration-tools',
-    discussionData: {
-      topic: 'Collaboration Tools',
-      messages: [
-        {
-          id: 1,
-          author: 'John Developer',
-          content: 'What are your favorite features for collaboration?',
-          timestamp: new Date('2024-01-11T12:00:00Z')
-        }
-      ]
-    },
-    participantsCount: 12,
-    viewsCount: 70,
-    commentsNumber: 10,
-    voting: {
-      upvotes: 10,
-      downvotes: 3,
-    },
-    attribution: {
-      attributionType: AttributionType.HUMAN_CREATED,
-      contentNature: ContentNature.ORGANIC,
-      disclosureRequired: false,
-    }
-  } as DiscussionTopicFeedItem,
 
 ];
 

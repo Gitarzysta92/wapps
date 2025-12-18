@@ -1,0 +1,17 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  border-radius: $radius-full;
+  gap: $space-1;
+    
+  &.discussion-stats {
+    background-color: var(--tui-background-accent-1);
+    color: var(--tui-text-primary);
+  }
+}
+
+.badge-icon {
+  font-size: 0.875rem;
+}

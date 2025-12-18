@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DiscussionComponent } from '@ui/discussion';
+import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiChip } from '@taiga-ui/kit';
 import { RoutePathPipe } from '@ui/routing';
@@ -35,6 +36,7 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
     ContextMenuChipComponent,
     AttributionInfoBadgeComponent,
     DiscussionComponent,
+    DiscussionStatsBadgeComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
@@ -61,7 +63,6 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
     .discussion-stats {
       display: flex;
       gap: 1.5rem;
-      padding: 0.5rem 0;
       color: var(--tui-text-secondary);
       font-size: 0.875rem;
     }
@@ -70,12 +71,12 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
       align-items: center;
       gap: 0.5rem;
     }
+    .discussion-stats-badge {
+      opacity: 0.5;
+    }
   `],
   template: `
     <ui-medium-card class="medium-card">
-      <tui-chip size="s" appearance="action-soft" slot="top-edge" class="discussion-chip">
-        <tui-icon icon="@tui.message-square" /> Discussion
-      </tui-chip>
       <ui-card-header slot="header">
         <app-avatar
           slot="left-side"
@@ -84,19 +85,13 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
         <h3 uiMediumTitle>
           {{ item.title }}
           <span class="discussion-label">
-            <tui-icon icon="@tui.message-circle" /> {{ item.discussionData.topic }}
+            discussion <tui-icon [style.height]="'16px'" icon="@tui.message-square-text" />
           </span>
         </h3>
-        <div class="discussion-stats">
-          <div class="stat-item">
-            <tui-icon icon="@tui.users" />
-            <span>{{ item.participantsCount }} participants</span>
-          </div>
-          <div class="stat-item">
-            <tui-icon icon="@tui.eye" />
-            <span>{{ item.viewsCount }} views</span>
-          </div>
-        </div>
+        <discussion-stats-badge
+          class="discussion-stats-badge"
+          [stats]="{ participants: item.participantsCount, views: item.viewsCount }" />
+
         <share-toggle-button
           appearance="action-soft"
           slot="right-side"
@@ -110,19 +105,19 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
       <div class="discussion-content">
         <ui-discussion
           [data]="discussionData"
-          [readonly]="true"
+
           [maxMessagesToShow]="3">
         </ui-discussion>
-
-        <a
-          tuiButton 
-          size="s" 
-          appearance="primary"
-          [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug, topicSlug: item.topicSlug }">
-            <tui-icon icon="@tui.message-circle"/>
-            Join Discussion
-        </a>
       </div>
+
+      <a
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug, topicSlug: item.topicSlug }">
+          <tui-icon icon="@tui.message-circle"/>
+          Join Discussion
+      </a>
 
       <ui-card-footer slot="footer">
         <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
