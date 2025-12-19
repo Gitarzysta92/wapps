@@ -1,15 +1,15 @@
 .opening-post-slot {
   position: relative;
 
- &::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 60px;
-  bottom: 0;
-  width: 1px;
-  background-color: #556981;
- }
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 60px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
+  }
 }
 
 .reply-slot {
@@ -59,9 +59,9 @@
       left: -28px;
       top: 30px;
       bottom: 0;
-      width: 20px;
+      width: 1px;
       height: calc(100% - 30px);
-      border-left: solid 1px #565d66; 
+      background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
     }
   }
 
