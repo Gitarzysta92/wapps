@@ -1,0 +1,68 @@
+.opening-post-slot {
+  position: relative;
+
+ &::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 60px;
+  bottom: 0;
+  width: 1px;
+  background-color: #556981;
+ }
+}
+
+.reply-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: 3rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom: solid 1px #565d66;
+    border-left: solid 1px #565d66;
+
+  }
+
+
+  ::ng-deep[slot="reply"] {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 0;
+      bottom: 0;
+      width: 20px;
+      height: 20px;
+      border-bottom-left-radius: 10px;
+      border-bottom: solid 1px #565d66;;
+      border-left: solid 1px #565d66; 
+    }
+
+  }
+
+  ::ng-deep[slot="reply"]:not(:last-child) {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 30px;
+      bottom: 0;
+      width: 20px;
+      height: calc(100% - 30px);
+      border-left: solid 1px #565d66; 
+    }
+  }
+
+}

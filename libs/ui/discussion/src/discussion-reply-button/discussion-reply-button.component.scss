@@ -1,0 +1,22 @@
+.reply-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: var(--tui-background-elevation-1);
+  }
+}
+
+.reply-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.reply-count {
+  font-size: 0.75rem;
+  color: var(--tui-text-secondary);
+}

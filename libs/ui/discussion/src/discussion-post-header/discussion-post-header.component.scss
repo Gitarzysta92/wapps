@@ -1,0 +1,47 @@
+.discussion-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.author-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.author-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--tui-text-primary);
+}
+
+.user-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.published-time {
+  font-size: 0.75rem;
+  color: var(--tui-text-secondary);
+}

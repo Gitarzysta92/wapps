@@ -24,3 +24,4 @@ export class DiscussionStatsBadgeComponent {
   public readonly stats = input.required<{ participants: number; views: number }>();
 
 }
+

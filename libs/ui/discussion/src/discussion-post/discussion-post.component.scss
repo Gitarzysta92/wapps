@@ -1,0 +1,20 @@
+.discussion-post {
+  display: flex;
+  flex-direction: column;
+}
+
+.discussion-post-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.discussion-post-content {
+  flex: 1;
+  margin-left: 3rem;
+}
+
+.discussion-post-bottom-bar {
+  margin-left: 3rem;
+  display: flex;
+  align-items: center;
+}

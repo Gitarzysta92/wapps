@@ -1,10 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { DiscussionComponent } from '@ui/discussion';
 import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { TuiChip } from '@taiga-ui/kit';
-import { RoutePathPipe } from '@ui/routing';
+import { TuiIcon } from '@taiga-ui/core';
 import type { DiscussionTopicFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/app';
@@ -12,6 +8,15 @@ import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
 import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { 
+  DiscussionPostComponent, 
+  DiscussionThreadComponent,
+  DiscussionPostHeaderComponent,
+  DiscussionExpandablePostContentComponent,
+  DiscussionVotingButtonComponent,
+  DiscussionReplyButtonComponent,
+  type DiscussionPostVM
+} from '@ui/discussion';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
 
@@ -35,13 +40,14 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
     ShareToggleButtonComponent,
     ContextMenuChipComponent,
     AttributionInfoBadgeComponent,
-    DiscussionComponent,
     DiscussionStatsBadgeComponent,
-    TuiChip,
-    TuiButton,
     TuiIcon,
-    RouterLink,
-    RoutePathPipe
+    DiscussionThreadComponent,
+    DiscussionPostComponent,
+    DiscussionPostHeaderComponent,
+    DiscussionExpandablePostContentComponent,
+    DiscussionVotingButtonComponent,
+    DiscussionReplyButtonComponent
   ],
   styles: [`
     .discussion-chip {
@@ -103,21 +109,82 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
       </ui-card-header>
       
       <div class="discussion-content">
-        <ui-discussion
-          [data]="discussionData"
+        <ui-discussion-thread>
 
-          [maxMessagesToShow]="3">
-        </ui-discussion>
+          <ui-discussion-post slot="opening-post" [post]="getOpeningPost()">
+            <ui-discussion-post-header 
+              slot="header"
+              [authorName]="getOpeningPost().author.name"
+              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
+              [publishedTime]="getOpeningPost().publishedTime">
+              <div slot="user-badges"></div>
+            </ui-discussion-post-header>
+            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+            <ui-discussion-voting-button slot="bottom-bar" />
+            <ui-discussion-reply-button slot="bottom-bar" />
+          </ui-discussion-post>
+
+          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
+            <ui-discussion-post-header 
+              slot="header"
+              [authorName]="getOpeningPost().author.name"
+              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
+              [publishedTime]="getOpeningPost().publishedTime">
+              <div slot="user-badges"></div>
+            </ui-discussion-post-header>
+            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+            <ui-discussion-voting-button slot="bottom-bar" />
+            <ui-discussion-reply-button slot="bottom-bar" />
+          </ui-discussion-post>
+
+          <ui-discussion-thread slot="reply">
+
+            <ui-discussion-post [post]="getOpeningPost()" slot="opening-post">
+              <ui-discussion-post-header slot="header" [authorName]="getOpeningPost().author.name" [authorAvatarUrl]="getOpeningPost().author.avatar.url" [publishedTime]="getOpeningPost().publishedTime">
+                <div slot="user-badges"></div>
+              </ui-discussion-post-header>
+              <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+            </ui-discussion-post>
+
+            <ui-discussion-post [post]="getOpeningPost()" slot="reply">
+              <ui-discussion-post-header slot="header" [authorName]="getOpeningPost().author.name" [authorAvatarUrl]="getOpeningPost().author.avatar.url" [publishedTime]="getOpeningPost().publishedTime">
+                <div slot="user-badges"></div>
+              </ui-discussion-post-header>
+              <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+              <ui-discussion-voting-button slot="bottom-bar" />
+              <ui-discussion-reply-button slot="bottom-bar" />
+            </ui-discussion-post>
+
+          </ui-discussion-thread>
+
+          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
+            <ui-discussion-post-header 
+              slot="header"
+              [authorName]="getOpeningPost().author.name"
+              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
+              [publishedTime]="getOpeningPost().publishedTime">
+              <div slot="user-badges"></div>
+            </ui-discussion-post-header>
+            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+            <ui-discussion-voting-button slot="bottom-bar" />
+            <ui-discussion-reply-button slot="bottom-bar" />
+          </ui-discussion-post>
+
+          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
+            <ui-discussion-post-header 
+              slot="header"
+              [authorName]="getOpeningPost().author.name"
+              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
+              [publishedTime]="getOpeningPost().publishedTime">
+              <div slot="user-badges"></div>
+            </ui-discussion-post-header>
+            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+            <ui-discussion-voting-button slot="bottom-bar" />
+            <ui-discussion-reply-button slot="bottom-bar" />
+          </ui-discussion-post>
+
+        </ui-discussion-thread>
       </div>
-
-      <a
-        tuiButton 
-        size="s" 
-        appearance="primary"
-        [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug, topicSlug: item.topicSlug }">
-          <tui-icon icon="@tui.message-circle"/>
-          Join Discussion
-      </a>
 
       <ui-card-footer slot="footer">
         <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
@@ -135,18 +202,22 @@ export class DiscussionTopicFeedItemComponent {
   @Input() item!: DiscussionTopicFeedItemVM;
   @Input() ctaPath = '';
 
-  get discussionData() {
+  getOpeningPost(): DiscussionPostVM {
     return {
-      topic: this.item.discussionData.topic,
-      messages: this.item.discussionData.messages.map((msg: unknown) => {
-        const message = msg as { id?: string; author?: string; content?: string; timestamp?: Date };
-        return {
-          id: message.id || `msg-${Date.now()}-${Math.random()}`,
-          author: message.author || 'Anonymous',
-          message: message.content || '',
-          timestamp: message.timestamp || new Date()
-        };
-      })
+      id: '1',
+      content: this.item.discussionData?.topic || '',
+      author: {
+        name: 'Test Author',
+        avatar: {
+          url: 'https://picsum.photos/200'
+        }
+      },
+      publishedTime: new Date(),
+      engagement: {
+        likes: 0
+      }
     };
   }
+
+
 }

@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
   displayName: 'portals-shared-features-discussion',
   preset: '../../../../../jest.preset.js',
