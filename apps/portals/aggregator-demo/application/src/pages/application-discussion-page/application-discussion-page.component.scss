@@ -9,6 +9,16 @@
   opacity: 0.5;
 }
 
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
+}
+
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
 
 // Page Layout
 .page-layout {

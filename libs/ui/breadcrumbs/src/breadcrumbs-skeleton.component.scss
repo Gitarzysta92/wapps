@@ -2,6 +2,7 @@
 
 :host {
   display: block;
+  padding: $space-1 0;
 }
 
 .breadcrumbs-skeleton {
@@ -17,8 +18,8 @@
 
 .breadcrumbs-skeleton__item {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  height: 16px;
-  width: 60px;
+  height: $space-3;
+  width: $size-content-xxs;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 
@@ -29,8 +30,8 @@
 
 .breadcrumbs-skeleton__separator {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  height: 16px;
-  width: 16px;
+  height: $space-3;
+  width: $space-3;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 }
