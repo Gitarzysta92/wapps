@@ -1,0 +1,76 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.discussion-thread-skeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+.opening-post-skeleton {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 60px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
+  }
+}
+
+.replies-skeleton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: 3rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom: solid 1px #565d66;
+    border-left: solid 1px #565d66;
+  }
+}
+
+.reply-skeleton {
+  position: relative;
+  padding-top: 1rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom: solid 1px #565d66;
+    border-left: solid 1px #565d66;
+  }
+
+  &:not(:last-child) {
+    &::after {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 30px;
+      bottom: 0;
+      width: 1px;
+      height: calc(100% - 30px);
+      background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
+    }
+  }
+}
+

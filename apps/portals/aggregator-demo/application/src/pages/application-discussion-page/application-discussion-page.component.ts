@@ -2,7 +2,6 @@ import { Component, computed, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of, delay } from 'rxjs';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { 
   DiscussionPostComponent, 
@@ -11,12 +10,12 @@ import {
   DiscussionExpandablePostContentComponent,
   DiscussionVotingButtonComponent,
   DiscussionReplyButtonComponent,
+  DiscussionThreadSkeletonComponent,
 } from '@ui/discussion';
 import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from "@ui/breadcrumbs";
 import { 
   PageHeaderComponent, 
-  PageHeaderSkeletonComponent, 
   PageTitleComponent, 
   PageTitleSkeletonComponent, 
   PageMetaComponent, 
@@ -32,8 +31,6 @@ import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
   standalone: true,
   imports: [
     CommonModule,
-    TuiButton,
-    TuiIcon,
     TuiBadge,
     DiscussionThreadComponent,
     DiscussionPostComponent,
@@ -41,11 +38,11 @@ import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
     DiscussionExpandablePostContentComponent,
     DiscussionVotingButtonComponent,
     DiscussionReplyButtonComponent,
+    DiscussionThreadSkeletonComponent,
     DiscussionStatsBadgeComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,
-    PageHeaderSkeletonComponent,
     PageTitleComponent,
     PageTitleSkeletonComponent,
     PageMetaComponent,

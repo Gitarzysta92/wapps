@@ -1,0 +1,6 @@
+<div class="discussion-content-skeleton">
+  @for (item of [].constructor(lines()); track $index) {
+    <div class="content-line-skeleton" [class.content-line-skeleton--short]="$last"></div>
+  }
+</div>
+

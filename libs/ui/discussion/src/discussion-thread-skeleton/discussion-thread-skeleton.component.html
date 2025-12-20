@@ -1,0 +1,14 @@
+<div class="discussion-thread-skeleton">
+  <div class="opening-post-skeleton">
+    <ui-discussion-post-skeleton [contentLines]="4" />
+  </div>
+  
+  <div class="replies-skeleton">
+    @for (item of [].constructor(repliesCount()); track $index) {
+      <div class="reply-skeleton">
+        <ui-discussion-post-skeleton [contentLines]="2" />
+      </div>
+    }
+  </div>
+</div>
+
