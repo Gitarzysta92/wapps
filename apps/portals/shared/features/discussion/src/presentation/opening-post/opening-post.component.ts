@@ -35,10 +35,7 @@ export interface OpeningPostVM {
   standalone: true,
   imports: [
     TuiIcon,
-    TuiAvatar,
-    TuiChip,
-    DiscussionPostComponent,
-    DatePipe
+    TuiChip
   ]
 })
 export class OpeningPostComponent {

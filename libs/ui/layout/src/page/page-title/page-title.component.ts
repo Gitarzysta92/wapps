@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'ui-page-title',
+  selector: '*[uiPageTitle]',
   standalone: true,
   imports: [],
   templateUrl: './page-title.component.html',

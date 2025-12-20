@@ -19,13 +19,7 @@ export interface TopCommentVM {
   templateUrl: './top-comment.component.html',
   styleUrl: './top-comment.component.scss',
   standalone: true,
-  imports: [
-    TuiIcon,
-    TuiAvatar,
-    TuiChip,
-    DiscussionPostComponent,
-    DatePipe
-  ]
+  imports: []
 })
 export class TopCommentComponent {
   private _comment = signal<TopCommentVM | null>(null);

@@ -71,7 +71,6 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     ArticleAuthorInfoComponent,
     ArticleAuthorInfoSkeletonComponent,
     ArticleRatingComponent,
-    ArticleRatingSkeletonComponent,
     MyFavoriteToggleComponent,
     ProfileBadgesComponent,
     DiscussionChipComponent,
