@@ -5,19 +5,24 @@ import {
 } from '@angular/core';
 
 
+export interface DiscussionAuthorVM {
+  id: string;
+  slug: string;
+  name: string;
+  avatar: {
+    url: string;
+  };
+}
+
 export interface DiscussionPostVM {
   id: string;
   content: string;
-  author: {
-    name: string;
-    avatar: {
-      url: string;
-    };
-  };
+  author: DiscussionAuthorVM;
   publishedTime: Date;
-  engagement: {
-    likes: number;
-  }
+  upvotesCount: number;
+  downvotesCount: number;
+  isEdited: boolean;
+  editedAt?: Date;
 }
 
 @Component({

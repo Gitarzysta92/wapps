@@ -33,16 +33,16 @@
   <section class="discussion-content">
     @if (discussion.value(); as topic) {
       <ui-discussion-thread>
-        <!-- Opening Post -->
-        <ui-discussion-post slot="opening-post" [post]="topic.openingPost">
+        <!-- Opening Post (the thread itself is the opening post) -->
+        <ui-discussion-post slot="opening-post" [post]="topic">
           <ui-discussion-post-header 
             slot="header"
-            [authorName]="topic.openingPost.author.name"
-            [authorAvatarUrl]="topic.openingPost.author.avatar.url"
-            [publishedTime]="topic.openingPost.publishedTime">
+            [authorName]="topic.author.name"
+            [authorAvatarUrl]="topic.author.avatar.url"
+            [publishedTime]="topic.publishedTime">
             <div slot="user-badges"></div>
           </ui-discussion-post-header>
-          <ui-discussion-expandable-post-content slot="content" [content]="topic.openingPost.content" />
+          <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
           <ui-discussion-voting-button slot="bottom-bar" />
           <ui-discussion-reply-button slot="bottom-bar" />
         </ui-discussion-post>
@@ -51,15 +51,15 @@
         <ui-discussion-post 
           *ngFor="let reply of topic.replies" 
           slot="reply" 
-          [post]="reply">
+          [post]="$any(reply)">
           <ui-discussion-post-header 
             slot="header"
-            [authorName]="reply.author.name"
-            [authorAvatarUrl]="reply.author.avatar.url"
-            [publishedTime]="reply.publishedTime">
+            [authorName]="$any(reply).author.name"
+            [authorAvatarUrl]="$any(reply).author.avatar.url"
+            [publishedTime]="$any(reply).publishedTime">
             <div slot="user-badges"></div>
           </ui-discussion-post-header>
-          <ui-discussion-expandable-post-content slot="content" [content]="reply.content" />
+          <ui-discussion-expandable-post-content slot="content" [content]="$any(reply).content" />
           <ui-discussion-voting-button slot="bottom-bar" />
           <ui-discussion-reply-button slot="bottom-bar" />
         </ui-discussion-post>

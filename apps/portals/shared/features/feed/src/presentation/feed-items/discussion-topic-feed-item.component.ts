@@ -217,15 +217,17 @@ export class DiscussionTopicFeedItemComponent {
       id: '1',
       content: this.item.discussionData?.topic || '',
       author: {
+        id: 'test-author',
+        slug: 'test-author',
         name: 'Test Author',
         avatar: {
           url: 'https://picsum.photos/200'
         }
       },
       publishedTime: new Date(),
-      engagement: {
-        likes: 0
-      }
+      upvotesCount: 0,
+      downvotesCount: 0,
+      isEdited: false
     };
   }
 
