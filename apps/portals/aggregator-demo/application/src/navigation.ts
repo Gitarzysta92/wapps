@@ -1,6 +1,6 @@
 export const ROUTE_PARAMS = {
   appSlug: ':appSlug',
-  topicSlug: ':topicSlug',
+  discussionSlug: ':discussionSlug',
   categorySlug: ':categorySlug',
   tagSlug: ':tagSlug',
   suiteSlug: ':suiteSlug',
@@ -145,14 +145,14 @@ export const NAVIGATION = {
     label: 'Reviews',
     icon: '@tui.star',
   },
-  applicationTopics: {
-    path: `apps/${ROUTE_PARAMS.appSlug}/topics`,
-    label: 'Topics',
+  applicationDiscussions: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/discussions`,
+    label: 'Discussions',
     icon: '@tui.message-circle',
   },
-  applicationTopic: {
-    path: `apps/${ROUTE_PARAMS.appSlug}/topics/${ROUTE_PARAMS.topicSlug}`,
-    label: 'Topic',
+  applicationDiscussion: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/discussions/${ROUTE_PARAMS.discussionSlug}`,
+    label: 'Discussion',
     icon: '@tui.message-circle',
   },
   applicationTimeline: {
@@ -248,7 +248,7 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationDevLog,
   NAVIGATION.applicationHealth,
-  NAVIGATION.applicationTopics,
+  NAVIGATION.applicationDiscussions,
 ]
 
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [

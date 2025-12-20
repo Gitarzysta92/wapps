@@ -22,6 +22,8 @@ import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
 import { UserAuxiliarySidebarComponent } from "./partials/user-auxiliary-sidebar/user-auxiliary-sidebar.component";
 import { UserCommonSidebarComponent } from "./partials/user-common-sidebar/user-common-sidebar.component";
 import { profileAvatarResolver } from "./resolvers/profile-avatar.resolver";
+import { breadcrumbResolver } from "./resolvers/breadcrumb.resolver";
+import { resolversFrom } from "@portals/shared/boundary/routing";
 
 
 // TODO: check if flat list approach
@@ -267,10 +269,10 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.applicationTopics.path,
+        path: NAVIGATION.applicationDiscussions.path,
         loadComponent: () => import('./pages/application-discussions-page/application-discussions-page.component').then(m => m.ApplicationDiscussionsPageComponent),
         data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics ],
+          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDiscussions ],
           header: null,
           topBar: null,
           bottomBar: {
@@ -302,10 +304,12 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.applicationTopic.path,
-        loadComponent: () => import('./pages/application-topic-page/application-topic-page.component').then(m => m.ApplicationTopicPageComponent),
+        path: NAVIGATION.applicationDiscussion.path,
+        loadComponent: () => import('./pages/application-discussion-page/application-discussion-page.component').then(m => m.ApplicationDiscussionPageComponent),
+        resolve: {
+          breadcrumb: breadcrumbResolver([ NAVIGATION.application, NAVIGATION.applicationDiscussions, NAVIGATION.applicationDiscussion ])
+        } as resolversFrom<IBreadcrumbRouteData>,
         data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics, NAVIGATION.applicationTopic ],
           header: null,
           topBar: null,
           bottomBar: {
@@ -334,7 +338,7 @@ export const routes: Routes = [
               quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
             }
           }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
+        } as IAppShellRouteData,
       },
       {
         path: NAVIGATION.applicationTimeline.path,

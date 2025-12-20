@@ -17,11 +17,11 @@ import {
   DiscussionReplyButtonComponent,
   type DiscussionPostVM
 } from '@ui/discussion';
+import { RouterLink } from '@angular/router';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
 
 export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
-  appLink: string;
   topicLink: string;
   contextMenu: ContextMenuItem[];
   attribution?: AttributionInfoVM;
@@ -32,6 +32,7 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     MediumCardComponent,
     CardHeaderComponent,
     CardFooterComponent,
@@ -103,7 +104,7 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
           slot="right-side"
           size="s"
           type="discussions"
-          [slug]="item.topicSlug"
+          [slug]="item.discussionSlug"
           [title]="item.discussionData.topic"
         />
       </ui-card-header>
@@ -185,6 +186,15 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
 
         </ui-discussion-thread>
       </div>
+
+      <a
+        tuiButton 
+        size="s" 
+        appearance="primary"
+        [routerLink]="item.topicLink">
+        <tui-icon icon="@tui.grid"/>
+        Discover Application
+      </a>
 
       <ui-card-footer slot="footer">
         <attribution-info-badge slot="left-side" [attribution]="item.attribution" />

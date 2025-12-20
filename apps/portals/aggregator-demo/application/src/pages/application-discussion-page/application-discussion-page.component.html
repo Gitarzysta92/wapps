@@ -1,0 +1,103 @@
+
+
+
+
+
+
+
+<div class="page-layout">
+  <!-- Topic Header -->
+  <section class="topic-header-section">
+    <div class="topic-header">
+      <div class="breadcrumb">
+        <a href="#" class="breadcrumb-link">{{ (app$ | async)?.name }}</a>
+        <tui-icon icon="@tui.chevron-right" class="breadcrumb-separator"></tui-icon>
+        <span class="breadcrumb-current">Discussions</span>
+      </div>
+      <h1 class="topic-title">How to integrate with external APIs?</h1>
+      <div class="topic-meta">
+        <div class="topic-stats">
+          <span class="replies-count">12 replies</span>
+          <span class="views-count">156 views</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="content-layout">
+    <main class="main-content">
+      <!-- Discussion Content -->
+      <section class="discussion-content-section">
+        <div class="discussion-content">
+          <div class="discussion-tags">
+            <tui-badge size="s" *ngFor="let tag of ['integration', 'api', 'help']">{{ tag }}</tui-badge>
+          </div>
+          
+          <ui-discussion-thread>
+            <!-- Opening Post -->
+            <ui-discussion-post slot="opening-post" [post]="getOpeningPost()">
+              <ui-discussion-post-header 
+                slot="header"
+                [authorName]="getOpeningPost().author.name"
+                [authorAvatarUrl]="getOpeningPost().author.avatar.url"
+                [publishedTime]="getOpeningPost().publishedTime">
+                <div slot="user-badges"></div>
+              </ui-discussion-post-header>
+              <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
+              <ui-discussion-voting-button slot="bottom-bar" />
+              <ui-discussion-reply-button slot="bottom-bar" />
+            </ui-discussion-post>
+
+            <!-- Replies -->
+            <ui-discussion-post 
+              *ngFor="let reply of getReplies()" 
+              slot="reply" 
+              [post]="reply">
+              <ui-discussion-post-header 
+                slot="header"
+                [authorName]="reply.author.name"
+                [authorAvatarUrl]="reply.author.avatar.url"
+                [publishedTime]="reply.publishedTime">
+                <div slot="user-badges"></div>
+              </ui-discussion-post-header>
+              <ui-discussion-expandable-post-content slot="content" [content]="reply.content" />
+              <ui-discussion-voting-button slot="bottom-bar" />
+              <ui-discussion-reply-button slot="bottom-bar" />
+            </ui-discussion-post>
+          </ui-discussion-thread>
+        </div>
+      </section>
+
+      <!-- Related Discussions -->
+      <div class="aside-card">
+        <h3 class="card-title">Related Discussions</h3>
+        <div class="card-content">
+          <div class="related-discussion" *ngFor="let discussion of ['API Rate Limiting', 'OAuth Implementation', 'Error Handling Best Practices']">
+            <h4 class="related-title">{{ discussion }}</h4>
+            <span class="related-stats">5 replies</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discussion Actions -->
+      <div class="aside-card">
+        <h3 class="card-title">Actions</h3>
+        <div class="card-content">
+          <button tuiButton appearance="secondary" size="s" class="full-width-btn">
+            <tui-icon icon="@tui.heart"></tui-icon>
+            Follow Discussion
+          </button>
+          <button tuiButton appearance="secondary" size="s" class="full-width-btn">
+            <tui-icon icon="@tui.share"></tui-icon>
+            Share
+          </button>
+          <button tuiButton appearance="secondary" size="s" class="full-width-btn">
+            <tui-icon icon="@tui.flag"></tui-icon>
+            Report
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

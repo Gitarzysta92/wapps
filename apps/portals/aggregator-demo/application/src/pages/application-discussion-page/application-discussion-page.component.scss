@@ -8,13 +8,11 @@
 
 // Topic Header Section
 .topic-header-section {
-  background: $color-bg;
-  border-bottom: $border-width-thin solid $color-border;
-  padding: $space-6 0;
+  padding: $space-3 0;
 }
 
 .topic-header {
-  @include grid-container($container-lg);
+  // @include grid-container($container-lg);
 }
 
 .breadcrumb {
@@ -46,7 +44,7 @@
 
 .topic-title {
   @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
+  color: var(--tui-text-primary);
   margin: 0 0 $space-4 0;
 }
 
@@ -99,7 +97,6 @@
   display: flex;
   flex-direction: column;
   gap: $space-6;
-  padding: $space-6 0;
   min-height: 60vh;
 }
 
@@ -122,7 +119,6 @@
 
 // Discussion Content Section
 .discussion-content-section {
-  background: $color-bg;
   border-bottom: $border-width-thin solid $color-border;
 }
 
@@ -152,7 +148,6 @@
 
 // Replies Section
 .replies-section {
-  background: $color-bg;
   border-bottom: $border-width-thin solid $color-border;
 }
 
@@ -180,7 +175,6 @@
 
 .reply-item {
   padding: $space-4;
-  background: $color-bg-muted;
   border: $border-width-thin solid $color-border;
   border-radius: $radius-md;
 }
@@ -221,7 +215,6 @@
   }
   
   pre {
-    background: $color-bg;
     border: $border-width-thin solid $color-border;
     border-radius: $radius-sm;
     padding: $space-3;
@@ -240,7 +233,6 @@
 .reply-form {
   margin-top: $space-6;
   padding: $space-6;
-  background: $color-bg-muted;
   border-radius: $radius-md;
 }
 
@@ -264,7 +256,6 @@
   border-radius: $radius-sm;
   @include text($font-size-md, $font-weight-regular, $line-height-loose);
   color: $color-text;
-  background: $color-bg;
   resize: vertical;
   
   &:focus {

@@ -6,3 +6,4 @@ export * from './navigation.dto';
 export * from './build-route-path';
 export * from './build-query';
 export * from './route-path.pipe';
+export * from './routing-data-consumer.type';

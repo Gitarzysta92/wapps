@@ -205,7 +205,7 @@ export class TempFeedProviderService implements IFeedProviderPort {
       title: `Discussion: ${topic}`,
       subtitle: `Join the conversation about ${topic.toLowerCase()}`,
       appSlug: app.slug,
-      topicSlug: topicSlug,
+      discussionSlug: topicSlug,
       discussionData: {
         topic: topic,
         messages: [
