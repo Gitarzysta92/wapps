@@ -27,7 +27,7 @@
   }
 </ui-page-header>
 
-<section class="discussion-tags">
+<section>
   @if (discussion.value(); as topic ) {
     <ui-tags [tags]="topic?.tags ?? []" />
   } @else if (discussion.isLoading()) {
@@ -37,7 +37,7 @@
   }
 </section>
 
-<section class="discussion-content">
+<section class="discussion-content-section">
   @if (discussion.value(); as topic) {
     <ui-discussion-thread>
       <!-- Opening Post (the thread itself is the opening post) -->
@@ -75,42 +75,17 @@
 </section>
 
 
+<section class="related-discussions">
 
-@if (discussion.isLoading() || app.isLoading()) {
-  <ui-page-header-skeleton class="page-header">
-    <ui-breadcrumbs-skeleton slot="top-bar" />
-    <ui-page-title-skeleton slot="title" />
-    <ui-page-meta-skeleton slot="meta" />
-  </ui-page-header-skeleton>  
-} @else {
- 
+</section>
 
 
-}
 
-@if (discussion.value(); as topic) {
-  <div class="page-layout">
-    <!-- Main Content -->
-    <div class="content-layout">
-      <main class="main-content">
-        <!-- Discussion Content -->
-        <section class="discussion-content-section">
-    
-        </section>
 
-        <!-- Related Discussions -->
-        <div class="aside-card">
-          <h3 class="card-title">Related Discussions</h3>
-          <div class="card-content">
-            <div class="related-discussion" *ngFor="let discussion of ['API Rate Limiting', 'OAuth Implementation', 'Error Handling Best Practices']">
-              <h4 class="related-title">{{ discussion }}</h4>
-              <span class="related-stats">5 replies</span>
-            </div>
-          </div>
-        </div>
+
 
         <!-- Discussion Actions -->
-        <div class="aside-card">
+        <!-- <div class="aside-card">
           <h3 class="card-title">Actions</h3>
           <div class="card-content">
             <button tuiButton appearance="secondary" size="s" class="full-width-btn">
@@ -126,8 +101,4 @@
               Report
             </button>
           </div>
-        </div>
-      </main>
-    </div>
-  </div>
-}
+        </div> -->

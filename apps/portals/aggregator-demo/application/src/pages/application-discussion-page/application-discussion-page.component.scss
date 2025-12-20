@@ -1,6 +1,5 @@
 @use 'ui/design-system/src/styles' as *;
 
-
 .page-header {
   margin-top: $space-20;
 }
@@ -19,100 +18,6 @@
   padding: $space-2 0;
 }
 
-
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
-}
-
-// Main Content Layout
-.content-layout {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-  min-height: 60vh;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-  width: 100%;
-  max-width: 100%;
-}
-
-// Discussion Content Section
 .discussion-content-section {
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.discussion-content {
   padding: $space-6 0;
-}
-
-.discussion-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-  margin-bottom: $space-4;
-}
-
-// Aside Cards
-.aside-card {
-  background: $color-bg;
-  border: $border-width-thin solid $color-border;
-  border-radius: $radius-md;
-  padding: $space-4;
-  box-shadow: $shadow-sm;
-}
-
-.card-title {
-  @include text($font-size-lg, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0 0 $space-3 0;
-  padding-bottom: $space-2;
-  border-bottom: $border-width-thin solid $color-border;
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.related-discussion {
-  padding: $space-2 0;
-  border-bottom: $border-width-thin solid $color-bg-muted;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.related-title {
-  @include text($font-size-sm, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0 0 $space-1 0;
-}
-
-.related-stats {
-  @include text($font-size-xs);
-  color: $color-text-muted;
-}
-
-.full-width-btn {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-// Responsive Design
-@media (max-width: 1024px) {
-  .content-layout {
-    grid-template-columns: 1fr;
-    gap: $space-4;
-  }
-}
-
-@media (max-width: 768px) {
 }
