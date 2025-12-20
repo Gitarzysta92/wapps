@@ -1,3 +1,8 @@
+export const NAVIGATION_NAME_PARAMS = {
+  discussionName: ':discussionName',
+  applicationName: ':applicationName',
+}
+
 export const ROUTE_PARAMS = {
   appSlug: ':appSlug',
   discussionSlug: ':discussionSlug',
@@ -117,7 +122,7 @@ export const NAVIGATION = {
   },
   application: {
     path: `apps/${ROUTE_PARAMS.appSlug}`,
-    label: 'Application',
+    label: `Application: ${NAVIGATION_NAME_PARAMS.applicationName}`,
     icon: '@tui.box',
   },
   applicationOverview: {
@@ -152,7 +157,7 @@ export const NAVIGATION = {
   },
   applicationDiscussion: {
     path: `apps/${ROUTE_PARAMS.appSlug}/discussions/${ROUTE_PARAMS.discussionSlug}`,
-    label: 'Discussion',
+    label: `Discussion: ${NAVIGATION_NAME_PARAMS.discussionName}`,
     icon: '@tui.message-circle',
   },
   applicationTimeline: {

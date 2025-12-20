@@ -95,7 +95,6 @@ type RegisteredFeedItem = Array<
         ok: true,
         value: {
           items: (FEED_ITEM_EXAMPLES as RegisteredFeedItem).map(i => {
-    
             switch (i.type) {
               case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
                 i.appLink = buildRoutePath(NAVIGATION.applicationHealth.path, { appSlug: i.appSlug });
@@ -121,7 +120,7 @@ type RegisteredFeedItem = Array<
                 i.suiteLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: i.suiteTitle.toLowerCase().replace(/\s+/g, '-') });
                 break;
               case DISCUSSION_TOPIC_FEED_ITEM_SELECTOR:
-                i.topicLink = buildRoutePath(NAVIGATION.applicationDiscussion.path, { appSlug: i.appSlug, topicSlug: i.discussionSlug });
+                i.topicLink = buildRoutePath(NAVIGATION.applicationDiscussion.path, { appSlug: i.appSlug, discussionSlug: i.discussionSlug });
                 break;
               case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR: {
                 // Extract slug from title or use a default pattern

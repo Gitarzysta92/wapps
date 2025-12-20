@@ -1,0 +1,11 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.page-title {
+  margin: 0;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+}

@@ -6,3 +6,9 @@ export { ElevatedCardSkeletonComponent } from './card/elevated-card/elevated-car
 export { CardHeaderComponent } from './card/card-header/card-header.component';
 export { CardFooterComponent } from './card/card-footer/card-footer.component';
 export { CommonSectionComponent } from './section/common-section.component';
+export { PageHeaderComponent } from './page/page-header/page-header.component';
+export { PageHeaderSkeletonComponent } from './page/page-header-skeleton/page-header-skeleton.component';
+export { PageTitleComponent } from './page/page-title/page-title.component';
+export { PageTitleSkeletonComponent } from './page/page-title-skeleton/page-title-skeleton.component';
+export { PageMetaComponent } from './page/page-meta/page-meta.component';
+export { PageMetaSkeletonComponent } from './page/page-meta-skeleton/page-meta-skeleton.component';

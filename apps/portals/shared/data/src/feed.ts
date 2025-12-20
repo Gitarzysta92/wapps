@@ -12,6 +12,7 @@ import {
 import { AttributionType, ContentNature } from "@domains/publication/attribution";
 import { CATEGORY_DICTIONARY } from "./categories";
 import { TAG_DICTIONARY } from "./tags";
+import { SAMPLE_DISCUSSION } from "./discussions";
 
 
 export const FEED_ITEM_EXAMPLES = [
@@ -24,7 +25,7 @@ export const FEED_ITEM_EXAMPLES = [
     subtitle: 'Join the conversation about collaboration tools',
     timestamp: new Date('2024-01-11T12:45:00Z'),
     appSlug: 'quick-task',
-    discussionSlug: 'collaboration-tools',
+    discussionSlug: SAMPLE_DISCUSSION.slug,
     discussionData: {
       topic: 'Collaboration Tools',
       messages: [

@@ -45,3 +45,6 @@ export * from './profiles';
 
 // Profiles data
 export * from './profiles';
+
+// Discussions data
+export * from './discussions';
