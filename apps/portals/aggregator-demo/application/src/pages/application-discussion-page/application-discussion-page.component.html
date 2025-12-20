@@ -1,11 +1,11 @@
 @if (discussion.isLoading() || app.isLoading()) {
-  <ui-page-header-skeleton>
+  <ui-page-header-skeleton class="page-header">
     <ui-breadcrumbs-skeleton slot="top-bar" />
     <ui-page-title-skeleton slot="title" />
     <ui-page-meta-skeleton slot="meta" />
   </ui-page-header-skeleton>  
 } @else {
-  <ui-page-header>
+  <ui-page-header class="page-header">
     <ui-breadcrumbs 
       slot="top-bar"
       routingDataContainer=""
@@ -13,10 +13,61 @@
     </ui-breadcrumbs>
     <h1 uiPageTitle slot="title">{{ discussion.value()?.title }}</h1>
     <ui-page-meta slot="meta">
-      <span class="replies-count">{{ discussion.value()?.repliesCount }} replies</span>
-      <span class="views-count">{{ discussion.value()?.viewsCount }} views</span>
+      <!-- TODO: it should be mapped outside template -->
+      <discussion-stats-badge
+        class="discussion-stats-badge"
+        [stats]="{ participants: discussion.value()?.repliesCount ?? 1, views: discussion.value()?.viewsCount ?? 1 }" />
     </ui-page-meta>
   </ui-page-header>
+
+  <section class="discussion-tags">
+    @if (discussion.value(); as topic ) {
+      <ui-tags [tags]="topic?.tags ?? []" />
+    } @else if (discussion.isLoading()) {
+      <ui-tags-skeleton />
+    } @else {
+      <p>Brak tagów do wyświetlenia</p>
+    }
+  </section>
+
+  <section class="discussion-content">
+    @if (discussion.value(); as topic) {
+      <ui-discussion-thread>
+        <!-- Opening Post -->
+        <ui-discussion-post slot="opening-post" [post]="topic.openingPost">
+          <ui-discussion-post-header 
+            slot="header"
+            [authorName]="topic.openingPost.author.name"
+            [authorAvatarUrl]="topic.openingPost.author.avatar.url"
+            [publishedTime]="topic.openingPost.publishedTime">
+            <div slot="user-badges"></div>
+          </ui-discussion-post-header>
+          <ui-discussion-expandable-post-content slot="content" [content]="topic.openingPost.content" />
+          <ui-discussion-voting-button slot="bottom-bar" />
+          <ui-discussion-reply-button slot="bottom-bar" />
+        </ui-discussion-post>
+  
+        <!-- Replies -->
+        <ui-discussion-post 
+          *ngFor="let reply of topic.replies" 
+          slot="reply" 
+          [post]="reply">
+          <ui-discussion-post-header 
+            slot="header"
+            [authorName]="reply.author.name"
+            [authorAvatarUrl]="reply.author.avatar.url"
+            [publishedTime]="reply.publishedTime">
+            <div slot="user-badges"></div>
+          </ui-discussion-post-header>
+          <ui-discussion-expandable-post-content slot="content" [content]="reply.content" />
+          <ui-discussion-voting-button slot="bottom-bar" />
+          <ui-discussion-reply-button slot="bottom-bar" />
+        </ui-discussion-post>
+      </ui-discussion-thread>
+    }
+  </section>
+
+
 }
 
 @if (discussion.value(); as topic) {
@@ -26,44 +77,7 @@
       <main class="main-content">
         <!-- Discussion Content -->
         <section class="discussion-content-section">
-          <div class="discussion-content">
-            <div class="discussion-tags">
-              <tui-badge size="s" *ngFor="let tag of topic.tags">{{ tag }}</tui-badge>
-            </div>
-            
-            <ui-discussion-thread>
-              <!-- Opening Post -->
-              <ui-discussion-post slot="opening-post" [post]="topic.openingPost">
-                <ui-discussion-post-header 
-                  slot="header"
-                  [authorName]="topic.openingPost.author.name"
-                  [authorAvatarUrl]="topic.openingPost.author.avatar.url"
-                  [publishedTime]="topic.openingPost.publishedTime">
-                  <div slot="user-badges"></div>
-                </ui-discussion-post-header>
-                <ui-discussion-expandable-post-content slot="content" [content]="topic.openingPost.content" />
-                <ui-discussion-voting-button slot="bottom-bar" />
-                <ui-discussion-reply-button slot="bottom-bar" />
-              </ui-discussion-post>
-
-              <!-- Replies -->
-              <ui-discussion-post 
-                *ngFor="let reply of topic.replies" 
-                slot="reply" 
-                [post]="reply">
-                <ui-discussion-post-header 
-                  slot="header"
-                  [authorName]="reply.author.name"
-                  [authorAvatarUrl]="reply.author.avatar.url"
-                  [publishedTime]="reply.publishedTime">
-                  <div slot="user-badges"></div>
-                </ui-discussion-post-header>
-                <ui-discussion-expandable-post-content slot="content" [content]="reply.content" />
-                <ui-discussion-voting-button slot="bottom-bar" />
-                <ui-discussion-reply-button slot="bottom-bar" />
-              </ui-discussion-post>
-            </ui-discussion-thread>
-          </div>
+    
         </section>
 
         <!-- Related Discussions -->

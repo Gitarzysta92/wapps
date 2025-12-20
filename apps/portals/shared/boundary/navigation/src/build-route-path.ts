@@ -1,5 +1,6 @@
 export interface RoutePathOptions {
   strict?: boolean;
+  absolute?: boolean;
 }
 
 /**
@@ -30,6 +31,6 @@ export function buildRoutePath(
   // normalize duplicate slashes (in case of missing/empty param in non-strict mode)
   const normalized = replaced.replace(/\/{2,}/g, '/').replace(/\/+$/g, '');
 
-  return normalized;
+  return opts.absolute ? `/${normalized}` : normalized;
 }
 

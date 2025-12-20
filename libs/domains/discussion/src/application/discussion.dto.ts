@@ -1,0 +1,60 @@
+
+
+export type DiscussionAuthorDto = {
+  id: string;
+  slug: string;
+  name: string;
+  avatar: {
+    url: string;
+  };
+}
+
+export type DiscussionPostDto = {
+  id: string;
+  content: string;
+  author: DiscussionAuthorDto;
+  publishedTime: Date;
+  upvotesCount: number;
+  downvotesCount: number;
+  isEdited: boolean;
+  editedAt?: Date;
+}
+
+
+export type DiscussionThreadDto = {
+  id: string;
+  slug: string;
+  title: string;
+  repliesCount: number;
+  viewsCount: number;
+  isPinned: boolean;
+  tags: { slug: string; name: string }[];
+  replies: Array<DiscussionPostDto | DiscussionThreadDto>;
+  isRootThread: boolean;
+  parentThreadId?: string;
+} & DiscussionPostDto;
+
+
+export type DiscussionThreadConfigurationDto = {
+  maxDepth: number;
+  maxReplies: number;
+  maxRepliesPerThread: number;
+  maxRepliesPerPost: number;
+  maxRepliesPerUser: number;
+  maxRepliesPerUserPerPost: number;
+  maxRepliesPerUserPerThread: number;
+}
+
+
+export type DiscussionThreadPolicyDto = {
+  canReply: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canPin: boolean;
+  canUnpin: boolean;
+  canLock: boolean;
+  canUnlock: boolean;
+  canMove: boolean;
+  canMerge: boolean;
+  canSplit: boolean;
+}

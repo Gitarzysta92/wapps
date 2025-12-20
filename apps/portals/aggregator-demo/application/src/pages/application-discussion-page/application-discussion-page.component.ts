@@ -12,6 +12,7 @@ import {
   DiscussionVotingButtonComponent,
   DiscussionReplyButtonComponent,
 } from '@ui/discussion';
+import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from "@ui/breadcrumbs";
 import { 
   PageHeaderComponent, 
@@ -24,6 +25,7 @@ import {
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS, DISCUSSIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
+import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
 
 @Component({
   selector: 'app-discussion-page',
@@ -39,6 +41,7 @@ import { NAVIGATION_NAME_PARAMS } from '../../navigation';
     DiscussionExpandablePostContentComponent,
     DiscussionVotingButtonComponent,
     DiscussionReplyButtonComponent,
+    DiscussionStatsBadgeComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,
@@ -46,7 +49,9 @@ import { NAVIGATION_NAME_PARAMS } from '../../navigation';
     PageTitleComponent,
     PageTitleSkeletonComponent,
     PageMetaComponent,
-    PageMetaSkeletonComponent
+    PageMetaSkeletonComponent,
+    TagsComponent,
+    TagsSkeletonComponent
   ],
   templateUrl: './application-discussion-page.component.html',
   styleUrl: './application-discussion-page.component.scss'
@@ -78,9 +83,6 @@ export class ApplicationDiscussionPageComponent implements
   public readonly breadcrumbData = computed(() => {
     const breadcrumb = this.breadcrumb();
     
-    console.log('app', this.app.value());
-    console.log('discussion', this.discussion.value(), this.discussionSlug());
-
     if (this.discussion.value() && this.app.value()) { 
       return breadcrumb.map((breadcrumb) => {
         if (breadcrumb.label.includes(NAVIGATION_NAME_PARAMS.discussionName)) {

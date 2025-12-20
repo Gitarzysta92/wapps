@@ -4,8 +4,13 @@ import { NavigationDeclarationDto, buildRoutePath } from '@portals/shared/bounda
 export const breadcrumbResolver: (breadcrumbs: NavigationDeclarationDto[]) => ResolveFn<NavigationDeclarationDto[]> = (breadcrumbs) => (route) => {
   const params = route.params as Record<string, string>;
   
+console.log(breadcrumbs.map(breadcrumb => ({
+  ...breadcrumb,
+  path: buildRoutePath(breadcrumb.path, params)
+})))
+  
   return breadcrumbs.map(breadcrumb => ({
     ...breadcrumb,
-    path: buildRoutePath(breadcrumb.path, params)
+    path: buildRoutePath(breadcrumb.path, params, { absolute: true })
   }));
 };

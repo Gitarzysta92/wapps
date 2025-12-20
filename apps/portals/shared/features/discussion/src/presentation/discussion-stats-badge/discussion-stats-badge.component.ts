@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { TuiIcon } from '@taiga-ui/core';
 
-
-
 @Component({
   selector: 'discussion-stats-badge',
   standalone: true,
@@ -16,9 +14,6 @@ import { TuiIcon } from '@taiga-ui/core';
   ],
   templateUrl: './discussion-stats-badge.component.html',
   styleUrls: ['./discussion-stats-badge.component.scss'],
-  host: {
-    '[class]': 'discussion-stats'
-  }
 })
 export class DiscussionStatsBadgeComponent {
   public readonly stats = input.required<{ participants: number; views: number }>();
