@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 .discussion-post {
   display: flex;
   flex-direction: column;
@@ -10,11 +12,12 @@
 
 .discussion-post-content {
   flex: 1;
-  margin-left: 3rem;
+  margin-left: $space-14;
 }
 
 .discussion-post-bottom-bar {
-  margin-left: 3rem;
+  margin-left: $space-14;
+  margin-bottom: $space-4;
   display: flex;
   align-items: center;
 }

@@ -21,3 +21,210 @@
 .discussion-content-section {
   padding: $space-6 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+// Related Discussions - Layout Only
+// ============================================================================
+
+.related-discussions {
+  margin-top: $space-12;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    margin-bottom: $space-6;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $space-6;
+  }
+
+  &__card-title {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    line-height: $line-height-tight;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__card-excerpt {
+    font-size: $font-size-sm;
+    color: var(--tui-text-secondary);
+    line-height: $line-height-normal;
+    margin: $space-2 0 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__card-meta {
+    display: flex;
+    gap: $space-4;
+    padding-top: $space-2;
+  }
+
+  &__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-size-xs;
+    color: var(--tui-text-secondary);
+  }
+
+  &__stat-icon {
+    font-size: $size-icon-xs;
+    color: var(--tui-primary);
+  }
+
+  &__card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+}
+
+// ============================================================================
+// Top Authors - Layout Only
+// ============================================================================
+
+.top-authors {
+  margin-top: $space-8;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    margin-bottom: $space-6;
+  }
+
+  &__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-4;
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    padding: $space-4 $space-5;
+    min-width: 280px;
+    flex: 1;
+    position: relative;
+
+    &--skeleton {
+      min-height: 72px;
+    }
+  }
+
+  &__crown {
+    font-size: $size-icon-sm;
+    color: #f59e0b;
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    border: 2px solid var(--tui-background-elevation-1);
+    box-shadow: $shadow-sm;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    margin: 0 0 $space-1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $space-3;
+  }
+
+  &__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-size-xs;
+    color: var(--tui-text-secondary);
+  }
+
+  &__stat-icon {
+    font-size: $size-icon-xs;
+    color: var(--tui-accent);
+  }
+
+  &__badge {
+    flex-shrink: 0;
+  }
+
+  // Skeleton styles
+  &__avatar-skeleton {
+    width: $size-avatar-md;
+    height: $size-avatar-md;
+    background: var(--skeleton-background, #{$color-skeleton-bg});
+    border-radius: $radius-full;
+    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+  }
+
+  &__info-skeleton {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__name-skeleton {
+    width: 120px;
+    height: 16px;
+    background: var(--skeleton-background, #{$color-skeleton-bg});
+    border-radius: $radius-sm;
+    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+  }
+
+  &__stats-skeleton {
+    width: 80px;
+    height: 12px;
+    background: var(--skeleton-background, #{$color-skeleton-bg});
+    border-radius: $radius-sm;
+    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+  }
+}

@@ -7,19 +7,19 @@
 .discussion-actions-skeleton {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $space-4;
 }
 
 .voting-skeleton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 
 .vote-button-skeleton {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  width: 3rem;
-  height: 1.5rem;
+  width: $space-12;
+  height: $space-6;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 }
@@ -27,8 +27,7 @@
 .reply-button-skeleton {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
   width: 4.5rem;
-  height: 1.5rem;
+  height: $space-6;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 }
-

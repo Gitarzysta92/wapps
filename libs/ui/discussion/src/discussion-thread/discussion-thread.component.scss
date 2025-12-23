@@ -1,3 +1,8 @@
+@use 'ui/design-system/src/styles' as *;
+
+$thread-line-color: $color-border-muted;
+$thread-line-color-transparent: rgba(86, 93, 102, 0);
+
 .opening-post-slot {
   position: relative;
 
@@ -6,9 +11,9 @@
     position: absolute;
     left: 20px;
     top: 60px;
-    bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
+    bottom: $space-0;
+    width: $border-width-thin;
+    background: linear-gradient(to bottom, $thread-line-color-transparent 0%, $thread-line-color 100%);
   }
 }
 
@@ -16,38 +21,36 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding-left: 3rem;
+  padding-left: $space-12;
 
   &::before {
     content: '';
     position: absolute;
     left: 20px;
-    top: 0;
-    bottom: 0;
-    width: 20px;
-    height: 20px;
-    border-bottom-left-radius: 10px;
-    border-bottom: solid 1px #565d66;
-    border-left: solid 1px #565d66;
-
+    top: $space-0;
+    bottom: $space-0;
+    width: $space-5;
+    height: $space-5;
+    border-bottom-left-radius: $space-2_5;
+    border-bottom: solid $border-width-thin $thread-line-color;
+    border-left: solid $border-width-thin $thread-line-color;
   }
-
 
   ::ng-deep[slot="reply"] {
     position: relative;
+
     &::before {
       content: '';
       position: absolute;
       left: -28px;
-      top: 0;
-      bottom: 0;
-      width: 20px;
-      height: 20px;
-      border-bottom-left-radius: 10px;
-      border-bottom: solid 1px #565d66;;
-      border-left: solid 1px #565d66; 
+      top: $space-0;
+      bottom: $space-0;
+      width: $space-5;
+      height: $space-5;
+      border-bottom-left-radius: $space-2_5;
+      border-bottom: solid $border-width-thin $thread-line-color;
+      border-left: solid $border-width-thin $thread-line-color;
     }
-
   }
 
   ::ng-deep[slot="reply"]:not(:last-child) {
@@ -58,11 +61,10 @@
       position: absolute;
       left: -28px;
       top: 30px;
-      bottom: 0;
-      width: 1px;
+      bottom: $space-0;
+      width: $border-width-thin;
       height: calc(100% - 30px);
-      background: linear-gradient(to bottom, #565d6600 0%, #565d66 100%);
+      background: linear-gradient(to bottom, $thread-line-color-transparent 0%, $thread-line-color 100%);
     }
   }
-
 }

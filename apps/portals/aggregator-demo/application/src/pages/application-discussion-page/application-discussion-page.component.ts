@@ -2,7 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of, delay } from 'rxjs';
-import { TuiBadge } from '@taiga-ui/kit';
+import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { 
   DiscussionPostComponent, 
   DiscussionThreadComponent,
@@ -19,8 +19,13 @@ import {
   PageTitleComponent, 
   PageTitleSkeletonComponent, 
   PageMetaComponent, 
-  PageMetaSkeletonComponent 
+  PageMetaSkeletonComponent,
+  MediumCardComponent,
+  MediumCardSkeletonComponent,
+  CardHeaderComponent
 } from "@ui/layout";
+import { TuiAppearance, TuiIcon } from '@taiga-ui/core';
+import { SlicePipe } from '@angular/common';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS, DISCUSSIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
@@ -31,7 +36,11 @@ import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
   standalone: true,
   imports: [
     CommonModule,
+    SlicePipe,
+    TuiAppearance,
+    TuiAvatar,
     TuiBadge,
+    TuiIcon,
     DiscussionThreadComponent,
     DiscussionPostComponent,
     DiscussionPostHeaderComponent,
@@ -47,6 +56,9 @@ import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
     PageTitleSkeletonComponent,
     PageMetaComponent,
     PageMetaSkeletonComponent,
+    MediumCardComponent,
+    MediumCardSkeletonComponent,
+    CardHeaderComponent,
     TagsComponent,
     TagsSkeletonComponent
   ],
@@ -64,7 +76,7 @@ export class ApplicationDiscussionPageComponent implements
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
       const app = APPLICATIONS.find(a => a.slug === appSlug) ?? null;
-      return of(app).pipe(delay(1500)); // Simulate network delay
+      return of(app).pipe(delay(1500));
     }
   });
 
@@ -72,8 +84,56 @@ export class ApplicationDiscussionPageComponent implements
     request: () => this.discussionSlug(),
     loader: ({ request: discussionSlug }) => {
       const discussion = DISCUSSIONS.find(d => d.slug === discussionSlug) ?? null;
-      return of(discussion).pipe(delay(1000)); // Simulate network delay
+      return of(discussion).pipe(delay(1000));
     }
+  });
+
+  public readonly relatedDiscussions = rxResource({
+    request: () => this.discussionSlug(),
+    loader: ({ request: discussionSlug }) => {
+      const discussion = DISCUSSIONS.filter(d => d.slug !== discussionSlug) ?? null;
+      return of(discussion).pipe(delay(1000));
+    }
+  });
+
+  // Derive top authors from discussions
+  public readonly topAuthors = computed(() => {
+    const discussions = this.relatedDiscussions.value() ?? [];
+    const currentDiscussion = this.discussion.value();
+    const allDiscussions = currentDiscussion 
+      ? [...discussions, currentDiscussion] 
+      : discussions;
+    
+    const authorMap = new Map<string, { 
+      id: string; 
+      name: string; 
+      slug: string;
+      avatar: { url: string }; 
+      postsCount: number; 
+      likesCount: number;
+    }>();
+
+    // Collect unique authors with aggregated stats
+    for (const discussion of allDiscussions) {
+      const author = discussion.author;
+      const existing = authorMap.get(author.id);
+      
+      if (!existing) {
+        authorMap.set(author.id, {
+          ...author,
+          postsCount: 1,
+          likesCount: discussion.upvotesCount ?? 0,
+        });
+      } else {
+        existing.postsCount += 1;
+        existing.likesCount += discussion.upvotesCount ?? 0;
+      }
+    }
+
+    // Sort by likes and return top 3
+    return Array.from(authorMap.values())
+      .sort((a, b) => b.likesCount - a.likesCount)
+      .slice(0, 3);
   });
 
   // TODO: move to a utility function

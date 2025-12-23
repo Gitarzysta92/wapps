@@ -7,42 +7,41 @@
 .discussion-header-skeleton {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $space-3;
 }
 
 .author-info-skeleton {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $space-3;
 }
 
 .avatar-skeleton {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: $size-avatar-md;
+  height: $size-avatar-md;
+  border-radius: $radius-full;
   background: var(--skeleton-background);
 }
 
 .author-details-skeleton {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: $space-1;
 }
 
 .author-name-skeleton {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  width: 8rem;
-  height: 0.875rem;
+  width: $space-32;
+  height: $font-size-sm;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 }
 
 .published-time-skeleton {
   @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
-  width: 5rem;
-  height: 0.75rem;
+  width: $space-20;
+  height: $font-size-xs;
   border-radius: $radius-sm;
   background: var(--skeleton-background);
 }
-

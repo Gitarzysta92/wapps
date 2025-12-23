@@ -1,47 +1,49 @@
+@use 'ui/design-system/src/styles' as *;
+
 .discussion-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $space-4;
 }
 
 .author-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $space-4;
 }
 
 .author-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: $size-avatar-md;
+  height: $size-avatar-md;
+  border-radius: $radius-full;
   object-fit: cover;
 }
 
 .author-details {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: $space-1;
 }
 
 .author-name-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 
 .author-name {
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
   color: var(--tui-text-primary);
 }
 
 .user-badges {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: $space-1;
 }
 
 .published-time {
-  font-size: 0.75rem;
+  font-size: $font-size-xs;
   color: var(--tui-text-secondary);
 }

@@ -1,22 +1,24 @@
+@use 'ui/design-system/src/styles' as *;
+
 .reply-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
-  transition: all 0.2s ease;
-  
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  border-radius: $space-1;
+  @include transition(all, $duration-200, $ease-in-out);
+
   &:hover {
     background-color: var(--tui-background-elevation-1);
   }
 }
 
 .reply-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
 }
 
 .reply-count {
-  font-size: 0.75rem;
+  font-size: $font-size-xs;
   color: var(--tui-text-secondary);
 }
