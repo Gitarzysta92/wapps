@@ -66,7 +66,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: DESKTOP_MAIN_NAVIGATION }
+            inputs: {
+              navigation: DESKTOP_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -106,7 +109,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -141,7 +147,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -176,7 +185,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -211,7 +223,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -246,7 +261,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -281,7 +299,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -307,7 +328,12 @@ export const routes: Routes = [
         path: NAVIGATION.applicationDiscussion.path,
         loadComponent: () => import('./pages/application-discussion-page/application-discussion-page.component').then(m => m.ApplicationDiscussionPageComponent),
         resolve: {
-          breadcrumb: breadcrumbResolver([ NAVIGATION.application, NAVIGATION.applicationDiscussions, NAVIGATION.applicationDiscussion ])
+          breadcrumb: breadcrumbResolver([
+            NAVIGATION.home,
+            NAVIGATION.application,
+            NAVIGATION.applicationDiscussions,
+            NAVIGATION.applicationDiscussion
+          ])
         } as resolversFrom<IBreadcrumbRouteData>,
         data: {
           header: null,
@@ -318,7 +344,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: DESKTOP_MAIN_NAVIGATION
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -353,7 +382,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -393,7 +425,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -430,7 +465,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -475,7 +513,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -511,7 +552,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -549,7 +593,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -586,7 +633,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -631,7 +681,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -685,7 +738,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -764,7 +820,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -799,7 +858,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -834,7 +896,10 @@ export const routes: Routes = [
           },
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -863,7 +928,10 @@ export const routes: Routes = [
           header: null,
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -893,7 +961,10 @@ export const routes: Routes = [
           header: null,
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -923,7 +994,10 @@ export const routes: Routes = [
           header: null,
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -1003,7 +1077,10 @@ export const routes: Routes = [
           header: null,
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,
@@ -1039,7 +1116,10 @@ export const routes: Routes = [
           header: null,
           leftSidebar: {
             component: CommonSidebarComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
             component: UserAuxiliarySidebarComponent,

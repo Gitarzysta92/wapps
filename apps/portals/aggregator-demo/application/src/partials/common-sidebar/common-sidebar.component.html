@@ -6,8 +6,27 @@
 />
 </div>
 
+
 <nav navigationList [alignment]="alignment()">
   @for (item of navigation(); track item.path) {
+    <a #navigationItem
+      navigationItem
+      appearance="navigation-primary"
+      [routerLink]="item.path"
+      [routerLinkActive]="navigationItem.activeClass"
+      [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">
+      <span slot="center" class="nav-label">{{ item.label }}</span>
+      @if (item.icon) {
+        <tui-icon slot="end" [icon]="item.icon"/>
+      }
+    </a>
+  }
+</nav>
+
+<ui-divider /> 
+
+<nav navigationList [alignment]="alignment()">
+  @for (item of navigationSecondary(); track item.path) {
     <a #navigationItem
       navigationItem
       appearance="navigation-primary"

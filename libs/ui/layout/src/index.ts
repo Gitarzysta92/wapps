@@ -12,3 +12,4 @@ export { PageTitleComponent } from './page/page-title/page-title.component';
 export { PageTitleSkeletonComponent } from './page/page-title-skeleton/page-title-skeleton.component';
 export { PageMetaComponent } from './page/page-meta/page-meta.component';
 export { PageMetaSkeletonComponent } from './page/page-meta-skeleton/page-meta-skeleton.component';
+export { DividerComponent } from './divider.component';

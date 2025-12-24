@@ -247,7 +247,6 @@ export const DESKTOP_USER_MAIN_NAVIGATION = [
 ]
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
-  NAVIGATION.home,
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationTimeline,
   NAVIGATION.applicationReviews,
