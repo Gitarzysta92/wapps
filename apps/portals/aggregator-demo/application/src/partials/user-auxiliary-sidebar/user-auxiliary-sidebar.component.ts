@@ -1,6 +1,6 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { AuthenticationService } from '@portals/shared/features/identity';
 import { THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
@@ -16,7 +16,7 @@ import { map } from 'rxjs';
 import type { TagDto } from '@domains/catalog/tags';
 
 @Component({
-  selector: 'user-common-sidebar',
+  selector: 'user-auxiliary-sidebar',
   templateUrl: './user-auxiliary-sidebar.component.html',
   styleUrl: './user-auxiliary-sidebar.component.scss',
   host: {
@@ -26,6 +26,7 @@ import type { TagDto } from '@domains/catalog/tags';
   imports: [
     CommonModule,
     RouterModule,
+    RouterLink,
     TuiButton,
     TuiIcon,
     MyProfileAvatarComponent,
@@ -50,6 +51,8 @@ export class UserAuxiliarySidebarComponent implements IAppShellSidebarComponent 
   public readonly myFavoritesStateProvider = inject(MY_FAVORITES_STATE_PROVIDER);
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
 
+  public readonly myProfilePath = NAVIGATION.myProfile.path;
+  
   public readonly myProfile$ = this.myProfileStateProvider.myProfile$;
   
   public readonly favoritesGridVm$ = this.myFavoritesStateProvider.myFavorites$.pipe(

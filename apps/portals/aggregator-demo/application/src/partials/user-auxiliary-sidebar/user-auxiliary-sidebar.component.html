@@ -8,7 +8,9 @@
       class="user-profile-btn"
       appearance="flat"
       tuiButton
-      type="button">
+      type="button"
+      [routerLink]="myProfilePath">
+      
       <div my-profile-avatar [avatarPath]="myProfileState?.data?.avatar?.uri"></div>
       <div my-profile-name [name]="myProfileState?.data?.name"></div>
     </button>

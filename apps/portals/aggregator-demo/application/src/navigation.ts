@@ -257,7 +257,6 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
 ]
 
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
-  NAVIGATION.myProfile,
   NAVIGATION.myFavorite,
   NAVIGATION.myDiscussions,
 ]
