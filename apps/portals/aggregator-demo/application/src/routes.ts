@@ -977,15 +977,7 @@ export const routes: Routes = [
               navigation: DESKTOP_USER_MAIN_NAVIGATION
             }
           },
-          rightSidebar: {
-            component: UserAuxiliarySidebarComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
-            },
-          },
+          rightSidebar: null,
           footer: {
             component: FooterPartialComponent,
             inputs: {

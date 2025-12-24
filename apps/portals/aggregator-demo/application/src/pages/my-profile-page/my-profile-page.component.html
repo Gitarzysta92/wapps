@@ -1,30 +1,34 @@
-@let profile = profile$ | async;
+
+<ui-page-header class="page-header">
+  <ui-breadcrumbs
+    class="breadcrumbs"
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+
+  @if (isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      <span>{{ profile().name }}</span>
+      <profile-badges [badges]="profile().badges"></profile-badges>
+    </h1>
+  }
+
+</ui-page-header>
 
 
-@if (profile) { 
-  <section class="heading">
-    <div class="heading__container">
-      <h1 class="heading__title">{{ profile.name }}</h1>
-      <profile-badges [badges]="profile.badges"></profile-badges>
-    </div>
-
-  </section>
+@if (isError()) {
+  <p>Error loading profile. Please try again.</p>
 }
 
-<div class="my-profile-page">
+<section class="discussion-content-section">
+
+</section>
+
+
+<!-- <div class="my-profile-page">
   <div class="my-profile-page__container">
-
-    @if (isLoading$ | async) {
-      <div class="my-profile-page__loading">
-        <p>Loading profile...</p>
-      </div>
-    }
-
-    @if (isError$ | async) {
-      <div class="my-profile-page__error">
-        <p>Error loading profile. Please try again.</p>
-      </div>
-    }
 
     @if (profile$ | async; as profile) {
       <div class="my-profile-page__content">
@@ -52,6 +56,6 @@
       </div>
     }
   </div>
-</div>
+</div> -->
 
 

@@ -1,5 +1,6 @@
 import { Component, inject, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
+import { TuiActiveZone } from "@taiga-ui/cdk";
 
 
 @Component({
@@ -8,6 +9,9 @@ import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
   standalone: true,
   imports: [
     RouterOutlet,
+  ],
+  providers: [
+    TuiActiveZone
   ]
 })
 export class RoutableDialogComponent implements OnDestroy {

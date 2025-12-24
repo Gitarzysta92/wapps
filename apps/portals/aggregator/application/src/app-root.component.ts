@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TuiPlatform, TuiVisualViewport } from '@taiga-ui/cdk';
+import { TuiPlatform, TuiVisualViewport, TuiActiveZone } from '@taiga-ui/cdk';
 import { TuiDialogs, TuiDropdowns } from '@taiga-ui/core';
 import { NavigationService, NAVIGATION_CONFIGURATION } from '@ui/navigation';
 import { THEME_PROVIDER_TOKEN, THEME_PROVIDER_CFG_TOKEN, ThemingDescriptorDirective, ThemingService } from '@portals/cross-cutting/theming';
@@ -24,6 +24,7 @@ import { NAVIGATION } from './navigation';
     TuiDropdowns,
   ],
   providers: [
+    TuiActiveZone,
     { provide: THEME_PROVIDER_TOKEN, useClass: ThemingService },
     {
       provide: THEME_PROVIDER_CFG_TOKEN,

@@ -6,9 +6,11 @@ import { GuestProfileDto } from "@domains/customer/profiles";
 import { MyProfileService } from "./application/my-profile.service";
 import { MY_PROFILE_API_BASE_URL_PROVIDER, MY_PROFILE_AVATAR_BASE_URL_PROVIDER } from "./application/infrastructure-providers.port";
 import { MY_PROFILE_STATE_PROVIDER } from "./application/my-profile-state-provider.token";
+import { MY_PROFILE_VIEW_STATE_PROVIDER } from "./presentation/my-profile-view-state-provider.port";
+import { MyProfileViewStateService } from "./presentation/my-profile-view-state.service";
 
 export function provideMyProfileFeature(c: {
-  apiBaseUrl: string
+  apiBaseUrl: string    
   avatarBaseUrl: string,
   guestProfile: GuestProfileDto
 }): ApplicationConfig {
@@ -19,6 +21,7 @@ export function provideMyProfileFeature(c: {
       { provide: MY_PROFILE_UPDATER, useClass: MyProfileApiService },
       { provide: MY_PROFILE_API_BASE_URL_PROVIDER, useValue: c.apiBaseUrl },
       { provide: MY_PROFILE_AVATAR_BASE_URL_PROVIDER, useValue: c.apiBaseUrl },
+      { provide: MY_PROFILE_VIEW_STATE_PROVIDER, useClass: MyProfileViewStateService },
       { provide: GUEST_PROFILE_PROVIDER, useFactory: () => ({ getGuestProfile: () => of({ value: c.guestProfile }) }) }
     ]
   }

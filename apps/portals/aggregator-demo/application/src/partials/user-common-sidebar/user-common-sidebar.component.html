@@ -1,14 +1,14 @@
 <div class="user-profile-section">
   <div class="user-profile">
     <div profile-avatar [avatarPath]="userProfileAvatar()"></div>
-    <div profile-name [name]="userProfileName()" class="user-name"></div>
   </div>
 </div>
 
-<nav navigationList [alignment]="'start'">
+<nav navigationList [alignment]="alignment()">
   @for (item of navigation(); track item.path) {
     <a #navigationItem
       navigationItem
+      appearance="navigation-primary"
       [routerLink]="item.path"
       [routerLinkActive]="navigationItem.activeClass"
       [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">

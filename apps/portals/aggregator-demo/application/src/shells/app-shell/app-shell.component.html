@@ -21,8 +21,8 @@
   </header>  
 }
 
-
-@if (leftSidebarComponent$ | async; as leftSidebar) {
+@let leftSidebar = leftSidebarComponent$ | async;
+@if (leftSidebar !== null && leftSidebar?.component) {
   <aside 
     class="container sidebar left" 
     [class.expanded]="leftSidebar.inputs.isExpanded">
@@ -51,7 +51,8 @@
   <router-outlet></router-outlet>
 </main>
 
-@if (rightSidebarComponent$ | async; as rightSidebar) {
+@let rightSidebar = rightSidebarComponent$ | async;
+@if (rightSidebar !== null && rightSidebar?.component) {
   <aside 
     class="container sidebar right" 
     [class.expanded]="rightSidebar.inputs.isExpanded">

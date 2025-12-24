@@ -1,11 +1,9 @@
-:host {
-  display: inline-block;
-}
+@use 'ui/design-system/src/styles' as *;
 
-.profile-badges {
+:host {
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  align-items: center;
+  gap: $space-1;
 }
 
 .profile-badge {
