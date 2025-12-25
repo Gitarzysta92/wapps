@@ -40,7 +40,7 @@ import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals
 import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
 import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
-import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '@portals/shared/features/app';
+import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '@portals/shared/features/application-overview';
 import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';
 import { TopReviewCardComponent } from '@portals/shared/features/review';
 @Component({

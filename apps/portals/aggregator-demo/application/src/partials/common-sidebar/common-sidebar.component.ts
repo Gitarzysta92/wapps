@@ -28,8 +28,7 @@ import { DividerComponent } from '@ui/layout';
   ]
 })
 export class CommonSidebarComponent {
-
-  public readonly profileAvatar = input<{ url: string; alt: string } | null>(null);
+  public readonly avatarPath = input<string | null>(null);
   public readonly isExpanded = input<boolean>(false);
   public readonly navigation = input<NavigationDeclarationDto[]>([]);
   public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);

@@ -3,7 +3,7 @@ import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, Acti
 import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
-import { filter, startWith, map, distinctUntilChanged, Observable, combineLatest } from 'rxjs';
+import { filter, startWith, map, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { SafeComponentOutletDirective } from '@ui/misc';
 import { TuiIcon } from '@taiga-ui/core';
@@ -83,7 +83,17 @@ export class AppShellComponent {
     //INFO: startWith is used to ensure that the data is initialized, 
     //router outlet events don't emit a value on init
     startWith(null),
-    map(() =>  this._route.firstChild?.snapshot as ActivatedRouteSnapshot)
+    map(() => {
+      let current: ActivatedRouteSnapshot | null = this._route.snapshot;
+      const aggregatedData: Record<string, unknown> = {};
+      const aggregatedParams: Record<string, string> = {};
+      while (current) {
+        Object.assign(aggregatedData, current.data);
+        Object.assign(aggregatedParams, current.params);
+        current = current.firstChild;
+      }
+      return { data: aggregatedData, params: aggregatedParams };
+    })
   );
 
   public readonly topBarComponent$ = this._routeData.pipe(
@@ -98,7 +108,6 @@ export class AppShellComponent {
   );
 
   public readonly headerComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
       component: (s.data as IAppShellRouteData)?.header?.component,
       inputs: {

@@ -9,7 +9,7 @@ import { StatusBannerComponent } from '@apps/portals/shared/features/health-stat
 import { AppRecordDto } from '@domains/catalog/record';
 import { NAVIGATION, ROUTE_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';
-import { OVERVIEW_PROVIDER } from '@portals/shared/features/overview';
+import { APPLICATION_OVERVIEW_PROVIDER } from '@portals/shared/features/application-overview';
 
 
 @Component({
@@ -34,7 +34,7 @@ import { OVERVIEW_PROVIDER } from '@portals/shared/features/overview';
 })
 export class ApplicationOverviewPageComponent {
   private readonly _route = inject(ActivatedRoute);
-  private readonly _overviewProvider = inject(OVERVIEW_PROVIDER);
+  private readonly _overviewProvider = inject(APPLICATION_OVERVIEW_PROVIDER);
 
   public readonly overviewVm$ = this._route.paramMap.pipe(
     map(p => p.get(ROUTE_PARAMS.appSlug)),

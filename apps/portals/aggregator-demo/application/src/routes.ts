@@ -1,4 +1,4 @@
-import { ResolveFn, Routes } from "@angular/router";
+import { Routes, ActivatedRouteSnapshot } from "@angular/router";
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 import { AuthenticationDialogComponent } from "./dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost-password-dialog.component";
@@ -26,6 +26,8 @@ import { breadcrumbResolver } from "./resolvers/breadcrumb.resolver";
 import { resolversFrom } from "@portals/shared/boundary/routing";
 import { sidebarResolver } from "./resolvers/sidebar.resolver";
 import { navigationResolver } from "./resolvers/navigation.resolver";
+import { provideApplicationOverviewFeature } from '@portals/shared/features/application-overview';
+import { ApplicationCommonSidebarComponent } from "./partials/application-common-sidebar/application-common-sidebar.component";
 
 
 // TODO: check if flat list approach
@@ -93,7 +95,8 @@ export const routes: Routes = [
       },
       {
         path: '',
-        providers: [provideApplicationOverviewFeature()],
+        providers: [provideApplicationOverviewFeature().providers],
+        data: {asd: 'asd'},
         children: [
           {
             path: NAVIGATION.application.path,
@@ -104,10 +107,11 @@ export const routes: Routes = [
             path: `${NAVIGATION.applicationOverview.path}`,
             loadComponent: () => import('./pages/application-overview-page/application-overview-page.component').then(m => m.ApplicationOverviewPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: applicationAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -144,10 +148,11 @@ export const routes: Routes = [
             path: NAVIGATION.applicationHealth.path,
             loadComponent: () => import('./pages/application-health-page/application-health-page.component').then(m => m.ApplicationHealthPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -180,10 +185,11 @@ export const routes: Routes = [
             path: NAVIGATION.applicationDevLog.path,
             loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -216,10 +222,11 @@ export const routes: Routes = [
             path: NAVIGATION.applicationReviews.path,
             loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -252,10 +259,11 @@ export const routes: Routes = [
             path: NAVIGATION.applicationReview.path,
             loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -288,10 +296,11 @@ export const routes: Routes = [
             path: NAVIGATION.applicationDiscussions.path,
             loadComponent: () => import('./pages/application-discussions-page/application-discussions-page.component').then(m => m.ApplicationDiscussionsPageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {
@@ -330,11 +339,11 @@ export const routes: Routes = [
                 NAVIGATION.applicationDiscussions,
                 NAVIGATION.applicationDiscussion
               ]),
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
                 navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
-                navigationAvatar: navigationResolver(NAVIGATION.applicationDiscussion)
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             } as resolversFrom<IBreadcrumbRouteData>,
             data: {
@@ -366,10 +375,10 @@ export const routes: Routes = [
             path: NAVIGATION.applicationTimeline.path,
             loadComponent: () => import('./pages/application-timeline-page/application-timeline-page.component').then(m => m.ApplicationTimelinePageComponent),
             resolve: {
-              leftSidebar: sidebarResolver(CommonSidebarComponent, {
-                avatar: profileAvatarResolver(),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug') ?? '',
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION)
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
               })
             },
             data: {

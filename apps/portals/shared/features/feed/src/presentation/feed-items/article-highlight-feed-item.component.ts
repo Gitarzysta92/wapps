@@ -11,7 +11,7 @@ import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu
 import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
 import { UpvoteChipComponent } from '@ui/voting';
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
-import { AppAvatarComponent } from '@portals/shared/features/app';
+import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { TagsComponent } from '@ui/tags';
 import { ArticleDetailsBadgeComponent } from '@portals/shared/features/articles';
 

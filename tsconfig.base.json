@@ -123,8 +123,8 @@
         "apps/portals/shared/boundary/routing/src/index.ts"
       ],
       "@portals/shared/data": ["apps/portals/shared/data/src/index.ts"],
-      "@portals/shared/features/app": [
-        "apps/portals/shared/features/app/src/index.ts"
+      "@portals/shared/features/application-overview": [
+        "apps/portals/shared/features/application-overview/src/index.ts"
       ],
       "@portals/shared/features/articles": [
         "apps/portals/shared/features/articles/src/index.ts"
@@ -170,9 +170,6 @@
       ],
       "@portals/shared/features/my-profile": [
         "apps/portals/shared/features/my-profile/src/index.ts"
-      ],
-      "@portals/shared/features/overview": [
-        "apps/portals/shared/features/overview/src/index.ts"
       ],
       "@portals/shared/features/platform": [
         "apps/portals/shared/features/platform/src/index.ts"

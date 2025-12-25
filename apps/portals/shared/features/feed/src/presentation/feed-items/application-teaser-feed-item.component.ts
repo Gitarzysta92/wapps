@@ -14,7 +14,7 @@ import {
   AppRatingComponent, 
   AppCategoryChipComponent,
   AppReviewsChipComponent 
-} from '@portals/shared/features/app';
+} from '@portals/shared/features/application-overview';
 import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
 import { ContextMenuChipComponent, ContextMenuItem } from '@ui/context-menu-chip';
 import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';

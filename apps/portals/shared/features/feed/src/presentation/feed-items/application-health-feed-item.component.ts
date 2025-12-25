@@ -5,7 +5,7 @@ import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import type { ApplicationHealthFeedItemDto } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
-import { AppAvatarComponent } from '@portals/shared/features/app';
+import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';

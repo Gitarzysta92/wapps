@@ -1,9 +1,11 @@
 <div class="portal-logo-wrapper">
-  @if (profileAvatar(); as profileAvatar) {
-    <tui-avatar [src]="profileAvatar.url" size="xl" />
-  } @else {
-    <tui-avatar [src]="'@tui.mastercard' | tuiIcon" size="xl" />
-  }
+  <a [routerLink]="navigationAvatar()?.path">
+    @if (avatarPath(); as path) {
+      <tui-avatar [src]="path" size="xl" [routerLink]="navigationAvatar()?.path"/>
+    } @else {
+      <tui-avatar [src]="'@tui.mastercard' | tuiIcon" size="xl" [routerLink]="navigationAvatar()?.path"/>
+    } 
+  </a>
 </div>
 
 
