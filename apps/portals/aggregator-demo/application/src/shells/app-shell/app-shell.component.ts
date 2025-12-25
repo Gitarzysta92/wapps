@@ -9,30 +9,30 @@ import { SafeComponentOutletDirective } from '@ui/misc';
 import { TuiIcon } from '@taiga-ui/core';
 
 export interface IAppShellRouteData {
-  topBar: {
+  topBar?: {
     component: Type<unknown>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null;
-  header: {
+  };
+  header?: {
     component: Type<IAppShellHeaderComponent>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null;
-  leftSidebar: {
+  };
+  leftSidebar?: {
     component: Type<IAppShellSidebarComponent>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null
-  rightSidebar: {
+  }
+  rightSidebar?: {
     component: Type<IAppShellSidebarComponent>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null;
-  footer: {
+  };
+  footer?: {
     component: Type<unknown>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null;
-  bottomBar: {
+  };
+  bottomBar?: {
     component: Type<unknown>,
     inputs?: Record<symbol, unknown | Signal<unknown>>
-  } | null;
+  };
 }
 
 export interface IAppShellHeaderComponent {
@@ -88,9 +88,9 @@ export class AppShellComponent {
 
   public readonly topBarComponent$ = this._routeData.pipe(
     map(s => ({
-      component: (s.data as IAppShellRouteData).topBar?.component,
+      component: (s.data as IAppShellRouteData)?.topBar?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).topBar?.inputs ?? {}),
+        ...((s.data as IAppShellRouteData) ?.topBar?.inputs ?? {}),
         ...s.params,
         ...s.data
       }
@@ -100,9 +100,9 @@ export class AppShellComponent {
   public readonly headerComponent$ = this._routeData.pipe(
     distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
-      component: (s.data as IAppShellRouteData).header?.component,
+      component: (s.data as IAppShellRouteData)?.header?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).header?.inputs ?? {}),
+        ...((s.data as IAppShellRouteData)  .header?.inputs ?? {}),
         ...s.params
       }
     }))
@@ -112,10 +112,10 @@ export class AppShellComponent {
     this._routeData,
     this._shellStateProvider.isLeftSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
-    component: (s.data as IAppShellRouteData).leftSidebar?.component,
+    component: (s.data as IAppShellRouteData)?.leftSidebar?.component,
     inputs: {
       // TODO: remove unnecessary fallback to empty object creation
-      ...((s.data as IAppShellRouteData).leftSidebar?.inputs ?? {}),
+      ...((s.data as IAppShellRouteData)?.leftSidebar?.inputs ?? {}),
       isExpanded,
       ...s.params,
       ...s.data
@@ -128,9 +128,9 @@ export class AppShellComponent {
     this._routeData,
     this._shellStateProvider.isRightSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
-    component: (s.data as IAppShellRouteData).rightSidebar?.component,
+    component: (s.data as IAppShellRouteData)?.rightSidebar?.component,
     inputs: {
-      ...((s.data as IAppShellRouteData).rightSidebar?.inputs ?? {}),
+      ...((s.data as IAppShellRouteData)?.rightSidebar?.inputs ?? {}),
       isExpanded,
       ...s.params,
       ...s.data
@@ -141,9 +141,9 @@ export class AppShellComponent {
 
   public readonly footerComponent$ = this._routeData.pipe(
     map(s => ({
-      component: (s.data as IAppShellRouteData).footer?.component,
+      component: (s.data as IAppShellRouteData)?.footer?.component,
       inputs: {
-        ...(s.data as IAppShellRouteData).footer?.inputs,
+        ...((s.data as IAppShellRouteData)?.footer?.inputs ?? {}),
         ...s.params,
         ...s.data
       }
@@ -152,9 +152,9 @@ export class AppShellComponent {
 
   public readonly bottomBarComponent$ = this._routeData.pipe(
     map(s => ({
-      component: (s.data as IAppShellRouteData).bottomBar?.component,
+      component: (s.data as IAppShellRouteData)?.bottomBar?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).bottomBar?.inputs ?? {}),
+        ...((s.data as IAppShellRouteData)?.bottomBar?.inputs ?? {}),
         ...s.params,
         ...s.data
       }
