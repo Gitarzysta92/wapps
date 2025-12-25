@@ -4,7 +4,7 @@ import { ROUTE_PARAMS } from '../navigation';
 import { inject } from '@angular/core';
 import { PROFILES_STATE_PROVIDER } from '@portals/shared/features/user-profile';
 
-export const profileAvatarResolver: ResolveFn<CustomerProfileDto["avatar"] | null> = (route) => {
+export const profileAvatarResolver: () => ResolveFn<CustomerProfileDto["avatar"] | null> = () => (route) => {
   let avatar: CustomerProfileDto["avatar"] | null = null;
 
   

@@ -22,7 +22,7 @@ export class NavigationItemComponent {
   
   public getActiveOptions(path: string): IsActiveMatchOptions {
     return { 
-      paths: path === '' ? 'exact' : 'subset',
+      paths: path === '' || path === '/' ? 'exact' : 'subset',
       queryParams: 'ignored',
       fragment: 'ignored',
       matrixParams: 'ignored'

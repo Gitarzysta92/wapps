@@ -29,9 +29,10 @@ import { DividerComponent } from '@ui/layout';
 })
 export class CommonSidebarComponent {
 
-  public readonly profileAvatar = input<string | null>(null);
+  public readonly profileAvatar = input<{ url: string; alt: string } | null>(null);
   public readonly isExpanded = input<boolean>(false);
   public readonly navigation = input<NavigationDeclarationDto[]>([]);
   public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);
+  public readonly navigationAvatar = input<NavigationDeclarationDto | null>(null);
   public readonly alignment = input<'start' | 'end'>('end');
 }

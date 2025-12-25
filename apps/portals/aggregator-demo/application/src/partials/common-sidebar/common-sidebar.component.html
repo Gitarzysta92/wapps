@@ -1,9 +1,9 @@
 <div class="portal-logo-wrapper">
-  <!-- <img [src]="profileAvatar()" alt="Profile avatar" /> -->
-  <tui-avatar 
-  [src]="'@tui.mastercard' | tuiIcon"
-  size="xl"
-/>
+  @if (profileAvatar(); as profileAvatar) {
+    <tui-avatar [src]="profileAvatar.url" size="xl" />
+  } @else {
+    <tui-avatar [src]="'@tui.mastercard' | tuiIcon" size="xl" />
+  }
 </div>
 
 
