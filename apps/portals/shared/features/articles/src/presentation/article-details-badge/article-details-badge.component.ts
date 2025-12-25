@@ -19,7 +19,7 @@ import { TuiIcon } from '@taiga-ui/core';
   templateUrl: './article-details-badge.component.html',
   styleUrls: ['./article-details-badge.component.scss'],
   host: {
-    '[class]': 'article-details'
+    '[class]': '"article-details"'
   }
 })
 export class ArticleDetailsBadgeComponent {

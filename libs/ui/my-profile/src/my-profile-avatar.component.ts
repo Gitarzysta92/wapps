@@ -2,7 +2,7 @@ import { Component, input } from "@angular/core";
 import { TuiAvatar, TuiBadgedContent } from "@taiga-ui/kit";
 
 @Component({
-  selector: "[my-profile-avatar]",
+  selector: "[ui-my-profile-avatar]",
   templateUrl: 'my-profile-avatar.component.html',
   styles: `tui-avatar { border: 2px solid }`,
   imports: [

@@ -14,9 +14,6 @@ import { BreadcrumbsComponent } from '@ui/breadcrumbs';
   styleUrl: 'my-profile-page.component.scss',
   standalone: true,
   imports: [
-    AsyncPipe,
-    TuiTitle,
-    TuiHeader,
     ProfileBadgesComponent,
     PageHeaderComponent,
     BreadcrumbsComponent,
