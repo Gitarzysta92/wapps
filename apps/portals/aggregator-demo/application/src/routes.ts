@@ -299,12 +299,16 @@ export const routes: Routes = [
               leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
                 appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
                 navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
-                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
                 navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
-              })
+              }),
+              breadcrumb: breadcrumbResolver([
+                NAVIGATION.home,
+                NAVIGATION.application,
+                NAVIGATION.applicationDiscussions,
+              ]),
             },
             data: {
-              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDiscussions ],
               bottomBar: {
                 component: CommonMobileBottomBarPartialComponent,
                 inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -327,7 +331,7 @@ export const routes: Routes = [
                   quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
                 }
               }
-            } as IAppShellRouteData & IBreadcrumbRouteData,
+            } as IAppShellRouteData,
           },
           {
             path: NAVIGATION.applicationDiscussion.path,

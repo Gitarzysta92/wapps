@@ -1,10 +1,25 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { TuiBadge } from '@taiga-ui/kit';
+import { Component, inject, computed, input } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { of, delay } from 'rxjs';
+import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
+import { TuiBadge, TuiAvatar } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
+import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
+import { 
+  PageHeaderComponent, 
+  PageTitleComponent, 
+  PageTitleSkeletonComponent,
+  PageMetaComponent,
+  PageMetaSkeletonComponent,
+  MediumCardComponent,
+  MediumCardSkeletonComponent
+} from '@ui/layout';
+import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
+import { APPLICATIONS } from '@portals/shared/data';
+import { NAVIGATION_NAME_PARAMS } from '../../navigation';
+import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
 
 interface DiscussionTopic {
   id: string;
@@ -24,29 +39,99 @@ interface DiscussionTopic {
   selector: 'app-application-discussions-page',
   standalone: true,
   imports: [
-    AsyncPipe,
-    NgFor,
-    NgIf,
+    CommonModule,
     TuiButton,
     TuiIcon,
-    TuiBadge
+    TuiBadge,
+    TuiAvatar,
+    TuiAppearance,
+    BreadcrumbsComponent,
+    BreadcrumbsSkeletonComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
+    PageTitleSkeletonComponent,
+    PageMetaComponent,
+    PageMetaSkeletonComponent,
+    MediumCardComponent,
+    MediumCardSkeletonComponent,
+    DiscussionStatsBadgeComponent
   ],
   templateUrl: './application-discussions-page.component.html',
   styleUrl: './application-discussions-page.component.scss',
 })
-export class ApplicationDiscussionsPageComponent {
-  private readonly _route = inject(ActivatedRoute);
+export class ApplicationDiscussionsPageComponent implements 
+  routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }> {
+
   private readonly _router = inject(Router);
 
-  public readonly app$ = this._route.paramMap.pipe(
-    map(p => p.get('appSlug') ?? 'unknown'),
-    map(slug => this._buildMockFromSlug(slug)),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+  public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
+  public readonly appSlug = input<string | null>(null);
 
-  public readonly discussions$ = this.app$.pipe(
-    map(() => this._generateMockDiscussions())
-  );
+  public readonly app = rxResource({
+    request: () => this.appSlug(),
+    loader: ({ request: appSlug }) => {
+      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
+      return of(app).pipe(delay(1000));
+    }
+  });
+
+  public readonly discussions = rxResource({
+    request: () => this.appSlug(),
+    loader: () => of(this._generateMockDiscussions()).pipe(delay(1200))
+  });
+
+  public readonly totalStats = computed(() => {
+    const discussionList = this.discussions.value() ?? [];
+    return {
+      topics: discussionList.length,
+      totalReplies: discussionList.reduce((sum, d) => sum + d.repliesCount, 0),
+      totalViews: discussionList.reduce((sum, d) => sum + d.viewsCount, 0)
+    };
+  });
+
+  public readonly pinnedDiscussions = computed(() => {
+    return (this.discussions.value() ?? []).filter(d => d.isPinned);
+  });
+
+  public readonly unpinnedDiscussions = computed(() => {
+    return (this.discussions.value() ?? []).filter(d => !d.isPinned);
+  });
+
+  public readonly breadcrumbData = computed(() => {
+    const breadcrumb = this.breadcrumb();
+    
+    if (this.app.value()) { 
+      return breadcrumb.map((b) => {
+        if (b.label.includes(NAVIGATION_NAME_PARAMS.applicationName)) {
+          return {
+            ...b,
+            label: b.label.replace(NAVIGATION_NAME_PARAMS.applicationName, this.app.value()?.name ?? 'Unknown Application')
+          };
+        }
+        return b;
+      });
+    }
+    return breadcrumb;
+  });
+
+  public formatRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks}w ago`;
+  }
+
+  public navigateToDiscussion(discussion: DiscussionTopic): void {
+    const appSlug = this.appSlug();
+    this._router.navigate(['/app', appSlug, 'topics', discussion.slug]);
+  }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
@@ -58,7 +143,7 @@ export class ApplicationDiscussionsPageComponent {
       slug,
       name,
       description: `${name} description`,
-      logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+      logo: 'https://picsum.photos/128',
       isPwa: true,
       rating: 4.7,
       tagIds: [],
@@ -136,39 +221,7 @@ export class ApplicationDiscussionsPageComponent {
         tags: ['collaboration', 'best-practices', 'team'],
         excerpt: 'Sharing some tips and tricks we\'ve learned for effective team collaboration using this platform...',
         slug: 'best-practices-for-team-collaboration'
-      },
-      {
-        id: '6',
-        title: 'Integration with Slack workspace',
-        author: 'Alex Thompson',
-        authorAvatar: 'https://i.pravatar.cc/40?img=6',
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 96),
-        repliesCount: 9,
-        viewsCount: 145,
-        isPinned: false,
-        tags: ['integration', 'slack', 'workspace'],
-        excerpt: 'Has anyone successfully integrated this app with their Slack workspace? Looking for guidance on the setup process...',
-        slug: 'integration-with-slack-workspace'
       }
     ];
-  }
-
-  public formatRelativeTime(date: Date): string {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w ago`;
-  }
-
-  public navigateToDiscussion(discussion: DiscussionTopic): void {
-    const appSlug = this._route.snapshot.paramMap.get('appSlug');
-    this._router.navigate(['/app', appSlug, 'topics', discussion.slug]);
   }
 }

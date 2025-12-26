@@ -1,66 +1,115 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, NgFor } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { TuiChip } from '@taiga-ui/kit';
+import { Component, inject, computed, input } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { of, delay } from 'rxjs';
+import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
+import { TuiChip, TuiBadge } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
+import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
+import { 
+  PageHeaderComponent, 
+  PageTitleComponent, 
+  PageTitleSkeletonComponent,
+  PageMetaComponent,
+  PageMetaSkeletonComponent,
+  MediumCardComponent,
+  MediumCardSkeletonComponent,
+  CommonSectionComponent,
+  TitledSeparatorComponent
+} from '@ui/layout';
+import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
+import { APPLICATIONS } from '@portals/shared/data';
+import { NAVIGATION_NAME_PARAMS } from '../../navigation';
+import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
+
+interface ChangelogEntry {
+  version: string;
+  releaseDate: Date;
+  description: string;
+  type: 'major' | 'minor' | 'patch';
+  changes: { type: string; description: string }[];
+}
 
 @Component({
   selector: 'app-application-devlog-page',
   standalone: true,
   imports: [
-    AsyncPipe,
-    NgFor,
+    CommonModule,
     TuiButton,
     TuiIcon,
-    TuiChip
+    TuiChip,
+    TuiBadge,
+    TuiAppearance,
+    BreadcrumbsComponent,
+    BreadcrumbsSkeletonComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
+    PageTitleSkeletonComponent,
+    PageMetaComponent,
+    PageMetaSkeletonComponent,
+    MediumCardComponent,
+    MediumCardSkeletonComponent,
+    CommonSectionComponent,
+    TitledSeparatorComponent,
+    AppChangelogInfoComponent,
+    AppChangelogDetailsComponent
   ],
   templateUrl: './application-devlog-page.component.html',
   styleUrl: './application-devlog-page.component.scss'
 })
-export class ApplicationDevlogPageComponent {
-  private readonly _route = inject(ActivatedRoute);
+export class ApplicationDevlogPageComponent implements 
+  routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }> {
 
-  public readonly app$ = this._route.paramMap.pipe(
-    map(p => p.get('appSlug') ?? 'unknown'),
-    map(slug => this._buildMockFromSlug(slug)),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+  public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
+  public readonly appSlug = input<string | null>(null);
 
-  getVersion(): string {
-    return '2.1.0';
+  public readonly app = rxResource({
+    request: () => this.appSlug(),
+    loader: ({ request: appSlug }) => {
+      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
+      return of(app).pipe(delay(1000));
+    }
+  });
+
+  public readonly changelog = rxResource({
+    request: () => this.appSlug(),
+    loader: () => of(this._generateMockChangelog()).pipe(delay(1200))
+  });
+
+  public readonly breadcrumbData = computed(() => {
+    const breadcrumb = this.breadcrumb();
+    
+    if (this.app.value()) { 
+      return breadcrumb.map((b) => {
+        if (b.label.includes(NAVIGATION_NAME_PARAMS.applicationName)) {
+          return {
+            ...b,
+            label: b.label.replace(NAVIGATION_NAME_PARAMS.applicationName, this.app.value()?.name ?? 'Unknown Application')
+          };
+        }
+        return b;
+      });
+    }
+    return breadcrumb;
+  });
+
+  public readonly latestEntry = computed(() => this.changelog.value()?.[0] ?? null);
+  public readonly previousEntries = computed(() => this.changelog.value()?.slice(1) ?? []);
+
+  getChangeTypeLabel(type: 'major' | 'minor' | 'patch'): string {
+    switch (type) {
+      case 'major': return 'Major Update';
+      case 'minor': return 'Minor Update';
+      case 'patch': return 'Patch';
+    }
   }
 
-  getDescription(): string {
-    return 'Major update with new features and improvements';
-  }
-
-  getReleaseDate(): string {
-    return new Date().toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
-  }
-
-  getChanges(): string[] {
-    return [
-      'New user interface improvements',
-      'Performance optimizations',
-      'Bug fixes and stability improvements',
-      'Added dark mode support',
-      'Enhanced security features'
-    ];
-  }
-
-  getChangeType(): 'major' | 'minor' | 'patch' {
-    return 'major';
-  }
-
-  getChangeTypeLabel(): string {
-    const type = this.getChangeType();
-    return type === 'major' ? 'Major Update' : type === 'minor' ? 'Minor Update' : 'Patch';
+  getChangeTypeAppearance(type: 'major' | 'minor' | 'patch'): string {
+    switch (type) {
+      case 'major': return 'error';
+      case 'minor': return 'primary';
+      case 'patch': return 'neutral';
+    }
   }
 
   private _buildMockFromSlug(slug: string): AppRecordDto {
@@ -73,7 +122,7 @@ export class ApplicationDevlogPageComponent {
       slug,
       name,
       description: `${name} description`,
-      logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+      logo: 'https://picsum.photos/128',
       isPwa: true,
       rating: 4.7,
       tagIds: [],
@@ -83,5 +132,44 @@ export class ApplicationDevlogPageComponent {
       updateDate: new Date(),
       listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
     };
+  }
+
+  private _generateMockChangelog(): ChangelogEntry[] {
+    return [
+      {
+        version: '2.1.0',
+        releaseDate: new Date(),
+        description: 'Major update with new features and improvements',
+        type: 'major',
+        changes: [
+          { type: 'feature', description: 'New user interface improvements' },
+          { type: 'feature', description: 'Performance optimizations' },
+          { type: 'fix', description: 'Bug fixes and stability improvements' },
+          { type: 'feature', description: 'Added dark mode support' },
+          { type: 'security', description: 'Enhanced security features' }
+        ]
+      },
+      {
+        version: '2.0.3',
+        releaseDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+        description: 'Minor bug fixes and improvements',
+        type: 'patch',
+        changes: [
+          { type: 'fix', description: 'Fixed login issue on mobile devices' },
+          { type: 'fix', description: 'Resolved performance regression' }
+        ]
+      },
+      {
+        version: '2.0.0',
+        releaseDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+        description: 'Complete redesign with new features',
+        type: 'major',
+        changes: [
+          { type: 'feature', description: 'Complete UI redesign' },
+          { type: 'feature', description: 'New dashboard experience' },
+          { type: 'feature', description: 'Integration with external services' }
+        ]
+      }
+    ];
   }
 }

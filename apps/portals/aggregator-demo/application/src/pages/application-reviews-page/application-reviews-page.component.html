@@ -1,45 +1,143 @@
-<main class="page-layout">
-  <section class="review-section">
-    <div class="section-content">
-      <h1 class="section-title">
-        <tui-icon icon="@tui.star" class="title-icon"></tui-icon>
-        Reviews & Testimonials
-      </h1>
-      <div class="review-container">
-        <div class="reviewer-column">
-          <tui-avatar src="AI" size="l" />
-          <div class="reviewer-name">{{ getReviewerName() }}</div>
-          <div class="reviewer-meta">
-            <span class="reviewer-role">{{ getReviewerRole() }}</span>
-            <span class="review-date">{{ getReviewDate() }}</span>
-          </div>
+<ui-page-header class="page-header">
+  @if (app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs
+      class="breadcrumbs"
+      slot="top-bar"
+      [breadcrumbs]="breadcrumbData()">
+    </ui-breadcrumbs>
+  }
+
+  @if (app.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      <tui-icon icon="@tui.star" />
+      Reviews & Testimonials
+    </h1>
+  }
+
+  @if (reviewsData.isLoading()) {
+    <ui-page-meta-skeleton slot="meta" />
+  }
+  @if (ratingStats(); as stats) {
+    <ui-page-meta slot="meta">
+      <div class="meta-rating">
+        <app-rating [readonly]="true" [rating]="stats.average" />
+        <span class="meta-average">{{ stats.average.toFixed(1) }}/5</span>
+        <span class="meta-total">({{ stats.total }} reviews)</span>
+      </div>
+    </ui-page-meta>
+  }
+</ui-page-header>
+
+<!-- Rating Summary Section -->
+<section class="rating-summary-section">
+  @if (reviewsData.isLoading()) {
+    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+  }
+  @if (ratingStats(); as stats) {
+    <ui-medium-card class="rating-summary-card" tuiAppearance="card-elevated">
+      <div class="rating-overview">
+        <div class="rating-score">
+          <span class="score-value">{{ stats.average.toFixed(1) }}</span>
+          <app-rating [readonly]="true" [rating]="stats.average" />
+          <span class="score-label">{{ stats.total }} reviews</span>
         </div>
+        
+        <div class="rating-distribution">
+          @for (dist of stats.distribution; track dist.stars) {
+            <div class="distribution-row">
+              <span class="star-label">{{ dist.stars }} stars</span>
+              <div class="distribution-bar">
+                <div class="distribution-fill" [style.width.%]="dist.percentage"></div>
+              </div>
+              <span class="distribution-count">{{ dist.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
 
-        <div class="review-column">
-          <h3 class="application-name">{{ (app$ | async)?.name }}</h3>
-          <p class="testimonial">"{{ getTestimonial() }}"</p>
+      <button
+        slot="footer"
+        tuiButton 
+        size="s" 
+        appearance="primary">
+        <tui-icon icon="@tui.pen"/>
+        Write a Review
+      </button>
+    </ui-medium-card>
+  }
+</section>
 
-          <div class="rating-container">
-            <span class="rating-value">{{ getRating().toFixed(1) }}/5</span>
-            <div class="rating-stars">
-              <tui-icon 
-                *ngFor="let star of [1,2,3,4,5]"
-                [icon]="star <= getRating() ? '@tui.star' : '@tui.star'"
-                [class.filled]="star <= getRating()"
-                class="star-icon" />
+<!-- Reviews List Section -->
+<section class="reviews-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    All Reviews
+  </h2>
+
+  <div class="reviews-list">
+    @if (reviewsData.isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    }
+    @if (reviews(); as reviewList) {
+      @for (review of reviewList; track review.id) {
+        <ui-medium-card class="review-card" tuiAppearance="card-elevated">
+          @if (review.isVerified) {
+            <tui-chip slot="top-edge" size="xs" appearance="primary">
+              <tui-icon icon="@tui.badge-check" />
+              Verified Purchase
+            </tui-chip>
+          }
+
+          <div class="review-header">
+            <div class="reviewer-info">
+              <tui-avatar [src]="review.authorAvatarUrl" size="l" />
+              <div class="reviewer-details">
+                <span class="reviewer-name">{{ review.authorName }}</span>
+                <span class="reviewer-role">{{ review.authorRole }}</span>
+                <span class="review-date">{{ review.date }}</span>
+              </div>
+            </div>
+            
+            <div class="review-rating">
+              <div class="rating-stars">
+                @for (star of getRatingStars(review.rating); track star) {
+                  <tui-icon 
+                    icon="@tui.star"
+                    [class.filled]="star <= review.rating"
+                    class="star-icon" />
+                }
+              </div>
+              <span class="rating-value">{{ review.rating.toFixed(1) }}</span>
             </div>
           </div>
 
-          <button
-            class="review-cta" 
-            tuiButton 
-            size="s" 
-            appearance="primary">
-              <tui-icon icon="@tui.external-link"/>
-              Read Full Review
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+          <p class="review-content">"{{ review.content }}"</p>
+
+          <div slot="footer" class="review-footer">
+            <button tuiButton appearance="secondary" size="xs">
+              <tui-icon icon="@tui.thumbs-up" />
+              Helpful ({{ review.helpfulCount }})
+            </button>
+            <button tuiButton appearance="flat" size="xs">
+              <tui-icon icon="@tui.flag" />
+              Report
+            </button>
+          </div>
+        </ui-medium-card>
+      }
+    }
+  </div>
+
+  <div class="load-more">
+    <button tuiButton appearance="secondary">
+      <tui-icon icon="@tui.chevron-down"></tui-icon>
+      Load More Reviews
+    </button>
+  </div>
+</section>

@@ -1,29 +1,122 @@
-<main class="page-layout">
-  <!-- Health Section -->
-  <section class="health-section">
-    <div class="section-content">
-      <h1 class="section-title">
-        <tui-icon icon="@tui.heart-pulse" class="title-icon"></tui-icon>
-        System Health
-      </h1>
-      
-      <health-status-banner
-        [status]="getOverallStatus()"
-        [message]="getStatusMessage()"
-        [timestamp]="getCurrentTimestamp()">
-      </health-status-banner>
-      
-      <div class="services-list">
-        <health-service-status-item
-          *ngFor="let service of getServices()"
-          [service]="service">
-        </health-service-status-item>
-      </div>
-      
-      <health-notices-section
-        [notices]="getNotices()"
-        [showEmptyState]="true">
-      </health-notices-section>
-    </div>
-  </section>
-</main>
+<ui-page-header class="page-header">
+  @if (app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs
+      class="breadcrumbs"
+      slot="top-bar"
+      [breadcrumbs]="breadcrumbData()">
+    </ui-breadcrumbs>
+  }
+
+  @if (app.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      <tui-icon icon="@tui.heart-pulse" />
+      System Health
+    </h1>
+  }
+
+  @if (healthData.isLoading()) {
+    <ui-page-meta-skeleton slot="meta" />
+  } @else {
+    <ui-page-meta slot="meta">
+      <health-check-badge [status]="overallStatus()" />
+    </ui-page-meta>
+  }
+</ui-page-header>
+
+<!-- Overall Status Banner -->
+<section class="health-section">
+  @if (healthData.isLoading()) {
+    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+  }
+  @if (healthData.value(); as data) {
+    <health-status-banner
+      [status]="data.overallStatus === 0 ? 'operational' : data.overallStatus === 1 ? 'degraded' : 'outage'"
+      [message]="data.statusMessage"
+      [timestamp]="data.lastUpdated">
+    </health-status-banner>
+  }
+</section>
+
+<!-- Status History -->
+<section class="health-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    30-Day Status History
+  </h2>
+
+  @if (healthData.isLoading()) {
+    <div class="history-skeleton"></div>
+  } @else {
+    <status-history [statusesHistory]="statusHistory()" />
+  }
+</section>
+
+<!-- Services Status -->
+<section class="health-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-warm"></span>
+    Service Status
+  </h2>
+
+  <div class="services-grid">
+    @if (healthData.isLoading()) {
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    }
+    @if (services(); as serviceList) {
+      @for (service of serviceList; track service.name) {
+        <ui-medium-card class="service-card" tuiAppearance="card-elevated">
+          <div class="service-header">
+            <span class="service-name">{{ service.name }}</span>
+            <span 
+              class="service-status"
+              [class.operational]="service.status === 'operational'"
+              [class.degraded]="service.status === 'degraded'"
+              [class.outage]="service.status === 'outage'">
+              <tui-icon 
+                [icon]="service.status === 'operational' ? '@tui.check-circle' : 
+                        service.status === 'degraded' ? '@tui.alert-circle' : '@tui.x-circle'" />
+              {{ service.status | titlecase }}
+            </span>
+          </div>
+          
+          <div class="service-uptime">
+            <div class="uptime-bar">
+              <div class="uptime-fill" [style.width.%]="service.uptime"></div>
+            </div>
+            <span class="uptime-value">{{ service.uptime }}% uptime</span>
+          </div>
+
+          @if (service.hasInfo) {
+            <div class="service-info">
+              <tui-icon icon="@tui.info" />
+              <span>View detailed metrics</span>
+            </div>
+          }
+        </ui-medium-card>
+      }
+    }
+  </div>
+</section>
+
+<!-- Notices Section -->
+<section class="health-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    Recent Notices
+  </h2>
+
+  @if (healthData.isLoading()) {
+    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+  } @else {
+    <health-notices-section
+      [notices]="notices()"
+      [showEmptyState]="true">
+    </health-notices-section>
+  }
+</section>

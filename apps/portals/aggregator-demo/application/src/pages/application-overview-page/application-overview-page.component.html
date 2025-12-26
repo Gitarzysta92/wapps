@@ -1,308 +1,200 @@
-<section class="header-section">
-  <h1>asdasdas</h1>
-  <a tuiLink href="#" target="_blank" rel="noopener noreferrer" class="developer-link">
-    Developer name
-  </a>
-  <div class="app-labels">
-    <tui-badge status="info" class="label">Contains ads</tui-badge>
-    <tui-badge status="info" class="label">In-app purchases</tui-badge>
-    <tui-badge status="neutral" class="label">Content rating</tui-badge>
-  </div>
-  <div class="score-container">
-    Rating:
-    <div class="score-stars">
-      <tui-icon 
-        *ngFor="let star of [1,2,3,4,5]"
-        [icon]="star <= getAggregatedScore() ? '@tui.star' : '@tui.star'"
-        [class.filled]="star <= getAggregatedScore()"
-        class="star-icon" />
+<ui-page-header class="page-header">
+  @if (app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs
+      class="breadcrumbs"
+      slot="top-bar"
+      [breadcrumbs]="breadcrumbData()">
+    </ui-breadcrumbs>
+  }
+
+  @if (app.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      {{ app.value()?.name }}
+    </h1>
+  }
+
+  @if (app.isLoading()) {
+    <ui-page-meta-skeleton slot="meta" />
+  } @else {
+    <ui-page-meta slot="meta">
+      <a tuiLink href="#" target="_blank" rel="noopener noreferrer" class="developer-link">
+        Developer name
+      </a>
+    </ui-page-meta>
+  }
+</ui-page-header>
+
+<!-- Hero Section with Cover Image -->
+<section class="hero-section">
+  @if (app.isLoading()) {
+    <div class="cover-skeleton"></div>
+  } @else {
+    <ui-cover-image
+      class="cover-image"
+      [image]="getCoverImage()">
+    </ui-cover-image>
+  }
+  
+  <div class="hero-content">
+    @if (app.isLoading()) {
+      <div class="avatar-skeleton"></div>
+    } @else {
+      <app-avatar
+        class="app-avatar"
+        [size]="'xl'"
+        [avatar]="{ url: app.value()?.logo ?? '', alt: app.value()?.name ?? '' }">
+      </app-avatar>
+    }
+    
+    <div class="hero-info">
+      @if (overviewData.isLoading()) {
+        <div class="rating-skeleton"></div>
+      }
+      @if (overviewData.value(); as data) {
+        <div class="rating-section">
+          <app-rating [readonly]="true" [rating]="data.aggregatedScore" />
+          <span class="rating-text">{{ data.aggregatedScore.toFixed(1) }}/5</span>
+          <span class="reviews-count">({{ data.reviewsCount }} reviews)</span>
+        </div>
+      }
+      
+      <div class="app-labels">
+        <tui-badge appearance="info" size="s">PWA Ready</tui-badge>
+        <tui-badge appearance="neutral" size="s">Free</tui-badge>
+      </div>
     </div>
-    <span class="score-value">{{ getAggregatedScore().toFixed(1) }}/5</span>
-    <span class="reviews-text">({{ getReviewsCount() }} reviews)</span>
-  </div>
-  <ui-cover-image
-    class="cover-image"
-    [image]="getCoverImage()">
-  </ui-cover-image>
-</section>
-
-<section class="basic-info-section">
-  <div class="category-column">
-    <div>Category:</div>
-    <tui-chip 
-      class="app-category" 
-      size="m"
-      appearance="primary">
-      {{ getCategory() }}
-    </tui-chip>
-  </div>
-  <div class="tag-column">
-    <div>Tags: </div>
-    <tui-chip 
-      *ngFor="let tag of getTags()"
-      class="app-tag" 
-      size="m"
-      appearance="secondary">
-      {{ tag }}
-    </tui-chip>
   </div>
 </section>
 
+<!-- Category & Tags Section -->
+<section class="metadata-section">
+  @if (overviewData.isLoading()) {
+    <div class="metadata-skeleton"></div>
+  }
+  @if (overviewData.value(); as data) {
+    <div class="category-row">
+      <span class="label">Category:</span>
+      <app-category-chip [category]="data.category" />
+    </div>
+    <div class="tags-row">
+      <span class="label">Tags:</span>
+      <ui-tags [tags]="data.tags" />
+    </div>
+  }
+</section>
+
+<!-- Quick Access Section -->
 <section class="quick-access-section">
   <h2 class="section-title">
-    <tui-icon icon="@tui.zap" class="title-icon"></tui-icon>
+    <span tuiAppearance="accent-bar-indigo"></span>
     Quick Access
   </h2>
+
   <div class="shortcuts-grid">
-    <a 
-      *ngIf="app$ | async as app"
-      [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
-      class="shortcut-card">
-      <div class="shortcut-icon health-icon">
-        <tui-icon icon="@tui.heart-pulse"></tui-icon>
-      </div>
-      <div class="shortcut-content">
-        <h3 class="shortcut-title">Health Status</h3>
-        <p class="shortcut-description">View system status and uptime</p>
-      </div>
-      <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
-    </a>
-
-    <a 
-      *ngIf="app$ | async as app"
-      [routerLink]="REVIEWS_PATH | routePath:{ appSlug: app.slug }:'string'"
-      class="shortcut-card">
-      <div class="shortcut-icon reviews-icon">
-        <tui-icon icon="@tui.star"></tui-icon>
-      </div>
-      <div class="shortcut-content">
-        <h3 class="shortcut-title">Reviews</h3>
-        <p class="shortcut-description">Read user testimonials</p>
-      </div>
-      <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
-    </a>
-
-    <a 
-      *ngIf="app$ | async as app"
-      [routerLink]="TIMELINE_PATH | routePath:{ appSlug: app.slug }:'string'"
-      class="shortcut-card">
-      <div class="shortcut-icon timeline-icon">
-        <tui-icon icon="@tui.timeline"></tui-icon>
-      </div>
-      <div class="shortcut-content">
-        <h3 class="shortcut-title">Timeline</h3>
-        <p class="shortcut-description">Recent updates and activity</p>
-      </div>
-      <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
-    </a>
+    @if (overviewData.isLoading()) {
+      @for (i of [1, 2, 3, 4]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    }
+    @if (shortcuts(); as shortcutList) {
+      @for (shortcut of shortcutList; track shortcut.title) {
+        <a 
+          class="shortcut-card"
+          tuiAppearance="card-elevated"
+          [routerLink]="shortcut.path | routePath:{ appSlug: appSlug() }:'string'">
+          <div class="shortcut-icon" [class]="shortcut.colorClass">
+            <tui-icon [icon]="shortcut.icon"></tui-icon>
+          </div>
+          <div class="shortcut-content">
+            <h3 class="shortcut-title">{{ shortcut.title }}</h3>
+            <p class="shortcut-description">{{ shortcut.description }}</p>
+          </div>
+          <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
+        </a>
+      }
+    }
   </div>
 </section>
-  
+
 <!-- Overview Section -->
 <section class="overview-section">
-  <div class="section-content">
-    <h2 class="section-title">
-      <tui-icon icon="@tui.box" class="title-icon"></tui-icon>
-      Application Overview
-    </h2>
-    <div class="overview-info">
-      <div class="app-content">
-        <p class="app-description">Discover this amazing application with powerful features and seamless integration.</p>
-      </div>
-    </div>
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-warm"></span>
+    About This Application
+  </h2>
+
+  @if (app.isLoading()) {
+    <div class="description-skeleton"></div>
+  } @else {
+    <p class="app-description">{{ app.value()?.description }}</p>
+  }
+</section>
+
+<!-- Health Status Preview -->
+<section class="preview-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    System Status
+  </h2>
+
+  <div class="preview-grid">
+    @if (overviewData.isLoading()) {
+      <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+    } @else {
+      <ui-medium-card class="preview-card" tuiAppearance="card-elevated">
+        <div class="preview-card-header">
+          <h3 class="preview-card-title">
+            <tui-icon icon="@tui.heart-pulse"></tui-icon>
+            Health Status
+          </h3>
+          <a 
+            [routerLink]="HEALTH_PATH | routePath:{ appSlug: appSlug() }:'string'"
+            tuiLink 
+            size="s">
+            View Details
+          </a>
+        </div>
+        <health-check-badge [status]="healthStatus()" size="l" />
+      </ui-medium-card>
+    }
   </div>
 </section>
 
-
-
-<!-- Health & Reviews Preview -->
-<section class="latest-reviews-section">
+<!-- Latest Reviews Preview -->
+<section class="preview-section">
   <h2 class="section-title">
-    <tui-icon icon="@tui.zap" class="title-icon"></tui-icon>
+    <span tuiAppearance="accent-bar-warm"></span>
     Latest Reviews
   </h2>
 
-  <div class="cards">
-
-    <!-- Latest Review Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.star"></tui-icon>
-          Latest Review
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="REVIEWS_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View All Reviews
-        </a>
-      </div>
-      <div class="review-preview">
-        <div class="review-header">
-          <tui-avatar src="AI" size="m" />
-          <div class="reviewer-info">
-            <div class="reviewer-name">{{ getLatestReviewerName() }}</div>
-            <div class="reviewer-role">{{ getLatestReviewerRole() }} · {{ getLatestReviewDate() }}</div>
+  <div class="preview-grid">
+    @if (overviewData.isLoading()) {
+      @for (i of [1, 2]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    }
+    @if (latestReviews(); as reviews) {
+      @for (review of reviews; track review.authorName) {
+        <ui-medium-card class="preview-card" tuiAppearance="card-elevated">
+          <div class="preview-card-header">
+            <h3 class="preview-card-title">
+              <tui-icon icon="@tui.star"></tui-icon>
+              User Review
+            </h3>
+            <a 
+              [routerLink]="REVIEWS_PATH | routePath:{ appSlug: appSlug() }:'string'"
+              tuiLink 
+              size="s">
+              View All Reviews
+            </a>
           </div>
-          <div class="review-rating">
-            <tui-icon icon="@tui.star" class="star-filled"></tui-icon>
-            <span>{{ getLatestRating().toFixed(1) }}</span>
-          </div>
-        </div>
-        <p class="review-text">"{{ getLatestTestimonial() }}"</p>
-      </div>
-    </div>
-    
-
-    <!-- Latest Review Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.star"></tui-icon>
-          Latest Review
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="REVIEWS_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View All Reviews
-        </a>
-      </div>
-      <div class="review-preview">
-        <div class="review-header">
-          <tui-avatar src="AI" size="m" />
-          <div class="reviewer-info">
-            <div class="reviewer-name">{{ getLatestReviewerName() }}</div>
-            <div class="reviewer-role">{{ getLatestReviewerRole() }} · {{ getLatestReviewDate() }}</div>
-          </div>
-          <div class="review-rating">
-            <tui-icon icon="@tui.star" class="star-filled"></tui-icon>
-            <span>{{ getLatestRating().toFixed(1) }}</span>
-          </div>
-        </div>
-        <p class="review-text">"{{ getLatestTestimonial() }}"</p>
-      </div>
-    </div>
+          <top-review-card [review]="review" />
+        </ui-medium-card>
+      }
+    }
   </div>
 </section>
-
-
-
-
-
-<!-- Health & Reviews Preview -->
-<section class="health-status-section">
-  <h2 class="section-title">
-    <tui-icon icon="@tui.zap" class="title-icon"></tui-icon>
-    Health Status
-  </h2>
-
-  <div class="cards">
-    <!-- Health Status Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.heart-pulse"></tui-icon>
-          System Health
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View Details
-        </a>
-      </div>
-      <health-status-banner
-        [status]="getHealthStatus()"
-        [message]="getHealthStatusMessage()"
-        [timestamp]="getCurrentTimestamp()">
-      </health-status-banner>
-    </div>
-
-    <!-- Health Status Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.heart-pulse"></tui-icon>
-          System Health
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View Details
-        </a>
-      </div>
-      <health-status-banner
-        [status]="getHealthStatus()"
-        [message]="getHealthStatusMessage()"
-        [timestamp]="getCurrentTimestamp()">
-      </health-status-banner>
-    </div>
-
-  </div>
-</section>
-
-
-
-
-<!-- Health & Reviews Preview -->
-<section class="health-status-section">
-  <h2 class="section-title">
-    <tui-icon icon="@tui.zap" class="title-icon"></tui-icon>
-    Articles
-  </h2>
-
-  <div class="cards">
-    <!-- Health Status Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.heart-pulse"></tui-icon>
-          System Health
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View Details
-        </a>
-      </div>
-      <health-status-banner
-        [status]="getHealthStatus()"
-        [message]="getHealthStatusMessage()"
-        [timestamp]="getCurrentTimestamp()">
-      </health-status-banner>
-    </div>
-
-    <!-- Health Status Card -->
-    <div class="preview-card">
-      <div class="preview-card-header">
-        <h3 class="preview-card-title">
-          <tui-icon icon="@tui.heart-pulse"></tui-icon>
-          System Health
-        </h3>
-        <a 
-          *ngIf="app$ | async as app"
-          [routerLink]="HEALTH_PATH | routePath:{ appSlug: app.slug }:'string'"
-          tuiLink 
-          size="s">
-          View Details
-        </a>
-      </div>
-      <health-status-banner
-        [status]="getHealthStatus()"
-        [message]="getHealthStatusMessage()"
-        [timestamp]="getCurrentTimestamp()">
-      </health-status-banner>
-    </div>
-
-  </div>
-</section>
-

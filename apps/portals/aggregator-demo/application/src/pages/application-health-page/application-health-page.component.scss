@@ -1,38 +1,164 @@
 @use 'ui/design-system/src/styles' as *;
 
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
+.page-header {
+  margin-top: $space-20;
 }
 
-// Health Section
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
+}
+
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
 .health-section {
-  padding: $space-6 0;
-}
+  margin-top: $space-12;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
 
-.section-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
+  &:first-of-type {
+    border-top: none;
+    margin-top: $space-6;
+  }
 }
 
 .section-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
   display: flex;
   align-items: center;
   gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin-bottom: $space-6;
 }
 
-.title-icon {
-  font-size: $font-size-3xl;
-  color: $color-primary-600;
+// ============================================================================
+// History Skeleton
+// ============================================================================
+
+.history-skeleton {
+  height: 80px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
 }
 
-.services-list {
+// ============================================================================
+// Services Grid
+// ============================================================================
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: $space-4;
+}
+
+.service-card {
+  padding: $space-4;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-3;
+}
+
+.service-name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+}
+
+.service-status {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+
+  tui-icon {
+    font-size: $font-size-sm;
+  }
+
+  &.operational {
+    color: var(--status-success, #{$color-accent-500});
+    background: rgba($color-accent-500, 0.1);
+  }
+
+  &.degraded {
+    color: var(--status-warning, #f59e0b);
+    background: rgba(#f59e0b, 0.1);
+  }
+
+  &.outage {
+    color: var(--status-error, #ef4444);
+    background: rgba(#ef4444, 0.1);
+  }
+}
+
+.service-uptime {
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-2;
+}
+
+.uptime-bar {
+  height: 6px;
+  background: var(--tui-base-03, #{$color-border});
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.uptime-fill {
+  height: 100%;
+  background: var(--tui-positive, #{$color-accent-500});
+  border-radius: $radius-full;
+  transition: width $duration-300 $ease-out;
+}
+
+.uptime-value {
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+  text-align: right;
+}
+
+.service-info {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
+  font-size: $font-size-xs;
+  color: var(--tui-primary);
+  cursor: pointer;
+  @include transition(color, $duration-150, $ease-in-out);
+
+  tui-icon {
+    font-size: $font-size-xs;
+  }
+
+  &:hover {
+    color: var(--tui-primary-hover);
+  }
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
 }

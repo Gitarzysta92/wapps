@@ -1,47 +1,72 @@
 @use 'ui/design-system/src/styles' as *;
 
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
+.page-header {
+  margin-top: $space-20;
 }
 
-// Section Styling
-.discussions-section {
-  padding: $space-6 0;
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
 }
 
-.section-content {
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+.discussion-stats-badge {
+  opacity: 0.5;
+}
+
+// ============================================================================
+// Intro Section
+// ============================================================================
+
+.discussions-intro {
   display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.section-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: $space-3;
-}
-
-.title-icon {
-  font-size: $font-size-3xl;
-  color: $color-primary-600;
-}
-
-// Discussions Container
-.discussions-container {
-  display: flex;
-  flex-direction: column;
+  padding: $space-6 0;
+  flex-wrap: wrap;
   gap: $space-4;
 }
 
-.discussions-intro {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
+.intro-text {
+  font-size: $font-size-md;
+  line-height: $line-height-loose;
+  color: var(--tui-text-secondary);
   margin: 0;
+}
+
+.discussions-actions {
+  display: flex;
+  gap: $space-3;
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
+.discussions-section {
+  margin-top: $space-8;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin-bottom: $space-6;
+}
+
+.discussions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: $space-6;
 }
 
 .discussions-list {
@@ -50,23 +75,25 @@
   gap: $space-4;
 }
 
-.discussion-item {
-  padding: $space-4;
-  background: $color-bg-muted;
-  border: $border-width-thin solid $color-border;
-  border-radius: $radius-md;
-  transition: all $duration-200;
+// ============================================================================
+// Discussion Card
+// ============================================================================
+
+.discussion-card {
   cursor: pointer;
   position: relative;
+  @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
   
   &:hover {
-    box-shadow: $shadow-md;
     transform: translateY(-2px);
-    border-color: $color-primary-600;
+    
+    .discussion-arrow {
+      opacity: 1;
+    }
   }
-  
-  &:active {
-    transform: translateY(0);
+
+  &--pinned {
+    border-color: var(--tui-accent);
   }
 }
 
@@ -77,64 +104,57 @@
   margin-bottom: $space-3;
 }
 
-.discussion-meta {
+.author-info {
   display: flex;
   align-items: center;
   gap: $space-2;
 }
 
-.author-avatar {
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.author-info {
+.author-details {
   display: flex;
   flex-direction: column;
   gap: $space-0_5;
 }
 
 .author-name {
-  @include text($font-size-sm, $font-weight-bold);
-  color: $color-text-strong;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
 }
 
 .discussion-time {
-  @include text($font-size-xs);
-  color: $color-text-muted;
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
 }
 
-.discussion-stats {
+.discussion-badges {
   display: flex;
-  flex-direction: column;
-  gap: $space-1;
-  text-align: right;
-}
-
-.replies-count,
-.views-count {
-  @include text($font-size-xs);
-  color: $color-text-muted;
-}
-
-.discussion-title {
-  @include text($font-size-lg, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0 0 $space-2 0;
-  display: flex;
-  align-items: center;
   gap: $space-2;
 }
 
-.pin-icon {
-  color: $color-primary-600;
-  font-size: $font-size-sm;
+.discussion-stats-inline {
+  display: flex;
+  gap: $space-3;
+}
+
+.discussion-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: var(--tui-text-primary);
+  margin: 0 0 $space-2 0;
 }
 
 .discussion-excerpt {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
+  font-size: $font-size-md;
+  line-height: $line-height-loose;
+  color: var(--tui-text-secondary);
   margin: 0 0 $space-3 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .discussion-tags {
@@ -143,46 +163,67 @@
   gap: $space-2;
 }
 
+.discussion-footer {
+  display: flex;
+  gap: $space-4;
+}
+
+.discussion-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+
+  tui-icon {
+    font-size: $size-icon-xs;
+    color: var(--tui-primary);
+  }
+}
+
 .discussion-arrow {
   position: absolute;
   top: $space-4;
   right: $space-4;
   opacity: 0;
-  transition: opacity $duration-200;
+  @include transition(opacity, $duration-200, $ease-in-out);
+
+  tui-icon {
+    color: var(--tui-primary);
+    font-size: $font-size-md;
+  }
 }
 
-.arrow-icon {
-  color: $color-primary-600;
-  font-size: $font-size-md;
-}
+// ============================================================================
+// Load More
+// ============================================================================
 
-.discussion-item:hover .discussion-arrow {
-  opacity: 1;
-}
-
-.discussions-actions {
+.load-more {
   display: flex;
-  gap: $space-3;
   justify-content: center;
-  margin-top: $space-4;
+  margin-top: $space-8;
 }
 
-// Responsive Design
+// ============================================================================
+// Responsive
+// ============================================================================
+
 @media (max-width: 768px) {
-  .discussion-header {
+  .discussions-intro {
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .discussions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .discussion-header {
+    flex-direction: column;
     gap: $space-2;
   }
   
-  .discussion-stats {
-    text-align: left;
-    flex-direction: row;
-    gap: $space-3;
-  }
-  
-  .discussions-actions {
-    flex-direction: column;
-    align-items: stretch;
+  .discussion-stats-inline {
+    margin-top: $space-2;
   }
 }
