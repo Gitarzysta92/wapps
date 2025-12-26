@@ -20,7 +20,6 @@ import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { 
   StatusBannerComponent, 
-  ServiceStatusItemComponent, 
   NoticesSectionComponent,
   HealthCheckBadgeComponent,
   StatusHistoryComponent,
@@ -47,7 +46,6 @@ import { ApplicationHealthStatusCode } from '@domains/feed';
     MediumCardComponent,
     MediumCardSkeletonComponent,
     StatusBannerComponent,
-    ServiceStatusItemComponent,
     NoticesSectionComponent,
     HealthCheckBadgeComponent,
     StatusHistoryComponent

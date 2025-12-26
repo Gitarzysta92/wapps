@@ -1,0 +1,13 @@
+@if (stats.value(); as statsValue) {
+  <tui-icon icon="@tui.users" class="badge-icon" />
+  <span class="discussions-stats-badge-text">
+    {{ statsValue.topics }} participants
+  </span>
+  <tui-icon icon="@tui.eye" class="badge-icon" />
+  <span class="discussions-stats-badge-text">
+    {{ statsValue.totalViews }} views
+  </span>
+} @else {
+  <div tuiSkeleton class="stats-skeleton"></div>
+}
+

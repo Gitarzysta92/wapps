@@ -5,7 +5,10 @@ export { ElevatedCardComponent } from './card/elevated-card/elevated-card.compon
 export { ElevatedCardSkeletonComponent } from './card/elevated-card/elevated-card-skeleton.component';
 export { CardHeaderComponent } from './card/card-header/card-header.component';
 export { CardFooterComponent } from './card/card-footer/card-footer.component';
+export { NoticeCardComponent } from './card/notice-card/notice-card.component';
 export { CommonSectionComponent } from './section/common-section.component';
+export { SectionHeaderComponent } from './section/section-header/section-header.component';
+export { SectionTitleComponent } from './section/section-title/section-title.component';
 export { PageHeaderComponent } from './page/page-header/page-header.component';
 export { PageHeaderSkeletonComponent } from './page/page-header-skeleton/page-header-skeleton.component';
 export { PageTitleComponent } from './page/page-title/page-title.component';

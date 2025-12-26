@@ -95,8 +95,8 @@
   top: 0;
   height: 100vh;
   z-index: $z-sticky;
-  @include sidebar-width();
   display: flex;
+  @include sidebar-width();
 
   .sidebar-inner {
     width: $size-content-xxs;

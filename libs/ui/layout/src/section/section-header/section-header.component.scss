@@ -1,0 +1,18 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  margin-bottom: $space-4;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.section-header-title {
+  display: flex;
+  align-items: center;
+}
+

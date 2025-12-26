@@ -12,14 +12,18 @@ import {
   PageTitleComponent, 
   PageTitleSkeletonComponent,
   PageMetaComponent,
-  PageMetaSkeletonComponent,
   MediumCardComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  CommonSectionComponent,
+  SectionHeaderComponent,
+  SectionTitleComponent,
+  DividerComponent,
+  NoticeCardComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
-import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
+import { DiscussionsStatsBadgeComponent } from '@portals/shared/features/discussion';
 
 interface DiscussionTopic {
   id: string;
@@ -51,10 +55,14 @@ interface DiscussionTopic {
     PageTitleComponent,
     PageTitleSkeletonComponent,
     PageMetaComponent,
-    PageMetaSkeletonComponent,
     MediumCardComponent,
     MediumCardSkeletonComponent,
-    DiscussionStatsBadgeComponent
+    DiscussionsStatsBadgeComponent,
+    CommonSectionComponent,
+    SectionHeaderComponent,
+    SectionTitleComponent,
+    DividerComponent,
+    NoticeCardComponent
   ],
   templateUrl: './application-discussions-page.component.html',
   styleUrl: './application-discussions-page.component.scss',

@@ -6,3 +6,4 @@ export { type OpeningPostVM } from './presentation/opening-post/opening-post.com
 export * from './presentation/badged-content';
 export * from './presentation/discussion-chip/discussion-chip.component';
 export * from './presentation/discussion-stats-badge';
+export * from './presentation/discussions-stats-badge';

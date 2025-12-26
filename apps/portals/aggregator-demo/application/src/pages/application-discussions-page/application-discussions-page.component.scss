@@ -18,61 +18,19 @@
   opacity: 0.5;
 }
 
-// ============================================================================
-// Intro Section
-// ============================================================================
-
 .discussions-intro {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $space-6 0;
-  flex-wrap: wrap;
-  gap: $space-4;
-}
-
-.intro-text {
-  font-size: $font-size-md;
-  line-height: $line-height-loose;
-  color: var(--tui-text-secondary);
-  margin: 0;
-}
-
-.discussions-actions {
-  display: flex;
-  gap: $space-3;
-}
-
-// ============================================================================
-// Section Layout
-// ============================================================================
-
-.discussions-section {
-  margin-top: $space-8;
-  padding: $space-8 0;
-  border-top: 1px solid var(--tui-base-03, #{$color-border});
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: var(--tui-text-primary);
   margin-bottom: $space-6;
+  background: var(--feed-background);
 }
 
-.discussions-grid {
+.pinned-discussions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: $space-6;
 }
 
-.discussions-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
+.discussions-intro [slot="content"] {
+  width: 100%;
 }
 
 // ============================================================================

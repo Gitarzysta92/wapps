@@ -13,14 +13,11 @@ import {
   PageMetaComponent,
   PageMetaSkeletonComponent,
   MediumCardComponent,
-  MediumCardSkeletonComponent,
-  CommonSectionComponent,
-  TitledSeparatorComponent
+  MediumCardSkeletonComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
-import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
 
 interface ChangelogEntry {
   version: string;
@@ -48,11 +45,7 @@ interface ChangelogEntry {
     PageMetaComponent,
     PageMetaSkeletonComponent,
     MediumCardComponent,
-    MediumCardSkeletonComponent,
-    CommonSectionComponent,
-    TitledSeparatorComponent,
-    AppChangelogInfoComponent,
-    AppChangelogDetailsComponent
+    MediumCardSkeletonComponent
   ],
   templateUrl: './application-devlog-page.component.html',
   styleUrl: './application-devlog-page.component.scss'

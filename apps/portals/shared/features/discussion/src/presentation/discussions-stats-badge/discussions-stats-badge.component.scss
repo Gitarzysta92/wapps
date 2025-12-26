@@ -1,0 +1,19 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  border-radius: $radius-full;
+  gap: $space-1;
+}
+
+.badge-icon {
+  font-size: 0.875rem;
+}
+
+.stats-skeleton {
+  width: 12rem;
+  height: 1.25rem;
+  border-radius: $radius-full;
+}
+

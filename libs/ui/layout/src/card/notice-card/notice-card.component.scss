@@ -1,0 +1,56 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.notice-card-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding: $space-4 $space-6;
+  border-radius: $radius-md;
+  background: var(--tui-base-02);
+  border: 1px solid var(--tui-base-03);
+}
+
+.notice-card-left {
+  flex: 1;
+  min-width: 0;
+  
+  p {
+    margin: 0;
+    color: var(--tui-text-primary);
+    font-size: $font-size-md;
+    line-height: $line-height-normal;
+  }
+}
+
+.notice-card-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+// Hide empty slots
+.notice-card-left:empty,
+.notice-card-right:empty {
+  display: none;
+}
+
+// Responsive: stack on smaller screens
+@media (max-width: 768px) {
+  .notice-card-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-3;
+  }
+  
+  .notice-card-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+

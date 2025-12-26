@@ -1,0 +1,12 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  gap: $space-3;
+  color: var(--tui-text-primary);
+}
+

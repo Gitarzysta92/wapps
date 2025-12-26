@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of, delay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadge, TuiChip } from '@taiga-ui/kit';
+import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import { 
@@ -19,13 +19,6 @@ import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { AppRatingComponent } from '@portals/shared/features/application-overview';
-import { 
-  TopReviewCardComponent, 
-  ReviewAuthorBadgeComponent,
-  ReviewQuoteShortComponent,
-  type TopReview 
-} from '@portals/shared/features/review';
-import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 
 interface ReviewData {
   id: string;
@@ -48,7 +41,6 @@ interface ReviewData {
     TuiButton,
     TuiIcon,
     TuiAvatar,
-    TuiBadge,
     TuiChip,
     TuiAppearance,
     BreadcrumbsComponent,
@@ -60,11 +52,7 @@ interface ReviewData {
     PageMetaSkeletonComponent,
     MediumCardComponent,
     MediumCardSkeletonComponent,
-    AppRatingComponent,
-    TopReviewCardComponent,
-    ReviewAuthorBadgeComponent,
-    ReviewQuoteShortComponent,
-    ProfileBadgesComponent
+    AppRatingComponent
   ],
   templateUrl: './application-reviews-page.component.html',
   styleUrl: './application-reviews-page.component.scss'

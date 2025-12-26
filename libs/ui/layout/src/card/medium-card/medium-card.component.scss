@@ -31,7 +31,7 @@
   position: absolute;
   display: flex;
   align-items: center;
-  top: -($size-touch-min / 2);
+  top: calc(-#{$size-touch-min} / 2);
   left: 0;
   padding: 0 $space-6;
   width: 100%;
