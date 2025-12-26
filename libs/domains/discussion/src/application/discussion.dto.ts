@@ -1,3 +1,19 @@
+export type DiscussionPreviewDto = {
+  id: string;
+  correlationId: unknown;
+  slug: string;
+  correlationSlug: string;
+  title: string;
+  author: string;
+  authorAvatar: string;
+  createdAt: Date;
+  repliesCount: number;
+  viewsCount: number;
+  isPinned: boolean;
+  tags: string[];
+  excerpt: string;
+}
+
 
 
 export type DiscussionAuthorDto = {
@@ -32,6 +48,7 @@ export type DiscussionThreadDto = {
   replies: Array<DiscussionPostDto | DiscussionThreadDto>;
   isRootThread: boolean;
   parentThreadId?: string;
+  correlationId: unknown;
 } & DiscussionPostDto;
 
 

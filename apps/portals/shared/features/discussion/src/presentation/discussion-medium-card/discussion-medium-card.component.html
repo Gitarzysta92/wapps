@@ -5,7 +5,7 @@
       <tui-avatar [src]="data().authorAvatar" size="s" />
       <div class="author-details">
         <span class="author-name">{{ data().author }}</span>
-        <span class="discussion-time">{{ formatRelativeTime(data().createdAt) }}</span>
+        <span class="discussion-time">{{ data().createdAt | relativeTime }}</span>
       </div>
     </div>
     <div class="discussion-stats-inline">

@@ -1,7 +1,9 @@
 import type { DiscussionThreadDto } from '@domains/discussion';
+import { APPLICATIONS } from './applications';
 
 export const SAMPLE_DISCUSSION: DiscussionThreadDto = {
   id: 'thread-1',
+  correlationId: APPLICATIONS[0].id,
   slug: 'how-to-integrate-with-external-apis',
   title: 'How to integrate with external APIs?',
   content: `I'm trying to integrate this app with our existing API infrastructure but running into authentication issues. The documentation mentions OAuth 2.0 support, but I'm not sure how to properly configure the client credentials.
@@ -71,6 +73,7 @@ const response = await fetch('/api/endpoint', {
 
 export const OAUTH_DISCUSSION: DiscussionThreadDto = {
   id: 'thread-2',
+  correlationId: APPLICATIONS[0].id,
   slug: 'oauth-implementation',
   title: 'OAuth Implementation Best Practices',
   content: `What are the recommended best practices for implementing OAuth 2.0 in a web application? I want to make sure I'm following security guidelines properly.`,
@@ -98,6 +101,7 @@ export const OAUTH_DISCUSSION: DiscussionThreadDto = {
 
 export const RATE_LIMITING_DISCUSSION: DiscussionThreadDto = {
   id: 'thread-3',
+  correlationId: APPLICATIONS[0].id,
   slug: 'api-rate-limiting',
   title: 'API Rate Limiting Strategies',
   content: `Has anyone implemented rate limiting for their API? What strategies work best for handling burst traffic while protecting the backend?`,

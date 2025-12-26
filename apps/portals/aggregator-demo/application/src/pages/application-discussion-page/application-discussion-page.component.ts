@@ -30,6 +30,7 @@ import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom
 import { APPLICATIONS, DISCUSSIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
+import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
 
 @Component({
   selector: 'app-discussion-page',
@@ -136,28 +137,21 @@ export class ApplicationDiscussionPageComponent implements
       .slice(0, 3);
   });
 
-  // TODO: move to a utility function
   public readonly breadcrumbData = computed(() => {
     const breadcrumb = this.breadcrumb();
+    const discussion = this.discussion.value();
+    const app = this.app.value();
     
-    if (this.discussion.value() && this.app.value()) { 
-      return breadcrumb.map((breadcrumb) => {
-        if (breadcrumb.label.includes(NAVIGATION_NAME_PARAMS.discussionName)) {
-          return {
-            ...breadcrumb,
-            label: breadcrumb.label.replace(NAVIGATION_NAME_PARAMS.discussionName, this.discussion.value()?.title ?? 'Unknown Discussion')
-          };
-        }
-        if (breadcrumb.label.includes(NAVIGATION_NAME_PARAMS.applicationName)) {
-          return {
-            ...breadcrumb,
-            label: breadcrumb.label.replace(NAVIGATION_NAME_PARAMS.applicationName, this.app.value()?.name ?? 'Unknown Application')
-          };
-        }
-        return breadcrumb;
-      });
-    } else {
-      return breadcrumb;
+    const replacements: Record<string, string> = {};
+    
+    if (discussion) {
+      replacements[NAVIGATION_NAME_PARAMS.discussionName] = discussion.title ?? 'Unknown Discussion';
     }
+    
+    if (app) {
+      replacements[NAVIGATION_NAME_PARAMS.applicationName] = app.name ?? 'Unknown Application';
+    }
+    
+    return replaceBreadcrumbLabels(breadcrumb, replacements);
   });
 }

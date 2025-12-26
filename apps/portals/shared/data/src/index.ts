@@ -48,3 +48,6 @@ export * from './profiles';
 
 // Discussions data
 export * from './discussions';
+
+// Discussion previews data
+export * from './discussion-previews';
