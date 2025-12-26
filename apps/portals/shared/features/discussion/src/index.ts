@@ -5,5 +5,7 @@ export { OpeningPostComponent } from './presentation/opening-post/opening-post.c
 export { type OpeningPostVM } from './presentation/opening-post/opening-post.component';
 export * from './presentation/badged-content';
 export * from './presentation/discussion-chip/discussion-chip.component';
-export * from './presentation/discussion-stats-badge';
-export * from './presentation/discussions-stats-badge';
+export { DiscussionStatsBadgeComponent } from './presentation/discussion-stats-badge/discussion-stats-badge.component';
+export { DiscussionsStatsBadgeComponent } from './presentation/discussions-stats-badge/discussions-stats-badge.component';
+export { DiscussionSmallCardComponent } from './presentation/discussion-small-card/discussion-small-card.component';
+export { DiscussionMediumCardComponent } from './presentation/discussion-medium-card/discussion-medium-card.component';

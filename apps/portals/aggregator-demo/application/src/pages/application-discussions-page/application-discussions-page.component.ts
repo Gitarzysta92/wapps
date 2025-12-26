@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { of, delay } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
-import { TuiBadge, TuiAvatar } from '@taiga-ui/kit';
+import { TuiBadge } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import { 
@@ -12,8 +12,6 @@ import {
   PageTitleComponent, 
   PageTitleSkeletonComponent,
   PageMetaComponent,
-  MediumCardComponent,
-  MediumCardSkeletonComponent,
   CommonSectionComponent,
   SectionHeaderComponent,
   SectionTitleComponent,
@@ -23,7 +21,7 @@ import {
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
-import { DiscussionsStatsBadgeComponent } from '@portals/shared/features/discussion';
+import { DiscussionSmallCardComponent, DiscussionMediumCardComponent, DiscussionsStatsBadgeComponent } from '@portals/shared/features/discussion';
 
 interface DiscussionTopic {
   id: string;
@@ -47,7 +45,6 @@ interface DiscussionTopic {
     TuiButton,
     TuiIcon,
     TuiBadge,
-    TuiAvatar,
     TuiAppearance,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
@@ -55,9 +52,9 @@ interface DiscussionTopic {
     PageTitleComponent,
     PageTitleSkeletonComponent,
     PageMetaComponent,
-    MediumCardComponent,
-    MediumCardSkeletonComponent,
     DiscussionsStatsBadgeComponent,
+    DiscussionSmallCardComponent,
+    DiscussionMediumCardComponent,
     CommonSectionComponent,
     SectionHeaderComponent,
     SectionTitleComponent,

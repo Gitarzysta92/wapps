@@ -342,8 +342,8 @@ body.dark {
 // ============================================================================
 
 [tuiAppearance][data-appearance='card-elevated'] {
-  background: var(--tui-background-elevation-1);
-  border: 1px solid var(--tui-base-03, #{$color-border});
+  background: var(--elevated-background);
+  border: 1px solid var(--elevated-background-border, #{$color-border});
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
   @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);

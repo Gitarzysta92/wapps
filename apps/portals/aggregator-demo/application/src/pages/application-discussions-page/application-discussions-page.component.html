@@ -20,7 +20,7 @@
 
   <ui-page-meta slot="meta">
     <discussions-stats-badge
-      class="discussions-stats-badge"
+      class="discussion-stats-badge"
       [appSlug]="appSlug()" />
   </ui-page-meta> 
 </ui-page-header>
@@ -38,190 +38,41 @@
 
 
 @if (pinnedDiscussions().length > 0) {
-  <section commonSection>
+  <section commonSection class="pinned-discussions-section">
     <ui-section-header slot="header">
-      <h2 uiSectionTitle slot="title">
+      <h3 uiSectionTitle slot="title">
         <tui-icon icon="@tui.pin" />
         Pinned Discussions
-      </h2>
+      </h3>
     </ui-section-header>
     <div class="pinned-discussions" slot="content">
       @for (discussion of pinnedDiscussions(); track discussion.id) {
-        <ui-medium-card 
-          class="discussion-card discussion-card--pinned"
-          tuiAppearance="card-elevated"
-          (click)="navigateToDiscussion(discussion)">
-          <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
-          
-          <div class="discussion-header">
-            <div class="author-info">
-              <tui-avatar [src]="discussion.authorAvatar" size="s" />
-              <div class="author-details">
-                <span class="author-name">{{ discussion.author }}</span>
-                <span class="discussion-time">{{ formatRelativeTime(discussion.createdAt) }}</span>
-              </div>
-            </div>
-            <div class="discussion-badges">
-              <tui-badge appearance="warning" size="s">
-                <tui-icon icon="@tui.pin" />
-                Pinned
-              </tui-badge>
-            </div>
-          </div>
-
-          <h3 class="discussion-title">{{ discussion.title }}</h3>
-          <p class="discussion-excerpt">{{ discussion.excerpt }}</p>
-
-          <div class="discussion-tags">
-            @for (tag of discussion.tags | slice:0:3; track tag) {
-              <span tuiAppearance="tag-gradient">{{ tag }}</span>
-            }
-          </div>
-
-          <div slot="footer" class="discussion-footer">
-            <span class="discussion-stat">
-              <tui-icon icon="@tui.message-circle" />
-              {{ discussion.repliesCount }} replies
-            </span>
-            <span class="discussion-stat">
-              <tui-icon icon="@tui.eye" />
-              {{ discussion.viewsCount }} views
-            </span>
-          </div>
-        </ui-medium-card>
+        <discussion-small-card
+          class="pinned-discussion-card"
+          appearance="card-elevated"
+          [data]="discussion"
+          (click)="navigateToDiscussion(discussion)" />
       }
     </div>
   </section>
 }
 
+<ui-divider />
 
-<section commonSection>
+<section commonSection class="recent-discussions-section">
   <ui-section-header slot="header">
-    <h2 uiSectionTitle slot="title">
+    <h3 uiSectionTitle slot="title">
       <tui-icon icon="@tui.pin" />
       Recent Discussions
-    </h2>
+    </h3>
   </ui-section-header>
-  <div class="pinned-discussions" slot="content">
-    @for (discussion of pinnedDiscussions(); track discussion.id) {
-      <ui-medium-card 
-        class="discussion-card discussion-card--pinned"
-        tuiAppearance="card-elevated"
-        (click)="navigateToDiscussion(discussion)">
-        <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
-        
-        <div class="discussion-header">
-          <div class="author-info">
-            <tui-avatar [src]="discussion.authorAvatar" size="s" />
-            <div class="author-details">
-              <span class="author-name">{{ discussion.author }}</span>
-              <span class="discussion-time">{{ formatRelativeTime(discussion.createdAt) }}</span>
-            </div>
-          </div>
-          <div class="discussion-badges">
-            <tui-badge appearance="warning" size="s">
-              <tui-icon icon="@tui.pin" />
-              Pinned
-            </tui-badge>
-          </div>
-        </div>
-
-        <h3 class="discussion-title">{{ discussion.title }}</h3>
-        <p class="discussion-excerpt">{{ discussion.excerpt }}</p>
-
-        <div class="discussion-tags">
-          @for (tag of discussion.tags | slice:0:3; track tag) {
-            <span tuiAppearance="tag-gradient">{{ tag }}</span>
-          }
-        </div>
-
-        <div slot="footer" class="discussion-footer">
-          <span class="discussion-stat">
-            <tui-icon icon="@tui.message-circle" />
-            {{ discussion.repliesCount }} replies
-          </span>
-          <span class="discussion-stat">
-            <tui-icon icon="@tui.eye" />
-            {{ discussion.viewsCount }} views
-          </span>
-        </div>
-      </ui-medium-card>
+  <div class="unpinned-discussions" slot="content">
+    @for (discussion of unpinnedDiscussions(); track discussion.id) {
+      <discussion-medium-card
+        class="unpinned-discussion-card"
+        appearance="card-elevated"
+        [data]="discussion"
+        (click)="navigateToDiscussion(discussion)" />
     }
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- All Discussions -->
-<section class="discussions-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-indigo"></span>
-    Recent Discussions
-  </h2>
-
-  <div class="discussions-list">
-    @if (discussions.isLoading()) {
-      @for (i of [1, 2, 3, 4]; track i) {
-        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-      }
-    } @else {
-      @for (discussion of unpinnedDiscussions(); track discussion.id) {
-        <ui-medium-card 
-          class="discussion-card"
-          tuiAppearance="card-elevated"
-          (click)="navigateToDiscussion(discussion)">
-          
-          <div class="discussion-header">
-            <div class="author-info">
-              <tui-avatar [src]="discussion.authorAvatar" size="s" />
-              <div class="author-details">
-                <span class="author-name">{{ discussion.author }}</span>
-                <span class="discussion-time">{{ formatRelativeTime(discussion.createdAt) }}</span>
-              </div>
-            </div>
-            <div class="discussion-stats-inline">
-              <span class="discussion-stat">
-                <tui-icon icon="@tui.message-circle" />
-                {{ discussion.repliesCount }}
-              </span>
-              <span class="discussion-stat">
-                <tui-icon icon="@tui.eye" />
-                {{ discussion.viewsCount }}
-              </span>
-            </div>
-          </div>
-
-          <h3 class="discussion-title">{{ discussion.title }}</h3>
-          <p class="discussion-excerpt">{{ discussion.excerpt }}</p>
-
-          <div class="discussion-tags">
-            @for (tag of discussion.tags | slice:0:3; track tag) {
-              <tui-badge size="s">{{ tag }}</tui-badge>
-            }
-          </div>
-
-          <div class="discussion-arrow">
-            <tui-icon icon="@tui.arrow-right" />
-          </div>
-        </ui-medium-card>
-      }
-    }
-  </div>
-
-  <div class="load-more">
-    <button tuiButton appearance="secondary">
-      <tui-icon icon="@tui.message-circle"></tui-icon>
-      View All Discussions
-    </button>
   </div>
 </section>

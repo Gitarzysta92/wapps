@@ -33,155 +33,18 @@
   width: 100%;
 }
 
-// ============================================================================
-// Discussion Card
-// ============================================================================
-
-.discussion-card {
-  cursor: pointer;
-  position: relative;
-  @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
-  
-  &:hover {
-    transform: translateY(-2px);
-    
-    .discussion-arrow {
-      opacity: 1;
-    }
-  }
-
-  &--pinned {
-    border-color: var(--tui-accent);
-  }
+.pinned-discussions-section, .recent-discussions-section {
+  margin-top: $space-6;
 }
 
-.discussion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: $space-3;
+.unpinned-discussion-card {
+  margin-top: $space-3;
 }
 
-.author-info {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.author-details {
-  display: flex;
-  flex-direction: column;
-  gap: $space-0_5;
-}
-
-.author-name {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  color: var(--tui-text-primary);
-}
-
-.discussion-time {
-  font-size: $font-size-xs;
-  color: var(--tui-text-secondary);
-}
-
-.discussion-badges {
-  display: flex;
-  gap: $space-2;
-}
-
-.discussion-stats-inline {
-  display: flex;
-  gap: $space-3;
-}
-
-.discussion-title {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  line-height: $line-height-tight;
-  color: var(--tui-text-primary);
-  margin: 0 0 $space-2 0;
-}
-
-.discussion-excerpt {
-  font-size: $font-size-md;
-  line-height: $line-height-loose;
-  color: var(--tui-text-secondary);
-  margin: 0 0 $space-3 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.discussion-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-}
-
-.discussion-footer {
-  display: flex;
-  gap: $space-4;
-}
-
-.discussion-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-1;
-  font-size: $font-size-xs;
-  color: var(--tui-text-secondary);
-
-  tui-icon {
-    font-size: $size-icon-xs;
-    color: var(--tui-primary);
-  }
-}
-
-.discussion-arrow {
-  position: absolute;
-  top: $space-4;
-  right: $space-4;
-  opacity: 0;
-  @include transition(opacity, $duration-200, $ease-in-out);
-
-  tui-icon {
-    color: var(--tui-primary);
-    font-size: $font-size-md;
-  }
-}
-
-// ============================================================================
-// Load More
-// ============================================================================
-
-.load-more {
-  display: flex;
-  justify-content: center;
-  margin-top: $space-8;
-}
-
-// ============================================================================
-// Responsive
-// ============================================================================
 
 @media (max-width: 768px) {
   .discussions-intro {
     flex-direction: column;
     align-items: flex-start;
-  }
-  
-  .discussions-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .discussion-header {
-    flex-direction: column;
-    gap: $space-2;
-  }
-  
-  .discussion-stats-inline {
-    margin-top: $space-2;
   }
 }

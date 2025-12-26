@@ -1,0 +1,41 @@
+<ui-medium-card class="discussion-card" [tuiAppearance]="appearance()">
+  
+  <div class="discussion-header">
+    <div class="author-info">
+      <tui-avatar [src]="data().authorAvatar" size="s" />
+      <div class="author-details">
+        <span class="author-name">{{ data().author }}</span>
+        <span class="discussion-time">{{ formatRelativeTime(data().createdAt) }}</span>
+      </div>
+    </div>
+    @if (data().isPinned) {
+      <div class="discussion-badges">
+        <tui-badge appearance="warning" size="s">
+          <tui-icon icon="@tui.pin" />
+          Pinned
+        </tui-badge>
+      </div>
+    }
+  </div>
+
+  <h3 class="discussion-title">{{ data().title }}</h3>
+  <p class="discussion-excerpt">{{ data().excerpt }}</p>
+
+  <div class="discussion-tags">
+    @for (tag of data().tags | slice:0:3; track tag) {
+      <span tuiAppearance="tag-gradient">{{ tag }}</span>
+    }
+  </div>
+
+  <div slot="footer" class="discussion-footer">
+    <span class="discussion-stat">
+      <tui-icon icon="@tui.message-circle" />
+      {{ data().repliesCount }} replies
+    </span>
+    <span class="discussion-stat">
+      <tui-icon icon="@tui.eye" />
+      {{ data().viewsCount }} views
+    </span>
+  </div>
+</ui-medium-card>
+
