@@ -1,24 +1,26 @@
 import { FeedItemDto } from "./feed-item.dto";
 
-export type ServiceStatus = {
-  name: string;
-  uptime: number;
-  status: 'operational' | 'degraded' | 'outage';
-  hasInfo: boolean;
-};
+export enum ApplicationHealthStatusCode {
+  Operational = 0,
+  Degraded = 1,
+  Outage = 2,
+}
 
-export type Notice = {
-  type: 'info' | 'warning' | 'error';
-  title: string;
-  message: string;
-  timestamp: Date;
-};
-
+export enum NoticeType {
+  Info = 0,
+  Warning = 1,
+  Error = 2,
+}
 export type ApplicationHealthFeedItemDto = {
   appSlug: string;
   appId: string;
-  overallStatus: 'operational' | 'degraded' | 'outage';
+  overallStatus: ApplicationHealthStatusCode;
   statusMessage: string;
-  services: ServiceStatus[];
-  notices: Notice[];
+  statusesHistory: Array<{ status: ApplicationHealthStatusCode; timestamp: number }>;
+  notice: {
+    type: NoticeType;
+    title: string;
+    message: string;
+    timestamp: Date;
+  } | null;
 } & FeedItemDto;

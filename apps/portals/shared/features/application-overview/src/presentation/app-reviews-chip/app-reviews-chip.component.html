@@ -1,0 +1,24 @@
+@if (reviewsLink() && !readonly()) {
+  <a
+    [routerLink]="reviewsLink()"
+    tuiButton
+    [size]="size()"
+    [appearance]="appearance()"
+    class="app-reviews-chip">
+    <tui-icon icon="@tui.message-circle" />
+    See Reviews
+    <span class="reviews-count">({{ reviewsCount() }} reviews)</span>
+  </a>
+} @else {
+  <button
+    tuiButton
+    [size]="size()"
+    [appearance]="appearance()"
+    [disabled]="readonly()"
+    class="app-reviews-chip">
+    <tui-icon icon="@tui.message-circle" />
+    See Reviews
+    <span class="reviews-count">({{ reviewsCount() }} reviews)</span>
+  </button>
+}
+

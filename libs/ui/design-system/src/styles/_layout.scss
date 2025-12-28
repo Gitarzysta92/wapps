@@ -10,6 +10,36 @@ $layout-breakpoint-md: "screen and (max-width: #{$custom-tablet-min})";
 $layout-breakpoint-lg: $tui-desktop;
 $layout-breakpoint-xl: $tui-desktop-lg-min;
 
+@mixin layout-grid-v2 {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+}
+
+
+
+@mixin main-width-v2 {
+
+  @media #{$layout-breakpoint-xl} {
+    width: 100%;
+    max-width: $container-xl
+  }
+
+  @media #{$layout-breakpoint-lg} {
+    width: 100%;
+    max-width: $container-xl
+  }
+
+  @media #{$layout-breakpoint-md} {
+    width: $container-sm;
+    max-width: $container-sm;
+  }
+
+  @media #{$layout-breakpoint-sm} {
+    width: 100%;
+    max-width: $container-sm;
+  }
+  
+}
 
 @mixin main-width {
 

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
 import { TuiTitle } from '@taiga-ui/core';
 import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
 import { DiscussionComponent } from '@portals/shared/features/discussion';
@@ -10,7 +9,6 @@ import { DiscussionComponent } from '@portals/shared/features/discussion';
   styleUrl: 'my-discussions.component.scss',
   standalone: true,
   imports: [
-    AsyncPipe,
     TuiTitle,
     TuiCardLarge,
     TuiHeader,
@@ -23,4 +21,5 @@ export class MyDiscussionsPageComponent {
   protected readonly isLoading = false;
   protected readonly isError = false;
 }
+
 

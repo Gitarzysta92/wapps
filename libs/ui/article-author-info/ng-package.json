@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.json",
+  "dest": "../../../dist/libs/ui/article-author-info",
+  "lib": {
+    "entryFile": "src/index.ts"
+  }
+}
+
+

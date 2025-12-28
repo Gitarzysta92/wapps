@@ -1,0 +1,111 @@
+@if (post) {
+  <div class="opening-post" [class.opening-post--pinned]="post.isPinned">
+    <!-- Post Header with Title and Metadata -->
+    <header class="opening-post__header">
+      @if (showTitle && post.title) {
+        <div class="opening-post__title-wrapper">
+          <h1 class="opening-post__title">{{ post.title }}</h1>
+          
+          <!-- Status badges -->
+          <div class="opening-post__badges">
+            @if (post.isPinned) {
+              <tui-chip appearance="accent" size="s">
+                <tui-icon icon="@tui.pin"/>
+                Pinned
+              </tui-chip>
+            }
+            @if (post.isLocked) {
+              <tui-chip appearance="warning" size="s">
+                <tui-icon icon="@tui.lock"/>
+                Locked
+              </tui-chip>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Tags -->
+      @if (showTags && post.tags && post.tags.length > 0) {
+        <div class="opening-post__tags">
+          @for (tag of post.tags; track tag.id) {
+            <tui-chip
+              appearance="neutral"
+              size="s"
+              class="opening-post__tag"
+              [style.--tag-color]="tag.color || 'var(--tui-text-primary)'"
+              (click)="onTagClick(tag.id)">
+              {{ tag.name }}
+            </tui-chip>
+          }
+        </div>
+      }
+    </header>
+
+    <!-- Discussion Post -->
+    <!-- <ui-discussion-post
+      [content]="post.content"
+      [publishedTime]="publishedTime()"
+      [engagement]="engagement()"
+      [maxCharacterAmount]="maxCharacterAmount"
+      [canReply]="canReply && !post.isLocked"
+      (like)="onUpvote()"
+      (dislike)="onDownvote()"
+      (reply)="onReply()"
+    >
+      <tui-avatar
+        avatar
+        [src]="post.authorAvatarUrl"
+        size="m"
+        class="author-avatar">
+        {{ post.authorName.substring(0, 2).toUpperCase() }}
+      </tui-avatar>
+      
+      <div author class="author-info">
+        <span class="author-name">{{ post.authorName }}</span>
+        @for (badge of post.authorBadges; track badge.name) {
+          <tui-chip [appearance]="badge.appearance" size="xs">
+            <tui-icon [icon]="badge.icon"/>
+            {{ badge.name }}
+          </tui-chip>
+        }
+        
+        @if (post.isEdited) {
+          <span class="edited-indicator" [title]="'Edited ' + editedTime()">
+            <tui-icon icon="@tui.edit-2"/>
+            edited
+          </span>
+        }
+      </div>
+
+      <div menu class="opening-post-actions">
+        @if (canEdit) {
+          <button
+            class="action-button"
+            type="button"
+            (click)="onEdit()"
+            title="Edit post">
+            <tui-icon icon="@tui.edit-2"/>
+          </button>
+        }
+        
+        <button
+          class="action-button"
+          type="button"
+          (click)="onShare()"
+          title="Share post">
+          <tui-icon icon="@tui.share-2"/>
+        </button>
+      </div>
+    </ui-discussion-post> -->
+
+    <!-- Additional metadata -->
+    <footer class="opening-post__footer">
+      @if (post.engagement.views !== undefined && post.engagement.views > 0) {
+        <div class="opening-post__views">
+          <tui-icon icon="@tui.eye"/>
+          <span>{{ post.engagement.views }} view{{ post.engagement.views !== 1 ? 's' : '' }}</span>
+        </div>
+      }
+    </footer>
+  </div>
+}

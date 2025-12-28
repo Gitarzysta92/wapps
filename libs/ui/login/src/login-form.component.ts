@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angula
 import { NgIf, NgFor } from '@angular/common';
 import { LoginFormDto } from "./login-form.dto";
 import { VALIDATION_MESSAGES } from "./validation-messages.port";
-import { TuiIcon, TuiTextfield } from "@taiga-ui/core";
+import { TuiTextfield } from "@taiga-ui/core";
 
 
 
@@ -16,8 +16,7 @@ import { TuiIcon, TuiTextfield } from "@taiga-ui/core";
     NgIf,
     NgFor,
     ReactiveFormsModule,
-    TuiTextfield,
-    TuiIcon
+    TuiTextfield
 ]
 })
 export class LoginFormComponent {

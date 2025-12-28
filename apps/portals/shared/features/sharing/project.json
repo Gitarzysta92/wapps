@@ -1,0 +1,42 @@
+{
+  "name": "portals-shared-features-sharing",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "sharing",
+  "sourceRoot": "apps/portals/shared/features/sharing",
+  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/sharing",
+        "main": "apps/portals/shared/features/sharing/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/sharing/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/sharing/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/sharing/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+
+
+
+

@@ -1,0 +1,97 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  border-radius: $radius-md;
+}
+
+.discussion-card {
+  position: relative;
+}
+
+.discussion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $space-3;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+  gap: $space-0_5;
+}
+
+.author-name {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+}
+
+.discussion-time {
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+}
+
+.discussion-badges {
+  display: flex;
+  gap: $space-2;
+}
+
+.discussion-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: var(--tui-text-primary);
+  margin: 0 0 $space-2 0;
+}
+
+.discussion-excerpt {
+  font-size: $font-size-md;
+  line-height: $line-height-loose;
+  color: var(--tui-text-secondary);
+  margin: 0 0 $space-3 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discussion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.discussion-footer {
+  display: flex;
+  gap: $space-4;
+}
+
+.discussion-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+
+  tui-icon {
+    font-size: $size-icon-xs;
+    color: var(--tui-primary);
+  }
+}
+
+@media (max-width: 768px) {
+  .discussion-header {
+    flex-direction: column;
+    gap: $space-2;
+  }
+}
+

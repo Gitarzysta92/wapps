@@ -1,0 +1,24 @@
+@use 'ui/design-system/src/styles' as *;
+
+.reply-button {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-3;
+  border-radius: $space-1;
+  @include transition(all, $duration-200, $ease-in-out);
+
+  &:hover {
+    background-color: var(--tui-background-elevation-1);
+  }
+}
+
+.reply-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.reply-count {
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+}

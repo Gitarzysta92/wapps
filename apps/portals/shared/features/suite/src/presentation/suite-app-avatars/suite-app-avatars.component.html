@@ -1,0 +1,12 @@
+<div class="suite-apps">
+  @for (app of apps(); track app.slug) {
+    <tui-avatar
+      class="app-avatar"
+      [src]="app.avatarUrl"
+      [tuiHint]="app.name"
+      size="m">
+    </tui-avatar>
+  }
+</div>
+
+

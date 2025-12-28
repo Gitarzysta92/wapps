@@ -1,0 +1,48 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-2; // 12px
+  tui-icon {
+    font-size: $size-icon-sm; // default/medium size (1.25rem)
+    line-height: 1;
+  }
+
+  // Correlate icon size with button size
+  &[data-size='xs'] tui-icon {
+    font-size: 0.75rem; // Custom size smaller than standard scale
+  }
+
+  &[data-size='s'] tui-icon {
+    font-size: $size-icon-xs; // 1rem
+  }
+
+  &[data-size='m'] tui-icon {
+    font-size: $size-icon-sm; // 1.25rem
+  }
+
+  &[data-size='l'] tui-icon {
+    font-size: $size-icon-md; // 1.5rem
+  }
+
+  &[data-size='xl'] tui-icon {
+    font-size: $size-icon-lg; // 2rem
+  }
+}
+
+.favorite-toggle {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+

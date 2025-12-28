@@ -1,11 +1,17 @@
+export const NAVIGATION_NAME_PARAMS = {
+  discussionName: ':discussionName',
+  applicationName: ':applicationName',
+}
+
 export const ROUTE_PARAMS = {
   appSlug: ':appSlug',
-  topicSlug: ':topicSlug',
+  discussionSlug: ':discussionSlug',
   categorySlug: ':categorySlug',
   tagSlug: ':tagSlug',
   suiteSlug: ':suiteSlug',
   articleSlug: ':articleSlug',
-  reviewSlug: ':reviewSlug'
+  reviewSlug: ':reviewSlug',
+  profileId: ':profileId',
 }
 
 export const NAVIGATION = {
@@ -24,10 +30,15 @@ export const NAVIGATION = {
     label: 'Discover',
     icon: '@tui.search',
   },
-  learn: {
-    path: 'learn',
-    label: 'Learn',
+  digest: {
+    path: 'digest',
+    label: 'Digest',
     icon: '@tui.book',
+  },
+  overview: {
+    path: 'me/profile',
+    label: 'Overview',
+    icon: '@tui.user',
   },
   myProfile: {
     path: 'me/profile',
@@ -43,6 +54,11 @@ export const NAVIGATION = {
     path: 'me/discussions',
     label: 'Discussions',
     icon: '@tui.message-circle',
+  },
+  performance: {
+    path: 'preferences',
+    label: 'Preferences',
+    icon: '@tui.settings',
   },
   settings: {
     path: 'settings',
@@ -106,7 +122,7 @@ export const NAVIGATION = {
   },
   application: {
     path: `apps/${ROUTE_PARAMS.appSlug}`,
-    label: 'Application',
+    label: `Application: ${NAVIGATION_NAME_PARAMS.applicationName}`,
     icon: '@tui.box',
   },
   applicationOverview: {
@@ -134,14 +150,14 @@ export const NAVIGATION = {
     label: 'Reviews',
     icon: '@tui.star',
   },
-  applicationTopics: {
-    path: `apps/${ROUTE_PARAMS.appSlug}/topics`,
-    label: 'Topics',
+  applicationDiscussions: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/discussions`,
+    label: 'Discussions',
     icon: '@tui.message-circle',
   },
-  applicationTopic: {
-    path: `apps/${ROUTE_PARAMS.appSlug}/topics/${ROUTE_PARAMS.topicSlug}`,
-    label: 'Topic',
+  applicationDiscussion: {
+    path: `apps/${ROUTE_PARAMS.appSlug}/discussions/${ROUTE_PARAMS.discussionSlug}`,
+    label: `Discussion: ${NAVIGATION_NAME_PARAMS.discussionName}`,
     icon: '@tui.message-circle',
   },
   applicationTimeline: {
@@ -203,34 +219,43 @@ export const NAVIGATION = {
     path: `search`,
     label: 'Search',
     icon: '@tui.search',
+  },
+  userProfile: {
+    path: `profiles/${ROUTE_PARAMS.profileId}`,
+    label: 'User profile',
+    icon: '@tui.user',
   }
 }
 
 export const DESKTOP_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
-  NAVIGATION.learn,
+  NAVIGATION.digest,
 ]
 
 export const MOBILE_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
-  NAVIGATION.learn,
+  NAVIGATION.digest,
 ]
 
+export const DESKTOP_USER_MAIN_NAVIGATION = [
+  NAVIGATION.home,
+  NAVIGATION.overview,
+  NAVIGATION.performance,
+  NAVIGATION.settings,
+]
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
-  NAVIGATION.home,
   NAVIGATION.applicationOverview,
   NAVIGATION.applicationTimeline,
   NAVIGATION.applicationReviews,
   NAVIGATION.applicationDevLog,
   NAVIGATION.applicationHealth,
-  NAVIGATION.applicationTopics,
+  NAVIGATION.applicationDiscussions,
 ]
 
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
-  NAVIGATION.myProfile,
   NAVIGATION.myFavorite,
   NAVIGATION.myDiscussions,
 ]

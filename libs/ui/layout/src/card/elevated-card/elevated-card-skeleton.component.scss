@@ -1,0 +1,36 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  padding: $space-6;
+
+  .card-backdrop {
+    @include skeleton-shimmer(var(--skeleton-shimmer-color));
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.5;
+    background: var(--skeleton-background);
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  .card-footer:has(*) {
+    position: relative;
+    margin-top: $space-3;
+    padding-top: $space-3;
+  }
+}
+
+

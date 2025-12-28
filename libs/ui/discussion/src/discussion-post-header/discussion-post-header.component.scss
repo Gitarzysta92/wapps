@@ -1,0 +1,48 @@
+@use 'ui/design-system/src/styles' as *;
+
+.discussion-header {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.author-avatar {
+  width: $size-avatar-md;
+  height: $size-avatar-md;
+  border-radius: $radius-full;
+  object-fit: cover;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.author-name {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
+  color: var(--tui-text-primary);
+}
+
+.user-badges {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.published-time {
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+}

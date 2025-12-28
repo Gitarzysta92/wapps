@@ -1,0 +1,47 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.discussion-header-skeleton {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.author-info-skeleton {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.avatar-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  width: $size-avatar-md;
+  height: $size-avatar-md;
+  border-radius: $radius-full;
+  background: var(--skeleton-background);
+}
+
+.author-details-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.author-name-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  width: $space-32;
+  height: $font-size-sm;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+}
+
+.published-time-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  width: $space-20;
+  height: $font-size-xs;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+}

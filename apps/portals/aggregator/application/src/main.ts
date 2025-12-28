@@ -3,7 +3,7 @@ import { createAppConfig } from './app-config';
 import { mergeApplicationConfig } from '@angular/core';
 // import { appConfigCSR } from './app-config.csr';
 import { routes } from './routes';
-import { provideProfileFeature } from '@portals/shared/features/profile';
+import { provideProfileFeature } from '@portals/shared/features/user-profile';
 import {
   provideIdentityRegistrationFeature,
   providePasswordResetRequestFeature,

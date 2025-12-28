@@ -1,0 +1,14 @@
+@use 'ui/design-system/src/styles' as *;
+
+.discussion-content {
+  padding: $space-2 $space-0;
+}
+
+.content-text {
+  margin: $space-0;
+  line-height: $line-height-loose;
+  font-size: $font-size-sm;
+  color: var(--tui-text-primary);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}

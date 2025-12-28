@@ -1,31 +1,44 @@
-<div class="top-comment">
-  <div class="comment-header">
-    <tui-avatar
-      [src]="comment.authorAvatarUrl"
-      size="xs"
-      class="author-avatar">
-      {{ comment.authorName.substring(0, 2).toUpperCase() }}
-    </tui-avatar>
-    <div class="author-info">
-      <span class="author-name">{{ comment.authorName }}</span>
-      <ng-content select="[slot='author-info']"></ng-content>
-    </div>
-    <div class="upvotes">
-      <tui-chip appearance="action-soft">
-        <span>{{ comment.upvotes }}</span>
-        <tui-icon
-          icon="@tui.thumbs-up"
-          class="upvote-icon"/>
-      </tui-chip>
-      <tui-chip appearance="action-soft">
-        <tui-icon
-          icon="@tui.award"
-          class="upvote-icon"/>
-      </tui-chip>
-    </div>
+@if (comment) {
+  <div class="top-comment">
+    <!-- <ui-discussion-post
+      [content]="comment.content"
+      [publishedTime]="publishedTime()"
+      [engagement]="engagement()"
+      [maxCharacterAmount]="150"
+      [canReply]="false"
+    >
+      <tui-avatar
+        avatar
+        [src]="comment.authorAvatarUrl"
+        size="s"
+        class="author-avatar">
+        {{ comment.authorName.substring(0, 2).toUpperCase() }}
+      </tui-avatar>
+      
+      <div author class="author-info">
+        <span class="author-name">{{ comment.authorName }}</span>
+        @for (badge of comment.authorBadges; track badge.name) {
+          <tui-chip [appearance]="badge.appearance" size="xs">
+            <tui-icon [icon]="badge.icon"/>
+            {{ badge.name }}
+          </tui-chip>
+        }
+        <ng-content select="[slot='author-info']"></ng-content>
+      </div>
+
+      <div menu class="top-comment-actions">
+        <tui-chip appearance="action-soft" size="s">
+          <tui-icon icon="@tui.award"/>
+        </tui-chip>
+      </div>
+    </ui-discussion-post> -->
+
+    <!-- Optional: Link to full discussion -->
+    @if (comment.discussionLink) {
+      <a [href]="comment.discussionLink" class="view-discussion">
+        View full discussion →
+      </a>
+    }
   </div>
-  
-  <p class="comment-content">{{ comment.content }}</p>
-  
-</div>
+}
 

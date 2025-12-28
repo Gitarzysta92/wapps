@@ -1,0 +1,16 @@
+<div class="discussion-header">
+  <div class="author-info">
+    @if (authorAvatarUrl()) {
+      <img [src]="authorAvatarUrl()" [alt]="authorName()" class="author-avatar" />
+    }
+    <div class="author-details">
+      <div class="author-name-row">
+        <span class="author-name">{{ authorName() }}</span>
+        <div class="user-badges">
+          <ng-content select="[slot='user-badges']" />
+        </div>
+      </div>
+      <span class="published-time">{{ publishedTime() }}</span>
+    </div>
+  </div>
+</div>

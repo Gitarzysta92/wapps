@@ -1,71 +1,111 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NgFor } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
-import { TuiIcon } from '@taiga-ui/core';
-import { StatusBannerComponent } from '@ui/status-banner';
-import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
-import { NoticesSectionComponent, Notice } from '@ui/notices-section';
+import { Component, inject, computed, input } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { of, delay } from 'rxjs';
+import { TuiIcon, TuiAppearance } from '@taiga-ui/core';
+import { TuiBadge } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
+import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
+import { 
+  PageHeaderComponent, 
+  PageTitleComponent, 
+  PageTitleSkeletonComponent,
+  PageMetaComponent,
+  PageMetaSkeletonComponent,
+  MediumCardComponent,
+  MediumCardSkeletonComponent
+} from '@ui/layout';
+import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
+import { APPLICATIONS } from '@portals/shared/data';
+import { NAVIGATION_NAME_PARAMS } from '../../navigation';
+import { 
+  StatusBannerComponent, 
+  NoticesSectionComponent,
+  HealthCheckBadgeComponent,
+  StatusHistoryComponent,
+  type ServiceStatus, 
+  type Notice 
+} from '@apps/portals/shared/features/health-status';
+import { ApplicationHealthStatusCode } from '@domains/feed';
 
 @Component({
   selector: 'app-application-health-page',
   standalone: true,
   imports: [
-    NgFor,
+    CommonModule,
     TuiIcon,
+    TuiBadge,
+    TuiAppearance,
+    BreadcrumbsComponent,
+    BreadcrumbsSkeletonComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
+    PageTitleSkeletonComponent,
+    PageMetaComponent,
+    PageMetaSkeletonComponent,
+    MediumCardComponent,
+    MediumCardSkeletonComponent,
     StatusBannerComponent,
-    ServiceStatusItemComponent,
-    NoticesSectionComponent
+    NoticesSectionComponent,
+    HealthCheckBadgeComponent,
+    StatusHistoryComponent
   ],
   templateUrl: './application-health-page.component.html',
   styleUrl: './application-health-page.component.scss'
 })
-export class ApplicationHealthPageComponent {
-  private readonly _route = inject(ActivatedRoute);
+export class ApplicationHealthPageComponent implements 
+  routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }> {
 
-  public readonly app$ = this._route.paramMap.pipe(
-    map(p => p.get('appSlug') ?? 'unknown'),
-    map(slug => this._buildMockFromSlug(slug)),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+  public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
+  public readonly appSlug = input<string | null>(null);
 
-  getOverallStatus(): 'operational' | 'degraded' | 'outage' {
-    return 'operational';
-  }
+  public readonly app = rxResource({
+    request: () => this.appSlug(),
+    loader: ({ request: appSlug }) => {
+      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
+      return of(app).pipe(delay(1000));
+    }
+  });
 
-  getStatusMessage(): string {
-    return 'All Systems Operational';
-  }
+  public readonly healthData = rxResource({
+    request: () => this.appSlug(),
+    loader: () => of(this._generateMockHealthData()).pipe(delay(1200))
+  });
 
-  getCurrentTimestamp(): Date {
-    return new Date();
-  }
+  public readonly breadcrumbData = computed(() => {
+    const breadcrumb = this.breadcrumb();
+    
+    if (this.app.value()) { 
+      return breadcrumb.map((b) => {
+        if (b.label.includes(NAVIGATION_NAME_PARAMS.applicationName)) {
+          return {
+            ...b,
+            label: b.label.replace(NAVIGATION_NAME_PARAMS.applicationName, this.app.value()?.name ?? 'Unknown Application')
+          };
+        }
+        return b;
+      });
+    }
+    return breadcrumb;
+  });
 
-  getServices(): ServiceStatus[] {
-    return [
-      {
-        name: 'API Service',
-        uptime: 99.99,
-        status: 'operational',
-        hasInfo: true
-      },
-      {
-        name: 'Database',
-        uptime: 100,
-        status: 'operational'
-      },
-      {
-        name: 'Storage Service',
-        uptime: 99.95,
-        status: 'operational'
-      }
-    ];
-  }
+  public readonly overallStatus = computed(() => {
+    const data = this.healthData.value();
+    if (!data) return { code: ApplicationHealthStatusCode.Operational, message: 'Loading...' };
+    return { code: data.overallStatus, message: data.statusMessage };
+  });
 
-  getNotices(): Notice[] {
-    return [];
-  }
+  public readonly statusHistory = computed(() => {
+    return this.healthData.value()?.statusHistory ?? [];
+  });
+
+  public readonly services = computed(() => {
+    return this.healthData.value()?.services ?? [];
+  });
+
+  public readonly notices = computed(() => {
+    return this.healthData.value()?.notices ?? [];
+  });
 
   private _buildMockFromSlug(slug: string): AppRecordDto {
     const name = slug
@@ -77,7 +117,7 @@ export class ApplicationHealthPageComponent {
       slug,
       name,
       description: `${name} description`,
-      logo: 'https://static.store.app/cdn-cgi/image/width=128,quality=75,format=auto/https://store-app-images.s3.us-east-1.amazonaws.com/1377b172723c9700810b9bc3d21fd0ff-400x400.png',
+      logo: 'https://picsum.photos/128',
       isPwa: true,
       rating: 4.7,
       tagIds: [],
@@ -87,5 +127,57 @@ export class ApplicationHealthPageComponent {
       updateDate: new Date(),
       listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
     };
+  }
+
+  private _generateMockHealthData() {
+    return {
+      overallStatus: ApplicationHealthStatusCode.Operational,
+      statusMessage: 'All Systems Operational',
+      lastUpdated: new Date(),
+      services: [
+        {
+          name: 'API Service',
+          uptime: 99.99,
+          status: 'operational' as const,
+          hasInfo: true
+        },
+        {
+          name: 'Database',
+          uptime: 100,
+          status: 'operational' as const
+        },
+        {
+          name: 'Storage Service',
+          uptime: 99.95,
+          status: 'operational' as const
+        },
+        {
+          name: 'Authentication',
+          uptime: 99.98,
+          status: 'operational' as const
+        },
+        {
+          name: 'CDN',
+          uptime: 100,
+          status: 'operational' as const
+        }
+      ] as ServiceStatus[],
+      notices: [] as Notice[],
+      statusHistory: this._generateStatusHistory()
+    };
+  }
+
+  private _generateStatusHistory() {
+    const history = [];
+    const now = Date.now();
+    for (let i = 0; i < 30; i++) {
+      history.push({
+        status: Math.random() > 0.95 
+          ? ApplicationHealthStatusCode.Degraded 
+          : ApplicationHealthStatusCode.Operational,
+        timestamp: now - (i * 24 * 60 * 60 * 1000)
+      });
+    }
+    return history;
   }
 }

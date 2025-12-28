@@ -1,0 +1,37 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  padding: $space-1 0;
+}
+
+.breadcrumbs-skeleton {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs-skeleton__list {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.breadcrumbs-skeleton__item {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: $space-3;
+  width: $size-content-xxs;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+
+  &--current {
+    width: 100px;
+  }
+}
+
+.breadcrumbs-skeleton__separator {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: $space-3;
+  width: $space-3;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+}

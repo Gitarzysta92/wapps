@@ -1,9 +1,11 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, IsActiveMatchOptions } from '@angular/router';
-import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
-import { TuiAvatar } from '@taiga-ui/kit';
+import { RouterModule } from '@angular/router';
+import { TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { NavigationListComponent, NavigationItemComponent } from '@ui/navigation';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { DividerComponent } from '@ui/layout';
 
 @Component({
   selector: 'common-sidebar',
@@ -11,35 +13,25 @@ import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
   styleUrl: './common-sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.expanded]': 'isExpanded'
+    '[class.expanded]': 'isExpanded()'
   },
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
-    TuiButton,
     TuiIcon,
     TuiAvatar,
-    TuiIconPipe
+    TuiIconPipe,
+    NavigationListComponent,
+    NavigationItemComponent,
+    DividerComponent,
   ]
 })
-export class CommonSidebarPartialComponent {
-
-  @Input() isExpanded = false;
-  @Input() navigation: NavigationDeclarationDto[] = [];
-
-  // TODO: excessive memory allocation,
-  // by creating a new object for each call
-  public getRouterLinkActiveOptions(path: string): IsActiveMatchOptions {
-    return { 
-      paths: path === '' ? 'exact' : 'subset',
-      queryParams: 'ignored',
-      fragment: 'ignored',
-      matrixParams: 'ignored'
-     };
-  }
-
-  // public onToggleClick(): void {
-  //   this.toggleExpansion.emit();
-  // }
+export class CommonSidebarComponent {
+  public readonly avatarPath = input<string | null>(null);
+  public readonly isExpanded = input<boolean>(false);
+  public readonly navigation = input<NavigationDeclarationDto[]>([]);
+  public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);
+  public readonly navigationAvatar = input<NavigationDeclarationDto | null>(null);
+  public readonly alignment = input<'start' | 'end'>('end');
 }

@@ -1,0 +1,89 @@
+.service-status-item {
+  margin-bottom: 1.5rem;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.service-name {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  .name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+  }
+  
+  .info-icon {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+}
+
+.uptime-percentage {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.status-bar-container {
+  .status-bar {
+    height: 8px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+    
+    &.status-operational {
+      background: #10b981;
+    }
+    
+    &.status-degraded {
+      background: #e3f2fd;
+    }
+    
+    &.status-outage {
+      background: #fce4ec;
+    }
+  }
+  
+  .status-indicators {
+    display: flex;
+    height: 100%;
+    gap: 1px;
+  }
+  
+  .status-day {
+    flex: 1;
+    height: 100%;
+    border-radius: 1px;
+    
+    &.day-operational {
+      background: #10b981;
+    }
+    
+    &.day-degraded {
+      background: #007bff;
+    }
+    
+    &.day-outage {
+      background: #374151;
+    }
+  }
+  
+  .time-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+}
+
+
+
+

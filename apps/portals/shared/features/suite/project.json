@@ -1,0 +1,40 @@
+{
+  "name": "portals-shared-features-suite",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "suite",
+  "sourceRoot": "apps/portals/shared/features/suite/src",
+  "tags": ["type:feature", "scope:suite"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/suite",
+        "main": "apps/portals/shared/features/suite/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/suite/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/suite/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/portals/shared/features/suite/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+
+

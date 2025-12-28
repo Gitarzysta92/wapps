@@ -1,0 +1,29 @@
+@use 'ui/design-system/src/styles/elevation' as *;
+
+tui-dialogs {
+  z-index: $z-modal;
+}
+
+// Required by some Taiga UI components
+@keyframes tuiPresent {
+  to {
+    content: '';
+  }
+}
+
+@keyframes tuiSkeletonVibe {
+  to {
+    opacity: 0.5;
+  }
+}
+
+//TODO: fix for taiga-dropdown that doesn't change theme dynamically
+tui-dropdown:has(user-panel), tui-dropdown:has(guest-panel) {
+  border: none!important;
+}
+
+
+//TODO: create dedicated button with this styling
+button tui-loader {
+  margin-left: -24px;
+}

@@ -1,0 +1,30 @@
+.status-history {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.status-label {
+  opacity: 0.5;
+}
+
+.status-dot {
+  width: 12px;
+  height: 32px;
+  border-radius: 10px;
+  transition: all 0.2s;
+  cursor: help;
+}
+
+.status-dot.operational {
+  background-color: var(--tui-status-positive);
+}
+
+.status-dot.degraded {
+  background-color: var(--tui-status-warning);
+}
+
+.status-dot.outage {
+  background-color: var(--tui-status-negative);
+}

@@ -1,3 +1,13 @@
 export { DiscussionComponent } from './discussion.component';
-export * from './presentation/top-comment';
+export { TopCommentComponent } from './presentation/top-comment/top-comment.component';
+export { type TopCommentVM } from './presentation/top-comment/top-comment.component';
+export { OpeningPostComponent } from './presentation/opening-post/opening-post.component';
+export { type OpeningPostVM } from './presentation/opening-post/opening-post.component';
 export * from './presentation/badged-content';
+export * from './presentation/discussion-chip/discussion-chip.component';
+export { DiscussionStatsBadgeComponent } from './presentation/discussion-stats-badge/discussion-stats-badge.component';
+export { DiscussionsStatsBadgeComponent } from './presentation/discussions-stats-badge/discussions-stats-badge.component';
+export { DiscussionSmallCardComponent } from './presentation/discussion-small-card/discussion-small-card.component';
+export { DiscussionMediumCardComponent } from './presentation/discussion-medium-card/discussion-medium-card.component';
+export { DiscussionSmallCardSkeletonComponent } from './presentation/discussion-small-card-skeleton/discussion-small-card-skeleton.component';
+export { DiscussionMediumCardSkeletonComponent } from './presentation/discussion-medium-card-skeleton/discussion-medium-card-skeleton.component';

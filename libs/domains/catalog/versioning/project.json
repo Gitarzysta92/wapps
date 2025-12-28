@@ -1,0 +1,33 @@
+{
+  "name": "catalog-versioning",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "cat",
+  "sourceRoot": "libs/domains/catalog/versioning/src",
+  "tags": [
+    "type:domain",
+    "scope:catalog"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/domains/catalog/versioning",
+        "main": "libs/domains/catalog/versioning/src/index.ts",
+        "tsConfig": "libs/domains/catalog/versioning/tsconfig.lib.json",
+        "assets": [
+          "libs/domains/catalog/versioning/*.md"
+        ]
+      }
+    }
+  }
+}

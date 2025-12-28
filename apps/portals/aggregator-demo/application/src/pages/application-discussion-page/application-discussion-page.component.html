@@ -1,0 +1,192 @@
+<ui-page-header class="page-header">
+  @if (discussion.isLoading() || app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs
+      class="breadcrumbs"
+      slot="top-bar"
+      [breadcrumbs]="breadcrumbData()">
+    </ui-breadcrumbs>
+  }
+
+  @if (discussion.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">{{ discussion.value()?.title }}</h1>
+  }
+
+  @if (discussion.isLoading()) {
+    <ui-page-meta-skeleton slot="meta" />
+  } @else {
+    <ui-page-meta slot="meta">
+    <!-- TODO: it should be mapped outside template -->
+    <discussion-stats-badge
+        class="discussion-stats-badge"
+        [stats]="{ participants: discussion.value()?.repliesCount ?? 1, views: discussion.value()?.viewsCount ?? 1 }" />
+    </ui-page-meta>
+  }
+</ui-page-header>
+
+<section>
+  @if (discussion.value(); as topic ) {
+    <ui-tags [tags]="topic?.tags ?? []" />
+  } @else if (discussion.isLoading()) {
+    <ui-tags-skeleton />
+  } @else {
+    <p>Brak tagów do wyświetlenia</p>
+  }
+</section>
+
+<section class="discussion-content-section">
+  @if (discussion.isLoading()) {
+    <ui-discussion-thread-skeleton [repliesCount]="2" />
+  } @else {
+    @if (discussion.value(); as topic) {
+      <ui-discussion-thread>
+        <!-- Opening Post (the thread itself is the opening post) -->
+        <ui-discussion-post slot="opening-post" [post]="topic">
+          <ui-discussion-post-header 
+            slot="header"
+            [authorName]="topic.author.name"
+            [authorAvatarUrl]="topic.author.avatar.url"
+            [publishedTime]="topic.publishedTime">
+            <div slot="user-badges"></div>
+          </ui-discussion-post-header>
+          <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
+          <ui-discussion-voting-button slot="bottom-bar" />
+          <ui-discussion-reply-button slot="bottom-bar" />
+        </ui-discussion-post>
+
+        <!-- Replies -->
+        <ui-discussion-post 
+          *ngFor="let reply of topic.replies" 
+          slot="reply" 
+          [post]="$any(reply)">
+          <ui-discussion-post-header 
+            slot="header"
+            [authorName]="$any(reply).author.name"
+            [authorAvatarUrl]="$any(reply).author.avatar.url"
+            [publishedTime]="$any(reply).publishedTime">
+            <div slot="user-badges"></div>
+          </ui-discussion-post-header>
+          <ui-discussion-expandable-post-content slot="content" [content]="$any(reply).content" />
+          <ui-discussion-voting-button slot="bottom-bar" />
+          <ui-discussion-reply-button slot="bottom-bar" />
+        </ui-discussion-post>
+      </ui-discussion-thread>
+    }
+  }
+</section>
+
+
+<!-- TODO: refactor this section -->
+<section class="related-discussions">
+  <h2 class="related-discussions__title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    Related Discussions
+  </h2>
+
+  <div class="related-discussions__grid">
+    @if (relatedDiscussions.isLoading()) {
+      @for (i of [1, 2]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    } @else {
+      @for (discussion of relatedDiscussions.value(); track discussion.slug) {
+        <ui-medium-card tuiAppearance="card-elevated">
+          <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
+          
+          <ui-card-header slot="header">
+            <h4 class="related-discussions__card-title">{{ discussion.title }}</h4>
+          </ui-card-header>
+
+          <p class="related-discussions__card-excerpt">{{ discussion.content | slice:0:120 }}...</p>
+
+          <div slot="bottom-bar" class="related-discussions__card-meta">
+            <span class="related-discussions__stat">
+              <tui-icon icon="@tui.message-circle" class="related-discussions__stat-icon" />
+              {{ discussion.repliesCount }} replies
+            </span>
+            <span class="related-discussions__stat">
+              <tui-icon icon="@tui.eye" class="related-discussions__stat-icon" />
+              {{ discussion.viewsCount }} views
+            </span>
+          </div>
+
+          <div slot="footer" class="related-discussions__card-tags">
+            @for (tag of discussion.tags | slice:0:3; track tag.slug) {
+              <span tuiAppearance="tag-gradient">{{ tag.name }}</span>
+            }
+          </div>
+        </ui-medium-card>
+      }
+    }
+  </div>
+</section>
+
+
+<!-- TODO: refactor this section -->
+<section class="top-authors">
+  <h2 class="top-authors__title">
+    <span tuiAppearance="accent-bar-warm"></span>
+    Top Authors
+  </h2>
+
+  <div class="top-authors__grid">
+    @if (relatedDiscussions.isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="top-authors__card top-authors__card--skeleton" tuiAppearance="card-author">
+          <div class="top-authors__avatar-skeleton"></div>
+          <div class="top-authors__info-skeleton">
+            <div class="top-authors__name-skeleton"></div>
+            <div class="top-authors__stats-skeleton"></div>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (author of topAuthors(); track author.id; let i = $index) {
+        <div 
+          class="top-authors__card" 
+          [tuiAppearance]="i === 0 ? 'card-author-featured' : 'card-author'">
+          <div [tuiAppearance]="i === 0 ? 'rank-badge-gold' : 'rank-badge'">
+            @if (i === 0) {
+              <tui-icon icon="@tui.crown" class="top-authors__crown crown-animated" />
+            } @else {
+              {{ i + 1 }}
+            }
+          </div>
+          
+          <tui-avatar 
+            [src]="author.avatar.url" 
+            [size]="i === 0 ? 'l' : 'm'"
+            class="top-authors__avatar"
+          />
+          
+          <div class="top-authors__info">
+            <h4 class="top-authors__name">{{ author.name }}</h4>
+            <div class="top-authors__stats">
+              <span class="top-authors__stat">
+                <tui-icon icon="@tui.message-square" class="top-authors__stat-icon" />
+                {{ author.postsCount }} posts
+              </span>
+              <span class="top-authors__stat">
+                <tui-icon icon="@tui.thumbs-up" class="top-authors__stat-icon" />
+                {{ author.likesCount }} likes
+              </span>
+            </div>
+          </div>
+
+          <div class="top-authors__badge">
+            @if (i === 0) {
+              <span tuiAppearance="badge-gold">Expert</span>
+            } @else if (i === 1) {
+              <span tuiAppearance="badge-silver">Pro</span>
+            } @else {
+              <span tuiAppearance="badge-bronze">Active</span>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

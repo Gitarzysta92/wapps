@@ -1,0 +1,28 @@
+<div class="notices-section">
+  <div class="notices-header">
+    <tui-icon icon="@tui.file-text" class="notices-icon"></tui-icon>
+    <h3 class="notices-title">Recent Notices</h3>
+  </div>
+  
+  <div class="notices-content" *ngIf="notices.length > 0; else emptyState">
+    <div *ngFor="let notice of notices" class="notice-item">
+      <div class="notice-header">
+        <span class="notice-title">{{ notice.title }}</span>
+        <span class="notice-date">{{ notice.date | date:'short' }}</span>
+      </div>
+      <p class="notice-message">{{ notice.message }}</p>
+    </div>
+  </div>
+  
+  <ng-template #emptyState>
+    <div class="empty-state" *ngIf="showEmptyState">
+      <tui-icon icon="@tui.file-text" class="empty-icon"></tui-icon>
+      <p class="empty-title">No recent notices</p>
+      <p class="empty-message">There have been no reports within the last 7 days.</p>
+    </div>
+  </ng-template>
+</div>
+
+
+
+

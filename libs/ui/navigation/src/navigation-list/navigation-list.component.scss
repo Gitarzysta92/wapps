@@ -1,0 +1,23 @@
+@use '@taiga-ui/core/styles/taiga-ui-local' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+
+  &[data-alignment="start"] {
+    align-items: flex-start;
+  }
+
+  &[data-alignment="end"] {
+    align-items: flex-end;
+  }
+}
+
+
+
+

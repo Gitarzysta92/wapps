@@ -1,0 +1,28 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  padding: $space-3 0;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.page-header-top-bar {
+  display: flex;
+  align-items: center;
+}
+
+.page-header-title {
+  display: flex;
+  align-items: center;
+}
+
+.page-header-meta {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}

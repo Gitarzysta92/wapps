@@ -5,58 +5,40 @@
     size="xl"
   />
 </section>
-
-<nav class="sidebar-nav">
+<nav 
+  navigationList
+  alignment="end">
   @if (isLoading()) {
-    <!-- Skeleton loaders -->
-    @for (skeleton of [1, 2, 3]; track skeleton) {
-      <div class="nav-item nav-item--skeleton" aria-hidden="true">
-        <span class="nav-label" [tuiSkeleton]="true"></span>
-        <div class="nav-icon" [tuiSkeleton]="true"></div>
-      </div>
+    <a 
+      navigationItemSkeleton
+      tuiAppearance="navigation-primary-skeleton"
+      [icon]="true" 
+      [active]="false">
+    </a>
+    @for (skeleton of [true, false, false]; track skeleton) {
+      <a
+        navigationItemSkeleton
+        tuiAppearance="navigation-primary-skeleton"
+        [icon]="true" 
+        [active]="skeleton">
+      </a>
     }
   } @else {
     <a
-      class="nav-item"
-      tuiButton
-      appearance="ghost"
-      type="button" 
+      navigationItem 
       [routerLink]="HOME.path"
-      routerLinkActive="active"
-      [title]="HOME.label">
-      <span class="nav-label">{{ HOME.label }}</span>
-      <div class="nav-icon">
-        <tui-icon
-          [icon]="HOME.icon"
-          [style.height.rem]="1.2"
-          [style.width.rem]="1.2"
-          [style.display]="'inline-block'"
-          [style.visibility]="'visible'"/>
-      </div>
+      appearance="navigation-primary">
+      <span>{{ HOME.label }}</span>
+      <tui-icon [icon]="HOME.icon"/>
     </a>
-
-    <!-- Dynamic navigation items -->
     @for (item of navigationItems(); track item.type) {
       <button
-        class="nav-item"
-        tuiButton
-        appearance="ghost"
-        type="button" 
+        navigationItem
+        appearance="navigation-primary"
         [class.active]="isActive(item.type)"
-        (click)="scrollToSection(item.type)"
-        [title]="item.label">
-        <span class="nav-label">
-          {{ item.label }}
-          <span class="nav-count">({{ item.count }})</span>
-        </span>
-        <div class="nav-icon">
-          <tui-icon
-            [icon]="item.icon"
-            [style.height.rem]="1.2"
-            [style.width.rem]="1.2"
-            [style.display]="'inline-block'"
-            [style.visibility]="'visible'"/>
-        </div>
+        (click)="scrollToSection(item.type)">
+        <span>{{ item.label }}</span>
+        <tui-icon [icon]="item.icon"/>
       </button>
     }
   }

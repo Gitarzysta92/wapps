@@ -1,0 +1,38 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  position: relative;
+  border-radius: $radius-md;
+  background: var(--skeleton-background-elevated);
+  padding: $space-4 $space-6;
+}
+
+.card-header {
+  display: block;
+  padding: $space-2 0;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  flex: 1;
+}
+
+.card-bottom-bar {
+  padding: $space-2 $space-4;
+}
+
+.card-footer {
+  padding: $space-2 $space-4;
+  background: var(--tui-background-base-alt);
+}
+
+// Hide empty slots
+.card-bottom-bar:empty,
+.card-footer:empty {
+  display: none;
+}
+
+

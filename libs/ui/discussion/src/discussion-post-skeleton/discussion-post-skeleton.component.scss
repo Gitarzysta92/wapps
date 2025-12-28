@@ -1,0 +1,26 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.discussion-post-skeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+.discussion-post-header-skeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+.discussion-post-content-skeleton {
+  flex: 1;
+  margin-left: $space-12;
+}
+
+.discussion-post-bottom-bar-skeleton {
+  margin-left: $space-12;
+  display: flex;
+  align-items: center;
+}

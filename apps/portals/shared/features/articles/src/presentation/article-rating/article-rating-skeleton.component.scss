@@ -1,0 +1,15 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-block;
+}
+
+.article-rating-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: 1.5rem;
+  width: 3rem;
+  border-radius: 1rem;
+  background: var(--skeleton-background-content);
+}
+
+

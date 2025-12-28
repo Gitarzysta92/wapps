@@ -1,0 +1,24 @@
+<div class="voting-buttons">
+  <button
+    tuiButton
+    appearance="flat"
+    size="xs"
+    [class.active]="isUpvoted()"
+    (click)="onUpvote()"
+    class="vote-button upvote-button"
+  >
+    <tui-icon icon="@tui.chevron-up" />
+    <span class="vote-count">{{ upvotes() }}</span>
+  </button>
+  <button
+    tuiButton
+    appearance="flat"
+    size="xs"
+    [class.active]="isDownvoted()"
+    (click)="onDownvote()"
+    class="vote-button downvote-button"
+  >
+    <tui-icon icon="@tui.chevron-down" />
+    <span class="vote-count">{{ downvotes() }}</span>
+  </button>
+</div>

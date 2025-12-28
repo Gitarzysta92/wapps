@@ -1,115 +1,119 @@
 @use 'ui/design-system/src/styles' as *;
 
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
+.page-header {
+  margin-top: $space-20;
 }
 
-// Section Styling
-.log-section {
-  padding: $space-6 0;
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
 }
 
-.section-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+.meta-app-name {
+  opacity: 0.5;
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
+.changelog-section {
+  margin-top: $space-12;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
 }
 
 .section-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
   display: flex;
   align-items: center;
   gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin-bottom: $space-6;
 }
 
-.title-icon {
-  font-size: $font-size-3xl;
-  color: $color-primary-600;
-}
-
-// Development Log Section
-.dev-log-container {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-  background: $color-bg-muted;
-  padding: $space-6;
-  border-radius: $radius-md;
-}
-
-.change-type-chip {
-  width: fit-content;
-}
-
-.dev-log-columns {
+.changelog-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: $space-6;
 }
 
-.version-column {
+// ============================================================================
+// Changelog Card
+// ============================================================================
+
+.changelog-card {
+  &--compact {
+    .changelog-header {
+      gap: $space-2;
+    }
+  }
+}
+
+.changelog-header {
   display: flex;
   flex-direction: column;
   gap: $space-3;
+  margin-bottom: $space-4;
 }
 
-.app-name {
-  @include text($font-size-xl, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.version-header {
+.version-info {
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: $space-3;
+  flex-wrap: wrap;
 }
 
-.version-icon {
-  color: $color-primary-600;
-  font-size: $font-size-lg;
-}
-
-.version-number {
-  @include text($font-size-xl, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
+.version-badge {
+  background: var(--indigo-gradient);
+  color: var(--tui-primary-text);
 }
 
 .release-date {
   display: flex;
   align-items: center;
-  gap: $space-2;
-  @include text($font-size-sm);
-  color: $color-text-muted;
-}
-
-.date-icon {
+  gap: $space-1;
   font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+
+  tui-icon {
+    font-size: $font-size-sm;
+  }
+
+  &--small {
+    font-size: $font-size-xs;
+  }
 }
 
-.version-description {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
+.changelog-description {
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  color: var(--tui-text-primary);
   margin: 0;
+
+  &--compact {
+    font-size: $font-size-sm;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
-.changes-column {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
+// ============================================================================
+// Changes Card
+// ============================================================================
 
-.changes-title {
-  @include text($font-size-lg, $font-weight-bold);
-  color: $color-text-strong;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
+.changes-card {
+  border: 4px solid var(--tui-accent);
+  margin-top: $space-4;
 }
 
 .changes-list {
@@ -125,24 +129,46 @@
   display: flex;
   align-items: flex-start;
   gap: $space-2;
-  @include text($font-size-sm, $font-weight-regular, $line-height-loose);
-  color: $color-text;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+  color: var(--tui-text-primary);
 }
 
-.check-icon {
-  color: $color-accent-500;
+.change-icon {
+  color: var(--tui-positive);
   font-size: $font-size-sm;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.dev-log-cta {
-  width: fit-content;
+// ============================================================================
+// Footer
+// ============================================================================
+
+.changelog-footer {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
 }
 
-// Responsive Design
+.changes-count {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+
+  tui-icon {
+    font-size: $font-size-xs;
+  }
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+
 @media (max-width: 768px) {
-  .dev-log-columns {
+  .changelog-grid {
     grid-template-columns: 1fr;
   }
 }

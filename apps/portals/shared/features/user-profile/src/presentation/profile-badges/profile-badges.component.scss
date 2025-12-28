@@ -1,0 +1,11 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.profile-badge {
+  flex-shrink: 0;
+}

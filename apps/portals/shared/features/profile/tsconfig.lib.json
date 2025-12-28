@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
-    "types": []
-  },
-  "include": ["**/*.ts", "../../../../../libs/domains/customer/src/my-profile/application/ports/profile-api-service.port.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
-}

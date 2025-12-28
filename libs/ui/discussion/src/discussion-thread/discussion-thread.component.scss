@@ -1,0 +1,70 @@
+@use 'ui/design-system/src/styles' as *;
+
+$thread-line-color: $color-border-muted;
+$thread-line-color-transparent: rgba(86, 93, 102, 0);
+
+.opening-post-slot {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 60px;
+    bottom: $space-0;
+    width: $border-width-thin;
+    background: linear-gradient(to bottom, $thread-line-color-transparent 0%, $thread-line-color 100%);
+  }
+}
+
+.reply-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: $space-12;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: $space-0;
+    bottom: $space-0;
+    width: $space-5;
+    height: $space-5;
+    border-bottom-left-radius: $space-2_5;
+    border-bottom: solid $border-width-thin $thread-line-color;
+    border-left: solid $border-width-thin $thread-line-color;
+  }
+
+  ::ng-deep[slot="reply"] {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: $space-0;
+      bottom: $space-0;
+      width: $space-5;
+      height: $space-5;
+      border-bottom-left-radius: $space-2_5;
+      border-bottom: solid $border-width-thin $thread-line-color;
+      border-left: solid $border-width-thin $thread-line-color;
+    }
+  }
+
+  ::ng-deep[slot="reply"]:not(:last-child) {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 30px;
+      bottom: $space-0;
+      width: $border-width-thin;
+      height: calc(100% - 30px);
+      background: linear-gradient(to bottom, $thread-line-color-transparent 0%, $thread-line-color 100%);
+    }
+  }
+}

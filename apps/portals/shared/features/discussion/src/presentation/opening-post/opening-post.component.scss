@@ -1,0 +1,191 @@
+@use 'ui/design-system/src/styles' as *;
+
+.opening-post {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  padding: $space-4;
+
+  &--pinned {
+    border-color: var(--tui-status-info);
+    background: var(--tui-background-accent-1);
+  }
+}
+
+// Header section
+.opening-post__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.opening-post__title-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.opening-post__title {
+  margin: 0;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: var(--tui-text-primary);
+  flex: 1;
+  min-width: 0; // Allow text to wrap
+}
+
+.opening-post__badges {
+  display: flex;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+// Tags section
+.opening-post__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.opening-post__tag {
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--tui-background-accent-1);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Author info
+.author-avatar {
+  flex-shrink: 0;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+  
+  .author-name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: var(--tui-text-primary);
+    line-height: $line-height-tight;
+  }
+}
+
+.edited-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  color: var(--tui-text-tertiary);
+  font-style: italic;
+
+  tui-icon {
+    font-size: $font-size-sm;
+  }
+}
+
+// Action buttons
+.opening-post-actions {
+  display: flex;
+  gap: $space-1;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--tui-radius-s);
+  color: var(--tui-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--tui-background-accent-1);
+    color: var(--tui-text-primary);
+  }
+
+  &:active {
+    background: var(--tui-background-accent-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-focus);
+    outline-offset: 2px;
+  }
+}
+
+// Footer section
+.opening-post__footer {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding-top: $space-2;
+  border-top: 1px solid var(--tui-border-normal);
+  color: var(--tui-text-tertiary);
+  font-size: $font-size-sm;
+}
+
+.opening-post__views {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+
+  tui-icon {
+    font-size: $font-size-md;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .opening-post {
+    padding: $space-3;
+    gap: $space-3;
+  }
+
+  .opening-post__title {
+    font-size: $font-size-xl;
+  }
+
+  .opening-post__title-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// Override discussion-post styles for opening post
+.opening-post {
+  ::ng-deep {
+    .discussion-post {
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    .discussion-post__content {
+      padding-left: 0;
+    }
+
+    .discussion-post__text {
+      font-size: $font-size-md;
+      // line-height: $line-height-relaxed;
+    }
+  }
+}

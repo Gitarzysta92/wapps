@@ -1,0 +1,21 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.tags-skeleton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: 1.5rem;
+  width: 4rem;
+  border-radius: 1rem;
+  background: var(--skeleton-background-content);
+}
+
+

@@ -1,0 +1,37 @@
+@use 'ui/design-system/src/styles' as *;
+
+.voting-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.vote-button {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1;
+  border-radius: $space-1;
+  @include transition(all, $duration-200, $ease-in-out);
+
+  &:hover {
+    background-color: var(--tui-background-elevation-1);
+  }
+
+  &.active {
+    color: var(--tui-status-primary);
+    background-color: var(--tui-background-elevation-1);
+  }
+}
+
+.vote-count {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.upvote-button.active {
+  color: var(--tui-status-positive);
+}
+
+.downvote-button.active {
+  color: var(--tui-status-negative);
+}

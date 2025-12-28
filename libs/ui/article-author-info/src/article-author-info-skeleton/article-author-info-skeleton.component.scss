@@ -1,0 +1,38 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.author-info-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: 1rem;
+  width: 4rem;
+  border-radius: 0.25rem;
+  background: var(--skeleton-background-content);
+}
+
+.avatar-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--skeleton-background-content);
+}
+
+.name-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: 1rem;
+  width: 6rem;
+  border-radius: 0.25rem;
+  background: var(--skeleton-background-content);
+}
+
+

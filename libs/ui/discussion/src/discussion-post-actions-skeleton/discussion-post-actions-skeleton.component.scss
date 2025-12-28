@@ -1,0 +1,33 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.discussion-actions-skeleton {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.voting-skeleton {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.vote-button-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  width: $space-12;
+  height: $space-6;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+}
+
+.reply-button-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  width: 4.5rem;
+  height: $space-6;
+  border-radius: $radius-sm;
+  background: var(--skeleton-background);
+}

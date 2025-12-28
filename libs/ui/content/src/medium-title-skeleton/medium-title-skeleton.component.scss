@@ -1,0 +1,15 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.medium-title-skeleton {
+  @include skeleton-shimmer(var(--skeleton-shimmer-color), 2.5s);
+  height: $space-4;
+  width: 60%;
+  border-radius: $radius-md;
+  background: var(--skeleton-background-content);
+}
+
+

@@ -1,0 +1,17 @@
+:host {
+  display: inline-block;
+}
+
+.context-menu-chip {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+
+
+

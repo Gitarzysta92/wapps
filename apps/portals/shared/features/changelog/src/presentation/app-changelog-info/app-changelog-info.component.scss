@@ -1,0 +1,39 @@
+.version-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.version-icon {
+  color: var(--tui-text-secondary);
+}
+
+.version-number {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.release-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--tui-text-secondary);
+  font-size: 0.875rem;
+}
+
+.date-icon {
+  font-size: 1rem;
+}
+
+.version-description {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--tui-text-primary);
+}

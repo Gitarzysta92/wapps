@@ -1,0 +1,59 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  position: relative;
+  border-radius: $radius-md;
+  padding: $space-6 $space-6;
+}
+.card-header {
+  display: block;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  flex: 1;
+}
+
+.card-bottom-bar {
+  margin-top: $space-2;
+  border-top: 1px solid white;
+  padding: $space-2;
+}
+
+:host:has(.card-top-edge:not(:empty)) {
+  padding-top: $space-7;
+}
+
+.card-top-edge:not(:empty) {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: calc(-#{$size-touch-min} / 2);
+  left: 0;
+  padding: 0 $space-6;
+  width: 100%;
+  height: $size-touch-min;
+  background: var(--tui-base-03);
+}
+
+:host:has([slot='footer']) {
+  padding-bottom: $space-3;
+}
+
+.card-footer:has([slot='footer']) {
+  padding-top: $space-3;
+}
+
+
+
+// Hide empty slots
+.card-top-bar:empty,
+.card-bottom-bar:empty,
+.card-footer:empty,
+.card-top-edge:empty {
+  display: none;
+}
+ 

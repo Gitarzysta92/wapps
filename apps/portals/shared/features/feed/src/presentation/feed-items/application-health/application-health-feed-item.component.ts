@@ -1,10 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { IFeedItemComponent } from '../../models/feed-item.interface';
 import { ContentFeedItemComponent } from '@ui/content-feed';
-import { StatusBannerComponent } from '@ui/status-banner';
-import { ServiceStatusItemComponent, ServiceStatus } from '@ui/service-status-item';
-import { NoticesSectionComponent, Notice } from '@ui/notices-section';
+import { StatusBannerComponent, ServiceStatusItemComponent, NoticesSectionComponent } from '@apps/portals/shared/features/health-status';
 import { NgFor } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationHealthFeedItemDto } from '@domains/feed';
@@ -17,8 +14,6 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
 
 @Component({
   selector: APPLICATION_HEALTH_FEED_ITEM_SELECTOR,
-  templateUrl: './application-health-feed-item.component.html',
-  styleUrl: './application-health-feed-item.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -30,37 +25,59 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
     RouterLink,
     TuiButton,
     TuiIcon,
-  ]
+  ],
+  template: `
+    <content-feed-item
+      icon="@tui.heart-pulse"
+      [item]="item">
+      <div class="item-content" content>
+        <health-status-banner
+          [status]="item.overallStatus"
+          [message]="item.statusMessage"
+          [timestamp]="item.timestamp">
+        </health-status-banner>
+        
+        <health-service-status-item
+          *ngFor="let service of item.services"
+          [service]="service">
+        </health-service-status-item>
+        
+        <health-notices-section
+          [notices]="noticesList"
+          [showEmptyState]="true">
+        </health-notices-section>
+        
+        <a
+          class="health-cta" 
+          tuiButton 
+          size="s" 
+          appearance="primary"
+          [routerLink]="item.appLink">
+            <tui-icon icon="@tui.external-link"/>
+            View Full Health Status
+        </a>
+      </div>
+      <div footer>
+        <ng-content></ng-content>
+      </div>
+    </content-feed-item>
+  `,
+  styles: [`
+    .item-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .health-cta {
+      margin-top: 1rem;
+    }
+  `]
 })
-export class ApplicationHealthFeedItemComponent implements IFeedItemComponent {
+export class ApplicationHealthFeedItemComponent {
   @Input() item!: ApplicationHealthFeedItemVM;
 
-  getApplicationSlug(): string {
-    return this.item.appSlug;
-  }
-
-  getApplicationHealthLink(): string[] {
-    return ['/app', this.getApplicationSlug(), 'health'];
-  }
-
-  getOverallStatus(): 'operational' | 'degraded' | 'outage' {
-    return this.item.overallStatus;
-  }
-
-  getStatusMessage(): string {
-    return this.item.statusMessage;
-  }
-
-  getCurrentTimestamp(): Date {
-    return this.item.timestamp;
-  }
-
-  getServices(): ServiceStatus[] {
-    return this.item.services;
-  }
-
-  getNotices(): Notice[] {
-    // Convert the DTO notices to the UI component expected format
+  get noticesList() {
     return this.item.notices.map(notice => ({
       id: `notice-${Date.now()}-${Math.random()}`,
       date: notice.timestamp || new Date(),

@@ -1,0 +1,9 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  tui-icon {
+    font-size: 0.875rem;
+  }
+}

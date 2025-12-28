@@ -12,5 +12,5 @@ import { TuiAvatar, TuiBadgedContent } from "@taiga-ui/kit";
 })
 export class MyProfileAvatarComponent {
 
-  public readonly avatarPath = input<string>();
+  public readonly avatarPath = input<string | null>(null);
 }

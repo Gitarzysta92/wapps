@@ -1,6 +1,5 @@
 import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { SmartSearchInputContainerComponent } from '@portals/shared/features/smart-search';
 import { StickyElementDirective, OutOfViewportChange } from '@ui/misc';
@@ -20,7 +19,6 @@ import { TuiIcon } from '@taiga-ui/core';
 })
 export class HeaderPartialComponent {
   public readonly state = inject(GlobalStateService);
-  public readonly navigation = inject(NavigationService).config;
   
   public isChatBannerCollapsed = true;
 

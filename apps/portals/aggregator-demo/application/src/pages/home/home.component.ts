@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { CommonModule, NgIf } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
 import {
@@ -31,6 +31,7 @@ import {
   DiscussionTopicFeedItemVM,
   ArticleHighlightFeedItemVM
 } from '@portals/shared/features/feed';
+import { mapAttributionToVM } from '@portals/shared/features/attribution';
 import { HomePageStateService } from "./home-page-state.service";
 import { TempFeedProviderService } from "./temp-feed-provider.service";
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
@@ -41,7 +42,6 @@ import { ApplicationDevLogFeedItemComponent } from '@portals/shared/features/fee
 import { SuiteTeaserFeedItemComponent } from '@portals/shared/features/feed';
 import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed';
 import { FeedContainerComponent } from "@portals/shared/features/feed";
-import { DiscussionComponent } from '@portals/shared/features/discussion';
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
 import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
@@ -82,8 +82,6 @@ type RegisteredFeedItem = Array<
     TuiDropdown,
     TuiBadgedContent,
     FeedContainerComponent,
-    NgIf,
-    DiscussionComponent,
   ],
   providers: [
     SearchMockDataService,
@@ -97,7 +95,6 @@ type RegisteredFeedItem = Array<
         ok: true,
         value: {
           items: (FEED_ITEM_EXAMPLES as RegisteredFeedItem).map(i => {
-    
             switch (i.type) {
               case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
                 i.appLink = buildRoutePath(NAVIGATION.applicationHealth.path, { appSlug: i.appSlug });
@@ -115,13 +112,15 @@ type RegisteredFeedItem = Array<
                 break;
               case APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR:
                 i.appLink = buildRoutePath(NAVIGATION.applicationDevLog.path, { appSlug: i.appSlug });
+                if (i.attribution) {
+                  i.attribution = mapAttributionToVM(i.attribution) as any;
+                }
                 break;
               case SUITE_TEASER_FEED_ITEM_SELECTOR:
                 i.suiteLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: i.suiteTitle.toLowerCase().replace(/\s+/g, '-') });
                 break;
               case DISCUSSION_TOPIC_FEED_ITEM_SELECTOR:
-                i.appLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
-                i.topicLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
+                i.topicLink = buildRoutePath(NAVIGATION.applicationDiscussion.path, { appSlug: i.appSlug, discussionSlug: i.discussionSlug });
                 break;
               case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR: {
                 // Extract slug from title or use a default pattern
@@ -237,6 +236,6 @@ export class HomePageComponent {
     reviews: NAVIGATION.applicationReviews,
     health: NAVIGATION.applicationHealth,
     devlog: NAVIGATION.applicationDevLog,
-    topic: NAVIGATION.applicationTopic
+    topic: NAVIGATION.applicationDiscussion
   }
 }

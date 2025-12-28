@@ -1,0 +1,73 @@
+@use '@taiga-ui/core/styles/taiga-ui-local' as *;
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+[data-alignment="end"] :host {
+  justify-content: flex-end;
+  
+  .nav-label {
+    order: 1;
+  }
+  
+  .nav-icon {
+    order: 2;
+    margin-left: $space-3;
+  }
+}
+
+[data-alignment="start"] :host {
+  justify-content: flex-start;
+  
+  .nav-icon {
+    order: 1;
+    margin-right: $space-3;
+  }
+  
+  .nav-label {
+    order: 2;
+  }
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  display: flex;
+  gap: $space-1;
+  align-items: center;
+}
+
+.nav-count {
+  opacity: 0.7;
+}
+
+[data-alignment="end"] :host(.nav-item--skeleton) {
+  justify-content: flex-end;
+  
+  .nav-label {
+    order: 1;
+  }
+  
+  .nav-icon {
+    order: 2;
+  }
+}
+
+[data-alignment="start"] :host(.nav-item--skeleton) {
+  justify-content: flex-start;
+  
+  .nav-icon {
+    order: 1;
+  }
+  
+  .nav-label {
+    order: 2;
+  }
+}

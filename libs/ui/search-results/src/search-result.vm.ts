@@ -20,7 +20,7 @@ export type SearchResultEntryVM = {
   type: string;
   name: string;
   description: string;
-  coverImageUrl: string;
+  coverImageUrl: { url: string; alt: string };
   link: string;
   // Application specific
   rating?: number;

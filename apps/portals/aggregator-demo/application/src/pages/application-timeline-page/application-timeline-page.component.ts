@@ -79,8 +79,7 @@ type RegisteredFeedItem = Array<
                     i.suiteLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: i.suiteTitle.toLowerCase().replace(/\s+/g, '-') });
                     break;
                   case DISCUSSION_TOPIC_FEED_ITEM_SELECTOR:
-                    i.appLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
-                    i.topicLink = buildRoutePath(NAVIGATION.applicationTopic.path, { appSlug: i.appSlug, topicSlug: i.topicSlug });
+                    i.topicLink = buildRoutePath(NAVIGATION.applicationDiscussion.path, { appSlug: i.appSlug, discussionSlug: i.discussionSlug });
                     break;
                   case ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR: {
                     // Extract slug from title or use a default pattern

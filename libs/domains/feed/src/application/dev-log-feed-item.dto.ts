@@ -1,4 +1,5 @@
 import { FeedItemDto } from "./feed-item.dto";
+import { ContentAttributionDto } from "@domains/publication/attribution";
 
 export type ApplicationDevLogFeedItem = {
   appSlug: string;
@@ -11,4 +12,5 @@ export type ApplicationDevLogFeedItem = {
     type: unknown;
   }>;
   type: unknown;
+  attribution?: ContentAttributionDto;
 } & FeedItemDto;

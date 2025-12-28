@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { TuiTitle } from '@taiga-ui/core';
-import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
-import { TuiAvatar } from '@taiga-ui/kit';
-import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
-import { map } from 'rxjs';
+import { TuiHeader } from '@taiga-ui/layout';
+import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
+import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
+import { PageHeaderComponent, PageTitleComponent, PageTitleSkeletonComponent } from '@ui/layout';
+import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 
 @Component({
   selector: 'my-profile-page',
@@ -12,26 +14,21 @@ import { map } from 'rxjs';
   styleUrl: 'my-profile-page.component.scss',
   standalone: true,
   imports: [
-    AsyncPipe,
-    TuiTitle,
-    TuiCardLarge,
-    TuiHeader,
-    TuiAvatar,
+    ProfileBadgesComponent,
+    PageHeaderComponent,
+    BreadcrumbsComponent,
+    PageTitleSkeletonComponent,
+    PageTitleComponent,
   ]
 })
 export class MyProfilePageComponent {
-  private readonly myProfileStateProvider = inject(MY_PROFILE_STATE_PROVIDER);
 
-  protected readonly profile$ = this.myProfileStateProvider.myProfile$.pipe(
-    map(state => state.data)
-  );
+  public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
 
-  protected readonly isLoading$ = this.myProfileStateProvider.myProfile$.pipe(
-    map(state => state.isLoading)
-  );
+  private readonly myProfileStateProvider = inject(MY_PROFILE_VIEW_STATE_PROVIDER);
 
-  protected readonly isError$ = this.myProfileStateProvider.myProfile$.pipe(
-    map(state => state.isError)
-  );
+  public readonly profile = computed(() => this.myProfileStateProvider.state().data);
+  public readonly isLoading = this.myProfileStateProvider.isLoading;
+  public readonly isError = this.myProfileStateProvider.isError;
 }
 

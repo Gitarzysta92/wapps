@@ -1,0 +1,50 @@
+.status-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  
+  &.status-operational {
+    background: #10b981;
+    border: 2px solid #059669;
+    color: #ffffff;
+  }
+  
+  &.status-degraded {
+    background: #e3f2fd;
+    border: 2px solid #007bff;
+    color: #007bff;
+  }
+  
+  &.status-outage {
+    background: #fce4ec;
+    border: 2px solid #374151;
+    color: #374151;
+  }
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.status-text {
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.status-timestamp {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+
+
+

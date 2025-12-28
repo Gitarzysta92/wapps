@@ -1,4 +1,4 @@
-<section class="section__breadcrumbs">
+ <section class="section__breadcrumbs">
   @let breadcrumbs = breadcrumbs$ | async;
   <ui-breadcrumbs [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
 </section>
@@ -7,49 +7,35 @@
   <filters-bar></filters-bar>
 </section>
 
-<section class="section__separator"></section>
-
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
   @for (group of resultsData.groups; track group.type) {
+    @let label = getGroupLabel(group.type);
+    <ui-titled-separator 
+      [text]="label.value" 
+      [icon]="label.icon">
+    </ui-titled-separator>
     <section
-      badged-content
+      commonSection
       class="section__results" 
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
-      <div class="group-header" slot="top-badge">
-        @let label = getGroupLabel(group.type);
-        <tui-chip 
-          size="s"
-          appearance="section-primary"
-          [iconStart]="label.icon">
-          {{ label.value }}
-        </tui-chip>
-        <!-- <button 
-          tuiButton 
-          appearance="primary" 
-          size="xs">
-            Show all results ({{ group.entries.length }}) 
-            <tui-icon icon="@tui.chevron-right"></tui-icon>
-        </button> -->
-      </div>
-      <div class="items-grid">
-        @for (entry of group.entries; track entry.name) {
-          @switch (group.type) {
-            @case (DiscoverySearchResultType.Article) {
-              <ng-container *ngTemplateOutlet="articleTile; context: { entry }"></ng-container>
-            }
-            @case (DiscoverySearchResultType.Application) {
-              <ng-container *ngTemplateOutlet="applicationTile; context: { entry }"></ng-container>
-            }
-            @case (DiscoverySearchResultType.Suite) {
-              <ng-container *ngTemplateOutlet="suiteTile; context: { entry }"></ng-container>
-            }
+      @for (entry of group.entries; track entry.name) {
+        @switch (group.type) {
+          @case (DiscoverySearchResultType.Article) {
+            <ng-container *ngTemplateOutlet="articleEntry; context: { entry }"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Application) {
+            <ng-container *ngTemplateOutlet="applicationEntry; context: { entry }"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Suite) {
+            <ng-container *ngTemplateOutlet="suiteEntry; context: { entry }"></ng-container>
           }
         }
-      </div>
+      }
       <button
         class="show-all-results-button"
+        slot="footer"
         tuiButton 
         appearance="primary" 
         size="s">
@@ -61,146 +47,125 @@
 }
 @else {
   @for (groupType of [
+    DiscoverySearchResultType.Article,
     DiscoverySearchResultType.Suite, 
-    DiscoverySearchResultType.Article, 
-    DiscoverySearchResultType.Application
   ]; track groupType) {
-    <section class="section__results">
-      <div class="group-header">
-        <h3 [tuiSkeleton]="true" style="width: 100px; height: 25px;"></h3>
-        <button tuiButton size="xs" [tuiSkeleton]="true" style="width: 100px; height: 25px;"></button>
-      </div>
-      <div class="items-grid">
-        @for (entry of [1, 2, 3]; track entry) {
-          @switch (groupType) {
-            @case (DiscoverySearchResultType.Article) {
-              <article-result-tile-skeleton class="item-card-skeleton"></article-result-tile-skeleton>
-            }
-            @case (DiscoverySearchResultType.Application) {
-              <application-result-tile-skeleton class="item-card-skeleton"></application-result-tile-skeleton>
-            }
-            @case (DiscoverySearchResultType.Suite) {
-              <suite-result-tile-skeleton class="item-card-skeleton"></suite-result-tile-skeleton>
-            }
+    <ui-titled-separator text="Loading"></ui-titled-separator>
+    <section 
+      class="section__results" 
+      commonSection>
+      @for (entry of [1, 2, 3]; track entry) {
+        @switch (groupType) {
+          @case (DiscoverySearchResultType.Article) {
+            <ng-container *ngTemplateOutlet="articleEntrySkeleton;"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Application) {
+            <ng-container *ngTemplateOutlet="applicationEntrySkeleton;"></ng-container>
+          }
+          @case (DiscoverySearchResultType.Suite) {
+            <ng-container *ngTemplateOutlet="suiteEntrySkeleton;"></ng-container>
           }
         }
-      </div>
+      }
     </section>
   }
 }
 
-<ng-template #articleTile let-entry="entry">
+<ng-template #articleEntry let-entry="entry">
   @let vm = toArticleVM(entry);
-  <article-result-tile
-    class="item-card blank" 
-    [item]="vm">
-    <div slot="top-bar">
-      <button
-        tuiButton
-        iconStart="@tui.heart"
-        size="s"
-        appearance="primary"
-        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveArticle(entry)">
-      </button>
-    </div>
-    <tui-chip 
-      size="xs" 
-      [iconStart]="'@tui.badge-check'"
-      slot="user-badges"
-      appearance="primary-soft">
-      verified
-    </tui-chip>
-    <tui-chip 
-      size="xs" 
-      [iconStart]="'@tui.rocket'" 
-      slot="user-badges"
-      appearance="premium-soft">
-      premium
-    </tui-chip>
-  </article-result-tile>
+  <ui-elevated-card class="item-card">
+    <ui-cover-image [image]="vm.coverImageUrl" slot="backdrop"/>
+    <ui-medium-card>
+      <ui-card-header slot="header">
+        <h3 uiMediumTitle>{{ vm.title }}</h3>
+        <article-rating [readonly]="true" slot="right-side" [rating]="vm.rating"/>
+      </ui-card-header>
+      <ui-tags [tags]="vm.tags" slot="tags"></ui-tags>
+      <ui-excerpt [excerpt]="vm.excerpt" slot="excerpt"></ui-excerpt>
+      <article-author-info [author]="vm.author" slot="author">
+        <profile-badges [badges]="vm.authorBadges" slot="badges"></profile-badges>
+      </article-author-info>
+    </ui-medium-card>
+  </ui-elevated-card>
 </ng-template>
 
-<ng-template #applicationTile let-entry="entry">
+
+<ng-template #articleEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-card-skeleton>
+      <ui-medium-title-skeleton slot="header"/>
+      <ui-tags-skeleton slot="tags"/>
+      <ui-excerpt-skeleton slot="excerpt"/>
+      <article-author-info-skeleton slot="author"/>
+    </ui-medium-card-skeleton>
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+
+
+
+<ng-template #applicationEntry let-entry="entry">
   @let vm = toApplicationVM(entry);
-  <application-result-tile
-    class="item-card"
-    [item]="toApplicationVM(entry)">
-    <div slot="top-bar">
-      <button
-        tuiButton
-        iconStart="@tui.heart"
-        size="s"
-        appearance="primary"
-        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveApplication(entry)">
-      </button>
-    </div>
-    <div slot="bottom-bar">
-      <tui-chip size="xs" appearance="action-soft">
-        <discussion-indicator
-          [commentsCount]="entry.commentsNumber"
-          (click)="$event.preventDefault(); $event.stopPropagation()">
-        </discussion-indicator>
-      </tui-chip>
-    </div>
-    <div slot="footer">
-      @if (vm.topReview) {
-        <top-review
-          class="top-comment"
-          [review]="vm.topReview">
-          @for (badge of vm.topReview.authorBadges; track badge) {
-            <tui-chip
-              slot="author-info"
-              size="xs"
-              [iconStart]="badge.icon"
-              [appearance]="badge.appearance">
-              {{ badge.name }}
-            </tui-chip>
-          }
-        </top-review>
-      }
-    </div>
-  </application-result-tile>
+  <ui-medium-card class="item-card">
+    <ui-card-header slot="header">
+      <app-avatar slot="left-side" [size]="'xl'" [avatar]="vm.avatarUrl"/>
+      <h3 uiMediumTitle>
+        {{ vm.title }}
+        <app-rating [readonly]="true" [rating]="vm.rating"/>
+      </h3>
+      <ui-tags [tags]="vm.tags"></ui-tags>
+      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
+    </ui-card-header>
+    <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
+    <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
+    @if (vm.topReview) {
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
+      </top-review-card>
+    }
+  </ui-medium-card>
 </ng-template>
 
-<ng-template #suiteTile let-entry="entry">
+
+<ng-template #applicationEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-title-skeleton slot="header"/>
+    <ui-tags-skeleton/>
+    <ui-excerpt-skeleton/>
+    <article-author-info-skeleton/>
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+
+
+<ng-template #suiteEntry let-entry="entry">
   @let vm = toSuiteVM(entry);
-  <suite-result-tile
-    routerLink=""
-    class="item-card"
-    [item]="vm">
-    <div slot="top-bar">
-      <button
-        tuiButton
-        iconStart="@tui.heart"
-        size="s"
-        appearance="primary"
-        (click)="$event.preventDefault(); $event.stopPropagation(); onSaveSuite(entry)">
-      </button>
-    </div>
-    <div slot="bottom-bar">
-      <tui-chip size="xs" appearance="action-soft">
-        <discussion-indicator
-          [commentsCount]="entry.commentsNumber"
-          (click)="$event.preventDefault(); $event.stopPropagation()">
-        </discussion-indicator>
-      </tui-chip>
-    </div>
-    <div slot="footer">
-      @if (vm.topComment) {
-        <top-comment
-          class="top-comment"
-          [comment]="vm.topComment">
-          @for (badge of vm.topComment.authorBadges; track badge) {
-            <tui-chip
-              slot="author-info"
-              size="xs"
-              [iconStart]="badge.icon"
-              [appearance]="badge.appearance">
-              {{ badge.name }}
-            </tui-chip>
-          }
-        </top-comment>
-      }
-    </div>
-  </suite-result-tile>
+  <ui-medium-card class="item-card">
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle>
+        {{ vm.title }}
+        <app-rating [readonly]="true" [rating]="vm.rating"/>
+      </h3>
+      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
+    </ui-card-header>
+    <ui-tags [tags]="vm.tags"></ui-tags>
+    <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>
+    <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
+    <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
+    @if (vm.topReview) {
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
+      </top-review-card>
+    }
+  </ui-medium-card>
+</ng-template>
+
+
+<ng-template #suiteEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-title-skeleton slot="header"/>
+    <ui-tags-skeleton/>
+    <ui-excerpt-skeleton/>
+    <article-author-info-skeleton/>
+  </ui-elevated-card-skeleton>
 </ng-template>

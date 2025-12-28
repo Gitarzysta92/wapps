@@ -1,27 +1,38 @@
-<div class="my-profile-page">
+
+<ui-page-header class="page-header">
+  <ui-breadcrumbs
+    class="breadcrumbs"
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+
+  @if (isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      <span>{{ profile().name }}</span>
+      <profile-badges [badges]="profile().badges"></profile-badges>
+    </h1>
+  }
+
+</ui-page-header>
+
+
+@if (isError()) {
+  <p>Error loading profile. Please try again.</p>
+}
+
+<section class="discussion-content-section">
+
+</section>
+
+
+<!-- <div class="my-profile-page">
   <div class="my-profile-page__container">
-    <div class="my-profile-page__header">
-      <h1 class="my-profile-page__title">My Profile</h1>
-      <p class="my-profile-page__subtitle">Manage your personal information</p>
-    </div>
-
-    @if (isLoading$ | async) {
-      <div class="my-profile-page__loading">
-        <p>Loading profile...</p>
-      </div>
-    }
-
-    @if (isError$ | async) {
-      <div class="my-profile-page__error">
-        <p>Error loading profile. Please try again.</p>
-      </div>
-    }
 
     @if (profile$ | async; as profile) {
       <div class="my-profile-page__content">
         <div 
-          tuiCardLarge
-          tuiAppearance="floating"
           class="my-profile-page__card"
         >
           <header tuiHeader class="my-profile-page__card-header">
@@ -29,14 +40,6 @@
           </header>
 
           <div class="my-profile-page__profile-info">
-            <div class="my-profile-page__avatar-section">
-              <tui-avatar
-                [src]="profile.avatarUrl"
-                size="xl"
-                class="my-profile-page__avatar"
-              />
-            </div>
-
             <div class="my-profile-page__details">
               <div class="my-profile-page__field">
                 <label class="my-profile-page__label">Name</label>
@@ -53,5 +56,6 @@
       </div>
     }
   </div>
-</div>
+</div> -->
+
 

@@ -1,17 +1,183 @@
 import { 
   ApplicationDevLogFeedItem, 
   ApplicationTeaserFeedItemDto, 
-  ApplicationHealthFeedItemDto, 
+  ApplicationHealthFeedItemDto,
+  ApplicationHealthStatusCode,
+  NoticeType,
   ApplicationReviewFeedItem, 
   ArticleHighlightFeedItem, 
   DiscussionTopicFeedItem, 
   SuiteTeaserFeedItem 
 } from "@domains/feed";
+import { AttributionType, ContentNature } from "@domains/publication/attribution";
 import { CATEGORY_DICTIONARY } from "./categories";
 import { TAG_DICTIONARY } from "./tags";
+import { SAMPLE_DISCUSSION } from "./discussions";
 
 
 export const FEED_ITEM_EXAMPLES = [
+
+  // Discussion Topic Feed Item Example
+  {
+    id: 'discussion-topic-1',
+    type: 'discussion-topic-feed-item',
+    title: 'Quick task',
+    subtitle: 'Join the conversation about collaboration tools',
+    timestamp: new Date('2024-01-11T12:45:00Z'),
+    appSlug: 'quick-task',
+    discussionSlug: SAMPLE_DISCUSSION.slug,
+    discussionData: {
+      topic: 'Collaboration Tools',
+      messages: [
+        {
+          id: 1,
+          author: 'John Developer',
+          content: 'What are your favorite features for collaboration?',
+          timestamp: new Date('2024-01-11T12:00:00Z')
+        }
+      ]
+    },
+    participantsCount: 12,
+    viewsCount: 70,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as DiscussionTopicFeedItem,
+
+  // Article Highlight Feed Item Example
+  {
+    id: 'article-highlight-1',
+    type: 'article-highlight-feed-item',
+    title: 'Boost Your Productivity With Quick Task',
+    subtitle: 'Explore top tips to work smarter in 2024.',
+    timestamp: new Date('2024-01-10T08:00:00Z'),
+    publicationDate: new Date('2024-01-10T08:00:00Z').getTime(),
+    excerpt: 'Explore top tips to work smarter in 2024 and discover how Quick Task revolutionizes the way you organize your workflow like a true professional. In today\'s fast-paced digital landscape, productivity isn\'t just about working harder—it\'s about working intelligently with the right tools at your fingertips. This comprehensive guide delves deep into cutting-edge productivity methodologies, time management strategies, and organizational frameworks that have been proven to boost efficiency by up to 300%. Learn how to leverage Quick Task\'s powerful features including intelligent task prioritization, collaborative workspaces, automated workflow optimization, and real-time progress tracking to transform your daily operations. We\'ll walk you through advanced techniques for breaking down complex projects into manageable chunks, setting SMART goals that actually get accomplished, eliminating productivity killers like context switching and decision fatigue, and creating sustainable habits that lead to long-term success. Whether you\'re a solo entrepreneur managing multiple ventures, a team leader coordinating distributed teams across time zones, or a busy professional juggling competing priorities, this article provides actionable insights and practical strategies you can implement immediately to reclaim your time, reduce stress, and achieve more in less time while maintaining a healthy work-life balance.',
+    author: 'Sarah Novak',
+    tags: [
+      { slug: 'productivity', name: 'Productivity' },
+      { slug: 'time-management', name: 'Time Management' },
+      { slug: 'organizational-framework', name: 'Organizational Framework' },
+      { slug: 'productivity-methods', name: 'Productivity Methods' },
+      { slug: 'productivity-tools', name: 'Productivity Tools' },
+    ],
+    category: 'Productivity',
+    coverImage: {
+      url: 'https://picsum.photos/seed/article1/400/200',
+      alt: 'Boost Your Productivity With Quick Task'
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task',
+      disclosureRequired: true,
+    }
+  } as ArticleHighlightFeedItem,
+  
+  // Application Review Feed Item Example
+  {
+    id: 'app-review-1',
+    type: 'application-review-feed-item',
+    title: 'Jane Doe reviewed Photo Snap',
+    subtitle: 'Absolutely love the new AI features!',
+    timestamp: new Date('2024-01-16T16:10:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    rating: 4.8,
+    reviewerName: 'Jane Doe',
+    reviewerAvatar: '',
+    reviewerRole: 'Photographer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
+    testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
+    appName: 'Photo Snap',
+    reviewDate: '2024-01-16T16:10:00Z',
+    helpfulCount: 42,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as ApplicationReviewFeedItem,
+
+  // Application Health Feed Item Example
+  {
+    id: 'app-health-1',
+    type: 'application-health-feed-item',
+    title: 'Photo Snap',
+    subtitle: 'All systems operational',
+    timestamp: new Date('2024-01-14T09:15:00Z'),
+    appSlug: 'photo-snap',
+    appId: '1',
+    overallStatus: ApplicationHealthStatusCode.Operational,
+    statusMessage: 'All systems operational',
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
+    ],
+    notice: {
+      type: NoticeType.Info,
+      title: 'Service Update',
+      message: 'Scheduled maintenance completed',
+      timestamp: new Date('2024-01-13T23:00:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
+  } as ApplicationHealthFeedItemDto,
 
   // Application Teaser Feed Item Example
   {
@@ -35,6 +201,16 @@ export const FEED_ITEM_EXAMPLES = [
     },
     aggregatedScore: 4.7,
     reviewsCount: 350,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   // Application Dev Log Feed Item Example
@@ -54,98 +230,19 @@ export const FEED_ITEM_EXAMPLES = [
       { description: 'Implemented batch processing', type: 'feature' },
       { description: 'Fixed memory leak in large file processing', type: 'bugfix' },
       { description: 'Improved user interface responsiveness', type: 'improvement' }
-    ]
-  } as ApplicationDevLogFeedItem,
-
-
-
-  // Application Health Feed Item Example
-  {
-    id: 'app-health-1',
-    type: 'application-health-feed-item',
-    title: 'Photo Snap Health Status',
-    subtitle: 'All systems operational',
-    timestamp: new Date('2024-01-14T09:15:00Z'),
-    appSlug: 'photo-snap',
-    appId: '1',
-    overallStatus: 'operational',
-    statusMessage: 'All systems operational',
-    services: [
-      {
-        name: 'Photo Snap',
-        status: 'operational',
-        uptime: 99,
-        hasInfo: true
-      }
     ],
-    notices: [
-      {
-        type: 'info',
-        title: 'Service Update',
-        message: 'Scheduled maintenance completed',
-        timestamp: new Date('2024-01-13T23:00:00Z')
-      }
-    ]
-  } as ApplicationHealthFeedItemDto,
-
-  // Application Review Feed Item Example
-  {
-    id: 'app-review-1',
-    type: 'application-review-feed-item',
-    title: 'Jane Doe reviewed Photo Snap',
-    subtitle: 'Absolutely love the new AI features!',
-    timestamp: new Date('2024-01-16T16:10:00Z'),
-    appSlug: 'photo-snap',
-    appId: '1',
-    rating: 4.8,
-    reviewerName: 'Jane Doe',
-    reviewerRole: 'Photographer',
-    reviewerAvatar: '',
-    testimonial: 'Absolutely love the new AI features! It makes editing photos so much faster and easier.',
-    appName: 'Photo Snap',
-    reviewDate: '2024-01-16T16:10:00Z',
-    helpfulCount: 42
-  } as ApplicationReviewFeedItem,
-
-  // Article Highlight Feed Item Example
-  {
-    id: 'article-highlight-1',
-    type: 'article-highlight-feed-item',
-    title: 'Boost Your Productivity With Quick Task',
-    subtitle: 'Explore top tips to work smarter in 2024.',
-    timestamp: new Date('2024-01-10T08:00:00Z'),
-    excerpt: 'Explore top tips to work smarter in 2024 and how Quick Task helps you organize your workflow like a pro.',
-    author: 'Sarah Novak',
-    category: 'Productivity',
-    coverImage: {
-      url: 'https://picsum.photos/seed/article1/400/200',
-      alt: 'Boost Your Productivity With Quick Task'
-    }
-  } as ArticleHighlightFeedItem,
-
-  // Discussion Topic Feed Item Example
-  {
-    id: 'discussion-topic-1',
-    type: 'discussion-topic-feed-item',
-    title: 'Discussion: Collaboration Tools',
-    subtitle: 'Join the conversation about collaboration tools',
-    timestamp: new Date('2024-01-11T12:45:00Z'),
-    appSlug: 'quick-task',
-    topicSlug: 'collaboration-tools',
-    discussionData: {
-      topic: 'Collaboration Tools',
-      messages: [
-        {
-          id: 1,
-          author: 'John Developer',
-          content: 'What are your favorite features for collaboration?',
-          timestamp: new Date('2024-01-11T12:00:00Z')
-        }
-      ]
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
     },
-    participantsCount: 12,
-    viewsCount: 70
-  } as DiscussionTopicFeedItem,
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
+    }
+  } as ApplicationDevLogFeedItem,
 
 ];
 
@@ -170,7 +267,18 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented batch processing', type: 'feature' },
       { description: 'Fixed memory leak in large file processing', type: 'bugfix' },
       { description: 'Improved user interface responsiveness', type: 'improvement' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4 Turbo',
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -188,7 +296,18 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Added real-time team collaboration', type: 'feature' },
       { description: 'Improved task synchronization', type: 'improvement' },
       { description: 'Fixed notification delivery issues', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task Inc.',
+      disclosureRequired: true,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -207,7 +326,18 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Added kill switch functionality', type: 'feature' },
       { description: 'Improved connection speed by 40%', type: 'performance' },
       { description: 'Fixed DNS leak vulnerability', type: 'security' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude + Human Review',
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -226,7 +356,17 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented smart goal tracking', type: 'feature' },
       { description: 'Enhanced data visualization', type: 'improvement' },
       { description: 'Fixed sync issues with bank accounts', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as ApplicationDevLogFeedItem,
 
   {
@@ -245,7 +385,19 @@ export const RANDOMIZED_FEED_ITEMS = [
       { description: 'Implemented sleep tracking', type: 'feature' },
       { description: 'Enhanced progress analytics', type: 'improvement' },
       { description: 'Fixed audio playback issues', type: 'bugfix' }
-    ]
+    ],
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ADVERTISEMENT,
+      sponsor: 'Wellness Corp',
+      disclosureRequired: true,
+      generatedBy: 'Marketing AI',
+    }
   } as ApplicationDevLogFeedItem,
 
   // Application Teaser Items (5 items)
@@ -270,6 +422,16 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -292,7 +454,18 @@ export const RANDOMIZED_FEED_ITEMS = [
       alt: 'Shop Ease logo'
     },
     aggregatedScore: 4.6,
-    reviewsCount: 1234,
+    reviewsCount: 1234, 
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude + Editorial Team',
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -316,6 +489,17 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -339,6 +523,17 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Quick Task Inc.',
+      disclosureRequired: true,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   {
@@ -362,6 +557,16 @@ export const RANDOMIZED_FEED_ITEMS = [
     },
     aggregatedScore: 4.6,
     reviewsCount: 1234,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as ApplicationTeaserFeedItemDto,
 
   // Application Health Items (5 items)
@@ -373,29 +578,56 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-16T09:00:00Z'),
     appSlug: 'photo-snap',
     appId: '43301C93-54B4-4EC4-80C9-9C169E0768BC',
-    overallStatus: 'operational',
+    overallStatus: ApplicationHealthStatusCode.Operational,
     statusMessage: 'All systems are running smoothly with optimal performance metrics.',
-    services: [
-      {
-        name: 'Photo Processing API',
-        uptime: 99.9,
-        status: 'operational',
-        hasInfo: true
-      },
-      {
-        name: 'AI Enhancement Service',
-        uptime: 99.8,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Storage Service',
-        uptime: 100,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
     ],
-    notices: []
+    notice: {
+      type: NoticeType.Info,
+      title: 'System Status',
+      message: 'All systems operational',
+      timestamp: new Date('2024-01-16T09:00:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -406,36 +638,56 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-15T11:30:00Z'),
     appSlug: 'quick-task',
     appId: '8EEDE19C-22A3-4916-8C44-9F8CC391A7CC',
-    overallStatus: 'degraded',
+    overallStatus: ApplicationHealthStatusCode.Degraded,
     statusMessage: 'Some services are experiencing minor performance issues.',
-    services: [
-      {
-        name: 'Task Management API',
-        uptime: 98.5,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Real-time Sync',
-        uptime: 97.2,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Notification Service',
-        uptime: 99.1,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'warning',
-        title: 'Performance Notice',
-        message: 'Response times are slightly elevated due to high load',
-        timestamp: new Date('2024-01-16T08:30:00Z')
-      }
-    ]
+    notice: {
+      type: NoticeType.Warning,
+      title: 'Performance Notice',
+      message: 'Response times are slightly elevated due to high load',
+      timestamp: new Date('2024-01-16T08:30:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -446,36 +698,56 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-14T14:15:00Z'),
     appSlug: 'speedy-vpn',
     appId: '65F52175-30CE-412A-8B52-FAD6F7C7D933',
-    overallStatus: 'outage',
+    overallStatus: ApplicationHealthStatusCode.Outage,
     statusMessage: 'Critical infrastructure issues detected, emergency response activated.',
-    services: [
-      {
-        name: 'VPN Gateway',
-        uptime: 85.2,
-        status: 'outage',
-        hasInfo: true
-      },
-      {
-        name: 'Authentication Service',
-        uptime: 92.1,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'DNS Resolution',
-        uptime: 88.7,
-        status: 'outage',
-        hasInfo: true
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Outage, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'error',
-        title: 'Service Disruption',
-        message: 'Critical infrastructure issues detected, emergency response activated',
-        timestamp: new Date('2024-01-15T10:00:00Z')
-      }
-    ]
+    notice: {
+      type: NoticeType.Error,
+      title: 'Service Disruption',
+      message: 'Critical infrastructure issues detected, emergency response activated',
+      timestamp: new Date('2024-01-15T10:00:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -486,29 +758,56 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-13T16:45:00Z'),
     appSlug: 'budget-buddy',
     appId: '3AE9FCCA-A167-4DB0-BF86-4FAA9E44C6FC',
-    overallStatus: 'operational',
+    overallStatus: ApplicationHealthStatusCode.Operational,
     statusMessage: 'All systems are running smoothly with optimal performance metrics.',
-    services: [
-      {
-        name: 'Budget Analytics API',
-        uptime: 99.95,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Bank Integration',
-        uptime: 99.8,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'AI Insights Engine',
-        uptime: 99.9,
-        status: 'operational',
-        hasInfo: false
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() }
     ],
-    notices: []
+    notice: {
+      type: NoticeType.Info,
+      title: 'System Status',
+      message: 'All systems operational',
+      timestamp: new Date('2024-01-13T16:45:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationHealthFeedItemDto,
 
   {
@@ -519,36 +818,56 @@ export const RANDOMIZED_FEED_ITEMS = [
     timestamp: new Date('2024-01-12T12:20:00Z'),
     appSlug: 'mindful',
     appId: '2952422F-E640-4FBE-8F0A-C9506F6E8CFD',
-    overallStatus: 'degraded',
+    overallStatus: ApplicationHealthStatusCode.Degraded,
     statusMessage: 'Some services are experiencing minor performance issues.',
-    services: [
-      {
-        name: 'Meditation Streaming',
-        uptime: 98.8,
-        status: 'degraded',
-        hasInfo: true
-      },
-      {
-        name: 'Progress Tracking',
-        uptime: 99.2,
-        status: 'operational',
-        hasInfo: false
-      },
-      {
-        name: 'Sleep Analytics',
-        uptime: 97.9,
-        status: 'degraded',
-        hasInfo: true
-      }
+    statusesHistory: [
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 29 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 28 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 27 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 26 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 25 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 24 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 23 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 22 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 21 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 20 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 19 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 18 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 17 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 16 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 15 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 14 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 13 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 12 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 11 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 10 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 9 * 86400000 },
+      { status: ApplicationHealthStatusCode.Operational, timestamp: Date.now() - 8 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 7 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 6 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 5 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 4 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 3 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 2 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() - 1 * 86400000 },
+      { status: ApplicationHealthStatusCode.Degraded, timestamp: Date.now() }
     ],
-    notices: [
-      {
-        type: 'info',
-        title: 'Maintenance Notice',
-        message: 'Scheduled maintenance completed, monitoring system performance',
-        timestamp: new Date('2024-01-14T09:00:00Z')
-      }
-    ]
+    notice: {
+      type: NoticeType.Info,
+      title: 'Maintenance Notice',
+      message: 'Scheduled maintenance completed, monitoring system performance',
+      timestamp: new Date('2024-01-14T09:00:00Z')
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationHealthFeedItemDto,
 
   // Application Review Items (5 items)
@@ -564,10 +883,24 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'John Developer',
     reviewerAvatar: '',
     reviewerRole: 'Senior Developer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+      { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
+    ],
     testimonial: 'This application has transformed our workflow. Highly recommended for teams looking to improve productivity.',
     appName: 'Photo Snap',
     reviewDate: '2024-01-16T10:00:00Z',
-    helpfulCount: 87
+    helpfulCount: 87,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -582,10 +915,24 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Sarah Engineer',
     reviewerAvatar: '',
     reviewerRole: 'Software Engineer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
+      { id: 'expert', name: 'expert', icon: '@tui.star', color: 'warning-soft' }
+    ],
     testimonial: 'Excellent tool with intuitive interface. The features are exactly what we needed for our project.',
     appName: 'Quick Task',
     reviewDate: '2024-01-14T15:30:00Z',
-    helpfulCount: 124
+    helpfulCount: 124,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -600,10 +947,23 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Mike Tester',
     reviewerAvatar: '',
     reviewerRole: 'QA Engineer',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
     testimonial: 'Outstanding performance and reliability. Our team has been using it for months without any issues.',
     appName: 'Speedy VPN',
     reviewDate: '2024-01-11T12:45:00Z',
-    helpfulCount: 156
+    helpfulCount: 156,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -618,10 +978,24 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'Emily Architect',
     reviewerAvatar: '',
     reviewerRole: 'Solution Architect',
+    reviewerBadges: [
+      { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' },
+      { id: 'expert', name: 'expert', icon: '@tui.star', color: 'warning-soft' }
+    ],
     testimonial: 'Great application with solid documentation. Easy to integrate into our existing infrastructure.',
     appName: 'Budget Buddy',
     reviewDate: '2024-01-08T09:20:00Z',
-    helpfulCount: 92
+    helpfulCount: 92,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationReviewFeedItem,
 
   {
@@ -636,10 +1010,23 @@ export const RANDOMIZED_FEED_ITEMS = [
     reviewerName: 'David Admin',
     reviewerAvatar: '',
     reviewerRole: 'System Administrator',
+    reviewerBadges: [
+      { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' }
+    ],
     testimonial: 'Impressed with the support and regular updates. The development team really cares about user feedback.',
     appName: 'Mindful',
     reviewDate: '2024-01-05T16:10:00Z',
-    helpfulCount: 203
+    helpfulCount: 203,
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as ApplicationReviewFeedItem,
 
   // Article Highlight Items (3 items)
@@ -649,12 +1036,23 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'Building Scalable Applications with Modern Architecture',
     subtitle: 'Learn how to design applications that can handle millions of users with modern architectural patterns and best practices.',
     timestamp: new Date('2024-01-15T14:00:00Z'),
+    publicationDate: new Date('2024-01-15T14:00:00Z').getTime(),
     excerpt: 'Learn how to design applications that can handle millions of users with modern architectural patterns and best practices.',
     author: 'Tech Editorial Team',
     category: 'Development',
     coverImage: {
       url: 'https://picsum.photos/seed/architecture/400/200',
       alt: 'Building Scalable Applications'
+    },
+    commentsNumber: 10,
+    voting: {
+      upvotes: 10,
+      downvotes: 3,
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ArticleHighlightFeedItem,
 
@@ -664,12 +1062,19 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'The Future of Web Development: Trends to Watch',
     subtitle: 'Explore the latest trends in web development including AI integration, edge computing, and new frameworks.',
     timestamp: new Date('2024-01-12T11:30:00Z'),
+    publicationDate: new Date('2024-01-12T11:30:00Z').getTime(),
     excerpt: 'Explore the latest trends in web development including AI integration, edge computing, and new frameworks.',
     author: 'Web Development Team',
     category: 'Technology',
     coverImage: {
       url: 'https://picsum.photos/seed/webdev/400/200',
       alt: 'Future of Web Development'
+    },
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: true,
+      generatedBy: 'GPT-4 + Human Editorial',
     }
   } as ArticleHighlightFeedItem,
 
@@ -679,12 +1084,18 @@ export const RANDOMIZED_FEED_ITEMS = [
     title: 'Security Best Practices for Modern Applications',
     subtitle: 'Essential security measures every developer should implement to protect user data and prevent vulnerabilities.',
     timestamp: new Date('2024-01-09T16:45:00Z'),
+    publicationDate: new Date('2024-01-09T16:45:00Z').getTime(),
     excerpt: 'Essential security measures every developer should implement to protect user data and prevent vulnerabilities.',
     author: 'Security Team',
     category: 'Security',
     coverImage: {
       url: 'https://picsum.photos/seed/security/400/200',
       alt: 'Security Best Practices'
+    },
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
     }
   } as ArticleHighlightFeedItem,
 
@@ -696,7 +1107,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     subtitle: 'Join the conversation about how to optimize application performance?',
     timestamp: new Date('2024-01-16T13:00:00Z'),
     appSlug: 'photo-snap',
-    topicSlug: 'how-to-optimize-application-performance',
+    discussionSlug: 'how-to-optimize-application-performance',
     discussionData: {
       topic: 'How to optimize application performance?',
       messages: [
@@ -715,7 +1126,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 23,
-    viewsCount: 156
+    viewsCount: 156,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   {
@@ -725,7 +1141,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     subtitle: 'Join the conversation about best practices for user authentication',
     timestamp: new Date('2024-01-13T10:30:00Z'),
     appSlug: 'speedy-vpn',
-    topicSlug: 'best-practices-for-user-authentication',
+    discussionSlug: 'best-practices-for-user-authentication',
     discussionData: {
       topic: 'Best practices for user authentication',
       messages: [
@@ -744,7 +1160,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 18,
-    viewsCount: 89
+    viewsCount: 89,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   {
@@ -754,7 +1175,7 @@ export const RANDOMIZED_FEED_ITEMS = [
     subtitle: 'Join the conversation about database design patterns discussion',
     timestamp: new Date('2024-01-10T14:20:00Z'),
     appSlug: 'budget-buddy',
-    topicSlug: 'database-design-patterns-discussion',
+    discussionSlug: 'database-design-patterns-discussion',
     discussionData: {
       topic: 'Database design patterns discussion',
       messages: [
@@ -773,7 +1194,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       ]
     },
     participantsCount: 31,
-    viewsCount: 203
+    viewsCount: 203,
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.ORGANIC,
+      disclosureRequired: false,
+    }
   } as DiscussionTopicFeedItem,
 
   // Suite Teaser Items (4 items)
@@ -790,7 +1216,12 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Time Tracker', logo: 'https://picsum.photos/seed/tt/64/64', description: 'Time tracking and analytics' },
       { name: 'Team Chat', logo: 'https://picsum.photos/seed/tc/64/64', description: 'Collaborative communication' }
     ],
-    category: 'Productivity'
+    category: 'Productivity',
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -806,7 +1237,13 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Git Manager', logo: 'https://picsum.photos/seed/gm/64/64', description: 'Git repository management' },
       { name: 'API Tester', logo: 'https://picsum.photos/seed/at/64/64', description: 'API testing and debugging' }
     ],
-    category: 'Development'
+    category: 'Development',
+    attribution: {
+      attributionType: AttributionType.HYBRID,
+      contentNature: ContentNature.PROMOTED,
+      disclosureRequired: true,
+      generatedBy: 'Claude AI + Editorial Review',
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -822,7 +1259,14 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Photo Editor', logo: 'https://picsum.photos/seed/pe/64/64', description: 'Professional photo editing' },
       { name: 'UI Prototyper', logo: 'https://picsum.photos/seed/up/64/64', description: 'Interactive UI prototyping' }
     ],
-    category: 'Design'
+    category: 'Design',
+    attribution: {
+      attributionType: AttributionType.AI_GENERATED,
+      contentNature: ContentNature.SPONSORED,
+      sponsor: 'Design Tools Inc.',
+      disclosureRequired: true,
+      generatedBy: 'GPT-4',
+    }
   } as SuiteTeaserFeedItem,
 
   {
@@ -838,6 +1282,11 @@ export const RANDOMIZED_FEED_ITEMS = [
       { name: 'Chart Builder', logo: 'https://picsum.photos/seed/cb/64/64', description: 'Interactive chart creation' },
       { name: 'Report Generator', logo: 'https://picsum.photos/seed/rg/64/64', description: 'Automated report generation' }
     ],
-    category: 'Analytics'
+    category: 'Analytics',
+    attribution: {
+      attributionType: AttributionType.HUMAN_CREATED,
+      contentNature: ContentNature.EDITORIAL,
+      disclosureRequired: false,
+    }
   } as SuiteTeaserFeedItem
 ];

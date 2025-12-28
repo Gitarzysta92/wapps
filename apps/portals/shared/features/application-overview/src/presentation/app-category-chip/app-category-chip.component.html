@@ -1,0 +1,18 @@
+@if (category().link) {
+  <a 
+    [routerLink]="category().link"
+    tuiChip
+    [size]="size()"
+    [appearance]="appearance()"
+    class="app-category-chip">
+    {{ category().name }}
+  </a>
+} @else {
+  <tui-chip 
+    [size]="size()"
+    [appearance]="appearance()"
+    class="app-category-chip">
+    {{ category().name }}
+  </tui-chip>
+}
+

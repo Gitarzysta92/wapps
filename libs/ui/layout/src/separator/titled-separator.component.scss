@@ -1,0 +1,27 @@
+@use 'ui/design-system/src/styles' as *;
+
+.titled-separator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.separator-line {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--tui-border-normal);
+  margin: 0;
+}
+
+.separator-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  color: var(--tui-border-normal);
+  tui-icon {
+    font-size: $font-size-sm;
+  }
+}
+

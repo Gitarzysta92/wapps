@@ -19,13 +19,14 @@
   display: flex;
   align-items: center;
   gap: $space-2;
+  font-size: $font-size-xs;
 }
 
 .breadcrumbs__link {
   display: flex;
   align-items: center;
   gap: $space-1;
-  color: $color-text-muted;
+  color: var(--tui-text-secondary);
   text-decoration: none;
   transition: color $duration-200 $ease-in-out;
 
@@ -39,7 +40,7 @@
   display: flex;
   align-items: center;
   gap: $space-1;
-  color: $color-text-strong;
+  color: var(--tui-text-primary);
   font-weight: $font-weight-medium;
 }
 
@@ -49,8 +50,9 @@
 }
 
 .breadcrumbs__separator {
-  color: $color-text-muted;
+  color: var(--tui-text-secondary);
   flex-shrink: 0;
+  font-size: $size-icon-xs;
 }
 
 .breadcrumbs__label {

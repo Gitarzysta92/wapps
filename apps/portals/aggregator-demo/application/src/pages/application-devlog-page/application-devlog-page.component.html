@@ -1,57 +1,133 @@
-<main class="page-layout">
-  <section class="log-section">
-    <div class="section-content">
-      <h1 class="section-title">
-        <tui-icon icon="@tui.git-commit" class="title-icon"></tui-icon>
-        Development Log
-      </h1>
-      <div class="dev-log-container">
-        <tui-chip 
-          class="change-type-chip" 
-          [appearance]="getChangeType() === 'major' ? 'error' : getChangeType() === 'minor' ? 'primary' : 'neutral'"
-          size="s">
-          {{ getChangeTypeLabel() }}
-        </tui-chip>
+<ui-page-header class="page-header">
+  @if (app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs
+      class="breadcrumbs"
+      slot="top-bar"
+      [breadcrumbs]="breadcrumbData()">
+    </ui-breadcrumbs>
+  }
 
-        <div class="dev-log-columns">
-          <!-- First Column: Version and Description -->
-          <div class="version-column">
-            <div class="app-name">{{ (app$ | async)?.name }}</div>
-            <div class="version-header">
-              <tui-icon icon="@tui.tag" class="version-icon" />
-              <h3 class="version-number">Version {{ getVersion() }}</h3>
-            </div>
-            <div class="release-date">
-              <tui-icon icon="@tui.calendar" class="date-icon" />
-              <span>{{ getReleaseDate() }}</span>
-            </div>
-            <p class="version-description">{{ getDescription() }}</p>
-          </div>
+  @if (app.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title">
+      <tui-icon icon="@tui.git-commit" />
+      Development Log
+    </h1>
+  }
 
-          <!-- Second Column: Changes List -->
-          <div class="changes-column">
-            <h4 class="changes-title">
-              <tui-icon icon="@tui.list" />
-              What's New
-            </h4>
-            <ul class="changes-list">
-              <li *ngFor="let change of getChanges()" class="change-item">
-                <tui-icon icon="@tui.check" class="check-icon" />
-                <span>{{ change }}</span>
-              </li>
-            </ul>
-          </div>
+  @if (app.isLoading()) {
+    <ui-page-meta-skeleton slot="meta" />
+  } @else {
+    <ui-page-meta slot="meta">
+      <span class="meta-app-name">{{ app.value()?.name }}</span>
+    </ui-page-meta>
+  }
+</ui-page-header>
+
+<!-- Latest Release Section -->
+<section class="changelog-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-indigo"></span>
+    Latest Release
+  </h2>
+
+  @if (changelog.isLoading()) {
+    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+  }
+  @if (latestEntry(); as entry) {
+    <ui-medium-card class="changelog-card" tuiAppearance="card-elevated">
+      <tui-chip 
+        slot="top-edge"
+        size="s" 
+        [appearance]="getChangeTypeAppearance(entry.type)">
+        {{ getChangeTypeLabel(entry.type) }}
+      </tui-chip>
+
+      <div class="changelog-header">
+        <div class="version-info">
+          <tui-badge class="version-badge" size="l">
+            <tui-icon icon="@tui.tag" />
+            v{{ entry.version }}
+          </tui-badge>
+          <span class="release-date">
+            <tui-icon icon="@tui.calendar" />
+            {{ entry.releaseDate | date:'mediumDate' }}
+          </span>
         </div>
-
-        <button
-          class="dev-log-cta" 
-          tuiButton 
-          size="s" 
-          appearance="primary">
-            <tui-icon icon="@tui.external-link"/>
-            View Full Changelog
-        </button>
+        <p class="changelog-description">{{ entry.description }}</p>
       </div>
-    </div>
-  </section>
-</main>
+
+      <ui-medium-card class="changes-card">
+        <tui-chip size="s" appearance="action-soft" slot="top-edge">
+          <tui-icon icon="@tui.package-plus" /> What's New
+        </tui-chip>
+        <ul class="changes-list">
+          @for (change of entry.changes; track change.description) {
+            <li class="change-item">
+              <tui-icon icon="@tui.check" class="change-icon" />
+              <span>{{ change.description }}</span>
+            </li>
+          }
+        </ul>
+      </ui-medium-card>
+
+      <button
+        slot="footer"
+        tuiButton 
+        size="s" 
+        appearance="primary">
+        <tui-icon icon="@tui.external-link"/>
+        View Full Changelog
+      </button>
+    </ui-medium-card>
+  }
+</section>
+
+<!-- Previous Releases Section -->
+<section class="changelog-section">
+  <h2 class="section-title">
+    <span tuiAppearance="accent-bar-warm"></span>
+    Previous Releases
+  </h2>
+
+  <div class="changelog-grid">
+    @if (changelog.isLoading()) {
+      @for (i of [1, 2]; track i) {
+        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      }
+    } @else {
+      @for (entry of previousEntries(); track entry.version) {
+        <ui-medium-card class="changelog-card changelog-card--compact" tuiAppearance="card-elevated">
+          <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
+          
+          <div class="changelog-header">
+            <div class="version-info">
+              <tui-badge size="m">v{{ entry.version }}</tui-badge>
+              <tui-chip 
+                size="xs" 
+                [appearance]="getChangeTypeAppearance(entry.type)">
+                {{ getChangeTypeLabel(entry.type) }}
+              </tui-chip>
+            </div>
+            <span class="release-date release-date--small">
+              <tui-icon icon="@tui.calendar" />
+              {{ entry.releaseDate | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <p class="changelog-description changelog-description--compact">{{ entry.description }}</p>
+
+          <div slot="footer" class="changelog-footer">
+            <span class="changes-count">
+              <tui-icon icon="@tui.list" />
+              {{ entry.changes.length }} changes
+            </span>
+          </div>
+        </ui-medium-card>
+      }
+    }
+  </div>
+</section>

@@ -1,10 +1,37 @@
 @use 'ui/design-system/src/styles' as *;
 
 
-
 :host {
-  display: block;
   position: relative;
+
+
+  .main {
+    display: grid;
+    grid-template-columns: $sidebar-base-width 1fr $sidebar-base-width;
+    grid-template-areas: "left main right";
+    @include main-width-v2();
+    @media #{$layout-breakpoint-md} {
+      grid-template-areas: "main main main";
+    }
+  
+    @media #{$layout-breakpoint-sm} {
+      grid-template-areas: "main main main";
+    }
+  }
+
+  &:not(:has(.sidebar.right)) .main {
+    grid-template-areas: "left main main";
+  }
+
+  &:not(:has(.sidebar.left)) .main {
+    grid-template-areas: "main main right";
+  }
+
+  .main:not(:has(.sidebar.right)), .main:not(:has(.sidebar.left)) {
+    @media #{$layout-breakpoint-md} {
+      grid-template-areas: "main main main";
+    }
+  }
 }
 
 .shell-background {
@@ -35,14 +62,41 @@
     display: block;
   }
 }
+.container {
+  &.main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0 $space-4;
+    router-outlet {
+      display: contents;
+    }
+
+    ::ng-deep > *:not(router-outlet) {
+      grid-area: main;
+    }
+  }
+}
+
+.top-bar {
+  position:fixed;
+  top: 0;
+  width: 100%;
+}
+
+.bottom-bar {
+  position:fixed;
+  bottom: 0;
+  width: 100%;
+}
+
 
 .sidebar {
   position: fixed;
   top: 0;
   height: 100vh;
   z-index: $z-sticky;
-  @include sidebar-width();
   display: flex;
+  @include sidebar-width();
 
   .sidebar-inner {
     width: $size-content-xxs;
@@ -65,6 +119,7 @@
 
   &.left {
     left: 0;
+    grid-area: left;
     justify-content: end;
     .sidebar-inner {
       right: 0;
@@ -90,6 +145,7 @@
 
   &.right {
     right: 0;
+    grid-area: right;
     justify-content: start;
     .sidebar-inner {
       left: 0;
@@ -124,23 +180,3 @@
   }
 }
 
-.container {
-  &.main {
-    position: relative;
-    margin: 0 auto;
-    @include main-width();
-    padding: 0 $space-4;
-  }
-}
-
-.top-bar {
-  position:fixed;
-  top: 0;
-  width: 100%;
-}
-
-.bottom-bar {
-  position:fixed;
-  bottom: 0;
-  width: 100%;
-}

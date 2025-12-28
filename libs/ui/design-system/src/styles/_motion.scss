@@ -16,6 +16,16 @@ $duration-500: 500ms;
   transition-timing-function: $timing;
 }
 
+// Skeleton animation
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;

@@ -1,38 +1,38 @@
-import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Type, inject, EventEmitter, InjectionToken, Signal } from '@angular/core';
 import { RouterOutlet, RouterModule, ActivatedRoute, Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
-import { filter, startWith, map, distinctUntilChanged, Observable, combineLatest } from 'rxjs';
+import { filter, startWith, map, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { SafeComponentOutletDirective } from '@ui/misc';
 import { TuiIcon } from '@taiga-ui/core';
 
 export interface IAppShellRouteData {
-  topBar: {
+  topBar?: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
-  } | null;
-  header: {
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  };
+  header?: {
     component: Type<IAppShellHeaderComponent>,
-    inputs?: Record<symbol, unknown>
-  } | null;
-  leftSidebar: {
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  };
+  leftSidebar?: {
     component: Type<IAppShellSidebarComponent>,
-    inputs?: Record<symbol, unknown>
-  } | null
-  rightSidebar: {
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  }
+  rightSidebar?: {
     component: Type<IAppShellSidebarComponent>,
-    inputs?: Record<symbol, unknown>
-  } | null;
-  footer: {
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  };
+  footer?: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
-  } | null;
-  bottomBar: {
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  };
+  bottomBar?: {
     component: Type<unknown>,
-    inputs?: Record<symbol, unknown>
-  } | null;
+    inputs?: Record<symbol, unknown | Signal<unknown>>
+  };
 }
 
 export interface IAppShellHeaderComponent {
@@ -41,7 +41,7 @@ export interface IAppShellHeaderComponent {
 }
 
 export interface IAppShellSidebarComponent {
-  isExpanded: boolean;
+  isExpanded: Signal<boolean> | boolean;
 }
 
 export interface IAppShellState {
@@ -83,82 +83,89 @@ export class AppShellComponent {
     //INFO: startWith is used to ensure that the data is initialized, 
     //router outlet events don't emit a value on init
     startWith(null),
-    map(() =>  this._route.firstChild?.snapshot as ActivatedRouteSnapshot)
+    map(() => {
+      let current: ActivatedRouteSnapshot | null = this._route.snapshot;
+      const aggregatedData: Record<string, unknown> = {};
+      const aggregatedParams: Record<string, string> = {};
+      while (current) {
+        Object.assign(aggregatedData, current.data);
+        Object.assign(aggregatedParams, current.params);
+        current = current.firstChild;
+      }
+      return { data: aggregatedData, params: aggregatedParams };
+    })
   );
 
   public readonly topBarComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
-      component: (s.data as IAppShellRouteData).topBar?.component,
+      component: (s.data as IAppShellRouteData)?.topBar?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).topBar?.inputs ?? {}),
-        ...s.params
+        ...((s.data as IAppShellRouteData) ?.topBar?.inputs ?? {}),
+        ...s.params,
+        ...s.data
       }
     }))
   );
 
   public readonly headerComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
-      component: (s.data as IAppShellRouteData).header?.component,
+      component: (s.data as IAppShellRouteData)?.header?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).header?.inputs ?? {}),
+        ...((s.data as IAppShellRouteData)  .header?.inputs ?? {}),
         ...s.params
       }
     }))
   );
 
   public readonly leftSidebarComponent$ = combineLatest([
-    this._routeData.pipe(
-      distinctUntilChanged((p, c) => p.component === c.component)
-    ),
+    this._routeData,
     this._shellStateProvider.isLeftSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
-    component: (s.data as IAppShellRouteData).leftSidebar?.component,
+    component: (s.data as IAppShellRouteData)?.leftSidebar?.component,
     inputs: {
       // TODO: remove unnecessary fallback to empty object creation
-      ...((s.data as IAppShellRouteData).leftSidebar?.inputs ?? {}),
+      ...((s.data as IAppShellRouteData)?.leftSidebar?.inputs ?? {}),
       isExpanded,
-      ...s.params
+      ...s.params,
+      ...s.data
     }
   })))
 
   public readonly isLeftSidebarExpanded$ = this._shellStateProvider.isLeftSidebarExpanded$;
 
   public readonly rightSidebarComponent$ = combineLatest([
-    this._routeData.pipe(
-      distinctUntilChanged((p, c) => p.component === c.component)
-    ),
+    this._routeData,
     this._shellStateProvider.isRightSidebarExpanded$
   ]).pipe(map(([s, isExpanded]) => ({
-    component: (s.data as IAppShellRouteData).rightSidebar?.component,
+    component: (s.data as IAppShellRouteData)?.rightSidebar?.component,
     inputs: {
-      ...((s.data as IAppShellRouteData).rightSidebar?.inputs ?? {}),
+      ...((s.data as IAppShellRouteData)?.rightSidebar?.inputs ?? {}),
       isExpanded,
-      ...s.params
+      ...s.params,
+      ...s.data
     }
   })))
 
   public readonly isRightSidebarExpanded$ = this._shellStateProvider.isRightSidebarExpanded$;
 
   public readonly footerComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
-      component: (s.data as IAppShellRouteData).footer?.component,
+      component: (s.data as IAppShellRouteData)?.footer?.component,
       inputs: {
-        ...(s.data as IAppShellRouteData).footer?.inputs,
-        ...s.params
+        ...((s.data as IAppShellRouteData)?.footer?.inputs ?? {}),
+        ...s.params,
+        ...s.data
       }
     }))
   );
 
   public readonly bottomBarComponent$ = this._routeData.pipe(
-    distinctUntilChanged((p, c) => p.component === c.component),
     map(s => ({
-      component: (s.data as IAppShellRouteData).bottomBar?.component,
+      component: (s.data as IAppShellRouteData)?.bottomBar?.component,
       inputs: {
-        ...((s.data as IAppShellRouteData).bottomBar?.inputs ?? {}),
-        ...s.params
+        ...((s.data as IAppShellRouteData)?.bottomBar?.inputs ?? {}),
+        ...s.params,
+        ...s.data
       }
     }))
   );

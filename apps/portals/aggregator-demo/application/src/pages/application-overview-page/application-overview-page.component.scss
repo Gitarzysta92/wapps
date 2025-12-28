@@ -1,143 +1,78 @@
 @use 'ui/design-system/src/styles' as *;
 
-.section-title {
-  @include text($font-size-xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-3;
+.page-header {
+  margin-top: $space-20;
 }
 
-.header-section {
-  margin-top: $space-10;
-  .cover-image {
-    display: block;
-    height: 300px;
-  }
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
 }
 
-.basic-info-section {
-  margin-top: $space-4;
-  display: flex;
-  flex-direction: row;
-  .category-column, .tag-column {
-    div {
-      padding: $space-2;
-      width: 100%;
-      font-weight: $font-weight-bold;
-    }
-  }
-  .app-tag, .app-category {
-    margin-right: $space-2;
-  }
-  .app-category {
-    margin-right: $space-4;
-  }
-}
-
-.quick-access-section {
-  margin-top: $space-10;
-}
-
-.overview-section {
-  margin-top: $space-10;
-}
-
-
-.preview-section {
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: $space-4;
-    margin-top: $space-4;
-  }
-}
-
-.latest-reviews-section {
-  margin-top: $space-10;
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: $space-4;
-    margin-top: $space-4;
-  }
-}
-
-.health-status-section {
-  margin-top: $space-10;
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: $space-4;
-    margin-top: $space-4;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
-}
-
-// App Header Section
-.app-header-section {
-  padding: $space-6 0;
-}
-
-.app-header {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.app-icon-title {
-  display: flex;
-  gap: $space-4;
-  align-items: flex-start;
-}
-
-.app-icon {
-  flex-shrink: 0;
-}
-
-.app-info {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.app-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
-  margin: 0;
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
 }
 
 .developer-link {
-  @include text($font-size-md, $font-weight-medium);
-  color: $color-primary-600;
-  text-decoration: none;
-  
-  &:hover {
-    text-decoration: underline;
-  }
+  color: var(--tui-primary);
+  font-size: $font-size-sm;
+}
+
+// ============================================================================
+// Hero Section
+// ============================================================================
+
+.hero-section {
+  position: relative;
+  margin-top: $space-6;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.cover-image {
+  display: block;
+  height: 250px;
+  mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+}
+
+.cover-skeleton {
+  height: 250px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-lg;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+}
+
+.hero-content {
+  position: relative;
+  margin-top: -$space-16;
+  padding: 0 $space-6;
+  display: flex;
+  align-items: flex-end;
+  gap: $space-6;
+}
+
+.app-avatar {
+  flex-shrink: 0;
+  border: 4px solid var(--tui-background-elevation-1);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+}
+
+.avatar-skeleton {
+  width: 96px;
+  height: 96px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-lg;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding-bottom: $space-2;
 }
 
 .rating-section {
@@ -146,24 +81,23 @@
   gap: $space-2;
 }
 
-.rating-stars {
-  display: flex;
-  gap: $space-0_5;
-}
-
-.star-icon {
-  color: $color-accent-500;
-  font-size: $font-size-sm;
-}
-
 .rating-text {
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-text-strong;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
 }
 
 .reviews-count {
-  @include text($font-size-sm);
-  color: $color-text-muted;
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+}
+
+.rating-skeleton {
+  width: 200px;
+  height: 24px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-sm;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
 }
 
 .app-labels {
@@ -172,114 +106,73 @@
   gap: $space-2;
 }
 
-.label {
-  font-size: $font-size-xs;
-}
+// ============================================================================
+// Metadata Section
+// ============================================================================
 
-.app-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-}
-
-.install-btn {
-  min-width: 120px;
-}
-
-.action-btn {
-  min-width: 100px;
-}
-
-.action-icon {
-  margin-right: $space-1;
-}
-
-
-.section-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-
-
-.title-icon {
-  font-size: $font-size-2xl;
-  color: $color-primary-600;
-}
-
-
-
-.overview-info {
+.metadata-section {
+  margin-top: $space-8;
+  padding: $space-6;
+  background: var(--elevated-background);
+  border: 1px solid var(--elevated-background-border);
+  border-radius: $radius-md;
   display: flex;
   flex-direction: column;
   gap: $space-4;
 }
 
-.app-category {
-  width: fit-content;
-}
-
-.app-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.app-description {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  margin: 0;
-}
-
-.app-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $space-2;
-}
-
-.score-container {
+.category-row,
+.tags-row {
   display: flex;
   align-items: center;
-  gap: $space-2;
-  @include text($font-size-md, $font-weight-medium);
-  color: $color-text;
+  gap: $space-3;
+  flex-wrap: wrap;
 }
 
-.score-stars {
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-secondary);
+  min-width: 80px;
+}
+
+.metadata-skeleton {
+  height: 80px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
+.quick-access-section,
+.overview-section,
+.preview-section {
+  margin-top: $space-12;
+  padding: $space-8 0;
+  border-top: 1px solid var(--tui-base-03, #{$color-border});
+}
+
+.section-title {
   display: flex;
-  gap: $space-0_5;
-  
-  .star-icon {
-    color: $color-text-muted;
-    font-size: $font-size-md;
-    
-    &.filled {
-      color: $color-accent-500;
-    }
-  }
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin-bottom: $space-6;
 }
 
-.score-value {
-  @include text($font-size-md, $font-weight-bold);
-  color: $color-text-strong;
-}
-
-.reviews-text {
-  @include text($font-size-sm);
-  color: $color-text-muted;
-}
-
-// Shortcuts Section
-.shortcuts-section {
-  padding: $space-6 0;
-}
+// ============================================================================
+// Shortcuts Grid
+// ============================================================================
 
 .shortcuts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: $space-4;
-  margin-top: $space-4;
 }
 
 .shortcut-card {
@@ -287,17 +180,17 @@
   align-items: center;
   gap: $space-3;
   padding: $space-4;
-  background: $color-bg-muted;
-  border: $border-width-thin solid $color-border;
-  border-radius: $radius-md;
   text-decoration: none;
   color: inherit;
-  transition: all $duration-200;
+  cursor: pointer;
+  @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
   
   &:hover {
-    border-color: $color-primary-600;
-    box-shadow: $shadow-md;
     transform: translateY(-2px);
+    
+    .shortcut-arrow {
+      transform: translateX(4px);
+    }
   }
 }
 
@@ -325,6 +218,11 @@
     background: rgba(#6366f1, 0.1);
     color: $color-primary-600;
   }
+  
+  &.discussions-icon {
+    background: rgba(#10b981, 0.1);
+    color: #059669;
+  }
 }
 
 .shortcut-content {
@@ -332,34 +230,54 @@
 }
 
 .shortcut-title {
-  @include text($font-size-md, $font-weight-bold);
-  color: $color-text-strong;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
   margin: 0 0 $space-0_5 0;
 }
 
 .shortcut-description {
-  @include text($font-size-sm);
-  color: $color-text-muted;
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
   margin: 0;
 }
 
 .shortcut-arrow {
   flex-shrink: 0;
-  color: $color-primary-600;
-  transition: transform $duration-200;
+  color: var(--tui-primary);
+  @include transition(transform, $duration-200, $ease-in-out);
 }
 
-.shortcut-card:hover .shortcut-arrow {
-  transform: translateX(4px);
+// ============================================================================
+// Overview Section
+// ============================================================================
+
+.app-description {
+  font-size: $font-size-md;
+  line-height: $line-height-loose;
+  color: var(--tui-text-primary);
+  margin: 0;
 }
 
+.description-skeleton {
+  height: 80px;
+  background: var(--skeleton-background, #{$color-skeleton-bg});
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
+}
+
+// ============================================================================
 // Preview Section
+// ============================================================================
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $space-4;
+}
 
 .preview-card {
   padding: $space-5;
-  background: $color-bg-muted;
-  border: $border-width-thin solid $color-border;
-  border-radius: $radius-md;
 }
 
 .preview-card-header {
@@ -370,57 +288,46 @@
 }
 
 .preview-card-title {
-  @include text($font-size-lg, $font-weight-bold);
-  color: $color-text-strong;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
   margin: 0;
   display: flex;
   align-items: center;
   gap: $space-2;
 }
 
-.review-preview {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
+// ============================================================================
+// Responsive
+// ============================================================================
 
-.review-header {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-}
-
-.reviewer-info {
-  flex: 1;
-}
-
-.reviewer-name {
-  @include text($font-size-sm, $font-weight-bold);
-  color: $color-text-strong;
-  margin-bottom: $space-0_5;
-}
-
-.reviewer-role {
-  @include text($font-size-xs);
-  color: $color-text-muted;
-}
-
-.review-rating {
-  display: flex;
-  align-items: center;
-  gap: $space-1;
-  @include text($font-size-sm, $font-weight-medium);
-  color: $color-text-strong;
-}
-
-.star-filled {
-  color: $color-accent-500;
-  font-size: $font-size-sm;
-}
-
-.review-text {
-  @include text($font-size-sm, $font-weight-regular, $line-height-loose);
-  color: $color-text;
-  margin: 0;
-  font-style: italic;
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -$space-12;
+    padding: 0 $space-4;
+  }
+  
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metadata-section {
+    padding: $space-4;
+  }
+  
+  .category-row,
+  .tags-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .label {
+    min-width: auto;
+  }
 }

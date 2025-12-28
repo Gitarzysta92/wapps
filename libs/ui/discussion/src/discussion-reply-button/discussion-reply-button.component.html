@@ -1,0 +1,13 @@
+<button
+  tuiButton
+  appearance="flat"
+  size="xs"
+  (click)="onReply()"
+  class="reply-button"
+>
+  <tui-icon icon="@tui.message-circle" />
+  <span class="reply-label">{{ label() }}</span>
+  @if (replyCount() > 0) {
+    <span class="reply-count">({{ replyCount() }})</span>
+  }
+</button>

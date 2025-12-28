@@ -1,4 +1,4 @@
-import { Routes } from "@angular/router";
+import { Routes, ActivatedRouteSnapshot } from "@angular/router";
 import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 import { AuthenticationDialogComponent } from "./dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost-password-dialog.component";
@@ -7,19 +7,28 @@ import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
-import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION } from "./navigation";
+import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION, DESKTOP_USER_MAIN_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
-import { CommonSidebarPartialComponent } from "./partials/common-sidebar/common-sidebar.component";
+import { CommonSidebarComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { CommonMobileBottomBarPartialComponent } from "./partials/common-mobile-bottom-bar/common-mobile-bottom-bar.component";
-import { ApplicationLeftSidebarPartialComponent } from "./partials/application-left-sidebar/application-left-sidebar.component";
-import { UserCommonSidebarPartialComponent } from "./partials/user-common-sidebar/user-common-sidebar.component";
+
 import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component"; 
 import { applicationsMatcher } from "./pages/applications/applications.matcher";
 import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
+import { UserAuxiliarySidebarComponent } from "./partials/user-auxiliary-sidebar/user-auxiliary-sidebar.component";
+import { UserCommonSidebarComponent } from "./partials/user-common-sidebar/user-common-sidebar.component";
+import { profileAvatarResolver } from "./resolvers/profile-avatar.resolver";
+import { breadcrumbResolver } from "./resolvers/breadcrumb.resolver";
+import { resolversFrom } from "@portals/shared/boundary/routing";
+import { sidebarResolver } from "./resolvers/sidebar.resolver";
+import { navigationResolver } from "./resolvers/navigation.resolver";
+import { provideApplicationOverviewFeature } from '@portals/shared/features/application-overview';
+import { ApplicationCommonSidebarComponent } from "./partials/application-common-sidebar/application-common-sidebar.component";
+
 
 // TODO: check if flat list approach
 // does not influence route matching performance
@@ -41,9 +50,7 @@ export const routes: Routes = [
         path: NAVIGATION.home.path,
         component: HomePageComponent,
         data: {
-          breadcrumb: [ NAVIGATION.home ],
-          header: null,
-          topBar: null,
+          breadcrumb: [NAVIGATION.home],
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: {
@@ -60,11 +67,14 @@ export const routes: Routes = [
             }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: DESKTOP_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: DESKTOP_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -84,289 +94,324 @@ export const routes: Routes = [
         } as IAppShellRouteData & IBreadcrumbRouteData,
       },
       {
-        path: NAVIGATION.application.path,
-        redirectTo: NAVIGATION.applicationOverview.path,
-        pathMatch: 'full'
-      },
-      {
-        path: `${NAVIGATION.applicationOverview.path}`,
-        loadComponent: () => import('./pages/application-overview-page/application-overview-page.component').then(m => m.ApplicationOverviewPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationOverview ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+        path: '',
+        providers: [provideApplicationOverviewFeature().providers],
+        data: {asd: 'asd'},
+        children: [
+          {
+            path: NAVIGATION.application.path,
+            redirectTo: NAVIGATION.applicationOverview.path,
+            pathMatch: 'full'
           },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: `${NAVIGATION.applicationOverview.path}`,
+            loadComponent: () => import('./pages/application-overview-page/application-overview-page.component').then(m => m.ApplicationOverviewPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [
+                NAVIGATION.home,
+                NAVIGATION.application,
+                NAVIGATION.applicationOverview
+              ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationHealth.path,
-        loadComponent: () => import('./pages/application-health-page/application-health-page.component').then(m => m.ApplicationHealthPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationHealth ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationHealth.path,
+            loadComponent: () => import('./pages/application-health-page/application-health-page.component').then(m => m.ApplicationHealthPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationHealth ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationDevLog.path,
-        loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDevLog ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationDevLog.path,
+            loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDevLog ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationReviews.path,
-        loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationReviews.path,
+            loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-            {
-        path: NAVIGATION.applicationReview.path,
-        loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews, NAVIGATION.applicationReview ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationReview.path,
+            loadComponent: () => import('./pages/application-reviews-page/application-reviews-page.component').then(m => m.ApplicationReviewsPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                secondaryNavigation: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationReviews, NAVIGATION.applicationReview ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationTopics.path,
-        loadComponent: () => import('./pages/application-discussions-page/application-discussions-page.component').then(m => m.ApplicationDiscussionsPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationDiscussions.path,
+            loadComponent: () => import('./pages/application-discussions-page/application-discussions-page.component').then(m => m.ApplicationDiscussionsPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              }),
+              breadcrumb: breadcrumbResolver([
+                NAVIGATION.home,
+                NAVIGATION.application,
+                NAVIGATION.applicationDiscussions,
+              ]),
             },
+            data: {
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationTopic.path,
-        loadComponent: () => import('./pages/application-topic-page/application-topic-page.component').then(m => m.ApplicationTopicPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTopics, NAVIGATION.applicationTopic ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          {
+            path: NAVIGATION.applicationDiscussion.path,
+            loadComponent: () => import('./pages/application-discussion-page/application-discussion-page.component').then(m => m.ApplicationDiscussionPageComponent),
+            resolve: {
+              breadcrumb: breadcrumbResolver([
+                NAVIGATION.home,
+                NAVIGATION.application,
+                NAVIGATION.applicationDiscussions,
+                NAVIGATION.applicationDiscussion
+              ]),
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
+            } as resolversFrom<IBreadcrumbRouteData>,
+            data: {
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData,
           },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+          {
+            path: NAVIGATION.applicationTimeline.path,
+            loadComponent: () => import('./pages/application-timeline-page/application-timeline-page.component').then(m => m.ApplicationTimelinePageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug') ?? '',
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
             },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTimeline ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
           },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
-      {
-        path: NAVIGATION.applicationTimeline.path,
-        loadComponent: () => import('./pages/application-timeline-page/application-timeline-page.component').then(m => m.ApplicationTimelinePageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationTimeline ],
-          header: null,
-          topBar: null,
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
-            },
-          },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
+        ]
       },
       {
         // INFO: custom matcher is used to mitigate 
@@ -376,7 +421,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
         data: {
           breadcrumb: [NAVIGATION.applications],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -385,11 +429,14 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -413,7 +460,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.suites],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -422,11 +468,14 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -460,18 +509,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.suite ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -496,18 +546,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.suites, NAVIGATION.createSuite ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -532,7 +583,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.favouriteSuites],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -541,11 +591,14 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -569,7 +622,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.articles],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -578,11 +630,14 @@ export const routes: Routes = [
             component: HeaderPartialComponent,
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -616,18 +671,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.articles, NAVIGATION.article ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -670,18 +726,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/entry-details-page/entry-details-page.component').then(m => m.EntryDetailsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.applications, NAVIGATION.registerApplication ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -714,8 +771,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.home,NAVIGATION.search ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
@@ -725,7 +780,7 @@ export const routes: Routes = [
             inputs: {}
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -749,18 +804,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.tags ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -784,18 +840,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -819,18 +876,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
         data: {
           breadcrumb: [ NAVIGATION.tags, NAVIGATION.tag, NAVIGATION.searchByTag ],
-          header: null,
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -853,13 +911,15 @@ export const routes: Routes = [
         path: NAVIGATION.categories.path,
         data: {
           breadcrumb: [ NAVIGATION.categories ],
-          header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -883,13 +943,15 @@ export const routes: Routes = [
         path: NAVIGATION.category.path,
         data: {
           breadcrumb: [ NAVIGATION.category ],
-          header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -913,13 +975,15 @@ export const routes: Routes = [
         path: NAVIGATION.searchByCategory.path,
         data: {
           breadcrumb: [ NAVIGATION.searchByCategory ],
-          header: null,
           leftSidebar: {
-            component: ApplicationLeftSidebarPartialComponent,
-            inputs: { navigation: APPLICATION_VIEW_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -955,28 +1019,18 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.myProfile.path,
-        canActivate: [AuthenticationGuard],
         loadComponent: () => import('./pages/my-profile-page/my-profile-page.component').then(m => m.MyProfilePageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
-          header: null,
-          leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
-          },
-          rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+          leftSidebar: { 
+            component: UserCommonSidebarComponent,
             inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
-            },
+              navigation: DESKTOP_USER_MAIN_NAVIGATION
+            }
           },
           footer: {
             component: FooterPartialComponent,
@@ -995,18 +1049,19 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/favorites/favorites.component').then(m => m.FavoritesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.myFavorite],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
-          header: null,
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
@@ -1031,18 +1086,57 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/my-discussions/my-discussions.component').then(m => m.MyDiscussionsPageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.myDiscussions],
-          topBar: null,
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigation: MOBILE_MAIN_NAVIGATION }
           },
-          header: null,
           leftSidebar: {
-            component: CommonSidebarPartialComponent,
-            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+            component: CommonSidebarComponent,
+            inputs: {
+              navigation: MOBILE_MAIN_NAVIGATION,
+              navigationSecondary: null
+            }
           },
           rightSidebar: {
-            component: UserCommonSidebarPartialComponent,
+            component: UserAuxiliarySidebarComponent,
+            inputs: {
+              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+            },
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
+      },
+      {
+        path: NAVIGATION.userProfile.path,
+        canActivate: [AuthenticationGuard],
+        loadComponent: () => import('./pages/profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+        resolve: {
+          leftSidebar:
+            sidebarResolver(CommonSidebarComponent, {
+              avatar: profileAvatarResolver(),
+              navigation: DESKTOP_USER_MAIN_NAVIGATION
+            })
+        },
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.myProfile],
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+
+          rightSidebar: {
+            component: UserAuxiliarySidebarComponent,
             inputs: {
               navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
               navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,

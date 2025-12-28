@@ -1,0 +1,5 @@
+<span class="reviewer-name">{{ reviewerName() }}</span>
+<ng-content slot="badges"></ng-content>
+@if (reviewDate()) {
+  <span class="review-date">{{ reviewDate() | date:'short' }}</span>
+}
