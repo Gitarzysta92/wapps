@@ -1,0 +1,94 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  border-radius: $radius-md;
+}
+
+.discussion-card {
+  position: relative;
+}
+
+.discussion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $space-3;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+  gap: $space-0_5;
+}
+
+.avatar-skeleton {
+  width: $size-avatar-sm;
+  height: $size-avatar-sm;
+  border-radius: 50%;
+}
+
+.author-name-skeleton {
+  width: 80px;
+  height: $font-size-sm;
+}
+
+.discussion-time-skeleton {
+  width: 60px;
+  height: $font-size-xs;
+}
+
+.discussion-title-skeleton {
+  width: 100%;
+  max-width: 300px;
+  height: $font-size-lg;
+  margin-bottom: $space-2;
+}
+
+.discussion-excerpt-line {
+  width: 100%;
+  height: $font-size-md;
+  margin-bottom: $space-1;
+
+  &:last-of-type {
+    width: 75%;
+    margin-bottom: $space-3;
+  }
+}
+
+.discussion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.tag-skeleton {
+  width: 60px;
+  height: 20px;
+  border-radius: $radius-sm;
+}
+
+.discussion-footer {
+  display: flex;
+  gap: $space-4;
+}
+
+.discussion-stat-skeleton {
+  width: 70px;
+  height: $font-size-xs;
+}
+
+@media (max-width: 768px) {
+  .discussion-header {
+    flex-direction: column;
+    gap: $space-2;
+  }
+}
+

@@ -37,7 +37,22 @@
 </section>
 
 
-@if (pinnedDiscussions().length > 0) {
+@if (discussions.isLoading()) {
+  <section commonSection class="pinned-discussions-section">
+    <ui-section-header slot="header">
+      <h3 uiSectionTitle slot="title">
+        <tui-icon icon="@tui.pin" />
+        Pinned Discussions
+      </h3>
+    </ui-section-header>
+    <div class="pinned-discussions" slot="content">
+      @for (item of [1, 2]; track item) {
+        <discussion-small-card-skeleton
+          class="pinned-discussion-card" />
+      }
+    </div>
+  </section>
+} @else if (pinnedDiscussions().length > 0) {
   <section commonSection class="pinned-discussions-section">
     <ui-section-header slot="header">
       <h3 uiSectionTitle slot="title">
@@ -67,12 +82,19 @@
     </h3>
   </ui-section-header>
   <div class="unpinned-discussions" slot="content">
-    @for (discussion of unpinnedDiscussions(); track discussion.id) {
-      <discussion-medium-card
-        class="unpinned-discussion-card"
-        appearance="card-elevated"
-        [data]="discussion"
-        (click)="navigateToDiscussion(discussion)" />
+    @if (discussions.isLoading()) {
+      @for (item of [1, 2, 3]; track item) {
+        <discussion-medium-card-skeleton
+          class="unpinned-discussion-card" />
+      }
+    } @else {
+      @for (discussion of unpinnedDiscussions(); track discussion.id) {
+        <discussion-medium-card
+          class="unpinned-discussion-card"
+          appearance="card-elevated"
+          [data]="discussion"
+          (click)="navigateToDiscussion(discussion)" />
+      }
     }
   </div>
 </section>

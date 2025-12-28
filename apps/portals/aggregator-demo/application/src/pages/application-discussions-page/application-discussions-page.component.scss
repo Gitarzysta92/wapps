@@ -41,6 +41,10 @@
   margin-top: $space-3;
 }
 
+.pinned-discussion-card, .unpinned-discussion-card {
+  cursor: pointer;
+}
+
 
 @media (max-width: 768px) {
   .discussions-intro {

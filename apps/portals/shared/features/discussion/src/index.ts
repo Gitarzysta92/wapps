@@ -9,3 +9,5 @@ export { DiscussionStatsBadgeComponent } from './presentation/discussion-stats-b
 export { DiscussionsStatsBadgeComponent } from './presentation/discussions-stats-badge/discussions-stats-badge.component';
 export { DiscussionSmallCardComponent } from './presentation/discussion-small-card/discussion-small-card.component';
 export { DiscussionMediumCardComponent } from './presentation/discussion-medium-card/discussion-medium-card.component';
+export { DiscussionSmallCardSkeletonComponent } from './presentation/discussion-small-card-skeleton/discussion-small-card-skeleton.component';
+export { DiscussionMediumCardSkeletonComponent } from './presentation/discussion-medium-card-skeleton/discussion-medium-card-skeleton.component';

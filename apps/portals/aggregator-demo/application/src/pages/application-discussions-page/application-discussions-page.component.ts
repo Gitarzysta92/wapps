@@ -20,7 +20,13 @@ import {
 import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS, DISCUSSION_PREVIEW_DATA } from '@portals/shared/data';
 import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
-import { DiscussionSmallCardComponent, DiscussionMediumCardComponent, DiscussionsStatsBadgeComponent } from '@portals/shared/features/discussion';
+import { 
+  DiscussionSmallCardComponent, 
+  DiscussionMediumCardComponent, 
+  DiscussionSmallCardSkeletonComponent,
+  DiscussionMediumCardSkeletonComponent,
+  DiscussionsStatsBadgeComponent 
+} from '@portals/shared/features/discussion';
 import type { DiscussionPreviewDto } from '@domains/discussion';
 import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
 
@@ -43,6 +49,8 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
     DiscussionsStatsBadgeComponent,
     DiscussionSmallCardComponent,
     DiscussionMediumCardComponent,
+    DiscussionSmallCardSkeletonComponent,
+    DiscussionMediumCardSkeletonComponent,
     CommonSectionComponent,
     SectionHeaderComponent,
     SectionTitleComponent,
