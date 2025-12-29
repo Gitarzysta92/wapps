@@ -25,6 +25,11 @@
       include_tasks: k3s/install.yml
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Create ArgoCD namespace
+      shell: kubectl apply -f {{ playbook_dir }}/../cluster/argocd/namespace.yaml
+      register: argocd_namespace
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Install ArgoCD in cluster
       shell: |
         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
