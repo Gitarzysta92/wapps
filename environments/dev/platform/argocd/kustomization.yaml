@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+resources:
+  - ../../../../platform/cluster/argocd
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: argocd.development.wapps.com
+    target:
+      kind: Ingress
+      name: argocd-ingress
+

@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: argocd.development.wapps.com
+  - host: argocd.host.placeholder  # This will be overridden by environment overlays
     http:
       paths:
       - path: /
