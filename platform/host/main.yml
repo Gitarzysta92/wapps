@@ -36,6 +36,31 @@
       register: argocd_install
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Wait for ArgoCD secrets to be created
+      shell: |
+        for i in {1..30}; do
+          if kubectl get secret argocd-secret -n argocd 2>/dev/null && \
+             kubectl get secret argocd-redis -n argocd 2>/dev/null; then
+            echo "ArgoCD secrets are ready"
+            exit 0
+          fi
+          echo "Waiting for ArgoCD secrets... ($i/30)"
+          sleep 2
+        done
+        echo "Warning: Some ArgoCD secrets may not be ready yet"
+        exit 0
+      register: argocd_secrets_wait
+      changed_when: false
+      failed_when: false
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Display ArgoCD pod status for debugging
+      shell: kubectl get pods -n argocd -o wide
+      register: argocd_pods_status
+      changed_when: false
+      failed_when: false
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Check if ArgoCD service needs patching
       shell: kubectl -n argocd get svc argocd-server -o jsonpath='{.spec.type}'
       register: argocd_svc_type
