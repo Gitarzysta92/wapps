@@ -81,6 +81,40 @@
       changed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Check if ArgoCD repository secret exists
+      shell: kubectl get secret wapps-repo-secret -n argocd 2>/dev/null || echo "NOT_FOUND"
+      register: argocd_repo_secret_check
+      changed_when: false
+      failed_when: false
+      when: 
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
+
+    - name: Create ArgoCD repository credentials secret
+      shell: |
+        kubectl create secret generic wapps-repo-secret \
+          --from-literal=type=git \
+          --from-literal=url=https://github.com/Gitarzysta92/wapps.git \
+          --from-literal=username=Gitarzysta92 \
+          --from-literal=password={{ git_token }} \
+          --namespace=argocd \
+          --dry-run=client -o yaml | kubectl apply -f -
+        kubectl label secret wapps-repo-secret -n argocd argocd.argoproj.io/secret-type=repository --overwrite
+      register: argocd_repo_secret
+      when:
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
+        - argocd_repo_secret_check.stdout == "NOT_FOUND" or argocd_repo_secret_check.rc != 0
+
+    - name: Verify ArgoCD repository secret
+      shell: kubectl get secret wapps-repo-secret -n argocd -o jsonpath='{.metadata.labels.argocd\.argoproj\.io/secret-type}'
+      register: argocd_repo_secret_verify
+      changed_when: false
+      failed_when: argocd_repo_secret_verify.stdout != 'repository'
+      when:
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
+
     - name: Map environment name to directory
       set_fact:
         env_dir: "{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% elif target_env | default('staging') == 'staging' %}dev{% else %}dev{% endif %}"
@@ -216,6 +250,7 @@
           Applications directory: {{ apps_dir }}
           Installed services:
             - ArgoCD (Cluster) - GitOps CD
+            - ArgoCD Repository Credentials - Git access for private repos
             - ArgoCD App of Apps - Application Management
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
