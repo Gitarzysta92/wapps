@@ -30,20 +30,25 @@ runs:
         curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
+      shell: bash
 
     - name: Login to ArgoCD
       run: |
         argocd login ${{ inputs.argocd-server }} --auth-token ${{ inputs.argocd-token }} --insecure
+      shell: bash
 
     - name: Update image tag in ArgoCD application
       run: |
         # Update the image tag in the deployment
         kubectl patch application ${{ inputs.app-name }} -n ${{ inputs.namespace }} --type merge -p '{"spec":{"source":{"helm":{"parameters":[{"name":"image.tag","value":"${{ inputs.image-tag }}"}]}}}}'
+      shell: bash
 
     - name: Sync ArgoCD application
       run: |
         argocd app sync ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --force
+      shell: bash
 
     - name: Wait for deployment to be ready
       run: |
         argocd app wait ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --timeout 300
+      shell: bash
