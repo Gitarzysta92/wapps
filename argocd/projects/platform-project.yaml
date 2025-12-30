@@ -6,7 +6,7 @@ metadata:
 spec:
   description: WApps Platform Infrastructure and Applications
   sourceRepos:
-    - 'https://github.com/your-org/wapps.git'
+    - 'https://github.com/Gitarzysta92/wapps.git'
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc

@@ -132,6 +132,11 @@
       register: argocd_ingress
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Apply ArgoCD AppProject (wapps-platform)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/projects/platform-project.yaml
+      register: argocd_project
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Apply ArgoCD App of Apps
       shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/app-of-apps.yaml
       register: app_of_apps
@@ -251,6 +256,7 @@
           Installed services:
             - ArgoCD (Cluster) - GitOps CD
             - ArgoCD Repository Credentials - Git access for private repos
+            - ArgoCD AppProject (wapps-platform) - Project configuration
             - ArgoCD App of Apps - Application Management
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
