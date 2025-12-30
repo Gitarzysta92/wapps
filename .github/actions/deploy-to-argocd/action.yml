@@ -46,9 +46,9 @@ runs:
 
     - name: Set kustomize image override
       run: |
-        # Use kubectl to patch the Application CR directly with kustomize image override
-        kubectl patch application ${{ inputs.app-name }} -n ${{ inputs.namespace }} --type=merge \
-          -p="{\"spec\":{\"source\":{\"kustomize\":{\"images\":[\"ghcr.io/gitarzysta92/aggregator-demo-csr=${{ inputs.image-tag }}\"]}}}}"
+        argocd app set ${{ inputs.app-name }} \
+          --kustomize-image "ghcr.io/gitarzysta92/aggregator-demo-csr=${{ inputs.image-tag }}" \
+          --grpc-web
       shell: bash
 
     - name: Sync ArgoCD application
