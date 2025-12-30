@@ -30,9 +30,13 @@ runs:
   steps:
     - name: Install ArgoCD CLI
       run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
+        if ! command -v argocd &> /dev/null; then
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd-linux-amd64
+          mkdir -p $HOME/.local/bin
+          mv argocd-linux-amd64 $HOME/.local/bin/argocd
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        fi
       shell: bash
 
     - name: Login to ArgoCD
