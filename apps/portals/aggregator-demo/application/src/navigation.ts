@@ -56,12 +56,12 @@ export const NAVIGATION = {
     icon: '@tui.message-circle',
   },
   performance: {
-    path: 'preferences',
+    path: 'me/settings/preferences',
     label: 'Preferences',
-    icon: '@tui.settings',
+    icon: '@tui.sliders',
   },
   settings: {
-    path: 'settings',
+    path: 'me/settings',
     label: 'Settings',
     icon: '@tui.settings',
   },
@@ -71,14 +71,29 @@ export const NAVIGATION = {
     icon: '@tui.bell',
   },
   settingsUser: {
-    path: 'settings/user',
+    path: 'me/settings/user',
     label: 'User settings',
     icon: '@tui.settings',
   },
   settingsProfile: {
-    path: 'settings/profile',
-    label: 'Profile settings',
-    icon: '@tui.settings',
+    path: 'me/settings/profile',
+    label: 'Profile Settings',
+    icon: '@tui.user',
+  },
+  settingsPreferences: {
+    path: 'me/settings/preferences',
+    label: 'Display & Content',
+    icon: '@tui.sliders',
+  },
+  settingsNotifications: {
+    path: 'me/settings/notifications',
+    label: 'Notifications',
+    icon: '@tui.bell',
+  },
+  settingsPrivacy: {
+    path: 'me/settings/privacy',
+    label: 'Privacy & Data',
+    icon: '@tui.shield',
   },
   suites: {
     path: 'suites',
@@ -315,4 +330,11 @@ export const FOOTER_QUATERNARY_NAVIGATION = [
   NAVIGATION.myApplications,
   NAVIGATION.claimApplicationOwnership,
   NAVIGATION.settings,
+]
+
+export const SETTINGS_NAVIGATION = [
+  NAVIGATION.settingsProfile,
+  NAVIGATION.settingsPreferences,
+  NAVIGATION.settingsNotifications,
+  NAVIGATION.settingsPrivacy,
 ]
