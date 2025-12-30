@@ -76,7 +76,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
       }
       .cover-image {
         opacity: 0.3;
-        //filter: blur(5px);
+        /* filter: blur(5px); */
       }
     `
   ],
