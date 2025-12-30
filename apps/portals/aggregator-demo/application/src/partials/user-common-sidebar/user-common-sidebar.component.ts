@@ -10,6 +10,7 @@ import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-prof
       [avatarPath]="avatarPath()"
       [isExpanded]="isExpanded()"
       [navigation]="navigation()"
+      [navigationSecondary]="navigationSecondary()"
       [alignment]="alignment()" />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +20,7 @@ import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-prof
 export class UserCommonSidebarComponent {
   public readonly isExpanded = input<boolean>(false);
   public readonly navigation = input<NavigationDeclarationDto[]>([]);
+  public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);
   public readonly alignment = input<'start' | 'end'>('end');
 
   private readonly myProfileViewState = inject(MY_PROFILE_VIEW_STATE_PROVIDER);

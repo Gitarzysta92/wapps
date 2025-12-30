@@ -1,0 +1,144 @@
+@use 'ui/design-system/src/styles' as *;
+
+.page-header {
+  margin-top: $space-20;
+}
+
+.page-description {
+  font-size: $font-size-md;
+  color: var(--tui-text-secondary);
+  margin: 0;
+}
+
+.error-section {
+  padding: $space-8;
+  text-align: center;
+  color: var(--tui-negative);
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: $radius-md;
+  margin-top: $space-8;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  margin-top: $space-8;
+  max-width: 800px;
+}
+
+.settings-card {
+  padding: $space-6;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0;
+}
+
+.section-subtitle {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+  margin: $space-1 0 0 0;
+  font-style: italic;
+}
+
+.section-icon {
+  font-size: $font-size-lg;
+  color: var(--tui-text-secondary);
+}
+
+.accent-bar {
+  width: 4px;
+  height: 1.2em;
+  border-radius: $radius-sm;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  margin-top: $space-4;
+}
+
+.setting-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: $space-4;
+  align-items: center;
+  padding: $space-4;
+  background: var(--tui-background-elevation-1);
+  border-radius: $radius-md;
+  border: 1px solid var(--tui-base-03);
+
+  @media #{$layout-breakpoint-sm} {
+    grid-template-columns: 1fr;
+    gap: $space-3;
+  }
+
+  &--master {
+    background: var(--tui-background-elevation-2);
+    border-color: var(--tui-primary);
+    border-width: 1px;
+  }
+
+  &--toggle {
+    .setting-control {
+      justify-self: end;
+
+      @media #{$layout-breakpoint-sm} {
+        justify-self: start;
+      }
+    }
+  }
+
+  &--disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.setting-label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0;
+}
+
+.setting-description {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+  margin: 0;
+  line-height: $line-height-normal;
+}
+
+.setting-control {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  @media #{$layout-breakpoint-sm} {
+    justify-content: flex-start;
+  }
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-4;
+  margin-top: $space-4;
+  padding-top: $space-6;
+  border-top: 1px solid var(--tui-base-03);
+}
+
