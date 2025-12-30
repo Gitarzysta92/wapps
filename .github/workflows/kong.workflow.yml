@@ -1,0 +1,53 @@
+name: 'Kong API Gateway - Platform Service'
+
+# Kong is a platform infrastructure service managed through ArgoCD
+# This workflow is currently disabled as Kong is deployed via GitOps
+# Changes to Kong configuration in platform/cluster/kong/ trigger automatic ArgoCD sync
+
+on:
+  workflow_dispatch: # Manual trigger only if needed for ArgoCD sync
+
+env:
+  APP_NAME: kong
+  NAMESPACE: argocd
+
+jobs:
+  sync:
+    name: 'Sync ArgoCD Application'
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set ArgoCD server URL
+        id: argocd-url
+        run: |
+          echo "server=argocd.development.wapps.com" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Sync Kong to ArgoCD
+        run: |
+          # Install ArgoCD CLI if not present
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+          fi
+          
+          # Login to ArgoCD
+          argocd login ${{ steps.argocd-url.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+          
+          # Sync the Kong application
+          argocd app sync ${{ env.APP_NAME }} --grpc-web
+          
+          # Wait for sync to complete
+          argocd app wait ${{ env.APP_NAME }} --timeout 300 --grpc-web
+        shell: bash
+
