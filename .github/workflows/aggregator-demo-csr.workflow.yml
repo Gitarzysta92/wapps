@@ -103,12 +103,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Set ArgoCD server URL
+        id: argocd-url
+        run: |
+          TARGET_ENV="${{ github.event.inputs.target_env || 'dev' }}"
+          if [ "$TARGET_ENV" = "dev" ]; then
+            ENV_NAME="development"
+          else
+            ENV_NAME="$TARGET_ENV"
+          fi
+          echo "server=argocd.${ENV_NAME}.wapps.com" >> $GITHUB_OUTPUT
+        shell: bash
+      
       - name: Deploy to ArgoCD
         uses: ./.github/actions/deploy-to-argocd
         with:
           app-name: ${{ env.APP_NAME }}
           namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ vars.ARGOCD_SERVER }}
+          argocd-server: ${{ steps.argocd-url.outputs.server }}
           argocd-token: ${{ secrets.ARGOCD_TOKEN }}
           image-tag: ${{ needs.build.outputs.image-tag }}
           environment: ${{ github.event.inputs.target_env || 'dev' }}
