@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: aggregator-ssr
-        image: ghcr.io/Gitarzysta92/aggregator-ssr:dev-latest
+        image: ghcr.io/gitarzysta92/aggregator-ssr:dev-latest
         imagePullPolicy: Always
         env:
         - name: NODE_ENV
