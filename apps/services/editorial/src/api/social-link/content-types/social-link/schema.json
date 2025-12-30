@@ -1,31 +1,26 @@
 {
+  "kind": "collectionType",
   "collectionName": "social_links",
   "info": {
-    "name": "SocialLink",
     "singularName": "social-link",
     "pluralName": "social-links",
-    "displayName": "Social link"
+    "displayName": "Social Link"
   },
   "attributes": {
-    "appListing": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::app-listing.app-listing"
-    },
     "socialId": {
       "type": "enumeration",
-      "enum": [
-        "Facebook",
-        "X",
-        "Reddit",
-        "Discord",
-        "LinkedIn",
-        "Medium"
-      ]
+      "enum": ["Facebook", "X", "Reddit", "Discord", "LinkedIn", "Medium"],
+      "required": true
     },
     "url": {
-      "type": "string"
+      "type": "string",
+      "required": true
+    },
+    "appRecord": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-record.app-record",
+      "inversedBy": "socials"
     }
-  },
-  "kind": "collectionType"
+  }
 }

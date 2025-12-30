@@ -1,29 +1,26 @@
 {
+  "kind": "collectionType",
   "collectionName": "store_links",
   "info": {
-    "name": "StoreLink",
     "singularName": "store-link",
     "pluralName": "store-links",
-    "displayName": "Store link"
+    "displayName": "Store Link"
   },
   "attributes": {
     "storeId": {
       "type": "enumeration",
-      "enum": [
-        "GooglePlay",
-        "AppleStore",
-        "AppGallery",
-        "MicrosoftStore"
-      ]
+      "enum": ["GooglePlay", "AppleStore", "AppGallery", "MicrosoftStore"],
+      "required": true
     },
     "url": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
-    "appListing": {
+    "appRecord": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::app-listing.app-listing"
+      "target": "api::app-record.app-record",
+      "inversedBy": "stores"
     }
-  },
-  "kind": "collectionType"
+  }
 }

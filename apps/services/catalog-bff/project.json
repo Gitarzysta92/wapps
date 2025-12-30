@@ -1,0 +1,58 @@
+{
+  "name": "apps.services.catalog-bff",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/catalog-bff/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:catalog", "layer:bff"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/services/catalog-bff",
+        "main": "apps/services/catalog-bff/src/main.ts",
+        "tsConfig": "apps/services/catalog-bff/tsconfig.app.json",
+        "webpackConfig": "apps/services/catalog-bff/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "apps.services.catalog-bff:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "apps.services.catalog-bff:build:development"
+        },
+        "production": {
+          "buildTarget": "apps.services.catalog-bff:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/services/catalog-bff/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

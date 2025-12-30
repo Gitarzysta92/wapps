@@ -1,27 +1,22 @@
 {
+  "kind": "collectionType",
   "collectionName": "device_associations",
   "info": {
-    "name": "DeviceAssociation",
     "singularName": "device-association",
     "pluralName": "device-associations",
-    "displayName": "Device association"
+    "displayName": "Device Association"
   },
   "attributes": {
     "deviceId": {
       "type": "enumeration",
-      "enum": [
-        "Desktop",
-        "Tablet",
-        "Phone",
-        "Smartwatch",
-        "Tv"
-      ]
+      "enum": ["Desktop", "Tablet", "Phone", "Smartwatch", "Tv"],
+      "required": true
     },
-    "appListing": {
+    "appRecord": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::app-listing.app-listing"
+      "target": "api::app-record.app-record",
+      "inversedBy": "devices"
     }
-  },
-  "kind": "collectionType"
+  }
 }

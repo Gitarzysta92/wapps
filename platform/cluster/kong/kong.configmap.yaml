@@ -13,8 +13,29 @@ data:
       
     - name: cdn-service
       url: https://your-cdn-domain.com
+
+    - name: catalog-bff-service
+      url: http://catalog-bff-service.catalog:80
       
     routes:
+    # Catalog BFF API routes (must be before generic /api route)
+    - name: catalog-api-route
+      service: catalog-bff-service
+      paths:
+      - /api/catalog
+      strip_path: false
+      plugins:
+      - name: rate-limiting
+        config:
+          minute: 60
+          hour: 1000
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: api"
+            - "X-Service: catalog-bff"
+
     # Static routes with fallback to SSR
     - name: home-route
       service: cdn-service

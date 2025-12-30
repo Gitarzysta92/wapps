@@ -1,8 +1,13 @@
 {
+  "kind": "collectionType",
   "collectionName": "monetization_associations",
-  "info": { "name": "MonetizationAssociation" },
+  "info": {
+    "singularName": "monetization-association",
+    "pluralName": "monetization-associations",
+    "displayName": "Monetization Association"
+  },
   "attributes": {
-    "monetizationId": { "type": "enumeration", "enum": ["Free", "Freemium", "Subscription", "AdBased", "OneTimePurchase", "Fees"] },
-    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" }
+    "monetizationId": { "type": "enumeration", "enum": ["Free", "Freemium", "Subscription", "AdBased", "OneTimePurchase", "Fees"], "required": true },
+    "appRecord": { "type": "relation", "relation": "manyToOne", "target": "api::app-record.app-record", "inversedBy": "monetizations" }
   }
-} 
+}

@@ -1,4 +1,5 @@
-// Listing domain TypeScript interfaces and enums
+// Editorial domain TypeScript interfaces and enums
+// Aligned with @domains/catalog types
 
 export enum Device {
   Desktop = 0,
@@ -47,37 +48,44 @@ export interface OrganizationProfileAssociation {
   organizationId: string;
 }
 
-export interface AppListingAssociation {
-  appListingId: number;
+export interface AppRecordAssociation {
+  appRecordId: number;
   organizationProfileId: number;
   isSuspended: boolean;
 }
 
 export interface SocialLink {
-  // Add fields as needed
+  id: number;
+  appRecordId: number;
+  socialId: Social;
+  url: string;
 }
 
 export interface StoreLink {
-  // Add fields as needed
+  id: number;
+  storeId: Store;
+  url: string;
+  appRecordId: number;
 }
 
-export interface AppListing {
+export interface AppRecord {
   id: number;
-  organizationProfile?: OrganizationProfileAssociation;
-  categoryId: number;
-  tags: number[];
-  isPwa: boolean;
-  rating: number;
-  website: string;
+  slug: string;
   name: string;
   description: string;
+  website: string;
+  isPwa: boolean;
+  rating: number;
   estimatedNumberOfUsers?: number;
   isSuspended: boolean;
   logo: string;
   banner: string;
   screenshots: string[];
-  stores: SocialLink[];
-  socials: StoreLink[];
+  organizationProfile?: OrganizationProfileAssociation;
+  categoryId: number;
+  tags: number[];
+  stores: StoreLink[];
+  socials: SocialLink[];
   devices: Device[];
 }
 
@@ -92,7 +100,7 @@ export interface OrganizationProfile {
   contactWebpage: string;
   avatar?: string;
   listingLimit: number;
-  appListingAssignments: AppListingAssociation[];
+  appRecordAssignments: AppRecordAssociation[];
 }
 
 export interface UserProfile {
@@ -105,56 +113,43 @@ export interface UserProfile {
 export interface DeviceAssociation {
   id: number;
   deviceId: Device;
-  appListingId: number;
+  appRecordId: number;
 }
 
 export interface PlatformAssociation {
   id: number;
   platformId: Platform;
-  appListingId: number;
+  appRecordId: number;
 }
 
 export interface MonetizationAssociation {
   id: number;
   monetizationId: MonetizationModel;
-  appListingId: number;
+  appRecordId: number;
 }
 
 export interface SuiteAssociation {
   id: number;
   suiteId: number;
-  appListingId: number;
+  appRecordId: number;
 }
 
 export interface TagAssociation {
   id: number;
   tagId: number;
-  appListingId: number;
+  appRecordId: number;
 }
 
-export interface SocialLinkEntity {
+export interface AppRecordImageEntity {
   id: number;
-  appListingId: number;
-  socialId: Social;
-  url: string;
-}
-
-export interface StoreLinkEntity {
-  id: number;
-  storeId: Store;
-  url: string;
-  appListingId: number;
-}
-
-export interface AppListingImageEntity {
-  id: number;
-  appListingId: number;
+  appRecordId: number;
   imageName: string;
 }
 
 export interface CategoryEntity {
   id: number;
   name: string;
+  slug: string;
   parentId?: number;
   childCategories: CategoryEntity[];
   parentCategory?: CategoryEntity;
@@ -163,9 +158,10 @@ export interface CategoryEntity {
 export interface TagEntity {
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface SuiteEntity {
   id: number;
   name: string;
-} 
+}

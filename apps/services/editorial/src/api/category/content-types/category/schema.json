@@ -1,14 +1,20 @@
 {
+  "kind": "collectionType",
   "collectionName": "categories",
   "info": {
-    "name": "Category",
     "singularName": "category",
-    "pluralName": "categorys",
+    "pluralName": "categories",
     "displayName": "Category"
   },
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
     },
     "childCategories": {
       "type": "relation",
@@ -22,6 +28,5 @@
       "target": "api::category.category",
       "inversedBy": "childCategories"
     }
-  },
-  "kind": "collectionType"
+  }
 }

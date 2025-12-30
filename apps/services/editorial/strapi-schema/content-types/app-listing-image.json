@@ -1,8 +1,0 @@
-{
-  "collectionName": "app_listing_images",
-  "info": { "name": "AppListingImage" },
-  "attributes": {
-    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" },
-    "image": { "type": "media", "multiple": false, "required": true }
-  }
-} 
