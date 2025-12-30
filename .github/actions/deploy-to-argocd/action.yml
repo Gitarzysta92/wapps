@@ -47,16 +47,16 @@ runs:
     - name: Set image tag in ArgoCD application
       run: |
         argocd app set ${{ inputs.app-name }} \
-          --namespace ${{ inputs.namespace }} \
-          --parameter image.tag=${{ inputs.image-tag }}
+          --parameter image.tag=${{ inputs.image-tag }} \
+          --grpc-web
       shell: bash
 
     - name: Sync ArgoCD application
       run: |
-        argocd app sync ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --force
+        argocd app sync ${{ inputs.app-name }} --force --grpc-web
       shell: bash
 
     - name: Wait for deployment to be ready
       run: |
-        argocd app wait ${{ inputs.app-name }} --namespace ${{ inputs.namespace }} --timeout 300
+        argocd app wait ${{ inputs.app-name }} --timeout 300 --grpc-web
       shell: bash
