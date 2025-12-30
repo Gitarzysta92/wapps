@@ -90,41 +90,17 @@
     SERVICE_EOF
   register: node_exporter_service
 
-- name: Create Ingress for ArgoCD
-  shell: |
-    cat << 'INGRESS_EOF' | kubectl apply -f -
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      name: argocd-ingress
-      namespace: argocd
-      annotations:
-        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    spec:
-      ingressClassName: nginx
-      rules:
-      - host: argocd.{{ tailscale_domain | default('development-wapps.ts.net') }}
-        http:
-          paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: argocd-server
-                port:
-                  number: 443
-    INGRESS_EOF
-  register: argocd_ingress
+# Note: ArgoCD ingress is managed by platform/cluster/argocd/ingress.yaml
+# Applied in main.yml to ensure correct hostname (argocd.development.wapps.com)
 
 - name: Display Ingress Status
   debug:
     msg: |
       Ingress controllers installed successfully!
       
-      Clean URLs (no ports required):
-      - K3s API: https://k3s-api.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
-      - ArgoCD: https://argocd.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
-      - Metrics: http://metrics.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
+      Ingress ingresses created:
+      - K3s API: k3s-api.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
+      - Metrics: metrics.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
       
-      Note: These URLs will work once DNS records are created and propagated.
+      Note: ArgoCD ingress is managed separately via platform/cluster/argocd/ingress.yaml
+      with hostname: argocd.development.wapps.com (applied in main.yml)
