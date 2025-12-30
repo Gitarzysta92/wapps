@@ -34,6 +34,8 @@ env:
   IMAGE_NAME: aggregator-demo-csr
   REGISTRY: ghcr.io
   NAMESPACE: argocd
+  # TODO: Extract GITHUB_USERNAME to organization/repository-level environment variable or secret
+  # to avoid hardcoding in each workflow file
   GITHUB_USERNAME: gitarzysta92
 
 jobs:
