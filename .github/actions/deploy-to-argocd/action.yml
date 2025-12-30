@@ -44,16 +44,16 @@ runs:
         argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
       shell: bash
 
-    - name: Set image tag in ArgoCD application
+    - name: Set kustomize image override
       run: |
-        argocd app set ${{ inputs.app-name }} \
-          --parameter image.tag=${{ inputs.image-tag }} \
-          --grpc-web
+        # Use kubectl to patch the Application CR directly with kustomize image override
+        kubectl patch application ${{ inputs.app-name }} -n ${{ inputs.namespace }} --type=merge \
+          -p="{\"spec\":{\"source\":{\"kustomize\":{\"images\":[\"ghcr.io/gitarzysta92/aggregator-demo-csr=${{ inputs.image-tag }}\"]}}}}"
       shell: bash
 
     - name: Sync ArgoCD application
       run: |
-        argocd app sync ${{ inputs.app-name }} --force --grpc-web
+        argocd app sync ${{ inputs.app-name }} --grpc-web
       shell: bash
 
     - name: Wait for deployment to be ready
