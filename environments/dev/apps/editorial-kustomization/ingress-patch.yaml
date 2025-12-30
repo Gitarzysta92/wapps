@@ -7,5 +7,5 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-  - host: editorial.dev.wapps.com
+  - host: editorial.development.wapps.com
 
