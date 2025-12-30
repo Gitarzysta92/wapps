@@ -1,27 +1,8 @@
-# Multi-stage build for Angular CSR application
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npx nx build aggregator-demo-csr --configuration=production
-
-# Production stage with Nginx
+# Production stage with Nginx - expects pre-built artifacts
 FROM nginx:alpine AS production
 
-# Copy built application to nginx
-COPY --from=builder /app/dist/apps/portals/aggregator-demo/entrypoints/csr /usr/share/nginx/html
+# Copy pre-built application to nginx
+COPY dist/apps/portals/aggregator-demo/entrypoints/csr /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY apps/portals/aggregator-demo/entrypoints/csr/nginx.conf /etc/nginx/nginx.conf
