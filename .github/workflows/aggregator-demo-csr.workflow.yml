@@ -108,7 +108,7 @@ jobs:
         with:
           app-name: ${{ env.APP_NAME }}
           namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
+          argocd-server: ${{ vars.ARGOCD_SERVER }}
           argocd-token: ${{ secrets.ARGOCD_TOKEN }}
           image-tag: ${{ needs.build.outputs.image-tag }}
           environment: ${{ github.event.inputs.target_env || 'dev' }}
