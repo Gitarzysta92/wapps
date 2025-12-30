@@ -11,8 +11,11 @@ inputs:
   argocd-server:
     description: 'ArgoCD server URL'
     required: true
-  argocd-token:
-    description: 'ArgoCD token'
+  argocd-username:
+    description: 'ArgoCD username'
+    required: true
+  argocd-password:
+    description: 'ArgoCD password'
     required: true
   image-tag:
     description: 'Docker image tag to deploy'
@@ -34,7 +37,7 @@ runs:
 
     - name: Login to ArgoCD
       run: |
-        argocd login ${{ inputs.argocd-server }} --auth-token ${{ inputs.argocd-token }} --insecure
+        argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure
       shell: bash
 
     - name: Set image tag in ArgoCD application
