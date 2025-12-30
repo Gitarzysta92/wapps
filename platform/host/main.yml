@@ -81,6 +81,31 @@
       changed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Configure ArgoCD RBAC for CI/CD access
+      shell: |
+        # TODO: Replace this with a dedicated CI/CD service account with limited permissions
+        # Current implementation grants full admin access for simplicity
+        # Future: Create accounts.cicd with specific RBAC policies (get, update, sync on applications)
+        kubectl patch configmap argocd-rbac-cm -n argocd --type merge -p '{"data":{"policy.default":"role:admin"}}' || \
+        kubectl create configmap argocd-rbac-cm -n argocd --from-literal=policy.default='role:admin'
+      register: argocd_rbac
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Restart ArgoCD server to apply RBAC changes
+      shell: kubectl rollout restart deployment/argocd-server -n argocd
+      register: argocd_restart
+      when: 
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - argocd_rbac.changed
+
+    - name: Wait for ArgoCD server restart
+      shell: kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -n argocd
+      register: argocd_restart_wait
+      changed_when: false
+      when: 
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - argocd_rbac.changed
+
     - name: Check if ArgoCD repository secret exists
       shell: kubectl get secret wapps-repo-secret -n argocd 2>/dev/null || echo "NOT_FOUND"
       register: argocd_repo_secret_check
