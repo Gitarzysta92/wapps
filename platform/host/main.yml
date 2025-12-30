@@ -81,6 +81,13 @@
       changed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Check current ArgoCD RBAC policy
+      shell: kubectl get configmap argocd-rbac-cm -n argocd -o jsonpath='{.data.policy\.default}' 2>/dev/null || echo "NOT_FOUND"
+      register: argocd_rbac_check
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Configure ArgoCD RBAC for CI/CD access
       shell: |
         # TODO: Replace this with a dedicated CI/CD service account with limited permissions
@@ -89,6 +96,24 @@
         kubectl patch configmap argocd-rbac-cm -n argocd --type merge -p '{"data":{"policy.default":"role:admin"}}' || \
         kubectl create configmap argocd-rbac-cm -n argocd --from-literal=policy.default='role:admin'
       register: argocd_rbac
+      when: 
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - argocd_rbac_check.stdout != 'role:admin'
+
+    - name: Verify ArgoCD RBAC policy
+      shell: kubectl get configmap argocd-rbac-cm -n argocd -o jsonpath='{.data.policy\.default}'
+      register: argocd_rbac_verify
+      changed_when: false
+      failed_when: argocd_rbac_verify.stdout != 'role:admin'
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Display ArgoCD RBAC status
+      debug:
+        msg: |
+          ArgoCD RBAC Configuration:
+            Default Policy: {{ argocd_rbac_verify.stdout }}
+            Status: {% if argocd_rbac_verify.stdout == 'role:admin' %}✓ Configured correctly{% else %}✗ Configuration mismatch{% endif %}
+            Note: Currently using default admin role. TODO: Replace with dedicated CI/CD account.
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Restart ArgoCD server to apply RBAC changes
@@ -96,7 +121,7 @@
       register: argocd_restart
       when: 
         - target_env | default('staging') in ['development', 'staging', 'production']
-        - argocd_rbac.changed
+        - argocd_rbac is changed
 
     - name: Wait for ArgoCD server restart
       shell: kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -n argocd
@@ -104,7 +129,7 @@
       changed_when: false
       when: 
         - target_env | default('staging') in ['development', 'staging', 'production']
-        - argocd_rbac.changed
+        - argocd_restart is changed
 
     - name: Check if ArgoCD repository secret exists
       shell: kubectl get secret wapps-repo-secret -n argocd 2>/dev/null || echo "NOT_FOUND"
