@@ -102,6 +102,35 @@
       register: argocd_ingress
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Apply ArgoCD App of Apps
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/app-of-apps.yaml
+      register: app_of_apps
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Wait for App of Apps application to be created
+      shell: |
+        for i in {1..30}; do
+          if kubectl get application wapps-app-of-apps -n argocd 2>/dev/null; then
+            echo "App of Apps is ready"
+            exit 0
+          fi
+          echo "Waiting for App of Apps... ($i/30)"
+          sleep 2
+        done
+        echo "Warning: App of Apps may not be ready yet"
+        exit 0
+      register: app_of_apps_wait
+      changed_when: false
+      failed_when: false
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Display App of Apps status
+      shell: kubectl get application -n argocd
+      register: argocd_apps_status
+      changed_when: false
+      failed_when: false
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
       when: target_env in ['development', 'staging', 'production']
@@ -191,6 +220,7 @@
           Applications directory: {{ apps_dir }}
           Installed services:
             - ArgoCD (Cluster) - GitOps CD
+            - ArgoCD App of Apps - Application Management
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics

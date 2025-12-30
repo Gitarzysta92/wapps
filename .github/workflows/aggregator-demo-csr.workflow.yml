@@ -87,7 +87,6 @@ jobs:
     name: 'Deploy to Development'
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/develop'
     environment: development
     steps:
       - name: Deploy to ArgoCD

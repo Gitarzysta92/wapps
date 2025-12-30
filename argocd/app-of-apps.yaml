@@ -8,7 +8,7 @@ metadata:
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/your-org/wapps.git
+    repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
     path: argocd/applications
   destination:
