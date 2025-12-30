@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: editorial
+  name: aggregator-demo-csr
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/your-org/wapps.git
+    repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
-    path: environments/dev/apps/editorial-kustomization
+    path: environments/dev/apps/aggregator-demo-csr-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: editorial
+    namespace: aggregator
   syncPolicy:
     automated:
       prune: true
@@ -27,3 +27,4 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+

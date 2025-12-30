@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editorial
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: editorial
+        image: editorial:dev-latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "1337"
+        - name: DATABASE_CLIENT
+          value: "mysql2"
+        - name: DATABASE_HOST
+          value: "mysql.mysql"
+        - name: DATABASE_PORT
+          value: "3306"
+        - name: DATABASE_NAME
+          value: "editorial_dev"
+        - name: DATABASE_USERNAME
+          value: "editorial"
+        - name: DATABASE_PASSWORD
+          value: "editorial_password"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+

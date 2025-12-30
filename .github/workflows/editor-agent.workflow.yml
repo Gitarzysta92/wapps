@@ -1,20 +1,23 @@
 name: 'Editor Agent - Background Service'
 
+# TEMPORARILY DISABLED - Testing aggregator-demo-csr CI/CD only
+# on:
+#   push:
+#     branches: [main, develop]
+#     paths:
+#       - 'apps/agents/editor/**'
+#       - 'libs/**'
+#       - 'package.json'
+#       - 'nx.json'
+#   pull_request:
+#     branches: [main, develop]
+#     paths:
+#       - 'apps/agents/editor/**'
+#       - 'libs/**'
+#       - 'package.json'
+#       - 'nx.json'
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'apps/agents/editor/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'apps/agents/editor/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
+  workflow_dispatch: # Disabled - only for manual trigger if needed
 
 env:
   APP_NAME: editor-agent

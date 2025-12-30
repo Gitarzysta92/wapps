@@ -10,10 +10,7 @@ spec:
   source:
     repoURL: https://github.com/your-org/wapps.git
     targetRevision: HEAD
-    path: apps/portals/aggregator/entrypoints/csr/provisioning/k8s
-    helm:
-      valueFiles:
-        - $values/environments/dev/apps/aggregator-csr.overlay.yml
+    path: environments/dev/apps/aggregator-csr-kustomization
   destination:
     server: https://kubernetes.default.svc
     namespace: aggregator

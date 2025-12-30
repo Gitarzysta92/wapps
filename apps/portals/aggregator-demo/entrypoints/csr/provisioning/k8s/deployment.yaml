@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-demo-csr
+  namespace: aggregator
+  labels:
+    app: aggregator-demo-csr
+    app.kubernetes.io/name: aggregator-demo-csr
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aggregator-demo-csr
+  template:
+    metadata:
+      labels:
+        app: aggregator-demo-csr
+        app.kubernetes.io/name: aggregator-demo-csr
+        app.kubernetes.io/component: frontend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: aggregator-demo-csr
+        image: ghcr.io/Gitarzysta92/aggregator-demo-csr:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "80"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+

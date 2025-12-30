@@ -1,13 +1,16 @@
 name: Host Environment Provisioning (Ansible)
 
+# TEMPORARILY DISABLED - Testing aggregator-demo-csr CI/CD only
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       env:
+#         description: "Target environment"
+#         type: choice
+#         required: true
+#         options: [development, staging, production]
 on:
-  workflow_dispatch:
-    inputs:
-      env:
-        description: "Target environment"
-        type: choice
-        required: true
-        options: [development, staging, production]
+  workflow_dispatch: # Disabled - only for manual trigger if needed
 
 jobs:
   provision:

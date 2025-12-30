@@ -1,33 +1,29 @@
-name: 'Aggregator CSR - Frontend Application'
+name: 'Aggregator Demo CSR - Frontend Application'
 
-# TEMPORARILY DISABLED - Testing aggregator-demo-csr CI/CD only
-# on:
-#   push:
-#     branches: [main, develop]
-#     paths:
-#       - 'apps/portals/aggregator/entrypoints/csr/**'
-#       - 'apps/portals/aggregator/application/**'
-#       - 'apps/portals/aggregator/shared/**'
-#       - 'libs/**'
-#       - 'package.json'
-#       - 'nx.json'
-#   pull_request:
-#     branches: [main, develop]
-#     paths:
-#       - 'apps/portals/aggregator/entrypoints/csr/**'
-#       - 'apps/portals/aggregator/application/**'
-#       - 'apps/portals/aggregator/shared/**'
-#       - 'libs/**'
-#       - 'package.json'
-#       - 'nx.json'
 on:
-  workflow_dispatch: # Disabled - only for manual trigger if needed
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
+      - 'apps/portals/aggregator-demo/application/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'nx.json'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
+      - 'apps/portals/aggregator-demo/application/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'nx.json'
 
 env:
-  APP_NAME: aggregator-csr
-  IMAGE_NAME: aggregator-csr
+  APP_NAME: aggregator-demo-csr
+  IMAGE_NAME: aggregator-demo-csr
   REGISTRY: ghcr.io
   NAMESPACE: argocd
+  GITHUB_USERNAME: Gitarzysta92
 
 jobs:
   test:
@@ -69,7 +65,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.GITHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -80,12 +76,12 @@ jobs:
         uses: ./.github/actions/build-and-push
         with:
           image-name: ${{ env.IMAGE_NAME }}
-          dockerfile-path: './apps/portals/aggregator/entrypoints/csr/Dockerfile'
+          dockerfile-path: './apps/portals/aggregator-demo/entrypoints/csr/Dockerfile'
           context-path: '.'
           tags: ${{ steps.meta.outputs.tags }}
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.GITHUB_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
   deploy-dev:
     name: 'Deploy to Development'
@@ -103,20 +99,3 @@ jobs:
           argocd-token: ${{ secrets.ARGOCD_TOKEN }}
           image-tag: ${{ needs.build.outputs.image-tag }}
           environment: dev
-
-  deploy-prod:
-    name: 'Deploy to Production'
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: prod

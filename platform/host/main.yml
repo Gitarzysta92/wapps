@@ -7,6 +7,8 @@
     git_sha: "{{ git_sha | default('main') }}"
     apps_dir: "/opt/wapps"
     ansible_user: "{{ ansible_env.USER | default('root') }}"
+    github_username: "{{ github_username | default('Gitarzysta92') }}"
+    github_token: "{{ github_token | default('') }}"
 
   tasks:
     - name: Display provisioning start
@@ -90,7 +92,7 @@
 
     - name: Set ArgoCD overlay path
       set_fact:
-        argocd_overlay_path: "{{ (playbook_dir | dirname | dirname) }}/environments/{{ env_dir }}/platform/argocd"
+        argocd_overlay_path: "{{ (playbook_dir | dirname | dirname) }}/environments/{{ env_dir }}/platform/argocd-kustomization"
       when: target_env in ['development', 'staging', 'production']
 
     - name: Apply ArgoCD ingress using Kustomize overlay
@@ -116,6 +118,62 @@
       include_tasks: nginx/install.yml
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Create aggregator namespace for applications
+      shell: kubectl create namespace aggregator --dry-run=client -o yaml | kubectl apply -f -
+      register: aggregator_namespace
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Check if GHCR secret exists in aggregator namespace
+      shell: kubectl get secret ghcr-secret -n aggregator 2>/dev/null || echo "NOT_FOUND"
+      register: ghcr_secret_check
+      changed_when: false
+      failed_when: false
+      when: 
+        - target_env in ['development', 'staging', 'production']
+        - github_token != ''
+
+    - name: Create GHCR image pull secret in aggregator namespace
+      shell: |
+        kubectl create secret docker-registry ghcr-secret \
+          --docker-server=ghcr.io \
+          --docker-username={{ github_username }} \
+          --docker-password={{ github_token }} \
+          --namespace=aggregator \
+          --dry-run=client -o yaml | kubectl apply -f -
+      register: ghcr_secret_aggregator
+      when:
+        - target_env in ['development', 'staging', 'production']
+        - github_token != ''
+        - ghcr_secret_check.stdout == "NOT_FOUND" or ghcr_secret_check.rc != 0
+
+    - name: Create editorial namespace for backend services
+      shell: kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
+      register: editorial_namespace
+      when: target_env in ['development', 'staging', 'production']
+
+    - name: Check if GHCR secret exists in editorial namespace
+      shell: kubectl get secret ghcr-secret -n editorial 2>/dev/null || echo "NOT_FOUND"
+      register: ghcr_secret_editorial_check
+      changed_when: false
+      failed_when: false
+      when: 
+        - target_env in ['development', 'staging', 'production']
+        - github_token != ''
+
+    - name: Create GHCR image pull secret in editorial namespace
+      shell: |
+        kubectl create secret docker-registry ghcr-secret \
+          --docker-server=ghcr.io \
+          --docker-username={{ github_username }} \
+          --docker-password={{ github_token }} \
+          --namespace=editorial \
+          --dry-run=client -o yaml | kubectl apply -f -
+      register: ghcr_secret_editorial
+      when:
+        - target_env in ['development', 'staging', 'production']
+        - github_token != ''
+        - ghcr_secret_editorial_check.stdout == "NOT_FOUND" or ghcr_secret_editorial_check.rc != 0
+
     - name: Include DNS installation
       include_tasks: dns/install.yml
       vars:
@@ -139,4 +197,5 @@
             - Tailscale (port 41641) - VPN networking
             - Nginx (ports 80/443) - Reverse Proxy
             - NTP - Time synchronization
+            - GHCR Image Pull Secrets (aggregator, editorial namespaces)
           Logs directory: {{ apps_dir }}/logs

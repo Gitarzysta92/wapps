@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-csr
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: aggregator-csr
+        image: ghcr.io/Gitarzysta92/aggregator-csr:dev-latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: API_URL
+          value: "http://editorial.editorial:1337"
+        - name: KONG_URL
+          value: "http://kong.kong:8000"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
