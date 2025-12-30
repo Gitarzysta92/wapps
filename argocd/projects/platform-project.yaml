@@ -48,6 +48,8 @@ spec:
       kind: '*'
     - group: 'vault.hashicorp.com'
       kind: '*'
+    - group: 'argoproj.io'
+      kind: 'Application'
   roles:
     - name: platform-admin
       description: Platform administrators
