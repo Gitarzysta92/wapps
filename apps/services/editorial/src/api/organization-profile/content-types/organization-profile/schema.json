@@ -1,14 +1,15 @@
 {
+  "kind": "collectionType",
   "collectionName": "organization_profiles",
   "info": {
-    "name": "OrganizationProfile",
     "singularName": "organization-profile",
     "pluralName": "organization-profiles",
-    "displayName": "Organization profile"
+    "displayName": "Organization Profile"
   },
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "url": {
       "type": "string"
@@ -28,17 +29,18 @@
     "avatar": {
       "type": "media",
       "multiple": false,
-      "required": false
+      "required": false,
+      "allowedTypes": ["images"]
     },
     "listingLimit": {
-      "type": "integer"
+      "type": "integer",
+      "default": 10
     },
-    "appListingAssignments": {
+    "appRecords": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::app-listing-association.app-listing-association",
+      "target": "api::app-record.app-record",
       "mappedBy": "organizationProfile"
     }
-  },
-  "kind": "collectionType"
+  }
 }

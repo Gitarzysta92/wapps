@@ -32,6 +32,12 @@ The Catalog BFF acts as an intermediary layer between frontend applications and 
 └───────────────┘  └──────────┘  └─────────────┘
 ```
 
+## API Documentation
+
+**Swagger UI**: http://localhost:3000/api/docs
+
+Interactive API documentation with request/response schemas, examples, and the ability to test endpoints directly.
+
 ## API Endpoints
 
 | Endpoint | Method | Description |
@@ -45,6 +51,7 @@ The Catalog BFF acts as an intermediary layer between frontend applications and 
 | `/api/catalog/tags/:slug` | GET | Get single tag by slug |
 | `/api/health` | GET | Health check |
 | `/api/health/ready` | GET | Readiness check |
+| `/api/docs` | GET | Swagger API documentation |
 
 ### Query Parameters
 

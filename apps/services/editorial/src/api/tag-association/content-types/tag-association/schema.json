@@ -1,10 +1,10 @@
 {
+  "kind": "collectionType",
   "collectionName": "tag_associations",
   "info": {
-    "name": "TagAssociation",
     "singularName": "tag-association",
     "pluralName": "tag-associations",
-    "displayName": "Tag association"
+    "displayName": "Tag Association"
   },
   "attributes": {
     "tag": {
@@ -12,11 +12,10 @@
       "relation": "manyToOne",
       "target": "api::tag.tag"
     },
-    "appListing": {
+    "appRecord": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::app-listing.app-listing"
+      "target": "api::app-record.app-record"
     }
-  },
-  "kind": "collectionType"
+  }
 }

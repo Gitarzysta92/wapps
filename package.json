@@ -75,6 +75,7 @@
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.4.2",
     "@ng-web-apis/common": "^4.11.1",
     "@ng-web-apis/intersection-observer": "^4.12.0",
     "@ng-web-apis/mutation-observer": "^4.12.0",
