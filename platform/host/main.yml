@@ -93,10 +93,15 @@
           {% endif %}
       when: target_env in ['development', 'staging', 'production']
 
+    - name: Set ArgoCD overlay path
+      set_fact:
+        argocd_overlay_path: "{{ playbook_dir | dirname | dirname }}/environments/{{ env_dir }}/platform/argocd"
+      when: target_env in ['development', 'staging', 'production']
+
     - name: Apply ArgoCD ingress using Kustomize overlay
-      shell: |
-        cd {{ playbook_dir }}/../../environments/{{ env_dir }}/platform/argocd
-        kubectl apply -k .
+      shell: kubectl apply -k .
+      args:
+        chdir: "{{ argocd_overlay_path }}"
       register: argocd_ingress
       when: target_env in ['development', 'staging', 'production']
 
