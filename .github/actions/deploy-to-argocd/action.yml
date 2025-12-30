@@ -41,7 +41,7 @@ runs:
 
     - name: Login to ArgoCD
       run: |
-        argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure
+        argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
       shell: bash
 
     - name: Set image tag in ArgoCD application
