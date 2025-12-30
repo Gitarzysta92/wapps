@@ -6,6 +6,12 @@ namespace: aggregator
 resources:
   - ../../../../apps/portals/aggregator-demo/entrypoints/csr/provisioning/k8s
 
-patchesStrategicMerge:
-  - deployment-patch.yaml
-  - ingress-patch.yaml
+patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: aggregator-demo-csr
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: aggregator-demo-csr-ingress

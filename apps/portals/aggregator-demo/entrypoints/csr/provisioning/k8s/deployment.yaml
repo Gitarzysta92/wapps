@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aggregator-demo-csr
-  namespace: aggregator
   labels:
     app: aggregator-demo-csr
     app.kubernetes.io/name: aggregator-demo-csr
