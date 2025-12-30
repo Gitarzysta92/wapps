@@ -85,17 +85,12 @@
 
     - name: Map environment name to directory
       set_fact:
-        env_dir: >-
-          {% if target_env == 'development' %}dev
-          {% elif target_env == 'production' %}prod
-          {% elif target_env == 'staging' %}dev
-          {% else %}dev
-          {% endif %}
+        env_dir: "{% if target_env == 'development' %}dev{% elif target_env == 'production' %}prod{% elif target_env == 'staging' %}dev{% else %}dev{% endif %}"
       when: target_env in ['development', 'staging', 'production']
 
     - name: Set ArgoCD overlay path
       set_fact:
-        argocd_overlay_path: "{{ playbook_dir | dirname | dirname }}/environments/{{ env_dir }}/platform/argocd"
+        argocd_overlay_path: "{{ (playbook_dir | dirname | dirname) }}/environments/{{ env_dir }}/platform/argocd"
       when: target_env in ['development', 'staging', 'production']
 
     - name: Apply ArgoCD ingress using Kustomize overlay
