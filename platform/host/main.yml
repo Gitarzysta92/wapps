@@ -3,40 +3,36 @@
   hosts: localhost
   become: yes
   vars:
-    target_env: "{{ target_env | default('staging') }}"
-    git_sha: "{{ git_sha | default('main') }}"
     apps_dir: "/opt/wapps"
     ansible_user: "{{ ansible_env.USER | default('root') }}"
-    github_username: "{{ github_username | default('Gitarzysta92') }}"
-    github_token: "{{ github_token | default('') }}"
 
   tasks:
     - name: Display provisioning start
       debug:
         msg: |
           Starting host environment provisioning...
-          Environment: {{ target_env }}
-          Git SHA: {{ git_sha }}
+          Environment: {{ target_env | default('staging') }}
+          Git SHA: {{ git_sha | default('main') }}
           Target directory: {{ apps_dir }}
 
     - name: Include system configuration
       include_tasks: system/configure.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include K3s installation
       include_tasks: k3s/install.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Create ArgoCD namespace
       shell: kubectl apply -f {{ playbook_dir }}/../cluster/argocd/namespace.yaml
       register: argocd_namespace
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Install ArgoCD in cluster
       shell: |
         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
       register: argocd_install
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Wait for ArgoCD secrets to be created
       shell: |
@@ -54,28 +50,28 @@
       register: argocd_secrets_wait
       changed_when: false
       failed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Display ArgoCD pod status for debugging
       shell: kubectl get pods -n argocd -o wide
       register: argocd_pods_status
       changed_when: false
       failed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Check if ArgoCD service needs patching
       shell: kubectl -n argocd get svc argocd-server -o jsonpath='{.spec.type}'
       register: argocd_svc_type
       changed_when: false
       failed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Remove ArgoCD NodePorts (use ClusterIP + Ingress)
       shell: |
         kubectl -n argocd patch svc argocd-server --type='merge' -p '{"spec":{"type":"ClusterIP"}}'
       register: argocd_patch
       when: 
-        - target_env in ['development', 'staging', 'production']
+        - target_env | default('staging') in ['development', 'staging', 'production']
         - argocd_svc_type.stdout != 'ClusterIP'
         - argocd_svc_type.rc == 0
 
@@ -83,29 +79,29 @@
       shell: kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
       register: argocd_wait
       changed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Map environment name to directory
       set_fact:
-        env_dir: "{% if target_env == 'development' %}dev{% elif target_env == 'production' %}prod{% elif target_env == 'staging' %}dev{% else %}dev{% endif %}"
-      when: target_env in ['development', 'staging', 'production']
+        env_dir: "{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% elif target_env | default('staging') == 'staging' %}dev{% else %}dev{% endif %}"
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Set ArgoCD overlay path
       set_fact:
         argocd_overlay_path: "{{ (playbook_dir | dirname | dirname) }}/environments/{{ env_dir }}/platform/argocd-kustomization"
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Apply ArgoCD ingress using Kustomize overlay
       shell: kubectl apply -k .
       args:
         chdir: "{{ argocd_overlay_path }}"
       register: argocd_ingress
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Apply ArgoCD App of Apps
       shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/app-of-apps.yaml
       register: app_of_apps
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Wait for App of Apps application to be created
       shell: |
@@ -122,35 +118,35 @@
       register: app_of_apps_wait
       changed_when: false
       failed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Display App of Apps status
       shell: kubectl get application -n argocd
       register: argocd_apps_status
       changed_when: false
       failed_when: false
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include Tailscale installation
       include_tasks: tailscale/install.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include Ingress installation
       include_tasks: ingress/install.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include Nginx reverse proxy installation
       include_tasks: nginx/install.yml
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Create aggregator namespace for applications
       shell: kubectl create namespace aggregator --dry-run=client -o yaml | kubectl apply -f -
       register: aggregator_namespace
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Check if GHCR secret exists in aggregator namespace
       shell: kubectl get secret ghcr-secret -n aggregator 2>/dev/null || echo "NOT_FOUND"
@@ -158,27 +154,27 @@
       changed_when: false
       failed_when: false
       when: 
-        - target_env in ['development', 'staging', 'production']
-        - github_token != ''
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
 
     - name: Create GHCR image pull secret in aggregator namespace
       shell: |
         kubectl create secret docker-registry ghcr-secret \
           --docker-server=ghcr.io \
-          --docker-username={{ github_username }} \
-          --docker-password={{ github_token }} \
+          --docker-username={{ github_username | default('Gitarzysta92') }} \
+          --docker-password={{ git_token }} \
           --namespace=aggregator \
           --dry-run=client -o yaml | kubectl apply -f -
       register: ghcr_secret_aggregator
       when:
-        - target_env in ['development', 'staging', 'production']
-        - github_token != ''
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
         - ghcr_secret_check.stdout == "NOT_FOUND" or ghcr_secret_check.rc != 0
 
     - name: Create editorial namespace for backend services
       shell: kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
       register: editorial_namespace
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Check if GHCR secret exists in editorial namespace
       shell: kubectl get secret ghcr-secret -n editorial 2>/dev/null || echo "NOT_FOUND"
@@ -186,28 +182,28 @@
       changed_when: false
       failed_when: false
       when: 
-        - target_env in ['development', 'staging', 'production']
-        - github_token != ''
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
 
     - name: Create GHCR image pull secret in editorial namespace
       shell: |
         kubectl create secret docker-registry ghcr-secret \
           --docker-server=ghcr.io \
-          --docker-username={{ github_username }} \
-          --docker-password={{ github_token }} \
+          --docker-username={{ github_username | default('Gitarzysta92') }} \
+          --docker-password={{ git_token }} \
           --namespace=editorial \
           --dry-run=client -o yaml | kubectl apply -f -
       register: ghcr_secret_editorial
       when:
-        - target_env in ['development', 'staging', 'production']
-        - github_token != ''
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - git_token | default('') != ''
         - ghcr_secret_editorial_check.stdout == "NOT_FOUND" or ghcr_secret_editorial_check.rc != 0
 
     - name: Include DNS installation
       include_tasks: dns/install.yml
       vars:
         target_ip: "{{ tailscale_ip.stdout | default(ansible_default_ipv4.address) }}"
-      when: target_env in ['development', 'staging', 'production']
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
 
 
@@ -215,8 +211,8 @@
       debug:
         msg: |
           Host provisioning completed successfully!
-          Environment: {{ target_env }}
-          Git SHA: {{ git_sha }}
+          Environment: {{ target_env | default('staging') }}
+          Git SHA: {{ git_sha | default('main') }}
           Applications directory: {{ apps_dir }}
           Installed services:
             - ArgoCD (Cluster) - GitOps CD
