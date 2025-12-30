@@ -37,10 +37,11 @@ runs:
         argocd login ${{ inputs.argocd-server }} --auth-token ${{ inputs.argocd-token }} --insecure
       shell: bash
 
-    - name: Update image tag in ArgoCD application
+    - name: Set image tag in ArgoCD application
       run: |
-        # Update the image tag in the deployment
-        kubectl patch application ${{ inputs.app-name }} -n ${{ inputs.namespace }} --type merge -p '{"spec":{"source":{"helm":{"parameters":[{"name":"image.tag","value":"${{ inputs.image-tag }}"}]}}}}'
+        argocd app set ${{ inputs.app-name }} \
+          --namespace ${{ inputs.namespace }} \
+          --parameter image.tag=${{ inputs.image-tag }}
       shell: bash
 
     - name: Sync ArgoCD application
