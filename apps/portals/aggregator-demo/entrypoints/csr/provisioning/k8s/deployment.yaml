@@ -22,7 +22,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: aggregator-demo-csr
-        image: ghcr.io/Gitarzysta92/aggregator-demo-csr:latest
+        image: ghcr.io/gitarzysta92/aggregator-demo-csr:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80

@@ -34,7 +34,7 @@ env:
   IMAGE_NAME: aggregator-demo-csr
   REGISTRY: ghcr.io
   NAMESPACE: argocd
-  GITHUB_USERNAME: Gitarzysta92
+  GITHUB_USERNAME: gitarzysta92
 
 jobs:
   test:
