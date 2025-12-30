@@ -373,90 +373,18 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiAppListingAssociationAppListingAssociation
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'app_listing_associations';
+export interface ApiAppRecordAppRecord extends Struct.CollectionTypeSchema {
+  collectionName: 'app_records';
   info: {
-    displayName: 'App listing association';
-    name: 'AppListingAssociation';
-    pluralName: 'app-listing-associations';
-    singularName: 'app-listing-association';
+    displayName: 'App Record';
+    pluralName: 'app-records';
+    singularName: 'app-record';
   };
   options: {
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::app-listing.app-listing'
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    isSuspended: Schema.Attribute.Boolean;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::app-listing-association.app-listing-association'
-    > &
-      Schema.Attribute.Private;
-    organizationProfile: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::organization-profile.organization-profile'
-    >;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiAppListingImageAppListingImage
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'app_listing_images';
-  info: {
-    displayName: 'App listing image';
-    name: 'AppListingImage';
-    pluralName: 'app-listing-images';
-    singularName: 'app-listing-image';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    appListing: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::app-listing.app-listing'
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    image: Schema.Attribute.Media & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::app-listing-image.app-listing-image'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiAppListingAppListing extends Struct.CollectionTypeSchema {
-  collectionName: 'app_listings';
-  info: {
-    displayName: 'App listing';
-    pluralName: 'app-listings';
-    singularName: 'app-listing';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    banner: Schema.Attribute.Media;
+    banner: Schema.Attribute.Media<'images'>;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -467,30 +395,46 @@ export interface ApiAppListingAppListing extends Struct.CollectionTypeSchema {
       'api::device-association.device-association'
     >;
     estimatedNumberOfUsers: Schema.Attribute.Integer;
-    isPwa: Schema.Attribute.Boolean;
-    isSuspended: Schema.Attribute.Boolean;
+    isPwa: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isSuspended: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     > &
       Schema.Attribute.Private;
-    logo: Schema.Attribute.Media;
-    name: Schema.Attribute.String;
+    logo: Schema.Attribute.Media<'images'>;
+    monetizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::monetization-association.monetization-association'
+    >;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     organizationProfile: Schema.Attribute.Relation<
       'manyToOne',
       'api::organization-profile.organization-profile'
     >;
+    platforms: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::platform-association.platform-association'
+    >;
     publishedAt: Schema.Attribute.DateTime;
-    rating: Schema.Attribute.Integer;
-    screenshots: Schema.Attribute.Media<undefined, true>;
+    rating: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      >;
+    screenshots: Schema.Attribute.Media<'images', true>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     socials: Schema.Attribute.Relation<
       'oneToMany',
-      'api::store-link.store-link'
+      'api::social-link.social-link'
     >;
     stores: Schema.Attribute.Relation<
       'oneToMany',
-      'api::social-link.social-link'
+      'api::store-link.store-link'
     >;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -504,8 +448,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
     displayName: 'Category';
-    name: 'Category';
-    pluralName: 'categorys';
+    pluralName: 'categories';
     singularName: 'category';
   };
   options: {
@@ -525,12 +468,13 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
       'api::category.category'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     parentCategory: Schema.Attribute.Relation<
       'manyToOne',
       'api::category.category'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -541,8 +485,7 @@ export interface ApiDeviceAssociationDeviceAssociation
   extends Struct.CollectionTypeSchema {
   collectionName: 'device_associations';
   info: {
-    displayName: 'Device association';
-    name: 'DeviceAssociation';
+    displayName: 'Device Association';
     pluralName: 'device-associations';
     singularName: 'device-association';
   };
@@ -550,16 +493,17 @@ export interface ApiDeviceAssociationDeviceAssociation
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     deviceId: Schema.Attribute.Enumeration<
       ['Desktop', 'Tablet', 'Phone', 'Smartwatch', 'Tv']
-    >;
+    > &
+      Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -577,8 +521,7 @@ export interface ApiMonetizationAssociationMonetizationAssociation
   extends Struct.CollectionTypeSchema {
   collectionName: 'monetization_associations';
   info: {
-    displayName: 'Monetization association';
-    name: 'MonetizationAssociation';
+    displayName: 'Monetization Association';
     pluralName: 'monetization-associations';
     singularName: 'monetization-association';
   };
@@ -586,9 +529,9 @@ export interface ApiMonetizationAssociationMonetizationAssociation
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -601,7 +544,8 @@ export interface ApiMonetizationAssociationMonetizationAssociation
       Schema.Attribute.Private;
     monetizationId: Schema.Attribute.Enumeration<
       ['Free', 'Freemium', 'Subscription', 'AdBased', 'OneTimePurchase', 'Fees']
-    >;
+    > &
+      Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -613,8 +557,7 @@ export interface ApiOrganizationProfileOrganizationProfile
   extends Struct.CollectionTypeSchema {
   collectionName: 'organization_profiles';
   info: {
-    displayName: 'Organization profile';
-    name: 'OrganizationProfile';
+    displayName: 'Organization Profile';
     pluralName: 'organization-profiles';
     singularName: 'organization-profile';
   };
@@ -622,25 +565,25 @@ export interface ApiOrganizationProfileOrganizationProfile
     draftAndPublish: false;
   };
   attributes: {
-    appListingAssignments: Schema.Attribute.Relation<
+    appRecords: Schema.Attribute.Relation<
       'oneToMany',
-      'api::app-listing-association.app-listing-association'
+      'api::app-record.app-record'
     >;
-    avatar: Schema.Attribute.Media;
+    avatar: Schema.Attribute.Media<'images'>;
     contactWebpage: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
     email: Schema.Attribute.String;
-    listingLimit: Schema.Attribute.Integer;
+    listingLimit: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<10>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::organization-profile.organization-profile'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     phoneNumber: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -654,8 +597,7 @@ export interface ApiPlatformAssociationPlatformAssociation
   extends Struct.CollectionTypeSchema {
   collectionName: 'platform_associations';
   info: {
-    displayName: 'Platform association';
-    name: 'PlatformAssociation';
+    displayName: 'Platform Association';
     pluralName: 'platform-associations';
     singularName: 'platform-association';
   };
@@ -663,9 +605,9 @@ export interface ApiPlatformAssociationPlatformAssociation
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -678,7 +620,8 @@ export interface ApiPlatformAssociationPlatformAssociation
       Schema.Attribute.Private;
     platformId: Schema.Attribute.Enumeration<
       ['Web', 'IOS', 'Android', 'Windows', 'Linux', 'MacOS']
-    >;
+    > &
+      Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -689,8 +632,7 @@ export interface ApiPlatformAssociationPlatformAssociation
 export interface ApiSocialLinkSocialLink extends Struct.CollectionTypeSchema {
   collectionName: 'social_links';
   info: {
-    displayName: 'Social link';
-    name: 'SocialLink';
+    displayName: 'Social Link';
     pluralName: 'social-links';
     singularName: 'social-link';
   };
@@ -698,9 +640,9 @@ export interface ApiSocialLinkSocialLink extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -714,19 +656,19 @@ export interface ApiSocialLinkSocialLink extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     socialId: Schema.Attribute.Enumeration<
       ['Facebook', 'X', 'Reddit', 'Discord', 'LinkedIn', 'Medium']
-    >;
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    url: Schema.Attribute.String;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
 export interface ApiStoreLinkStoreLink extends Struct.CollectionTypeSchema {
   collectionName: 'store_links';
   info: {
-    displayName: 'Store link';
-    name: 'StoreLink';
+    displayName: 'Store Link';
     pluralName: 'store-links';
     singularName: 'store-link';
   };
@@ -734,9 +676,9 @@ export interface ApiStoreLinkStoreLink extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -750,11 +692,12 @@ export interface ApiStoreLinkStoreLink extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     storeId: Schema.Attribute.Enumeration<
       ['GooglePlay', 'AppleStore', 'AppGallery', 'MicrosoftStore']
-    >;
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    url: Schema.Attribute.String;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -762,8 +705,7 @@ export interface ApiTagAssociationTagAssociation
   extends Struct.CollectionTypeSchema {
   collectionName: 'tag_associations';
   info: {
-    displayName: 'Tag association';
-    name: 'TagAssociation';
+    displayName: 'Tag Association';
     pluralName: 'tag-associations';
     singularName: 'tag-association';
   };
@@ -771,9 +713,9 @@ export interface ApiTagAssociationTagAssociation
     draftAndPublish: false;
   };
   attributes: {
-    appListing: Schema.Attribute.Relation<
+    appRecord: Schema.Attribute.Relation<
       'manyToOne',
-      'api::app-listing.app-listing'
+      'api::app-record.app-record'
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -796,7 +738,6 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
   collectionName: 'tags';
   info: {
     displayName: 'Tag';
-    name: 'Tag';
     pluralName: 'tags';
     singularName: 'tag';
   };
@@ -810,8 +751,9 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1195,6 +1137,158 @@ export interface PluginUploadFolder extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface PluginUsersPermissionsPermission
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'up_permissions';
+  info: {
+    description: '';
+    displayName: 'Permission';
+    name: 'permission';
+    pluralName: 'permissions';
+    singularName: 'permission';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    action: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.permission'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.role'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface PluginUsersPermissionsRole
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'up_roles';
+  info: {
+    description: '';
+    displayName: 'Role';
+    name: 'role';
+    pluralName: 'roles';
+    singularName: 'role';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.role'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 3;
+      }>;
+    permissions: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.permission'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.String & Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
+export interface PluginUsersPermissionsUser
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'up_users';
+  info: {
+    description: '';
+    displayName: 'User';
+    name: 'user';
+    pluralName: 'users';
+    singularName: 'user';
+  };
+  options: {
+    draftAndPublish: false;
+    timestamps: true;
+  };
+  attributes: {
+    blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
+    confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 6;
+      }>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    > &
+      Schema.Attribute.Private;
+    password: Schema.Attribute.Password &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 6;
+      }>;
+    provider: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
+    role: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.role'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    username: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 3;
+      }>;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
@@ -1205,9 +1299,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::app-listing-association.app-listing-association': ApiAppListingAssociationAppListingAssociation;
-      'api::app-listing-image.app-listing-image': ApiAppListingImageAppListingImage;
-      'api::app-listing.app-listing': ApiAppListingAppListing;
+      'api::app-record.app-record': ApiAppRecordAppRecord;
       'api::category.category': ApiCategoryCategory;
       'api::device-association.device-association': ApiDeviceAssociationDeviceAssociation;
       'api::monetization-association.monetization-association': ApiMonetizationAssociationMonetizationAssociation;
@@ -1225,6 +1317,9 @@ declare module '@strapi/strapi' {
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
+      'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
+      'plugin::users-permissions.role': PluginUsersPermissionsRole;
+      'plugin::users-permissions.user': PluginUsersPermissionsUser;
     }
   }
 }

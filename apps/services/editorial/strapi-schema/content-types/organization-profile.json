@@ -1,15 +1,20 @@
 {
+  "kind": "collectionType",
   "collectionName": "organization_profiles",
-  "info": { "name": "OrganizationProfile" },
+  "info": {
+    "singularName": "organization-profile",
+    "pluralName": "organization-profiles",
+    "displayName": "Organization Profile"
+  },
   "attributes": {
-    "name": { "type": "string" },
+    "name": { "type": "string", "required": true },
     "url": { "type": "string" },
     "description": { "type": "text" },
     "phoneNumber": { "type": "string" },
     "email": { "type": "string" },
     "contactWebpage": { "type": "string" },
-    "avatar": { "type": "media", "multiple": false, "required": false },
-    "listingLimit": { "type": "integer" },
-    "appListingAssignments": { "type": "relation", "relation": "oneToMany", "target": "api::app-listing-association.app-listing-association", "mappedBy": "organizationProfile" }
+    "avatar": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
+    "listingLimit": { "type": "integer", "default": 10 },
+    "appRecords": { "type": "relation", "relation": "oneToMany", "target": "api::app-record.app-record", "mappedBy": "organizationProfile" }
   }
-} 
+}

@@ -1,8 +1,13 @@
 {
+  "kind": "collectionType",
   "collectionName": "platform_associations",
-  "info": { "name": "PlatformAssociation" },
+  "info": {
+    "singularName": "platform-association",
+    "pluralName": "platform-associations",
+    "displayName": "Platform Association"
+  },
   "attributes": {
-    "platformId": { "type": "enumeration", "enum": ["Web", "IOS", "Android", "Windows", "Linux", "MacOS"] },
-    "appListing": { "type": "relation", "relation": "manyToOne", "target": "api::app-listing.app-listing" }
+    "platformId": { "type": "enumeration", "enum": ["Web", "IOS", "Android", "Windows", "Linux", "MacOS"], "required": true },
+    "appRecord": { "type": "relation", "relation": "manyToOne", "target": "api::app-record.app-record", "inversedBy": "platforms" }
   }
-} 
+}
