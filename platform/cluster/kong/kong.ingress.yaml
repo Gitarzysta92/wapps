@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   rules:
-    - host: kong.lab
+    - host: kong.wapps.com
       http:
         paths:
           - path: /
@@ -18,7 +18,7 @@ spec:
                 name: kong
                 port:
                   number: 8000
-    - host: kong-admin.lab
+    - host: kong-admin.wapps.com
       http:
         paths:
           - path: /

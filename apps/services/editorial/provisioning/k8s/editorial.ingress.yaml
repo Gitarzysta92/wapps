@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Optional, for HTTP setups
 spec:
   rules:
-    - host: editorial-service.wapps.lab
+    - host: editorial-service.wapps.com
       http:
         paths:
           - path: /

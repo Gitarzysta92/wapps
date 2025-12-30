@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   rules:
-    - host: minio-api.lab
+    - host: minio-api.wapps.com
       http:
         paths:
           - path: /
@@ -17,7 +17,7 @@ spec:
                 name: my-minio
                 port:
                   number: 9000
-    - host: minio-ui.lab
+    - host: minio-ui.wapps.com
       http:
         paths:
           - path: /

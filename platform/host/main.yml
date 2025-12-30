@@ -250,7 +250,7 @@
       shell: |
         kubectl create secret docker-registry ghcr-secret \
           --docker-server=ghcr.io \
-          --docker-username={{ github_username | default('gitarzysta92') }} \
+          --docker-username={{ github_username | default('Gitarzysta92') }} \
           --docker-password={{ git_token }} \
           --namespace=aggregator \
           --dry-run=client -o yaml | kubectl apply -f -

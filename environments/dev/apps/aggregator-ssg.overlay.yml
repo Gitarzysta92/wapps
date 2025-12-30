@@ -20,7 +20,7 @@ env:
 
 ingress:
   enabled: true
-  host: "aggregator-ssg-dev.lab"
+  host: "aggregator-ssg.dev.wapps.com"
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"

@@ -44,11 +44,11 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "kong-dev.lab"
+    - host: "kong.dev.wapps.com"
       paths:
         - path: /
           pathType: Prefix
-    - host: "kong-admin-dev.lab"
+    - host: "kong-admin.dev.wapps.com"
       paths:
         - path: /
           pathType: Prefix
