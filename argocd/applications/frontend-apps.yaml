@@ -8,7 +8,9 @@ metadata:
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/your-org/wapps.git
+    # TODO: Move repoURL to environment variable or Kustomize parameter
+    # Currently hardcoded to: https://github.com/Gitarzysta92/wapps.git
+    repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
     path: argocd/applications/frontend
   destination:
