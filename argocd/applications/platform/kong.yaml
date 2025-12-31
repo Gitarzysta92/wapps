@@ -13,9 +13,9 @@ spec:
     repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
     path: platform/cluster/kong
-    helm:
-      valueFiles:
-        - $values/environments/dev/platform/kong.overlay.yml
+    # Using directory mode for raw Kubernetes manifests
+    directory:
+      recurse: false
   destination:
     server: https://kubernetes.default.svc
     namespace: kong
