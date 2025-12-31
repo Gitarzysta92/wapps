@@ -194,7 +194,7 @@
 
 - name: Determine database name based on environment
   set_fact:
-    db_name: "editorial_{{ target_env | default('dev') }}"
+    db_name: "editorial_{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% elif target_env | default('staging') == 'staging' %}staging{% else %}dev{% endif %}"
 
 - name: Create editorial database credentials secret
   shell: |
