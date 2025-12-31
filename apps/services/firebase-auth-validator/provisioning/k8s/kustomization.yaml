@@ -5,6 +5,7 @@ namespace: default
 
 resources:
   - deployment.yaml
+  - service.yaml
 
 images:
   - name: firebase-auth-validator

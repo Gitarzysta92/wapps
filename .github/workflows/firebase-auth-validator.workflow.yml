@@ -5,7 +5,7 @@ on:
     branches: [develop, main]
     paths:
       - 'apps/services/firebase-auth-validator/**'
-      - 'environments/*/apps/catalog-bff-kustomization/**'
+      - 'environments/*/apps/firebase-auth-validator-kustomization/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -162,14 +162,14 @@ jobs:
           image-tag: ${{ needs.build.outputs.image }}
           environment: ${{ steps.env-vars.outputs.env_short }}
 
-      - name: Apply ingress configurations
+      - name: Apply environment configuration
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
           
-          # Apply catalog-bff ingress with auth
-          if [ -d "environments/${ENV_SHORT}/apps/catalog-bff-kustomization" ]; then
-            kubectl apply -k environments/${ENV_SHORT}/apps/catalog-bff-kustomization/
-            echo "✅ Ingress configurations applied"
+          # Apply firebase-auth-validator environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/firebase-auth-validator-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/firebase-auth-validator-kustomization/
+            echo "✅ Environment configuration applied"
           fi
 
       - name: Apply network policies
