@@ -17,18 +17,37 @@ spec:
           value: "0.0.0.0"
         - name: PORT
           value: "1337"
+        # Database credentials from Kubernetes secret (created by Ansible)
         - name: DATABASE_CLIENT
-          value: "mysql2"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_CLIENT
         - name: DATABASE_HOST
-          value: "mysql.mysql"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_HOST
         - name: DATABASE_PORT
-          value: "3306"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_PORT
         - name: DATABASE_NAME
-          value: "editorial_dev"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_NAME
         - name: DATABASE_USERNAME
-          value: "editorial"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_USERNAME
         - name: DATABASE_PASSWORD
-          value: "editorial_password"
+          valueFrom:
+            secretKeyRef:
+              name: editorial-db-credentials
+              key: DATABASE_PASSWORD
         resources:
           limits:
             cpu: 1000m

@@ -1,0 +1,337 @@
+---
+# ==============================================
+# MySQL Installation on Host for Kubernetes Cluster
+# ==============================================
+# This playbook installs MySQL server on the host machine and configures
+# it to be accessible from pods running in the Kubernetes cluster.
+# It creates a Kubernetes Service with manual Endpoints pointing to the host IP.
+
+- name: Install MySQL server and dependencies
+  package:
+    name: 
+      - mysql-server
+      - python3-pymysql
+    state: present
+
+- name: Start and enable MySQL service
+  systemd:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Wait for MySQL to be ready
+  wait_for:
+    port: 3306
+    host: 127.0.0.1
+    timeout: 30
+
+# ==============================================
+# MySQL Root Configuration
+# ==============================================
+- name: Set MySQL root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+  ignore_errors: yes
+
+# ==============================================
+# MySQL Configuration for Cluster Access
+# ==============================================
+- name: Create MySQL configuration for cluster access
+  copy:
+    content: |
+      [mysqld]
+      # Bind to all interfaces so cluster pods can connect
+      bind-address = 0.0.0.0
+      port = 3306
+      
+      # Connection limits
+      max_connections = 200
+      
+      # Performance tuning
+      innodb_buffer_pool_size = 512M
+      innodb_log_file_size = 128M
+      
+      # Security
+      skip-name-resolve
+      
+      # Character set (required for Strapi and modern apps)
+      character-set-server = utf8mb4
+      collation-server = utf8mb4_unicode_ci
+      
+      # Logging (optional - uncomment for debugging)
+      # general_log = 1
+      # general_log_file = /var/log/mysql/general.log
+      # log_error = /var/log/mysql/error.log
+    dest: /etc/mysql/mysql.conf.d/wapps.cnf
+    mode: '0644'
+  register: mysql_config
+
+- name: Restart MySQL if configuration changed
+  systemd:
+    name: mysql
+    state: restarted
+  when: mysql_config.changed
+
+- name: Wait for MySQL after restart
+  wait_for:
+    port: 3306
+    host: 127.0.0.1
+    timeout: 30
+  when: mysql_config.changed
+
+# ==============================================
+# Database Creation
+# ==============================================
+- name: Create editorial databases for different environments
+  mysql_db:
+    name: "{{ item }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password | default('root_password') }}"
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+  loop:
+    - editorial_dev
+    - editorial_staging
+    - editorial_prod
+
+# ==============================================
+# Database User Creation
+# ==============================================
+- name: Create editorial database user
+  mysql_user:
+    name: editorial
+    password: "{{ mysql_editorial_password | default('editorial_password') }}"
+    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL'
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password | default('root_password') }}"
+
+# ==============================================
+# Firewall Configuration
+# ==============================================
+- name: Allow MySQL through firewall
+  ufw:
+    rule: allow
+    port: "3306"
+    proto: tcp
+    comment: "MySQL for Kubernetes cluster"
+
+# ==============================================
+# Kubernetes Service Integration
+# ==============================================
+- name: Get host primary IP address
+  set_fact:
+    host_ip: "{{ ansible_default_ipv4.address }}"
+
+- name: Display detected host IP for verification
+  debug:
+    msg: "Detected host IP address: {{ host_ip }}"
+
+- name: Create MySQL namespace in Kubernetes
+  shell: kubectl create namespace mysql --dry-run=client -o yaml | kubectl apply -f -
+  register: mysql_namespace
+
+- name: Create Kubernetes Service for host MySQL
+  shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: mysql
+      namespace: mysql
+      labels:
+        app: mysql
+        type: external-host-service
+      annotations:
+        description: "MySQL running on host machine"
+    spec:
+      type: ClusterIP
+      ports:
+        - name: mysql
+          port: 3306
+          targetPort: 3306
+          protocol: TCP
+    EOF
+  register: mysql_k8s_service
+
+- name: Create Kubernetes Endpoints for host MySQL
+  shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Endpoints
+    metadata:
+      name: mysql
+      namespace: mysql
+      labels:
+        app: mysql
+        type: external-host-service
+      annotations:
+        description: "Points to MySQL on host at {{ host_ip }}"
+    subsets:
+      - addresses:
+          - ip: {{ host_ip }}
+        ports:
+          - name: mysql
+            port: 3306
+            protocol: TCP
+    EOF
+  register: mysql_k8s_endpoints
+
+# ==============================================
+# Kubernetes Secrets for Applications
+# ==============================================
+- name: Create editorial namespace if not exists
+  shell: kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
+  register: editorial_namespace
+
+- name: Determine database name based on environment
+  set_fact:
+    db_name: "editorial_{{ target_env | default('dev') }}"
+
+- name: Create editorial database credentials secret
+  shell: |
+    kubectl create secret generic editorial-db-credentials \
+      --namespace=editorial \
+      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_HOST=mysql.mysql \
+      --from-literal=DATABASE_PORT=3306 \
+      --from-literal=DATABASE_NAME={{ db_name }} \
+      --from-literal=DATABASE_USERNAME=editorial \
+      --from-literal=DATABASE_PASSWORD={{ mysql_editorial_password | default('editorial_password') }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: editorial_db_secret
+
+- name: Create catalog namespace if not exists
+  shell: kubectl create namespace catalog --dry-run=client -o yaml | kubectl apply -f -
+  register: catalog_namespace
+
+# ==============================================
+# Verification Tests
+# ==============================================
+- name: Test local MySQL connection
+  shell: |
+    mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
+      -e "SELECT 1 AS test;" {{ db_name }}
+  register: mysql_local_test
+  changed_when: false
+  failed_when: mysql_local_test.rc != 0
+
+- name: Test MySQL connection from cluster
+  shell: |
+    kubectl run mysql-connection-test \
+      --rm -i --restart=Never \
+      --image=mysql:8.0 \
+      --namespace=mysql \
+      --command -- \
+      mysql -h mysql.mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
+      -e "SELECT 'Connection successful from cluster' AS status, NOW() AS timestamp, '{{ host_ip }}' AS host_ip;" {{ db_name }}
+  register: mysql_cluster_test
+  changed_when: false
+  failed_when: false
+
+- name: Get Kubernetes Service ClusterIP
+  shell: kubectl get service mysql -n mysql -o jsonpath='{.spec.clusterIP}'
+  register: mysql_service_ip
+  changed_when: false
+
+- name: Get Kubernetes Endpoints IP
+  shell: kubectl get endpoints mysql -n mysql -o jsonpath='{.subsets[0].addresses[0].ip}'
+  register: mysql_endpoint_ip
+  changed_when: false
+
+# ==============================================
+# Display Installation Summary
+# ==============================================
+- name: Display MySQL installation summary
+  debug:
+    msg: |
+      ╔════════════════════════════════════════════════════════════════╗
+      ║          MySQL Installation Complete                           ║
+      ╚════════════════════════════════════════════════════════════════╝
+      
+      📊 DATABASE INFORMATION:
+      ├─ Host IP: {{ host_ip }}
+      ├─ Port: 3306
+      ├─ Bind Address: 0.0.0.0 (accessible from cluster)
+      ├─ Character Set: utf8mb4
+      └─ Max Connections: 200
+      
+      📁 DATABASES CREATED:
+      ├─ editorial_dev
+      ├─ editorial_staging
+      └─ editorial_prod
+      
+      👤 DATABASE USER:
+      ├─ Username: editorial
+      ├─ Password: {{ mysql_editorial_password | default('editorial_password') }}
+      ├─ Permissions: ALL on editorial_*.*
+      └─ Access: From any host (%)
+      
+      ☸️  KUBERNETES INTEGRATION:
+      ├─ Namespace: mysql
+      ├─ Service Name: mysql
+      ├─ Service ClusterIP: {{ mysql_service_ip.stdout }}
+      ├─ Endpoint IP: {{ mysql_endpoint_ip.stdout }} (host)
+      └─ DNS: mysql.mysql.svc.cluster.local
+      
+      🔐 KUBERNETES SECRETS CREATED:
+      ├─ editorial-db-credentials (namespace: editorial)
+      └─ Contains: All database connection parameters
+      
+      ✅ CONNECTION TESTS:
+      ├─ Local: {{ 'PASSED ✓' if mysql_local_test.rc == 0 else 'FAILED ✗' }}
+      └─ From Cluster: {{ 'PASSED ✓' if mysql_cluster_test.rc == 0 else 'CHECK LOGS' }}
+      
+      📝 USAGE IN EDITORIAL POD:
+      
+      Option 1 - Use environment variables:
+        env:
+          - name: DATABASE_HOST
+            value: "mysql.mysql"
+          - name: DATABASE_PORT
+            value: "3306"
+          - name: DATABASE_NAME
+            value: "{{ db_name }}"
+          - name: DATABASE_USERNAME
+            value: "editorial"
+          - name: DATABASE_PASSWORD
+            value: "<secret>"
+      
+      Option 2 - Use Kubernetes Secret (recommended):
+        envFrom:
+          - secretRef:
+              name: editorial-db-credentials
+      
+      🔧 MAINTENANCE COMMANDS:
+      
+      View Kubernetes service:
+        kubectl get svc mysql -n mysql
+      
+      View endpoints:
+        kubectl get endpoints mysql -n mysql -o yaml
+      
+      View secret:
+        kubectl get secret editorial-db-credentials -n editorial -o yaml
+      
+      Update endpoint if host IP changes:
+        kubectl patch endpoints mysql -n mysql --type=json \
+          -p='[{"op":"replace","path":"/subsets/0/addresses/0/ip","value":"NEW_IP"}]'
+      
+      Test connection from cluster:
+        kubectl run mysql-test --rm -it --restart=Never \
+          --image=mysql:8.0 --namespace=mysql -- \
+          mysql -h mysql.mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
+          -e "SHOW DATABASES;"
+      
+      Access MySQL from host:
+        mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} {{ db_name }}
+      
+      ╔════════════════════════════════════════════════════════════════╗
+      ║  MySQL is accessible from pods via: mysql.mysql:3306           ║
+      ╚════════════════════════════════════════════════════════════════╝
+

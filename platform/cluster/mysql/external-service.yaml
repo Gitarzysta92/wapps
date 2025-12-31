@@ -1,0 +1,81 @@
+---
+# This is a reference manifest showing the Kubernetes Service and Endpoints
+# that Ansible creates automatically. You don't need to apply this manually.
+# It's provided for documentation and reference purposes.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mysql
+  labels:
+    name: mysql
+
+---
+# Service provides a stable DNS name for MySQL
+# Pods connect to: mysql.mysql or mysql.mysql.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: mysql
+  labels:
+    app: mysql
+    type: external-host-service
+  annotations:
+    description: "MySQL server running on host machine"
+    provisioned-by: "ansible"
+spec:
+  type: ClusterIP
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+      protocol: TCP
+
+---
+# Endpoints specify the actual IP address to route traffic to
+# This points to the host machine's IP (automatically detected by Ansible)
+# NOTE: The IP address here is a placeholder - Ansible replaces it with the actual host IP
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mysql
+  namespace: mysql
+  labels:
+    app: mysql
+    type: external-host-service
+  annotations:
+    description: "Points to MySQL server on host machine"
+    provisioned-by: "ansible"
+subsets:
+  - addresses:
+      - ip: 192.168.1.100  # PLACEHOLDER - Ansible replaces with {{ ansible_default_ipv4.address }}
+    ports:
+      - name: mysql
+        port: 3306
+        protocol: TCP
+
+---
+# Secret for editorial service to use
+# Contains all database connection parameters
+# NOTE: Ansible creates this with actual passwords
+apiVersion: v1
+kind: Secret
+metadata:
+  name: editorial-db-credentials
+  namespace: editorial
+  labels:
+    app: editorial
+    component: database
+  annotations:
+    description: "Database credentials for Editorial service"
+    provisioned-by: "ansible"
+type: Opaque
+stringData:
+  DATABASE_CLIENT: mysql2
+  DATABASE_HOST: mysql.mysql
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: editorial_dev  # Or editorial_staging, editorial_prod based on environment
+  DATABASE_USERNAME: editorial
+  DATABASE_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password
+

@@ -55,23 +55,24 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
       apiBaseUrl: 'https://api.myfavorites.com',
     }),
     provideCategoryFeature({
-      path: NAVIGATION.categories.path
+      path: NAVIGATION.categories.path,
+      useBff: true
     }),
     // provideTrendingTagsFeature({
     //   path: NAVIGATION.tags.path
     // }),
     provideFilterFeature(),
     // appConfigCSR,
-    provideListingFeature(),
+    provideListingFeature({ useBff: true }),
     provideListingPlatformFeature(),
     provideCompatibilityFeature(),
     provideListingMonetizationFeature(),
     provideSocialsFeature(),
     provideUserStatisticPlatformFeature(),
-    provideTagsFeature(),
+    provideTagsFeature({ useBff: true }),
     provideMultiSearchFeature(),
     provideSmartSearchFeature(),
-  provideApplicationOverviewFeature(),
+  provideApplicationOverviewFeature({ useBff: true }),
     provideSharingFeature({
       baseUrl: 'https://api.sharing.com'
     }),

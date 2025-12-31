@@ -95,7 +95,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        providers: [provideApplicationOverviewFeature().providers],
+        providers: [provideApplicationOverviewFeature({ useBff: true }).providers],
         data: {asd: 'asd'},
         children: [
           {
