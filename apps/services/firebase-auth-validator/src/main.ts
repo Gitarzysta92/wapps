@@ -49,7 +49,7 @@ app.get('/validate', async (req: Request, res: Response) => {
     console.log(`✅ Token validated for user: ${decodedToken.uid}`);
     
     // Return 200 for successful validation
-    res.status(200).json({ 
+    return res.status(200).json({ 
       authenticated: true,
       uid: decodedToken.uid 
     });
