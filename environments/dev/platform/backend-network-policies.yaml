@@ -1,14 +1,17 @@
-# Network Policies to ensure backend services only accept traffic from Kong
+# Network Policies for Backend Services
+
+# These policies ensure backend services can only be accessed via ingress-nginx
+# This provides a security layer even without a dedicated API gateway
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: catalog-bff-kong-only
+  name: catalog-bff-ingress-only
   namespace: catalog
   labels:
     app: catalog-bff
-    security: kong-gateway
+    security: ingress-controlled
 spec:
   podSelector:
     matchLabels:
@@ -16,11 +19,11 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    # Allow traffic from Kong namespace
+    # Allow traffic from ingress-nginx
     - from:
       - namespaceSelector:
           matchLabels:
-            name: kong
+            app.kubernetes.io/name: ingress-nginx
       ports:
       - protocol: TCP
         port: 80
@@ -36,7 +39,7 @@ spec:
     - from:
       - namespaceSelector:
           matchLabels:
-            name: kube-system
+            kubernetes.io/metadata.name: kube-system
       ports:
       - protocol: TCP
         port: 80
@@ -45,11 +48,11 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: editorial-kong-only
+  name: editorial-ingress-only
   namespace: editorial
   labels:
     app: editorial
-    security: kong-gateway
+    security: ingress-controlled
 spec:
   podSelector:
     matchLabels:
@@ -57,11 +60,11 @@ spec:
   policyTypes:
     - Ingress
   ingress:
-    # Allow traffic from Kong namespace
+    # Allow traffic from ingress-nginx
     - from:
       - namespaceSelector:
           matchLabels:
-            name: kong
+            app.kubernetes.io/name: ingress-nginx
       ports:
       - protocol: TCP
         port: 1337
@@ -77,28 +80,12 @@ spec:
     - from:
       - namespaceSelector:
           matchLabels:
-            name: kube-system
+            kubernetes.io/metadata.name: kube-system
       ports:
       - protocol: TCP
         port: 1337
 
 ---
-# Note: Add similar policies for other backend services as needed
-# Example for aggregator-ssr if it has API endpoints:
-# apiVersion: networking.k8s.io/v1
-# kind: NetworkPolicy
-# metadata:
-#   name: aggregator-ssr-kong-only
-#   namespace: aggregator
-# spec:
-#   podSelector:
-#     matchLabels:
-#       app: aggregator-ssr
-#   policyTypes:
-#     - Ingress
-#   ingress:
-#     - from:
-#       - namespaceSelector:
-#           matchLabels:
-#             name: kong
-
+# Note: Frontend applications (aggregator-csr, aggregator-ssr, etc.) 
+# should remain publicly accessible via ingress-nginx
+# They don't need restrictive network policies

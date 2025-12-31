@@ -4,12 +4,7 @@ kind: Kustomization
 namespace: catalog
 
 resources:
-  - ../../../../apps/services/catalog-bff/provisioning/k8s
+- ingress-patch.yaml
 
-patchesStrategicMerge:
-  - deployment-patch.yaml
-
-images:
-  - name: ghcr.io/gitarzysta92/catalog-bff
-    newTag: latest
-
+commonLabels:
+  environment: development

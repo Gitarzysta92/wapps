@@ -1,0 +1,122 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-bff-public-api
+  namespace: catalog
+  labels:
+    app: catalog-bff
+    type: public-api
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Route-Type: api-public";
+      more_set_headers "X-Service: catalog-bff";
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.development.wapps.com
+    http:
+      paths:
+      # Public routes - no authentication required
+      - path: /catalog/listings
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80
+      - path: /catalog/search
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-bff-protected-api
+  namespace: catalog
+  labels:
+    app: catalog-bff
+    type: protected-api
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rate-limit: "60"
+    nginx.ingress.kubernetes.io/limit-rps: "60"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    # Firebase authentication
+    nginx.ingress.kubernetes.io/auth-url: "http://firebase-auth-validator.default.svc.cluster.local/validate"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-Auth-Time,X-User-Claims"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Route-Type: api-protected";
+      more_set_headers "X-Service: catalog-bff";
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.development.wapps.com
+    http:
+      paths:
+      # Protected routes - Firebase authentication required
+      - path: /catalog/my-listings
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80
+      - path: /catalog/favorites
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-bff-optional-auth-api
+  namespace: catalog
+  labels:
+    app: catalog-bff
+    type: optional-auth-api
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rate-limit: "80"
+    nginx.ingress.kubernetes.io/limit-rps: "80"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    # Optional authentication - allows anonymous access
+    nginx.ingress.kubernetes.io/auth-url: "http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-Anonymous"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Route-Type: api";
+      more_set_headers "X-Service: catalog-bff";
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.development.wapps.com
+    http:
+      paths:
+      # Routes with optional auth - personalized if authenticated
+      - path: /catalog
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80
+
