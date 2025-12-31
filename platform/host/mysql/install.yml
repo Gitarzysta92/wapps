@@ -92,6 +92,7 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     encoding: utf8mb4
     collation: utf8mb4_unicode_ci
   loop:
@@ -111,6 +112,7 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
 
 # ==============================================
 # Firewall Configuration
