@@ -30,7 +30,7 @@ jobs:
       contents: read
       packages: write
     outputs:
-      image: ${{ steps.meta.outputs.tags }}
+      image: ${{ steps.image-tag.outputs.tag }}
       environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
@@ -81,6 +81,15 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Extract single image tag for deployment
+        id: image-tag
+        run: |
+          # Extract the SHA-based tag (last line, most specific)
+          TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Using image tag: $TAG"
+        shell: bash
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
