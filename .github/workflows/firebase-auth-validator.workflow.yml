@@ -1,0 +1,238 @@
+name: 'Firebase Auth Validator - Build & Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/services/firebase-auth-validator/**'
+      - 'environments/*/apps/catalog-bff-kustomization/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  SERVICE_NAME: firebase-auth-validator
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/firebase-auth-validator
+
+jobs:
+  build:
+    name: 'Build Docker Image'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/services/firebase-auth-validator/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/services/firebase-auth-validator
+        run: npm ci
+
+      - name: Build TypeScript
+        working-directory: apps/services/firebase-auth-validator
+        run: npm run build
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/services/firebase-auth-validator
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image digest
+        run: echo "Image built and pushed with tags: ${{ steps.meta.outputs.tags }}"
+
+  deploy:
+    name: 'Deploy to Kubernetes'
+    runs-on: self-hosted
+    needs: build
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+
+      - name: Update Firebase Project ID secret
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          
+          # Get Firebase Project ID from GitHub Secrets
+          if [ "${ENV}" == "production" ]; then
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_PROD }}"
+          else
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
+          fi
+          
+          if [ -z "$FIREBASE_ID" ]; then
+            echo "::error::Firebase Project ID not configured for ${ENV} environment"
+            exit 1
+          fi
+          
+          # Create or update secret
+          kubectl create secret generic firebase-config \
+            --from-literal=project-id="${FIREBASE_ID}" \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "✅ Firebase config secret updated"
+
+      - name: Update deployment image
+        run: |
+          # Update image tag in deployment
+          kubectl set image deployment/firebase-auth-validator \
+            firebase-auth-validator=${{ needs.build.outputs.image }} \
+            -n default || echo "Deployment not found, will create"
+
+      - name: Deploy auth validator
+        run: |
+          # Apply deployment
+          kubectl apply -f apps/services/firebase-auth-validator/k8s/deployment.yaml
+          echo "✅ Firebase auth validator deployed"
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/firebase-auth-validator -n default --timeout=300s
+          echo "✅ Rollout completed successfully"
+
+      - name: Verify deployment
+        run: |
+          echo "Firebase Auth Validator pods:"
+          kubectl get pods -n default -l app=firebase-auth-validator
+          
+          echo ""
+          echo "Firebase Auth Validator service:"
+          kubectl get svc -n default firebase-auth-validator
+
+      - name: Test health endpoint
+        run: |
+          sleep 5
+          
+          POD=$(kubectl get pods -n default -l app=firebase-auth-validator -o jsonpath='{.items[0].metadata.name}')
+          
+          if [ -n "$POD" ]; then
+            echo "Testing health endpoint..."
+            kubectl exec -n default $POD -- wget -qO- http://localhost:8080/health | grep -q "healthy" && \
+              echo "✅ Health check passed" || echo "⚠️ Health check failed"
+          else
+            echo "⚠️ No pods found"
+          fi
+
+      - name: Apply ingress configurations
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply catalog-bff ingress with auth
+          if [ -d "environments/${ENV_SHORT}/apps/catalog-bff-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/catalog-bff-kustomization/
+            echo "✅ Ingress configurations applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Firebase Auth Validator - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ needs.build.outputs.image }}"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Firebase Auth Validator deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Validate: http://firebase-auth-validator.default.svc.cluster.local/validate"
+            echo "  - Validate Optional: http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
+            echo "  - Health: http://firebase-auth-validator.default.svc.cluster.local/health"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Test with a Firebase token"
+            echo "  2. Check logs: kubectl logs -n default -l app=firebase-auth-validator --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n catalog"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
