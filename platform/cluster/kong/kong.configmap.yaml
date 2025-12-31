@@ -7,25 +7,10 @@ data:
   kong.yml: |
     _format_version: "3.0"
     
-    # Consumers for JWT authentication
+    # Consumers for optional authentication
     consumers:
-    - username: firebase-user
-      # This consumer represents any user authenticated via Firebase
-      custom_id: firebase-authenticated
-      
     - username: anonymous-user
-      # This consumer is used for routes with optional authentication
       custom_id: anonymous
-    
-    # JWT credentials for Firebase
-    jwt_secrets:
-    - consumer: firebase-user
-      key: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
-      algorithm: RS256
-      rsa_public_key: |
-        # Public keys are automatically fetched from Firebase JWKS endpoint
-        # Kong will cache and refresh these keys automatically
-      secret: "firebase-jwt-secret"
     
     services:
     - name: aggregator-ssr-service
@@ -58,9 +43,8 @@ data:
             headers:
             - "X-Route-Type: api-public"
             - "X-Service: catalog-bff"
-            - "X-Kong-Upstream: catalog-bff"
     
-    # Catalog BFF API routes - Protected (auth required)
+    # Catalog BFF API routes - Protected (OIDC auth with Firebase)
     - name: catalog-protected-route
       service: catalog-bff-service
       hosts:
@@ -70,17 +54,15 @@ data:
       - /catalog/favorites
       strip_path: false
       plugins:
-      - name: jwt
+      - name: openid-connect
         config:
-          uri_param_names:
-            - jwt
-          cookie_names:
-            - firebase_token
-          key_claim_name: kid
-          claims_to_verify:
-            - exp
           issuer: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
-          maximum_expiration: 3600
+          client_id:
+            - "{{ FIREBASE_PROJECT_ID }}"
+          ssl_verify: true
+          bearer_only: true
+          response_mode: header
+          skip_already_auth_requests: true
       - name: rate-limiting
         config:
           minute: 60
@@ -91,9 +73,8 @@ data:
             headers:
             - "X-Route-Type: api-protected"
             - "X-Service: catalog-bff"
-            - "X-Kong-Upstream: catalog-bff"
     
-    # Catalog BFF API routes - Optional auth (personalized if authenticated)
+    # Catalog BFF API routes - Optional auth
     - name: catalog-api-route
       service: catalog-bff-service
       hosts:
@@ -102,18 +83,6 @@ data:
       - /catalog
       strip_path: false
       plugins:
-      - name: jwt
-        config:
-          uri_param_names:
-            - jwt
-          cookie_names:
-            - firebase_token
-          key_claim_name: kid
-          claims_to_verify:
-            - exp
-          anonymous: anonymous-user
-          issuer: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
-          maximum_expiration: 3600
       - name: rate-limiting
         config:
           minute: 80
@@ -124,9 +93,8 @@ data:
             headers:
             - "X-Route-Type: api"
             - "X-Service: catalog-bff"
-            - "X-Kong-Upstream: catalog-bff"
     
-    # Editorial Service - All routes
+    # Editorial Service
     - name: editorial-route
       service: aggregator-ssr-service
       hosts:
@@ -145,11 +113,10 @@ data:
             headers:
             - "X-Route-Type: api"
             - "X-Service: editorial"
-            - "X-Kong-Upstream: editorial"
     
-    # Auth Service - Backend authentication endpoints
+    # Auth Service
     - name: auth-service-route
-      service: catalog-bff-service  # Update this when auth service is created
+      service: catalog-bff-service
       hosts:
       - api.development.wapps.com
       paths:
@@ -166,9 +133,8 @@ data:
             headers:
             - "X-Route-Type: auth"
             - "X-Service: auth"
-            - "X-Kong-Upstream: auth-service"
 
-    # Static routes with fallback to SSR
+    # Static routes
     - name: home-route
       service: cdn-service
       paths:
@@ -225,7 +191,7 @@ data:
             headers:
             - "X-Route-Type: dynamic"
     
-    # Default fallback to SSR
+    # Default fallback
     - name: default-route
       service: aggregator-ssr-service
       paths:
