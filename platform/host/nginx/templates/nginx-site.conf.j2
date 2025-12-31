@@ -61,7 +61,7 @@ server {
     }
 }
 
-# Kong API Gateway - All API traffic goes through Kong
+# API Gateway - All API traffic goes through ingress-nginx
 server {
     listen 80;
     listen 443 ssl http2;
@@ -74,13 +74,10 @@ server {
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
     
-    # Route all API traffic through Kong API Gateway
+    # Route all API traffic through ingress-nginx
+    # This enables firebase-auth-validator integration via ingress annotations
     location / {
-        # Option 1: Direct to Kong (bypass ingress-nginx) - Better performance
-        proxy_pass http://127.0.0.1:30080;  # Kong NodePort
-        
-        # Option 2: Through ingress-nginx (uncomment if preferred)
-        # proxy_pass http://127.0.0.1:32080;  # Ingress-nginx NodePort
+        proxy_pass http://127.0.0.1:32080;  # Ingress-nginx NodePort
         
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
