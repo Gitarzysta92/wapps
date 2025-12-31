@@ -15,6 +15,7 @@
       - htop
       - vim
       - jq
+      - python3-pymysql  # Required for Ansible MySQL modules
     state: present
 
 - name: Create initial user
