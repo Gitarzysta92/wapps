@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: apps/services/firebase-auth-validator
-        run: npm ci
+        run: npm install
 
       - name: Build TypeScript
         working-directory: apps/services/firebase-auth-validator
