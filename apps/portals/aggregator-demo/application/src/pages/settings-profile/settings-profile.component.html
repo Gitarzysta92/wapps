@@ -1,0 +1,187 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+
+  <h1 uiPageTitle slot="title">Profile Settings</h1>
+
+  <p slot="meta" class="page-description">
+    Manage your public profile information
+  </p>
+</ui-page-header>
+
+@if (isError()) {
+  <section class="error-section">
+    <p>Error loading profile. Please try again.</p>
+  </section>
+} @else {
+  <section class="settings-content">
+    <!-- Avatar Section -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          Profile Picture
+        </h2>
+      </header>
+      <div class="avatar-section">
+        <tui-avatar
+          [src]="profile()?.avatar?.uri || ''"
+          size="xl"
+        >
+          {{ (profile()?.name || 'User').substring(0, 2).toUpperCase() }}
+        </tui-avatar>
+        <div class="avatar-actions">
+          <button
+            tuiButton
+            appearance="secondary"
+            iconStart="@tui.upload"
+            type="button"
+          >
+            Upload new photo
+          </button>
+          <button
+            tuiButton
+            appearance="flat"
+            type="button"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Info Section -->
+    <form
+      tuiAppearance="floating"
+      tuiCardLarge
+      tuiForm="m"
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          Basic Information
+        </h2>
+      </header>
+
+      <tui-textfield>
+        <label tuiLabel>Display Name</label>
+        <input
+          tuiTextfield
+          [placeholder]="profile()?.name || 'Your name'"
+          [(ngModel)]="formData().name"
+          name="name"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Bio</label>
+        <textarea
+          tuiTextfield
+          placeholder="Tell others about yourself..."
+          [(ngModel)]="formData().bio"
+          name="bio"
+          rows="3"
+        ></textarea>
+        <span tuiHint>Maximum 500 characters</span>
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Location</label>
+        <input
+          tuiTextfield
+          placeholder="City, Country"
+          [(ngModel)]="formData().location"
+          name="location"
+        />
+      </tui-textfield>
+    </form>
+
+    <!-- Social Links Section -->
+    <form
+      tuiAppearance="floating"
+      tuiCardLarge
+      tuiForm="m"
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
+          Social Links
+        </h2>
+      </header>
+
+      <tui-textfield>
+        <label tuiLabel>Website</label>
+        <input
+          tuiTextfield
+          placeholder="https://yourwebsite.com"
+          [(ngModel)]="formData().website"
+          name="website"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Twitter / X</label>
+        <input
+          tuiTextfield
+          placeholder="@username"
+          [(ngModel)]="formData().twitter"
+          name="twitter"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>LinkedIn</label>
+        <input
+          tuiTextfield
+          placeholder="https://linkedin.com/in/username"
+          [(ngModel)]="formData().linkedin"
+          name="linkedin"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>GitHub</label>
+        <input
+          tuiTextfield
+          placeholder="@username"
+          [(ngModel)]="formData().github"
+          name="github"
+        />
+      </tui-textfield>
+    </form>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        tuiButton
+        appearance="primary"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="onSave()"
+      >
+        @if (isSaving()) {
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+    </div>
+  </section>
+}
+

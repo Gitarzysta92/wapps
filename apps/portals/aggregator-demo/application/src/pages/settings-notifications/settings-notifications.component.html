@@ -1,0 +1,319 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+
+  <h1 uiPageTitle slot="title">Notification Settings</h1>
+
+  <p slot="meta" class="page-description">
+    Control how and when you receive notifications
+  </p>
+</ui-page-header>
+
+@if (isError()) {
+  <section class="error-section">
+    <p>Error loading preferences. Please try again.</p>
+  </section>
+} @else {
+  <section class="settings-content">
+    <!-- Email Notifications -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          <tui-icon icon="@tui.mail" class="section-icon" />
+          Email Notifications
+        </h2>
+      </header>
+
+      <div class="settings-group">
+        <!-- Master toggle -->
+        <div class="setting-item setting-item--master">
+          <div class="setting-info">
+            <h3 class="setting-label">Enable Email Notifications</h3>
+            <p class="setting-description">Receive notifications via email</p>
+          </div>
+          <div class="setting-control">
+            <input
+              type="checkbox"
+              tuiSwitch
+              [ngModel]="emailPreferences().enabled"
+              (ngModelChange)="onEmailEnabledToggle($event)"
+            />
+          </div>
+        </div>
+
+        @if (emailPreferences().enabled) {
+          <!-- Frequency -->
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3 class="setting-label">Email Frequency</h3>
+              <p class="setting-description">How often to send notification emails</p>
+            </div>
+            <div class="setting-control">
+              @for (option of emailFrequencyOptions; track option.value) {
+                <button
+                  tuiButton
+                  size="s"
+                  [appearance]="emailPreferences().frequency === option.value ? 'primary' : 'secondary'"
+                  (click)="onEmailFrequencyChange(option.value)"
+                >
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Individual toggles -->
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">New Discussions</h3>
+              <p class="setting-description">Notify when new discussions are started in topics you follow</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().newDiscussions"
+                (ngModelChange)="onEmailPreferenceToggle('newDiscussions', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Discussion Replies</h3>
+              <p class="setting-description">Notify when someone replies to your discussions</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().discussionReplies"
+                (ngModelChange)="onEmailPreferenceToggle('discussionReplies', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">New Articles</h3>
+              <p class="setting-description">Notify about new articles in categories you follow</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().newArticles"
+                (ngModelChange)="onEmailPreferenceToggle('newArticles', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Favorite Updates</h3>
+              <p class="setting-description">Notify about updates to your favorite apps and suites</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().favoriteUpdates"
+                (ngModelChange)="onEmailPreferenceToggle('favoriteUpdates', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Weekly Digest</h3>
+              <p class="setting-description">Receive a weekly summary of activity</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().weeklyDigest"
+                (ngModelChange)="onEmailPreferenceToggle('weeklyDigest', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">System Announcements</h3>
+              <p class="setting-description">Important updates about the platform</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="emailPreferences().systemAnnouncements"
+                (ngModelChange)="onEmailPreferenceToggle('systemAnnouncements', $event)"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- In-App Notifications -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
+          <tui-icon icon="@tui.bell-ring" class="section-icon" />
+          In-App Notifications
+        </h2>
+      </header>
+
+      <div class="settings-group">
+        <div class="setting-item setting-item--master">
+          <div class="setting-info">
+            <h3 class="setting-label">Enable In-App Notifications</h3>
+            <p class="setting-description">Show notifications within the application</p>
+          </div>
+          <div class="setting-control">
+            <input
+              type="checkbox"
+              tuiSwitch
+              [ngModel]="inAppPreferences().enabled"
+              (ngModelChange)="onInAppEnabledToggle($event)"
+            />
+          </div>
+        </div>
+
+        @if (inAppPreferences().enabled) {
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Mentions</h3>
+              <p class="setting-description">Notify when someone mentions you in a discussion</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="inAppPreferences().discussionMentions"
+                (ngModelChange)="onInAppPreferenceToggle('discussionMentions', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Replies</h3>
+              <p class="setting-description">Notify when someone replies to your posts</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="inAppPreferences().discussionReplies"
+                (ngModelChange)="onInAppPreferenceToggle('discussionReplies', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">Favorite Updates</h3>
+              <p class="setting-description">Notify about changes to favorited items</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="inAppPreferences().favoriteUpdates"
+                (ngModelChange)="onInAppPreferenceToggle('favoriteUpdates', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="setting-item setting-item--toggle">
+            <div class="setting-info">
+              <h3 class="setting-label">System Alerts</h3>
+              <p class="setting-description">Critical system notifications and alerts</p>
+            </div>
+            <div class="setting-control">
+              <input
+                type="checkbox"
+                tuiSwitch
+                [ngModel]="inAppPreferences().systemAlerts"
+                (ngModelChange)="onInAppPreferenceToggle('systemAlerts', $event)"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Push Notifications -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header tuiHeader>
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          <tui-icon icon="@tui.smartphone" class="section-icon" />
+          Push Notifications
+        </h2>
+        <p class="section-subtitle">Coming soon - Mobile app required</p>
+      </header>
+
+      <div class="settings-group">
+        <div class="setting-item setting-item--master setting-item--disabled">
+          <div class="setting-info">
+            <h3 class="setting-label">Enable Push Notifications</h3>
+            <p class="setting-description">Receive notifications on your mobile device</p>
+          </div>
+          <div class="setting-control">
+            <input
+              type="checkbox"
+              tuiSwitch
+              [ngModel]="pushPreferences().enabled"
+              (ngModelChange)="onPushEnabledToggle($event)"
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onCancel()"
+      >
+        Reset to Defaults
+      </button>
+      <button
+        tuiButton
+        appearance="primary"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="onSave()"
+      >
+        @if (isSaving()) {
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+    </div>
+  </section>
+}

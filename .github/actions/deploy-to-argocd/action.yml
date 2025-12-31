@@ -4,6 +4,9 @@ inputs:
   app-name:
     description: 'ArgoCD application name'
     required: true
+  image-name:
+    description: 'Docker image name (defaults to app-name if not provided)'
+    required: false
   namespace:
     description: 'ArgoCD namespace'
     required: true
@@ -12,11 +15,14 @@ inputs:
     description: 'ArgoCD server URL'
     required: true
   argocd-username:
-    description: 'ArgoCD username'
-    required: true
+    description: 'ArgoCD username (for user/password authentication)'
+    required: false
   argocd-password:
-    description: 'ArgoCD password'
-    required: true
+    description: 'ArgoCD password (for user/password authentication)'
+    required: false
+  argocd-token:
+    description: 'ArgoCD authentication token (alternative to username/password)'
+    required: false
   image-tag:
     description: 'Docker image tag to deploy'
     required: true
@@ -41,22 +47,46 @@ runs:
 
     - name: Login to ArgoCD
       run: |
-        argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
+        if [ -n "${{ inputs.argocd-token }}" ]; then
+          echo "Logging in with token authentication"
+          argocd login ${{ inputs.argocd-server }} --auth-token "${{ inputs.argocd-token }}" --insecure --grpc-web
+        elif [ -n "${{ inputs.argocd-username }}" ] && [ -n "${{ inputs.argocd-password }}" ]; then
+          echo "Logging in with username/password authentication"
+          argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
+        else
+          echo "Error: Either argocd-token or both argocd-username and argocd-password must be provided"
+          exit 1
+        fi
       shell: bash
 
     - name: Set kustomize image override
       run: |
+        IMAGE_NAME="${{ inputs.image-name }}"
+        if [ -z "$IMAGE_NAME" ]; then
+          IMAGE_NAME="${{ inputs.app-name }}"
+        fi
+        
+        echo "Setting kustomize image for ${{ inputs.app-name }}: ghcr.io/gitarzysta92/${IMAGE_NAME}=${{ inputs.image-tag }}"
         argocd app set ${{ inputs.app-name }} \
-          --kustomize-image "ghcr.io/gitarzysta92/aggregator-demo-csr=${{ inputs.image-tag }}" \
+          --kustomize-image "ghcr.io/gitarzysta92/${IMAGE_NAME}=${{ inputs.image-tag }}" \
           --grpc-web
       shell: bash
 
-    - name: Sync ArgoCD application
-      run: |
-        argocd app sync ${{ inputs.app-name }} --grpc-web
-      shell: bash
+    # Manual sync is disabled because ArgoCD applications have auto-sync enabled.
+    # The 'argocd app set' command above triggers an automatic sync operation.
+    # Running 'argocd app sync' here causes a race condition error:
+    # "rpc error: code = FailedPrecondition desc = another operation is already in progress"
+    # because the auto-sync from the image override is still running.
+    #
+    # - name: Sync ArgoCD application
+    #   run: |
+    #     argocd app sync ${{ inputs.app-name }} --grpc-web
+    #   shell: bash
 
-    - name: Wait for deployment to be ready
+    - name: Wait for auto-sync deployment to be ready
       run: |
-        argocd app wait ${{ inputs.app-name }} --timeout 300 --grpc-web
+        echo "Waiting for ArgoCD auto-sync to complete..."
+        sleep 5  # Give ArgoCD a moment to detect the change and start auto-syncing
+        argocd app wait ${{ inputs.app-name }} --timeout 1000 --grpc-web
+        echo "✅ Deployment completed successfully"
       shell: bash

@@ -171,6 +171,9 @@
       "@portals/shared/features/my-profile": [
         "apps/portals/shared/features/my-profile/src/index.ts"
       ],
+      "@portals/shared/features/preferences": [
+        "apps/portals/shared/features/preferences/src/index.ts"
+      ],
       "@portals/shared/features/platform": [
         "apps/portals/shared/features/platform/src/index.ts"
       ],

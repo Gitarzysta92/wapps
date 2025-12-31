@@ -7,7 +7,7 @@ import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { FILTERS } from "./filters";
-import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION, DESKTOP_USER_MAIN_NAVIGATION } from "./navigation";
+import { APPLICATION_VIEW_MAIN_NAVIGATION, FOOTER_MAIN_NAVIGATION, FOOTER_QUATERNARY_NAVIGATION, FOOTER_SECONDARY_NAVIGATION, FOOTER_TERTIARY_NAVIGATION, MOBILE_MAIN_NAVIGATION, NAVIGATION, AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION, UNAUTHENTICATED_USER_MAIN_NAVIGATION, UNAUTHENTICATED_USER_SECONDARY_NAVIGATION, DESKTOP_MAIN_NAVIGATION, DESKTOP_USER_MAIN_NAVIGATION, SETTINGS_NAVIGATION } from "./navigation";
 import { AuthenticationGuard } from "@portals/shared/features/identity";
 import { HeaderPartialComponent } from "./partials/header/header.component";
 import { CommonSidebarComponent } from "./partials/common-sidebar/common-sidebar.component";
@@ -1158,18 +1158,54 @@ export const routes: Routes = [
       {
         path: NAVIGATION.settings.path,
         canActivate: [AuthenticationGuard],
-        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
-        data: { breadcrumb: [ NAVIGATION.settings ] },
+        data: {
+          breadcrumb: [NAVIGATION.home, NAVIGATION.settings],
+          bottomBar: {
+            component: CommonMobileBottomBarPartialComponent,
+            inputs: { navigation: MOBILE_MAIN_NAVIGATION }
+          },
+          leftSidebar: {
+            component: UserCommonSidebarComponent,
+            inputs: {
+              navigation: DESKTOP_USER_MAIN_NAVIGATION,
+              navigationSecondary: SETTINGS_NAVIGATION
+            }
+          },
+          footer: {
+            component: FooterPartialComponent,
+            inputs: {
+              primaryNavigation: FOOTER_MAIN_NAVIGATION,
+              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+            }
+          }
+        } as IAppShellRouteData & IBreadcrumbRouteData,
         children: [
           {
-            path: 'user',
-            loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
-            data: { breadcrumb: [ NAVIGATION.settings, NAVIGATION.settingsUser ] },
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'profile',
           },
           {
             path: 'profile',
-            loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsPageComponent),
-            data: { breadcrumb: [ NAVIGATION.settings, NAVIGATION.settingsProfile ] },
+            loadComponent: () => import('./pages/settings-profile/settings-profile.component').then(m => m.SettingsProfilePageComponent),
+            data: { breadcrumb: [NAVIGATION.home, NAVIGATION.settings, NAVIGATION.settingsProfile] },
+          },
+          {
+            path: 'preferences',
+            loadComponent: () => import('./pages/settings-preferences/settings-preferences.component').then(m => m.SettingsPreferencesPageComponent),
+            data: { breadcrumb: [NAVIGATION.home, NAVIGATION.settings, NAVIGATION.settingsPreferences] },
+          },
+          {
+            path: 'notifications',
+            loadComponent: () => import('./pages/settings-notifications/settings-notifications.component').then(m => m.SettingsNotificationsPageComponent),
+            data: { breadcrumb: [NAVIGATION.home, NAVIGATION.settings, NAVIGATION.settingsNotifications] },
+          },
+          {
+            path: 'privacy',
+            loadComponent: () => import('./pages/settings-privacy/settings-privacy.component').then(m => m.SettingsPrivacyPageComponent),
+            data: { breadcrumb: [NAVIGATION.home, NAVIGATION.settings, NAVIGATION.settingsPrivacy] },
           },
         ]
       }

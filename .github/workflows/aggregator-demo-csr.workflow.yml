@@ -130,6 +130,7 @@ jobs:
         uses: ./.github/actions/deploy-to-argocd
         with:
           app-name: ${{ env.APP_NAME }}
+          image-name: ${{ env.IMAGE_NAME }}
           namespace: ${{ env.NAMESPACE }}
           argocd-server: ${{ steps.argocd-url.outputs.server }}
           argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}

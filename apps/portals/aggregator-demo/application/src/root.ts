@@ -25,6 +25,7 @@ import { provideMyProfileFeature } from '@portals/shared/features/my-profile';
 import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
 import { provideSharingFeature } from '@portals/shared/features/sharing';
+import { providePreferencesFeature } from '@portals/shared/features/preferences';
 
 
 
@@ -74,6 +75,9 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
   provideApplicationOverviewFeature({ useBff: true }),
     provideSharingFeature({
       baseUrl: 'https://api.sharing.com'
+    }),
+    providePreferencesFeature({
+      apiBaseUrl: 'https://api.preferences.com'
     }),
   {
       providers: [

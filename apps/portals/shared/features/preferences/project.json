@@ -1,0 +1,25 @@
+{
+  "name": "portals-shared-features-preferences",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "preferences",
+  "sourceRoot": "apps/portals/shared/features/preferences",
+  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/portals/shared/features/preferences",
+        "main": "apps/portals/shared/features/preferences/src/index.ts",
+        "tsConfig": "apps/portals/shared/features/preferences/tsconfig.lib.json",
+        "assets": ["apps/portals/shared/features/preferences/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
+

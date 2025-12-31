@@ -1,0 +1,76 @@
+@use 'ui/design-system/src/styles' as *;
+
+.page-header {
+  margin-top: $space-20;
+}
+
+.page-description {
+  font-size: $font-size-md;
+  color: var(--tui-text-secondary);
+  margin: 0;
+}
+
+.error-section {
+  padding: $space-8;
+  text-align: center;
+  color: var(--tui-negative);
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: $radius-md;
+  margin-top: $space-8;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  margin-top: $space-8;
+  max-width: 720px;
+}
+
+.settings-card {
+  padding: $space-6;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0 0 $space-4 0;
+}
+
+.accent-bar {
+  width: 4px;
+  height: 1.2em;
+  border-radius: $radius-sm;
+}
+
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: $space-6;
+  padding: $space-4 0;
+
+  @media #{$layout-breakpoint-sm} {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-4;
+  margin-top: $space-4;
+  padding-top: $space-6;
+  border-top: 1px solid var(--tui-base-03);
+}
+
