@@ -22,6 +22,9 @@ Client → ingress-nginx → firebase-auth-validator → Backend
 
 ## Endpoints
 
+### `GET /api-docs`
+Interactive Swagger/OpenAPI documentation for the API. Provides detailed information about all endpoints, request/response schemas, and allows testing endpoints directly from the browser.
+
 ### `GET /validate`
 Validates Firebase JWT token. Returns 401 if no token or invalid token.
 

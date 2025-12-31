@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -8,6 +9,280 @@ const PORT = process.env.PORT || 8080;
 admin.initializeApp({
   projectId: process.env.FIREBASE_PROJECT_ID,
 });
+
+// Swagger documentation
+const swaggerDocument = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Firebase Auth Validator API',
+    version: '1.0.0',
+    description: 'Service for validating Firebase authentication tokens for ingress-nginx external auth',
+    contact: {
+      name: 'Platform Team'
+    }
+  },
+  servers: [
+    {
+      url: 'http://firebase-auth-validator.default.svc.cluster.local',
+      description: 'Kubernetes cluster internal'
+    }
+  ],
+  tags: [
+    {
+      name: 'Health',
+      description: 'Health check endpoints'
+    },
+    {
+      name: 'Authentication',
+      description: 'Firebase token validation endpoints'
+    }
+  ],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Firebase ID token'
+      }
+    },
+    schemas: {
+      HealthResponse: {
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+            example: 'healthy'
+          }
+        }
+      },
+      ValidateSuccessResponse: {
+        type: 'object',
+        properties: {
+          authenticated: {
+            type: 'boolean',
+            example: true
+          },
+          uid: {
+            type: 'string',
+            example: 'abc123xyz'
+          }
+        }
+      },
+      ValidateOptionalResponse: {
+        type: 'object',
+        properties: {
+          authenticated: {
+            type: 'boolean'
+          },
+          uid: {
+            type: 'string',
+            nullable: true
+          },
+          anonymous: {
+            type: 'boolean',
+            nullable: true
+          }
+        }
+      },
+      ErrorResponse: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'string',
+            example: 'Token validation failed'
+          }
+        }
+      }
+    },
+    responses: {
+      UnauthorizedError: {
+        description: 'Authentication token is missing or invalid',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/ErrorResponse'
+            }
+          }
+        },
+        headers: {
+          'WWW-Authenticate': {
+            schema: {
+              type: 'string',
+              example: 'Bearer'
+            }
+          }
+        }
+      }
+    }
+  },
+  paths: {
+    '/health': {
+      get: {
+        tags: ['Health'],
+        summary: 'Health check endpoint',
+        description: 'Returns the health status of the service',
+        responses: {
+          '200': {
+            description: 'Service is healthy',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/HealthResponse'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/validate': {
+      get: {
+        tags: ['Authentication'],
+        summary: 'Validate Firebase token (required)',
+        description: 'Validates Firebase ID token from Authorization header. Used by ingress-nginx external auth. Returns 401 if token is missing or invalid.',
+        security: [
+          {
+            BearerAuth: []
+          }
+        ],
+        parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...'
+            },
+            description: 'Firebase ID token in Bearer format'
+          }
+        ],
+        responses: {
+          '200': {
+            description: 'Token is valid',
+            headers: {
+              'X-User-Id': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Authenticated user ID'
+              },
+              'X-User-Email': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Authenticated user email'
+              },
+              'X-Auth-Time': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Authentication timestamp'
+              },
+              'X-User-Claims': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Custom claims as JSON string (if present)'
+              }
+            },
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ValidateSuccessResponse'
+                }
+              }
+            }
+          },
+          '401': {
+            $ref: '#/components/responses/UnauthorizedError'
+          }
+        }
+      }
+    },
+    '/validate-optional': {
+      get: {
+        tags: ['Authentication'],
+        summary: 'Validate Firebase token (optional)',
+        description: 'Validates Firebase ID token if present, otherwise allows anonymous access. Used for endpoints that support both authenticated and anonymous users.',
+        security: [
+          {
+            BearerAuth: []
+          },
+          {}
+        ],
+        parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...'
+            },
+            description: 'Firebase ID token in Bearer format (optional)'
+          }
+        ],
+        responses: {
+          '200': {
+            description: 'Token validated or anonymous access allowed',
+            headers: {
+              'X-User-Id': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Authenticated user ID (only if token provided and valid)'
+              },
+              'X-User-Email': {
+                schema: {
+                  type: 'string'
+                },
+                description: 'Authenticated user email (only if token provided and valid)'
+              },
+              'X-Anonymous': {
+                schema: {
+                  type: 'string',
+                  enum: ['true']
+                },
+                description: 'Set to "true" if accessing anonymously'
+              }
+            },
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ValidateOptionalResponse'
+                },
+                examples: {
+                  authenticated: {
+                    summary: 'Authenticated user',
+                    value: {
+                      authenticated: true,
+                      uid: 'abc123xyz'
+                    }
+                  },
+                  anonymous: {
+                    summary: 'Anonymous user',
+                    value: {
+                      authenticated: false,
+                      anonymous: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  customSiteTitle: 'Firebase Auth Validator API',
+  customCss: '.swagger-ui .topbar { display: none }',
+}));
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {

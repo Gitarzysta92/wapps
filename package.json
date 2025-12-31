@@ -37,6 +37,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^24.6.2",
     "@types/node-fetch": "^2.6.12",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/utils": "^8.19.0",
     "angular-eslint": "^19.2.0",
     "eslint": "^9.8.0",
@@ -112,6 +113,7 @@
     "puppeteer": "^24.10.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
+    "swagger-ui-express": "^5.0.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   }
