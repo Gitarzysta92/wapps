@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: firebase-auth-validator
-        image: firebase-auth-validator:latest
+        image: firebase-auth-validator
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
