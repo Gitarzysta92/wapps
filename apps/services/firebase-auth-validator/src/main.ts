@@ -4,11 +4,17 @@ import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const INGRESS_AUTH_SECRET = process.env.INGRESS_AUTH_SECRET;
 
 // Initialize Firebase Admin
 admin.initializeApp({
   projectId: process.env.FIREBASE_PROJECT_ID,
 });
+
+// Validate configuration
+if (!INGRESS_AUTH_SECRET) {
+  console.warn('⚠️  WARNING: INGRESS_AUTH_SECRET not set - backend services cannot validate auth headers!');
+}
 
 // Swagger documentation
 const swaggerDocument = {
@@ -316,6 +322,11 @@ app.get('/validate', async (req: Request, res: Response) => {
     res.setHeader('X-User-Email', decodedToken.email || '');
     res.setHeader('X-Auth-Time', decodedToken.auth_time?.toString() || '');
     
+    // Add shared secret so backend can verify headers came from ingress
+    if (INGRESS_AUTH_SECRET) {
+      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
+    }
+    
     // Add custom claims if present
     if (decodedToken.custom_claims) {
       res.setHeader('X-User-Claims', JSON.stringify(decodedToken.custom_claims));
@@ -352,6 +363,9 @@ app.get('/validate-optional', async (req: Request, res: Response) => {
   // If no auth header, allow through as anonymous
   if (!authHeader) {
     res.setHeader('X-Anonymous', 'true');
+    if (INGRESS_AUTH_SECRET) {
+      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
+    }
     return res.status(200).json({ authenticated: false, anonymous: true });
   }
 
@@ -363,6 +377,11 @@ app.get('/validate-optional', async (req: Request, res: Response) => {
     res.setHeader('X-User-Id', decodedToken.uid);
     res.setHeader('X-User-Email', decodedToken.email || '');
     
+    // Add shared secret
+    if (INGRESS_AUTH_SECRET) {
+      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
+    }
+    
     return res.status(200).json({ 
       authenticated: true,
       uid: decodedToken.uid 
@@ -370,6 +389,9 @@ app.get('/validate-optional', async (req: Request, res: Response) => {
   } catch (error) {
     // If token is invalid, allow through as anonymous
     res.setHeader('X-Anonymous', 'true');
+    if (INGRESS_AUTH_SECRET) {
+      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
+    }
     return res.status(200).json({ authenticated: false, anonymous: true });
   }
 });
