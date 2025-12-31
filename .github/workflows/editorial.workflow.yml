@@ -42,7 +42,7 @@ jobs:
     needs: test
     if: github.event_name == 'push'
     outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
+      image-tag: ${{ steps.image-tag.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,6 +70,15 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Extract single image tag for deployment
+        id: image-tag
+        run: |
+          # Extract the SHA-based tag (last line, most specific)
+          TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Using image tag: $TAG"
+        shell: bash
+
       - name: Build and push Docker image
         uses: ./.github/actions/build-and-push
         with:
@@ -83,34 +92,44 @@ jobs:
 
   deploy-dev:
     name: 'Deploy to Development'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     if: github.ref == 'refs/heads/develop'
     environment: development
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Deploy to ArgoCD
         uses: ./.github/actions/deploy-to-argocd
         with:
           app-name: ${{ env.IMAGE_NAME }}
+          image-name: ${{ env.IMAGE_NAME }}
           namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
+          argocd-server: argocd.development.wapps.com
+          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
+          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
           image-tag: ${{ needs.build.outputs.image-tag }}
           environment: dev
 
   deploy-prod:
     name: 'Deploy to Production'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Deploy to ArgoCD
         uses: ./.github/actions/deploy-to-argocd
         with:
           app-name: ${{ env.IMAGE_NAME }}
+          image-name: ${{ env.IMAGE_NAME }}
           namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
+          argocd-server: argocd.production.wapps.com
+          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
+          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
           image-tag: ${{ needs.build.outputs.image-tag }}
           environment: prod
