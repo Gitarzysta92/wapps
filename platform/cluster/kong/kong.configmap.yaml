@@ -7,6 +7,22 @@ data:
   kong.yml: |
     _format_version: "3.0"
     
+    # NOTE: Firebase JWT validation in Kong Open Source
+    # Kong's openid-connect plugin is Enterprise-only.
+    # For open-source Kong with Firebase auth, you have two options:
+    # 
+    # Option 1: Backend validation (RECOMMENDED)
+    #   - Kong routes to your backend without auth
+    #   - Backend validates Firebase tokens using Firebase Admin SDK
+    #   - See: platform/cluster/kong/BACKEND-FIREBASE-AUTH.md
+    #
+    # Option 2: Custom Lua plugin
+    #   - Write custom Kong plugin to validate Firebase JWTs
+    #   - Fetch JWKS from Firebase and validate signatures
+    #   - More complex but keeps auth at gateway layer
+    #
+    # Current config: Protected routes return 401 until backend auth is implemented
+    
     # Consumers for optional authentication
     consumers:
     - username: anonymous-user
@@ -44,7 +60,7 @@ data:
             - "X-Route-Type: api-public"
             - "X-Service: catalog-bff"
     
-    # Catalog BFF API routes - Protected (OIDC auth with Firebase)
+    # Catalog BFF API routes - Protected (auth required)
     - name: catalog-protected-route
       service: catalog-bff-service
       hosts:
@@ -54,15 +70,10 @@ data:
       - /catalog/favorites
       strip_path: false
       plugins:
-      - name: openid-connect
+      - name: request-termination
         config:
-          issuer: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
-          client_id:
-            - "{{ FIREBASE_PROJECT_ID }}"
-          ssl_verify: true
-          bearer_only: true
-          response_mode: header
-          skip_already_auth_requests: true
+          status_code: 401
+          message: "Authentication required (Firebase auth not yet configured)"
       - name: rate-limiting
         config:
           minute: 60
