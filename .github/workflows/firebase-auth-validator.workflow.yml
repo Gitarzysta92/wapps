@@ -138,18 +138,16 @@ jobs:
           
           echo "✅ Firebase config secret updated"
 
-      - name: Update deployment image
-        run: |
-          # Update image tag in deployment
-          kubectl set image deployment/firebase-auth-validator \
-            firebase-auth-validator=${{ needs.build.outputs.image }} \
-            -n default || echo "Deployment not found, will create"
-
       - name: Deploy auth validator
         run: |
-          # Apply deployment
+          # Apply deployment (creates or updates)
           kubectl apply -f apps/services/firebase-auth-validator/k8s/deployment.yaml
-          echo "✅ Firebase auth validator deployed"
+          echo "✅ Firebase auth validator deployment applied"
+          
+          # Update image if deployment already exists
+          kubectl set image deployment/firebase-auth-validator \
+            firebase-auth-validator=${{ needs.build.outputs.image }} \
+            -n default || echo "Image will be set by deployment manifest"
 
       - name: Wait for rollout
         run: |
