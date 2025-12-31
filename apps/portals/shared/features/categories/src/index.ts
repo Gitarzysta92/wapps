@@ -6,3 +6,4 @@ export * from './presentation/mappings/category-dto-to-filter-option-vm.mapper';
 export * from './presentation/category-list-container.directive';
 export * from './presentation/models/category.vm';
 export * from './category.providers';
+export * from './infrastructure/categories-bff-api.service';
