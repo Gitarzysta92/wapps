@@ -41,6 +41,21 @@ env:
   admin_access_log: "/dev/stdout"
   admin_error_log: "/dev/stderr"
 
+# Firebase Authentication Configuration for Development
+firebase:
+  enabled: true
+  # Replace with your actual Firebase project ID
+  projectId: "your-firebase-dev-project-id"
+  # JWT settings
+  jwt:
+    issuer: "https://securetoken.google.com/your-firebase-dev-project-id"
+    audience: "your-firebase-dev-project-id"
+    jwksUri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+    maxExpiration: 3600
+    # Algorithms supported by Firebase
+    algorithms:
+      - RS256
+
 ingress:
   enabled: true
   hosts:
@@ -55,3 +70,9 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Enable CORS at ingress level
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+

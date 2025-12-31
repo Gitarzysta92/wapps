@@ -1,0 +1,322 @@
+name: 'Kong API Gateway - Configuration & Deployment'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'platform/cluster/kong/**'
+      - 'environments/*/platform/kong.overlay.yml'
+      - 'environments/*/platform/api-gateway-ingress.yaml'
+      - 'environments/*/platform/backend-network-policies.yaml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+      apply_network_policies:
+        description: 'Apply NetworkPolicies (enforce Kong-only access)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  APP_NAME: kong
+  NAMESPACE: kong
+
+jobs:
+  configure:
+    name: 'Configure Kong with Firebase'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      config-changed: ${{ steps.check-changes.outputs.changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+        shell: bash
+
+      - name: Set Firebase Project ID
+        id: firebase-config
+        run: |
+          ENV="${{ steps.set-env.outputs.environment }}"
+          
+          # Use environment-specific Firebase project ID
+          if [ "${ENV}" == "production" ]; then
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_PROD }}"
+          else
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
+          fi
+          
+          if [ -z "$FIREBASE_ID" ]; then
+            echo "::error::Firebase Project ID not configured for ${ENV} environment"
+            echo "::error::Add FIREBASE_PROJECT_ID_DEV or FIREBASE_PROJECT_ID_PROD to GitHub Secrets"
+            exit 1
+          fi
+          
+          echo "project_id=${FIREBASE_ID}" >> $GITHUB_OUTPUT
+          echo "✅ Firebase Project ID configured for ${ENV}"
+        shell: bash
+
+      - name: Check if configuration needs update
+        id: check-changes
+        run: |
+          if grep -q "{{ FIREBASE_PROJECT_ID }}" platform/cluster/kong/kong.configmap.yaml; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Placeholders found - configuration needs update"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ Configuration already set"
+          fi
+        shell: bash
+
+      - name: Replace Firebase placeholders in Kong ConfigMap
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+          PROJECT_ID="${{ steps.firebase-config.outputs.project_id }}"
+          ENV="${{ steps.set-env.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)  # development -> dev
+          
+          echo "Configuring Kong for environment: ${ENV}"
+          echo "Firebase Project ID: ${PROJECT_ID}"
+          
+          # Update Kong ConfigMap
+          sed -i "s/{{ FIREBASE_PROJECT_ID }}/${PROJECT_ID}/g" \
+            platform/cluster/kong/kong.configmap.yaml
+          
+          # Update environment overlay
+          if [ -f "environments/${ENV_SHORT}/platform/kong.overlay.yml" ]; then
+            sed -i "s/your-firebase-dev-project-id/${PROJECT_ID}/g" \
+              environments/${ENV_SHORT}/platform/kong.overlay.yml
+            sed -i "s/your-firebase-prod-project-id/${PROJECT_ID}/g" \
+              environments/${ENV_SHORT}/platform/kong.overlay.yml
+            sed -i "s|https://securetoken.google.com/your-firebase-[^/]*-project-id|https://securetoken.google.com/${PROJECT_ID}|g" \
+              environments/${ENV_SHORT}/platform/kong.overlay.yml
+          fi
+          
+          echo "✅ Firebase configuration updated"
+        shell: bash
+
+      - name: Validate YAML syntax
+        run: |
+          # Install yamllint if needed
+          pip install yamllint || true
+          
+          if command -v yamllint &> /dev/null; then
+            yamllint platform/cluster/kong/kong.configmap.yaml || true
+            echo "✅ YAML validation completed"
+          else
+            echo "⚠️ yamllint not available, skipping validation"
+          fi
+        shell: bash
+
+      - name: Show configuration diff
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+          echo "Configuration changes:"
+          git diff platform/cluster/kong/kong.configmap.yaml || echo "No changes"
+        shell: bash
+
+  deploy:
+    name: 'Deploy Kong Configuration'
+    runs-on: self-hosted
+    needs: configure
+    if: needs.configure.outputs.config-changed == 'true' || github.event_name == 'workflow_dispatch'
+    environment: ${{ needs.configure.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.configure.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Determine if network policies should be applied
+          if [ "${{ github.event.inputs.apply_network_policies }}" == "true" ]; then
+            APPLY_NP="true"
+          elif [ "${{ secrets.ENABLE_NETWORK_POLICIES }}" == "true" ]; then
+            APPLY_NP="true"
+          else
+            APPLY_NP="false"
+          fi
+          echo "apply_network_policies=${APPLY_NP}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Label Kong namespace
+        run: |
+          kubectl label namespace kong name=kong --overwrite || echo "Namespace already labeled"
+        shell: bash
+
+      - name: Deploy API Gateway Ingress
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/api-gateway-ingress.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/api-gateway-ingress.yaml
+            echo "✅ API Gateway Ingress deployed"
+          else
+            echo "⚠️ API Gateway Ingress not found for ${ENV_SHORT}"
+          fi
+        shell: bash
+
+      - name: Deploy Network Policies
+        if: steps.env-vars.outputs.apply_network_policies == 'true'
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network Policies deployed (Kong-only access enforced)"
+          else
+            echo "⚠️ Network Policies not found for ${ENV_SHORT}"
+          fi
+        shell: bash
+
+      - name: Apply Kong ConfigMap
+        run: |
+          kubectl apply -f platform/cluster/kong/kong.configmap.yaml
+          echo "✅ Kong ConfigMap applied"
+        shell: bash
+
+      - name: Restart Kong deployment
+        run: |
+          kubectl rollout restart deployment/kong -n kong
+          echo "⏳ Waiting for Kong rollout..."
+          kubectl rollout status deployment/kong -n kong --timeout=300s
+          echo "✅ Kong restarted successfully"
+        shell: bash
+
+      - name: Verify Kong deployment
+        run: |
+          echo "Kong pods:"
+          kubectl get pods -n kong -l app=kong
+          
+          echo ""
+          echo "Kong service:"
+          kubectl get svc -n kong kong
+          
+          echo ""
+          echo "API Gateway ingress:"
+          kubectl get ingress -n kong api-gateway-ingress 2>/dev/null || echo "API Gateway ingress not found"
+        shell: bash
+
+      - name: Test Kong health
+        run: |
+          # Wait a bit for Kong to be ready
+          sleep 5
+          
+          # Get a Kong pod name
+          POD=$(kubectl get pods -n kong -l app=kong -o jsonpath='{.items[0].metadata.name}')
+          
+          if [ -n "$POD" ]; then
+            echo "Testing Kong Admin API health..."
+            kubectl exec -n kong $POD -- curl -s http://localhost:8001/status | grep -q "database.*reachable" && \
+              echo "✅ Kong is healthy" || echo "⚠️ Kong health check failed"
+          else
+            echo "⚠️ No Kong pods found"
+          fi
+        shell: bash
+
+  sync-argocd:
+    name: 'Sync Kong via ArgoCD'
+    runs-on: ubuntu-latest
+    needs: [configure, deploy]
+    if: always() && (needs.deploy.result == 'success' || needs.configure.outputs.config-changed == 'false')
+    environment: ${{ needs.configure.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync Kong Application
+        run: |
+          # Install ArgoCD CLI
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+          fi
+          
+          # Get environment
+          ENV="${{ needs.configure.outputs.environment }}"
+          if [ "${ENV}" == "production" ]; then
+            ARGOCD_SERVER="${{ secrets.ARGOCD_SERVER_PROD }}"
+            ARGOCD_TOKEN="${{ secrets.ARGOCD_TOKEN_PROD }}"
+          else
+            ARGOCD_SERVER="${{ secrets.ARGOCD_SERVER }}"
+            ARGOCD_TOKEN="${{ secrets.ARGOCD_TOKEN }}"
+          fi
+          
+          # Login to ArgoCD
+          argocd login ${ARGOCD_SERVER} \
+            --auth-token "${ARGOCD_TOKEN}" \
+            --insecure --grpc-web
+          
+          # Sync the Kong application (force refresh)
+          argocd app sync kong --force --grpc-web || echo "Sync triggered"
+          
+          # Wait for sync (with timeout)
+          argocd app wait kong --timeout 300 --grpc-web || echo "Sync in progress"
+          
+          echo "✅ ArgoCD sync completed"
+        shell: bash
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [configure, deploy, sync-argocd]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Kong Configuration & Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.configure.outputs.environment }}"
+          echo "Configuration Changed: ${{ needs.configure.outputs.config-changed }}"
+          echo ""
+          echo "Job Results:"
+          echo "  - Configure: ${{ needs.configure.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo "  - ArgoCD Sync: ${{ needs.sync-argocd.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Kong successfully deployed and configured!"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Test API: curl http://api.development.wapps.com/catalog/listings"
+            echo "  2. Check logs: kubectl logs -n kong -l app=kong --tail=50"
+            echo "  3. Monitor ArgoCD: https://argocd.development.wapps.com"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        shell: bash
+

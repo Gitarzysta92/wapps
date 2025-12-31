@@ -1,0 +1,104 @@
+# Network Policies to ensure backend services only accept traffic from Kong
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: catalog-bff-kong-only
+  namespace: catalog
+  labels:
+    app: catalog-bff
+    security: kong-gateway
+spec:
+  podSelector:
+    matchLabels:
+      app: catalog-bff
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow traffic from Kong namespace
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kong
+      ports:
+      - protocol: TCP
+        port: 80
+    
+    # Allow traffic from same namespace (for internal communication, health checks)
+    - from:
+      - podSelector: {}
+      ports:
+      - protocol: TCP
+        port: 80
+    
+    # Allow traffic from kube-system (for monitoring, health checks)
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-system
+      ports:
+      - protocol: TCP
+        port: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: editorial-kong-only
+  namespace: editorial
+  labels:
+    app: editorial
+    security: kong-gateway
+spec:
+  podSelector:
+    matchLabels:
+      app: editorial
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow traffic from Kong namespace
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kong
+      ports:
+      - protocol: TCP
+        port: 1337
+    
+    # Allow traffic from same namespace
+    - from:
+      - podSelector: {}
+      ports:
+      - protocol: TCP
+        port: 1337
+    
+    # Allow traffic from kube-system
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-system
+      ports:
+      - protocol: TCP
+        port: 1337
+
+---
+# Note: Add similar policies for other backend services as needed
+# Example for aggregator-ssr if it has API endpoints:
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: aggregator-ssr-kong-only
+#   namespace: aggregator
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: aggregator-ssr
+#   policyTypes:
+#     - Ingress
+#   ingress:
+#     - from:
+#       - namespaceSelector:
+#           matchLabels:
+#             name: kong
+

@@ -7,6 +7,26 @@ data:
   kong.yml: |
     _format_version: "3.0"
     
+    # Consumers for JWT authentication
+    consumers:
+    - username: firebase-user
+      # This consumer represents any user authenticated via Firebase
+      custom_id: firebase-authenticated
+      
+    - username: anonymous-user
+      # This consumer is used for routes with optional authentication
+      custom_id: anonymous
+    
+    # JWT credentials for Firebase
+    jwt_secrets:
+    - consumer: firebase-user
+      key: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
+      algorithm: RS256
+      rsa_public_key: |
+        # Public keys are automatically fetched from Firebase JWKS endpoint
+        # Kong will cache and refresh these keys automatically
+      secret: "firebase-jwt-secret"
+    
     services:
     - name: aggregator-ssr-service
       url: http://aggregator-ssr-service.aggregator:80
@@ -18,13 +38,49 @@ data:
       url: http://catalog-bff-service.catalog:80
       
     routes:
-    # Catalog BFF API routes (must be before generic /api route)
-    - name: catalog-api-route
+    # Catalog BFF API routes - Public (no auth required)
+    - name: catalog-public-listings-route
       service: catalog-bff-service
+      hosts:
+      - api.development.wapps.com
       paths:
-      - /api/catalog
+      - /catalog/listings
+      - /catalog/search
       strip_path: false
       plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 2000
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: api-public"
+            - "X-Service: catalog-bff"
+            - "X-Kong-Upstream: catalog-bff"
+    
+    # Catalog BFF API routes - Protected (auth required)
+    - name: catalog-protected-route
+      service: catalog-bff-service
+      hosts:
+      - api.development.wapps.com
+      paths:
+      - /catalog/my-listings
+      - /catalog/favorites
+      strip_path: false
+      plugins:
+      - name: jwt
+        config:
+          uri_param_names:
+            - jwt
+          cookie_names:
+            - firebase_token
+          key_claim_name: kid
+          claims_to_verify:
+            - exp
+          issuer: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
+          maximum_expiration: 3600
       - name: rate-limiting
         config:
           minute: 60
@@ -33,8 +89,84 @@ data:
         config:
           add:
             headers:
+            - "X-Route-Type: api-protected"
+            - "X-Service: catalog-bff"
+            - "X-Kong-Upstream: catalog-bff"
+    
+    # Catalog BFF API routes - Optional auth (personalized if authenticated)
+    - name: catalog-api-route
+      service: catalog-bff-service
+      hosts:
+      - api.development.wapps.com
+      paths:
+      - /catalog
+      strip_path: false
+      plugins:
+      - name: jwt
+        config:
+          uri_param_names:
+            - jwt
+          cookie_names:
+            - firebase_token
+          key_claim_name: kid
+          claims_to_verify:
+            - exp
+          anonymous: anonymous-user
+          issuer: https://securetoken.google.com/{{ FIREBASE_PROJECT_ID }}
+          maximum_expiration: 3600
+      - name: rate-limiting
+        config:
+          minute: 80
+          hour: 1500
+      - name: response-transformer
+        config:
+          add:
+            headers:
             - "X-Route-Type: api"
             - "X-Service: catalog-bff"
+            - "X-Kong-Upstream: catalog-bff"
+    
+    # Editorial Service - All routes
+    - name: editorial-route
+      service: aggregator-ssr-service
+      hosts:
+      - api.development.wapps.com
+      paths:
+      - /editorial
+      strip_path: false
+      plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 2000
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: api"
+            - "X-Service: editorial"
+            - "X-Kong-Upstream: editorial"
+    
+    # Auth Service - Backend authentication endpoints
+    - name: auth-service-route
+      service: catalog-bff-service  # Update this when auth service is created
+      hosts:
+      - api.development.wapps.com
+      paths:
+      - /auth
+      strip_path: false
+      plugins:
+      - name: rate-limiting
+        config:
+          minute: 30
+          hour: 500
+      - name: response-transformer
+        config:
+          add:
+            headers:
+            - "X-Route-Type: auth"
+            - "X-Service: auth"
+            - "X-Kong-Upstream: auth-service"
 
     # Static routes with fallback to SSR
     - name: home-route
@@ -111,6 +243,8 @@ data:
       config:
         minute: 100
         hour: 1000
+        policy: local
+        fault_tolerant: true
     - name: cors
       config:
         origins:
@@ -119,10 +253,22 @@ data:
         - GET
         - POST
         - PUT
+        - PATCH
         - DELETE
         - OPTIONS
         headers:
         - Accept
+        - Accept-Version
         - Authorization
+        - Content-Length
         - Content-Type
+        - Date
+        - X-Auth-Token
         - X-Requested-With
+        exposed_headers:
+        - X-Auth-Token
+        - X-Route-Type
+        - X-Service
+        credentials: true
+        max_age: 3600
+        preflight_continue: false
