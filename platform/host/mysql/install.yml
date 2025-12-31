@@ -14,12 +14,6 @@
       - libmysqlclient-dev
     state: present
 
-- name: Ensure PyMySQL is available for Ansible
-  pip:
-    name: pymysql
-    state: present
-    executable: pip3
-
 - name: Start and enable MySQL service
   systemd:
     name: mysql
