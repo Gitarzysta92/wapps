@@ -21,7 +21,7 @@ on:
 env:
   SERVICE_NAME: firebase-auth-validator
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/firebase-auth-validator
+  IMAGE_NAME: gitarzysta92/wapps/firebase-auth-validator
 
 jobs:
   build:
