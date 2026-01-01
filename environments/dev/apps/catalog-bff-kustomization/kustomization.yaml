@@ -4,7 +4,8 @@ kind: Kustomization
 namespace: catalog
 
 resources:
-- ingress-patch.yaml
+  - ../../../../apps/services/catalog-bff/provisioning/k8s
+  - ingress-patch.yaml
 
 commonLabels:
   environment: development
