@@ -4,8 +4,13 @@ kind: Kustomization
 namespace: default
 
 resources:
+  - namespace.yaml
   - deployment.yaml
   - service.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
 
 images:
   - name: firebase-auth-validator

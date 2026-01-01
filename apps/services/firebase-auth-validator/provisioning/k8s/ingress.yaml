@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firebase-auth-validator-ingress
+  namespace: default
+  labels:
+    app: firebase-auth-validator
+    app.kubernetes.io/name: firebase-auth-validator
+    app.kubernetes.io/component: auth
+    app.kubernetes.io/part-of: platform
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: api.wapps.local
+      http:
+        paths:
+          - path: /auth(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: firebase-auth-validator
+                port:
+                  number: 80
+

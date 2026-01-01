@@ -5,6 +5,9 @@ metadata:
   namespace: default
   labels:
     app: firebase-auth-validator
+    app.kubernetes.io/name: firebase-auth-validator
+    app.kubernetes.io/component: auth
+    app.kubernetes.io/part-of: platform
 spec:
   type: ClusterIP
   ports:
