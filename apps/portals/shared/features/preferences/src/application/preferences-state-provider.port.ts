@@ -9,3 +9,4 @@ export interface IPreferencesStateProvider {
   preferences$: Observable<PreferencesState>;
 }
 
+

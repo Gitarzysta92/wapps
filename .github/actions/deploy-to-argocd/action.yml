@@ -66,9 +66,9 @@ runs:
           IMAGE_NAME="${{ inputs.app-name }}"
         fi
         
-        echo "Setting kustomize image for ${{ inputs.app-name }}: ghcr.io/gitarzysta92/${IMAGE_NAME}=${{ inputs.image-tag }}"
+        echo "Setting kustomize image for ${{ inputs.app-name }}: ${IMAGE_NAME}=${{ inputs.image-tag }}"
         argocd app set ${{ inputs.app-name }} \
-          --kustomize-image "ghcr.io/gitarzysta92/${IMAGE_NAME}=${{ inputs.image-tag }}" \
+          --kustomize-image "${IMAGE_NAME}=${{ inputs.image-tag }}" \
           --grpc-web
       shell: bash
 

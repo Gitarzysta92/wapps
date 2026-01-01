@@ -5,3 +5,4 @@ export const PREFERENCES_STATE_PROVIDER = new InjectionToken<IPreferencesStatePr
   'PREFERENCES_STATE_PROVIDER'
 );
 
+

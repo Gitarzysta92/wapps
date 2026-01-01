@@ -12,7 +12,3 @@ resources:
 commonLabels:
   app.kubernetes.io/managed-by: argocd
 
-images:
-  - name: ghcr.io/gitarzysta92/catalog-bff
-    newTag: latest
-

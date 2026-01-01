@@ -12,8 +12,3 @@ resources:
 commonLabels:
   app.kubernetes.io/managed-by: argocd
 
-images:
-  - name: firebase-auth-validator
-    newName: ghcr.io/gitarzysta92/wapps/firebase-auth-validator
-    newTag: latest
-

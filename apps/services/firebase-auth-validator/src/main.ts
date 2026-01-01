@@ -296,6 +296,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 // HEALTH CHECK
 // ===========================================
 
+// Serve raw OpenAPI spec as JSON
+app.get('/api-docs.json', (req: Request, res: Response) => {
+  res.json(swaggerDocument);
+});
+
+// Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'healthy' });
 });

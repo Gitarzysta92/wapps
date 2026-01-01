@@ -6,3 +6,4 @@ export interface PreferencesState {
   data: CustomerPreferencesDto;
 }
 
+
