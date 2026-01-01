@@ -90,8 +90,8 @@ jobs:
           context-path: '.'
           tags: ${{ steps.meta.outputs.tags }}
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
   deploy-dev:
     name: 'Deploy to Development'
