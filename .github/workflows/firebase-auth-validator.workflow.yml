@@ -42,7 +42,7 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             ENV="${{ github.event.inputs.environment }}"
           elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            ENV="production"
+            ENV="development"
           else
             ENV="development"
           fi
