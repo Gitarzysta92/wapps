@@ -31,7 +31,6 @@ jobs:
       contents: read
       packages: write
     outputs:
-      image: ${{ steps.image-tag.outputs.tag }}
       environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
@@ -72,41 +71,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Extract single image tag for deployment
-        id: image-tag
-        run: |
-          # Extract the SHA-based tag (last line, most specific)
-          TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Using image tag: $TAG"
-        shell: bash
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: apps/services/firebase-auth-validator/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Image digest
+      - name: Image pushed
         run: |
-          echo "Image built and pushed with tags:"
-          echo "${{ steps.meta.outputs.tags }}"
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
   deploy:
     name: 'Deploy to ${{ needs.build.outputs.environment }}'
@@ -151,17 +128,32 @@ jobs:
           
           echo "✅ Firebase config secret updated"
 
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: firebase-auth-validator
-          image-name: firebase-auth-validator
-          namespace: argocd
-          argocd-server: ${{ steps.env-vars.outputs.server }}
-          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
-          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
-          image-tag: ${{ needs.build.outputs.image }}
-          environment: ${{ steps.env-vars.outputs.env_short }}
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for firebase-auth-validator..."
+          argocd app sync firebase-auth-validator --force --grpc-web
+          
+          echo "Waiting for deployment to complete..."
+          argocd app wait firebase-auth-validator --timeout 300 --grpc-web
+          
+          echo "✅ Deployment completed successfully"
 
       - name: Apply environment configuration
         run: |
@@ -195,7 +187,7 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "Environment: ${{ needs.build.outputs.environment }}"
-          echo "Image: ${{ needs.build.outputs.image }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           echo ""
           echo "Job Results:"
           echo "  - Build: ${{ needs.build.result }}"
@@ -209,11 +201,12 @@ jobs:
             echo "  - Validate: http://firebase-auth-validator.default.svc.cluster.local/validate"
             echo "  - Validate Optional: http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
             echo "  - Health: http://firebase-auth-validator.default.svc.cluster.local/health"
+            echo "  - Swagger UI: http://api.firebase-auth-validator.development.wapps.com/api-docs"
             echo ""
             echo "Next steps:"
             echo "  1. Test with a Firebase token"
             echo "  2. Check logs: kubectl logs -n default -l app=firebase-auth-validator --tail=50"
-            echo "  3. Verify ingress: kubectl get ingress -n catalog"
+            echo "  3. Verify ingress: kubectl get ingress -n default"
           else
             echo "⚠️ Deployment completed with issues. Check logs above."
           fi

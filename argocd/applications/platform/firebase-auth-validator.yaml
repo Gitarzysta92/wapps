@@ -26,10 +26,4 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  # Ignore differences in kustomization image tags to allow CI/CD to update them
-  ignoreDifferences:
-    - group: kustomize.config.k8s.io
-      kind: Kustomization
-      jqPathExpressions:
-        - '.images[]?.newTag'
 
