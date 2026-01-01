@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
-    path: apps/services/firebase-auth-validator/provisioning/k8s
+    path: environments/dev/apps/firebase-auth-validator-kustomization
   destination:
     server: https://kubernetes.default.svc
     namespace: default
