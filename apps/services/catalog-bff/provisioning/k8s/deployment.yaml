@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: catalog-bff
-          image: ghcr.io/gitarzysta92/catalog-bff:latest
+          image: ghcr.io/gitarzysta92/wapps/catalog-bff:latest
           imagePullPolicy: Always
           ports:
             - name: http
