@@ -2,9 +2,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: firebase-auth-validator-ingress
+  annotations:
+    # Allow CORS for frontend apps
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://aggregator-demo.development.wapps.com,https://aggregator.development.wapps.com"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
 spec:
   rules:
-  - host: api.firebase-auth-validator.development.wapps.com
+  # Auth BFF endpoint for frontend apps
+  - host: auth.development.wapps.com
     http:
       paths:
       - path: /

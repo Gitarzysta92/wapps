@@ -1,7 +1,11 @@
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { AuthenticationStorage } from "../infrastructure/authentication.storage";
-import { CredentialsDto } from "@domains/identity/authentication";
+import { 
+  CredentialsDto, 
+  AuthenticationProvider, 
+  AuthenticationMethodDto 
+} from "@domains/identity/authentication";
 import { Result } from "@standard";
 import { map, tap } from "rxjs";
 import { AUTHENTICATION_HANDLER } from "./authentication-handler.token";
@@ -29,6 +33,20 @@ export class AuthenticationService {
           this._tokenStorage.setToken(r.value);
         }
       }))
+  }
+
+  public authenticateWithProvider(provider: AuthenticationProvider): Observable<Result<string | null, Error>> {
+    return this._authenticationHandler.authenticateWithProvider(provider)
+      .pipe(tap(r => {
+        console.log('authenticateWithProvider result', provider, r);
+        if (r.ok) {
+          this._tokenStorage.setToken(r.value);
+        }
+      }))
+  }
+
+  public getAvailableMethods(): Observable<AuthenticationMethodDto[]> {
+    return this._authenticationHandler.getAvailableMethods();
   }
 
   public unauthenticate(): void {

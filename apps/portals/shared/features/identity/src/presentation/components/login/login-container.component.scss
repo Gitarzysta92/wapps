@@ -3,3 +3,27 @@
 login-form {
   margin-bottom: $space-5;
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: $space-6 0;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--tui-border-normal);
+  }
+  
+  span {
+    padding: 0 $space-4;
+    color: var(--tui-text-secondary);
+    font-size: 0.875rem;
+  }
+}
+
+.error-notification {
+  margin-top: $space-4;
+}

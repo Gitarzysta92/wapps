@@ -71,6 +71,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Determine environment name
+        id: env-name
+        run: |
+          TARGET_ENV="${{ github.event.inputs.target_env || 'dev' }}"
+          if [ "$TARGET_ENV" = "dev" ]; then
+            ENV_NAME="development"
+          else
+            ENV_NAME="$TARGET_ENV"
+          fi
+          echo "name=${ENV_NAME}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV_NAME}"
+        shell: bash
+
+      - name: Patch environment configuration
+        run: |
+          ENV_FILE="apps/portals/aggregator-demo/application/src/environment.ts"
+          ENV_NAME="${{ steps.env-name.outputs.name }}"
+          
+          # Patch ENVIRONMENT_NAME
+          sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
+          
+          echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
+          echo "--- Resulting URLs ---"
+          echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
+          echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.com"
+          echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.com"
+        shell: bash
+
       - name: Build application
         run: npx nx build ${{ env.APP_NAME }} --configuration=production
 
@@ -80,16 +108,19 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.GITHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch,suffix=-${{ steps.env-name.outputs.name }}
+            type=ref,event=pr,suffix=-${{ steps.env-name.outputs.name }}
+            type=sha,prefix={{branch}}-,suffix=-${{ steps.env-name.outputs.name }}
+            type=raw,value=latest-${{ steps.env-name.outputs.name }},enable={{is_default_branch}}
 
       - name: Extract single image tag for deployment
         id: image-tag
         run: |
-          # Extract the SHA-based tag (last line, most specific)
-          TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
+          # Extract the SHA-based tag with environment suffix
+          TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -E "sha-.*-${{ steps.env-name.outputs.name }}$" | head -n1)
+          if [ -z "$TAG" ]; then
+            TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
+          fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Using image tag: $TAG"
         shell: bash

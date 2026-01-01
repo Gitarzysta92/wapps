@@ -1,5 +1,5 @@
 import { ApplicationConfig } from "@angular/core";
-import { PASSWORD_RESET_HANDLER } from "../../../../../../libs/features/identity/password-reset/ports";
+import { PASSWORD_RESET_HANDLER } from "./application/password-reset-handler.token";
 import { PasswordResetApiService } from "./infrastructure/password-reset-api.service";
 
 
