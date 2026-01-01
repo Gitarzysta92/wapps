@@ -127,10 +127,10 @@ jobs:
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/catalog-bff-deployment -n ${{ env.NAMESPACE }}
+          kubectl rollout restart deployment/catalog-bff -n ${{ env.NAMESPACE }}
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/catalog-bff-deployment -n ${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/catalog-bff -n ${{ env.NAMESPACE }} --timeout=300s
           
           echo "✅ Deployment restarted successfully"
 
@@ -173,9 +173,9 @@ jobs:
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/catalog-bff-deployment -n ${{ env.NAMESPACE }}
+          kubectl rollout restart deployment/catalog-bff -n ${{ env.NAMESPACE }}
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/catalog-bff-deployment -n ${{ env.NAMESPACE }} --timeout=300s
+          kubectl rollout status deployment/catalog-bff -n ${{ env.NAMESPACE }} --timeout=300s
           
           echo "✅ Deployment restarted successfully"
