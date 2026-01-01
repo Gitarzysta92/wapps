@@ -16,7 +16,7 @@ on:
 
 env:
   APP_NAME: apps.services.catalog-bff
-  IMAGE_NAME: gitarzysta92/catalog-bff
+  IMAGE_NAME: gitarzysta92/wapps/catalog-bff
   REGISTRY: ghcr.io
   NAMESPACE: catalog
 
@@ -96,16 +96,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Ensure GHCR secret exists in catalog namespace
-        run: |
-          kubectl create secret docker-registry ghcr-secret \
-            --docker-server=ghcr.io \
-            --docker-username=gitarzysta92 \
-            --docker-password=${{ secrets.CONTAINER_REGISTRY_TOKEN }} \
-            --namespace=catalog \
-            --dry-run=client -o yaml | kubectl apply -f -
-          echo "✅ GHCR secret configured"
 
       - name: Install ArgoCD CLI
         run: |
