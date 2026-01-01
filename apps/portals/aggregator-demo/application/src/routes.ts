@@ -3,6 +3,7 @@ import { tuiGenerateDialogableRoute } from "@taiga-ui/kit";
 import { AuthenticationDialogComponent } from "./dialogs/authentication-dialog/authentication-dialog.component";
 import { LostPasswordDialogComponent } from "./dialogs/lost-password-dialog/lost-password-dialog.component";
 import { RegistrationDialogComponent } from "./dialogs/registration-dialog/registration-dialog.component";
+import { OAuthCallbackComponent } from "@portals/shared/features/identity";
 import { HomePageComponent } from "./pages/home/home.component";
 import { RoutableDialogComponent } from "@ui/routable-dialog";
 import { AppShellComponent, IAppShellRouteData } from "./shells/app-shell/app-shell.component";
@@ -1239,6 +1240,11 @@ export const routes: Routes = [
         redirectTo: ""
       }
     ]
+  },
+  // OAuth callback route for third-party authentication
+  {
+    path: 'auth/callback',
+    component: OAuthCallbackComponent
   },
   {
     path: '**',

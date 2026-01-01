@@ -1,19 +1,35 @@
-<login-form #loginForm (onSubmit)="authenticate($event)">
-  <button
-    tuiButton
-    type="submit"
-    [disabled]="!loginForm.valid">
-    <tui-loader
-      class="loader"
-      [inheritColor]="true"
-      [overlay]="true"
-      [showLoader]="isAuthenticating"/>
-    Sign in
-  </button>
-</login-form>
+@if (showEmailPasswordForm) {
+  <login-form #loginForm (onSubmit)="authenticate($event)">
+    <button
+      tuiButton
+      type="submit"
+      [disabled]="!loginForm.valid || isAuthenticating">
+      <tui-loader
+        class="loader"
+        [inheritColor]="true"
+        [overlay]="true"
+        [showLoader]="isAuthenticating && authenticatingProvider === AuthenticationProvider.EMAIL_PASSWORD"/>
+      Sign in
+    </button>
+  </login-form>
+}
+
+@if (availableMethods$ | async; as methods) {
+  @if (showEmailPasswordForm && methods.length > 1) {
+    <div class="divider">
+      <span>or continue with</span>
+    </div>
+  }
+  
+  <provider-buttons
+    [methods]="methods"
+    [authenticatingProvider]="authenticatingProvider"
+    (onProviderClick)="authenticateWithProvider($event)">
+  </provider-buttons>
+}
 
 @for (entry of timedQueue.entries; track entry.id) {
-  <tui-notification size="l">
+  <tui-notification size="l" class="error-notification">
     {{ entry.item.text }}
     <button
       (click)="timedQueue.dequeue(entry.id)"

@@ -183,3 +183,4 @@ export const DEFAULT_CUSTOMER_PREFERENCES: CustomerPreferencesDto = {
   accessibility: DEFAULT_ACCESSIBILITY_PREFERENCES,
 };
 
+
