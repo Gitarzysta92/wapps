@@ -150,10 +150,20 @@ jobs:
           echo "Triggering ArgoCD sync for firebase-auth-validator..."
           argocd app sync firebase-auth-validator --force --grpc-web
           
-          echo "Waiting for deployment to complete..."
+          echo "Waiting for sync to complete..."
           argocd app wait firebase-auth-validator --timeout 300 --grpc-web
           
-          echo "✅ Deployment completed successfully"
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/firebase-auth-validator -n default
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/firebase-auth-validator -n default --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
 
       - name: Apply environment configuration
         run: |
