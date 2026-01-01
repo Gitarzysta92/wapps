@@ -25,6 +25,17 @@
         "command": "strapi start",
         "cwd": "apps/services/editorial"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/services/editorial/jest.config.ts",
+        "passWithNoTests": true
+      }
     }
   }
 }
