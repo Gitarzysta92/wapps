@@ -29,8 +29,8 @@ const swaggerDocument = {
   },
   servers: [
     {
-      url: 'http://firebase-auth-validator.default.svc.cluster.local',
-      description: 'Kubernetes cluster internal'
+      url: '/',
+      description: 'Current host'
     }
   ],
   tags: [
