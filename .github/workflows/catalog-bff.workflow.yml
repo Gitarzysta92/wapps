@@ -91,7 +91,7 @@ jobs:
     name: 'Deploy to Development'
     runs-on: self-hosted
     needs: build
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     environment: development
     steps:
       - name: Checkout code
@@ -137,7 +137,7 @@ jobs:
     name: 'Deploy to Production'
     runs-on: self-hosted
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: false  # Disabled - use workflow_dispatch for production deployments
     environment: production
     steps:
       - name: Checkout code
