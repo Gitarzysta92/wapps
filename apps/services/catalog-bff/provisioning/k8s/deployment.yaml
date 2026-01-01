@@ -18,6 +18,8 @@ spec:
       labels:
         app: catalog-bff
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
         - name: catalog-bff
           image: ghcr.io/gitarzysta92/catalog-bff:latest
