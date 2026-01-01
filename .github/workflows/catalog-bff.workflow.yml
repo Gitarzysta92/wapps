@@ -15,7 +15,7 @@ on:
 
 env:
   APP_NAME: apps.services.catalog-bff
-  IMAGE_NAME: gitarzysta92/wapps/catalog-bff
+  IMAGE_NAME: gitarzysta92/catalog-bff
   REGISTRY: ghcr.io
   NAMESPACE: catalog
 
