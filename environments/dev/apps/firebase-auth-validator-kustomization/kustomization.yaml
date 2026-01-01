@@ -16,3 +16,10 @@ patches:
       kind: Ingress
       name: firebase-auth-validator-ingress
 
+# Image overrides for this environment
+# ArgoCD will update this section via 'kustomize edit set image'
+images:
+  - name: firebase-auth-validator
+    newName: ghcr.io/gitarzysta92/wapps/firebase-auth-validator
+    newTag: latest
+
