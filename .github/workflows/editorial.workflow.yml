@@ -1,56 +1,55 @@
-name: 'Editorial Service - Backend Application'
+name: 'Editorial Service - Build & Deploy'
 
 on:
   push:
-    branches: [main, develop]
+    branches: [develop, main]
     paths:
       - 'apps/services/editorial/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'apps/services/editorial/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
-  workflow_dispatch: # Manual trigger option
+      - '.github/workflows/editorial.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
 
 env:
-  APP_NAME: apps.services.editorial
-  IMAGE_NAME: editorial
+  SERVICE_NAME: editorial
   REGISTRY: ghcr.io
-  NAMESPACE: argocd
+  IMAGE_NAME: gitarzysta92/wapps/editorial
 
 jobs:
-  test:
-    name: 'Test and Lint'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests and linting
-        uses: ./.github/actions/test-and-lint
-        with:
-          app-name: ${{ env.APP_NAME }}
-
   build:
-    name: 'Build and Push'
+    name: 'Build Docker Image'
     runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push'
     permissions:
       contents: read
       packages: write
     outputs:
-      image-tag: ${{ steps.image-tag.outputs.tag }}
+      environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -60,79 +59,141 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build ${{ env.APP_NAME }} --configuration=production
+        run: npx nx build apps.services.editorial --configuration=production
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Extract single image tag for deployment
-        id: image-tag
-        run: |
-          # Extract the SHA-based tag (last line, most specific)
-          TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Using image tag: $TAG"
-        shell: bash
-
-      - name: Build and push Docker image
-        uses: ./.github/actions/build-and-push
-        with:
-          image-name: ${{ env.IMAGE_NAME }}
-          dockerfile-path: './apps/services/editorial/Dockerfile'
-          context-path: '.'
-          tags: ${{ steps.meta.outputs.tags }}
           registry: ${{ env.REGISTRY }}
           username: gitarzysta92
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
-  deploy-dev:
-    name: 'Deploy to Development'
-    runs-on: self-hosted
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: development
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
         with:
-          app-name: ${{ env.IMAGE_NAME }}
-          image-name: ${{ env.IMAGE_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: argocd.development.wapps.com
-          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
-          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: dev
+          context: .
+          file: apps/services/editorial/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-  deploy-prod:
-    name: 'Deploy to Production'
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
     runs-on: self-hosted
     needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
+    environment: ${{ needs.build.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.IMAGE_NAME }}
-          image-name: ${{ env.IMAGE_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: argocd.production.wapps.com
-          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
-          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: prod
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for editorial..."
+          argocd app sync editorial --force --grpc-web
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait editorial --timeout 300 --grpc-web
+          
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/editorial -n editorial
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/editorial -n editorial --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply editorial environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/editorial-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/editorial-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Editorial Service - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Editorial Service deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Admin Panel: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/admin"
+            echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api"
+            echo "  - Health: http://editorial.editorial.svc.cluster.local:1337/_health"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Verify admin panel access"
+            echo "  2. Check logs: kubectl logs -n editorial -l app=editorial --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n editorial"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
