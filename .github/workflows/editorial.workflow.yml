@@ -41,6 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
     outputs:
       image-tag: ${{ steps.image-tag.outputs.tag }}
     steps:
