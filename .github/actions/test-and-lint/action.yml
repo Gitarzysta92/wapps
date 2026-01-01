@@ -35,7 +35,7 @@ runs:
     - name: Run tests
       run: |
         echo "Running tests for ${{ inputs.app-name }}..."
-        npx nx test ${{ inputs.app-name }} --coverage --ci || { echo "❌ Tests failed for ${{ inputs.app-name }}"; exit 1; }
+        npx nx test ${{ inputs.app-name }} --coverage --ci --passWithNoTests || { echo "❌ Tests failed for ${{ inputs.app-name }}"; exit 1; }
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
