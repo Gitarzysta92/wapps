@@ -48,7 +48,7 @@ app.use((req: Request, res: Response, next) => {
     return res.status(200).end();
   }
   
-  next();
+  return next();
 });
 
 // Validate configuration
