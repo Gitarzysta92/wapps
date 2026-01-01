@@ -11,4 +11,8 @@ patches:
     target:
       kind: Deployment
       name: firebase-auth-validator
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: firebase-auth-validator-ingress
 

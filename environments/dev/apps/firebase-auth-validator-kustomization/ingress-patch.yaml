@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firebase-auth-validator-ingress
+spec:
+  rules:
+  - host: api.firebase-auth-validator.development.wapps.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: firebase-auth-validator
+            port:
+              number: 80
+
