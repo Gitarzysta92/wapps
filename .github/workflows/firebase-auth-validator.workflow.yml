@@ -5,7 +5,8 @@ on:
     branches: [develop, main]
     paths:
       - 'apps/services/firebase-auth-validator/**'
-      - 'environments/*/apps/firebase-auth-validator-kustomization/**'
+      - '.github/workflows/firebase-auth-validator.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
     inputs:
       environment:
