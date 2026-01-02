@@ -131,9 +131,9 @@ jobs:
 
       - name: Login to ArgoCD
         run: |
-          echo "${{ secrets.ARGO_INITIAL_PASSWORD }}" | argocd login ${{ steps.env-vars.outputs.server }} \
+          argocd login ${{ steps.env-vars.outputs.server }} \
             --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
-            --password-stdin \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
             --insecure --grpc-web
 
       - name: Trigger ArgoCD sync
