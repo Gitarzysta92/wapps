@@ -150,10 +150,10 @@ jobs:
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/aggregator-demo-csr -n default
+          kubectl rollout restart deployment/aggregator-demo-csr -n aggregator
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/aggregator-demo-csr -n default --timeout=300s
+          kubectl rollout status deployment/aggregator-demo-csr -n aggregator --timeout=300s
           
           echo "✅ Deployment restarted successfully"
 
@@ -201,12 +201,12 @@ jobs:
             echo ""
             echo "Service endpoints:"
             echo "  - Application: https://aggregator-demo.${{ needs.build.outputs.environment }}.wapps.com"
-            echo "  - Health: http://aggregator-demo-csr.default.svc.cluster.local/health"
+            echo "  - Health: http://aggregator-demo-csr.aggregator.svc.cluster.local/health"
             echo ""
             echo "Next steps:"
             echo "  1. Verify application access"
-            echo "  2. Check logs: kubectl logs -n default -l app=aggregator-demo-csr --tail=50"
-            echo "  3. Verify ingress: kubectl get ingress -n default"
+            echo "  2. Check logs: kubectl logs -n aggregator -l app=aggregator-demo-csr --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n aggregator"
           else
             echo "⚠️ Deployment completed with issues. Check logs above."
           fi
