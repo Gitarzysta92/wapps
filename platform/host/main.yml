@@ -280,6 +280,67 @@
       failed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Create MinIO namespace
+      shell: kubectl create namespace minio --dry-run=client -o yaml | kubectl apply -f -
+      register: minio_namespace
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Check if MinIO secrets exist
+      shell: kubectl get secret minio-credentials -n minio 2>/dev/null || echo "NOT_FOUND"
+      register: minio_secret_check
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Create MinIO secrets
+      shell: |
+        MINIO_ROOT_USER="{{ lookup('env', 'MINIO_ROOT_USER') | default('admin', true) }}"
+        MINIO_ROOT_PASSWORD="{{ lookup('env', 'MINIO_ROOT_PASSWORD') | default('changeme', true) }}"
+        
+        kubectl create secret generic minio-credentials \
+          --from-literal=endpoint="minio.minio:9000" \
+          --from-literal=rootUser="${MINIO_ROOT_USER}" \
+          --from-literal=rootPassword="${MINIO_ROOT_PASSWORD}" \
+          --from-literal=accessKey="${MINIO_ROOT_USER}" \
+          --from-literal=secretKey="${MINIO_ROOT_PASSWORD}" \
+          --from-literal=useSSL="false" \
+          --from-literal=region="us-east-1" \
+          --namespace=minio \
+          --dry-run=client -o yaml | kubectl apply -f -
+      register: minio_secrets
+      when:
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - minio_secret_check.stdout == "NOT_FOUND" or minio_secret_check.rc != 0
+
+    - name: Deploy MinIO ArgoCD Application
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/minio.yaml
+      register: minio_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Wait for MinIO application to be created
+      shell: |
+        for i in {1..30}; do
+          if kubectl get application minio -n argocd 2>/dev/null; then
+            echo "MinIO application is ready"
+            exit 0
+          fi
+          echo "Waiting for MinIO application... ($i/30)"
+          sleep 2
+        done
+        echo "Warning: MinIO application may not be ready yet"
+        exit 0
+      register: minio_app_wait
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Display MinIO status
+      shell: kubectl get application minio -n argocd -o wide 2>/dev/null || echo "MinIO application not found"
+      register: minio_status
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
@@ -373,6 +434,7 @@
             - ArgoCD AppProject (wapps-platform) - Project configuration
             - ArgoCD App of Apps - Application Management
             - RabbitMQ (Platform) - Message Broker
+            - MinIO (Platform) - Object Storage
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
