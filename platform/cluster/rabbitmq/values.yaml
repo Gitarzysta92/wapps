@@ -12,7 +12,8 @@
 image:
   registry: docker.io
   repository: bitnami/rabbitmq
-  tag: 3.13-debian-12  # Use stable tag instead of specific patch version
+  tag: 3.13.7-debian-12-r3  # Latest Debian 12 revision for 3.13.7
+  pullPolicy: IfNotPresent
 
 # Service Configuration
 service:
