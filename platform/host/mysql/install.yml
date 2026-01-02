@@ -200,7 +200,7 @@
   shell: |
     kubectl create secret generic mysql-credentials \
       --namespace=mysql \
-      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_CLIENT=mysql \
       --from-literal=DATABASE_HOST=mysql.mysql \
       --from-literal=DATABASE_PORT=3306 \
       --from-literal=DATABASE_USERNAME=wapps_app \
@@ -222,7 +222,7 @@
   shell: |
     kubectl create secret generic editorial-db-credentials \
       --namespace=editorial \
-      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_CLIENT=mysql \
       --from-literal=DATABASE_HOST=mysql.mysql \
       --from-literal=DATABASE_PORT=3306 \
       --from-literal=DATABASE_NAME={{ editorial_db_name }} \
@@ -245,7 +245,7 @@
   shell: |
     kubectl create secret generic catalog-db-credentials \
       --namespace=catalog \
-      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_CLIENT=mysql \
       --from-literal=DATABASE_HOST=mysql.mysql \
       --from-literal=DATABASE_PORT=3306 \
       --from-literal=DATABASE_NAME={{ catalog_db_name }} \

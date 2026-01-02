@@ -173,7 +173,7 @@ spec:
 ## Secret Contents
 
 ### Shared Secret (`mysql-credentials` in mysql namespace)
-- `DATABASE_CLIENT`: `mysql2`
+- `DATABASE_CLIENT`: `mysql`
 - `DATABASE_HOST`: `mysql.mysql`
 - `DATABASE_PORT`: `3306`
 - `DATABASE_USERNAME`: `wapps_app`

@@ -71,7 +71,7 @@ metadata:
     provisioned-by: "ansible"
 type: Opaque
 stringData:
-  DATABASE_CLIENT: mysql2
+  DATABASE_CLIENT: mysql
   DATABASE_HOST: mysql.mysql
   DATABASE_PORT: "3306"
   DATABASE_USERNAME: wapps_app
@@ -93,7 +93,7 @@ metadata:
     provisioned-by: "ansible"
 type: Opaque
 stringData:
-  DATABASE_CLIENT: mysql2
+  DATABASE_CLIENT: mysql
   DATABASE_HOST: mysql.mysql
   DATABASE_PORT: "3306"
   DATABASE_NAME: editorial_dev  # Or editorial_staging, editorial_prod based on environment
@@ -116,7 +116,7 @@ metadata:
     provisioned-by: "ansible"
 type: Opaque
 stringData:
-  DATABASE_CLIENT: mysql2
+  DATABASE_CLIENT: mysql
   DATABASE_HOST: mysql.mysql
   DATABASE_PORT: "3306"
   DATABASE_NAME: catalog_dev  # Or catalog_staging, catalog_prod based on environment
