@@ -6,6 +6,7 @@ name: 'Editor Agent - Background Service'
 #     branches: [main, develop]
 #     paths:
 #       - 'apps/agents/editor/**'
+#       - '.github/workflows/editor-agent.workflow.yml'
 #       - 'libs/**'
 #       - 'package.json'
 #       - 'nx.json'
@@ -13,6 +14,7 @@ name: 'Editor Agent - Background Service'
 #     branches: [main, develop]
 #     paths:
 #       - 'apps/agents/editor/**'
+#       - '.github/workflows/editor-agent.workflow.yml'
 #       - 'libs/**'
 #       - 'package.json'
 #       - 'nx.json'
