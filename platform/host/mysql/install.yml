@@ -5,6 +5,8 @@
 # This playbook installs MySQL server on the host machine and configures
 # it to be accessible from pods running in the Kubernetes cluster.
 # It creates a Kubernetes Service with manual Endpoints pointing to the host IP.
+#
+# Uses a shared 'wapps_app' user for all services with service-specific databases.
 
 - name: Install MySQL server and dependencies
   package:
@@ -84,9 +86,9 @@
   when: mysql_config.changed
 
 # ==============================================
-# Database Creation
+# Database Creation (all services)
 # ==============================================
-- name: Create editorial databases for different environments
+- name: Create databases for all services
   mysql_db:
     name: "{{ item }}"
     state: present
@@ -96,18 +98,24 @@
     encoding: utf8mb4
     collation: utf8mb4_unicode_ci
   loop:
+    # Editorial (Strapi CMS)
     - editorial_dev
     - editorial_staging
     - editorial_prod
+    # Catalog BFF
+    - catalog_dev
+    - catalog_staging
+    - catalog_prod
+    # Add more service databases here as needed
 
 # ==============================================
-# Database User Creation
+# Shared Database User Creation
 # ==============================================
-- name: Create editorial database user
+- name: Create shared wapps_app database user
   mysql_user:
-    name: editorial
-    password: "{{ mysql_editorial_password | default('editorial_password') }}"
-    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL'
+    name: wapps_app
+    password: "{{ mysql_wapps_password | default('wapps_password') }}"
+    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL'
     host: '%'
     state: present
     login_user: root
@@ -186,15 +194,29 @@
   register: mysql_k8s_endpoints
 
 # ==============================================
-# Kubernetes Secrets for Applications
+# Shared MySQL Credentials Secret
+# ==============================================
+- name: Create shared MySQL credentials secret in mysql namespace
+  shell: |
+    kubectl create secret generic mysql-credentials \
+      --namespace=mysql \
+      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_HOST=mysql.mysql \
+      --from-literal=DATABASE_PORT=3306 \
+      --from-literal=DATABASE_USERNAME=wapps_app \
+      --from-literal=DATABASE_PASSWORD={{ mysql_wapps_password | default('wapps_password') }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: mysql_shared_secret
+
+# ==============================================
+# Editorial Service Credentials
 # ==============================================
 - name: Create editorial namespace if not exists
   shell: kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
-  register: editorial_namespace
 
-- name: Determine database name based on environment
+- name: Determine editorial database name based on environment
   set_fact:
-    db_name: "editorial_{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% elif target_env | default('staging') == 'staging' %}staging{% else %}dev{% endif %}"
+    editorial_db_name: "editorial_{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% else %}staging{% endif %}"
 
 - name: Create editorial database credentials secret
   shell: |
@@ -203,23 +225,42 @@
       --from-literal=DATABASE_CLIENT=mysql2 \
       --from-literal=DATABASE_HOST=mysql.mysql \
       --from-literal=DATABASE_PORT=3306 \
-      --from-literal=DATABASE_NAME={{ db_name }} \
-      --from-literal=DATABASE_USERNAME=editorial \
-      --from-literal=DATABASE_PASSWORD={{ mysql_editorial_password | default('editorial_password') }} \
+      --from-literal=DATABASE_NAME={{ editorial_db_name }} \
+      --from-literal=DATABASE_USERNAME=wapps_app \
+      --from-literal=DATABASE_PASSWORD={{ mysql_wapps_password | default('wapps_password') }} \
       --dry-run=client -o yaml | kubectl apply -f -
   register: editorial_db_secret
 
+# ==============================================
+# Catalog Service Credentials
+# ==============================================
 - name: Create catalog namespace if not exists
   shell: kubectl create namespace catalog --dry-run=client -o yaml | kubectl apply -f -
-  register: catalog_namespace
+
+- name: Determine catalog database name based on environment
+  set_fact:
+    catalog_db_name: "catalog_{% if target_env | default('staging') == 'development' %}dev{% elif target_env | default('staging') == 'production' %}prod{% else %}staging{% endif %}"
+
+- name: Create catalog database credentials secret
+  shell: |
+    kubectl create secret generic catalog-db-credentials \
+      --namespace=catalog \
+      --from-literal=DATABASE_CLIENT=mysql2 \
+      --from-literal=DATABASE_HOST=mysql.mysql \
+      --from-literal=DATABASE_PORT=3306 \
+      --from-literal=DATABASE_NAME={{ catalog_db_name }} \
+      --from-literal=DATABASE_USERNAME=wapps_app \
+      --from-literal=DATABASE_PASSWORD={{ mysql_wapps_password | default('wapps_password') }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: catalog_db_secret
 
 # ==============================================
 # Verification Tests
 # ==============================================
 - name: Test local MySQL connection
   shell: |
-    mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
-      -e "SELECT 1 AS test;" {{ db_name }}
+    mysql -u wapps_app -p{{ mysql_wapps_password | default('wapps_password') }} \
+      -e "SELECT 1 AS test;" {{ editorial_db_name }}
   register: mysql_local_test
   changed_when: false
   failed_when: mysql_local_test.rc != 0
@@ -231,8 +272,8 @@
       --image=mysql:8.0 \
       --namespace=mysql \
       --command -- \
-      mysql -h mysql.mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
-      -e "SELECT 'Connection successful from cluster' AS status, NOW() AS timestamp, '{{ host_ip }}' AS host_ip;" {{ db_name }}
+      mysql -h mysql.mysql -u wapps_app -p{{ mysql_wapps_password | default('wapps_password') }} \
+      -e "SELECT 'Connection successful from cluster' AS status, NOW() AS timestamp, '{{ host_ip }}' AS host_ip;" {{ editorial_db_name }}
   register: mysql_cluster_test
   changed_when: false
   failed_when: false
@@ -265,14 +306,13 @@
       └─ Max Connections: 200
       
       📁 DATABASES CREATED:
-      ├─ editorial_dev
-      ├─ editorial_staging
-      └─ editorial_prod
+      ├─ editorial_dev, editorial_staging, editorial_prod
+      └─ catalog_dev, catalog_staging, catalog_prod
       
-      👤 DATABASE USER:
-      ├─ Username: editorial
-      ├─ Password: {{ mysql_editorial_password | default('editorial_password') }}
-      ├─ Permissions: ALL on editorial_*.*
+      👤 SHARED DATABASE USER:
+      ├─ Username: wapps_app
+      ├─ Password: {{ mysql_wapps_password | default('wapps_password') }}
+      ├─ Permissions: ALL on editorial_*.*, catalog_*.*
       └─ Access: From any host (%)
       
       ☸️  KUBERNETES INTEGRATION:
@@ -283,58 +323,44 @@
       └─ DNS: mysql.mysql.svc.cluster.local
       
       🔐 KUBERNETES SECRETS CREATED:
+      ├─ mysql-credentials (namespace: mysql) - shared credentials
       ├─ editorial-db-credentials (namespace: editorial)
-      └─ Contains: All database connection parameters
+      └─ catalog-db-credentials (namespace: catalog)
       
       ✅ CONNECTION TESTS:
       ├─ Local: {{ 'PASSED ✓' if mysql_local_test.rc == 0 else 'FAILED ✗' }}
       └─ From Cluster: {{ 'PASSED ✓' if mysql_cluster_test.rc == 0 else 'CHECK LOGS' }}
       
-      📝 USAGE IN EDITORIAL POD:
+      📝 USAGE IN PODS:
       
-      Option 1 - Use environment variables:
-        env:
-          - name: DATABASE_HOST
-            value: "mysql.mysql"
-          - name: DATABASE_PORT
-            value: "3306"
-          - name: DATABASE_NAME
-            value: "{{ db_name }}"
-          - name: DATABASE_USERNAME
-            value: "editorial"
-          - name: DATABASE_PASSWORD
-            value: "<secret>"
-      
-      Option 2 - Use Kubernetes Secret (recommended):
+      Option 1 - Use service-specific secret (recommended):
         envFrom:
           - secretRef:
-              name: editorial-db-credentials
+              name: editorial-db-credentials  # or catalog-db-credentials
+      
+      Option 2 - Use shared secret + set DATABASE_NAME:
+        envFrom:
+          - secretRef:
+              name: mysql-credentials
+        env:
+          - name: DATABASE_NAME
+            value: "editorial_dev"
       
       🔧 MAINTENANCE COMMANDS:
       
-      View Kubernetes service:
-        kubectl get svc mysql -n mysql
-      
-      View endpoints:
-        kubectl get endpoints mysql -n mysql -o yaml
-      
-      View secret:
+      View secrets:
+        kubectl get secret mysql-credentials -n mysql -o yaml
         kubectl get secret editorial-db-credentials -n editorial -o yaml
-      
-      Update endpoint if host IP changes:
-        kubectl patch endpoints mysql -n mysql --type=json \
-          -p='[{"op":"replace","path":"/subsets/0/addresses/0/ip","value":"NEW_IP"}]'
       
       Test connection from cluster:
         kubectl run mysql-test --rm -it --restart=Never \
           --image=mysql:8.0 --namespace=mysql -- \
-          mysql -h mysql.mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} \
+          mysql -h mysql.mysql -u wapps_app -p{{ mysql_wapps_password | default('wapps_password') }} \
           -e "SHOW DATABASES;"
       
       Access MySQL from host:
-        mysql -u editorial -p{{ mysql_editorial_password | default('editorial_password') }} {{ db_name }}
+        mysql -u wapps_app -p{{ mysql_wapps_password | default('wapps_password') }} {{ editorial_db_name }}
       
       ╔════════════════════════════════════════════════════════════════╗
       ║  MySQL is accessible from pods via: mysql.mysql:3306           ║
       ╚════════════════════════════════════════════════════════════════╝
-

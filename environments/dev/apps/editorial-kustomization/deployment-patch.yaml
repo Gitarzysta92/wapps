@@ -15,7 +15,7 @@ spec:
           value: "0.0.0.0"
         - name: PORT
           value: "1337"
-        # Database credentials from Kubernetes secret (created by Ansible)
+        # Database credentials from Kubernetes secret (created by workflow)
         - name: DATABASE_CLIENT
           valueFrom:
             secretKeyRef:
@@ -46,6 +46,32 @@ spec:
             secretKeyRef:
               name: editorial-db-credentials
               key: DATABASE_PASSWORD
+        # Strapi admin panel secrets (created by workflow)
+        - name: APP_KEYS
+          valueFrom:
+            secretKeyRef:
+              name: editorial-strapi-secrets
+              key: APP_KEYS
+        - name: API_TOKEN_SALT
+          valueFrom:
+            secretKeyRef:
+              name: editorial-strapi-secrets
+              key: API_TOKEN_SALT
+        - name: ADMIN_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: editorial-strapi-secrets
+              key: ADMIN_JWT_SECRET
+        - name: TRANSFER_TOKEN_SALT
+          valueFrom:
+            secretKeyRef:
+              name: editorial-strapi-secrets
+              key: TRANSFER_TOKEN_SALT
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: editorial-strapi-secrets
+              key: JWT_SECRET
         resources:
           limits:
             cpu: 1000m
@@ -53,4 +79,3 @@ spec:
           requests:
             cpu: 500m
             memory: 512Mi
-

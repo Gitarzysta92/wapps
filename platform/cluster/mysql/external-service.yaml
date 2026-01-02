@@ -56,9 +56,30 @@ subsets:
         protocol: TCP
 
 ---
-# Secret for editorial service to use
-# Contains all database connection parameters
-# NOTE: Ansible creates this with actual passwords
+# Shared MySQL credentials secret (in mysql namespace)
+# All services use the same wapps_app user
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-credentials
+  namespace: mysql
+  labels:
+    app: mysql
+    component: credentials
+  annotations:
+    description: "Shared MySQL credentials for all services"
+    provisioned-by: "ansible"
+type: Opaque
+stringData:
+  DATABASE_CLIENT: mysql2
+  DATABASE_HOST: mysql.mysql
+  DATABASE_PORT: "3306"
+  DATABASE_USERNAME: wapps_app
+  DATABASE_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password
+
+---
+# Editorial service database credentials
+# Uses shared wapps_app user with service-specific database
 apiVersion: v1
 kind: Secret
 metadata:
@@ -76,6 +97,28 @@ stringData:
   DATABASE_HOST: mysql.mysql
   DATABASE_PORT: "3306"
   DATABASE_NAME: editorial_dev  # Or editorial_staging, editorial_prod based on environment
-  DATABASE_USERNAME: editorial
+  DATABASE_USERNAME: wapps_app
   DATABASE_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password
 
+---
+# Catalog service database credentials
+# Uses shared wapps_app user with service-specific database
+apiVersion: v1
+kind: Secret
+metadata:
+  name: catalog-db-credentials
+  namespace: catalog
+  labels:
+    app: catalog
+    component: database
+  annotations:
+    description: "Database credentials for Catalog service"
+    provisioned-by: "ansible"
+type: Opaque
+stringData:
+  DATABASE_CLIENT: mysql2
+  DATABASE_HOST: mysql.mysql
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: catalog_dev  # Or catalog_staging, catalog_prod based on environment
+  DATABASE_USERNAME: wapps_app
+  DATABASE_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password

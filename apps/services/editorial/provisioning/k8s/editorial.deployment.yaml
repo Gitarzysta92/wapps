@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: editorial
   namespace: editorial
+  labels:
+    app: editorial
+    app.kubernetes.io/name: editorial
+    app.kubernetes.io/component: cms
 spec:
   replicas: 1
   selector:
@@ -12,47 +16,46 @@ spec:
     metadata:
       labels:
         app: editorial
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "editorial-service-role"
-        vault.hashicorp.com/agent-inject-secret-db-creds: "secret/data/editorial/database"
-        vault.hashicorp.com/agent-inject-template-db-creds: |
-          {{- with secret "secret/data/editorial/database" -}}
-          export DATABASE_HOST={{ .Data.data.host }}
-          export DATABASE_PORT={{ .Data.data.port }}
-          export DATABASE_NAME={{ .Data.data.name }}
-          export DATABASE_USERNAME={{ .Data.data.username }}
-          export DATABASE_PASSWORD={{ .Data.data.password }}
-          export DATABASE_SSL={{ .Data.data.ssl }}
-          {{- end }}
-
-        vault.hashicorp.com/agent-inject-secret-admin-panel: "secret/data/editorial/admin_panel"
-        vault.hashicorp.com/agent-inject-template-admin-panel: |
-          {{- with secret "secret/data/editorial/admin_panel" -}}
-          export JWT_SECRET={{ .Data.data.JWT_SECRET }}
-          export ADMIN_JWT_SECRET={{ .Data.data.ADMIN_JWT_SECRET }}
-          export API_TOKEN_SALT={{ .Data.data.API_TOKEN_SALT }}
-          export APP_KEYS={{ .Data.data.APP_KEYS }}
-          export ENCRYPTION_KEY={{ .Data.data.ENCRYPTION_KEY }}
-          export HOST={{ .Data.data.HOST }}
-          export PORT={{ .Data.data.PORT }}
-          export TRANSFER_TOKEN_SALT={{ .Data.data.TRANSFER_TOKEN_SALT }}
-          {{- end }}
     spec:
       serviceAccountName: editorial-service
       imagePullSecrets:
-      - name: ghcr-secret
+        - name: ghcr-secret
       containers:
         - name: editorial
           image: ghcr.io/gitarzysta92/wapps/editorial:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 1337
+            - name: http
+              containerPort: 1337
+              protocol: TCP
           env:
             - name: NODE_ENV
               value: "production"
-          command: ["sh", "-c"]
-          args:
-            - |
-              . /vault/secrets/db-creds && . /vault/secrets/admin-panel && npm run start
-          # Add other Strapi env vars as needed 
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "1337"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: 1337
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: 1337
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      restartPolicy: Always

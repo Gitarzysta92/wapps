@@ -105,6 +105,26 @@ jobs:
           # Set ArgoCD server
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
+      - name: Create editorial namespace
+        run: |
+          kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
+
+      # NOTE: Database credentials (editorial-db-credentials) are created by Ansible
+      # during host provisioning. See: platform/host/mysql/install.yml
+
+      - name: Create Strapi secrets
+        run: |
+          kubectl create secret generic editorial-strapi-secrets \
+            --from-literal=APP_KEYS="${{ secrets.EDITORIAL_APP_KEYS }}" \
+            --from-literal=API_TOKEN_SALT="${{ secrets.EDITORIAL_API_TOKEN_SALT }}" \
+            --from-literal=ADMIN_JWT_SECRET="${{ secrets.EDITORIAL_ADMIN_JWT_SECRET }}" \
+            --from-literal=TRANSFER_TOKEN_SALT="${{ secrets.EDITORIAL_TRANSFER_TOKEN_SALT }}" \
+            --from-literal=JWT_SECRET="${{ secrets.EDITORIAL_JWT_SECRET }}" \
+            --namespace=editorial \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "✅ Strapi secrets created/updated"
+
       - name: Install ArgoCD CLI
         run: |
           if ! command -v argocd &> /dev/null; then

@@ -19,42 +19,47 @@ Kubernetes pods access the host MySQL through a **Service with manual Endpoints*
 │                  Kubernetes Cluster                      │
 │                                                          │
 │  ┌──────────────┐         ┌────────────────┐           │
-│  │ Editorial    │         │ Other Services │           │
-│  │ Pod          │────────▶│ (future)       │           │
-│  └──────┬───────┘         └────────────────┘           │
-│         │                                                │
-│         │ Connects to: mysql.mysql:3306                 │
-│         ▼                                                │
-│  ┌────────────────────────────────────┐                │
-│  │  Service: mysql                    │                │
-│  │  Namespace: mysql                  │                │
-│  │  ClusterIP: 10.43.x.x:3306         │                │
-│  │  (No pod selector)                 │                │
-│  └────────────┬───────────────────────┘                │
+│  │ Editorial    │         │ Catalog-BFF    │           │
+│  │ Pod          │         │ Pod            │           │
+│  └──────┬───────┘         └────────┬───────┘           │
+│         │                          │                    │
+│         │ Connects to: mysql.mysql:3306                │
+│         ▼                          ▼                    │
+│  ┌────────────────────────────────────────────┐        │
+│  │  Service: mysql                            │        │
+│  │  Namespace: mysql                          │        │
+│  │  ClusterIP: 10.43.x.x:3306                 │        │
+│  │  (No pod selector)                         │        │
+│  └────────────┬───────────────────────────────┘        │
 │               │                                          │
 │               │ Routes via Endpoints                     │
 │               ▼                                          │
-│  ┌────────────────────────────────────┐                │
-│  │  Endpoints: mysql                  │                │
-│  │  Target: 192.168.1.100:3306        │◀───────────┐   │
-│  └────────────┬───────────────────────┘            │   │
+│  ┌────────────────────────────────────────────┐        │
+│  │  Endpoints: mysql                          │◀───┐   │
+│  │  Target: 192.168.1.100:3306                │    │   │
+│  └────────────┬───────────────────────────────┘    │   │
 └───────────────┼────────────────────────────────────┼───┘
                 │                                     │
                 │ Traffic exits cluster               │
                 ▼                                     │
 ┌───────────────────────────────────────────────┐    │
-│              Host Machine                      │    │
-│           IP: 192.168.1.100                    │────┘
+│              Host Machine                      │────┘
+│           IP: 192.168.1.100                    │
 │                                                │
 │  ┌─────────────────────────────────┐          │
 │  │  MySQL Server (native)          │          │
 │  │  Bind: 0.0.0.0:3306              │          │
 │  │  Config: /etc/mysql/mysql.conf.d │          │
 │  │                                  │          │
+│  │  Shared User: wapps_app          │          │
+│  │                                  │          │
 │  │  Databases:                      │          │
 │  │  - editorial_dev                 │          │
 │  │  - editorial_staging             │          │
 │  │  - editorial_prod                │          │
+│  │  - catalog_dev                   │          │
+│  │  - catalog_staging               │          │
+│  │  - catalog_prod                  │          │
 │  └─────────────────────────────────┘          │
 └───────────────────────────────────────────────┘
 ```
@@ -67,7 +72,7 @@ MySQL is automatically installed via Ansible during host provisioning:
 ansible-playbook platform/host/main.yml \
   -e target_env=development \
   -e mysql_root_password=SecureRootPassword \
-  -e mysql_editorial_password=SecureEditorialPassword \
+  -e mysql_wapps_password=SecureWappsAppPassword \
   -e git_token=ghp_xxx
 ```
 
@@ -75,16 +80,64 @@ ansible-playbook platform/host/main.yml \
 
 1. **MySQL Server** on host
 2. **MySQL Configuration** (`/etc/mysql/mysql.conf.d/wapps.cnf`)
-3. **Databases**: `editorial_dev`, `editorial_staging`, `editorial_prod`
-4. **Database User**: `editorial` with full access
+3. **Databases**: `editorial_*`, `catalog_*` (dev/staging/prod)
+4. **Shared User**: `wapps_app` with access to all databases
 5. **Kubernetes Service**: `mysql.mysql` 
 6. **Kubernetes Endpoints**: Pointing to host IP
-7. **Kubernetes Secret**: `editorial-db-credentials` in `editorial` namespace
+7. **Kubernetes Secrets**: 
+   - `mysql-credentials` (shared, in mysql namespace)
+   - `editorial-db-credentials` (in editorial namespace)
+   - `catalog-db-credentials` (in catalog namespace)
 8. **Firewall Rule**: Allow port 3306
 
 ## Accessing MySQL from Pods
 
-### Method 1: Environment Variables (Simple)
+### Method 1: Service-Specific Secret (Recommended)
+
+Each service has its own secret with the correct DATABASE_NAME:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editorial
+  namespace: editorial
+spec:
+  template:
+    spec:
+      containers:
+      - name: editorial
+        image: editorial:latest
+        envFrom:
+          - secretRef:
+              name: editorial-db-credentials
+```
+
+### Method 2: Shared Secret + Custom DATABASE_NAME
+
+Use the shared secret and override the database name:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-service
+  namespace: my-namespace
+spec:
+  template:
+    spec:
+      containers:
+      - name: my-service
+        image: my-service:latest
+        envFrom:
+          - secretRef:
+              name: mysql-credentials
+        env:
+          - name: DATABASE_NAME
+            value: "my_database_dev"
+```
+
+### Method 3: Individual Environment Variables
 
 ```yaml
 apiVersion: apps/v1
@@ -106,7 +159,10 @@ spec:
           - name: DATABASE_NAME
             value: "editorial_dev"
           - name: DATABASE_USERNAME
-            value: "editorial"
+            valueFrom:
+              secretKeyRef:
+                name: editorial-db-credentials
+                key: DATABASE_USERNAME
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -114,32 +170,18 @@ spec:
                 key: DATABASE_PASSWORD
 ```
 
-### Method 2: Kubernetes Secret (Recommended)
+## Secret Contents
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: editorial
-  namespace: editorial
-spec:
-  template:
-    spec:
-      containers:
-      - name: editorial
-        image: editorial:latest
-        envFrom:
-          - secretRef:
-              name: editorial-db-credentials
-```
-
-The secret contains:
+### Shared Secret (`mysql-credentials` in mysql namespace)
 - `DATABASE_CLIENT`: `mysql2`
 - `DATABASE_HOST`: `mysql.mysql`
 - `DATABASE_PORT`: `3306`
-- `DATABASE_NAME`: `editorial_dev` (or staging/prod)
-- `DATABASE_USERNAME`: `editorial`
+- `DATABASE_USERNAME`: `wapps_app`
 - `DATABASE_PASSWORD`: (your password)
+
+### Service-Specific Secrets
+Same as shared, plus:
+- `DATABASE_NAME`: Service-specific database (e.g., `editorial_dev`)
 
 ## DNS Resolution
 
@@ -149,6 +191,28 @@ Pods can use any of these to connect:
 - `mysql.mysql.svc.cluster.local` (fully qualified)
 
 All resolve to the Service's ClusterIP, which routes to the host.
+
+## Adding New Services
+
+1. **Add database to Ansible** (`platform/host/mysql/install.yml`):
+   ```yaml
+   # In the database creation loop
+   - my_service_dev
+   - my_service_staging
+   - my_service_prod
+   ```
+
+2. **Update user privileges**:
+   ```yaml
+   priv: '..../my_service_dev.*:ALL/my_service_staging.*:ALL/my_service_prod.*:ALL'
+   ```
+
+3. **Add secret creation task** in Ansible for the new service
+
+4. **Re-run Ansible**:
+   ```bash
+   ansible-playbook platform/host/main.yml --tags mysql
+   ```
 
 ## Maintenance
 
@@ -161,8 +225,10 @@ kubectl get svc mysql -n mysql -o yaml
 # View endpoints
 kubectl get endpoints mysql -n mysql -o yaml
 
-# View secret
+# View secrets
+kubectl get secret mysql-credentials -n mysql -o yaml
 kubectl get secret editorial-db-credentials -n editorial -o yaml
+kubectl get secret catalog-db-credentials -n catalog -o yaml
 ```
 
 ### Update Host IP (if it changes)
@@ -193,42 +259,42 @@ kubectl patch endpoints mysql -n mysql --type=json \
 kubectl run mysql-test --rm -it --restart=Never \
   --image=mysql:8.0 \
   --namespace=mysql \
-  -- mysql -h mysql.mysql -u editorial -p
+  -- mysql -h mysql.mysql -u wapps_app -p
 
 # With command
 kubectl run mysql-test --rm -it --restart=Never \
   --image=mysql:8.0 \
   --namespace=mysql \
-  -- mysql -h mysql.mysql -u editorial -pYOUR_PASSWORD \
+  -- mysql -h mysql.mysql -u wapps_app -pYOUR_PASSWORD \
   -e "SHOW DATABASES;"
 ```
 
 ### Access MySQL from Host
 
 ```bash
-# Connect as editorial user
-mysql -u editorial -p editorial_dev
+# Connect as wapps_app user
+mysql -u wapps_app -p editorial_dev
 
 # Connect as root
 sudo mysql -u root -p
 
 # Run a query
-mysql -u editorial -p editorial_dev -e "SHOW TABLES;"
+mysql -u wapps_app -p editorial_dev -e "SHOW TABLES;"
 ```
 
 ### Backup Databases
 
 ```bash
 # Backup single database
-mysqldump -u editorial -p editorial_dev > editorial_dev_backup.sql
+mysqldump -u wapps_app -p editorial_dev > editorial_dev_backup.sql
 
-# Backup all editorial databases
-for db in editorial_dev editorial_staging editorial_prod; do
-  mysqldump -u editorial -p $db > ${db}_backup_$(date +%Y%m%d).sql
+# Backup all databases
+for db in editorial_dev editorial_staging editorial_prod catalog_dev catalog_staging catalog_prod; do
+  mysqldump -u wapps_app -p $db > ${db}_backup_$(date +%Y%m%d).sql
 done
 
 # Restore from backup
-mysql -u editorial -p editorial_dev < editorial_dev_backup.sql
+mysql -u wapps_app -p editorial_dev < editorial_dev_backup.sql
 ```
 
 ### Monitor MySQL
@@ -295,7 +361,7 @@ sudo mysql -u root -p -e "
 
 ### Access Denied
 
-- Check user permissions: `mysql -u root -p -e "SELECT user, host FROM mysql.user WHERE user='editorial';"`
+- Check user permissions: `mysql -u root -p -e "SELECT user, host FROM mysql.user WHERE user='wapps_app';"`
 - Verify password is correct in secret: `kubectl get secret editorial-db-credentials -n editorial -o yaml`
 
 ### DNS Not Resolving
@@ -312,6 +378,7 @@ sudo mysql -u root -p -e "
 - ✅ No remote root access
 - ⚠️ Password stored in K8s secret (base64 encoded, not encrypted)
 - ⚠️ Accessible from any pod in cluster
+- ⚠️ Single user for all services (simpler but less isolated)
 
 ### Production Recommendations
 
@@ -320,19 +387,23 @@ sudo mysql -u root -p -e "
    - Use Vault Agent injection for pods
    - Rotate passwords regularly
 
-2. **Network Policies**
-   - Restrict which pods can access MySQL
-   - Only allow editorial namespace
+2. **Per-Service Users** (if isolation needed)
+   - Create separate MySQL users per service
+   - Each user only has access to its own database
 
-3. **Strong Passwords**
+3. **Network Policies**
+   - Restrict which pods can access MySQL
+   - Only allow specific namespaces
+
+4. **Strong Passwords**
    - Use generated passwords (not defaults)
    - Minimum 20 characters
 
-4. **SSL/TLS**
+5. **SSL/TLS**
    - Enable SSL for MySQL connections
    - Configure pods to use SSL
 
-5. **Monitoring**
+6. **Monitoring**
    - Set up alerts for failed login attempts
    - Monitor connection counts
    - Track slow queries
@@ -349,7 +420,7 @@ When migrating to a managed database (AWS RDS, Google Cloud SQL, etc.):
      -p='[{"op":"replace","path":"/subsets/0/addresses/0/ip","value":"db.example.com"}]'
    ```
 
-2. **Update Secret** with new credentials
+2. **Update Secrets** with new credentials
 3. **Test connection** from pods
 4. **Migrate data** using mysqldump
 5. **No application code changes needed!** ✨
@@ -366,4 +437,4 @@ The Service abstraction makes this migration transparent to applications.
 - Installation: `platform/host/mysql/install.yml`
 - Main playbook: `platform/host/main.yml`
 - Editorial deployment: `environments/dev/apps/editorial-kustomization/`
-
+- Catalog deployment: `environments/dev/apps/catalog-bff-kustomization/`
