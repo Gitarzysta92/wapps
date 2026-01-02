@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: rabbitmq
 
 resources:
-  - ../../../../platform/cluster/rabbitmq
+  - ../../../../platform/cluster/rabbitmq/ingress.yaml
 
 patches:
   - patch: |-
@@ -14,4 +14,7 @@ patches:
     target:
       kind: Ingress
       name: rabbitmq-ingress
+
+# Note: Namespace and Helm resources managed by rabbitmq ArgoCD app
+# This overlay only manages environment-specific ingress configuration
 

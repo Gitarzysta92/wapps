@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: minio
 
 resources:
-  - ../../../../platform/cluster/minio
+  - ../../../../platform/cluster/minio/ingress.yaml
 
 patches:
   - patch: |-
@@ -17,4 +17,7 @@ patches:
     target:
       kind: Ingress
       name: minio-ingress
+
+# Note: Namespace and Helm resources managed by minio ArgoCD app
+# This overlay only manages environment-specific ingress configuration
 

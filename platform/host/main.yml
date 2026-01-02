@@ -251,22 +251,28 @@
         - target_env | default('staging') in ['development', 'staging', 'production']
         - rabbitmq_secret_check.stdout == "NOT_FOUND" or rabbitmq_secret_check.rc != 0
 
-    - name: Deploy RabbitMQ ArgoCD Application
+    - name: Deploy RabbitMQ ArgoCD Application (Helm)
       shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/rabbitmq.yaml
       register: rabbitmq_app
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Wait for RabbitMQ application to be created
+    - name: Deploy RabbitMQ Config ArgoCD Application (Ingress)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/rabbitmq-config.yaml
+      register: rabbitmq_config_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Wait for RabbitMQ applications to be created
       shell: |
         for i in {1..30}; do
-          if kubectl get application rabbitmq -n argocd 2>/dev/null; then
-            echo "RabbitMQ application is ready"
+          if kubectl get application rabbitmq -n argocd 2>/dev/null && \
+             kubectl get application rabbitmq-config -n argocd 2>/dev/null; then
+            echo "RabbitMQ applications are ready"
             exit 0
           fi
-          echo "Waiting for RabbitMQ application... ($i/30)"
+          echo "Waiting for RabbitMQ applications... ($i/30)"
           sleep 2
         done
-        echo "Warning: RabbitMQ application may not be ready yet"
+        echo "Warning: RabbitMQ applications may not be ready yet"
         exit 0
       register: rabbitmq_app_wait
       changed_when: false
@@ -274,7 +280,12 @@
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Display RabbitMQ status
-      shell: kubectl get application rabbitmq -n argocd -o wide 2>/dev/null || echo "RabbitMQ application not found"
+      shell: |
+        echo "=== RabbitMQ Helm Chart ==="
+        kubectl get application rabbitmq -n argocd -o wide 2>/dev/null || echo "RabbitMQ application not found"
+        echo ""
+        echo "=== RabbitMQ Configuration ==="
+        kubectl get application rabbitmq-config -n argocd -o wide 2>/dev/null || echo "RabbitMQ config application not found"
       register: rabbitmq_status
       changed_when: false
       failed_when: false
@@ -312,22 +323,28 @@
         - target_env | default('staging') in ['development', 'staging', 'production']
         - minio_secret_check.stdout == "NOT_FOUND" or minio_secret_check.rc != 0
 
-    - name: Deploy MinIO ArgoCD Application
+    - name: Deploy MinIO ArgoCD Application (Helm)
       shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/minio.yaml
       register: minio_app
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Wait for MinIO application to be created
+    - name: Deploy MinIO Config ArgoCD Application (Ingress)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/minio-config.yaml
+      register: minio_config_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Wait for MinIO applications to be created
       shell: |
         for i in {1..30}; do
-          if kubectl get application minio -n argocd 2>/dev/null; then
-            echo "MinIO application is ready"
+          if kubectl get application minio -n argocd 2>/dev/null && \
+             kubectl get application minio-config -n argocd 2>/dev/null; then
+            echo "MinIO applications are ready"
             exit 0
           fi
-          echo "Waiting for MinIO application... ($i/30)"
+          echo "Waiting for MinIO applications... ($i/30)"
           sleep 2
         done
-        echo "Warning: MinIO application may not be ready yet"
+        echo "Warning: MinIO applications may not be ready yet"
         exit 0
       register: minio_app_wait
       changed_when: false
@@ -335,7 +352,12 @@
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Display MinIO status
-      shell: kubectl get application minio -n argocd -o wide 2>/dev/null || echo "MinIO application not found"
+      shell: |
+        echo "=== MinIO Helm Chart ==="
+        kubectl get application minio -n argocd -o wide 2>/dev/null || echo "MinIO application not found"
+        echo ""
+        echo "=== MinIO Configuration ==="
+        kubectl get application minio-config -n argocd -o wide 2>/dev/null || echo "MinIO config application not found"
       register: minio_status
       changed_when: false
       failed_when: false
@@ -433,8 +455,8 @@
             - ArgoCD Repository Credentials - Git access for private repos
             - ArgoCD AppProject (wapps-platform) - Project configuration
             - ArgoCD App of Apps - Application Management
-            - RabbitMQ (Platform) - Message Broker
-            - MinIO (Platform) - Object Storage
+            - RabbitMQ (Platform) - Message Broker (Helm + Config)
+            - MinIO (Platform) - Object Storage (Helm + Config)
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
@@ -442,4 +464,10 @@
             - Nginx (ports 80/443) - Reverse Proxy
             - NTP - Time synchronization
             - GHCR Image Pull Secrets (aggregator, editorial namespaces)
+          
+          ArgoCD Applications Created:
+            - rabbitmq: Helm chart deployment
+            - rabbitmq-config: Ingress configuration overlay
+            - minio: Helm chart deployment
+            - minio-config: Ingress configuration overlay
           Logs directory: {{ apps_dir }}/logs

@@ -7,6 +7,8 @@ spec:
   description: WApps Platform Infrastructure and Applications
   sourceRepos:
     - 'https://github.com/Gitarzysta92/wapps.git'
+    - 'https://charts.bitnami.com/bitnami'  # Bitnami charts (RabbitMQ)
+    - 'https://charts.min.io/'              # MinIO charts
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
