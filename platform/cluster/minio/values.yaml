@@ -6,6 +6,12 @@
 # rootUser: <secret>       # From GitHub Secrets
 # rootPassword: <secret>   # From GitHub Secrets
 
+# Image Configuration
+image:
+  repository: quay.io/minio/minio
+  tag: RELEASE.2024-12-18T13-15-44Z  # Use stable release tag
+  pullPolicy: IfNotPresent
+
 # Deployment mode
 mode: standalone
 
