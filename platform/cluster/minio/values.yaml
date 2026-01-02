@@ -1,0 +1,71 @@
+# MinIO Helm Chart Values
+# Chart: minio/minio
+# Docs: https://github.com/minio/minio/tree/master/helm/minio
+
+# Authentication - provided via --set at install time
+# rootUser: <secret>       # From GitHub Secrets
+# rootPassword: <secret>   # From GitHub Secrets
+
+# Deployment mode
+mode: standalone
+
+# Persistence
+persistence:
+  enabled: true
+  size: 50Gi
+  storageClass: "local-path"
+
+# Resources
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+# Service Configuration
+service:
+  type: ClusterIP
+  port: 9000
+
+consoleService:
+  type: ClusterIP
+  port: 9001
+
+# Buckets to create on startup
+buckets:
+  - name: uploads
+    policy: none
+    purge: false
+  - name: backups
+    policy: none
+    purge: false
+  - name: assets
+    policy: download
+    purge: false
+  - name: media-storage
+    policy: none
+    purge: false
+
+# Users (optional)
+users: []
+
+# Policies (optional)
+policies: []
+
+# Environment variables
+environment: {}
+
+# Ingress (disabled - managed by ArgoCD kustomization)
+ingress:
+  enabled: false
+
+consoleIngress:
+  enabled: false
+
+# Metrics
+metrics:
+  serviceMonitor:
+    enabled: false
+

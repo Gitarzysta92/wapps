@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acquisition
+  labels:
+    name: acquisition
+    app.kubernetes.io/part-of: scrappers
+

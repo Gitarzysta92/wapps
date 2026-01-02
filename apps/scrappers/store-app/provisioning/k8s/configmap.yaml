@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: store-app-config
+  namespace: acquisition
+  labels:
+    app: store-app
+    app.kubernetes.io/name: store-app
+    app.kubernetes.io/component: scrapper
+    app.kubernetes.io/part-of: scrappers
+data:
+  # MinIO (S3-compatible storage)
+  MEDIA_STORAGE_HOST: "http://minio.minio:9000"
+  # RabbitMQ
+  QUEUE_HOST: "rabbitmq.rabbitmq"
+  QUEUE_PORT: "5672"
+  # Puppeteer
+  HEADLESS: "true"
+

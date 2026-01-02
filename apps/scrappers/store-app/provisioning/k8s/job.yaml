@@ -1,0 +1,64 @@
+# Manual one-time job for testing or ad-hoc scraping
+# Usage: kubectl create -f job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: store-app-scrapper-manual-
+  namespace: acquisition
+  labels:
+    app: store-app
+    app.kubernetes.io/name: store-app
+    app.kubernetes.io/component: scrapper
+    app.kubernetes.io/part-of: scrappers
+    job-type: manual
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: store-app
+        app.kubernetes.io/name: store-app
+        app.kubernetes.io/component: scrapper
+    spec:
+      serviceAccountName: store-app
+      restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: scrapper
+          image: ghcr.io/gitarzysta92/wapps/store-app-scrapper:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: store-app-config
+          env:
+            # RabbitMQ credentials from secret
+            - name: QUEUE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: username
+            - name: QUEUE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: password
+            # MinIO credentials from secret
+            - name: MEDIA_STORAGE_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: accessKey
+            - name: MEDIA_STORAGE_SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: secretKey
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+
