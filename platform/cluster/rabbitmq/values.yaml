@@ -8,12 +8,8 @@
 #   password: <secret>       # From GitHub Secrets
 #   erlangCookie: <secret>   # From GitHub Secrets
 
-# Image Configuration
-image:
-  registry: docker.io
-  repository: bitnami/rabbitmq
-  tag: 3.13-debian-12  # Stable Debian 12 image (no patch version)
-  pullPolicy: IfNotPresent
+# Note: Image version managed by Helm chart version (ArgoCD app)
+# No need to override image tag - chart includes tested default
 
 # Service Configuration
 service:
