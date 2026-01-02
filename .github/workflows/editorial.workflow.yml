@@ -125,6 +125,16 @@ jobs:
           
           echo "✅ Strapi secrets created/updated"
 
+      - name: Verify secrets exist
+        run: |
+          echo "Verifying editorial-strapi-secrets exists..."
+          kubectl get secret editorial-strapi-secrets -n editorial
+          
+          echo "Verifying editorial-db-credentials exists..."
+          kubectl get secret editorial-db-credentials -n editorial
+          
+          echo "✅ All required secrets verified"
+
       - name: Install ArgoCD CLI
         run: |
           if ! command -v argocd &> /dev/null; then
