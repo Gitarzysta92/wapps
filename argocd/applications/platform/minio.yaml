@@ -6,13 +6,25 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    description: "MinIO object storage (Helm-managed)"
+    description: "MinIO object storage (GitOps-managed Helm deployment)"
 spec:
   project: wapps-platform
-  source:
-    repoURL: https://github.com/Gitarzysta92/wapps.git
-    targetRevision: HEAD
-    path: environments/dev/platform/minio-kustomization
+  sources:
+    - repoURL: https://charts.min.io/
+      chart: minio
+      targetRevision: 5.x.x
+      helm:
+        releaseName: minio
+        valueFiles:
+          - $values/platform/cluster/minio/values.yaml
+        parameters:
+          - name: rootUser
+            value: "admin"
+          - name: rootPassword
+            value: "changeme"
+    - repoURL: https://github.com/Gitarzysta92/wapps.git
+      targetRevision: HEAD
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: minio
@@ -22,6 +34,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
     retry:
       limit: 5
       backoff:
@@ -29,10 +42,8 @@ spec:
         factor: 2
         maxDuration: 3m
   ignoreDifferences:
-    # Ignore Helm-managed resources
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
         - /spec/template/spec/containers/0/image
-

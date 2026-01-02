@@ -6,13 +6,27 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    description: "RabbitMQ message broker (Helm-managed)"
+    description: "RabbitMQ message broker (GitOps-managed Helm deployment)"
 spec:
   project: wapps-platform
-  source:
-    repoURL: https://github.com/Gitarzysta92/wapps.git
-    targetRevision: HEAD
-    path: environments/dev/platform/rabbitmq-kustomization
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: rabbitmq
+      targetRevision: 14.x.x
+      helm:
+        releaseName: rabbitmq
+        valueFiles:
+          - $values/platform/cluster/rabbitmq/values.yaml
+        parameters:
+          - name: auth.username
+            value: "admin"
+          - name: auth.password
+            value: "changeme"
+          - name: auth.erlangCookie
+            value: "secretcookie"
+    - repoURL: https://github.com/Gitarzysta92/wapps.git
+      targetRevision: HEAD
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: rabbitmq
@@ -22,6 +36,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
     retry:
       limit: 5
       backoff:
@@ -29,10 +44,8 @@ spec:
         factor: 2
         maxDuration: 3m
   ignoreDifferences:
-    # Ignore Helm-managed resources
     - group: apps
       kind: StatefulSet
       jsonPointers:
         - /spec/replicas
         - /spec/template/spec/containers/0/image
-
