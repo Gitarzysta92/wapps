@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: rabbitmq
+
+resources:
+  - ../../../../platform/cluster/rabbitmq
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: rabbitmq.development.wapps.com
+    target:
+      kind: Ingress
+      name: rabbitmq-ingress
+

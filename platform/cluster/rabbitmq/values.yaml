@@ -1,0 +1,58 @@
+# RabbitMQ Helm Chart Values
+# Chart: bitnami/rabbitmq
+# Docs: https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq
+
+# Authentication - provided via --set at install time
+# auth:
+#   username: <secret>       # From GitHub Secrets
+#   password: <secret>       # From GitHub Secrets
+#   erlangCookie: <secret>   # From GitHub Secrets
+
+# Service Configuration
+service:
+  type: ClusterIP
+  ports:
+    amqp: 5672
+    amqpTls: 5671
+    dist: 25672
+    manager: 15672
+    epmd: 4369
+    metrics: 9419
+
+# Persistence
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "local-path"
+
+# Resources
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# High Availability
+replicaCount: 1
+
+# Metrics
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+
+# Plugins
+plugins: "rabbitmq_management rabbitmq_prometheus"
+
+# Configuration
+configuration: |-
+  ## Clustering
+  cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
+  cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+  cluster_formation.k8s.address_type = hostname
+  
+  ## Queue master location
+  queue_master_locator = min-masters
+

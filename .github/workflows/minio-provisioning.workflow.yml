@@ -1,0 +1,308 @@
+name: 'MinIO - Platform Service Provisioning'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'platform/cluster/minio/**'
+      - 'environments/dev/platform/minio-kustomization/**'
+      - '.github/workflows/minio-provisioning.workflow.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'install'
+        type: choice
+        options:
+          - install
+          - upgrade
+          - sync
+          - uninstall
+
+env:
+  SERVICE_NAME: minio
+  NAMESPACE: minio
+  HELM_RELEASE_NAME: minio
+  HELM_REPO_NAME: minio
+  HELM_REPO_URL: https://charts.min.io/
+  HELM_CHART_NAME: minio/minio
+
+jobs:
+  set-environment:
+    name: 'Set Environment'
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      action: ${{ steps.set-action.outputs.action }}
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set action
+        id: set-action
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ACTION="${{ github.event.inputs.action }}"
+          else
+            ACTION="sync"
+          fi
+          echo "action=${ACTION}" >> $GITHUB_OUTPUT
+          echo "Action: ${ACTION}"
+
+  provision:
+    name: 'Provision MinIO (${{ needs.set-environment.outputs.environment }})'
+    runs-on: self-hosted
+    needs: set-environment
+    environment: ${{ needs.set-environment.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.set-environment.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ Namespace ${{ env.NAMESPACE }} ensured"
+
+      - name: Create MinIO secrets
+        run: |
+          MINIO_ROOT_USER="${{ secrets.MINIO_ROOT_USER }}"
+          MINIO_ROOT_PASSWORD="${{ secrets.MINIO_ROOT_PASSWORD }}"
+          
+          if [ -z "$MINIO_ROOT_USER" ] || [ -z "$MINIO_ROOT_PASSWORD" ]; then
+            echo "::error::MinIO credentials not configured in GitHub Secrets"
+            exit 1
+          fi
+          
+          kubectl create secret generic minio-credentials \
+            --from-literal=endpoint="minio.minio:9000" \
+            --from-literal=rootUser="${MINIO_ROOT_USER}" \
+            --from-literal=rootPassword="${MINIO_ROOT_PASSWORD}" \
+            --from-literal=accessKey="${MINIO_ROOT_USER}" \
+            --from-literal=secretKey="${MINIO_ROOT_PASSWORD}" \
+            --from-literal=useSSL="false" \
+            --from-literal=region="us-east-1" \
+            --namespace=${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "✅ MinIO credentials secret created/updated"
+
+      - name: Add Helm repository
+        if: needs.set-environment.outputs.action == 'install' || needs.set-environment.outputs.action == 'upgrade'
+        run: |
+          helm repo add ${{ env.HELM_REPO_NAME }} ${{ env.HELM_REPO_URL }}
+          helm repo update
+          echo "✅ Helm repository added and updated"
+
+      - name: Install MinIO
+        if: needs.set-environment.outputs.action == 'install'
+        run: |
+          echo "Installing MinIO via Helm..."
+          
+          if helm list -n ${{ env.NAMESPACE }} | grep -q ${{ env.HELM_RELEASE_NAME }}; then
+            echo "⚠️ MinIO is already installed. Use 'upgrade' action to update."
+            exit 0
+          fi
+          
+          helm install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            --values platform/cluster/minio/values.yaml \
+            --set rootUser="${{ secrets.MINIO_ROOT_USER }}" \
+            --set rootPassword="${{ secrets.MINIO_ROOT_PASSWORD }}" \
+            --wait \
+            --timeout 10m
+          
+          echo "✅ MinIO installed successfully"
+
+      - name: Upgrade MinIO
+        if: needs.set-environment.outputs.action == 'upgrade'
+        run: |
+          echo "Upgrading MinIO via Helm..."
+          
+          helm upgrade ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            --values platform/cluster/minio/values.yaml \
+            --set rootUser="${{ secrets.MINIO_ROOT_USER }}" \
+            --set rootPassword="${{ secrets.MINIO_ROOT_PASSWORD }}" \
+            --wait \
+            --timeout 10m
+          
+          echo "✅ MinIO upgraded successfully"
+
+      - name: Uninstall MinIO
+        if: needs.set-environment.outputs.action == 'uninstall'
+        run: |
+          echo "⚠️ Uninstalling MinIO..."
+          helm uninstall ${{ env.HELM_RELEASE_NAME }} --namespace ${{ env.NAMESPACE }} || true
+          echo "✅ MinIO uninstalled"
+          echo "⚠️ Note: PVCs are not deleted automatically"
+
+      - name: Wait for MinIO to be ready
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          echo "Waiting for MinIO to be ready..."
+          kubectl wait --for=condition=ready pod -l app=minio \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=300s || true
+          echo "✅ MinIO pods checked"
+
+      - name: Create default buckets
+        if: needs.set-environment.outputs.action == 'install'
+        run: |
+          echo "Creating default buckets..."
+          sleep 10
+          
+          MINIO_POD=$(kubectl get pod -n ${{ env.NAMESPACE }} -l app=minio -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+          
+          if [ -n "$MINIO_POD" ]; then
+            kubectl exec -n ${{ env.NAMESPACE }} $MINIO_POD -- \
+              mc alias set local http://localhost:9000 \
+              "${{ secrets.MINIO_ROOT_USER }}" \
+              "${{ secrets.MINIO_ROOT_PASSWORD }}" || true
+            
+            for bucket in uploads backups assets; do
+              kubectl exec -n ${{ env.NAMESPACE }} $MINIO_POD -- \
+                mc mb --ignore-existing local/$bucket || true
+              echo "✅ Bucket '$bucket' created"
+            done
+            
+            kubectl exec -n ${{ env.NAMESPACE }} $MINIO_POD -- \
+              mc anonymous set download local/assets || true
+            
+            echo "✅ Default buckets configured"
+          else
+            echo "⚠️ Could not find MinIO pod, skipping bucket creation"
+          fi
+
+      - name: Verify MinIO installation
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          echo "Verifying MinIO installation..."
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app=minio
+          kubectl get svc -n ${{ env.NAMESPACE }}
+          kubectl get secret minio-credentials -n ${{ env.NAMESPACE }}
+          echo "✅ MinIO verification complete"
+
+      - name: Install ArgoCD CLI
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Create/Sync ArgoCD Application
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          if argocd app get ${{ env.SERVICE_NAME }} --grpc-web 2>/dev/null; then
+            echo "ArgoCD application exists, syncing..."
+            argocd app sync ${{ env.SERVICE_NAME }} --grpc-web
+          else
+            echo "Creating ArgoCD application..."
+            kubectl apply -f argocd/applications/platform/${{ env.SERVICE_NAME }}.yaml
+            sleep 5
+            argocd app sync ${{ env.SERVICE_NAME }} --grpc-web || true
+          fi
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait ${{ env.SERVICE_NAME }} --timeout 300 --grpc-web || true
+          echo "✅ ArgoCD sync completed"
+
+      - name: Apply environment configuration
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -d "environments/${ENV_SHORT}/platform/minio-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/platform/minio-kustomization/
+            echo "✅ Environment configuration applied"
+          else
+            echo "⚠️ No environment overlay found"
+          fi
+
+      - name: Apply network policies
+        if: needs.set-environment.outputs.action != 'uninstall'
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [set-environment, provision]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "MinIO - Platform Service Provisioning Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.set-environment.outputs.environment }}"
+          echo "Action: ${{ needs.set-environment.outputs.action }}"
+          echo ""
+          echo "Job Results:"
+          echo "  - Provision: ${{ needs.provision.result }}"
+          echo ""
+          
+          if [ "${{ needs.provision.result }}" == "success" ] && [ "${{ needs.set-environment.outputs.action }}" != "uninstall" ]; then
+            echo "✅ MinIO provisioned successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - API: https://minio-api.${{ needs.set-environment.outputs.environment }}.wapps.com"
+            echo "  - Console: https://minio-console.${{ needs.set-environment.outputs.environment }}.wapps.com"
+            echo "  - Internal: minio.minio:9000"
+            echo ""
+            echo "Default buckets: uploads, backups, assets"
+            echo ""
+            echo "Connection from pods:"
+            echo "  Use secret: minio-credentials"
+          elif [ "${{ needs.set-environment.outputs.action }}" == "uninstall" ]; then
+            echo "✅ MinIO uninstalled successfully!"
+          else
+            echo "⚠️ Provisioning completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
