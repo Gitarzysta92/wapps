@@ -40,10 +40,12 @@ spec:
           {{- end }}
     spec:
       serviceAccountName: editorial-service
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
         - name: editorial
-          image: editorial:latest
-          imagePullPolicy: Never
+          image: ghcr.io/gitarzysta92/wapps/editorial:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 1337
           env:

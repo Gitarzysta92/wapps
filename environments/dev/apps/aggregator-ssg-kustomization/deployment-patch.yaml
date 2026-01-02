@@ -8,8 +8,6 @@ spec:
     spec:
       containers:
       - name: aggregator-ssg
-        image: ghcr.io/gitarzysta92/aggregator-ssg:dev-latest
-        imagePullPolicy: Always
         env:
         - name: NODE_ENV
           value: "development"

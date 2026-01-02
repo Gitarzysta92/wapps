@@ -19,9 +19,12 @@ spec:
         app.kubernetes.io/name: aggregator-csr
         app.kubernetes.io/component: frontend
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: aggregator-csr
-        image: aggregator-csr:latest
+        image: ghcr.io/gitarzysta92/aggregator-csr:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
           name: http
