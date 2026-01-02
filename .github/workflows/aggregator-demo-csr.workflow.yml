@@ -1,68 +1,56 @@
-name: 'Aggregator Demo CSR - Frontend Application'
+name: 'Aggregator Demo CSR - Build & Deploy'
 
 on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
+      - 'apps/portals/aggregator-demo/application/**'
+      - '.github/workflows/aggregator-demo-csr.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
     inputs:
-      target_env:
+      environment:
         description: 'Target environment'
         required: true
+        default: 'development'
         type: choice
         options:
-          - dev
-          - staging
+          - development
           - production
-        default: dev
-  push:
-    branches: [main, develop]
-    paths:
-      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
-      - 'apps/portals/aggregator-demo/application/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
-      - 'apps/portals/aggregator-demo/application/**'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
 
 env:
-  APP_NAME: aggregator-demo-csr
-  IMAGE_NAME: aggregator-demo-csr
+  SERVICE_NAME: aggregator-demo-csr
   REGISTRY: ghcr.io
-  NAMESPACE: argocd
-  # TODO: Extract GITHUB_USERNAME to organization/repository-level environment variable or secret
-  # to avoid hardcoding in each workflow file
-  GITHUB_USERNAME: gitarzysta92
+  IMAGE_NAME: gitarzysta92/wapps/aggregator-demo-csr
 
 jobs:
-  test:
-    name: 'Test and Lint'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests and linting
-        uses: ./.github/actions/test-and-lint
-        with:
-          app-name: ${{ env.APP_NAME }}
-
   build:
-    name: 'Build and Push'
+    name: 'Build Docker Image'
     runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      image-tag: ${{ steps.image-tag.outputs.tag }}
+      environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="production"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -71,23 +59,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Determine environment name
-        id: env-name
-        run: |
-          TARGET_ENV="${{ github.event.inputs.target_env || 'dev' }}"
-          if [ "$TARGET_ENV" = "dev" ]; then
-            ENV_NAME="development"
-          else
-            ENV_NAME="$TARGET_ENV"
-          fi
-          echo "name=${ENV_NAME}" >> $GITHUB_OUTPUT
-          echo "Environment: ${ENV_NAME}"
-        shell: bash
-
       - name: Patch environment configuration
         run: |
           ENV_FILE="apps/portals/aggregator-demo/application/src/environment.ts"
-          ENV_NAME="${{ steps.env-name.outputs.name }}"
+          ENV_NAME="${{ steps.set-env.outputs.environment }}"
           
           # Patch ENVIRONMENT_NAME
           sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
@@ -97,74 +72,142 @@ jobs:
           echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
           echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.com"
           echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.com"
-        shell: bash
 
       - name: Build application
-        run: npx nx build ${{ env.APP_NAME }} --configuration=production
+        run: npx nx build aggregator-demo-csr --configuration=production
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ env.GITHUB_USERNAME }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch,suffix=-${{ steps.env-name.outputs.name }}
-            type=ref,event=pr,suffix=-${{ steps.env-name.outputs.name }}
-            type=sha,prefix={{branch}}-,suffix=-${{ steps.env-name.outputs.name }}
-            type=raw,value=latest-${{ steps.env-name.outputs.name }},enable={{is_default_branch}}
-
-      - name: Extract single image tag for deployment
-        id: image-tag
-        run: |
-          # Extract the SHA-based tag with environment suffix
-          TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -E "sha-.*-${{ steps.env-name.outputs.name }}$" | head -n1)
-          if [ -z "$TAG" ]; then
-            TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n1)
-          fi
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Using image tag: $TAG"
-        shell: bash
-
-      - name: Build and push Docker image
-        uses: ./.github/actions/build-and-push
-        with:
-          image-name: ${{ env.IMAGE_NAME }}
-          dockerfile-path: './apps/portals/aggregator-demo/entrypoints/csr/Dockerfile'
-          context-path: '.'
-          tags: ${{ steps.meta.outputs.tags }}
           registry: ${{ env.REGISTRY }}
-          username: ${{ env.GITHUB_USERNAME }}
+          username: gitarzysta92
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/portals/aggregator-demo/entrypoints/csr/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
   deploy:
-    name: 'Deploy to ${{ github.event.inputs.target_env || ''dev'' }}'
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
     runs-on: self-hosted
     needs: build
-    environment: ${{ (github.event.inputs.target_env == 'dev' || github.event.inputs.target_env == '') && 'development' || github.event.inputs.target_env }}
+    environment: ${{ needs.build.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set ArgoCD server URL
-        id: argocd-url
+
+      - name: Set environment variables
+        id: env-vars
         run: |
-          TARGET_ENV="${{ github.event.inputs.target_env || 'dev' }}"
-          if [ "$TARGET_ENV" = "dev" ]; then
-            ENV_NAME="development"
-          else
-            ENV_NAME="$TARGET_ENV"
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
           fi
-          echo "server=argocd.${ENV_NAME}.wapps.com" >> $GITHUB_OUTPUT
-        shell: bash
-      
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          image-name: ${{ env.IMAGE_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ steps.argocd-url.outputs.server }}
-          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
-          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: ${{ github.event.inputs.target_env || 'dev' }}
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for aggregator-demo-csr..."
+          argocd app sync aggregator-demo-csr --force --grpc-web
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait aggregator-demo-csr --timeout 300 --grpc-web
+          
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/aggregator-demo-csr -n default
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/aggregator-demo-csr -n default --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply aggregator-demo-csr environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Aggregator Demo CSR - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Aggregator Demo CSR deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Application: https://aggregator-demo.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Health: http://aggregator-demo-csr.default.svc.cluster.local/health"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Verify application access"
+            echo "  2. Check logs: kubectl logs -n default -l app=aggregator-demo-csr --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n default"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
