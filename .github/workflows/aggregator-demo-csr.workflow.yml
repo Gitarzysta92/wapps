@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/portals/aggregator-demo/entrypoints/csr/**'
       - 'apps/portals/aggregator-demo/application/**'
+      - 'environments/dev/apps/aggregator-demo-csr-kustomization/**'
       - '.github/workflows/aggregator-demo-csr.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
@@ -43,7 +44,7 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             ENV="${{ github.event.inputs.environment }}"
           elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            ENV="production"
+            ENV="development"
           else
             ENV="development"
           fi
