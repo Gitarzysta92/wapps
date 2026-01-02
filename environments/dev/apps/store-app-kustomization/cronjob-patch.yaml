@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: store-app-scrapper
+  namespace: acquisition
+spec:
+  # Development: run daily at midnight
+  schedule: "0 0 * * *"
+  # Keep fewer job history in dev
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+

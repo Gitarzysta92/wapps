@@ -44,6 +44,9 @@ buckets:
   - name: assets
     policy: download
     purge: false
+  - name: media-storage
+    policy: none
+    purge: false
 
 # Users (optional)
 users: []
