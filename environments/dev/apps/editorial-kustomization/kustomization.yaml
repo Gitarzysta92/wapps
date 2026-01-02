@@ -6,7 +6,12 @@ namespace: editorial
 resources:
   - ../../../../apps/services/editorial/provisioning/k8s
 
-patchesStrategicMerge:
-  - deployment-patch.yaml
-  - ingress-patch.yaml
-
+patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: editorial
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: editorial-ingress
