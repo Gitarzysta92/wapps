@@ -12,7 +12,7 @@ spec:
   sources:
     - repoURL: https://charts.min.io/
       chart: minio
-      targetRevision: 5.2.0  # Pin to specific tested version
+      targetRevision: 5.3.0  # Newer chart with compatible MinIO version
       helm:
         releaseName: minio
         valueFiles:

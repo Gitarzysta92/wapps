@@ -6,8 +6,12 @@
 # rootUser: <secret>       # From GitHub Secrets
 # rootPassword: <secret>   # From GitHub Secrets
 
-# Note: Image version managed by Helm chart version (ArgoCD app)
-# No need to override image tag - chart includes tested default
+# Image override - needed for data format compatibility
+# The PVC has data written by RELEASE.2024-12-18, need >= that version
+image:
+  repository: quay.io/minio/minio
+  tag: RELEASE.2024-12-18T13-15-44Z
+  pullPolicy: IfNotPresent
 
 # Deployment mode
 mode: standalone
