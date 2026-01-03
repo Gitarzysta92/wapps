@@ -51,39 +51,12 @@ resources:
 # High Availability
 replicaCount: 1
 
-# Load definitions to manage users/vhosts declaratively
-# Uses Bitnami chart's built-in support for load_definitions
+# Authentication - hardcoded for development
+# TODO: Move to GitHub Secrets for production
 auth:
   username: admin
   password: changeme
   erlangCookie: secretcookie
-
-loadDefinition:
-  enabled: true
-  file: |
-    {
-      "users": [
-        {
-          "name": "admin",
-          "password": "changeme",
-          "tags": "administrator"
-        }
-      ],
-      "vhosts": [
-        {
-          "name": "/"
-        }
-      ],
-      "permissions": [
-        {
-          "user": "admin",
-          "vhost": "/",
-          "configure": ".*",
-          "write": ".*",
-          "read": ".*"
-        }
-      ]
-    }
 
 # Metrics
 metrics:
