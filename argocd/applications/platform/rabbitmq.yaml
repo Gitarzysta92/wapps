@@ -12,7 +12,7 @@ spec:
   sources:
     - repoURL: https://charts.bitnami.com/bitnami
       chart: rabbitmq
-      targetRevision: 14.*.*  # Use latest 14.x available in repo
+      targetRevision: 16.0.14  # Latest available version in Bitnami repo
       helm:
         releaseName: rabbitmq
         valueFiles:
