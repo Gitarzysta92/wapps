@@ -59,6 +59,12 @@ auth:
   erlangCookie: secretcookie
   forcePassword: true  # Force password update even with existing data
 
+# Extra environment variables to override chart defaults
+# Force password update on every startup (even with persisted data)
+extraEnvVars:
+  - name: RABBITMQ_UPDATE_PASSWORD
+    value: "yes"
+
 # Metrics
 metrics:
   enabled: true
