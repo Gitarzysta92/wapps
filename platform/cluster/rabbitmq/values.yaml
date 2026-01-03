@@ -9,13 +9,13 @@
 #   erlangCookie: <secret>   # From GitHub Secrets
 
 # Image override - Bitnami paywall workaround
-# Bitnami moved specific revision tags (-r1, -r2) behind paywall (late 2024)
-# Using :latest tag which is always available publicly
+# Bitnami moved specific revision tags to legacy repo (late 2024)
+# Using bitnamilegacy repository to get exact version chart expects
 image:
   registry: docker.io
-  repository: bitnami/rabbitmq
-  tag: latest  # Always pulls newest available version
-  pullPolicy: Always  # Force pull to get updates
+  repository: bitnamilegacy/rabbitmq  # Legacy repo with specific revision tags
+  tag: 4.1.3-debian-12-r1  # Exact version chart 16.0.14 expects
+  pullPolicy: IfNotPresent
 
 # Service Configuration
 service:
