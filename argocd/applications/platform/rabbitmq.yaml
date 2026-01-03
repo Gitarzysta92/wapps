@@ -12,7 +12,7 @@ spec:
   sources:
     - repoURL: https://charts.bitnami.com/bitnami
       chart: rabbitmq
-      targetRevision: 14.6.6  # Pin to specific tested version
+      targetRevision: 16.0.16  # Latest stable version (Nov 2025)
       helm:
         releaseName: rabbitmq
         valueFiles:
