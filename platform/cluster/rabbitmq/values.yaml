@@ -8,8 +8,14 @@
 #   password: <secret>       # From GitHub Secrets
 #   erlangCookie: <secret>   # From GitHub Secrets
 
-# Note: Image version managed by Helm chart version (ArgoCD app)
-# No need to override image tag - chart includes tested default
+# Image override - Bitnami paywall workaround
+# Bitnami moved specific revision tags (-r1, -r2) behind paywall (late 2024)
+# Use general version tag that's still public: 4.1-debian-12 instead of 4.1.3-debian-12-r1
+image:
+  registry: docker.io
+  repository: bitnami/rabbitmq
+  tag: 4.1-debian-12  # General version tag (public, no revision number)
+  pullPolicy: IfNotPresent
 
 # Service Configuration
 service:
