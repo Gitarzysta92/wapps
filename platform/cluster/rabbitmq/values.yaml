@@ -2,6 +2,11 @@
 # Chart: bitnami/rabbitmq
 # Docs: https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq
 
+# Global settings - allow bitnamilegacy repository
+global:
+  security:
+    allowInsecureImages: true  # Required for bitnamilegacy repository
+
 # Authentication - provided via --set at install time
 # auth:
 #   username: <secret>       # From GitHub Secrets
