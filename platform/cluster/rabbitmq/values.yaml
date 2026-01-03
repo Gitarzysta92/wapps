@@ -57,6 +57,7 @@ auth:
   username: admin
   password: changeme
   erlangCookie: secretcookie
+  forcePassword: true  # Force password update even with existing data
 
 # Metrics
 metrics:
