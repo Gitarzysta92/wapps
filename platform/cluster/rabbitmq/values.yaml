@@ -52,50 +52,38 @@ resources:
 replicaCount: 1
 
 # Load definitions to manage users/vhosts declaratively
-# This ensures correct users even when restoring from persistent data
+# Uses Bitnami chart's built-in support for load_definitions
+auth:
+  username: admin
+  password: changeme
+  erlangCookie: secretcookie
+
 loadDefinition:
   enabled: true
-  existingSecret: ""  # Will create inline definitions
-
-extraConfiguration: |-
-  load_definitions = /app/load_definition.json
-
-extraSecrets:
-  load-definition:
-    load_definition.json: |
-      {
-        "users": [
-          {
-            "name": "admin",
-            "password": "changeme",
-            "tags": ["administrator"]
-          }
-        ],
-        "vhosts": [
-          {
-            "name": "/"
-          }
-        ],
-        "permissions": [
-          {
-            "user": "admin",
-            "vhost": "/",
-            "configure": ".*",
-            "write": ".*",
-            "read": ".*"
-          }
-        ]
-      }
-
-extraVolumes:
-  - name: load-definition
-    secret:
-      secretName: rabbitmq-load-definition
-
-extraVolumeMounts:
-  - name: load-definition
-    mountPath: /app
-    readOnly: true
+  file: |
+    {
+      "users": [
+        {
+          "name": "admin",
+          "password": "changeme",
+          "tags": "administrator"
+        }
+      ],
+      "vhosts": [
+        {
+          "name": "/"
+        }
+      ],
+      "permissions": [
+        {
+          "user": "admin",
+          "vhost": "/",
+          "configure": ".*",
+          "write": ".*",
+          "read": ".*"
+        }
+      ]
+    }
 
 # Metrics
 metrics:
