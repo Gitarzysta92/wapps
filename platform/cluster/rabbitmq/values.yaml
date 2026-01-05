@@ -34,8 +34,10 @@ service:
     metrics: 9419
 
 # Persistence
+# TODO: Re-enable after fixing local-path data retention issue
+# Issue: Old data persists on host even after PV deletion, causing password update failures
 persistence:
-  enabled: true
+  enabled: false  # Temporarily disabled - uses emptyDir instead
   size: 10Gi
   storageClass: "local-path"
 
