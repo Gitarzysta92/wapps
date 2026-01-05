@@ -8,5 +8,4 @@ resources:
   - ingress.yaml
 
 # Note: RabbitMQ is installed via Helm chart (bitnami/rabbitmq)
-# See .github/workflows/rabbitmq-provisioning.workflow.yml for installation
 

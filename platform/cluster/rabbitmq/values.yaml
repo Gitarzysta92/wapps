@@ -60,13 +60,42 @@ auth:
   password: changeme
   erlangCookie: secretcookie
 
-# NOTE: Admin user creation
-# The Bitnami chart's automatic user creation via auth.username doesn't work reliably.
-# Manual user creation required after deployment:
-#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl add_user admin changeme
-#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl set_user_tags admin administrator  
-#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-# TODO: Enable persistence to prevent losing users on pod restart, or implement init container
+# Load definitions to create admin user with hashed password
+# Password hash generated with: echo -n "changeme" | sha256sum | awk '{print $1}'
+extraSecrets:
+  load-definition:
+    load_definition.json: |
+      {
+        "users": [
+          {
+            "name": "admin",
+            "password_hash": "YjZhMGNhOWMwZDJiMzE1MGY4MDg5NGEwNjA4MTFhZjI3NDgwMjE4Mzc0NzMxMGYzMDY3MjgzNjUwYTk4NzM3OQ==",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+          }
+        ],
+        "vhosts": [
+          {
+            "name": "/"
+          }
+        ],
+        "permissions": [
+          {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+          }
+        ]
+      }
+
+loadDefinition:
+  enabled: true
+  existingSecret: load-definition
+
+extraConfiguration: |
+  load_definitions = /app/load_definition.json
 
 # Metrics
 metrics:
