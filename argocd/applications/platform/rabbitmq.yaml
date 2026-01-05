@@ -18,12 +18,10 @@ spec:
         valueFiles:
           - $values/platform/cluster/rabbitmq/values.yaml
         parameters:
-          - name: auth.existingPasswordSecret
-            value: "rabbitmq-credentials"
-          - name: auth.existingPasswordSecretKey
-            value: "rabbitmq-password"
           - name: auth.username
             value: "admin"
+          - name: auth.password
+            value: "changeme"
           - name: auth.erlangCookie
             value: "secretcookie"
     - repoURL: https://github.com/Gitarzysta92/wapps.git

@@ -55,10 +55,7 @@ replicaCount: 1
 # Secret name: rabbitmq-credentials (created before Helm deployment)
 auth:
   username: admin
-  # Password loaded from existing secret: rabbitmq-credentials
-  # Key 'rabbitmq-password' is the standard key name expected by Bitnami chart
-  existingPasswordSecret: rabbitmq-credentials
-  existingPasswordSecretKey: rabbitmq-password
+  password: changeme
   erlangCookie: secretcookie
 
 # Metrics
