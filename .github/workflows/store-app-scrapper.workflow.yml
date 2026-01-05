@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/scrappers/store-app/**'
       - 'environments/dev/apps/store-app-kustomization/**'
+      - 'environments/dev/apps/aggregator-demo-csr-kustomization/**'
       - '.github/workflows/store-app-scrapper.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
@@ -18,11 +19,6 @@ on:
         options:
           - development
           - production
-      run_job:
-        description: 'Run scrapper job after deploy'
-        required: false
-        default: false
-        type: boolean
 
 env:
   SERVICE_NAME: store-app-scrapper
@@ -66,7 +62,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build store-app --configuration=production
+        run: npx nx build store-app
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
