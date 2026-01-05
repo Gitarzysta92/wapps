@@ -51,11 +51,13 @@ resources:
 # High Availability
 replicaCount: 1
 
-# Authentication - hardcoded for development
-# TODO: Move to GitHub Secrets for production
+# Authentication - uses external secret created by Ansible
+# Secret name: rabbitmq-credentials (created before Helm deployment)
 auth:
   username: admin
-  password: changeme
+  # Password loaded from existing secret: rabbitmq-credentials
+  existingPasswordSecret: rabbitmq-credentials
+  existingPasswordSecretKey: password
   erlangCookie: secretcookie
 
 # Metrics
