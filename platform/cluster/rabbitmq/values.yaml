@@ -57,11 +57,6 @@ auth:
   password: changeme
   erlangCookie: secretcookie
 
-# Force password update on every restart
-extraEnvVars:
-  - name: RABBITMQ_UPDATE_PASSWORD
-    value: "yes"
-
 # Metrics
 metrics:
   enabled: true
