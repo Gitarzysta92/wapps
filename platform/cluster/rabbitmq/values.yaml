@@ -58,7 +58,6 @@ auth:
   username: admin
   password: changeme
   erlangCookie: secretcookie
-  updatePassword: true  # Force password update on pod restart
 
 # Metrics
 metrics:
