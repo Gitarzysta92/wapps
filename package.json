@@ -99,6 +99,7 @@
     "@taiga-ui/legacy": "^4.22.0",
     "@taiga-ui/polymorpheus": "^4.9.0",
     "@tinkoff/ng-polymorpheus": "^4.3.0",
+    "@aws-sdk/client-s3": "^3.839.0",
     "amqplib": "^0.10.8",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",
