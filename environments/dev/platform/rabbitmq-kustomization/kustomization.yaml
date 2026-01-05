@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: rabbitmq
 
 resources:
-  - ../../../../platform/cluster/rabbitmq/ingress.yaml
+  - ../../../../platform/cluster/rabbitmq
 
 patches:
   - patch: |-
