@@ -24,8 +24,10 @@ spec:
             value: "changeme"
           - name: auth.erlangCookie
             value: "secretcookie"
-          - name: auth.updatePasswordOnStartup
-            value: "true"
+          - name: extraEnvVars[0].name
+            value: "RABBITMQ_UPDATE_PASSWORD"
+          - name: extraEnvVars[0].value
+            value: "yes"
     - repoURL: https://github.com/Gitarzysta92/wapps.git
       targetRevision: HEAD
       ref: values

@@ -56,8 +56,11 @@ auth:
   username: admin
   password: changeme
   erlangCookie: secretcookie
-  # Force password update on startup (fixes password mismatch on pod restart)
-  updatePasswordOnStartup: true
+
+# Force password update on every restart
+extraEnvVars:
+  - name: RABBITMQ_UPDATE_PASSWORD
+    value: "yes"
 
 # Metrics
 metrics:
