@@ -56,8 +56,9 @@ replicaCount: 1
 auth:
   username: admin
   # Password loaded from existing secret: rabbitmq-credentials
+  # Key 'rabbitmq-password' is the standard key name expected by Bitnami chart
   existingPasswordSecret: rabbitmq-credentials
-  existingPasswordSecretKey: password
+  existingPasswordSecretKey: rabbitmq-password
   erlangCookie: secretcookie
 
 # Metrics

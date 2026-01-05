@@ -21,7 +21,7 @@ spec:
           - name: auth.existingPasswordSecret
             value: "rabbitmq-credentials"
           - name: auth.existingPasswordSecretKey
-            value: "password"
+            value: "rabbitmq-password"
           - name: auth.username
             value: "admin"
           - name: auth.erlangCookie

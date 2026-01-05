@@ -225,31 +225,24 @@
       register: rabbitmq_namespace
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Check if RabbitMQ secrets exist
-      shell: kubectl get secret rabbitmq-credentials -n rabbitmq 2>/dev/null || echo "NOT_FOUND"
-      register: rabbitmq_secret_check
-      changed_when: false
-      failed_when: false
-      when: target_env | default('staging') in ['development', 'staging', 'production']
-
-    - name: Create RabbitMQ secrets
+    - name: Create/Update RabbitMQ secrets
       shell: |
         RABBITMQ_USERNAME="{{ lookup('env', 'RABBITMQ_USERNAME') | default('admin', true) }}"
         RABBITMQ_PASSWORD="{{ lookup('env', 'RABBITMQ_PASSWORD') | default('changeme', true) }}"
         
+        # Create/update secret (Helm will reference this for RabbitMQ password)
         kubectl create secret generic rabbitmq-credentials \
           --from-literal=host="rabbitmq.rabbitmq" \
           --from-literal=port="5672" \
           --from-literal=username="${RABBITMQ_USERNAME}" \
           --from-literal=password="${RABBITMQ_PASSWORD}" \
+          --from-literal=rabbitmq-password="${RABBITMQ_PASSWORD}" \
           --from-literal=management-port="15672" \
           --from-literal=connection-string="amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq.rabbitmq:5672/" \
           --namespace=rabbitmq \
           --dry-run=client -o yaml | kubectl apply -f -
       register: rabbitmq_secrets
-      when:
-        - target_env | default('staging') in ['development', 'staging', 'production']
-        - rabbitmq_secret_check.stdout == "NOT_FOUND" or rabbitmq_secret_check.rc != 0
+      when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Deploy RabbitMQ ArgoCD Application (Helm)
       shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/rabbitmq.yaml
