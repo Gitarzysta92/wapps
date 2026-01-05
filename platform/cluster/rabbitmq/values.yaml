@@ -61,7 +61,7 @@ auth:
   erlangCookie: secretcookie
 
 # Load definitions to create admin user with hashed password
-# Password hash generated with: echo -n "changeme" | sha256sum | awk '{print $1}'
+# Password hash generated with: python3 -c "import hashlib, base64, os; salt = os.urandom(4); hashed = hashlib.sha256(salt + b'changeme').digest(); print(base64.b64encode(salt + hashed).decode())"
 extraSecrets:
   load-definition:
     load_definition.json: |
@@ -69,7 +69,7 @@ extraSecrets:
         "users": [
           {
             "name": "admin",
-            "password_hash": "YjZhMGNhOWMwZDJiMzE1MGY4MDg5NGEwNjA4MTFhZjI3NDgwMjE4Mzc0NzMxMGYzMDY3MjgzNjUwYTk4NzM3OQ==",
+            "password_hash": "2VhjcD6TW7QTewrFXlG8RcbYWF9IA6oKvSnWcoBbiSRb0T/l",
             "hashing_algorithm": "rabbit_password_hashing_sha256",
             "tags": "administrator"
           }
