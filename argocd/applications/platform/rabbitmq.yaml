@@ -24,6 +24,8 @@ spec:
             value: "changeme"
           - name: auth.erlangCookie
             value: "secretcookie"
+          - name: auth.updatePasswordOnStartup
+            value: "true"
     - repoURL: https://github.com/Gitarzysta92/wapps.git
       targetRevision: HEAD
       ref: values

@@ -51,12 +51,13 @@ resources:
 # High Availability
 replicaCount: 1
 
-# Authentication - uses external secret created by Ansible
-# Secret name: rabbitmq-credentials (created before Helm deployment)
+# Authentication
 auth:
   username: admin
   password: changeme
   erlangCookie: secretcookie
+  # Force password update on startup (fixes password mismatch on pod restart)
+  updatePasswordOnStartup: true
 
 # Metrics
 metrics:
