@@ -34,10 +34,11 @@ service:
     metrics: 9419
 
 # Persistence
-# TODO: Re-enable after fixing local-path data retention issue
-# Issue: Old data persists on host even after PV deletion, causing password update failures
+# Enabled to persist RabbitMQ data including users, queues, and messages
+# Note: If password changes fail, manually delete data on host: 
+#   ssh serveradmin@192.168.1.102 "sudo rm -rf /var/lib/rancher/k3s/storage/pvc-*rabbitmq*"
 persistence:
-  enabled: false  # Temporarily disabled - uses emptyDir instead
+  enabled: true
   size: 10Gi
   storageClass: "local-path"
 
@@ -59,40 +60,13 @@ auth:
   password: changeme
   erlangCookie: secretcookie
 
-# Load definitions to create admin user (bypasses broken startup script)
-extraSecrets:
-  load-definition:
-    load_definition.json: |
-      {
-        "users": [
-          {
-            "name": "{{ .Values.auth.username }}",
-            "password": "{{ .Values.auth.password }}",
-            "tags": "administrator"
-          }
-        ],
-        "vhosts": [
-          {
-            "name": "/"
-          }
-        ],
-        "permissions": [
-          {
-            "user": "{{ .Values.auth.username }}",
-            "vhost": "/",
-            "configure": ".*",
-            "write": ".*",
-            "read": ".*"
-          }
-        ]
-      }
-
-loadDefinition:
-  enabled: true
-  existingSecret: load-definition
-
-extraConfiguration: |
-  load_definitions = /app/load_definition.json
+# NOTE: Admin user creation
+# The Bitnami chart's automatic user creation via auth.username doesn't work reliably.
+# Manual user creation required after deployment:
+#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl add_user admin changeme
+#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl set_user_tags admin administrator  
+#   kubectl exec rabbitmq-0 -n rabbitmq -- rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+# TODO: Enable persistence to prevent losing users on pod restart, or implement init container
 
 # Metrics
 metrics:
@@ -112,4 +86,8 @@ configuration: |-
   
   ## Queue master location
   queue_master_locator = min-masters
+  
+  ## Disable loopback restriction for guest user (allows remote login)
+  ## However, we'll use admin user instead via load definitions
+  loopback_users = none
 
