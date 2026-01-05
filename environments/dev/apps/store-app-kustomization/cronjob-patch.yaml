@@ -9,4 +9,8 @@ spec:
   # Keep fewer job history in dev
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      # Increased backoff limit to allow more retries before giving up
+      backoffLimit: 3
 
