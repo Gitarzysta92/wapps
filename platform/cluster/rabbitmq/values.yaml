@@ -59,6 +59,41 @@ auth:
   password: changeme
   erlangCookie: secretcookie
 
+# Load definitions to create admin user (bypasses broken startup script)
+extraSecrets:
+  load-definition:
+    load_definition.json: |
+      {
+        "users": [
+          {
+            "name": "{{ .Values.auth.username }}",
+            "password": "{{ .Values.auth.password }}",
+            "tags": "administrator"
+          }
+        ],
+        "vhosts": [
+          {
+            "name": "/"
+          }
+        ],
+        "permissions": [
+          {
+            "user": "{{ .Values.auth.username }}",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+          }
+        ]
+      }
+
+loadDefinition:
+  enabled: true
+  existingSecret: load-definition
+
+extraConfiguration: |
+  load_definitions = /app/load_definition.json
+
 # Metrics
 metrics:
   enabled: true
