@@ -60,23 +60,42 @@ auth:
   password: changeme
   erlangCookie: secretcookie
 
-# Admin user creation via lifecycle hook
-# Load definitions with password_hash failed silently - using reliable rabbitmqctl approach
-lifecycleHooks:
-  postStart:
-    exec:
-      command:
-        - /bin/bash
-        - -c
-        - |
-          # Wait for RabbitMQ to be ready
-          until rabbitmqctl status >/dev/null 2>&1; do sleep 2; done
-          # Create admin user if it doesn't exist
-          if ! rabbitmqctl list_users | grep -q "^admin"; then
-            rabbitmqctl add_user admin changeme
-            rabbitmqctl set_user_tags admin administrator
-            rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-          fi
+# Load definitions to create admin user with hashed password
+# Password hash generated with: python3 -c "import hashlib, base64, os; salt = os.urandom(4); hashed = hashlib.sha256(salt + b'changeme').digest(); print(base64.b64encode(salt + hashed).decode())"
+extraSecrets:
+  load-definition:
+    load_definition.json: |
+      {
+        "users": [
+          {
+            "name": "admin",
+            "password_hash": "2VhjcD6TW7QTewrFXlG8RcbYWF9IA6oKvSnWcoBbiSRb0T/l",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+          }
+        ],
+        "vhosts": [
+          {
+            "name": "/"
+          }
+        ],
+        "permissions": [
+          {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+          }
+        ]
+      }
+
+loadDefinition:
+  enabled: true
+  existingSecret: load-definition
+
+extraConfiguration: |
+  load_definitions = /app/load_definition.json
 
 # Metrics
 metrics:
@@ -100,4 +119,8 @@ configuration: |-
   ## Disable loopback restriction for guest user (allows remote login)
   ## However, we'll use admin user instead via load definitions
   loopback_users = none
+  
+  ## Debug logging for definitions import
+  log.file.level = debug
+  log.console.level = debug
 
