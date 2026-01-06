@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install dependencies for Chromium if your app needs headless browsing
+# Install dependencies for Chromium (Puppeteer will use its bundled Chromium)
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
@@ -23,15 +23,18 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy only pre-built output from the Nx build
+# Copy pre-built output from the Nx build (includes generated package.json)
 COPY dist/apps/scrappers/store-app ./
 
-RUN npm install
+# Install production dependencies (generated package.json contains only what's needed)
+RUN npm install --production
 
 ENV NODE_ENV=production
-# Optional: If your app reads its own package.json or uses runtime deps
-# COPY apps/scrappers/store-app/package*.json ./
-# RUN npm ci --omit=dev
+
+# Environment variables expected at runtime (injected by Kubernetes):
+# - QUEUE_USERNAME, QUEUE_PASSWORD (from rabbitmq-credentials secret)
+# - MEDIA_STORAGE_HOST, MEDIA_STORAGE_ACCESSKEY, MEDIA_STORAGE_SECRETKEY (from minio-credentials secret)
+# - QUEUE_HOST, QUEUE_PORT, HEADLESS (from store-app-config ConfigMap)
 
 # Run the app
-CMD ["node", "src/index.js"]  # Adjust entrypoint if different
+CMD ["node", "src/index.js"]
