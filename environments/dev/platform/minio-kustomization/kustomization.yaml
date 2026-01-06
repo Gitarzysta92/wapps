@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: minio
 
 resources:
-  - ingress.yaml
+  - ../../../../platform/cluster/minio
 
 patches:
   - patch: |-
