@@ -1,4 +1,4 @@
-name: 'Store App Scrapper - Build & Deploy'
+name: 'Scrappers - StoreApp - build & deploy'
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'environments/dev/apps/aggregator-demo-csr-kustomization/**'
       - '.github/workflows/store-app-scrapper.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
+      - '.github/actions/sync-argocd-app/**' 
   workflow_dispatch:
     inputs:
       environment:
@@ -24,10 +25,10 @@ env:
   SERVICE_NAME: store-app-scrapper
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/wapps/store-app-scrapper
-  NAMESPACE: acquisition
+  NAMESPACE_MANIFEST: apps/scrappers/store-app/provisioning/k8s/namespace.yaml
 
 jobs:
-  build:
+  build:  
     name: 'Build Docker Image'
     runs-on: ubuntu-latest
     permissions:
@@ -38,7 +39,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      # TODO: this has to be exported to 
+      # reusable action.
       - name: Set environment
         id: set-env
         run: |
@@ -74,12 +76,25 @@ jobs:
           username: gitarzysta92
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
+      # TODO: move it to reusable action
+      #- name: Compute image tag
+      #  id: image
+      #  run: |
+      #    BRANCH="${{ github.ref_name }}"
+      #    SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
+      #    SHORT_SHA="${GITHUB_SHA::7}"
+      #
+      #    TAG="${SAFE_BRANCH}-${SHORT_SHA}"
+      #    echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: apps/scrappers/store-app/Dockerfile
           push: true
+          # TODO: Use here externally computed tag, with sha and branch name
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -105,97 +120,50 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
-      - name: Create acquisition namespace
-        run: |
-          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+      - name: Extract namespace
+        id: ns
+        uses: ./.github/actions/extract-namespace
+        with:
+          manifest: ${{ env.NAMESPACE_MANIFEST }}
 
-      - name: Copy RabbitMQ credentials to acquisition namespace
+      - name: Create RabbitMQ credentials secret
         run: |
-          # Check if rabbitmq-credentials exists in rabbitmq namespace
-          if kubectl get secret rabbitmq-credentials -n rabbitmq 2>/dev/null; then
-            kubectl get secret rabbitmq-credentials -n rabbitmq -o yaml | \
-              sed 's/namespace: rabbitmq/namespace: ${{ env.NAMESPACE }}/' | \
-              kubectl apply -f -
-            echo "✅ RabbitMQ credentials copied to ${{ env.NAMESPACE }} namespace"
-          else
-            echo "⚠️ rabbitmq-credentials not found in rabbitmq namespace"
-            echo "Creating placeholder secret..."
-            kubectl create secret generic rabbitmq-credentials \
-              --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
-              --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
-              --namespace=${{ env.NAMESPACE }} \
-              --dry-run=client -o yaml | kubectl apply -f -
-          fi
+          kubectl create secret generic rabbitmq-credentials \
+            --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
+            --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ RabbitMQ credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
-      - name: Copy MinIO credentials to acquisition namespace
+      - name: Create MinIO credentials secret
         run: |
-          # Check if minio-credentials exists in minio namespace
-          if kubectl get secret minio-credentials -n minio 2>/dev/null; then
-            kubectl get secret minio-credentials -n minio -o yaml | \
-              sed 's/namespace: minio/namespace: ${{ env.NAMESPACE }}/' | \
-              kubectl apply -f -
-            echo "✅ MinIO credentials copied to ${{ env.NAMESPACE }} namespace"
-          else
-            echo "⚠️ minio-credentials not found in minio namespace"
-            echo "Creating placeholder secret..."
-            kubectl create secret generic minio-credentials \
-              --from-literal=accessKey="${{ secrets.MINIO_ROOT_USER }}" \
-              --from-literal=secretKey="${{ secrets.MINIO_ROOT_PASSWORD }}" \
-              --namespace=${{ env.NAMESPACE }} \
-              --dry-run=client -o yaml | kubectl apply -f -
-          fi
+          kubectl create secret generic minio-credentials \
+            --from-literal=accessKey="${{ secrets.MINIO_ACCESS_KEY }}" \
+            --from-literal=secretKey="${{ secrets.MINIO_SECRET_KEY }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ MinIO credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
-      - name: Copy GHCR secret to acquisition namespace
+      - name: Create GHCR image pull secret
         run: |
-          # Check if ghcr-secret exists in default namespace
-          if kubectl get secret ghcr-secret -n default 2>/dev/null; then
-            kubectl get secret ghcr-secret -n default -o yaml | \
-              sed 's/namespace: default/namespace: ${{ env.NAMESPACE }}/' | \
-              kubectl apply -f -
-            echo "✅ GHCR secret copied to ${{ env.NAMESPACE }} namespace"
-          else
-            echo "⚠️ ghcr-secret not found, creating..."
-            kubectl create secret docker-registry ghcr-secret \
-              --docker-server=ghcr.io \
-              --docker-username=gitarzysta92 \
-              --docker-password=${{ secrets.CONTAINER_REGISTRY_TOKEN }} \
-              --namespace=${{ env.NAMESPACE }} \
-              --dry-run=client -o yaml | kubectl apply -f -
-          fi
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ GHCR image pull secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
-      - name: Install ArgoCD CLI
-        run: |
-          if ! command -v argocd &> /dev/null; then
-            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-            chmod +x argocd-linux-amd64
-            mkdir -p $HOME/.local/bin
-            mv argocd-linux-amd64 $HOME/.local/bin/argocd
-            echo "$HOME/.local/bin" >> $PATH
-          fi
-
-      - name: Login to ArgoCD
-        run: |
-          argocd login ${{ steps.env-vars.outputs.server }} \
-            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
-            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
-            --insecure --grpc-web
-
-      - name: Create/Sync ArgoCD Application
-        run: |
-          if argocd app get ${{ env.SERVICE_NAME }} --grpc-web 2>/dev/null; then
-            echo "ArgoCD application exists, syncing..."
-            argocd app sync ${{ env.SERVICE_NAME }} --force --grpc-web
-          else
-            echo "Creating ArgoCD application..."
-            kubectl apply -f argocd/applications/backend/store-app-scrapper.yaml
-            sleep 5
-            argocd app sync ${{ env.SERVICE_NAME }} --grpc-web || true
-          fi
-          
-          echo "Waiting for sync to complete..."
-          argocd app wait ${{ env.SERVICE_NAME }} --timeout 300 --grpc-web || true
-          
-          echo "✅ ArgoCD sync completed"
+      - name: Sync ArgoCD Application
+        uses: ./.github/actions/sync-argocd-app
+        with:
+          app-name: ${{ env.SERVICE_NAME }}
+          argocd-server: ${{ steps.env-vars.outputs.server }}
+          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
+          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
+          app-manifest-path: argocd/applications/backend/store-app-scrapper.yaml
+          sync-timeout: '300'
+          force-sync: 'true'
 
       - name: Apply environment configuration
         run: |
@@ -205,13 +173,6 @@ jobs:
             kubectl apply -k environments/${ENV_SHORT}/apps/store-app-kustomization/
             echo "✅ Environment configuration applied"
           fi
-
-      - name: Trigger manual job (if requested)
-        if: github.event.inputs.run_job == 'true'
-        run: |
-          echo "Creating manual scrapper job..."
-          kubectl create -f apps/scrappers/store-app/provisioning/k8s/job.yaml
-          echo "✅ Manual job created"
 
   summary:
     name: 'Deployment Summary'

@@ -1,0 +1,87 @@
+name: 'Sync ArgoCD Application'
+description: 'Install ArgoCD CLI, login, optionally create app, sync and wait for completion'
+inputs:
+  app-name:
+    description: 'ArgoCD application name'
+    required: true
+  argocd-server:
+    description: 'ArgoCD server URL'
+    required: true
+  argocd-username:
+    description: 'ArgoCD username (for user/password authentication)'
+    required: false
+  argocd-password:
+    description: 'ArgoCD password (for user/password authentication)'
+    required: false
+  argocd-token:
+    description: 'ArgoCD authentication token (alternative to username/password)'
+    required: false
+  app-manifest-path:
+    description: 'Path to ArgoCD Application manifest file (optional, used to create app if it does not exist)'
+    required: false
+  sync-timeout:
+    description: 'Timeout in seconds for waiting for sync to complete'
+    required: false
+    default: '300'
+  force-sync:
+    description: 'Force sync even if app is already synced'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install ArgoCD CLI
+      run: |
+        if ! command -v argocd &> /dev/null; then
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd-linux-amd64
+          mkdir -p $HOME/.local/bin
+          mv argocd-linux-amd64 $HOME/.local/bin/argocd
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        fi
+      shell: bash
+
+    - name: Login to ArgoCD
+      run: |
+        if [ -n "${{ inputs.argocd-token }}" ]; then
+          echo "Logging in with token authentication"
+          argocd login ${{ inputs.argocd-server }} --auth-token "${{ inputs.argocd-token }}" --insecure --grpc-web
+        elif [ -n "${{ inputs.argocd-username }}" ] && [ -n "${{ inputs.argocd-password }}" ]; then
+          echo "Logging in with username/password authentication"
+          argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
+        else
+          echo "Error: Either argocd-token or both argocd-username and argocd-password must be provided"
+          exit 1
+        fi
+      shell: bash
+
+    - name: Create/Sync ArgoCD Application
+      run: |
+        if argocd app get ${{ inputs.app-name }} --grpc-web 2>/dev/null; then
+          echo "ArgoCD application exists, syncing..."
+          if [ "${{ inputs.force-sync }}" == "true" ]; then
+            argocd app sync ${{ inputs.app-name }} --force --grpc-web
+          else
+            argocd app sync ${{ inputs.app-name }} --grpc-web
+          fi
+        else
+          if [ -n "${{ inputs.app-manifest-path }}" ]; then
+            echo "Creating ArgoCD application from ${{ inputs.app-manifest-path }}..."
+            kubectl apply -f ${{ inputs.app-manifest-path }}
+            sleep 5
+            argocd app sync ${{ inputs.app-name }} --grpc-web || true
+          else
+            echo "Error: ArgoCD application '${{ inputs.app-name }}' does not exist and no app-manifest-path provided"
+            exit 1
+          fi
+        fi
+      shell: bash
+
+    - name: Wait for sync to complete
+      run: |
+        echo "Waiting for sync to complete..."
+        argocd app wait ${{ inputs.app-name }} --timeout ${{ inputs.sync-timeout }} --grpc-web || true
+        echo "✅ ArgoCD sync completed"
+      shell: bash
+

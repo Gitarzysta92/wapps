@@ -1,0 +1,38 @@
+name: Extract Kubernetes Namespace
+description: Extract namespace name from a Kubernetes Namespace manifest
+
+inputs:
+  manifest:
+    description: Path to namespace YAML manifest
+    required: true
+
+outputs:
+  namespace:
+    description: Extracted namespace name
+    value: ${{ steps.extract.outputs.namespace }}
+
+runs:
+  using: composite
+  steps:
+    - name: Ensure yq is available
+      shell: bash
+      run: |
+        if ! command -v yq &>/dev/null; then
+          echo "Installing yq..."
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+        fi
+
+    - name: Extract namespace
+      id: extract
+      shell: bash
+      run: |
+        NAMESPACE=$(yq '.metadata.name' "${{ inputs.manifest }}")
+
+        if [ -z "$NAMESPACE" ] || [ "$NAMESPACE" = "null" ]; then
+          echo "❌ Failed to extract namespace from ${{ inputs.manifest }}"
+          exit 1
+        fi
+
+        echo "namespace=$NAMESPACE" >> $GITHUB_OUTPUT

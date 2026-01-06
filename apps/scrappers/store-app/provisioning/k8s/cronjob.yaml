@@ -2,12 +2,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: store-app-scrapper
-  namespace: acquisition
-  labels:
-    app: store-app
-    app.kubernetes.io/name: store-app
-    app.kubernetes.io/component: scrapper
-    app.kubernetes.io/part-of: scrappers
 spec:
   schedule: "0 0 * * *"  # Daily at midnight
   concurrencyPolicy: Forbid
@@ -15,7 +9,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
-      backoffLimit: 3
+      backoffLimit: 2
       template:
         metadata:
           labels:

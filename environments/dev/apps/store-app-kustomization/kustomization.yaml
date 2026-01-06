@@ -1,11 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-namespace: acquisition
-
 resources:
   - ../../../../apps/scrappers/store-app/provisioning/k8s
-
 patches:
   - path: cronjob-patch.yaml
     target:

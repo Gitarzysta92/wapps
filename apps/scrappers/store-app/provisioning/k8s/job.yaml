@@ -3,14 +3,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: store-app-scrapper-manual-
-  namespace: acquisition
+  name: manual-store-app-scrapper
   labels:
     app: store-app
     app.kubernetes.io/name: store-app
     app.kubernetes.io/component: scrapper
     app.kubernetes.io/part-of: scrappers
-    job-type: manual
 spec:
   backoffLimit: 3
   ttlSecondsAfterFinished: 3600
