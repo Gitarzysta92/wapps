@@ -23,8 +23,8 @@ if (!user || !pass) {
   console.error(`  QUEUE_PASSWORD: ${pass ? '✓' : '✗ MISSING'}`);
   process.exit(1);
 }
-
-const url = `amqp://${user}:${pass}@${host}:${port}`;
+console.log(`  AMQP URL: amqp://${user}:***@${host}:${port}`);
+const url = `amqp://${user}:${pass}@${host}:${port}/`;
 const queueName = "store.app-scrapper";
 
 // const mediaStorageHost = process.env['MEDIA_STORAGE_HOST'];
