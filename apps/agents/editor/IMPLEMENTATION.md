@@ -79,49 +79,19 @@ Created GitHub Actions workflow:
 - Pushes to GitHub Container Registry (ghcr.io)
 - Tags: `latest` and `<branch>-<sha>`
 
-## Required Kubernetes Secrets
+## Required GitHub Secrets
 
-The editor agent requires the following secrets:
+Add these secrets to your GitHub repository (**Settings** → **Secrets and variables** → **Actions**):
 
-### 1. Editorial Service API Token (Created by GitHub Actions)
+### 1. `EDITORIAL_SERVICE_API_TOKEN`
+- Get from Strapi admin panel (`/admin` → Settings → API Tokens)
+- Create token with permissions: app-record, tag, upload (or Full Access)
 
-The workflow automatically creates this secret during deployment:
+### 2. `RABBITMQ_USERNAME`
+- RabbitMQ username (same as store-app-scrapper)
 
-```bash
-kubectl create secret generic editor-agent-secrets \
-  --from-literal=EDITORIAL_SERVICE_API_TOKEN="your-strapi-api-token" \
-  --namespace=editorial
-```
-
-**To generate the Strapi API token:**
-1. Log into Strapi admin panel at `https://editorial.development.wapps.com/admin`
-2. Go to **Settings** → **API Tokens**
-3. Create new token with:
-   - **Name**: `editor-agent`
-   - **Type**: `Full access` or custom with permissions:
-     - `app-record`: create, update, find
-     - `tag`: create, update, find
-     - `upload`: create (for file uploads)
-4. Copy the token
-5. Add it to GitHub repository secrets as `EDITORIAL_SERVICE_API_TOKEN`
-
-**To add the secret to GitHub:**
-1. Go to your repository on GitHub
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Name: `EDITORIAL_SERVICE_API_TOKEN`
-5. Value: Paste the Strapi API token
-6. Click **Add secret**
-
-### 2. RabbitMQ Credentials (Created by Ansible)
-
-These are automatically created during host provisioning by Ansible.
-
-The secret `rabbitmq-credentials` in the `rabbitmq` namespace contains:
-- `username`: RabbitMQ username
-- `password`: RabbitMQ password
-
-This is managed by `platform/host/main.yml` and doesn't require manual intervention.
+### 3. `RABBITMQ_PASSWORD`
+- RabbitMQ password (same as store-app-scrapper)
 
 ## Deployment Steps
 

@@ -109,27 +109,27 @@ jobs:
         run: |
           kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
 
-      # NOTE: RabbitMQ credentials (rabbitmq-credentials) are created by Ansible
-      # during host provisioning. See: platform/host/main.yml
+      - name: Create RabbitMQ credentials secret
+        run: |
+          kubectl create secret generic rabbitmq-credentials \
+            --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
+            --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
+            --namespace=editorial \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ RabbitMQ credentials secret created/updated in editorial namespace"
 
       - name: Create editor-agent secrets
         run: |
           kubectl create secret generic editor-agent-secrets \
             --from-literal=EDITORIAL_SERVICE_API_TOKEN="${{ secrets.EDITORIAL_SERVICE_API_TOKEN }}" \
             --namespace=editorial \
-            --dry-run=client -o yaml | kubectl apply -f -
-          
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ Editor agent secrets created/updated"
 
       - name: Verify secrets exist
         run: |
-          echo "Verifying editor-agent-secrets exists..."
           kubectl get secret editor-agent-secrets -n editorial
-          
-          echo "Verifying rabbitmq-credentials exists..."
-          kubectl get secret rabbitmq-credentials -n editorial || \
-            kubectl get secret rabbitmq-credentials -n rabbitmq
-          
+          kubectl get secret rabbitmq-credentials -n editorial
           echo "✅ All required secrets verified"
 
       - name: Install ArgoCD CLI
