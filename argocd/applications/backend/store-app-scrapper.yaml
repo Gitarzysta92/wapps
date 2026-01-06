@@ -13,13 +13,13 @@ spec:
     path: environments/dev/apps/store-app-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: acquisition
+    namespace: ingestion-scrappers-store-app
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=false
     retry:
       limit: 5
       backoff:
