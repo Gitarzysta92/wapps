@@ -6,6 +6,9 @@ namespace: rabbitmq
 resources:
   - namespace.yaml
   - ingress.yaml
+  - service-amqp-nodeport.yaml
 
 # Note: RabbitMQ is installed via Helm chart (bitnami/rabbitmq)
+# The service-amqp-nodeport.yaml exposes AMQP port 5672 via NodePort 30567
+# for external TCP access through nginx stream module
 

@@ -33,6 +33,37 @@
     dest: /etc/nginx/sites-enabled/{{ target_env }}-wapps
     state: link
 
+- name: Create stream configuration directory
+  file:
+    path: /etc/nginx/conf.d
+    state: directory
+    mode: '0755'
+
+- name: Create stream configuration
+  template:
+    src: nginx-stream.conf.j2
+    dest: /etc/nginx/conf.d/stream.conf
+    mode: '0644'
+
+- name: Ensure stream module is loaded (Debian/Ubuntu)
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*include\s+/etc/nginx/modules-enabled/\*\.conf;'
+    line: 'include /etc/nginx/modules-enabled/*.conf;'
+    insertbefore: '^events\s+\{'
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure nginx.conf includes stream configuration
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*include\s+/etc/nginx/conf.d/stream.conf;'
+    line: 'include /etc/nginx/conf.d/stream.conf;'
+    insertafter: '^events\s+\{'
+    state: present
+  when: ansible_os_family == "Debian"
+  # Note: For RHEL/CentOS, stream config might need to be in main nginx.conf directly
+
 - name: Generate self-signed SSL certificate
   shell: |
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -84,6 +115,7 @@
       - K3s API: https://k3s-api.{{ target_env }}.wapps.com  
       - Node Exporter: http://metrics.{{ target_env }}.wapps.com
       - Cluster Services: https://any-service.{{ target_env }}.wapps.com (via ingress)
+      - RabbitMQ AMQP: <host-ip>:5672 (TCP via nginx stream)
       
       🔧 Configuration:
       - Environment: {{ target_env }}

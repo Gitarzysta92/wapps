@@ -16,5 +16,7 @@ patches:
       name: rabbitmq-ingress
 
 # Note: Namespace and Helm resources managed by rabbitmq ArgoCD app
-# This overlay only manages environment-specific ingress configuration
+# This overlay manages:
+# - Environment-specific ingress configuration
+# - NodePort exposure for AMQP (port 30567) for external TCP access via nginx stream
 
