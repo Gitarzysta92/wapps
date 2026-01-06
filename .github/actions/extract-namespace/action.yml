@@ -19,9 +19,11 @@ runs:
       run: |
         if ! command -v yq &>/dev/null; then
           echo "Installing yq..."
-          sudo wget -qO /usr/local/bin/yq \
+          mkdir -p "$HOME/bin"
+          wget -qO "$HOME/bin/yq" \
             https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+          chmod +x "$HOME/bin/yq"
+          echo "$HOME/bin" >> $GITHUB_PATH
         fi
 
     - name: Extract namespace
