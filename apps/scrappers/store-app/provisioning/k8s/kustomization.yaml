@@ -8,6 +8,8 @@ resources:
   - cronjob.yaml
   - job.yaml
 
-commonLabels:
-  app.kubernetes.io/managed-by: argocd
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/managed-by: argocd
 
