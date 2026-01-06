@@ -7,9 +7,9 @@ import { getConnectionString } from './rabbitmq';
 dotenv.config();
 
 const QUEUE_NAME = 'store.app-scrapper';
-const EDITORIAL_SERVICE_HOST = process.env['EDITORIAL_SERVICE_HOST'] || 'http://editorial-service.editorial:1337';
+const EDITORIAL_SERVICE_HOST = process.env['EDITORIAL_SERVICE_HOST'];
 const EDITORIAL_API_TOKEN = process.env['EDITORIAL_SERVICE_API_TOKEN'];
-const MEDIA_STORAGE_HOST = process.env['MEDIA_STORAGE_HOST'] || 'http://minio.minio:9000';
+const MEDIA_STORAGE_HOST = process.env['MEDIA_STORAGE_HOST'];
 
 interface ScrapedApp {
   name: string;
@@ -182,14 +182,20 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
 
 async function run() {
   console.log('🚀 Starting Editor Agent...');
-  console.log(`📡 Editorial Service: ${EDITORIAL_SERVICE_HOST}`);
-  console.log(`🐰 RabbitMQ Queue: ${QUEUE_NAME}`);
-  console.log(`🔐 API Token: ${EDITORIAL_API_TOKEN ? '✓ Set' : '✗ Missing'}`);
-
-  if (!EDITORIAL_API_TOKEN) {
-    console.error('❌ EDITORIAL_SERVICE_API_TOKEN is required');
+  
+  // Validate required environment variables
+  if (!EDITORIAL_SERVICE_HOST) {
+    console.error('❌ EDITORIAL_SERVICE_HOST environment variable is required');
     process.exit(1);
   }
+  if (!EDITORIAL_API_TOKEN) {
+    console.error('❌ EDITORIAL_SERVICE_API_TOKEN environment variable is required');
+    process.exit(1);
+  }
+
+  console.log(`📡 Editorial Service: ${EDITORIAL_SERVICE_HOST}`);
+  console.log(`🐰 RabbitMQ Queue: ${QUEUE_NAME}`);
+  console.log(`🔐 API Token: ✓ Set`);
 
   const connection = await amqp.connect(getConnectionString());
   const channel = await connection.createChannel();

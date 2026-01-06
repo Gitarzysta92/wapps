@@ -34,7 +34,7 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: EDITORIAL_URL
-              value: "http://editorial-service.editorial:1337"
+              value: "http://editorial.editorial.svc.cluster.local:1337"
             - name: EDITORIAL_API_TOKEN
               valueFrom:
                 secretKeyRef:

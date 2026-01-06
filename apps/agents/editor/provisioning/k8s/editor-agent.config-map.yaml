@@ -4,7 +4,7 @@ metadata:
   name: editor-agent-config
   namespace: editorial
 data:
-  EDITORIAL_SERVICE_HOST: "http://editorial-service.editorial.svc.cluster.local:1337"
+  EDITORIAL_SERVICE_HOST: "http://editorial.editorial.svc.cluster.local:1337"
   QUEUE_HOST: "rabbitmq.rabbitmq.svc.cluster.local"
   QUEUE_PORT: "5672"
   MEDIA_STORAGE_HOST: "http://minio.minio.svc.cluster.local:9000"
