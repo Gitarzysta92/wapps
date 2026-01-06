@@ -5,9 +5,9 @@ export function getJsonFromFile<T>(path: string): T {
 }
 
 export async function autoScroll(page: any){
-  await page.evaluate(async () => {
-    let prevHeight = 0;
-    const timer = await new Promise((r) => {
+  await page.evaluate(() => {
+    return new Promise<void>((resolve) => {
+      let prevHeight = 0;
       let counter = 0;
       const timer: any = setInterval(() => {
         window.scrollBy(0, 2000);
@@ -19,12 +19,12 @@ export async function autoScroll(page: any){
         }
 
         if (counter > 10) {
-          r(timer)
+          clearInterval(timer);
+          resolve();
         }
 
-        console.log(document.body.scrollHeight, counter)
-      }, 100)
-    })
-    clearInterval(timer as any)
+        console.log(document.body.scrollHeight, counter);
+      }, 100);
+    });
   });
 }
