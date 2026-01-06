@@ -4,10 +4,7 @@ kind: Kustomization
 namespace: editorial
 
 resources:
-  - ../../../../apps/agents/editor/provisioning/k8s/editor-agent.namespace.yaml
-  - ../../../../apps/agents/editor/provisioning/k8s/editor-agent.service-account.yaml
-  - ../../../../apps/agents/editor/provisioning/k8s/editor-agent.config-map.yaml
-  - ../../../../apps/agents/editor/provisioning/k8s/editor-agent.deployment.yaml
+  - ../../../../apps/agents/editor/provisioning/k8s
 
 patches:
   - path: deployment-patch.yaml
