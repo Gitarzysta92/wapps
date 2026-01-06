@@ -144,8 +144,8 @@ jobs:
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           # Create/update MinIO credentials secret
           kubectl create secret generic minio-credentials \
-            --from-literal=accessKey="${{ secrets.MINIO_ACCESS_KEY }}" \
-            --from-literal=secretKey="${{ secrets.MINIO_SECRET_KEY }}" \
+            --from-literal=accessKey="${{ secrets.MINIO_ROOT_USER }}" \
+            --from-literal=secretKey="${{ secrets.MINIO_ROOT_PASSWORD }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ MinIO credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
