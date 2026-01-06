@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editor-agent
+spec:
+  replicas: 1
+

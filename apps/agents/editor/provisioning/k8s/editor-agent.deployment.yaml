@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: editor-agent
   namespace: editorial
+  labels:
+    app: editor-agent
+    app.kubernetes.io/name: editor-agent
+    app.kubernetes.io/component: agent
 spec:
   replicas: 1
   selector:
@@ -12,46 +16,39 @@ spec:
     metadata:
       labels:
         app: editor-agent
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "editor-agent-role"
-        vault.hashicorp.com/agent-inject-secret-openai: "secret/data/openai"
-        vault.hashicorp.com/agent-inject-template-openai: |
-          {{- with secret "secret/data/openai" -}}
-          export OPENAI_API_KEY={{ .Data.data.token }}
-          {{- end }}
-        vault.hashicorp.com/agent-inject-secret-editorial-service: "secret/data/editorial/service"
-        vault.hashicorp.com/agent-inject-template-editorial-service: |
-          {{- with secret "secret/data/editorial/service" -}}
-          export EDITORIAL_SERVICE_API_TOKEN={{ .Data.data.token }}
-          {{- end }}
-        vault.hashicorp.com/agent-inject-secret-queue: "secret/data/rabbitmq"
-        vault.hashicorp.com/agent-inject-template-queue: |
-          {{- with secret "secret/data/rabbitmq" -}}
-          export QUEUE_USERNAME={{ .Data.data.username }}
-          export QUEUE_PASSWORD={{ .Data.data.password }}
-          {{- end }}
     spec:
       serviceAccountName: editor-agent
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: editor-agent
-          image: editor-agent:latest
-          imagePullPolicy: Never
-          command: ["sh", "-c"]
-          args:
-            - >
-              echo "======= /vault/secrets/openai =======";
-              nl -ba /vault/secrets/openai;
-              echo "======= /vault/secrets/editorial-service =======";
-              nl -ba /vault/secrets/editorial-service;
-              echo "======= /vault/secrets/queue =======";
-              nl -ba /vault/secrets/queue;
-              set -a
-              && . /vault/secrets/openai
-              && . /vault/secrets/editorial-service
-              && . /vault/secrets/queue
-              && set +a
-              && exec node src/index.js
+          image: ghcr.io/gitarzysta92/wapps/editor-agent:latest
+          imagePullPolicy: Always
+          env:
+            # RabbitMQ credentials from secret (created by Ansible)
+            - name: QUEUE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: username
+            - name: QUEUE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: password
+            # Editorial Service API token (created by workflow)
+            - name: EDITORIAL_SERVICE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: editor-agent-secrets
+                  key: EDITORIAL_SERVICE_API_TOKEN
           envFrom:
             - configMapRef:
                 name: editor-agent-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
