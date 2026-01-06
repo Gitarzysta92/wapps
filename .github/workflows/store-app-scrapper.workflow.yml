@@ -128,6 +128,9 @@ jobs:
 
       - name: Create RabbitMQ credentials secret
         run: |
+          # Ensure namespace exists
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          # Create/update RabbitMQ credentials secret
           kubectl create secret generic rabbitmq-credentials \
             --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
             --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
@@ -137,6 +140,9 @@ jobs:
 
       - name: Create MinIO credentials secret
         run: |
+          # Ensure namespace exists
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          # Create/update MinIO credentials secret
           kubectl create secret generic minio-credentials \
             --from-literal=accessKey="${{ secrets.MINIO_ACCESS_KEY }}" \
             --from-literal=secretKey="${{ secrets.MINIO_SECRET_KEY }}" \
@@ -146,6 +152,9 @@ jobs:
 
       - name: Create GHCR image pull secret
         run: |
+          # Ensure namespace exists
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          # Create/update GHCR image pull secret
           kubectl create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
             --docker-username=gitarzysta92 \
