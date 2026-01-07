@@ -91,16 +91,24 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
   try {
     console.log(`📝 Processing app: ${scrapedApp.name}`);
 
-    // Check if app already exists
-    const existingResponse = await axios.get(
-      `${EDITORIAL_SERVICE_HOST}/api/app-records`,
-      {
-        params: { 'filters[slug][$eq]': scrapedApp.slug },
-        headers: { Authorization: `Bearer ${EDITORIAL_API_TOKEN}` },
+    // Check if app already exists - handle 404 as "not found"
+    let existingApp = null;
+    try {
+      const existingResponse = await axios.get(
+        `${EDITORIAL_SERVICE_HOST}/api/app-records`,
+        {
+          params: { 'filters[slug][$eq]': scrapedApp.slug },
+          headers: { Authorization: `Bearer ${EDITORIAL_API_TOKEN}` },
+        }
+      );
+      existingApp = existingResponse.data.data[0];
+    } catch (error) {
+      if (!axios.isAxiosError(error) || error.response?.status !== 404) {
+        throw error; // Re-throw non-404 errors
       }
-    );
-
-    const existingApp = existingResponse.data.data[0];
+      // 404 = doesn't exist, continue to create
+      console.log(`Record not found for ${scrapedApp.slug}, will create new`);
+    }
 
     // Process tags
     const tagIds: number[] = [];
@@ -158,7 +166,7 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
       console.log(`✅ Updated app: ${scrapedApp.name}`);
     } else {
       // Create new
-      await axios.post(
+      const createResponse = await axios.post(
         `${EDITORIAL_SERVICE_HOST}/api/app-records`,
         { data: appData },
         {
@@ -168,7 +176,7 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
           },
         }
       );
-      console.log(`✅ Created app: ${scrapedApp.name}`);
+      console.log(`✅ Created app: ${scrapedApp.name} (ID: ${createResponse.data.data.id})`);
     }
   } catch (error) {
     console.error(`Failed to process app ${scrapedApp.name}:`, error);
