@@ -158,10 +158,11 @@ export class EditorialClient {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService
   ) {
-    this.baseUrl = this.configService.get<string>('EDITORIAL_URL');
-    if (!this.baseUrl) {
+    const editorialUrl = this.configService.get<string>('EDITORIAL_URL');
+    if (!editorialUrl) {
       throw new Error('EDITORIAL_URL environment variable is required');
     }
+    this.baseUrl = editorialUrl;
     this.apiToken = this.configService.get<string>('EDITORIAL_API_TOKEN');
   }
 
