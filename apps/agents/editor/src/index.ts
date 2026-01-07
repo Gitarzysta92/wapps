@@ -83,7 +83,8 @@ async function findOrCreateTag(tagName: string): Promise<number | null> {
 
     return createResponse.data.data.id;
   } catch (error) {
-    console.error(`❌ Failed to find/create tag ${tagName}:`, error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to find/create tag ${tagName}:`, errorMessage);
     if (axios.isAxiosError(error)) {
       console.error('Tag creation - Status:', error.response?.status);
       console.error('Tag creation - Response:', error.response?.data);
@@ -186,7 +187,8 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
       console.log(`✅ Created app: ${scrapedApp.name} (ID: ${createResponse.data.data.id})`);
     }
   } catch (error) {
-    console.error(`❌ Failed to process app ${scrapedApp.name}:`, error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to process app ${scrapedApp.name}:`, errorMessage);
     if (axios.isAxiosError(error)) {
       console.error('Request URL:', error.config?.url);
       console.error('Request Method:', error.config?.method);
