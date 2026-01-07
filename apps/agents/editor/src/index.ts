@@ -64,6 +64,7 @@ async function findOrCreateTag(tagName: string): Promise<number | null> {
     }
 
     // Create new tag
+    console.log(`Creating new tag: ${tagName}`);
     const createResponse = await axios.post(
       `${EDITORIAL_SERVICE_HOST}/api/tags`,
       {
@@ -82,7 +83,11 @@ async function findOrCreateTag(tagName: string): Promise<number | null> {
 
     return createResponse.data.data.id;
   } catch (error) {
-    console.error(`Failed to find/create tag ${tagName}:`, error);
+    console.error(`❌ Failed to find/create tag ${tagName}:`, error.message);
+    if (axios.isAxiosError(error)) {
+      console.error('Tag creation - Status:', error.response?.status);
+      console.error('Tag creation - Response:', error.response?.data);
+    }
     return null;
   }
 }
@@ -166,6 +171,8 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
       console.log(`✅ Updated app: ${scrapedApp.name}`);
     } else {
       // Create new
+      console.log(`Creating new record for: ${scrapedApp.name}`);
+      console.log(`POST ${EDITORIAL_SERVICE_HOST}/api/app-records`);
       const createResponse = await axios.post(
         `${EDITORIAL_SERVICE_HOST}/api/app-records`,
         { data: appData },
@@ -179,10 +186,12 @@ async function createOrUpdateAppRecord(scrapedApp: ScrapedApp): Promise<void> {
       console.log(`✅ Created app: ${scrapedApp.name} (ID: ${createResponse.data.data.id})`);
     }
   } catch (error) {
-    console.error(`Failed to process app ${scrapedApp.name}:`, error);
+    console.error(`❌ Failed to process app ${scrapedApp.name}:`, error.message);
     if (axios.isAxiosError(error)) {
-      console.error('Response data:', error.response?.data);
-      console.error('Response status:', error.response?.status);
+      console.error('Request URL:', error.config?.url);
+      console.error('Request Method:', error.config?.method);
+      console.error('Response Status:', error.response?.status);
+      console.error('Response Data:', JSON.stringify(error.response?.data, null, 2));
     }
     throw error;
   }
