@@ -11,7 +11,7 @@ export class OpenAIClient {
   async generateNotes(userPrompt: string): Promise<string> {
     try {
       const response = await this.client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-nano', // Cheapest model available
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: userPrompt },
