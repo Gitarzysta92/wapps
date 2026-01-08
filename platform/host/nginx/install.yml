@@ -1,8 +1,15 @@
 ---
-- name: Install nginx
+- name: Install nginx (full version with stream module support)
+  package:
+    name: "{{ 'nginx-full' if ansible_os_family == 'Debian' else 'nginx' }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install nginx (non-Debian)
   package:
     name: nginx
     state: present
+  when: ansible_os_family != "Debian"
 
 - name: Create nginx configuration directory
   file:
@@ -45,6 +52,13 @@
     dest: /etc/nginx/conf.d/stream.conf
     mode: '0644'
 
+- name: Ensure modules-enabled directory exists (Debian/Ubuntu)
+  file:
+    path: /etc/nginx/modules-enabled
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "Debian"
+
 - name: Ensure stream module is loaded (Debian/Ubuntu)
   lineinfile:
     path: /etc/nginx/nginx.conf
@@ -54,15 +68,20 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Ensure nginx.conf includes stream configuration
+- name: Remove any existing stream.conf include from wrong location
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*include\s+/etc/nginx/conf.d/stream.conf;'
+    state: absent
+
+- name: Ensure nginx.conf includes stream configuration at top level (before http block)
   lineinfile:
     path: /etc/nginx/nginx.conf
     regexp: '^\s*include\s+/etc/nginx/conf.d/stream.conf;'
     line: 'include /etc/nginx/conf.d/stream.conf;'
-    insertafter: '^events\s+\{'
+    insertbefore: '^http\s+\{'
     state: present
-  when: ansible_os_family == "Debian"
-  # Note: For RHEL/CentOS, stream config might need to be in main nginx.conf directly
+  # Note: Stream block must be at top level, before http block. Requires nginx-full on Debian/Ubuntu.
 
 - name: Generate self-signed SSL certificate
   shell: |
