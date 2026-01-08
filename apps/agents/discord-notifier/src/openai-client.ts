@@ -22,8 +22,7 @@ export class OpenAIClient {
             content: userPrompt
           }
         ],
-        max_output_tokens: 1500,
-        temperature: 0.6
+        max_output_tokens: 1500
       });
 
       const text = response.output
