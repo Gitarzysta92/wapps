@@ -25,6 +25,8 @@ export class OpenAIClient {
         max_output_tokens: 1500
       });
 
+
+      console.log(response.output);
       const text = response.output
         .filter(item => item.type === "message")
         .flatMap(item => item.content)
