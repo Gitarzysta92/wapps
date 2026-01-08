@@ -1,0 +1,27 @@
+{
+  "name": "discord-notifier",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/agents/discord-notifier/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/agents/discord-notifier",
+        "main": "apps/agents/discord-notifier/src/index.ts",
+        "tsConfig": "apps/agents/discord-notifier/tsconfig.lib.json",
+        "assets": ["apps/agents/discord-notifier/*.md"],
+        "generatePackageJson": true
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "discord-notifier:build",
+        "watch": true
+      }
+    }
+  }
+}
