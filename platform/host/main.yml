@@ -85,47 +85,20 @@
       changed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Check current ArgoCD RBAC policy
-      shell: kubectl get configmap argocd-rbac-cm -n argocd -o jsonpath='{.data.policy\.default}' 2>/dev/null || echo "NOT_FOUND"
-      register: argocd_rbac_check
-      changed_when: false
-      failed_when: false
-      when: target_env | default('staging') in ['development', 'staging', 'production']
-
-    - name: Configure ArgoCD RBAC for CI/CD access
+    - name: Apply ArgoCD configuration via kustomization
       shell: |
-        # TODO: Replace this with a dedicated CI/CD service account with limited permissions
-        # Current implementation grants full admin access for simplicity
-        # Future: Create accounts.cicd with specific RBAC policies (get, update, sync on applications)
-        kubectl patch configmap argocd-rbac-cm -n argocd --type merge -p '{"data":{"policy.default":"role:admin"}}' || \
-        kubectl create configmap argocd-rbac-cm -n argocd --from-literal=policy.default='role:admin'
-      register: argocd_rbac
-      when: 
-        - target_env | default('staging') in ['development', 'staging', 'production']
-        - argocd_rbac_check.stdout != 'role:admin'
-
-    - name: Verify ArgoCD RBAC policy
-      shell: kubectl get configmap argocd-rbac-cm -n argocd -o jsonpath='{.data.policy\.default}'
-      register: argocd_rbac_verify
-      changed_when: false
-      failed_when: argocd_rbac_verify.stdout != 'role:admin'
+        # Apply ConfigMaps for argocd-cm (admin account capabilities) and argocd-rbac-cm (RBAC policy)
+        # This is cleaner than patching ConfigMaps after installation
+        kubectl apply -k {{ playbook_dir }}/../cluster/argocd
+      register: argocd_config
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Display ArgoCD RBAC status
-      debug:
-        msg: |
-          ArgoCD RBAC Configuration:
-            Default Policy: {{ argocd_rbac_verify.stdout }}
-            Status: {% if argocd_rbac_verify.stdout == 'role:admin' %}✓ Configured correctly{% else %}✗ Configuration mismatch{% endif %}
-            Note: Currently using default admin role. TODO: Replace with dedicated CI/CD account.
-      when: target_env | default('staging') in ['development', 'staging', 'production']
-
-    - name: Restart ArgoCD server to apply RBAC changes
+    - name: Restart ArgoCD server to apply configuration changes
       shell: kubectl rollout restart deployment/argocd-server -n argocd
       register: argocd_restart
       when: 
         - target_env | default('staging') in ['development', 'staging', 'production']
-        - argocd_rbac is changed
+        - argocd_config is changed
 
     - name: Wait for ArgoCD server restart
       shell: kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -n argocd
