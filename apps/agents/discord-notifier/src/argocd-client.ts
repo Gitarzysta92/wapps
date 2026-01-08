@@ -31,11 +31,14 @@ export interface ArgoCDData {
 export class ArgoCDClient {
   private client: AxiosInstance;
 
-  constructor(serverUrl: string, token: string) {
+  constructor(serverUrl: string, username: string, password: string) {
     this.client = axios.create({
       baseURL: serverUrl,
+      auth: {
+        username,
+        password,
+      },
       headers: {
-        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       // ArgoCD often uses self-signed certs in dev

@@ -16,7 +16,8 @@ const requiredEnvVars = [
   'GITHUB_TOKEN',
   'GITHUB_REPO',
   'ARGOCD_SERVER',
-  'ARGOCD_TOKEN',
+  'ARGOCD_USERNAME',
+  'ARGOCD_PASSWORD',
   'OPENAI_API_KEY',
   'QUEUE_USERNAME',
   'QUEUE_PASSWORD',
@@ -49,7 +50,8 @@ async function run() {
 
   const argocdClient = new ArgoCDClient(
     process.env['ARGOCD_SERVER']!,
-    process.env['ARGOCD_TOKEN']!
+    process.env['ARGOCD_USERNAME']!,
+    process.env['ARGOCD_PASSWORD']!
   );
 
   const rabbitmqClient = new RabbitMQClient();

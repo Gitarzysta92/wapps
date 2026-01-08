@@ -117,37 +117,13 @@ jobs:
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ RabbitMQ credentials secret created/updated in agents namespace"
 
-      - name: Install ArgoCD CLI
-        run: |
-          if ! command -v argocd &> /dev/null; then
-            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-            chmod +x argocd-linux-amd64
-            mkdir -p $HOME/.local/bin
-            mv argocd-linux-amd64 $HOME/.local/bin/argocd
-            export PATH="$HOME/.local/bin:$PATH"
-            echo "$HOME/.local/bin" >> $GITHUB_PATH
-          fi
-
-      - name: Generate ArgoCD token
-        id: argocd-token
-        run: |
-          # Login to ArgoCD to generate token
-          argocd login ${{ steps.env-vars.outputs.server }} \
-            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
-            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
-            --insecure --grpc-web
-          
-          # Generate token for discord-notifier (valid for 1 year)
-          TOKEN=$(argocd account generate-token --account ${{ secrets.ARGO_INITIAL_USERNAME }} --grpc-web)
-          echo "token=${TOKEN}" >> $GITHUB_OUTPUT
-          echo "✅ ArgoCD token generated"
-
       - name: Create discord-notifier secrets
         run: |
           SECRET_CMD="kubectl create secret generic discord-notifier-secrets \
             --from-literal=DISCORD_BOT_TOKEN=\"${{ secrets.DISCORD_BOT_TOKEN }}\" \
             --from-literal=GITHUB_TOKEN=\"${{ secrets.GIT_TOKEN }}\" \
-            --from-literal=ARGOCD_TOKEN=\"${{ steps.argocd-token.outputs.token }}\" \
+            --from-literal=ARGOCD_USERNAME=\"${{ secrets.ARGO_INITIAL_USERNAME }}\" \
+            --from-literal=ARGOCD_PASSWORD=\"${{ secrets.ARGO_INITIAL_PASSWORD }}\" \
             --from-literal=OPENAI_API_KEY=\"${{ secrets.OPENAI_API_KEY }}\""
           
           # Add DISCORD_CHANNEL_ID only if it's set (optional)
