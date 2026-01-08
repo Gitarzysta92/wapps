@@ -20,6 +20,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: opensearch-dashboards  # Service created by Helm chart
+                name: opensearch-opensearch-dashboards  # Service created by Helm chart (releaseName-chartName-component)
                 port:
                   number: 5601  # OpenSearch Dashboards port
