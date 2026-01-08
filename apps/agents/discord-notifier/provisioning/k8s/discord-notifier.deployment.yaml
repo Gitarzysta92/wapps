@@ -57,17 +57,12 @@ spec:
                 secretKeyRef:
                   name: discord-notifier-secrets
                   key: GITHUB_TOKEN
-            # ArgoCD credentials
-            - name: ARGOCD_USERNAME
+            # ArgoCD token
+            - name: ARGOCD_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: discord-notifier-secrets
-                  key: ARGOCD_USERNAME
-            - name: ARGOCD_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: discord-notifier-secrets
-                  key: ARGOCD_PASSWORD
+                  key: ARGOCD_TOKEN
             # OpenAI API key
             - name: OPENAI_API_KEY
               valueFrom:

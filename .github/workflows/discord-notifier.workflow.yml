@@ -136,8 +136,7 @@ jobs:
           kubectl create secret generic discord-notifier-secrets \
             --from-literal=DISCORD_BOT_TOKEN="${{ secrets.DISCORD_BOT_TOKEN }}" \
             --from-literal=GITHUB_TOKEN="${{ secrets.GIT_TOKEN }}" \
-            --from-literal=ARGOCD_USERNAME="${{ secrets.ARGO_INITIAL_USERNAME }}" \
-            --from-literal=ARGOCD_PASSWORD="${{ secrets.ARGO_INITIAL_PASSWORD }}" \
+            --from-literal=ARGOCD_TOKEN="${{ secrets.ARGOCD_TOKEN }}" \
             --from-literal=OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             ${CHANNEL_ID_ARG} \
             --namespace=agents \
