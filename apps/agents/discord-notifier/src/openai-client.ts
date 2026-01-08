@@ -22,6 +22,11 @@ export class OpenAIClient {
             content: userPrompt
           }
         ],
+        reasoning: { effort: "low" },
+        text: {
+          format: { type: "text" }
+        },
+        stream: false,
         max_output_tokens: 1500
       });
 
