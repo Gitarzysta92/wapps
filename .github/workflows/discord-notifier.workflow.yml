@@ -117,6 +117,16 @@ jobs:
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ RabbitMQ credentials secret created/updated in agents namespace"
 
+      - name: Create GHCR image pull secret
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=agents \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ GHCR image pull secret created/updated in agents namespace"
+
       - name: Create discord-notifier secrets
         run: |
           SECRET_CMD="kubectl create secret generic discord-notifier-secrets \
