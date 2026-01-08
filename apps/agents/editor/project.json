@@ -22,6 +22,16 @@
         "buildTarget": "editor-agent:build",
         "watch": true
       }
+    },
+    "simple-add": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build editor-agent",
+          "node dist/apps/agents/editor/src/simple-add.js"
+        ],
+        "parallel": false
+      }
     }
   }
 }

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: discord-notifier-data
+  namespace: agents
+  labels:
+    app: discord-notifier
+    app.kubernetes.io/name: discord-notifier
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-path

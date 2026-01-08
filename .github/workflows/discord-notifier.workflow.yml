@@ -1,55 +1,55 @@
-name: 'Discord Notifier - Background Service'
+name: 'Discord Notifier - Build & Deploy'
 
 on:
   push:
-    branches: [main, develop]
+    branches: [develop, main]
     paths:
       - 'apps/agents/discord-notifier/**'
+      - 'environments/dev/apps/discord-notifier-kustomization/**'
       - '.github/workflows/discord-notifier.workflow.yml'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'apps/agents/discord-notifier/**'
-      - '.github/workflows/discord-notifier.workflow.yml'
-      - 'libs/**'
-      - 'package.json'
-      - 'nx.json'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
 
 env:
-  APP_NAME: discord-notifier
-  IMAGE_NAME: discord-notifier
+  SERVICE_NAME: discord-notifier
   REGISTRY: ghcr.io
-  NAMESPACE: argocd
+  IMAGE_NAME: gitarzysta92/wapps/discord-notifier
 
 jobs:
-  test:
-    name: 'Test and Lint'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests and linting
-        uses: ./.github/actions/test-and-lint
-        with:
-          app-name: ${{ env.APP_NAME }}
-
   build:
-    name: 'Build and Push'
+    name: 'Build Docker Image'
     runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
+      environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -59,60 +59,164 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build ${{ env.APP_NAME }} --configuration=production
+        run: npx nx build discord-notifier
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
       - name: Build and push Docker image
-        uses: ./.github/actions/build-and-push
+        uses: docker/build-push-action@v5
         with:
-          image-name: ${{ env.IMAGE_NAME }}
-          dockerfile-path: './apps/agents/discord-notifier/Dockerfile'
-          context-path: '.'
-          tags: ${{ steps.meta.outputs.tags }}
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          file: apps/agents/discord-notifier/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-  deploy-dev:
-    name: 'Deploy to Development'
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: development
-    steps:
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: dev
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
-  deploy-prod:
-    name: 'Deploy to Production'
-    runs-on: ubuntu-latest
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
     needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
+    environment: ${{ needs.build.outputs.environment }}
     steps:
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: prod
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Create agents namespace
+        run: |
+          kubectl create namespace agents --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create RabbitMQ credentials secret
+        run: |
+          kubectl create secret generic rabbitmq-credentials \
+            --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
+            --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
+            --namespace=agents \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ RabbitMQ credentials secret created/updated in agents namespace"
+
+      - name: Create discord-notifier secrets
+        run: |
+          SECRET_CMD="kubectl create secret generic discord-notifier-secrets \
+            --from-literal=DISCORD_BOT_TOKEN=\"${{ secrets.DISCORD_BOT_TOKEN }}\" \
+            --from-literal=GITHUB_TOKEN=\"${{ secrets.GITHUB_TOKEN }}\" \
+            --from-literal=ARGOCD_TOKEN=\"${{ secrets.ARGOCD_TOKEN }}\" \
+            --from-literal=OPENAI_API_KEY=\"${{ secrets.OPENAI_API_KEY }}\""
+          
+          # Add DISCORD_CHANNEL_ID only if it's set (optional)
+          if [ -n "${{ secrets.DISCORD_CHANNEL_ID }}" ]; then
+            SECRET_CMD="${SECRET_CMD} --from-literal=DISCORD_CHANNEL_ID=\"${{ secrets.DISCORD_CHANNEL_ID }}\""
+          fi
+          
+          ${SECRET_CMD} \
+            --namespace=agents \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ Discord notifier secrets created/updated"
+
+      - name: Verify secrets exist
+        run: |
+          kubectl get secret discord-notifier-secrets -n agents
+          kubectl get secret rabbitmq-credentials -n agents
+          echo "✅ All required secrets verified"
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for discord-notifier-agent..."
+          argocd app sync discord-notifier-agent --force --grpc-web
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait discord-notifier-agent --timeout 300 --grpc-web
+          
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/discord-notifier -n agents
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/discord-notifier -n agents --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply discord-notifier environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/discord-notifier-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/discord-notifier-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Discord Notifier - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Discord Notifier deployed successfully!"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Check logs: kubectl logs -n agents -l app=discord-notifier --tail=50"
+            echo "  2. Test command: Use !devstatus in Discord channel"
+            echo "  3. Verify scheduled updates are working"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

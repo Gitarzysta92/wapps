@@ -2,10 +2,10 @@ import { Client, GatewayIntentBits, TextChannel, Message } from 'discord.js';
 
 export class DiscordClient {
   private client: Client;
-  private channelId: string;
+  private channelId: string | undefined;
   private isReady = false;
 
-  constructor(token: string, channelId: string) {
+  constructor(token: string, channelId?: string) {
     this.channelId = channelId;
     this.client = new Client({
       intents: [
@@ -33,23 +33,47 @@ export class DiscordClient {
     }
   }
 
-  async sendMessage(content: string): Promise<void> {
+  async sendMessage(content: string, channelId?: string): Promise<void> {
     if (!this.isReady) {
       throw new Error('Discord client is not ready');
     }
 
+    const targetChannelId = channelId || this.channelId;
+    if (!targetChannelId) {
+      throw new Error('No channel ID provided and DISCORD_CHANNEL_ID not set');
+    }
+
     try {
-      const channel = await this.client.channels.fetch(this.channelId);
+      const channel = await this.client.channels.fetch(targetChannelId);
       if (channel && channel.isTextBased()) {
         await (channel as TextChannel).send(content);
-        console.log('✅ Message sent to Discord channel');
+        console.log(`✅ Message sent to Discord channel ${targetChannelId}`);
       } else {
         throw new Error('Channel not found or is not a text channel');
       }
     } catch (error) {
-      console.error('Error sending Discord message:', error);
+      console.error(`Error sending Discord message to ${targetChannelId}:`, error);
       throw error;
     }
+  }
+
+  async sendToMultipleChannels(content: string, channelIds: string[]): Promise<void> {
+    if (!this.isReady) {
+      throw new Error('Discord client is not ready');
+    }
+
+    const results = await Promise.allSettled(
+      channelIds.map((channelId) => this.sendMessage(content, channelId))
+    );
+
+    const successful = results.filter((r) => r.status === 'fulfilled').length;
+    const failed = results.filter((r) => r.status === 'rejected').length;
+
+    if (failed > 0) {
+      console.warn(`⚠️ Failed to send to ${failed} out of ${channelIds.length} channels`);
+    }
+
+    console.log(`✅ Sent message to ${successful}/${channelIds.length} channels`);
   }
 
   onCommand(commandPrefix: string, callback: (message: Message) => void): void {

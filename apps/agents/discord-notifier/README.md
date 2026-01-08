@@ -4,8 +4,9 @@ A long-running Discord bot that gathers development information from GitHub, Arg
 
 ## Features
 
-- 🔄 **Automated Scheduled Updates**: Posts development status to Discord at configured times (default: 9 AM and 5 PM)
-- 💬 **On-Demand Reports**: Use `!devstatus` command in Discord to get instant updates
+- 🔄 **Automated Scheduled Updates**: Posts development status to registered Discord channels at configured times (default: 9 AM and 5 PM)
+- 💬 **On-Demand Reports**: Use `!devstatus` command in any Discord channel to get instant updates
+- 📝 **Dynamic Channel Registration**: Register/unregister channels for scheduled updates using Discord commands
 - 🐙 **GitHub Integration**: Tracks commits, workflow runs, and pull requests
 - 🚢 **ArgoCD Integration**: Monitors application health and deployment status
 - 🐰 **RabbitMQ Integration**: Checks queue health and message backlogs
@@ -21,7 +22,9 @@ Discord Bot → [GitHub, ArgoCD, RabbitMQ] → Data Aggregation → ChatGPT → 
 
 ### Required
 - `DISCORD_BOT_TOKEN` - Discord bot authentication token
-- `DISCORD_CHANNEL_ID` - Discord channel ID for posting messages
+
+### Optional
+- `DISCORD_CHANNEL_ID` - Initial channel ID to register for scheduled updates (can also be registered dynamically via `!register` command)
 - `GITHUB_TOKEN` - GitHub Personal Access Token with repo access
 - `GITHUB_REPO` - Repository name (format: owner/repo)
 - `ARGOCD_SERVER` - ArgoCD server URL
@@ -35,6 +38,8 @@ Discord Bot → [GitHub, ArgoCD, RabbitMQ] → Data Aggregation → ChatGPT → 
 - `QUEUE_PORT` - RabbitMQ port (default: 5672)
 - `SCHEDULE_TIMES` - Comma-separated times for daily updates (default: "09:00,17:00")
 - `TZ` - Timezone for scheduling (default: UTC)
+
+**Note**: Channels can be registered dynamically using the `!register` command in Discord. The `DISCORD_CHANNEL_ID` environment variable is optional and only used as an initial channel to register on startup.
 
 ## Development
 
@@ -61,8 +66,11 @@ npx nx build discord-notifier
 ### Kubernetes
 The bot is deployed as a Kubernetes Deployment:
 - Namespace: `agents`
-- Secrets managed by Vault
+- Secrets managed via GitHub Actions (created during deployment)
+- Persistent storage: Channel registry stored in `/data/channels.json` on a PersistentVolumeClaim (100Mi, `local-path` storage class)
 - Auto-deployed via ArgoCD
+
+**Persistence**: Registered channels are stored in a JSON file on a persistent volume, so they survive pod restarts and deployments.
 
 ### GitHub Actions
 The CI/CD pipeline:
@@ -73,7 +81,10 @@ The CI/CD pipeline:
 
 ## Discord Commands
 
-- `!devstatus` - Generate and post current development status
+- `!devstatus` - Generate and post current development status (works in any channel)
+- `!register` - Register the current channel for scheduled updates
+- `!unregister` - Unregister the current channel from scheduled updates
+- `!channels` - List all channels registered for scheduled updates
 
 ## Customization
 

@@ -2,6 +2,6 @@ export default {
   rest: {
     defaultLimit: 25,
     maxLimit: 100,
-    withCount: true,
+    withCount: false, // Disable automatic count queries - major performance improvement
   },
 };

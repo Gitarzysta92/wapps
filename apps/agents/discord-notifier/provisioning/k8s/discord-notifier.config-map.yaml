@@ -10,3 +10,4 @@ data:
   QUEUE_PORT: "5672"
   SCHEDULE_TIMES: "09:00,17:00"
   TZ: "Europe/Warsaw"
+  CHANNEL_REGISTRY_PATH: "/data/channels.json"

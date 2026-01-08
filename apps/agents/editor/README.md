@@ -24,6 +24,8 @@ nx build editor-agent
 
 ## Local Development
 
+### Main Editor Agent (RabbitMQ Consumer)
+
 ```bash
 # Set environment variables
 export QUEUE_USERNAME=guest
@@ -36,6 +38,32 @@ export EDITORIAL_SERVICE_API_TOKEN=your-strapi-token
 # Run in development mode
 nx serve editor-agent
 ```
+
+### Simple Add Application (Direct Entry)
+
+A simple application that adds a hardcoded entry directly to the Editorial service without using RabbitMQ.
+
+```bash
+# Create .env file from example
+cp .env.example .env
+
+# Edit .env and set your secrets:
+# EDITORIAL_SERVICE_HOST=http://localhost:1337
+# EDITORIAL_SERVICE_API_TOKEN=your-strapi-token
+
+# Build the project
+nx build editor-agent
+
+# Run the simple-add application
+node dist/apps/agents/editor/src/simple-add.js
+```
+
+The simple-add application will:
+- Load environment variables from `.env` file
+- Create a hardcoded app entry with example data
+- Upload placeholder images
+- Create tags if they don't exist
+- Exit after processing
 
 ## Docker Build
 
