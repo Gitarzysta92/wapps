@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
-import { SYSTEM_PROMPT } from './constants';
+import OpenAI from "openai";
+import { SYSTEM_PROMPT } from "./constants";
 
 export class OpenAIClient {
   private client: OpenAI;
@@ -10,18 +10,32 @@ export class OpenAIClient {
 
   async generateNotes(userPrompt: string): Promise<string> {
     try {
-      const response = await this.client.chat.completions.create({
-        model: 'gpt-5-nano', // Cheapest model available
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userPrompt },
+      const response = await this.client.responses.create({
+        model: "gpt-5-nano",
+        input: [
+          {
+            role: "system",
+            content: SYSTEM_PROMPT
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
         ],
-        max_completion_tokens: 1500,
+        max_output_tokens: 1500,
+        temperature: 0.6
       });
 
-      return response.choices[0].message.content || 'Failed to generate notes';
+      const text = response.output
+        .filter(item => item.type === "message")
+        .flatMap(item => item.content)
+        .filter(content => content.type === "output_text")
+        .map(content => content.text)
+        .join("\n");
+
+      return text || "Failed to generate notes";
     } catch (error) {
-      console.error('Error generating notes with OpenAI:', error);
+      console.error("Error generating notes with OpenAI:", error);
       throw error;
     }
   }
