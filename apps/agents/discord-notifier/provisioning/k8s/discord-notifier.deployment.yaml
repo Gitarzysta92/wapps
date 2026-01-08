@@ -79,6 +79,27 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          # Health check - since this is a Discord bot (no HTTP), use process check
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "pgrep -f 'node.*index.js' || exit 1"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "pgrep -f 'node.*index.js' || exit 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
         - name: data
           persistentVolumeClaim:
