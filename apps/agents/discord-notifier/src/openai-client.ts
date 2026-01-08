@@ -17,7 +17,7 @@ export class OpenAIClient {
           { role: 'user', content: userPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 1500,
+        max_completion_tokens: 1500,
       });
 
       return response.choices[0].message.content || 'Failed to generate notes';
