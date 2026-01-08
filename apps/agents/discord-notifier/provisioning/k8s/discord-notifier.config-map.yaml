@@ -5,7 +5,7 @@ metadata:
   namespace: agents
 data:
   GITHUB_REPO: "gitarzysta92/wapps"
-  ARGOCD_SERVER: "https://argocd.argocd.svc.cluster.local"
+  ARGOCD_SERVER: "https://argocd-server.argocd.svc.cluster.local"
   QUEUE_HOST: "rabbitmq.rabbitmq.svc.cluster.local"
   QUEUE_PORT: "5672"
   SCHEDULE_TIMES: "09:00,17:00"

@@ -78,10 +78,25 @@ export class DiscordClient {
 
   onCommand(commandPrefix: string, callback: (message: Message) => void): void {
     this.client.on('messageCreate', (message) => {
+      // Debug: log all messages (can be removed later)
+      if (!message.author.bot) {
+        console.log(`📩 Message received: "${message.content}" from ${message.author.tag} in ${message.channel.id}`);
+      }
+      
       if (message.author.bot) return;
       if (message.content.startsWith(commandPrefix)) {
+        console.log(`✅ Command matched: ${commandPrefix}`);
         callback(message);
       }
+    });
+    
+    // Also listen for errors
+    this.client.on('error', (error) => {
+      console.error('❌ Discord client error:', error);
+    });
+    
+    this.client.on('warn', (warning) => {
+      console.warn('⚠️ Discord client warning:', warning);
     });
   }
 

@@ -29,7 +29,18 @@ export class RabbitMQClient {
 
     try {
       connection = await amqp.connect(this.connectionString);
+      
+      // Handle connection errors
+      connection.on('error', (err) => {
+        console.error('RabbitMQ connection error:', err);
+      });
+      
       channel = await connection.createChannel();
+      
+      // Handle channel errors
+      channel.on('error', (err) => {
+        console.error('RabbitMQ channel error:', err);
+      });
 
       // Get management API info - this is a simplified version
       // In production, you'd want to use RabbitMQ Management HTTP API
@@ -38,8 +49,7 @@ export class RabbitMQClient {
       // Common queue names to check - extend based on your setup
       const queueNames = [
         'store.app-scrapper',
-        'content-acquired-queue',
-        'dev-notes-queue',
+        // Add other queue names that actually exist in your RabbitMQ setup
       ];
 
       for (const queueName of queueNames) {
@@ -50,9 +60,12 @@ export class RabbitMQClient {
             messages: queueInfo.messageCount,
             consumers: queueInfo.consumerCount,
           });
-        } catch (error) {
-          // Queue doesn't exist or can't be checked - skip it
-          console.log(`Queue ${queueName} not found or inaccessible`);
+        } catch (error: any) {
+          // Queue doesn't exist or can't be checked - skip it silently
+          // Only log if it's not a 404 (queue not found) error
+          if (error?.code !== 404) {
+            console.log(`Queue ${queueName} not accessible: ${error.message || error}`);
+          }
         }
       }
 
