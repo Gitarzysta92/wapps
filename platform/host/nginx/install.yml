@@ -40,6 +40,11 @@
     dest: /etc/nginx/sites-enabled/{{ target_env }}-wapps
     state: link
 
+- name: Remove old stream.conf from conf.d (if exists) to prevent auto-inclusion in http block
+  file:
+    path: /etc/nginx/conf.d/stream.conf
+    state: absent
+
 - name: Create stream configuration directory (separate from conf.d to avoid http block inclusion)
   file:
     path: /etc/nginx/stream.d
