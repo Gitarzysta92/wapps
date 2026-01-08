@@ -1,0 +1,17 @@
+{
+  "name": "discord-notifier",
+  "version": "0.0.1",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "@octokit/rest": "^20.0.2",
+    "openai": "^4.24.1",
+    "node-cron": "^3.0.3",
+    "amqplib": "^0.10.8",
+    "dotenv": "^16.5.0",
+    "axios": "^1.6.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node-cron": "^3.0.11"
+  }
+}

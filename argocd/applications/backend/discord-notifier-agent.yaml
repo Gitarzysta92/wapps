@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: discord-notifier-agent
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: discord-notifier
+    app.kubernetes.io/component: agent
+spec:
+  project: wapps-platform
+  source:
+    repoURL: https://github.com/Gitarzysta92/wapps.git
+    targetRevision: HEAD
+    path: environments/dev/apps/discord-notifier-kustomization
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: agents
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
