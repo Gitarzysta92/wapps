@@ -40,16 +40,16 @@
     dest: /etc/nginx/sites-enabled/{{ target_env }}-wapps
     state: link
 
-- name: Create stream configuration directory
+- name: Create stream configuration directory (separate from conf.d to avoid http block inclusion)
   file:
-    path: /etc/nginx/conf.d
+    path: /etc/nginx/stream.d
     state: directory
     mode: '0755'
 
 - name: Create stream configuration
   template:
     src: nginx-stream.conf.j2
-    dest: /etc/nginx/conf.d/stream.conf
+    dest: /etc/nginx/stream.d/stream.conf
     mode: '0644'
 
 - name: Ensure modules-enabled directory exists (Debian/Ubuntu)
@@ -68,20 +68,20 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Remove any existing stream.conf include from wrong location
+- name: Remove any existing stream.conf includes from wrong locations
   lineinfile:
     path: /etc/nginx/nginx.conf
-    regexp: '^\s*include\s+/etc/nginx/conf.d/stream.conf;'
+    regexp: '^\s*include\s+/etc/nginx/(conf\.d|stream\.d)/stream\.conf;'
     state: absent
 
-- name: Ensure nginx.conf includes stream configuration at top level (before http block)
+- name: Ensure nginx.conf includes stream configuration at top level (before events block)
   lineinfile:
     path: /etc/nginx/nginx.conf
-    regexp: '^\s*include\s+/etc/nginx/conf.d/stream.conf;'
-    line: 'include /etc/nginx/conf.d/stream.conf;'
-    insertbefore: '^http\s+\{'
+    regexp: '^\s*include\s+/etc/nginx/stream\.d/stream\.conf;'
+    line: 'include /etc/nginx/stream.d/stream.conf;'
+    insertbefore: '^events\s+\{'
     state: present
-  # Note: Stream block must be at top level, before http block. Requires nginx-full on Debian/Ubuntu.
+  # Note: Stream block must be at top level, before events/http blocks. Requires nginx-full on Debian/Ubuntu.
 
 - name: Generate self-signed SSL certificate
   shell: |
