@@ -9,6 +9,7 @@ spec:
     - 'https://github.com/Gitarzysta92/wapps.git'
     - 'https://charts.bitnami.com/bitnami'  # Bitnami charts (RabbitMQ)
     - 'https://charts.min.io/'              # MinIO charts
+    - 'https://opensearch-project.github.io/helm-charts/'  # OpenSearch charts
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc

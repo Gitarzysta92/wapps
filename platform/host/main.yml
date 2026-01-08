@@ -329,6 +329,55 @@
       failed_when: false
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Create OpenSearch namespace
+      shell: kubectl create namespace opensearch --dry-run=client -o yaml | kubectl apply -f -
+      register: opensearch_namespace
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Check if OpenSearch secrets exist
+      shell: kubectl get secret opensearch-credentials -n opensearch 2>/dev/null || echo "NOT_FOUND"
+      register: opensearch_secret_check
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Create OpenSearch secrets
+      shell: |
+        OPENSEARCH_USERNAME="{{ lookup('env', 'OPENSEARCH_USERNAME') | default('admin', true) }}"
+        OPENSEARCH_PASSWORD="{{ lookup('env', 'OPENSEARCH_PASSWORD') | default('changeme', true) }}"
+        
+        kubectl create secret generic opensearch-credentials \
+          --from-literal=username="${OPENSEARCH_USERNAME}" \
+          --from-literal=password="${OPENSEARCH_PASSWORD}" \
+          --namespace=opensearch \
+          --dry-run=client -o yaml | kubectl apply -f -
+      register: opensearch_secrets
+      when:
+        - target_env | default('staging') in ['development', 'staging', 'production']
+        - opensearch_secret_check.stdout == "NOT_FOUND" or opensearch_secret_check.rc != 0
+
+    - name: Deploy OpenSearch ArgoCD Application (Helm)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/opensearch.yaml
+      register: opensearch_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Deploy OpenSearch Config ArgoCD Application (Ingress)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/opensearch-config.yaml
+      register: opensearch_config_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Display OpenSearch status
+      shell: |
+        echo "=== OpenSearch Helm Chart ==="
+        kubectl get application opensearch -n argocd -o wide 2>/dev/null || echo "OpenSearch application not found"
+        echo ""
+        echo "=== OpenSearch Configuration ==="
+        kubectl get application opensearch-config -n argocd -o wide 2>/dev/null || echo "OpenSearch config application not found"
+      register: opensearch_status
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Include Node Exporter installation
       include_tasks: node-exporter/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
@@ -423,6 +472,7 @@
             - ArgoCD App of Apps - Application Management
             - RabbitMQ (Platform) - Message Broker (Helm + Config)
             - MinIO (Platform) - Object Storage (Helm + Config)
+            - OpenSearch (Platform) - Search Engine (Helm + Config)
             - GitHub Actions Runner - CI/CD
             - K3s (port 6443) - Kubernetes
             - Node Exporter (port 9100) - Metrics
@@ -436,4 +486,6 @@
             - rabbitmq-config: Ingress configuration overlay
             - minio: Helm chart deployment
             - minio-config: Ingress configuration overlay
+            - opensearch: Helm chart deployment
+            - opensearch-config: Ingress configuration overlay
           Logs directory: {{ apps_dir }}/logs

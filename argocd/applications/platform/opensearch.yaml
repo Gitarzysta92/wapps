@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    description: "OpenSearch search engine (GitOps-managed Helm deployment)"
+spec:
+  project: wapps-platform
+  sources:
+    - repoURL: https://opensearch-project.github.io/helm-charts/
+      chart: opensearch
+      targetRevision: 2.11.0  # Latest stable version
+      helm:
+        releaseName: opensearch
+        valueFiles:
+          - $values/platform/cluster/opensearch/values.yaml
+        parameters:
+          - name: adminPassword
+            value: "changeme"
+    - repoURL: https://github.com/Gitarzysta92/wapps.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: opensearch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: opensearch
+
+resources:
+  - namespace.yaml
+  - ingress.yaml
+
+# Note: OpenSearch is installed via Helm chart (opensearch-project/opensearch)
+# See .github/workflows/opensearch-provisioning.workflow.yml for installation
