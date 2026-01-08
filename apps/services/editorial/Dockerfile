@@ -15,12 +15,12 @@ RUN npm install --omit=dev
 # Copy the rest of your app (API + Admin + Config)
 COPY apps/services/editorial/ .
 
-# Build Admin Panel
+# Set production mode BEFORE build (critical for optimized bundles)
+ENV NODE_ENV=production
+
+# Build Admin Panel (with production optimizations)
 RUN npm run build
 
 # Expose Strapi port
 EXPOSE 1337
-
-# Run Strapi in production mode
-ENV NODE_ENV=production
 CMD ["npm", "start"]
