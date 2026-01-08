@@ -129,19 +129,17 @@ jobs:
 
       - name: Create discord-notifier secrets
         run: |
-          SECRET_CMD="kubectl create secret generic discord-notifier-secrets \
-            --from-literal=DISCORD_BOT_TOKEN=\"${{ secrets.DISCORD_BOT_TOKEN }}\" \
-            --from-literal=GITHUB_TOKEN=\"${{ secrets.GIT_TOKEN }}\" \
-            --from-literal=ARGOCD_USERNAME=\"${{ secrets.ARGO_INITIAL_USERNAME }}\" \
-            --from-literal=ARGOCD_PASSWORD=\"${{ secrets.ARGO_INITIAL_PASSWORD }}\" \
-            --from-literal=OPENAI_API_KEY=\"${{ secrets.OPENAI_API_KEY }}\""
-          
-          # Add DISCORD_CHANNEL_ID only if it's set (optional)
+          CHANNEL_ID_ARG=""
           if [ -n "${{ secrets.DISCORD_CHANNEL_ID }}" ]; then
-            SECRET_CMD="${SECRET_CMD} --from-literal=DISCORD_CHANNEL_ID=\"${{ secrets.DISCORD_CHANNEL_ID }}\""
+            CHANNEL_ID_ARG="--from-literal=DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }}"
           fi
-          
-          ${SECRET_CMD} \
+          kubectl create secret generic discord-notifier-secrets \
+            --from-literal=DISCORD_BOT_TOKEN="${{ secrets.DISCORD_BOT_TOKEN }}" \
+            --from-literal=GITHUB_TOKEN="${{ secrets.GIT_TOKEN }}" \
+            --from-literal=ARGOCD_USERNAME="${{ secrets.ARGO_INITIAL_USERNAME }}" \
+            --from-literal=ARGOCD_PASSWORD="${{ secrets.ARGO_INITIAL_PASSWORD }}" \
+            --from-literal=OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            ${CHANNEL_ID_ARG} \
             --namespace=agents \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ Discord notifier secrets created/updated"
