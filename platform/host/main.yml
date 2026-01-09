@@ -366,6 +366,30 @@
       register: opensearch_config_app
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Deploy OpenSearch Dashboards ArgoCD Application (Helm)
+      shell: kubectl apply -f {{ (playbook_dir | dirname | dirname) }}/argocd/applications/platform/opensearch-dashboards.yaml
+      register: opensearch_dashboards_app
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Wait for OpenSearch applications to be created
+      shell: |
+        for i in {1..30}; do
+          if kubectl get application opensearch -n argocd 2>/dev/null && \
+             kubectl get application opensearch-config -n argocd 2>/dev/null && \
+             kubectl get application opensearch-dashboards -n argocd 2>/dev/null; then
+            echo "OpenSearch applications are ready"
+            exit 0
+          fi
+          echo "Waiting for OpenSearch applications... ($i/30)"
+          sleep 2
+        done
+        echo "Warning: OpenSearch applications may not be ready yet"
+        exit 0
+      register: opensearch_app_wait
+      changed_when: false
+      failed_when: false
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Display OpenSearch status
       shell: |
         echo "=== OpenSearch Helm Chart ==="
@@ -373,6 +397,9 @@
         echo ""
         echo "=== OpenSearch Configuration ==="
         kubectl get application opensearch-config -n argocd -o wide 2>/dev/null || echo "OpenSearch config application not found"
+        echo ""
+        echo "=== OpenSearch Dashboards ==="
+        kubectl get application opensearch-dashboards -n argocd -o wide 2>/dev/null || echo "OpenSearch Dashboards application not found"
       register: opensearch_status
       changed_when: false
       failed_when: false
@@ -488,4 +515,5 @@
             - minio-config: Ingress configuration overlay
             - opensearch: Helm chart deployment
             - opensearch-config: Ingress configuration overlay
+            - opensearch-dashboards: Helm chart deployment
           Logs directory: {{ apps_dir }}/logs

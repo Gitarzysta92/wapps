@@ -1,0 +1,39 @@
+# OpenSearch Dashboards Helm Chart Values
+# Chart: opensearch-project/opensearch-dashboards
+# Docs: https://github.com/opensearch-project/helm-charts/tree/main/charts/opensearch-dashboards
+
+# OpenSearch connection
+# Note: OpenSearch service is configured with HTTP on port 9200
+# Service name: opensearch-cluster-master (from OpenSearch Helm chart)
+opensearchHosts: "http://opensearch-cluster-master:9200"
+
+# Authentication
+# These can be overridden via --set parameters in ArgoCD application
+opensearchUsername: "admin"
+opensearchPassword: "changeme"
+
+# SSL/TLS configuration (uncomment if HTTPS is used)
+# opensearch:
+#   ssl:
+#     verificationMode: none
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5601
+
+# Resources
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# Replicas
+replicas: 1
+
+# Ingress (disabled - managed by ArgoCD kustomization)
+ingress:
+  enabled: false

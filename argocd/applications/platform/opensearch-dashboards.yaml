@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch-dashboards
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    description: "OpenSearch Dashboards (GitOps-managed Helm deployment)"
+spec:
+  project: wapps-platform
+  sources:
+    - repoURL: https://opensearch-project.github.io/helm-charts/
+      chart: opensearch-dashboards
+      targetRevision: 2.11.0  # Match OpenSearch chart version
+      helm:
+        releaseName: opensearch-dashboards
+        valueFiles:
+          - $values/platform/cluster/opensearch-dashboards/values.yaml
+        parameters:
+          - name: opensearchUsername
+            value: "admin"
+          - name: opensearchPassword
+            value: "changeme"
+    - repoURL: https://github.com/Gitarzysta92/wapps.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: opensearch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false  # Namespace created by opensearch Helm chart
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

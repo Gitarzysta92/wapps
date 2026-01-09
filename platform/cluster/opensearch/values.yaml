@@ -44,28 +44,8 @@ opensearch:
       http: 9200
       transport: 9300
 
-# OpenSearch Dashboards configuration
-dashboards:
-  enabled: true
-  replicas: 1
-  
-  # Resources
-  resources:
-    requests:
-      cpu: 250m
-      memory: 512Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
-  
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 5601
-  
-  # OpenSearch connection
-  opensearchHosts: "https://opensearch-cluster-master:9200"
-  opensearchCredentialsSecret: "opensearch-credentials"
+# Note: OpenSearch Dashboards is deployed separately via opensearch-dashboards ArgoCD application
+# See: argocd/applications/platform/opensearch-dashboards.yaml
 
 # Ingress (disabled - managed by ArgoCD kustomization)
 ingress:
