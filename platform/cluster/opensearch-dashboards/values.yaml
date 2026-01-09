@@ -4,7 +4,7 @@
 
 # OpenSearch connection
 # Note: OpenSearch service is configured with HTTP on port 9200
-# Service name: opensearch-cluster-master (from OpenSearch Helm chart)
+# Service name: opensearch-cluster-master (from OpenSearch Helm chart global.masterService)
 opensearchHosts: "http://opensearch-cluster-master:9200"
 
 # Authentication
