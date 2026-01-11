@@ -33,30 +33,38 @@ storeAppScrapper
     const queueClient = new QueueClient(amqp);
     const browserClient = new BrowserClient(puppeteer);
     const queue = await queueClient.connect({
-      host, port, username, password, name: APP_RECORD_QUEUE_NAME
+      host: params.host,
+      port: params.port,
+      username: params.username,
+      password: params.password,
+      name: APP_RECORD_QUEUE_NAME
     });
-    const browser = await browserClient.launch({ headless });
+    const browser = await browserClient.launch({ headless: params.headless });
     return {
       listScrapper: new ScrapAppListFromStoreApp(browser),
       detailsScrapper: new ScrapAppDetailsFromStoreApp(browser),
       recordProcessingService: new RawRecordProcessorService(queue),
       mediaIngestionService: new MediaIngestionService(queue),
+      browserClient: browserClient,
+      queueClient: queueClient,
     }
   })
-  .run(({ listScrapper, detailsScrapper, recordProcessingService, mediaSynchronizationService }) => {
+  .run(async ({ listScrapper, detailsScrapper, recordProcessingService, mediaIngestionService }) => {
     const apps = await listScrapper.handle();
     for (const app of apps) {
       const details = await detailsScrapper.handle(app);
       const data = Object.assign(app, details);
       recordProcessingService.processRawAppRecord(data);
-      mediaSynchronizationService.enqueueExternalMediaSynchronization(data.assets);
+      mediaIngestionService.ingestMedia(data.assets);
     }
-  }).catch(async (err) => {
+  })
+  .catch(async (err) => {
     console.error(err);
     process.exit(1);
-    }).finally(() => {
-      await queueClient.close();
-      await browserClient.close();
+  })
+  .finally(async ({ queueClient, browserClient }) => {
+    await queueClient.close();
+    await browserClient.close();
     process.exit(0);
   });
 

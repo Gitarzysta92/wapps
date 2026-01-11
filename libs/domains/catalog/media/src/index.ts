@@ -4,3 +4,6 @@ export * from './application/media-option.dto';
 export * from './application/media-option-provider.port';
 export * from './infrastructure/constants';
 export * from './application/media-ingestor.port';
+export * from './application/media-type.constant';
+export * from './application/media-extension.constant';
+export * from './application/raw-media.dto';

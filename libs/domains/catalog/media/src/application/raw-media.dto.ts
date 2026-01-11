@@ -1,7 +1,10 @@
+import { MediaExtension } from "./media-extension.constant";
+import { MediaType } from "./media-type.constant";
+
 export type RawMediaDto = {
-  id: number;
+  referenceIdentifier: unknown;
   name: string;
   url: string;
-  type: string;
-  size: number;
+  extension: MediaExtension;
+  type: MediaType;
 }
