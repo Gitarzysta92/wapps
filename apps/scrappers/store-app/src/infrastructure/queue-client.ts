@@ -1,12 +1,15 @@
-import amqp, { Channel, Connection } from 'amqplib';
+import * as amqp from 'amqplib';
 
 export interface QueueChannel {
   sendToQueue(queueName: string, message: Buffer): boolean;
 }
 
+type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
+type AmqpChannel = Awaited<ReturnType<AmqpConnection['createChannel']>>;
+
 export class QueueClient {
-  private connection: Connection | null = null;
-  private channel: Channel | null = null;
+  private connection: AmqpConnection | null = null;
+  private channel: AmqpChannel | null = null;
 
   constructor(
     private readonly client: typeof amqp,

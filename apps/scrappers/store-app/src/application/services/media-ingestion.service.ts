@@ -26,19 +26,9 @@ export class MediaIngestionService implements IMediaIngestor {
     });
   }
 
-  ingestMedia(assets: RawMediaDto[]): void {
-    const rawMedia: RawMediaDto[] = assets.map((asset) => {
-      return {
-        referenceIdentifier: null,
-        name: asset.name,
-        url: asset.url,
-        extension: asset.extension,
-        type: MediaType.IMAGE,
-      };
-    });
-
-    for (const media of rawMedia) {
-      const message = JSON.stringify(media);
+  ingestMedia(media: RawMediaDto[]): void {
+    for (const item of media) {
+      const message = JSON.stringify(item);
       this.queue.sendToQueue(APP_RECORD_QUEUE_NAME, Buffer.from(message));
     }
   }
