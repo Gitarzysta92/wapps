@@ -1,0 +1,36 @@
+{
+  "name": "media-ingestion",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/media-ingestion/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:services-media-ingestion"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/services/media-ingestion",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/services/media-ingestion/src/main.ts",
+        "tsConfig": "apps/services/media-ingestion/tsconfig.lib.json",
+        "assets": ["apps/services/media-ingestion/*.md"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "media-ingestion:build",
+        "watch": true
+      }
+    }
+  }
+}
