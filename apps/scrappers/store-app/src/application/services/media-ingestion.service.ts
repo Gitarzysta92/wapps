@@ -1,6 +1,6 @@
-import { IMediaIngestor, RawMediaDto, MediaType, MediaExtension } from '@domains/catalog/media';
+import { IMediaIngestor, RawMediaDto, MediaType, MediaExtension, RAW_MEDIA_INGESTION_SLUG } from '@domains/catalog/media';
 import { QueueChannel } from '../../infrastructure/queue-client';
-import { APP_RECORD_QUEUE_NAME } from '@domains/catalog/record';
+
 
 type Asset = {
   src: string;
@@ -8,7 +8,15 @@ type Asset = {
 };
 
 export class MediaIngestionService implements IMediaIngestor {
-  constructor(private readonly queue: QueueChannel) {
+
+  constructor(
+    private readonly queue: QueueChannel,
+    private readonly queueName: string
+  ) {
+  }
+
+  async initialize(): Promise<void> {
+    await this.queue.assertQueue(this.queueName);
   }
 
   mapAssetsToRawMedia(assets: Asset[]): RawMediaDto[] {
@@ -29,7 +37,7 @@ export class MediaIngestionService implements IMediaIngestor {
   ingestMedia(media: RawMediaDto[]): void {
     for (const item of media) {
       const message = JSON.stringify(item);
-      this.queue.sendToQueue(APP_RECORD_QUEUE_NAME, Buffer.from(message));
+      this.queue.sendToQueue(this.queueName, Buffer.from(message));
     }
   }
 

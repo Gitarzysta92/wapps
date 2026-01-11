@@ -8,7 +8,9 @@ import { BrowserClient } from './infrastructure/browser-client';
 import { RawRecordProcessorService } from './application/services/raw-record-processor.service';
 import { MediaIngestionService } from './application/services/media-ingestion.service';
 import { ApplicationShell } from '@standard';
-import { APP_RECORD_QUEUE_NAME } from '@domains/catalog/record';
+import { RAW_MEDIA_INGESTION_SLUG } from '@domains/catalog/media';
+import { RAW_RECORD_PROCESSING_SLUG } from '@domains/catalog/record';
+
 
 dotenv.config();
 
@@ -37,17 +39,19 @@ storeAppScrapper
       port: params.port,
       username: params.username,
       password: params.password,
-      name: APP_RECORD_QUEUE_NAME
     });
     const browser = await browserClient.launch({ headless: params.headless });
-    return {
+    const deps = {
       listScrapper: new ScrapAppListFromStoreApp(browser),
       detailsScrapper: new ScrapAppDetailsFromStoreApp(browser),
-      recordProcessingService: new RawRecordProcessorService(queue),
-      mediaIngestionService: new MediaIngestionService(queue),
+      recordProcessingService: new RawRecordProcessorService(queue, RAW_RECORD_PROCESSING_SLUG),
+      mediaIngestionService: new MediaIngestionService(queue, RAW_MEDIA_INGESTION_SLUG),
       browserClient: browserClient,
       queueClient: queueClient,
     }
+    deps.recordProcessingService.initialize();
+    deps.mediaIngestionService.initialize();
+    return deps;
   })
   .run(async ({ listScrapper, detailsScrapper, recordProcessingService, mediaIngestionService }) => {
     //TODO: add proper logging
@@ -65,11 +69,7 @@ storeAppScrapper
         const details = await detailsScrapper.handle(app);
         const data = { ...app, ...details };
         recordProcessingService.processRawAppRecord(data);
-        
-        if (data.assets && data.assets.length > 0) {
-          mediaIngestionService.ingestMedia(mediaIngestionService.mapAssetsToRawMedia(data.assets));
-        }
-        
+        mediaIngestionService.ingestMedia(mediaIngestionService.mapAssetsToRawMedia(data.assets));
         processedCount++;
         console.log(`✅ Processed (${processedCount}/${apps.length}): ${data.name}`);
       } catch (error) {

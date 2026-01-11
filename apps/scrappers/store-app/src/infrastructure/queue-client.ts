@@ -1,6 +1,7 @@
 import * as amqp from 'amqplib';
 
 export interface QueueChannel {
+  assertQueue(queueName: string, options?: amqp.Options.AssertQueue): Promise<amqp.Message>;
   sendToQueue(queueName: string, message: Buffer): boolean;
 }
 
@@ -20,8 +21,6 @@ export class QueueClient {
     port: string;
     username: string;
     password: string;
-    name: string;
-    options?: amqp.Options.AssertQueue;
   }): Promise<QueueChannel> {
     if (!cfg.username) {
       throw new Error('QUEUE_USERNAME is required');
@@ -41,11 +40,17 @@ export class QueueClient {
     
     this.connection = await this.client.connect(url);
     this.channel = await this.connection.createChannel();
-    await this.channel.assertQueue(cfg.name, cfg.options || { durable: true });
 
     console.log('✅ Connected to RabbitMQ');
 
     return {
+      assertQueue: async (queueName: string, options?: amqp.Options.AssertQueue) => {
+        if (!this.channel) {
+          throw new Error('Channel is not initialized');
+        }
+        const queue = await this.channel.assertQueue(queueName, options || { durable: true });
+        return queue as unknown as amqp.Message;
+      },
       sendToQueue: (queueName: string, message: Buffer) => {
         if (!this.channel) {
           throw new Error('Channel is not initialized');

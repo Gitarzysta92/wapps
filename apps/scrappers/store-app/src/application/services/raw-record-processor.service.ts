@@ -1,4 +1,4 @@
-import { IRawRecordProcessor, RawRecordDto, APP_RECORD_QUEUE_NAME } from "@domains/catalog/record";
+import { IRawRecordProcessor, RawRecordDto } from "@domains/catalog/record";
 import { QueueChannel } from "../../infrastructure/queue-client";
 
 type ScrapedApp = {
@@ -10,8 +10,11 @@ type ScrapedApp = {
 };
 
 export class RawRecordProcessorService implements IRawRecordProcessor {
-  constructor(private readonly queue: QueueChannel) {
-  }
+
+  constructor(
+    private readonly queue: QueueChannel,
+    private readonly queueName: string
+  ) { }
 
   processRawAppRecord(data: ScrapedApp | RawRecordDto): void {
     const rawRecord: RawRecordDto = {
@@ -24,6 +27,10 @@ export class RawRecordProcessorService implements IRawRecordProcessor {
     };
 
     const message = JSON.stringify(rawRecord);
-    this.queue.sendToQueue(APP_RECORD_QUEUE_NAME, Buffer.from(message));
+    this.queue.sendToQueue(this.queueName, Buffer.from(message));
+  }
+
+  async initialize(): Promise<void> {
+    await this.queue.assertQueue(this.queueName);
   }
 }

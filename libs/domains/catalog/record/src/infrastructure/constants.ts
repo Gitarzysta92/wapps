@@ -1,1 +1,0 @@
-export const APP_RECORD_QUEUE_NAME = 'store.app-record';

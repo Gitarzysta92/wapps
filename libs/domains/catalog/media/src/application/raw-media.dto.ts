@@ -1,5 +1,5 @@
-import { MediaExtension } from "./media-extension.constant";
-import { MediaType } from "./media-type.constant";
+import { MediaExtension } from "./constants";
+import { MediaType } from "./constants";
 
 export type RawMediaDto = {
   referenceIdentifier: unknown;
