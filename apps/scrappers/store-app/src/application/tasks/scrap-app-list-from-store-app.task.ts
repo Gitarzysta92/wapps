@@ -1,10 +1,11 @@
 import { Browser } from "puppeteer";
-import { autoScroll } from "./utils";
+import { autoScroll } from "../utils";
 
 interface ScrapedApp {
   id?: number;
   name: string;
   url: string;
+  slug: string;
   tags: string[];
 }
 
@@ -33,9 +34,11 @@ export class ScrapAppListFromStoreApp {
           }
         }
         if (name && detailsLink) {
+          const slug = detailsLink.replace('https://store.app/', '').replace(/\/$/, '');
           apps.push({ 
             name, 
-            url: detailsLink, 
+            url: detailsLink,
+            slug,
             tags: Array.from(tags.values())
           });
         }

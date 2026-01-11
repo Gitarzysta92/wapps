@@ -1,5 +1,5 @@
 import { Browser } from "puppeteer";
-import { ScrapedApp } from "./scraped-app.dto";
+import { ScrapedApp } from "../scraped-app.dto";
 
 type AppInput = {
   url: string;

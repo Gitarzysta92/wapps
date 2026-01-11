@@ -63,6 +63,7 @@
       ],
       "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
+      "@domains/catalog/media": ["libs/domains/catalog/media/src/index.ts"],
       "@domains/catalog/versioning": [
         "libs/domains/catalog/versioning/src/index.ts"
       ],

@@ -37,4 +37,4 @@ ENV NODE_ENV=production
 # - QUEUE_HOST, QUEUE_PORT, HEADLESS (from store-app-config ConfigMap)
 
 # Run the app
-CMD ["node", "src/index.js"]
+CMD ["node", "src/apps-scrapper.js"]
