@@ -6,14 +6,23 @@
   "tags": ["type:app", "scope:scrappers-store-app"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "platform": "node",
         "outputPath": "dist/apps/scrappers/store-app",
+        "format": ["cjs"],
+        "bundle": true,
         "main": "apps/scrappers/store-app/src/apps-scrapper.ts",
         "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
         "assets": ["apps/scrappers/store-app/*.md"],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
       }
     },
     "serve": {
