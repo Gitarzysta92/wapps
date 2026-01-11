@@ -1,60 +1,69 @@
-import amqp from 'amqplib';
-import { IRawRecordProcessor, RawRecordDto } from '@domains/catalog/record';
+import amqp, { Channel, Connection } from 'amqplib';
 
+export interface QueueChannel {
+  sendToQueue(queueName: string, message: Buffer): boolean;
+}
 
-export class QueueClient implements IRawRecordProcessor {
+export class QueueClient {
+  private connection: Connection | null = null;
+  private channel: Channel | null = null;
 
   constructor(
     private readonly client: typeof amqp,
   ) { }
-  processRawAppRecord(data: RawRecordDto): void {
-    throw new Error('Method not implemented.');
-  }
 
-  connect(cfg: {
+  async connect(cfg: {
     host: string;
     port: string;
     username: string;
     password: string;
     name: string;
     options?: amqp.Options.AssertQueue;
-  }) {
-
-
-
-    if (!username) {
+  }): Promise<QueueChannel> {
+    if (!cfg.username) {
       throw new Error('QUEUE_USERNAME is required');
     }
-    if (!password) {
+    if (!cfg.password) {
       throw new Error('QUEUE_PASSWORD is required');
     }
-    if (!host) {
+    if (!cfg.host) {
       throw new Error('QUEUE_HOST is required');
     }
-    if (!port) {
+    if (!cfg.port) {
       throw new Error('QUEUE_PORT is required');
     }
 
-
-
-
-
-
-    console.log(`AMQP URL: amqp://${user}:***@${host}:${port}`);
-const url = `amqp://${user}:${pass}@${host}:${port}/`;
-const queueName = "store.app-scrapper";
-    return this._channel.connect();
-
-    const connection = await amqp.connect(url);
-    const channel = await connection.createChannel();
-    await channel.assertQueue(queueName);
-
-    console.log('Connecting to RabbitMQ...');
+    const url = `amqp://${cfg.username}:${cfg.password}@${cfg.host}:${cfg.port}/`;
+    console.log(`Connecting to RabbitMQ at ${cfg.host}:${cfg.port}...`);
+    
+    this.connection = await this.client.connect(url);
+    this.channel = await this.connection.createChannel();
+    await this.channel.assertQueue(cfg.name, cfg.options || { durable: true });
 
     console.log('✅ Connected to RabbitMQ');
+
+    return {
+      sendToQueue: (queueName: string, message: Buffer) => {
+        if (!this.channel) {
+          throw new Error('Channel is not initialized');
+        }
+        return this.channel.sendToQueue(queueName, message);
+      }
+    };
   }
 
-  close() {
-    throw new Error('Method not implemented.');
+  async close(): Promise<void> {
+    try {
+      if (this.channel) {
+        await this.channel.close();
+        this.channel = null;
+      }
+      if (this.connection) {
+        await this.connection.close();
+        this.connection = null;
+      }
+    } catch (error) {
+      console.error('Error closing queue connection:', error);
+    }
   }
 }
