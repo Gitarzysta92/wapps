@@ -1,5 +1,7 @@
 // import type { Core } from '@strapi/strapi';
 
+import { seedData } from './bootstrap/seed-data';
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -17,6 +19,9 @@ export default {
    * run jobs, or perform some special logic.
    */
   async bootstrap({ strapi }: { strapi: any }) {
+    // Seed data from @data library
+    await seedData(strapi);
+
     // Set permissions for API token access
     const publicRole = await strapi
       .query('plugin::users-permissions.role')

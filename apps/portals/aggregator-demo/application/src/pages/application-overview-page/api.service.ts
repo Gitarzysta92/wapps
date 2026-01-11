@@ -1,11 +1,14 @@
 import { AppPreviewDto, AppRecordDto, IRecordsProvider, RECORD_SUBDOMAIN_SLUG } from '@domains/catalog/record';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Result } from "@standard";
 import { API_BASE_URL } from '@portals/shared/boundary/http';
 
 export class ApiService implements IRecordsProvider {
+  getRecordPreview(slug: string): Observable<Result<AppPreviewDto, Error>> {
+    return of({ ok: true, value: {} as any });
+  }
   private readonly _http = inject(HttpClient);
   private readonly _apiBaseUrl = inject(API_BASE_URL);
 
@@ -15,7 +18,7 @@ export class ApiService implements IRecordsProvider {
     );
   }
 
-  public getRecordPreview(slug: string): Observable<Result<AppPreviewDto[], Error>> {
-    throw new Error('Method not implemented.');
-  }
+  // public getRecordPreview(slug: string): Observable<Result<AppPreviewDto[], Error>> {
+  //   return of({ ok: true, value: [] });
+  // }
 }

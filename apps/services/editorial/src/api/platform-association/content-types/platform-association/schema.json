@@ -7,9 +7,10 @@
     "displayName": "Platform Association"
   },
   "attributes": {
-    "platformId": {
-      "type": "enumeration",
-      "enum": ["Web", "IOS", "Android", "Windows", "Linux", "MacOS"],
+    "platform": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::platform.platform",
       "required": true
     },
     "appRecord": {
