@@ -1,5 +1,16 @@
 import fetch from "node-fetch";
-import { ScrapedApp } from "../scraped-app.dto";
+
+type ScrapedApp = {
+  id?: number;
+  name: string;
+  url: string;
+  slug: string;
+  tags: string[];
+  detailsLink: string;
+  description: string;
+  links: Array<{ id: number; link: string }>;
+  assets: Array<{ src: string; type: 'logo' | 'gallery' }>;
+}
 
 type AppInput = {
   url: string;
@@ -56,6 +67,7 @@ export class ScrapAppDetailsFromStoreAppV2 {
       detailsLink: jsonLdData.url || input.url,
       tags: input.tags || [],
       description: jsonLdData.description || '',
+      url: jsonLdData.url || input.url,
       links: [],
       assets: []
     };

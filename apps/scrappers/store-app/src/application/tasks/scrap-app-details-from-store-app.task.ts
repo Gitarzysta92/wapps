@@ -1,5 +1,16 @@
 import { Browser } from "puppeteer";
-import { ScrapedApp } from "../scraped-app.dto";
+
+type ScrapedApp = {
+  id?: number;
+  name: string;
+  url: string;
+  slug: string;
+  tags: string[];
+  detailsLink: string;
+  description: string;
+  links: Array<{ id: number; link: string }>;
+  assets: Array<{ src: string; type: 'logo' | 'gallery' }>;
+}
 
 type AppInput = {
   url: string;
@@ -27,6 +38,7 @@ export class ScrapAppDetailsFromStoreApp {
         detailsLink: baseData.url,
         tags: baseData.tags || [],
         description: '',
+        url: baseData.url,
         links: [],
         assets: []
       };

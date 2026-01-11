@@ -2,7 +2,6 @@ import { Browser } from "puppeteer";
 import { autoScroll } from "../utils";
 
 interface ScrapedApp {
-  id?: number;
   name: string;
   url: string;
   slug: string;

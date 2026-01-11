@@ -1,5 +1,5 @@
-import { MediaDto } from "./media.dto";
+import { RawMediaDto } from "./raw-media.dto";
 
 export interface IMediaIngestor {
-  ingestMedia(media: MediaDto): void;
+  ingestMedia(media: RawMediaDto): void;
 }
