@@ -50,20 +50,41 @@ storeAppScrapper
     }
   })
   .run(async ({ listScrapper, detailsScrapper, recordProcessingService, mediaIngestionService }) => {
+    //TODO: add proper logging
+    // based on opensearch
     const apps = await listScrapper.handle();
+    if (!apps || apps.length === 0) {
+      console.log('ℹ️  No apps found to process');
+      return;
+    } 
+
+    let processedCount = 0;
+    let failedCount = 0;
     for (const app of apps) {
-      const details = await detailsScrapper.handle(app);
-      const data = Object.assign(app, details);
-      recordProcessingService.processRawAppRecord(data);
-      mediaIngestionService.ingestMedia(data.assets);
+      try {
+        const details = await detailsScrapper.handle(app);
+        const data = { ...app, ...details };
+        recordProcessingService.processRawAppRecord(data);
+        mediaIngestionService.ingestMedia(mediaIngestionService.mapAssetsToRawMedia(data.assets));
+        processedCount++;
+        console.log(`✅ Processed (${processedCount}/${apps.length}): ${data.name}`);
+      } catch (error) {
+        failedCount++;
+        console.error(`❌ Failed to process ${app.name || app.slug || 'unknown'}:`, error);
+      }
     }
+    
+    console.log(`\n📊 Summary: ${processedCount} processed, ${failedCount} failed out of ${apps.length} total`);
   })
   .catch(async (err) => {
-    console.error(err);
+    console.error('❌ Fatal error:', err);
     process.exit(1);
   })
   .finally(async ({ queueClient, browserClient }) => {
-    await queueClient.close();
-    await browserClient.close();
-    process.exit(0);
+    try {
+      await queueClient.close();
+      await browserClient.close();
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+    }
   });
