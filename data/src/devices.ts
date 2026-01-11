@@ -1,4 +1,4 @@
-import { DeviceOptionDto } from '../libs/domains/catalog/compatibility/src/application/models/device-option.dto';
+import { DeviceOptionDto } from '@domains/catalog/compatibility';
 
 export const devices: DeviceOptionDto[] = [
   { id: 0, name: 'Desktop', slug: 'desktop' },

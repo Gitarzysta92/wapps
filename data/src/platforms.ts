@@ -1,4 +1,4 @@
-import { PlatformOptionDto } from '../libs/domains/catalog/compatibility/src/application/models/platform-option.dto';
+import { PlatformOptionDto } from '@domains/catalog/compatibility';
 
 export const platforms: PlatformOptionDto[] = [
   { id: 0, name: 'Web', slug: 'web' },

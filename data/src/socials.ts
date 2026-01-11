@@ -1,4 +1,4 @@
-import { SocialOptionDto } from '../libs/domains/catalog/references/src/application/models/social-option.dto';
+import { SocialOptionDto } from '@domains/catalog/references';
 
 export const socials: SocialOptionDto[] = [
   { id: 0, name: 'Facebook', slug: 'facebook' },

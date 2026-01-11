@@ -1,4 +1,4 @@
-import { CategoryTreeDto } from '../libs/domains/catalog/category/src/application/category.dto';
+import { CategoryTreeDto } from '@domains/catalog/category';
 
 export const categories: CategoryTreeDto[] = [
   {

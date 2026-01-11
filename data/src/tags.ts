@@ -1,4 +1,4 @@
-import { TagOptionDto } from '../libs/domains/catalog/tags/src/application/models/tag-option.dto';
+import { TagOptionDto } from '@domains/catalog/tags';
 
 export const tags: TagOptionDto[] = [
   { id: 0, name: 'Cryptocurrency', slug: 'cryptocurrency' },

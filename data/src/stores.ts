@@ -1,4 +1,4 @@
-import { StoreOptionDto } from '../libs/domains/catalog/references/src/application/models/store-option.dto';
+import { StoreOptionDto } from '@domains/catalog/references';
 
 export const stores: StoreOptionDto[] = [
   { id: 0, name: 'GooglePlay', slug: 'google-play' },

@@ -1,4 +1,4 @@
-import { EstimatedUserSpanOptionDto } from '../libs/domains/catalog/metrics/src/application/models/estimated-user-span-option.dto';
+import { EstimatedUserSpanOptionDto } from '@domains/catalog/metrics';
 
 export const userSpans: EstimatedUserSpanOptionDto[] = [
   { id: 0, name: '0-1000', slug: '0-1000', from: 0, to: 1000 },

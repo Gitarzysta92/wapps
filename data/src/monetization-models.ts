@@ -1,4 +1,4 @@
-import { MonetizationOptionDto } from '../libs/domains/catalog/pricing/src/application/models/monetization-option.dto';
+import { MonetizationOptionDto } from '@domains/catalog/pricing';
 
 export const monetizationModels: MonetizationOptionDto[] = [
   { id: 0, name: 'Free', slug: 'free' },
