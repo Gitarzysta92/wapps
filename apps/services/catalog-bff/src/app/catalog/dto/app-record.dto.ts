@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AppRecordDto } from '@domains/catalog/record';
 
-export class AppRecordResponseDto implements AppRecordDto {
+export class AppRecordResponseDto {
   @ApiProperty({ description: 'App record ID', example: 1 })
   id!: unknown;
 

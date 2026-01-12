@@ -3,6 +3,7 @@ import { EditorialClient, StrapiAppRecord, StrapiCategory, StrapiTag } from './c
 import { AppRecordDto, AppPreviewDto } from '@domains/catalog/record';
 import { CategoryDto, CategoryTreeDto } from '@domains/catalog/category';
 import { TagDto } from '@domains/catalog/tags';
+import { AppRecordResponseDto } from './dto/app-record.dto';
 
 interface GetAppsFilters {
   page: number;
@@ -65,6 +66,24 @@ export class CatalogService {
   }
 
   /**
+   * Get app record as response DTO (includes isPwa, rating, dates)
+   */
+  async getAppRecordResponse(slug: string): Promise<AppRecordResponseDto | null> {
+    try {
+      const strapiRecord = await this.editorialClient.getAppRecordBySlug(slug);
+      if (!strapiRecord) return null;
+
+      const record = this.composeAppRecord(strapiRecord);
+      await this.enrichRecord(record);
+
+      return this.mapToResponseDto(record, strapiRecord);
+    } catch (error) {
+      this.logger.error(`Failed to get app record response for slug: ${slug}`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Get app records with pagination and filtering
    */
   async getAppRecords(filters: GetAppsFilters): Promise<PaginatedResult<AppRecordDto>> {
@@ -82,6 +101,28 @@ export class CatalogService {
       return { data: records, meta };
     } catch (error) {
       this.logger.error('Failed to get app records', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get app records as response DTOs with pagination and filtering
+   */
+  async getAppRecordsResponse(filters: GetAppsFilters): Promise<PaginatedResult<AppRecordResponseDto>> {
+    try {
+      const { data, meta } = await this.editorialClient.getAppRecords(filters);
+
+      const records = await Promise.all(
+        data.map(async (strapiRecord) => {
+          const record = this.composeAppRecord(strapiRecord);
+          await this.enrichRecord(record);
+          return this.mapToResponseDto(record, strapiRecord);
+        })
+      );
+
+      return { data: records, meta };
+    } catch (error) {
+      this.logger.error('Failed to get app records response', error);
       throw error;
     }
   }
@@ -167,14 +208,12 @@ export class CatalogService {
       name: attrs.name,
       description: attrs.description || '',
       logo: attrs.logo?.data?.attributes?.url || '',
-      isPwa: attrs.isPwa || false,
-      rating: attrs.rating || 0,
       tagIds: attrs.tags?.data?.map((t) => t.id) || [],
       categoryId: attrs.category?.data?.id || 0,
       platformIds: this.extractPlatformIds(attrs),
       reviewNumber: 0, // Will be enriched
-      updateDate: new Date(attrs.updatedAt),
-      listingDate: new Date(attrs.publishedAt || attrs.createdAt),
+      updateTimestamp: new Date(attrs.updatedAt).getTime(),
+      creationTimestamp: new Date(attrs.publishedAt || attrs.createdAt).getTime(),
     };
   }
 
@@ -277,10 +316,18 @@ export class CatalogService {
 
   /**
    * Mock review number computation
+   * TODO: Replace with actual reviews service call
    */
   private computeReviewNumber(record: AppRecordDto): number {
-    // Temporary mock: rating * 100
-    return Math.floor(record.rating * 100);
+    // Temporary mock: generate a pseudo-random number based on slug
+    // This will be replaced with actual reviews service call
+    let hash = 0;
+    for (let i = 0; i < record.slug.length; i++) {
+      const char = record.slug.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash % 1000); // Return a number between 0 and 999
   }
 
   /**
@@ -348,6 +395,28 @@ export class CatalogService {
     });
 
     return roots;
+  }
+
+  /**
+   * Map AppRecordDto + StrapiAppRecord to AppRecordResponseDto
+   */
+  private mapToResponseDto(record: AppRecordDto, strapi: StrapiAppRecord): AppRecordResponseDto {
+    const attrs = strapi.attributes;
+    return {
+      id: record.id,
+      slug: record.slug,
+      name: record.name,
+      description: record.description,
+      logo: record.logo,
+      isPwa: attrs.isPwa || false,
+      rating: attrs.rating || 0,
+      tagIds: record.tagIds,
+      categoryId: record.categoryId,
+      platformIds: record.platformIds,
+      reviewNumber: record.reviewNumber,
+      updateDate: new Date(attrs.updatedAt),
+      listingDate: new Date(attrs.publishedAt || attrs.createdAt),
+    };
   }
 }
 

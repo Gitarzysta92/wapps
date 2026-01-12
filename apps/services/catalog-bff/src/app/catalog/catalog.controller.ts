@@ -18,11 +18,11 @@ export class CatalogController {
   @ApiResponse({ status: 200, description: 'App record found', type: AppRecordResponseDto })
   @ApiResponse({ status: 404, description: 'App not found' })
   async getAppBySlug(@Param('slug') slug: string): Promise<AppRecordResponseDto> {
-    const result = await this.catalogService.getAppRecord(slug);
+    const result = await this.catalogService.getAppRecordResponse(slug);
     if (!result) {
       throw new NotFoundException(`App with slug '${slug}' not found`);
     }
-    return result as AppRecordResponseDto;
+    return result;
   }
 
   @Get('apps')
@@ -40,13 +40,13 @@ export class CatalogController {
     @Query('tags') tags?: string,
     @Query('search') search?: string
   ): Promise<PaginatedAppsResponseDto<AppRecordResponseDto>> {
-    return this.catalogService.getAppRecords({
+    return this.catalogService.getAppRecordsResponse({
       page: parseInt(page, 10),
       pageSize: parseInt(pageSize, 10),
       category,
       tags: tags ? tags.split(',') : undefined,
       search,
-    }) as Promise<PaginatedAppsResponseDto<AppRecordResponseDto>>;
+    });
   }
 
   @Get('apps/:slug/preview')
