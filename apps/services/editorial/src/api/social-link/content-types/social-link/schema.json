@@ -7,9 +7,10 @@
     "displayName": "Social Link"
   },
   "attributes": {
-    "socialId": {
-      "type": "enumeration",
-      "enum": ["Facebook", "X", "Reddit", "Discord", "LinkedIn", "Medium"],
+    "social": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::social.social",
       "required": true
     },
     "url": {

@@ -8,7 +8,7 @@
     "develop": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "strapi develop",
+        "command": "node -r ts-node/register/transpile-only -r ./register-paths.js node_modules/.bin/strapi develop",
         "cwd": "apps/services/editorial"
       }
     },
@@ -22,7 +22,7 @@
     "start": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "strapi start",
+        "command": "node -r ts-node/register/transpile-only -r ./register-paths.js node_modules/.bin/strapi start",
         "cwd": "apps/services/editorial"
       }
     },

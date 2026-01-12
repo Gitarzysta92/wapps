@@ -6,20 +6,72 @@
   "tags": ["type:app", "scope:scrappers-store-app"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "platform": "node",
         "outputPath": "dist/apps/scrappers/store-app",
-        "main": "apps/scrappers/store-app/src/index.ts",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/scrappers/store-app/src/apps-scrapper.ts",
         "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
         "assets": ["apps/scrappers/store-app/*.md"],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "store-app:build",
+        "watch": true
+      }
+    },
+    "run": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "store-app:build",
+        "main": "apps/scrappers/store-app/src/index.ts"
+      }
+    },
+    "build-serve-app-details": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/scrappers/store-app-details",
+        "main": "apps/scrappers/store-app/src/app-details-scrapper.ts",
+        "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
+        "assets": ["apps/scrappers/store-app/*.md"],
+        "generatePackageJson": true
+      }
+    },
+    "serve-app-details": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "store-app:build-serve-app-details",
+        "watch": true
+      }
+    },
+    "build-serve-app-list": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/scrappers/store-app-list",
+        "main": "apps/scrappers/store-app/src/app-list-scrapper.ts",
+        "tsConfig": "apps/scrappers/store-app/tsconfig.lib.json",
+        "assets": ["apps/scrappers/store-app/*.md"],
+        "generatePackageJson": true
+      }
+    },
+    "serve-app-list": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "store-app:build-serve-app-list",
         "watch": true
       }
     }

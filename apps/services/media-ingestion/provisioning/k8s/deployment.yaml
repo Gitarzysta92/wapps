@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-ingestion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media-ingestion
+  template:
+    metadata:
+      labels:
+        app: media-ingestion
+        app.kubernetes.io/name: media-ingestion
+        app.kubernetes.io/component: service
+    spec:
+      serviceAccountName: media-ingestion
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: media-ingestion
+          image: ghcr.io/gitarzysta92/wapps/media-ingestion:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: media-ingestion-config
+          env:
+            - name: QUEUE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: username
+            - name: QUEUE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: password
+            - name: MEDIA_STORAGE_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: accessKey
+            - name: MEDIA_STORAGE_SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: secretKey
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

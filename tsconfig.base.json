@@ -43,6 +43,7 @@
         "apps/portals/shared/features/health-status/src/index.ts"
       ],
       "@cross-cutting/events": ["cross-cutting/events/src/index.ts"],
+      "@data": ["data/src/index.ts"],
       "@domains/acquisition": ["libs/domains/acquisition/src/index.ts"],
       "@domains/catalog/category": [
         "libs/domains/catalog/category/src/index.ts"
@@ -63,6 +64,7 @@
       ],
       "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
+      "@domains/catalog/media": ["libs/domains/catalog/media/src/index.ts"],
       "@domains/catalog/versioning": [
         "libs/domains/catalog/versioning/src/index.ts"
       ],

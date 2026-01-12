@@ -7,9 +7,10 @@
     "displayName": "Store Link"
   },
   "attributes": {
-    "storeId": {
-      "type": "enumeration",
-      "enum": ["GooglePlay", "AppleStore", "AppGallery", "MicrosoftStore"],
+    "store": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::store.store",
       "required": true
     },
     "url": {

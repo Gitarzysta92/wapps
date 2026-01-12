@@ -132,7 +132,8 @@ async function run() {
     const registeredChannels = channelRegistry.getAll();
     
     if (registeredChannels.length === 0) {
-      console.log('⚠️ No channels registered for scheduled updates, skipping...');
+      console.log('⚠️ No channels registered for scheduled updates, skipping message send.');
+      console.log('💡 Use !register command in Discord to register a channel for scheduled updates.');
       return;
     }
 
@@ -147,7 +148,12 @@ async function run() {
 
   scheduler.start();
   console.log(`📝 Scheduled updates at: ${scheduleTimes.join(', ')}`);
-  console.log(`📋 Registered channels: ${channelRegistry.getCount()}`);
+  const registeredCount = channelRegistry.getCount();
+  console.log(`📋 Registered channels: ${registeredCount}`);
+  if (registeredCount === 0) {
+    console.log('⚠️  WARNING: No channels registered for scheduled updates!');
+    console.log('💡 To register a channel, use the !register command in Discord, or set DISCORD_CHANNEL_ID environment variable.');
+  }
 
   console.log('✅ Discord Notifier Bot is running!');
   console.log('💬 Commands:');

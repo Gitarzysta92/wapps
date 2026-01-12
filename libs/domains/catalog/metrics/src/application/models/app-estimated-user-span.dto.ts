@@ -1,4 +1,5 @@
 export type AppEstimatedUserSpanDto = {
   id: unknown,
-  name: string
+  name: string,
+  number: number,
 }

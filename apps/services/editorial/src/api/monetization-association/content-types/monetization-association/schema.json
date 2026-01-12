@@ -7,9 +7,10 @@
     "displayName": "Monetization Association"
   },
   "attributes": {
-    "monetizationId": {
-      "type": "enumeration",
-      "enum": ["Free", "Freemium", "Subscription", "AdBased", "OneTimePurchase", "Fees"],
+    "monetizationModel": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::monetization-model.monetization-model",
       "required": true
     },
     "appRecord": {

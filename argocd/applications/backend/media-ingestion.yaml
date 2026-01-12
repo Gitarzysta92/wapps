@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: media-ingestion
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: wapps-platform
+  source:
+    repoURL: https://github.com/Gitarzysta92/wapps.git
+    targetRevision: HEAD
+    path: environments/dev/apps/media-ingestion-kustomization
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingestion-services-media-ingestion
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

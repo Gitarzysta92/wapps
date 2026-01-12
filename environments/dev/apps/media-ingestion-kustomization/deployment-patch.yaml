@@ -1,0 +1,6 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-ingestion
+spec:
+  replicas: 1

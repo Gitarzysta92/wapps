@@ -14,8 +14,8 @@ stream {
     server {
         listen 5672;
         proxy_pass rabbitmq_amqp;
-        proxy_timeout 1s;
-        proxy_responses 1;
+        proxy_timeout 3600s;  # 1 hour - allows for long-lived AMQP connections with heartbeats
+        proxy_connect_timeout 10s;
         error_log /var/log/nginx/rabbitmq-amqp.error.log;
     }
 }

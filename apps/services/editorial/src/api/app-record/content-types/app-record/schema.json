@@ -100,6 +100,11 @@
       "relation": "oneToMany",
       "target": "api::monetization-association.monetization-association",
       "mappedBy": "appRecord"
+    },
+    "userSpan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-span.user-span"
     }
   }
 }
