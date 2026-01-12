@@ -208,6 +208,7 @@ export class CatalogService {
       name: attrs.name,
       description: attrs.description || '',
       logo: attrs.logo?.data?.attributes?.url || '',
+      rating: attrs.rating || 0,
       tagIds: attrs.tags?.data?.map((t) => t.id) || [],
       categoryId: attrs.category?.data?.id || 0,
       platformIds: this.extractPlatformIds(attrs),
