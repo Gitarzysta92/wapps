@@ -5,7 +5,7 @@ export type AppRecordDto = {
   description: string;
   logo: string;
   //isPwa: boolean;
-  //rating: number;
+  rating: number;
   tagIds: number[];
   categoryId: number;
   platformIds: number[];

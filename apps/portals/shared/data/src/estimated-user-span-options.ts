@@ -10,9 +10,28 @@ const ESTIMATED_USER_SPAN_DATA = [
   { id: 4, name: "1000000+" }
 ];
 
-export const ESTIMATED_USER_SPAN_OPTIONS: EstimatedUserSpanOptionDto[] = ESTIMATED_USER_SPAN_DATA.map(e => ({
-  id: e.id,
-  name: e.name,
-  slug: generateSlug(e.name)
-}));
+export const ESTIMATED_USER_SPAN_OPTIONS: EstimatedUserSpanOptionDto[] = ESTIMATED_USER_SPAN_DATA.map(e => {
+  // Parse name like "0-1000" or "1000000+" to extract from/to values
+  const parseRange = (name: string): { from: number; to: number } => {
+    if (name.endsWith('+')) {
+      const from = parseInt(name.replace('+', '').replace(/,/g, ''), 10);
+      return { from, to: Number.MAX_SAFE_INTEGER };
+    }
+    const [fromStr, toStr] = name.split('-');
+    return {
+      from: parseInt(fromStr.replace(/,/g, ''), 10),
+      to: parseInt(toStr.replace(/,/g, ''), 10)
+    };
+  };
+  
+  const { from, to } = parseRange(e.name);
+  
+  return {
+    id: e.id,
+    name: e.name,
+    slug: generateSlug(e.name),
+    from,
+    to
+  };
+});
 
