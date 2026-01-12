@@ -215,6 +215,8 @@ export class CatalogService {
       reviewNumber: 0, // Will be enriched
       updateTimestamp: new Date(attrs.updatedAt).getTime(),
       creationTimestamp: new Date(attrs.publishedAt || attrs.createdAt).getTime(),
+      updateDate: new Date(attrs.updatedAt),
+      listingDate: new Date(attrs.publishedAt || attrs.createdAt),
     };
   }
 
