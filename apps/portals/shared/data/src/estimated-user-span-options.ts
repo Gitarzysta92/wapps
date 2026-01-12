@@ -10,7 +10,7 @@ const ESTIMATED_USER_SPAN_DATA = [
   { id: 4, name: "1000000+" }
 ];
 
-export const ESTIMATED_USER_SPAN_OPTIONS: EstimatedUserSpanOptionDto[] = ESTIMATED_USER_SPAN_DATA.map(e => {
+export const ESTIMATED_USER_SPAN_OPTIONS: EstimatedUserSpanOptionDto[] = ESTIMATED_USER_SPAN_DATA.map((e): EstimatedUserSpanOptionDto => {
   // Parse name like "0-1000" or "1000000+" to extract from/to values
   const parseRange = (name: string): { from: number; to: number } => {
     if (name.endsWith('+')) {

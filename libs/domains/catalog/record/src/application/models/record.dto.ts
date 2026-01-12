@@ -4,13 +4,15 @@ export type AppRecordDto = {
   name: string;
   description: string;
   logo: string;
-  //isPwa: boolean;
+  isPwa?: boolean;
   rating: number;
   tagIds: number[];
   categoryId: number;
   platformIds: number[];
 
   reviewNumber: number;
-  updateTimestamp: number;
-  creationTimestamp: number;
+  updateTimestamp?: number;
+  creationTimestamp?: number;
+  updateDate: Date;
+  listingDate?: Date;
 }

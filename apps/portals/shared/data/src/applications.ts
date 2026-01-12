@@ -48,6 +48,7 @@ export const PHOTO_SNAP:
     name: 'Photo Snap',
     email: 'photo@snap.com'
   },
+  number: 1000000,
 }
 
 export const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -86,7 +87,8 @@ export const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibili
     id: '2',
     name: 'Quick Task Team',
     email: 'team@quicktask.com'
-  }
+  },
+  number: 500000,
 }
 
 const SPEEDY_VPN: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -125,7 +127,8 @@ const SPEEDY_VPN: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto &
     id: '3',
     name: 'Speedy VPN Inc',
     email: 'contact@speedyvpn.com'
-  }
+  },
+  number: 2000000,
 }
 
 const BUDGET_BUDDY: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -164,7 +167,8 @@ const BUDGET_BUDDY: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto
     id: '4',
     name: 'Budget Buddy LLC',
     email: 'hello@budgetbuddy.com'
-  }
+  },
+  number: 300000,
 }
 
 const MINDFUL: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -203,7 +207,8 @@ const MINDFUL: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & Ap
     id: '5',
     name: 'Mindful Apps',
     email: 'support@mindful.com'
-  }
+  },
+  number: 800000,
 }
 
 const FIT_TRACK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -242,7 +247,8 @@ const FIT_TRACK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
     id: '6',
     name: 'Fit Track Solutions',
     email: 'info@fittrack.com'
-  }
+  },
+  number: 600000,
 }
 
 const SHOP_EASE: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & AppOwnershipDto & AppMonetizationDto & AppReferencesDto = {
@@ -285,7 +291,8 @@ const SHOP_EASE: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
     id: '7',
     name: 'Shop Ease Corp',
     email: 'contact@shopease.com'
-  }
+  },
+  number: 1500000,
 }
 
 export const APPLICATIONS = [
