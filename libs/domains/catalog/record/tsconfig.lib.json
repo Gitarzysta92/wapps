@@ -6,7 +6,8 @@
     "types": [],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "rootDir": "../../../../"
   },
   "include": ["src/**/*"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
