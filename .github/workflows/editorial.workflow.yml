@@ -62,6 +62,9 @@ jobs:
       - name: Build application
         run: npx nx build apps.services.editorial --configuration=production
 
+      - name: Build admin panel
+        run: npx nx build-admin apps.services.editorial
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

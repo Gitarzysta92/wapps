@@ -12,6 +12,9 @@ WORKDIR /app
 # Copy the prebuilt dist from CI
 COPY dist/apps/services/editorial ./
 
+# Copy the built admin panel (created by strapi build)
+COPY apps/services/editorial/build ./build
+
 # Install only production dependencies
 # Using npm install instead of npm ci because the generated package.json
 # doesn't have a matching package-lock.json
@@ -28,7 +31,6 @@ RUN if ls config/*.ts 1> /dev/null 2>&1; then \
 
 # Environment variables
 ENV NODE_ENV=production
-ENV SERVE_ADMIN_PANEL=false
 
 EXPOSE 1337
 
