@@ -13,6 +13,29 @@
       }
     },
     "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/services/editorial",
+        "main": "apps/services/editorial/src/index.ts",
+        "tsConfig": "apps/services/editorial/tsconfig.app.json",
+        "webpackConfig": "apps/services/editorial/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "build-admin": {
       "executor": "nx:run-commands",
       "options": {
         "command": "strapi build",
@@ -24,6 +47,21 @@
       "options": {
         "command": "node -r ts-node/register/transpile-only -r ./register-paths.js node_modules/.bin/strapi start",
         "cwd": "apps/services/editorial"
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "apps.services.editorial:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "apps.services.editorial:build:development"
+        },
+        "production": {
+          "buildTarget": "apps.services.editorial:build:production"
+        }
       }
     },
     "lint": {

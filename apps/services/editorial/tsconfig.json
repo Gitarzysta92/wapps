@@ -1,4 +1,5 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "Node",
@@ -12,34 +13,16 @@
     "resolveJsonModule": true,
     "noEmitOnError": true,
     "noImplicitThis": true,
-    "outDir": "dist",
-    "rootDir": ".",
-    "baseUrl": "../../../",
-    "paths": {
-      "@data": ["data/src/index.ts"],
-      "@domains/catalog/category": ["libs/domains/catalog/category/src/index.ts"],
-      "@domains/catalog/compatibility": ["libs/domains/catalog/compatibility/src/index.ts"],
-      "@domains/catalog/metrics": ["libs/domains/catalog/metrics/src/index.ts"],
-      "@domains/catalog/pricing": ["libs/domains/catalog/pricing/src/index.ts"],
-      "@domains/catalog/references": ["libs/domains/catalog/references/src/index.ts"],
-      "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"]
-    }
+    "outDir": "dist"
   },
-  "include": [
-    "./",
-    "./**/*.ts",
-    "./**/*.js",
-    "src/**/*.json",
-    "../../data/src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules/",
-    "build/",
-    "dist/",
-    ".cache/",
-    ".tmp/",
-    "src/admin/",
-    "**/*.test.*",
-    "src/plugins/**"
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
   ]
 }

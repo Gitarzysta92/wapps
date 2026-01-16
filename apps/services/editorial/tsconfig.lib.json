@@ -1,0 +1,37 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/apps/services/editorial",
+    "composite": true,
+    "declaration": true,
+    "module": "CommonJS",
+    "target": "ES2019",
+    "lib": ["ES2020"],
+    "types": ["node"],
+    "strict": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noEmitOnError": true
+  },
+  "include": ["src/**/*.ts", "config/**/*.ts"],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "src/admin/**/*",
+    "build",
+    "dist",
+    ".cache",
+    ".tmp"
+  ],
+  "references": [
+    { "path": "../../../data/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/category/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/compatibility/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/metrics/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/pricing/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/references/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/catalog/tags/tsconfig.lib.json" }
+  ]
+}

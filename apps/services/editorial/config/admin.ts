@@ -1,4 +1,7 @@
 export default ({ env }) => ({
+  // Disable admin panel serving (useful for production API-only deployments)
+  serveAdminPanel: env.bool('SERVE_ADMIN_PANEL', true),
+  
   auth: {
     secret: env('ADMIN_JWT_SECRET'),
   },
