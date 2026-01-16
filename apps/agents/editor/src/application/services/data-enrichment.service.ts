@@ -2,12 +2,7 @@ import { RawRecordDto } from '@domains/catalog/record';
 import { OpenAIClient } from '../../infrastructure/openai-client';
 import { EditorialClient, EditorialRecord } from '../../infrastructure/editorial-client';
 import { SYSTEM_PROMPT_DATA_ENRICHMENT, USER_PROMPT_TEMPLATE_DATA_ENRICHMENT } from '../constants';
-import { categories } from '../../../../../../data/categories';
-import { platforms } from '../../../../../../data/platforms';
-import { devices } from '../../../../../../data/devices';
-import { monetizationModels } from '../../../../../../data/monetization-models';
-import { userSpans } from '../../../../../../data/user-spans';
-import { tags } from '../../../../../../data/tags';
+import { categories, platforms, devices, monetizationModels, userSpans, tags } from '@data';
 
 interface EnrichedData {
   categoryId: number | null;

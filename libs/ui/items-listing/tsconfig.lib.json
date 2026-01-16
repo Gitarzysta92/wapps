@@ -4,6 +4,18 @@
     "outDir": "../../../dist/out-tsc",
     "types": []
   },
-  "include": ["**/*.ts", "../../../apps/portals/shared/features/listing/src/presentation/param-map-to-app-listing-request-dto.mapper.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": [
+    "**/*.ts",
+    "../../../apps/portals/shared/features/listing/src/presentation/param-map-to-app-listing-request-dto.mapper.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../standard/tsconfig.lib.json"
+    }
+  ]
 }

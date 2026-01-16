@@ -7,13 +7,10 @@
   "tags": ["type:standard", "scope:core"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/../../dist/libs/standard"],
       "options": {
-        "outputPath": "dist/libs/standard",
-        "main": "libs/standard/src/index.ts",
-        "tsConfig": "libs/standard/tsconfig.lib.json",
-        "assets": ["libs/standard/*.md"]
+        "command": "tsc --build libs/standard/tsconfig.lib.json"
       }
     },
     "test": {

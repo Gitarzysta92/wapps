@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/pricing"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/pricing",
-        "main": "libs/domains/catalog/pricing/src/index.ts",
-        "tsConfig": "libs/domains/catalog/pricing/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/pricing/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/pricing/tsconfig.lib.json"
       }
     }
   }

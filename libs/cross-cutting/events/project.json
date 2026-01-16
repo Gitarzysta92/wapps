@@ -6,13 +6,12 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/../../dist/cross-cutting/events"
+      ],
       "options": {
-        "outputPath": "dist/cross-cutting/events",
-        "main": "cross-cutting/events/src/index.ts",
-        "tsConfig": "cross-cutting/events/tsconfig.lib.json",
-        "assets": ["cross-cutting/events/*.md"]
+        "command": "tsc --build libs/cross-cutting/events/tsconfig.lib.json"
       }
     }
   }

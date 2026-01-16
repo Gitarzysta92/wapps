@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/filters"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/filters",
-        "main": "libs/domains/catalog/filters/src/index.ts",
-        "tsConfig": "libs/domains/catalog/filters/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/filters/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/filters/tsconfig.lib.json"
       }
     }
   }

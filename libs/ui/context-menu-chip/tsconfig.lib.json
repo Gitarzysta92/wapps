@@ -13,9 +13,12 @@
     "jest.config.ts",
     "src/**/*.test.ts"
   ],
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../../standard/tsconfig.lib.json"
+    }
+  ]
 }
-
-
-
-

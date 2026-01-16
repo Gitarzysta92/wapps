@@ -1,14 +1,26 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../../dist/domains/catalog/search",
     "declaration": true,
     "types": [],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noEmitOnError": false,
-    "rootDir": "../../../../"
+    "rootDir": "src",
+    "composite": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../standard/tsconfig.lib.json"
+    }
+  ]
 }

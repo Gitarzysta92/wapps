@@ -16,17 +16,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/compatibility"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/compatibility",
-        "main": "libs/domains/catalog/compatibility/src/index.ts",
-        "tsConfig": "libs/domains/catalog/compatibility/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/compatibility/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/compatibility/tsconfig.lib.json"
       }
     }
   }

@@ -3,25 +3,46 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/agents/editor/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["type:app", "scope:agents", "layer:app"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "target": "node",
+        "compiler": "tsc",
         "outputPath": "dist/apps/agents/editor",
         "main": "apps/agents/editor/src/index.ts",
         "tsConfig": "apps/agents/editor/tsconfig.lib.json",
-        "assets": ["apps/agents/editor/*.md"],
-        "generatePackageJson": true
+        "webpackConfig": "apps/agents/editor/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "editor-agent:build",
-        "watch": true
+        "buildTarget": "editor-agent:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "editor-agent:build:development"
+        },
+        "production": {
+          "buildTarget": "editor-agent:build:production"
+        }
       }
     }
   }
 }
+

@@ -1,9 +1,11 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
     "@nx/js:tsc": {
       "cache": true,
-      "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
     }
   },

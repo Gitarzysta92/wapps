@@ -1,9 +1,20 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../dist/out-tsc",
+    "outDir": "../dist/data",
+    "rootDir": "src",
+    "declaration": true,
+    "composite": true,
     "types": []
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "references": [
+    { "path": "../libs/domains/catalog/category/tsconfig.lib.json" },
+    { "path": "../libs/domains/catalog/compatibility/tsconfig.lib.json" },
+    { "path": "../libs/domains/catalog/pricing/tsconfig.lib.json" },
+    { "path": "../libs/domains/catalog/references/tsconfig.lib.json" },
+    { "path": "../libs/domains/catalog/tags/tsconfig.lib.json" },
+    { "path": "../libs/domains/catalog/metrics/tsconfig.lib.json" }
+  ]
 }

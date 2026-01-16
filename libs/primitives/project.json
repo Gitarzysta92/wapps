@@ -7,13 +7,10 @@
   "tags": ["type:primitives", "scope:core"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/../../dist/libs/primitives"],
       "options": {
-        "outputPath": "dist/libs/primitives",
-        "main": "libs/primitives/src/index.ts",
-        "tsConfig": "libs/primitives/tsconfig.lib.json",
-        "assets": ["libs/primitives/*.md"]
+        "command": "tsc --build libs/primitives/tsconfig.lib.json"
       }
     },
     "test": {

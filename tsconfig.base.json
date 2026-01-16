@@ -52,6 +52,7 @@
         "libs/domains/catalog/compatibility/src/index.ts"
       ],
       "@domains/catalog/contact": ["libs/domains/catalog/contact/src/index.ts"],
+      "@domains/catalog/media": ["libs/domains/catalog/media/src/index.ts"],
       "@domains/catalog/metrics": ["libs/domains/catalog/metrics/src/index.ts"],
       "@domains/catalog/ownership": [
         "libs/domains/catalog/ownership/src/index.ts"
@@ -64,7 +65,6 @@
       ],
       "@domains/catalog/search": ["libs/domains/catalog/search/src/index.ts"],
       "@domains/catalog/tags": ["libs/domains/catalog/tags/src/index.ts"],
-      "@domains/catalog/media": ["libs/domains/catalog/media/src/index.ts"],
       "@domains/catalog/versioning": [
         "libs/domains/catalog/versioning/src/index.ts"
       ],
@@ -173,11 +173,11 @@
       "@portals/shared/features/my-profile": [
         "apps/portals/shared/features/my-profile/src/index.ts"
       ],
-      "@portals/shared/features/preferences": [
-        "apps/portals/shared/features/preferences/src/index.ts"
-      ],
       "@portals/shared/features/platform": [
         "apps/portals/shared/features/platform/src/index.ts"
+      ],
+      "@portals/shared/features/preferences": [
+        "apps/portals/shared/features/preferences/src/index.ts"
       ],
       "@portals/shared/features/pricing": [
         "apps/portals/shared/features/pricing/src/index.ts"

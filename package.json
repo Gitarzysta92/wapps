@@ -97,6 +97,7 @@
     "@taiga-ui/cdk": "^4.34.0",
     "@taiga-ui/core": "^4.34.0",
     "@taiga-ui/event-plugins": "^4.0.2",
+    "@taiga-ui/i18n": "^4.34.0",
     "@taiga-ui/icons": "^4.34.0",
     "@taiga-ui/kit": "^4.34.0",
     "@taiga-ui/layout": "^4.34.0",

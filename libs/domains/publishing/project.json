@@ -4,21 +4,25 @@
   "projectType": "library",
   "prefix": "domains",
   "sourceRoot": "libs/domains/publishing/src",
-  "tags": ["type:domain", "scope:publishing"],
+  "tags": [
+    "type:domain",
+    "scope:publishing"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/../../dist/domains/publishing"
+      ],
       "options": {
-        "outputPath": "dist/libs/domains/publishing",
-        "main": "libs/domains/publishing/src/index.ts",
-        "tsConfig": "libs/domains/publishing/tsconfig.lib.json",
-        "assets": ["libs/domains/publishing/*.md"]
+        "command": "tsc --build libs/domains/publishing/tsconfig.lib.json"
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "libs/domains/publishing/jest.config.ts",
         "passWithNoTests": true
@@ -32,8 +36,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

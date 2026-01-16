@@ -4,22 +4,25 @@
   "projectType": "library",
   "prefix": "domains",
   "sourceRoot": "libs/domains/customer/profiles/src",
-  "tags": ["type:domain", "scope:customer"],
+  "tags": [
+    "type:domain",
+    "scope:customer"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/../../dist/domains/customer/profiles"
+      ],
       "options": {
-        "outputPath": "dist/libs/domains/customer/profiles",
-        "main": "libs/domains/customer/profiles/src/index.ts",
-        "tsConfig": "libs/domains/customer/profiles/tsconfig.lib.json",
-        "assets": ["libs/domains/customer/profiles/*.md"]
+        "command": "tsc --build libs/domains/customer/profiles/tsconfig.lib.json"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

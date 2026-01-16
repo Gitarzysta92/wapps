@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/metrics"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/metrics",
-        "main": "libs/domains/catalog/metrics/src/index.ts",
-        "tsConfig": "libs/domains/catalog/metrics/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/metrics/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/metrics/tsconfig.lib.json"
       }
     }
   }

@@ -4,6 +4,18 @@
     "outDir": "../../../dist/out-tsc",
     "types": []
   },
-  "include": ["**/*.ts", "../../../apps/portals/shared/features/identity/src/application/password-reset-request-handler.token.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": [
+    "**/*.ts",
+    "../../../apps/portals/shared/features/identity/src/application/password-reset-request-handler.token.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../standard/tsconfig.lib.json"
+    }
+  ]
 }

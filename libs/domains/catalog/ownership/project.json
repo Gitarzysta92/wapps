@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/ownership"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/ownership",
-        "main": "libs/domains/catalog/ownership/src/index.ts",
-        "tsConfig": "libs/domains/catalog/ownership/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/ownership/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/ownership/tsconfig.lib.json"
       }
     }
   }

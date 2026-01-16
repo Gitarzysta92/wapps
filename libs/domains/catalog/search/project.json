@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/search"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/search",
-        "main": "libs/domains/catalog/search/src/index.ts",
-        "tsConfig": "libs/domains/catalog/search/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/search/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/search/tsconfig.lib.json"
       }
     }
   }

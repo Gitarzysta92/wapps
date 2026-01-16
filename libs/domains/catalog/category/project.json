@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/category"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/category",
-        "main": "libs/domains/catalog/category/src/index.ts",
-        "tsConfig": "libs/domains/catalog/category/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/category/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/category/tsconfig.lib.json"
       }
     }
   }

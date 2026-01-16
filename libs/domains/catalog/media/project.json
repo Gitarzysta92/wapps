@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/media"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/media",
-        "main": "libs/domains/catalog/media/src/index.ts",
-        "tsConfig": "libs/domains/catalog/media/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/media/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/media/tsconfig.lib.json"
       }
     }
   }

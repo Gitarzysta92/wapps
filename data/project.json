@@ -6,13 +6,10 @@
   "tags": ["type:data", "scope:shared"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/../dist/data"],
       "options": {
-        "outputPath": "dist/data",
-        "main": "data/src/index.ts",
-        "tsConfig": "data/tsconfig.lib.json",
-        "assets": ["data/*.md"]
+        "command": "tsc --build data/tsconfig.lib.json"
       }
     },
     "test": {

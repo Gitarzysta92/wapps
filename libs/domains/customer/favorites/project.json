@@ -4,22 +4,25 @@
   "projectType": "library",
   "prefix": "domains",
   "sourceRoot": "libs/domains/customer/favorites/src",
-  "tags": ["type:domain", "scope:customer"],
+  "tags": [
+    "type:domain",
+    "scope:customer"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/../../dist/domains/customer/favorites"
+      ],
       "options": {
-        "outputPath": "dist/libs/domains/customer/favorites",
-        "main": "libs/domains/customer/favorites/src/index.ts",
-        "tsConfig": "libs/domains/customer/favorites/tsconfig.lib.json",
-        "assets": ["libs/domains/customer/favorites/*.md"]
+        "command": "tsc --build libs/domains/customer/favorites/tsconfig.lib.json"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

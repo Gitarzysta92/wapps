@@ -32,17 +32,12 @@
       ]
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/../../dist/domains/catalog/contact"
       ],
       "options": {
-        "outputPath": "dist/domains/catalog/contact",
-        "main": "libs/domains/catalog/contact/src/index.ts",
-        "tsConfig": "libs/domains/catalog/contact/tsconfig.lib.json",
-        "assets": [
-          "libs/domains/catalog/contact/*.md"
-        ]
+        "command": "tsc --build libs/domains/catalog/contact/tsconfig.lib.json"
       }
     }
   }

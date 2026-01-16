@@ -4,21 +4,25 @@
   "projectType": "library",
   "prefix": "domains",
   "sourceRoot": "libs/domains/feed/src",
-  "tags": ["type:domain", "scope:feed"],
+  "tags": [
+    "type:domain",
+    "scope:feed"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{projectRoot}/../../dist/domains/feed"
+      ],
       "options": {
-        "outputPath": "dist/libs/domains/feed",
-        "main": "libs/domains/feed/src/index.ts",
-        "tsConfig": "libs/domains/feed/tsconfig.lib.json",
-        "assets": ["libs/domains/feed/*.md"]
+        "command": "tsc --build libs/domains/feed/tsconfig.lib.json"
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "libs/domains/feed/jest.config.ts",
         "passWithNoTests": true
@@ -32,7 +36,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
