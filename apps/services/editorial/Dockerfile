@@ -13,6 +13,7 @@ WORKDIR /app
 COPY dist/apps/services/editorial ./
 
 # Copy the built admin panel (created by strapi build)
+# The build folder should exist from the build-admin step in CI
 COPY apps/services/editorial/build ./build
 
 # Install only production dependencies

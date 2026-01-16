@@ -64,6 +64,19 @@ jobs:
 
       - name: Build admin panel
         run: npx nx build-admin apps.services.editorial
+        continue-on-error: false
+      
+      - name: Verify admin panel build
+        run: |
+          if [ ! -d "apps/services/editorial/build" ]; then
+            echo "❌ Admin panel build folder not found!"
+            echo "Contents of apps/services/editorial:"
+            ls -la apps/services/editorial/ || true
+            exit 1
+          else
+            echo "✅ Admin panel build folder found"
+            ls -la apps/services/editorial/build/ | head -10
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
