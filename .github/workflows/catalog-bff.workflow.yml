@@ -1,6 +1,7 @@
 name: 'Catalog BFF - Backend Service'
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, develop]
     paths:
