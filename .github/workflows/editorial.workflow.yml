@@ -63,7 +63,16 @@ jobs:
         run: npx nx build apps.services.editorial --configuration=production
 
       - name: Build admin panel
-        run: npx nx build-admin apps.services.editorial
+        run: |
+          echo "Building Strapi admin panel..."
+          npx nx build-admin apps.services.editorial || {
+            echo "❌ Build admin panel failed!"
+            echo "Checking if strapi is available in node_modules:"
+            ls -la node_modules/.bin/strapi || echo "strapi not found in root node_modules/.bin"
+            echo "Checking apps/services/editorial/node_modules:"
+            ls -la apps/services/editorial/node_modules/.bin/strapi 2>/dev/null || echo "strapi not found in local node_modules/.bin"
+            exit 1
+          }
         continue-on-error: false
       
       - name: Verify admin panel build
@@ -72,9 +81,14 @@ jobs:
             echo "❌ Admin panel build folder not found!"
             echo "Contents of apps/services/editorial:"
             ls -la apps/services/editorial/ || true
+            echo "Checking if build folder exists elsewhere:"
+            find . -type d -name "build" -path "*/editorial/*" 2>/dev/null || echo "No build folder found"
             exit 1
           else
             echo "✅ Admin panel build folder found"
+            echo "Build folder size:"
+            du -sh apps/services/editorial/build
+            echo "Build folder contents (first 10 items):"
             ls -la apps/services/editorial/build/ | head -10
           fi
 
