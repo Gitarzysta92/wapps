@@ -10,4 +10,4 @@ RUN npm install
 ENV NODE_ENV=production
 
 # Run the app
-CMD ["node", "src/index.js"]
+CMD ["node", "main.js"]
