@@ -7,9 +7,9 @@
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
-    "dev": "node -r ./register-paths.js ./node_modules/.bin/strapi develop",
-    "develop": "node -r ./register-paths.js ./node_modules/.bin/strapi develop",
-    "start": "node -r ./register-paths.js ./node_modules/.bin/strapi start",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
