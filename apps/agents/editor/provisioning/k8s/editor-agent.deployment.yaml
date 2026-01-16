@@ -42,6 +42,12 @@ spec:
                 secretKeyRef:
                   name: editor-agent-secrets
                   key: EDITORIAL_SERVICE_API_TOKEN
+            # OpenAI API key
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: editor-agent-secrets
+                  key: OPENAI_API_KEY
           envFrom:
             - configMapRef:
                 name: editor-agent-config
