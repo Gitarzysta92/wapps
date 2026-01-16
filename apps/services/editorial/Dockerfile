@@ -1,6 +1,6 @@
 # Dockerfile for prebuilt editorial service
 # Build happens in CI with: nx build apps.services.editorial --configuration=production
-FROM node:18-slim
+FROM node:20-slim
 
 # Install runtime dependencies for better-sqlite3/mysql2
 RUN apt-get update && apt-get install -y \
@@ -13,7 +13,9 @@ WORKDIR /app
 COPY dist/apps/services/editorial ./
 
 # Install only production dependencies
-RUN npm ci --production
+# Using npm install instead of npm ci because the generated package.json
+# doesn't have a matching package-lock.json
+RUN npm install --production --no-audit --no-fund
 
 # Environment variables
 ENV NODE_ENV=production
