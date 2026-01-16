@@ -17,11 +17,20 @@ COPY dist/apps/services/editorial ./
 # doesn't have a matching package-lock.json
 RUN npm install --production --no-audit --no-fund
 
+# Compile TypeScript config files to JavaScript
+# Strapi requires .js config files, but webpack copies .ts files
+RUN if ls config/*.ts 1> /dev/null 2>&1; then \
+      npm install --save-dev typescript && \
+      npx tsc config/*.ts --target ES2020 --module commonjs --moduleResolution node --esModuleInterop --skipLibCheck --outDir config --resolveJsonModule && \
+      rm -f config/*.ts config/*.ts.map && \
+      npm uninstall --save-dev typescript; \
+    fi
+
 # Environment variables
 ENV NODE_ENV=production
 ENV SERVE_ADMIN_PANEL=false
 
 EXPOSE 1337
 
-# Run compiled JavaScript directly - no ts-node, no register-paths!
-CMD ["node", "main.js"]
+# Start Strapi in production mode
+CMD ["node_modules/.bin/strapi", "start"]
