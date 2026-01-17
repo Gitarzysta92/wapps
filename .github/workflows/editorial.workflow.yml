@@ -119,9 +119,13 @@ jobs:
 
       - name: Create NestJS secrets
         run: |
-          # NestJS uses simpler environment variables compared to Strapi
+          # NestJS uses individual database environment variables
           kubectl create secret generic editorial-app-secrets \
-            --from-literal=DATABASE_URL="${{ secrets.EDITORIAL_DATABASE_URL }}" \
+            --from-literal=DATABASE_HOST="${{ secrets.EDITORIAL_DATABASE_HOST }}" \
+            --from-literal=DATABASE_PORT="${{ secrets.EDITORIAL_DATABASE_PORT }}" \
+            --from-literal=DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
+            --from-literal=DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
+            --from-literal=DATABASE_NAME="${{ secrets.EDITORIAL_DATABASE_NAME }}" \
             --from-literal=NODE_ENV="production" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -

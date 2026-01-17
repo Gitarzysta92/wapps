@@ -35,11 +35,31 @@ spec:
               value: "0.0.0.0"
             - name: PORT
               value: "1337"
-            - name: DATABASE_URL
+            - name: DATABASE_HOST
               valueFrom:
                 secretKeyRef:
                   name: editorial-app-secrets
-                  key: DATABASE_URL
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: DATABASE_PORT
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: DATABASE_NAME
           resources:
             requests:
               memory: "1Gi"

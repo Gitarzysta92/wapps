@@ -22,8 +22,12 @@ nx build apps.services.editorial
 # Run development
 nx serve apps.services.editorial
 
-# MySQL connection (update .env or use environment variable)
-DATABASE_URL=mysql://root:password@localhost:3306/editorial
+# MySQL connection (use individual environment variables)
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USERNAME=root
+DATABASE_PASSWORD=password
+DATABASE_NAME=editorial
 ```
 
 ### API Endpoints
