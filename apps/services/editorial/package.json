@@ -15,8 +15,8 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-users-permissions": "5.16.0",
-    "@strapi/strapi": "5.16.0",
+    "@strapi/plugin-users-permissions": "5.32.0",
+    "@strapi/strapi": "5.32.0",
     "amqplib": "^0.10.8",
     "better-sqlite3": "^12.5.0",
     "dotenv": "^16.5.0",
