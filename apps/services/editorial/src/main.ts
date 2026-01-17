@@ -3,6 +3,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
@@ -19,7 +20,7 @@ async function bootstrap() {
     })
   );
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/editorial');
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -34,7 +35,7 @@ async function bootstrap() {
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
+  SwaggerModule.setup('api/editorial/docs', app, document, {
     customSiteTitle: 'Editorial API Documentation',
     customCss: '.swagger-ui .topbar { display: none }',
   });
@@ -42,8 +43,8 @@ async function bootstrap() {
   const port = process.env.PORT || 1337;
   await app.listen(port);
 
-  logger.log(`🚀 Editorial API is running on: http://localhost:${port}/api`);
-  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
+  logger.log(`🚀 Editorial API is running on: http://localhost:${port}/api/editorial`);
+  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/editorial/docs`);
 }
 
 bootstrap();
