@@ -121,11 +121,11 @@ jobs:
         run: |
           # NestJS uses individual database environment variables with EDITORIAL_ prefix
           kubectl create secret generic editorial-app-secrets \
-            --from-literal=EDITORIAL_DATABASE_HOST="${{ secrets.EDITORIAL_DATABASE_HOST }}" \
-            --from-literal=EDITORIAL_DATABASE_PORT="${{ secrets.EDITORIAL_DATABASE_PORT }}" \
+            --from-literal=EDITORIAL_DATABASE_HOST="${{ vars.EDITORIAL_DATABASE_HOST }}" \
+            --from-literal=EDITORIAL_DATABASE_PORT="${{ vars.EDITORIAL_DATABASE_PORT }}" \
             --from-literal=EDITORIAL_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
             --from-literal=EDITORIAL_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
-            --from-literal=EDITORIAL_DATABASE_NAME="${{ secrets.EDITORIAL_DATABASE_NAME }}" \
+            --from-literal=EDITORIAL_DATABASE_NAME="${{ vars.EDITORIAL_DATABASE_NAME }}" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -
           
