@@ -29,11 +29,11 @@ spec:
               containerPort: 1337
               protocol: TCP
           env:
-            - name: NODE_ENV
+            - name: EDITORIAL_NODE_ENV
               value: "production"
-            - name: HOST
+            - name: EDITORIAL_HOST
               value: "0.0.0.0"
-            - name: PORT
+            - name: EDITORIAL_PORT
               value: "1337"
             - name: EDITORIAL_DATABASE_HOST
               valueFrom:

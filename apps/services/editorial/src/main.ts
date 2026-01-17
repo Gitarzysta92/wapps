@@ -9,7 +9,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: process.env.EDITORIAL_CORS_ORIGIN || '*',
     credentials: true,
   });
 
@@ -40,7 +40,7 @@ async function bootstrap() {
     customCss: '.swagger-ui .topbar { display: none }',
   });
 
-  const port = process.env.PORT || 1337;
+  const port = process.env.EDITORIAL_PORT || 1337;
   await app.listen(port);
 
   logger.log(`🚀 Editorial API is running on: http://localhost:${port}/api`);

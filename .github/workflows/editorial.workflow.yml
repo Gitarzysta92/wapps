@@ -126,7 +126,6 @@ jobs:
             --from-literal=EDITORIAL_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
             --from-literal=EDITORIAL_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
             --from-literal=EDITORIAL_DATABASE_NAME="${{ secrets.EDITORIAL_DATABASE_NAME }}" \
-            --from-literal=NODE_ENV="production" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -
           

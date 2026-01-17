@@ -10,8 +10,8 @@ COPY . ./
 RUN npm install --omit=dev --no-audit --no-fund
 
 # Environment variables
-ENV NODE_ENV=production
-ENV PORT=1337
+ENV EDITORIAL_NODE_ENV=production
+ENV EDITORIAL_PORT=1337
 
 EXPOSE 1337
 
