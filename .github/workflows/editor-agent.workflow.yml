@@ -118,10 +118,21 @@ jobs:
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ RabbitMQ credentials secret created/updated in editorial namespace"
 
+      - name: Create GHCR image pull secret
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=editorial \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+          echo "✅ GHCR image pull secret created/updated in editorial namespace"
+
       - name: Create editor-agent secrets
         run: |
           kubectl create secret generic editor-agent-secrets \
             --from-literal=EDITORIAL_SERVICE_API_TOKEN="${{ secrets.EDITORIAL_SERVICE_API_TOKEN }}" \
+            --from-literal=OPENAI_API_KEY="asdasdasd" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ Editor agent secrets created/updated"
@@ -130,6 +141,7 @@ jobs:
         run: |
           kubectl get secret editor-agent-secrets -n editorial
           kubectl get secret rabbitmq-credentials -n editorial
+          kubectl get secret ghcr-secret -n editorial
           echo "✅ All required secrets verified"
 
       - name: Install ArgoCD CLI
