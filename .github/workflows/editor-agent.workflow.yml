@@ -7,7 +7,7 @@ on:
       - 'apps/agents/editor/**'
       - 'libs/cross-cutting/events/**'
       - 'environments/dev/apps/editor-agent-kustomization/**'
-      - '.github/workflows/editor-agent.yml'
+      - '.github/workflows/editor-agent.workflow.yml'
   workflow_dispatch:
     inputs:
       environment:
