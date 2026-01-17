@@ -37,6 +37,7 @@
     },
     "build-admin": {
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist/build"],
       "options": {
         "command": "npx strapi build",
         "cwd": "apps/services/editorial"

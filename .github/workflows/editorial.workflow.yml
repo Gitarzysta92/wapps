@@ -73,11 +73,10 @@ jobs:
             ls -la apps/services/editorial/node_modules/.bin/strapi 2>/dev/null || echo "strapi not found in local node_modules/.bin"
             exit 1
           }
-        continue-on-error: false
       
       - name: Verify admin panel build
         run: |
-          if [ ! -d "apps/services/editorial/build" ]; then
+          if [ ! -d "apps/services/editorial/dist/build" ]; then
             echo "❌ Admin panel build folder not found!"
             echo "Contents of apps/services/editorial:"
             ls -la apps/services/editorial/ || true
@@ -87,9 +86,9 @@ jobs:
           else
             echo "✅ Admin panel build folder found"
             echo "Build folder size:"
-            du -sh apps/services/editorial/build
+            du -sh apps/services/editorial/dist/build
             echo "Build folder contents (first 10 items):"
-            ls -la apps/services/editorial/build/ | head -10
+            ls -la apps/services/editorial/dist/build/ | head -10
           fi
 
       - name: Set up Docker Buildx

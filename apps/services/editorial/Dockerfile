@@ -13,8 +13,8 @@ WORKDIR /app
 COPY dist/apps/services/editorial ./
 
 # Copy the built admin panel (created by strapi build)
-# The build folder should exist from the build-admin step in CI
-COPY apps/services/editorial/build ./build
+# Strapi 5 builds to dist/build instead of build
+COPY apps/services/editorial/dist/build ./build
 
 # Install only production dependencies
 # Using npm install instead of npm ci because the generated package.json
