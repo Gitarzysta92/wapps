@@ -1,40 +1,23 @@
-# Dockerfile for prebuilt editorial service
-# Build happens in CI with: nx build apps.services.editorial --configuration=production
+# Dockerfile for NestJS editorial service
 FROM node:20-slim
-
-# Install runtime dependencies for better-sqlite3/mysql2
-RUN apt-get update && apt-get install -y \
-    python3 make g++ \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy the prebuilt dist from CI
-COPY dist/apps/services/editorial ./
-
-# Copy the built admin panel (created by strapi build)
-# Strapi 5 builds to dist/build instead of build
-COPY apps/services/editorial/dist/build ./build
+# Copy the prebuilt dist (when building from dist folder, files are in current dir)
+COPY . ./
 
 # Install only production dependencies
-# Using npm install instead of npm ci because the generated package.json
-# doesn't have a matching package-lock.json
-RUN npm install --production --no-audit --no-fund
-
-# Compile TypeScript config files to JavaScript
-# Strapi requires .js config files, but webpack copies .ts files
-RUN if ls config/*.ts 1> /dev/null 2>&1; then \
-      npm install --save-dev typescript && \
-      npx tsc config/*.ts --target ES2020 --module commonjs --moduleResolution node --esModuleInterop --skipLibCheck --outDir config --resolveJsonModule && \
-      rm -f config/*.ts config/*.ts.map && \
-      npm uninstall --save-dev typescript; \
-    fi
+RUN npm install --omit=dev --no-audit --no-fund
 
 # Environment variables
 ENV NODE_ENV=production
+ENV PORT=1337
 
 EXPOSE 1337
 
-# Start the webpack-bundled application
-# Using node main.js instead of strapi start to use pre-resolved path aliases (@data)
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+  CMD node -e "require('http').get('http://localhost:1337/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start the application
 CMD ["node", "main.js"]

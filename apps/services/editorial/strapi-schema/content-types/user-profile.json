@@ -1,8 +1,0 @@
-{
-  "collectionName": "user_profiles",
-  "info": { "name": "UserProfile" },
-  "attributes": {
-    "name": { "type": "string" },
-    "avatar": { "type": "media", "multiple": false, "required": false }
-  }
-} 

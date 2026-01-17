@@ -1,79 +1,168 @@
-# 🚀 Getting started with Strapi
+# Editorial Service - NestJS + TypeORM
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+## 🎉 Finally! A Working Solution
 
-### `develop`
+Simple NestJS REST API with TypeORM and MySQL. **No CMS complications!**
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+### Why NestJS?
 
-```
-npm run develop
-# or
-yarn develop
-```
+- ✅ **Compiles cleanly** with Nx webpack
+- ✅ **`@data` imports work perfectly** (TypeScript path aliases resolved at build time)
+- ✅ **Native MySQL support** via TypeORM
+- ✅ **Full control** - no magic, no runtime TS compilation
+- ✅ **Auto-generated Swagger docs**
+- ✅ **Production-ready**
 
-### `start`
+### Quick Start
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+```bash
+# Build
+nx build apps.services.editorial
 
-```
-npm run start
-# or
-yarn start
-```
+# Run development
+nx serve apps.services.editorial
 
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
+# MySQL connection (update .env or use environment variable)
+DATABASE_URL=mysql://root:password@localhost:3306/editorial
 ```
 
-## ⚙️ Deployment
+### API Endpoints
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+All endpoints prefixed with `/api`:
+
+**Core Resources:**
+- `GET /api/apps` - List all app records
+- `POST /api/apps` - Create app record
+- `GET /api/apps/:id` - Get app by ID
+- `PUT /api/apps/:id` - Update app
+- `DELETE /api/apps/:id` - Delete app
+
+**Taxonomies:**
+- `/api/categories` - Full CRUD for categories
+- `/api/tags` - Full CRUD for tags
+
+**Reference Data:**
+- `GET /api/reference/platforms`
+- `GET /api/reference/devices`
+- `GET /api/reference/socials`
+- `GET /api/reference/stores`
+- `GET /api/reference/monetization-models`
+- `GET /api/reference/user-spans`
+
+**Health:**
+- `GET /api/health` - Health check
+
+**Documentation:**
+- `GET /api/docs` - Swagger UI
+
+### Features
+
+#### 1. TypeORM Entities
+All entities with proper relationships:
+- `AppRecord` - Main content with many-to-many relations
+- `Category` - Hierarchical (parent/children)
+- `Tag` - Simple taxonomy
+- Reference entities (Platform, Device, etc.)
+
+#### 2. Automatic Seeding ✨
+**The `@data` imports work!**
+
+```typescript
+// src/app/seed/seed.service.ts
+import { categories, tags, platforms } from '@data'; // ✅ WORKS!
+
+// Seeds automatically on startup
+```
+
+#### 3. MySQL Database
+TypeORM handles:
+- Auto-creates tables (`synchronize: true` in dev)
+- Migrations (can be added for production)
+- Full relationship management
+
+### Environment Variables
+
+Create `.env` or set in your environment:
+
+```bash
+DATABASE_URL=mysql://root:password@localhost:3306/editorial
+PORT=1337
+NODE_ENV=development
+```
+
+### Development
+
+```bash
+# Watch mode with hot reload
+nx serve apps.services.editorial
+
+# Build for production
+nx build apps.services.editorial --configuration=production
+```
+
+### Production Deployment
+
+```bash
+# Build creates dist/apps/services/editorial with:
+# - Compiled main.js
+# - package.json (auto-generated)
+# - All dependencies resolved
+
+# Docker
+docker build -t editorial .
+docker run -p 1337:1337 \
+  -e DATABASE_URL=mysql://user:pass@host:3306/editorial \
+  editorial
+```
+
+### Project Structure
 
 ```
-yarn strapi deploy
+src/
+├── main.ts                    # Bootstrap
+├── app/
+│   ├── app.module.ts          # Main module with TypeORM
+│   ├── health/                # Health check
+│   ├── seed/                  # 🌱 Data seeding with @data
+│   ├── apps/                  # App records CRUD
+│   │   ├── entities/
+│   │   ├── apps.controller.ts
+│   │   ├── apps.service.ts
+│   │   └── apps.module.ts
+│   ├── categories/            # Categories CRUD
+│   ├── tags/                  # Tags CRUD
+│   └── reference/             # Reference data (platforms, devices, etc.)
 ```
 
-## 📚 Learn more
+### What Happened Before?
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+We tried:
+1. **Strapi** - Runtime TS compilation broke `@data` imports
+2. **Payload CMS v3** - Unstable API, MongoDB only for v2
+3. **KeystoneJS** - Same runtime TS compilation issue
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+**The Problem:** All CMSs compile TypeScript at runtime which doesn't resolve Nx monorepo path aliases.
 
-## ✨ Community
+**The Solution:** NestJS compiles with webpack at build time, resolving all path aliases correctly!
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+### Next Steps
+
+1. Connect to your MySQL database
+2. Service will auto-create tables and seed data
+3. Access Swagger docs at `http://localhost:1337/api/docs`
+4. Start building your frontend!
+
+### Why This is Better
+
+| Feature | CMS Solutions | NestJS Solution |
+|---------|---------------|-----------------|
+| `@data` imports | ❌ Broken | ✅ Works |
+| Build process | ❌ Complex | ✅ Simple |
+| MySQL support | ⚠️ Varies | ✅ Native |
+| Control | ❌ Limited | ✅ Full |
+| Documentation | ⚠️ Manual | ✅ Auto (Swagger) |
+| Monorepo | ❌ Problematic | ✅ Perfect |
 
 ---
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
-
-# Editorial Strapi Service
-
-This Strapi project is managed as an Nx application and uses content types and TypeScript types from the local `strapi-schema` package.
-
-## Project Structure
-- Content types: see `../strapi-schema/content-types`
-- Types: see `../strapi-schema/types`
-- Nx project configuration: see `project.json`
-- Provisioning: see `provisioning/`
-
-## Development
-- Install dependencies: `npm install`
-- Start Strapi: `npm run develop`
-- Build: `npm run build`
-
-## Schema
-Content types and types are maintained in the `strapi-schema` directory and should be copied or linked into the Strapi app as needed.
+**Finally working! 🚀**
