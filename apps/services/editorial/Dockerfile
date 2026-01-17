@@ -35,5 +35,6 @@ ENV NODE_ENV=production
 
 EXPOSE 1337
 
-# Start Strapi in production mode
-CMD ["node_modules/.bin/strapi", "start"]
+# Start the webpack-bundled application
+# Using node main.js instead of strapi start to use pre-resolved path aliases (@data)
+CMD ["node", "main.js"]
