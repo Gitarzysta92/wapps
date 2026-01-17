@@ -62,34 +62,11 @@ jobs:
       - name: Build application
         run: npx nx build apps.services.editorial --configuration=production
 
-      - name: Build admin panel
+      - name: Verify build output
         run: |
-          echo "Building Strapi admin panel..."
-          npx nx build-admin apps.services.editorial || {
-            echo "❌ Build admin panel failed!"
-            echo "Checking if strapi is available in node_modules:"
-            ls -la node_modules/.bin/strapi || echo "strapi not found in root node_modules/.bin"
-            echo "Checking apps/services/editorial/node_modules:"
-            ls -la apps/services/editorial/node_modules/.bin/strapi 2>/dev/null || echo "strapi not found in local node_modules/.bin"
-            exit 1
-          }
-      
-      - name: Verify admin panel build
-        run: |
-          if [ ! -d "apps/services/editorial/dist/build" ]; then
-            echo "❌ Admin panel build folder not found!"
-            echo "Contents of apps/services/editorial:"
-            ls -la apps/services/editorial/ || true
-            echo "Checking if build folder exists elsewhere:"
-            find . -type d -name "build" -path "*/editorial/*" 2>/dev/null || echo "No build folder found"
-            exit 1
-          else
-            echo "✅ Admin panel build folder found"
-            echo "Build folder size:"
-            du -sh apps/services/editorial/dist/build
-            echo "Build folder contents (first 10 items):"
-            ls -la apps/services/editorial/dist/build/ | head -10
-          fi
+          echo "✅ Application built successfully"
+          echo "Build output location: dist/apps/services/editorial"
+          ls -la dist/apps/services/editorial/ | head -10
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -104,7 +81,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: dist/apps/services/editorial
           file: apps/services/editorial/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
@@ -140,26 +117,21 @@ jobs:
       # NOTE: Database credentials (editorial-db-credentials) are created by Ansible
       # during host provisioning. See: platform/host/mysql/install.yml
 
-      - name: Create Strapi secrets
+      - name: Create NestJS secrets
         run: |
-          kubectl create secret generic editorial-strapi-secrets \
-            --from-literal=APP_KEYS="${{ secrets.EDITORIAL_APP_KEYS }}" \
-            --from-literal=API_TOKEN_SALT="${{ secrets.EDITORIAL_API_TOKEN_SALT }}" \
-            --from-literal=ADMIN_JWT_SECRET="${{ secrets.EDITORIAL_ADMIN_JWT_SECRET }}" \
-            --from-literal=TRANSFER_TOKEN_SALT="${{ secrets.EDITORIAL_TRANSFER_TOKEN_SALT }}" \
-            --from-literal=JWT_SECRET="${{ secrets.EDITORIAL_JWT_SECRET }}" \
+          # NestJS uses simpler environment variables compared to Strapi
+          kubectl create secret generic editorial-app-secrets \
+            --from-literal=DATABASE_URL="${{ secrets.EDITORIAL_DATABASE_URL }}" \
+            --from-literal=NODE_ENV="production" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -
           
-          echo "✅ Strapi secrets created/updated"
+          echo "✅ NestJS secrets created/updated"
 
       - name: Verify secrets exist
         run: |
-          echo "Verifying editorial-strapi-secrets exists..."
-          kubectl get secret editorial-strapi-secrets -n editorial
-          
-          echo "Verifying editorial-db-credentials exists..."
-          kubectl get secret editorial-db-credentials -n editorial
+          echo "Verifying editorial-app-secrets exists..."
+          kubectl get secret editorial-app-secrets -n editorial
           
           echo "✅ All required secrets verified"
 
@@ -243,12 +215,12 @@ jobs:
             echo "✅ Editorial Service deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - Admin Panel: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/admin"
             echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api"
-            echo "  - Health: http://editorial.editorial.svc.cluster.local:1337/_health"
+            echo "  - Swagger Docs: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/docs"
+            echo "  - Health: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/health"
             echo ""
             echo "Next steps:"
-            echo "  1. Verify admin panel access"
+            echo "  1. Test API endpoints"
             echo "  2. Check logs: kubectl logs -n editorial -l app=editorial --tail=50"
             echo "  3. Verify ingress: kubectl get ingress -n editorial"
           else
