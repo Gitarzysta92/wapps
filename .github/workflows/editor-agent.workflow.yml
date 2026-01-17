@@ -132,7 +132,7 @@ jobs:
         run: |
           kubectl create secret generic editor-agent-secrets \
             --from-literal=EDITORIAL_SERVICE_API_TOKEN="${{ secrets.EDITORIAL_SERVICE_API_TOKEN }}" \
-            --from-literal=OPENAI_API_KEY="asdasdasd" \
+            --from-literal=OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ Editor agent secrets created/updated"
