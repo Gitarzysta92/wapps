@@ -196,7 +196,7 @@ jobs:
           kubectl rollout restart deployment/editorial -n editorial
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/editorial -n editorial --timeout=300s
+          kubectl rollout status deployment/editorial -n editorial --timeout=600s
           
           echo "✅ Deployment restarted successfully"
 

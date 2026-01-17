@@ -42,11 +42,18 @@ spec:
             limits:
               memory: "2Gi"
               cpu: "2000m"
+          startupProbe:
+            httpGet:
+              path: /_health
+              port: 1337
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /_health
               port: 1337
-            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
@@ -54,7 +61,6 @@ spec:
             httpGet:
               path: /_health
               port: 1337
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
