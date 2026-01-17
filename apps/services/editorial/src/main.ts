@@ -20,7 +20,7 @@ async function bootstrap() {
     })
   );
 
-  app.setGlobalPrefix('api/editorial');
+  app.setGlobalPrefix('api');
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -35,7 +35,7 @@ async function bootstrap() {
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/editorial/docs', app, document, {
+  SwaggerModule.setup('api/docs', app, document, {
     customSiteTitle: 'Editorial API Documentation',
     customCss: '.swagger-ui .topbar { display: none }',
   });
@@ -43,8 +43,8 @@ async function bootstrap() {
   const port = process.env.PORT || 1337;
   await app.listen(port);
 
-  logger.log(`🚀 Editorial API is running on: http://localhost:${port}/api/editorial`);
-  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/editorial/docs`);
+  logger.log(`🚀 Editorial API is running on: http://localhost:${port}/api`);
+  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
 }
 
 bootstrap();

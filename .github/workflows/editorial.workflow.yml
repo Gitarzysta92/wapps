@@ -119,13 +119,13 @@ jobs:
 
       - name: Create NestJS secrets
         run: |
-          # NestJS uses individual database environment variables
+          # NestJS uses individual database environment variables with EDITORIAL_ prefix
           kubectl create secret generic editorial-app-secrets \
-            --from-literal=DATABASE_HOST="${{ secrets.EDITORIAL_DATABASE_HOST }}" \
-            --from-literal=DATABASE_PORT="${{ secrets.EDITORIAL_DATABASE_PORT }}" \
-            --from-literal=DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
-            --from-literal=DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
-            --from-literal=DATABASE_NAME="${{ secrets.EDITORIAL_DATABASE_NAME }}" \
+            --from-literal=EDITORIAL_DATABASE_HOST="${{ secrets.EDITORIAL_DATABASE_HOST }}" \
+            --from-literal=EDITORIAL_DATABASE_PORT="${{ secrets.EDITORIAL_DATABASE_PORT }}" \
+            --from-literal=EDITORIAL_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
+            --from-literal=EDITORIAL_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
+            --from-literal=EDITORIAL_DATABASE_NAME="${{ secrets.EDITORIAL_DATABASE_NAME }}" \
             --from-literal=NODE_ENV="production" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -
@@ -219,9 +219,9 @@ jobs:
             echo "✅ Editorial Service deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/editorial"
-            echo "  - Swagger Docs: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/editorial/docs"
-            echo "  - Health: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/editorial/health"
+            echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api"
+            echo "  - Swagger Docs: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/docs"
+            echo "  - Health: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/health"
             echo ""
             echo "Next steps:"
             echo "  1. Test API endpoints"

@@ -29,11 +29,11 @@ import { UserSpan } from './reference/entities/user-span.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        host: configService.get('DATABASE_HOST') || 'localhost',
-        port: parseInt(configService.get('DATABASE_PORT') || '3306', 10),
-        username: configService.get('DATABASE_USERNAME') || 'root',
-        password: configService.get('DATABASE_PASSWORD') || 'password',
-        database: configService.get('DATABASE_NAME') || 'editorial',
+        host: configService.get('EDITORIAL_DATABASE_HOST') || 'localhost',
+        port: parseInt(configService.get('EDITORIAL_DATABASE_PORT') || '3306', 10),
+        username: configService.get('EDITORIAL_DATABASE_USERNAME') || 'root',
+        password: configService.get('EDITORIAL_DATABASE_PASSWORD') || 'password',
+        database: configService.get('EDITORIAL_DATABASE_NAME') || 'editorial',
         entities: [
           Category,
           Tag,
