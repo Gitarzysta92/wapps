@@ -5,6 +5,7 @@ export interface QueueChannel {
   consume(queueName: string, onMessage: (msg: amqp.ConsumeMessage | null) => void): Promise<void>;
   ack(message: amqp.Message): void;
   nack(message: amqp.Message, allUpTo?: boolean, requeue?: boolean): void;
+  prefetch(count: number): void;
 }
 
 type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;

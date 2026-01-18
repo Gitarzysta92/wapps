@@ -15,6 +15,7 @@ export class MediaIngestionService {
 
   async initialize(): Promise<void> {
     await this.queue.assertQueue(this.queueName);
+    await this.queue.prefetch(1);
     await this.minioClient.ensureBucket(MEDIA_STORAGE_BUCKET_NAME);
     console.log(`✅ Media ingestion service initialized, listening on queue: ${this.queueName}`);
   }
@@ -56,6 +57,7 @@ export class MediaIngestionService {
       buffer,
       {
         originalUrl: rawMedia.url,
+        referenceIdentifier: rawMedia.referenceIdentifier as string ?? '',
         name: rawMedia.name,
         type: rawMedia.type,
         extension: rawMedia.extension,
