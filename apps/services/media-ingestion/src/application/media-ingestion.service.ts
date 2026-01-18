@@ -1,5 +1,6 @@
 import { QueueChannel } from '../infrastructure/queue-client';
 import { MinioClient } from '../infrastructure/minio-client';
+import { downloadImageFromUrl } from '../infrastructure/image-downloader';
 import { RawMediaDto } from '@domains/catalog/media';
 import { createHash } from 'crypto';
 
@@ -46,7 +47,7 @@ export class MediaIngestionService {
     }
 
     console.log(`📥 Downloading media from: ${rawMedia.url}`);
-    const buffer = await this.minioClient.downloadImage(rawMedia.url);
+    const buffer = await downloadImageFromUrl(rawMedia.url);
     
     console.log(`📤 Uploading to MinIO: ${objectKey}`);
     await this.minioClient.uploadImage(

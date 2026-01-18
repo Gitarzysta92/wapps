@@ -1,5 +1,4 @@
 import { CreateBucketCommand, HeadBucketCommand, HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import fetch from 'node-fetch';
 
 export class MinioClient {
   private client: S3Client;
@@ -40,14 +39,6 @@ export class MinioClient {
     } catch {
       return false;
     }
-  }
-
-  async downloadImage(url: string): Promise<Buffer> {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-    return Buffer.from(await response.arrayBuffer());
   }
 
   async uploadImage(
