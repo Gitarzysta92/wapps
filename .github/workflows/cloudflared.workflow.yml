@@ -1,4 +1,5 @@
 # Cloudflare Tunnel (cloudflared) – in-cluster. Manifest-only; no image build.
+# Namespace comes from GitOps (platform/cluster/cloudflared/namespace.yaml).
 name: 'Cloudflared - Deploy'
 
 on:
@@ -10,15 +11,6 @@ on:
       - '.github/workflows/cloudflared.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Target environment'
-        required: true
-        default: 'development'
-        type: choice
-        options:
-          - development
-          - production
 
 env:
   APP_NAME: cloudflared
@@ -33,18 +25,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set environment
-        id: set-env
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-          else
-            ENV="development"
-          fi
-          echo "environment=${ENV}" >> $GITHUB_OUTPUT
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
-          echo "Environment: ${ENV}, ArgoCD: argocd.${ENV}.wapps.com"
-
       - name: Install ArgoCD CLI
         run: |
           if ! command -v argocd &> /dev/null; then
@@ -58,18 +38,38 @@ jobs:
 
       - name: Login to ArgoCD
         run: |
-          argocd login ${{ steps.set-env.outputs.server }} \
+          argocd login argocd.development.wapps.com \
             --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
             --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
             --insecure --grpc-web
 
-      - name: Trigger ArgoCD sync
+      - name: Sync platform-services (creates/updates cloudflared Application)
+        run: |
+          echo "Syncing platform-services (ensures cloudflared app exists)..."
+          argocd app sync platform-services --force --grpc-web
+          argocd app wait platform-services --timeout 120 --grpc-web
+          echo "✅ platform-services synced"
+
+      - name: Trigger ArgoCD sync for cloudflared
         run: |
           echo "Triggering ArgoCD sync for cloudflared..."
           argocd app sync cloudflared --force --grpc-web
           echo "Waiting for sync to complete..."
           argocd app wait cloudflared --timeout 300 --grpc-web
           echo "✅ ArgoCD sync completed"
+
+      - name: Update cloudflared tunnel credentials secret
+        run: |
+          TOKEN="${{ secrets.CLOUDFLARED_TUNNEL_TOKEN }}"
+          if [ -z "${TOKEN}" ]; then
+            echo "::error::CLOUDFLARED_TUNNEL_TOKEN not set in GitHub Environment secrets"
+            exit 1
+          fi
+          kubectl create secret generic cloudflared-tunnel-credentials \
+            --from-literal=TUNNEL_TOKEN="${TOKEN}" \
+            --namespace=${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ cloudflared-tunnel-credentials secret updated"
 
       - name: Restart deployment to pick up ConfigMap changes
         run: |
@@ -99,7 +99,7 @@ jobs:
             echo "Next steps:"
             echo "  1. Check tunnel: Zero Trust → Networks → Tunnels"
             echo "  2. Logs: kubectl logs -n cloudflared -l app=cloudflared -f"
-            echo "  3. Ensure cloudflared-tunnel-credentials Secret exists with TUNNEL_TOKEN"
+            echo "  3. CLOUDFLARED_TUNNEL_TOKEN is applied from GitHub secrets"
           else
             echo "⚠️ Deployment had issues. Check logs above."
           fi
