@@ -50,14 +50,6 @@ jobs:
           argocd app wait platform-services --timeout 120 --grpc-web
           echo "✅ platform-services synced"
 
-      - name: Trigger ArgoCD sync for cloudflared
-        run: |
-          echo "Triggering ArgoCD sync for cloudflared..."
-          argocd app sync cloudflared --force --grpc-web
-          echo "Waiting for sync to complete..."
-          argocd app wait cloudflared --timeout 300 --grpc-web
-          echo "✅ ArgoCD sync completed"
-
       - name: Update cloudflared tunnel credentials secret
         run: |
           TOKEN="${{ secrets.CLOUDFLARED_TUNNEL_TOKEN }}"
@@ -71,6 +63,15 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
           echo "✅ cloudflared-tunnel-credentials secret updated"
 
+      - name: Trigger ArgoCD sync for cloudflared
+        run: |
+          echo "Triggering ArgoCD sync for cloudflared..."
+          argocd app sync cloudflared --force --grpc-web
+          echo "Waiting for sync to complete..."
+          argocd app wait cloudflared --timeout 300 --grpc-web
+          echo "✅ ArgoCD sync completed"
+
+          
       - name: Restart deployment to pick up ConfigMap changes
         run: |
           echo "Restarting cloudflared to reload config..."
