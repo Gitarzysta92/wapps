@@ -1,5 +1,4 @@
-@import '@taiga-ui/core/styles/taiga-ui-theme.less';
-@import '@taiga-ui/core/styles/taiga-ui-fonts.less';
+@use '@taiga-ui/core/styles/taiga-ui-local';
 
 * {
   box-sizing: border-box;
@@ -20,7 +19,7 @@ h1, h2, h3, h4, h5, h6 {
 a {
   color: var(--tui-text-action);
   text-decoration: none;
-  
+
   &:hover {
     text-decoration: underline;
   }

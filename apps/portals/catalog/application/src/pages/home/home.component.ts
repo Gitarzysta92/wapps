@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TuiIcon, TuiButton, TuiLoader } from '@taiga-ui/core';
+import { TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { CatalogApiService } from '../../services/catalog-api.service';
 import { AppRecordDto } from '../../services/catalog.dto';
@@ -16,7 +16,6 @@ import { NAVIGATION } from '../../navigation';
     CommonModule,
     RouterModule,
     TuiIcon,
-    TuiButton,
     TuiBadge,
     TuiLoader,
   ]

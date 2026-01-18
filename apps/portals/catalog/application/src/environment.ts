@@ -1,12 +1,14 @@
 /**
  * Environment configuration for Catalog Portal
- * 
- * URL pattern: <resource>.<environment>.wapps.com
- * 
+ *
+ * Catalog uses catalog-bff as the source of data.
+ * - Local: catalog-bff at http://localhost:3000 (global prefix /api → /api/catalog/...)
+ * - Deployed: api.<env>.wapps.com (catalog-bff under /api/catalog/...)
+ *
  * ENVIRONMENT_NAME values:
- * - "" (empty): Local development, uses mock services or localhost
+ * - "" (empty): Local development, catalog-bff at localhost:3000
  * - "development": Development environment
- * - "staging": Staging environment  
+ * - "staging": Staging environment
  * - "production": Production environment
  */
 export const ENVIRONMENT_NAME = "";
@@ -17,21 +19,15 @@ export const ENVIRONMENT_NAME = "";
 export const BASE_DOMAIN = "wapps.com";
 
 /**
- * Build a service URL based on environment
- * @param resource - Resource name (e.g., 'catalog', 'api')
- * @returns Full URL or localhost URL for local development
+ * Base URL for catalog-bff API (includes /api prefix).
+ * catalog-bff uses app.setGlobalPrefix('api'), routes are /api/catalog/apps, /api/catalog/apps/:slug.
  */
-export function buildServiceUrl(resource: string, port?: number): string {
+export function getCatalogApiBaseUrl(): string {
   if (!ENVIRONMENT_NAME) {
-    // Local development - use localhost with port
-    if (port) {
-      return `http://localhost:${port}`;
-    }
-    return "";
+    return "http://localhost:3000/api";
   }
-  return `https://${resource}.${ENVIRONMENT_NAME}.${BASE_DOMAIN}`;
+  return `https://api.${ENVIRONMENT_NAME}.${BASE_DOMAIN}/api`;
 }
 
-// Pre-built service URLs for convenience
-export const CATALOG_BFF_URL = buildServiceUrl("catalog", 3000);
-export const API_BASE_URL = buildServiceUrl("api");
+/** Injected as CATALOG_API_URL; used by CatalogApiService to build /api/catalog/apps, /api/catalog/apps/:slug */
+export const CATALOG_API_BASE_URL = getCatalogApiBaseUrl();

@@ -56,16 +56,10 @@ apps/portals/catalog/
 
 ### Environment
 
-Edit `application/src/environment.ts`:
+The portal uses **catalog-bff** as the only data source. Edit `application/src/environment.ts`:
 
-```typescript
-export const ENVIRONMENT_NAME = ""; // Local dev with mock data
-export const CATALOG_BFF_URL = buildServiceUrl("catalog", 3000);
-```
-
-- **Local Development**: Empty `ENVIRONMENT_NAME` uses mock data
-- **With API**: Set port to 3000 for `http://localhost:3000`
-- **Production**: Set `ENVIRONMENT_NAME` to "production" for `https://catalog.production.wapps.com`
+- **Local** (`ENVIRONMENT_NAME = ""`): catalog-bff at `http://localhost:3000/api` (paths `/api/catalog/apps`, `/api/catalog/apps/:slug`)
+- **Deployed**: `https://api.<env>.wapps.com/api` (e.g. `https://api.development.wapps.com/api`)
 
 ## Development
 
@@ -97,27 +91,26 @@ nx lint catalog-csr
 
 ## API Integration
 
-The portal connects to the catalog-bff service (`apps/services/catalog-bff`):
+The portal uses **catalog-bff** (`apps/services/catalog-bff`) as the only data source. catalog-bff uses `app.setGlobalPrefix('api')` and `@Controller('catalog')`.
 
-### Endpoints Used
+### Endpoints used
 
-- `GET /catalog/apps` - List all applications
-- `GET /catalog/apps/:slug` - Get app by slug
+- `GET /api/catalog/apps` – list apps (query: `page`, `pageSize`, `category`, `tags`, `search`)
+- `GET /api/catalog/apps/:slug` – app by slug
 
-### Mock Data
+### Local development
 
-When `CATALOG_BFF_URL` is empty or unavailable, the service returns mock data with 6 sample applications.
-
-### Real API
-
-To connect to the real API:
-
-1. Start the catalog-bff service:
+1. Start catalog-bff (default port 3000):
    ```bash
    nx serve catalog-bff
    ```
 
-2. The portal will automatically connect to `http://localhost:3000`
+2. Start the catalog portal:
+   ```bash
+   nx serve catalog-csr
+   ```
+
+The portal calls `http://localhost:3000/api/catalog/apps` and `http://localhost:3000/api/catalog/apps/:slug`. If catalog-bff is not running, requests will fail.
 
 ## UI Components
 
