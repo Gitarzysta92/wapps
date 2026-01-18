@@ -61,10 +61,10 @@ mediaIngestionApp
     console.error('❌ Fatal error:', err);
     process.exit(1);
   })
-  .finally(async ({ queueClient }) => {
-    try {
-      await queueClient.close();
-    } catch (error) {
-      console.error('Error during cleanup:', error);
-    }
-  });
+  // .finally(async ({ queueClient }) => {
+  //   try {
+  //     await queueClient.close();
+  //   } catch (error) {
+  //     console.error('Error during cleanup:', error);
+  //   }
+  // });
