@@ -26,9 +26,9 @@ spec:
                   key: TUNNEL_TOKEN
           args:
             - tunnel
-            - run
             - --config
             - /etc/cloudflared/config.yaml
+            - run
           volumeMounts:
             - name: config
               mountPath: /etc/cloudflared
