@@ -49,13 +49,13 @@ mediaIngestionApp
     );
 
     await mediaIngestionService.initialize();
-    await mediaIngestionService.startListening();
 
-    return { queueClient };
+
+    return { queueClient, mediaIngestionService };
   })
-  .run(async () => {
+  .run(async ({ mediaIngestionService }) => {
     console.log('🚀 Media Ingestion Service is running...');
-    await new Promise(() => {});
+    await mediaIngestionService.startListening();
   })
   .catch(async (err) => {
     console.error('❌ Fatal error:', err);
