@@ -61,17 +61,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Patch environment configuration
-        run: |
-          ENV_FILE="apps/portals/catalog/application/src/environment.ts"
-          ENV_NAME="${{ steps.set-env.outputs.environment }}"
-          
-          # Patch ENVIRONMENT_NAME
-          sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
-          
-          echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
-          echo "CATALOG_API_BASE_URL: http://catalog.${ENV_NAME}.wapps.com/api"
-
       - name: Build application
         run: npx nx build catalog-csr --configuration=production
 
