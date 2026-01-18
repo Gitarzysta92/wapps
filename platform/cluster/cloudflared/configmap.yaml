@@ -9,10 +9,16 @@ metadata:
 data:
   config.yaml: |
     ingress:
-      - hostname: api.development.wapps.com
+      - hostname: appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
-      - hostname: catalog.development.wapps.com
+        originRequest:
+          httpHostHeader: catalog-csr.development.wapps.com
+      - hostname: api.appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
-      - hostname: catalog-csr.development.wapps.com
+        originRequest:
+          httpHostHeader: catalog.development.wapps.com
+      - hostname: cdn.appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: cdn.development.wapps.com
       - service: http_status:404
