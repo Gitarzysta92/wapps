@@ -70,6 +70,11 @@ editorAgent
     // Set prefetch to process one message at a time
     queue.prefetch(1);
 
+    // Track consecutive errors for exponential backoff
+    const MAX_RETRIES = 5;
+    const BASE_DELAY_MS = 1000; // 1 second
+    const MAX_DELAY_MS = 60000; // 60 seconds
+
     // Start consuming messages
     await queue.consume(
       RAW_RECORD_PROCESSING_SLUG,
@@ -80,14 +85,57 @@ editorAgent
           const rawRecord: RawRecordDto = JSON.parse(msg.content.toString());
           console.log(`📥 Received message for: ${rawRecord.name}`);
 
+          // Get current retry count from message headers
+          const retryCount = (msg.properties.headers?.['x-retry-count'] as number) || 0;
+
+          // Check if max retries exceeded
+          if (retryCount >= MAX_RETRIES) {
+            console.error(`❌ Max retries (${MAX_RETRIES}) exceeded for: ${rawRecord.name}`);
+            console.error('Message will be discarded. Consider implementing a dead-letter queue.');
+            queue.nack(msg, false, false); // Discard the message
+            return;
+          }
+
           await dataEnrichmentService.processRawRecord(rawRecord);
 
           queue.ack(msg);
           console.log(`✅ Message acknowledged for: ${rawRecord.name}`);
         } catch (error) {
           console.error('❌ Error processing message:', error);
-          // Negative acknowledgment - requeue the message
-          queue.nack(msg, false, true);
+
+          // Get current retry count
+          const retryCount = (msg.properties.headers?.['x-retry-count'] as number) || 0;
+          const nextRetryCount = retryCount + 1;
+
+          // Calculate exponential backoff delay: 1s, 2s, 4s, 8s, 16s, ...
+          const delayMs = Math.min(
+            BASE_DELAY_MS * Math.pow(2, retryCount),
+            MAX_DELAY_MS
+          );
+
+          console.log(
+            `⏳ Retry ${nextRetryCount}/${MAX_RETRIES} - waiting ${delayMs}ms before requeuing...`
+          );
+
+          // Wait before requeuing to implement backoff
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+
+          // Update retry count in message headers
+          const headers = msg.properties.headers || {};
+          headers['x-retry-count'] = nextRetryCount;
+
+          // Requeue with updated headers
+          queue.nack(msg, false, false); // Don't requeue automatically
+          queue.sendToQueue(
+            RAW_RECORD_PROCESSING_SLUG,
+            msg.content,
+            {
+              ...msg.properties,
+              headers,
+            }
+          );
+
+          console.log(`🔄 Message requeued with retry count: ${nextRetryCount}`);
         }
       },
       { noAck: false }

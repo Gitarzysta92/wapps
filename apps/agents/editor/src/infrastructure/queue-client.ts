@@ -6,6 +6,7 @@ export interface QueueChannel {
   ack(message: amqp.Message): void;
   nack(message: amqp.Message, allUpTo?: boolean, requeue?: boolean): void;
   prefetch(count: number): void;
+  sendToQueue(queueName: string, content: Buffer, options?: amqp.Options.Publish): boolean;
 }
 
 type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
@@ -76,6 +77,12 @@ export class QueueClient {
           throw new Error('Channel is not initialized');
         }
         this.channel.prefetch(count);
+      },
+      sendToQueue: (queueName: string, content: Buffer, options?: amqp.Options.Publish) => {
+        if (!this.channel) {
+          throw new Error('Channel is not initialized');
+        }
+        return this.channel.sendToQueue(queueName, content, options);
       }
     };
   }
