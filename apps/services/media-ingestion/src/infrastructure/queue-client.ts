@@ -71,6 +71,12 @@ export class QueueClient {
           throw new Error('Channel is not initialized');
         }
         this.channel.nack(message, allUpTo, requeue);
+      },
+      prefetch: (count: number) => {
+        if (!this.channel) {
+          throw new Error('Channel is not initialized');
+        }
+        this.channel.prefetch(count);
       }
     };
   }

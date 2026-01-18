@@ -53,3 +53,24 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          # Health check – no HTTP server; check that main process (PID 1) is alive
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "kill -0 1 || exit 1"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "kill -0 1 || exit 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
