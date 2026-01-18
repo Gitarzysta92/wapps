@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EditorialClient, StrapiAppRecord, StrapiCategory, StrapiTag } from './clients/editorial.client';
+import { EditorialClient, EditorialAppRecord, EditorialCategory, EditorialTag } from './clients/editorial.client';
 import { AppRecordDto, AppPreviewDto } from '@domains/catalog/record';
 import { CategoryDto, CategoryTreeDto } from '@domains/catalog/category';
 import { TagDto } from '@domains/catalog/tags';
@@ -52,10 +52,10 @@ export class CatalogService {
    */
   async getAppRecord(slug: string): Promise<AppRecordDto | null> {
     try {
-      const strapiRecord = await this.editorialClient.getAppRecordBySlug(slug);
-      if (!strapiRecord) return null;
+      const editorialRecord = await this.editorialClient.getAppRecordBySlug(slug);
+      if (!editorialRecord) return null;
 
-      const record = this.composeAppRecord(strapiRecord);
+      const record = this.composeAppRecord(editorialRecord);
       await this.enrichRecord(record);
 
       return record;
@@ -70,13 +70,13 @@ export class CatalogService {
    */
   async getAppRecordResponse(slug: string): Promise<AppRecordResponseDto | null> {
     try {
-      const strapiRecord = await this.editorialClient.getAppRecordBySlug(slug);
-      if (!strapiRecord) return null;
+      const editorialRecord = await this.editorialClient.getAppRecordBySlug(slug);
+      if (!editorialRecord) return null;
 
-      const record = this.composeAppRecord(strapiRecord);
+      const record = this.composeAppRecord(editorialRecord);
       await this.enrichRecord(record);
 
-      return this.mapToResponseDto(record, strapiRecord);
+      return this.mapToResponseDto(record, editorialRecord);
     } catch (error) {
       this.logger.error(`Failed to get app record response for slug: ${slug}`, error);
       throw error;
@@ -91,8 +91,8 @@ export class CatalogService {
       const { data, meta } = await this.editorialClient.getAppRecords(filters);
 
       const records = await Promise.all(
-        data.map(async (strapiRecord) => {
-          const record = this.composeAppRecord(strapiRecord);
+        data.map(async (editorialRecord) => {
+          const record = this.composeAppRecord(editorialRecord);
           await this.enrichRecord(record);
           return record;
         })
@@ -113,10 +113,10 @@ export class CatalogService {
       const { data, meta } = await this.editorialClient.getAppRecords(filters);
 
       const records = await Promise.all(
-        data.map(async (strapiRecord) => {
-          const record = this.composeAppRecord(strapiRecord);
+        data.map(async (editorialRecord) => {
+          const record = this.composeAppRecord(editorialRecord);
           await this.enrichRecord(record);
-          return this.mapToResponseDto(record, strapiRecord);
+          return this.mapToResponseDto(record, editorialRecord);
         })
       );
 
@@ -132,10 +132,10 @@ export class CatalogService {
    */
   async getAppPreview(slug: string): Promise<AppPreviewDto | null> {
     try {
-      const strapiRecord = await this.editorialClient.getAppRecordBySlug(slug);
-      if (!strapiRecord) return null;
+      const editorialRecord = await this.editorialClient.getAppRecordBySlug(slug);
+      if (!editorialRecord) return null;
 
-      return this.composeAppPreview(strapiRecord);
+      return this.composeAppPreview(editorialRecord);
     } catch (error) {
       this.logger.error(`Failed to get app preview for slug: ${slug}`, error);
       throw error;
@@ -147,8 +147,8 @@ export class CatalogService {
    */
   async getCategories(): Promise<CategoryDto[]> {
     try {
-      const strapiCategories = await this.editorialClient.getCategories();
-      const categories = strapiCategories.map((sc) => this.composeCategoryDto(sc));
+      const editorialCategories = await this.editorialClient.getCategories();
+      const categories = editorialCategories.map((ec) => this.composeCategoryDto(ec));
       this.computeCategoryMetadata(categories);
       return categories;
     } catch (error) {
@@ -170,8 +170,8 @@ export class CatalogService {
    */
   async getTags(): Promise<TagDto[]> {
     try {
-      const strapiTags = await this.editorialClient.getTags();
-      return strapiTags.map((st) => this.composeTagDto(st));
+      const editorialTags = await this.editorialClient.getTags();
+      return editorialTags.map((et) => this.composeTagDto(et));
     } catch (error) {
       this.logger.error('Failed to get tags', error);
       throw error;
@@ -183,9 +183,9 @@ export class CatalogService {
    */
   async getTag(slug: string): Promise<TagDto | null> {
     try {
-      const strapiTag = await this.editorialClient.getTagBySlug(slug);
-      if (!strapiTag) return null;
-      return this.composeTagDto(strapiTag);
+      const editorialTag = await this.editorialClient.getTagBySlug(slug);
+      if (!editorialTag) return null;
+      return this.composeTagDto(editorialTag);
     } catch (error) {
       this.logger.error(`Failed to get tag for slug: ${slug}`, error);
       throw error;
@@ -197,73 +197,67 @@ export class CatalogService {
   // =========================
 
   /**
-   * Transform Strapi AppRecord → Domain AppRecordDto
+   * Transform Editorial AppRecord → Domain AppRecordDto
    */
-  private composeAppRecord(strapi: StrapiAppRecord): AppRecordDto {
-    const attrs = strapi.attributes;
-
+  private composeAppRecord(editorial: EditorialAppRecord): AppRecordDto {
     return {
-      id: strapi.id,
-      slug: attrs.slug,
-      name: attrs.name,
-      description: attrs.description || '',
-      logo: attrs.logo?.data?.attributes?.url || '',
-      rating: attrs.rating || 0,
-      tagIds: attrs.tags?.data?.map((t) => t.id) || [],
-      categoryId: attrs.category?.data?.id || 0,
-      platformIds: this.extractPlatformIds(attrs),
+      id: this.convertIdToNumber(editorial.id),
+      slug: editorial.slug,
+      name: editorial.name,
+      description: editorial.description || '',
+      logo: editorial.logoUrl || '',
+      rating: editorial.rating || 0,
+      tagIds: editorial.tags?.map((t) => this.convertIdToNumber(t.id)) || [],
+      categoryId: editorial.category ? this.convertIdToNumber(editorial.category.id) : 0,
+      platformIds: this.extractPlatformIds(editorial),
       reviewNumber: 0, // Will be enriched
-      updateTimestamp: new Date(attrs.updatedAt).getTime(),
-      creationTimestamp: new Date(attrs.publishedAt || attrs.createdAt).getTime(),
-      updateDate: new Date(attrs.updatedAt),
-      listingDate: new Date(attrs.publishedAt || attrs.createdAt),
+      updateTimestamp: new Date(editorial.updatedAt).getTime(),
+      creationTimestamp: new Date(editorial.createdAt).getTime(),
+      updateDate: new Date(editorial.updatedAt),
+      listingDate: new Date(editorial.createdAt),
     };
   }
 
   /**
-   * Transform Strapi AppRecord → Domain AppPreviewDto
+   * Transform Editorial AppRecord → Domain AppPreviewDto
    */
-  private composeAppPreview(strapi: StrapiAppRecord): AppPreviewDto {
-    const attrs = strapi.attributes;
-
+  private composeAppPreview(editorial: EditorialAppRecord): AppPreviewDto {
     return {
-      id: strapi.id,
-      slug: attrs.slug,
-      name: attrs.name,
-      logo: attrs.logo?.data?.attributes?.url || '',
-      isPwa: attrs.isPwa || false,
-      rating: attrs.rating || 0,
+      id: this.convertIdToNumber(editorial.id),
+      slug: editorial.slug,
+      name: editorial.name,
+      logo: editorial.logoUrl || '',
+      isPwa: editorial.isPwa || false,
+      rating: editorial.rating || 0,
       reviews: 0, // Placeholder - would come from reviews service
-      tagIds: attrs.tags?.data?.map((t) => t.id) || [],
-      categoryId: attrs.category?.data?.id || 0,
-      platformIds: this.extractPlatformIds(attrs),
+      tagIds: editorial.tags?.map((t) => this.convertIdToNumber(t.id)) || [],
+      categoryId: editorial.category ? this.convertIdToNumber(editorial.category.id) : 0,
+      platformIds: this.extractPlatformIds(editorial),
     };
   }
 
   /**
-   * Transform Strapi Category → Domain CategoryDto
+   * Transform Editorial Category → Domain CategoryDto
    */
-  private composeCategoryDto(strapi: StrapiCategory): CategoryDto {
-    const attrs = strapi.attributes;
-
+  private composeCategoryDto(editorial: EditorialCategory): CategoryDto {
     return {
-      id: strapi.id,
-      name: attrs.name,
-      slug: attrs.slug,
-      parentId: attrs.parentCategory?.data?.id || null,
+      id: this.convertIdToNumber(editorial.id),
+      name: editorial.name,
+      slug: editorial.slug,
+      parentId: editorial.parent ? this.convertIdToNumber(editorial.parent.id) : null,
       rootId: null, // Will be computed
       depth: 0, // Will be computed
     };
   }
 
   /**
-   * Transform Strapi Tag → Domain TagDto
+   * Transform Editorial Tag → Domain TagDto
    */
-  private composeTagDto(strapi: StrapiTag): TagDto {
+  private composeTagDto(editorial: EditorialTag): TagDto {
     return {
-      id: strapi.id,
-      slug: strapi.attributes.slug,
-      name: strapi.attributes.name,
+      id: this.convertIdToNumber(editorial.id),
+      slug: editorial.slug,
+      name: editorial.name,
     };
   }
 
@@ -272,24 +266,40 @@ export class CatalogService {
   // =========================
 
   /**
+   * Convert UUID string to numeric ID for domain models
+   * Uses a hash function to generate consistent numeric IDs from UUIDs
+   */
+  private convertIdToNumber(uuid: string): number {
+    let hash = 0;
+    for (let i = 0; i < uuid.length; i++) {
+      const char = uuid.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+  }
+
+  /**
    * Extract platform IDs from associations
    */
-  private extractPlatformIds(attrs: StrapiAppRecord['attributes']): number[] {
-    // Extract from platform associations if populated
-    if (attrs.platforms?.data) {
-      return attrs.platforms.data.map((p) => {
-        const platformMap: Record<string, number> = {
-          Web: 1,
-          IOS: 2,
-          Android: 3,
-          Windows: 4,
-          Linux: 5,
-          MacOS: 6,
-        };
-        return platformMap[p.attributes.platformId] || 0;
-      });
+  private extractPlatformIds(editorial: EditorialAppRecord): number[] {
+    if (!editorial.platforms || editorial.platforms.length === 0) {
+      return [];
     }
-    return [];
+
+    // Map platform slugs to numeric IDs
+    const platformMap: Record<string, number> = {
+      web: 1,
+      ios: 2,
+      android: 3,
+      windows: 4,
+      linux: 5,
+      macos: 6,
+    };
+
+    return editorial.platforms
+      .map((p) => platformMap[p.slug.toLowerCase()] || 0)
+      .filter((id) => id !== 0);
   }
 
   /**
@@ -341,10 +351,12 @@ export class CatalogService {
 
     categories.forEach((category) => {
       if (this.categoryMetadataCache.has(category.id)) {
-        const cached = this.categoryMetadataCache.get(category.id)!;
-        category.depth = cached.depth;
-        category.rootId = cached.rootId;
-        return;
+        const cached = this.categoryMetadataCache.get(category.id);
+        if (cached) {
+          category.depth = cached.depth;
+          category.rootId = cached.rootId;
+          return;
+        }
       }
 
       let depth = 0;
@@ -385,7 +397,8 @@ export class CatalogService {
 
     // Build tree
     categories.forEach((cat) => {
-      const node = categoryMap.get(cat.id)!;
+      const node = categoryMap.get(cat.id);
+      if (!node) return;
 
       if (cat.parentId === null) {
         roots.push(node);
@@ -401,24 +414,23 @@ export class CatalogService {
   }
 
   /**
-   * Map AppRecordDto + StrapiAppRecord to AppRecordResponseDto
+   * Map AppRecordDto + EditorialAppRecord to AppRecordResponseDto
    */
-  private mapToResponseDto(record: AppRecordDto, strapi: StrapiAppRecord): AppRecordResponseDto {
-    const attrs = strapi.attributes;
+  private mapToResponseDto(record: AppRecordDto, editorial: EditorialAppRecord): AppRecordResponseDto {
     return {
       id: record.id,
       slug: record.slug,
       name: record.name,
       description: record.description,
       logo: record.logo,
-      isPwa: attrs.isPwa || false,
-      rating: attrs.rating || 0,
+      isPwa: editorial.isPwa || false,
+      rating: editorial.rating || 0,
       tagIds: record.tagIds,
       categoryId: record.categoryId,
       platformIds: record.platformIds,
       reviewNumber: record.reviewNumber,
-      updateDate: new Date(attrs.updatedAt),
-      listingDate: new Date(attrs.publishedAt || attrs.createdAt),
+      updateDate: new Date(editorial.updatedAt),
+      listingDate: new Date(editorial.createdAt),
     };
   }
 }

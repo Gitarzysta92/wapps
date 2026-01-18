@@ -1,50 +1,70 @@
 import { RawRecordDto } from '@domains/catalog/record';
+import { CategoryTreeDto } from '@domains/catalog/category';
 import { OpenAIClient } from '../../infrastructure/openai-client';
 import { EditorialClient, EditorialRecord } from '../../infrastructure/editorial-client';
 import { SYSTEM_PROMPT_DATA_ENRICHMENT, USER_PROMPT_TEMPLATE_DATA_ENRICHMENT } from '../constants';
-import { categories, platforms, devices, monetizationModels, userSpans, tags } from '@data';
+import { categories, platforms, devices, monetizationModels, tags } from '@data';
 
 interface EnrichedData {
-  categoryId: number | null;
-  tagIds: number[];
-  platformIds: number[];
-  deviceIds: number[];
-  monetizationIds: number[];
-  userSpanId: number | null;
-  contact: {
-    email: string | null;
-    phone: string | null;
-    website: string | null;
-    address: string | null;
-    city: string | null;
-    state: string | null;
-    zip: string | null;
-    country: string | null;
-    latitude: number | null;
-    longitude: number | null;
-  };
-  compatibility: {
-    deviceIds: number[];
-    platformIds: number[];
-  };
-  version: string | null;
-  references: Array<{
-    name: string;
-    url: string;
-    type: string;
-  }>;
+  categoryId: string | null;
+  tagIds: string[];
+  platformIds: string[];
+  deviceIds: string[];
+  monetizationModelIds: string[];
+  website: string | null;
+  isPwa: boolean;
+  rating: number | null;
+  estimatedNumberOfUsers: number | null;
+  logoUrl: string | null;
+  bannerUrl: string | null;
 }
 
 export class DataEnrichmentService {
+  private categoriesMap: Map<string, string> = new Map(); // slug -> id
+  private tagsMap: Map<string, string> = new Map(); // slug -> id
+  private platformsMap: Map<string, string> = new Map(); // slug -> id
+  private devicesMap: Map<string, string> = new Map(); // slug -> id
+  private monetizationModelsMap: Map<string, string> = new Map(); // slug -> id
+  private initialized = false;
+
   constructor(
     private readonly openaiClient: OpenAIClient,
     private readonly editorialClient: EditorialClient
   ) {}
 
+  private async initializeMaps(): Promise<void> {
+    if (this.initialized) return;
+
+    try {
+      const [categories, tags, platforms, devices, monetizationModels] = await Promise.all([
+        this.editorialClient.getCategories(),
+        this.editorialClient.getTags(),
+        this.editorialClient.getPlatforms(),
+        this.editorialClient.getDevices(),
+        this.editorialClient.getMonetizationModels(),
+      ]);
+
+      categories.forEach(c => this.categoriesMap.set(c.slug, c.id));
+      tags.forEach(t => this.tagsMap.set(t.slug, t.id));
+      platforms.forEach(p => this.platformsMap.set(p.slug, p.id));
+      devices.forEach(d => this.devicesMap.set(d.slug, d.id));
+      monetizationModels.forEach(m => this.monetizationModelsMap.set(m.slug, m.id));
+
+      this.initialized = true;
+      console.log('✅ Reference data initialized');
+    } catch (error) {
+      console.error('❌ Failed to initialize reference data:', error);
+      throw error;
+    }
+  }
+
   async processRawRecord(rawRecord: RawRecordDto): Promise<void> {
     console.log(`📝 Processing raw record: ${rawRecord.name}`);
 
     try {
+      // Initialize reference data maps
+      await this.initializeMaps();
+
       // Check if record exists
       const existingRecord = await this.editorialClient.findRecordBySlug(rawRecord.slug);
 
@@ -56,32 +76,24 @@ export class DataEnrichmentService {
         slug: rawRecord.slug,
         name: rawRecord.name,
         description: rawRecord.description,
-        categoryId: enrichedData.categoryId || undefined,
-        tagIds: enrichedData.tagIds,
-        platformIds: enrichedData.platformIds,
-        deviceIds: enrichedData.deviceIds,
-        monetizationIds: enrichedData.monetizationIds,
-        userSpanId: enrichedData.userSpanId || undefined,
-        website: enrichedData.contact.website || undefined,
-        email: enrichedData.contact.email || undefined,
-        phone: enrichedData.contact.phone || undefined,
-        address: enrichedData.contact.address || undefined,
-        city: enrichedData.contact.city || undefined,
-        state: enrichedData.contact.state || undefined,
-        zip: enrichedData.contact.zip || undefined,
-        country: enrichedData.contact.country || undefined,
-        latitude: enrichedData.contact.latitude || undefined,
-        longitude: enrichedData.contact.longitude || undefined,
-        version: enrichedData.version || undefined,
-        updateTimestamp: Date.now(),
-        creationTimestamp: existingRecord?.creationTimestamp || Date.now(),
-        references: enrichedData.references,
+        website: enrichedData.website || undefined,
+        isPwa: enrichedData.isPwa || false,
+        rating: enrichedData.rating || undefined,
+        estimatedNumberOfUsers: enrichedData.estimatedNumberOfUsers || undefined,
+        isSuspended: false,
+        logoUrl: enrichedData.logoUrl || undefined,
+        bannerUrl: enrichedData.bannerUrl || undefined,
+        category: enrichedData.categoryId || undefined,
+        tags: enrichedData.tagIds,
+        platforms: enrichedData.platformIds,
+        devices: enrichedData.deviceIds,
+        monetizationModels: enrichedData.monetizationModelIds,
       };
 
       // Create or update record
-      if (existingRecord) {
+      if (existingRecord && existingRecord.id) {
         console.log(`📝 Updating existing record: ${rawRecord.name}`);
-        await this.editorialClient.updateRecord(existingRecord.id!, record);
+        await this.editorialClient.updateRecord(existingRecord.id, record);
       } else {
         console.log(`📝 Creating new record: ${rawRecord.name}`);
         await this.editorialClient.createRecord(record);
@@ -100,40 +112,35 @@ export class DataEnrichmentService {
   ): Promise<EnrichedData> {
     console.log(`🤖 Enriching data with OpenAI for: ${rawRecord.name}`);
 
-    // Prepare static data summaries for OpenAI
+    // Prepare static data summaries for OpenAI using slugs
     const categoriesSummary = this.flattenCategories(categories)
-      .map(c => `${c.id}: ${c.name}`)
+      .map(c => `${c.slug}: ${c.name}`)
       .join(', ');
 
     const tagsSummary = tags
       .slice(0, 200) // Limit to avoid token overflow
-      .map((t: { id: number; name: string }) => `${t.id}: ${t.name}`)
+      .map((t: { id: number; name: string; slug: string }) => `${t.slug}: ${t.name}`)
       .join(', ');
 
     const platformsSummary = platforms
-      .map((p: { id: number; name: string }) => `${p.id}: ${p.name}`)
+      .map((p: { id: number; name: string; slug: string }) => `${p.slug}: ${p.name}`)
       .join(', ');
 
     const devicesSummary = devices
-      .map((d: { id: number; name: string }) => `${d.id}: ${d.name}`)
+      .map((d: { id: number; name: string; slug: string }) => `${d.slug}: ${d.name}`)
       .join(', ');
 
     const monetizationSummary = monetizationModels
-      .map((m: { id: number; name: string }) => `${m.id}: ${m.name}`)
-      .join(', ');
-
-    const userSpansSummary = userSpans
-      .map((u: { id: number; name: string; from: number; to: number }) => `${u.id}: ${u.name} (${u.from}-${u.to})`)
+      .map((m: { id: number; name: string; slug: string }) => `${m.slug}: ${m.name}`)
       .join(', ');
 
     const currentData = existingRecord 
       ? JSON.stringify({
-          categoryId: existingRecord.categoryId,
-          tagIds: existingRecord.tagIds,
-          platformIds: existingRecord.platformIds,
-          deviceIds: existingRecord.deviceIds,
-          monetizationIds: existingRecord.monetizationIds,
-          userSpanId: existingRecord.userSpanId,
+          category: existingRecord.category,
+          tags: existingRecord.tags,
+          platforms: existingRecord.platforms,
+          devices: existingRecord.devices,
+          monetizationModels: existingRecord.monetizationModels,
         }, null, 2)
       : 'No existing data';
 
@@ -149,14 +156,43 @@ export class DataEnrichmentService {
       .replace('{{PLATFORMS}}', platformsSummary)
       .replace('{{DEVICES}}', devicesSummary)
       .replace('{{MONETIZATION_MODELS}}', monetizationSummary)
-      .replace('{{USER_SPANS}}', userSpansSummary)
       .replace('{{CURRENT_DATA}}', currentData);
 
     try {
-      const enrichedData = await this.openaiClient.generateStructuredData<EnrichedData>(
+      // OpenAI should return slugs which we'll convert to UUIDs
+      interface OpenAIEnrichedData {
+        categorySlug: string | null;
+        tagSlugs: string[];
+        platformSlugs: string[];
+        deviceSlugs: string[];
+        monetizationModelSlugs: string[];
+        website: string | null;
+        isPwa: boolean;
+        rating: number | null;
+        estimatedNumberOfUsers: number | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+      }
+
+      const openAIData = await this.openaiClient.generateStructuredData<OpenAIEnrichedData>(
         SYSTEM_PROMPT_DATA_ENRICHMENT,
         userPrompt
       );
+
+      // Convert slugs to UUIDs
+      const enrichedData: EnrichedData = {
+        categoryId: openAIData.categorySlug ? this.categoriesMap.get(openAIData.categorySlug) || null : null,
+        tagIds: openAIData.tagSlugs.map(slug => this.tagsMap.get(slug)).filter((id): id is string => !!id),
+        platformIds: openAIData.platformSlugs.map(slug => this.platformsMap.get(slug)).filter((id): id is string => !!id),
+        deviceIds: openAIData.deviceSlugs.map(slug => this.devicesMap.get(slug)).filter((id): id is string => !!id),
+        monetizationModelIds: openAIData.monetizationModelSlugs.map(slug => this.monetizationModelsMap.get(slug)).filter((id): id is string => !!id),
+        website: openAIData.website,
+        isPwa: openAIData.isPwa,
+        rating: openAIData.rating,
+        estimatedNumberOfUsers: openAIData.estimatedNumberOfUsers,
+        logoUrl: openAIData.logoUrl,
+        bannerUrl: openAIData.bannerUrl,
+      };
 
       console.log(`✅ Data enriched successfully for: ${rawRecord.name}`);
       return enrichedData;
@@ -171,53 +207,53 @@ export class DataEnrichmentService {
   private fallbackEnrichment(rawRecord: RawRecordDto): EnrichedData {
     console.log(`⚠️  Using fallback enrichment for: ${rawRecord.name}`);
 
-    // Try to match category by name
-    const categoryId = this.findCategoryByName(rawRecord.category) || null;
+    // Try to match category by slug from static data
+    const categorySlug = this.findCategorySlugByName(rawRecord.category);
+    const categoryId = categorySlug ? this.categoriesMap.get(categorySlug) || null : null;
 
-    // Try to match platforms by name
+    // Match platforms by slug from static data
+    interface PlatformData { id: number; name: string; slug: string }
     const platformIds = rawRecord.platforms
-      .map(p => platforms.find((pl: { id: number; name: string }) => pl.name.toLowerCase() === p.toLowerCase())?.id)
-      .filter((id): id is number => id !== undefined);
+      .map(p => {
+        const platformData = platforms.find((pl: PlatformData) => 
+          pl.slug === p.toLowerCase() || pl.name.toLowerCase() === p.toLowerCase()
+        );
+        return platformData?.slug ? this.platformsMap.get(platformData.slug) : undefined;
+      })
+      .filter((id): id is string => id !== undefined);
 
-    // Try to match tags by name
+    // Match tags by slug from static data
+    interface TagData { id: number; name: string; slug: string }
     const tagIds = rawRecord.tags
-      .map(t => tags.find((tag: { id: number; name: string }) => tag.name.toLowerCase() === t.toLowerCase())?.id)
-      .filter((id): id is number => id !== undefined);
+      .map(t => {
+        const tagData = tags.find((tag: TagData) => 
+          tag.slug === t.toLowerCase() || tag.name.toLowerCase() === t.toLowerCase()
+        );
+        return tagData?.slug ? this.tagsMap.get(tagData.slug) : undefined;
+      })
+      .filter((id): id is string => id !== undefined);
 
     return {
       categoryId,
       tagIds,
       platformIds,
       deviceIds: [],
-      monetizationIds: [],
-      userSpanId: null,
-      contact: {
-        email: null,
-        phone: null,
-        website: null,
-        address: null,
-        city: null,
-        state: null,
-        zip: null,
-        country: null,
-        latitude: null,
-        longitude: null,
-      },
-      compatibility: {
-        deviceIds: [],
-        platformIds,
-      },
-      version: null,
-      references: [],
+      monetizationModelIds: [],
+      website: null,
+      isPwa: false,
+      rating: null,
+      estimatedNumberOfUsers: null,
+      logoUrl: null,
+      bannerUrl: null,
     };
   }
 
-  private flattenCategories(cats: any[]): Array<{ id: number; name: string }> {
-    const result: Array<{ id: number; name: string }> = [];
+  private flattenCategories(cats: CategoryTreeDto[]): Array<{ id: number; name: string; slug: string }> {
+    const result: Array<{ id: number; name: string; slug: string }> = [];
     
-    const flatten = (items: any[]) => {
+    const flatten = (items: CategoryTreeDto[]) => {
       for (const item of items) {
-        result.push({ id: item.id, name: item.name });
+        result.push({ id: item.id, name: item.name, slug: item.slug });
         if (item.childs && item.childs.length > 0) {
           flatten(item.childs);
         }
@@ -228,14 +264,15 @@ export class DataEnrichmentService {
     return result;
   }
 
-  private findCategoryByName(categoryName: string): number | undefined {
+  private findCategorySlugByName(categoryName: string): string | undefined {
     if (!categoryName) return undefined;
     
     const flattened = this.flattenCategories(categories);
-    const found = flattened.find(
-      c => c.name.toLowerCase() === categoryName.toLowerCase()
-    );
+    // First try exact slug match, then fall back to name match
+    const foundBySlug = flattened.find(c => c.slug === categoryName.toLowerCase());
+    if (foundBySlug) return foundBySlug.slug;
     
-    return found?.id;
+    const foundByName = flattened.find(c => c.name.toLowerCase() === categoryName.toLowerCase());
+    return foundByName?.slug;
   }
 }

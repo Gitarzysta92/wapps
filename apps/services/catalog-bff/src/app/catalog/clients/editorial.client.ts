@@ -4,144 +4,64 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
 // =========================
-// Strapi Response Types
+// Editorial API Response Types
 // =========================
 
-export interface StrapiAppRecord {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    description: string;
-    website: string;
-    isPwa: boolean;
-    rating: number;
-    isSuspended: boolean;
-    estimatedNumberOfUsers?: number;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    logo?: {
-      data?: {
-        attributes: {
-          url: string;
-          alternativeText?: string;
-        };
-      };
-    };
-    banner?: {
-      data?: {
-        attributes: {
-          url: string;
-        };
-      };
-    };
-    screenshots?: {
-      data?: Array<{
-        attributes: {
-          url: string;
-        };
-      }>;
-    };
-    category?: {
-      data?: {
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      };
-    };
-    tags?: {
-      data: Array<{
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      }>;
-    };
-    organizationProfile?: {
-      data?: {
-        id: number;
-        attributes: {
-          name: string;
-        };
-      };
-    };
-    platforms?: {
-      data: Array<{
-        id: number;
-        attributes: {
-          platformId: string;
-        };
-      }>;
-    };
-    devices?: {
-      data: Array<{
-        id: number;
-        attributes: {
-          deviceId: string;
-        };
-      }>;
-    };
-  };
+export interface EditorialAppRecord {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  website: string | null;
+  isPwa: boolean;
+  rating: number | null;
+  isSuspended: boolean;
+  estimatedNumberOfUsers: number | null;
+  logoUrl: string | null;
+  bannerUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  category: EditorialCategory | null;
+  tags: EditorialTag[];
+  platforms: EditorialPlatform[];
+  devices: EditorialDevice[];
+  monetizationModels: EditorialMonetizationModel[];
 }
 
-export interface StrapiCategory {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    parentCategory?: {
-      data?: {
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      };
-    };
-    childCategories?: {
-      data: Array<{
-        id: number;
-        attributes: {
-          name: string;
-          slug: string;
-        };
-      }>;
-    };
-  };
+export interface EditorialCategory {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  parent: EditorialCategory | null;
+  children: EditorialCategory[];
 }
 
-export interface StrapiTag {
-  id: number;
-  attributes: {
-    name: string;
-    slug: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  };
+export interface EditorialTag {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface StrapiResponse<T> {
-  data: T[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+export interface EditorialPlatform {
+  id: string;
+  name: string;
+  slug: string;
 }
 
-interface StrapiSingleResponse<T> {
-  data: T[];
+export interface EditorialDevice {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface EditorialMonetizationModel {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 // =========================
@@ -182,23 +102,24 @@ export class EditorialClient {
   // App Records
   // =========================
 
-  async getAppRecordBySlug(slug: string): Promise<StrapiAppRecord | null> {
+  async getAppRecordBySlug(slug: string): Promise<EditorialAppRecord | null> {
     try {
+      // Editorial API returns all records, we need to filter by slug client-side
+      // TODO: Add slug-based endpoint to editorial service for better performance
       const response = await firstValueFrom(
-        this.httpService.get<StrapiSingleResponse<StrapiAppRecord>>(
-          `${this.baseUrl}/api/app-records`,
+        this.httpService.get<EditorialAppRecord[]>(
+          `${this.baseUrl}/api/apps`,
           {
-            params: {
-              'filters[slug][$eq]': slug,
-              'filters[isSuspended][$eq]': false,
-              populate: 'deep,3',
-            },
             headers: this.getHeaders(),
           }
         )
       );
 
-      return response.data.data[0] || null;
+      const record = response.data.find(
+        (app) => app.slug === slug && !app.isSuspended
+      );
+
+      return record || null;
     } catch (error) {
       this.logger.error(`Failed to fetch app record by slug: ${slug}`, error);
       throw error;
@@ -212,50 +133,71 @@ export class EditorialClient {
     tags?: string[];
     search?: string;
   }): Promise<{
-    data: StrapiAppRecord[];
+    data: EditorialAppRecord[];
     meta: { page: number; pageSize: number; total: number; pageCount: number };
   }> {
     try {
-      const params: Record<string, unknown> = {
-        'pagination[page]': filters.page,
-        'pagination[pageSize]': filters.pageSize,
-        populate: 'deep,3',
-        'filters[isSuspended][$eq]': false,
-        'sort[0]': 'publishedAt:desc',
-      };
-
-      if (filters.category) {
-        params['filters[category][slug][$eq]'] = filters.category;
-      }
-
-      if (filters.tags && filters.tags.length > 0) {
-        filters.tags.forEach((tag, index) => {
-          params[`filters[tags][slug][$in][${index}]`] = tag;
-        });
-      }
-
-      if (filters.search) {
-        params['filters[$or][0][name][$containsi]'] = filters.search;
-        params['filters[$or][1][description][$containsi]'] = filters.search;
-      }
-
+      // Editorial API doesn't support filtering/pagination yet
+      // We'll implement client-side filtering and pagination
+      // TODO: Add filtering and pagination support to editorial service
       const response = await firstValueFrom(
-        this.httpService.get<StrapiResponse<StrapiAppRecord>>(
-          `${this.baseUrl}/api/app-records`,
+        this.httpService.get<EditorialAppRecord[]>(
+          `${this.baseUrl}/api/apps`,
           {
-            params,
             headers: this.getHeaders(),
           }
         )
       );
 
+      let filteredData = response.data.filter((app) => !app.isSuspended);
+
+      // Apply category filter
+      if (filters.category) {
+        filteredData = filteredData.filter(
+          (app) => app.category?.slug === filters.category
+        );
+      }
+
+      // Apply tags filter
+      if (filters.tags && filters.tags.length > 0) {
+        const tagsToFilter = filters.tags;
+        filteredData = filteredData.filter((app) =>
+          tagsToFilter.some((tagSlug) =>
+            app.tags.some((tag) => tag.slug === tagSlug)
+          )
+        );
+      }
+
+      // Apply search filter
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        filteredData = filteredData.filter(
+          (app) =>
+            app.name.toLowerCase().includes(searchLower) ||
+            app.description?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Sort by updatedAt desc
+      filteredData.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
+      // Apply pagination
+      const total = filteredData.length;
+      const pageCount = Math.ceil(total / filters.pageSize);
+      const startIndex = (filters.page - 1) * filters.pageSize;
+      const endIndex = startIndex + filters.pageSize;
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
       return {
-        data: response.data.data,
+        data: paginatedData,
         meta: {
-          page: response.data.meta.pagination.page,
-          pageSize: response.data.meta.pagination.pageSize,
-          total: response.data.meta.pagination.total,
-          pageCount: response.data.meta.pagination.pageCount,
+          page: filters.page,
+          pageSize: filters.pageSize,
+          total,
+          pageCount,
         },
       };
     } catch (error) {
@@ -268,22 +210,18 @@ export class EditorialClient {
   // Categories
   // =========================
 
-  async getCategories(): Promise<StrapiCategory[]> {
+  async getCategories(): Promise<EditorialCategory[]> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<StrapiResponse<StrapiCategory>>(
+        this.httpService.get<EditorialCategory[]>(
           `${this.baseUrl}/api/categories`,
           {
-            params: {
-              populate: 'parentCategory,childCategories',
-              'pagination[pageSize]': 100,
-            },
             headers: this.getHeaders(),
           }
         )
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       this.logger.error('Failed to fetch categories', error);
       throw error;
@@ -294,42 +232,37 @@ export class EditorialClient {
   // Tags
   // =========================
 
-  async getTags(): Promise<StrapiTag[]> {
+  async getTags(): Promise<EditorialTag[]> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<StrapiResponse<StrapiTag>>(
+        this.httpService.get<EditorialTag[]>(
           `${this.baseUrl}/api/tags`,
           {
-            params: {
-              'pagination[pageSize]': 100,
-            },
             headers: this.getHeaders(),
           }
         )
       );
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       this.logger.error('Failed to fetch tags', error);
       throw error;
     }
   }
 
-  async getTagBySlug(slug: string): Promise<StrapiTag | null> {
+  async getTagBySlug(slug: string): Promise<EditorialTag | null> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<StrapiSingleResponse<StrapiTag>>(
+        this.httpService.get<EditorialTag[]>(
           `${this.baseUrl}/api/tags`,
           {
-            params: {
-              'filters[slug][$eq]': slug,
-            },
             headers: this.getHeaders(),
           }
         )
       );
 
-      return response.data.data[0] || null;
+      const tag = response.data.find((t) => t.slug === slug);
+      return tag || null;
     } catch (error) {
       this.logger.error(`Failed to fetch tag by slug: ${slug}`, error);
       throw error;

@@ -111,12 +111,26 @@
 # ==============================================
 # Shared Database User Creation
 # ==============================================
-- name: Create shared wapps_app database user
+# Note: MySQL treats 'localhost' and '%' as different hosts
+# Create user for '%' (remote access from cluster pods)
+- name: Create shared wapps_app database user for remote access
   mysql_user:
     name: wapps_app
     password: "{{ mysql_wapps_password | default('wapps_password') }}"
     priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL'
     host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+# Create user for 'localhost' (local access from host machine)
+- name: Create shared wapps_app database user for localhost
+  mysql_user:
+    name: wapps_app
+    password: "{{ mysql_wapps_password | default('wapps_password') }}"
+    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL'
+    host: 'localhost'
     state: present
     login_user: root
     login_password: "{{ mysql_root_password | default('root_password') }}"

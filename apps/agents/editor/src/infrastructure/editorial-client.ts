@@ -1,31 +1,24 @@
 import axios from 'axios';
 
 export interface EditorialRecord {
-  id?: number;
+  id?: string;
   slug: string;
   name: string;
-  description: string;
-  categoryId?: number;
-  tagIds?: number[];
-  platformIds?: number[];
-  deviceIds?: number[];
-  monetizationIds?: number[];
-  userSpanId?: number;
+  description?: string;
   website?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  country?: string;
-  latitude?: number;
-  longitude?: number;
-  version?: string;
-  releaseDate?: string;
-  updateTimestamp?: number;
-  creationTimestamp?: number;
-  references?: Array<{ name: string; url: string; type: string }>;
+  isPwa?: boolean;
+  rating?: number;
+  estimatedNumberOfUsers?: number;
+  isSuspended?: boolean;
+  logoUrl?: string;
+  bannerUrl?: string;
+  category?: string; // UUID
+  tags?: string[]; // UUIDs
+  platforms?: string[]; // UUIDs
+  devices?: string[]; // UUIDs
+  monetizationModels?: string[]; // UUIDs
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class EditorialClient {
@@ -36,19 +29,34 @@ export class EditorialClient {
 
   async findRecordBySlug(slug: string): Promise<EditorialRecord | null> {
     try {
-      const response = await axios.get(
-        `${this.host}/api/app-records`,
+      const response = await axios.get<EditorialRecord[]>(
+        `${this.host}/api/apps`,
         {
-          params: { 'filters[slug][$eq]': slug },
           headers: { Authorization: `Bearer ${this.apiToken}` },
         }
       );
       
-      if (response.data.data && response.data.data.length > 0) {
-        return this.mapStrapiToRecord(response.data.data[0]);
+      // Find the record with matching slug
+      const record = response.data?.find((app) => app.slug === slug);
+      return record || null;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
       }
+      throw error;
+    }
+  }
+
+  async findRecordById(id: string): Promise<EditorialRecord | null> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/apps/${id}`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
       
-      return null;
+      return response.data || null;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         return null;
@@ -61,8 +69,8 @@ export class EditorialClient {
     try {
       console.log(`Creating new record: ${record.name}`);
       const response = await axios.post(
-        `${this.host}/api/app-records`,
-        { data: this.mapRecordToStrapi(record) },
+        `${this.host}/api/apps`,
+        record,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -71,8 +79,8 @@ export class EditorialClient {
         }
       );
       
-      console.log(`✅ Created record: ${record.name} (ID: ${response.data.data.id})`);
-      return this.mapStrapiToRecord(response.data.data);
+      console.log(`✅ Created record: ${record.name} (ID: ${response.data.id})`);
+      return response.data;
     } catch (error) {
       console.error(`❌ Failed to create record ${record.name}:`, error);
       if (axios.isAxiosError(error)) {
@@ -82,12 +90,12 @@ export class EditorialClient {
     }
   }
 
-  async updateRecord(id: number, record: Partial<EditorialRecord>): Promise<EditorialRecord> {
+  async updateRecord(id: string, record: Partial<EditorialRecord>): Promise<EditorialRecord> {
     try {
       console.log(`Updating record ID ${id}: ${record.name}`);
       const response = await axios.put(
-        `${this.host}/api/app-records/${id}`,
-        { data: this.mapRecordToStrapi(record) },
+        `${this.host}/api/apps/${id}`,
+        record,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -97,72 +105,122 @@ export class EditorialClient {
       );
       
       console.log(`✅ Updated record: ${record.name}`);
-      return this.mapStrapiToRecord(response.data.data);
+      return response.data;
     } catch (error) {
       console.error(`❌ Failed to update record ${record.name}:`, error);
       throw error;
     }
   }
 
-  private mapStrapiToRecord(strapiData: any): EditorialRecord {
-    const attrs = strapiData.attributes || strapiData;
-    return {
-      id: strapiData.id,
-      slug: attrs.slug,
-      name: attrs.name,
-      description: attrs.description,
-      categoryId: attrs.category?.data?.id,
-      tagIds: attrs.tags?.data?.map((t: any) => t.id) || [],
-      platformIds: attrs.platforms?.data?.map((p: any) => p.id) || [],
-      deviceIds: attrs.devices?.data?.map((d: any) => d.id) || [],
-      monetizationIds: attrs.monetizations?.data?.map((m: any) => m.id) || [],
-      userSpanId: attrs.userSpan?.data?.id,
-      website: attrs.website,
-      email: attrs.email,
-      phone: attrs.phone,
-      address: attrs.address,
-      city: attrs.city,
-      state: attrs.state,
-      zip: attrs.zip,
-      country: attrs.country,
-      latitude: attrs.latitude,
-      longitude: attrs.longitude,
-      version: attrs.version,
-      releaseDate: attrs.releaseDate,
-      updateTimestamp: attrs.updateTimestamp,
-      creationTimestamp: attrs.creationTimestamp,
-    };
+  async deleteRecord(id: string): Promise<{ deleted: boolean }> {
+    try {
+      console.log(`Deleting record ID ${id}`);
+      const response = await axios.delete(
+        `${this.host}/api/apps/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiToken}`,
+          },
+        }
+      );
+      
+      console.log(`✅ Deleted record ID: ${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Failed to delete record ID ${id}:`, error);
+      throw error;
+    }
   }
 
-  private mapRecordToStrapi(record: Partial<EditorialRecord>): any {
-    const data: any = {};
-    
-    if (record.slug) data.slug = record.slug;
-    if (record.name) data.name = record.name;
-    if (record.description) data.description = record.description;
-    if (record.categoryId) data.category = record.categoryId;
-    if (record.tagIds) data.tags = record.tagIds;
-    if (record.platformIds) data.platforms = record.platformIds;
-    if (record.deviceIds) data.devices = record.deviceIds;
-    if (record.monetizationIds) data.monetizations = record.monetizationIds;
-    if (record.userSpanId) data.userSpan = record.userSpanId;
-    if (record.website) data.website = record.website;
-    if (record.email) data.email = record.email;
-    if (record.phone) data.phone = record.phone;
-    if (record.address) data.address = record.address;
-    if (record.city) data.city = record.city;
-    if (record.state) data.state = record.state;
-    if (record.zip) data.zip = record.zip;
-    if (record.country) data.country = record.country;
-    if (record.latitude !== undefined) data.latitude = record.latitude;
-    if (record.longitude !== undefined) data.longitude = record.longitude;
-    if (record.version) data.version = record.version;
-    if (record.releaseDate) data.releaseDate = record.releaseDate;
-    if (record.updateTimestamp) data.updateTimestamp = record.updateTimestamp;
-    if (record.creationTimestamp) data.creationTimestamp = record.creationTimestamp;
-    
-    data.isSuspended = false;
-    
-    return data;
+  async getAllRecords(): Promise<EditorialRecord[]> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/apps`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch all records:', error);
+      throw error;
+    }
+  }
+
+  // Reference data methods
+  async getPlatforms(): Promise<Array<{ id: string; name: string; slug: string }>> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/reference/platforms`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch platforms:', error);
+      throw error;
+    }
+  }
+
+  async getDevices(): Promise<Array<{ id: string; name: string; slug: string }>> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/reference/devices`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch devices:', error);
+      throw error;
+    }
+  }
+
+  async getMonetizationModels(): Promise<Array<{ id: string; name: string; slug: string }>> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/reference/monetization-models`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch monetization models:', error);
+      throw error;
+    }
+  }
+
+  async getCategories(): Promise<Array<{ id: string; name: string; slug: string }>> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/categories`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch categories:', error);
+      throw error;
+    }
+  }
+
+  async getTags(): Promise<Array<{ id: string; name: string; slug: string }>> {
+    try {
+      const response = await axios.get(
+        `${this.host}/api/tags`,
+        {
+          headers: { Authorization: `Bearer ${this.apiToken}` },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('❌ Failed to fetch tags:', error);
+      throw error;
+    }
   }
 }
