@@ -123,10 +123,18 @@ jobs:
 
       - name: Create MinIO credentials secret
         run: |
+          # Default to ArgoCD MinIO app values (admin/changeme) when env/repo secrets are unset
+          # to avoid SignatureDoesNotMatch. Set MINIO_ROOT_USER/MINIO_ROOT_PASSWORD in the
+          # GitHub environment (or repo) and in argocd/applications/platform/minio.yaml to use custom creds.
+          ACCESS_KEY="${{ secrets.MINIO_ROOT_USER }}"
+          SECRET_KEY="${{ secrets.MINIO_ROOT_PASSWORD }}"
+          [ -z "$ACCESS_KEY" ] && ACCESS_KEY="admin"
+          [ -z "$SECRET_KEY" ] && SECRET_KEY="changeme"
+
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic minio-credentials \
-            --from-literal=accessKey="${{ secrets.MINIO_ROOT_USER }}" \
-            --from-literal=secretKey="${{ secrets.MINIO_ROOT_PASSWORD }}" \
+            --from-literal=accessKey="$ACCESS_KEY" \
+            --from-literal=secretKey="$SECRET_KEY" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ MinIO credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"

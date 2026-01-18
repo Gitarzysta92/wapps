@@ -9,13 +9,17 @@ export class MinioClient {
     accessKey: string;
     secretKey: string;
   }) {
+    // Trim to avoid SignatureDoesNotMatch when K8s secrets have trailing newlines
+    const accessKey = config.accessKey?.trim() ?? '';
+    const secretKey = config.secretKey?.trim() ?? '';
+
     this.client = new S3Client({
       region: 'us-east-1',
       endpoint: config.host,
       forcePathStyle: true,
       credentials: {
-        accessKeyId: config.accessKey,
-        secretAccessKey: config.secretKey,
+        accessKeyId: accessKey,
+        secretAccessKey: secretKey,
       },
     });
   }
