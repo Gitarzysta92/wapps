@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-csr
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: catalog-csr
+        env:
+        - name: NODE_ENV
+          value: "development"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi

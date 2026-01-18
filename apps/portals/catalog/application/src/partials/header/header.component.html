@@ -1,0 +1,20 @@
+<div class="header-content">
+  <div class="header-logo">
+    <a [routerLink]="homeNavigation.path" class="logo-link">
+      <tui-icon icon="@tui.layout-grid" [style.width.rem]="1.5" [style.height.rem]="1.5"></tui-icon>
+      <span class="logo-text">App Catalog</span>
+    </a>
+  </div>
+
+  <nav class="header-nav">
+    @for (item of navigation; track item.path) {
+      <a 
+        [routerLink]="item.path" 
+        routerLinkActive="active"
+        class="nav-item">
+        <tui-icon [icon]="item.icon" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+</div>

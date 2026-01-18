@@ -1,0 +1,111 @@
+<div class="app-details-page">
+  <div class="back-navigation">
+    <a [routerLink]="['/', navigation.catalog.path]" tuiButton appearance="secondary" size="s">
+      <tui-icon icon="@tui.chevron-left" [style.width.rem]="1" [style.height.rem]="1"></tui-icon>
+      Back to Catalog
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <tui-loader size="xl" [overlay]="true">Loading application details...</tui-loader>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-container">
+      <tui-icon icon="@tui.alert-circle" class="error-icon"></tui-icon>
+      <p class="error-message">{{ error() }}</p>
+      <a [routerLink]="['/', navigation.catalog.path]" tuiButton appearance="primary">
+        Go back to Catalog
+      </a>
+    </div>
+  }
+
+  @if (!isLoading() && !error() && app()) {
+    <div class="app-details">
+      <header class="app-header">
+        <div class="app-logo-large">
+          <img [src]="app()!.logo" [alt]="app()!.name + ' logo'" />
+        </div>
+        <div class="app-header-content">
+          <div class="app-title-section">
+            <h1 class="app-title">{{ app()!.name }}</h1>
+            <div class="app-badges">
+              @if (app()!.isPwa) {
+                <span tuiBadge size="m" status="success">PWA</span>
+              }
+            </div>
+          </div>
+          <div class="app-rating-section">
+            <div class="rating-display">
+              <tui-icon icon="@tui.star" class="rating-icon"></tui-icon>
+              <span class="rating-value">{{ app()!.rating }}</span>
+              <span class="rating-max">/ 5</span>
+            </div>
+            <div class="rating-reviews">{{ app()!.reviewNumber }} reviews</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="app-content">
+        <section class="content-section">
+          <h2 class="section-title">Description</h2>
+          <p class="app-description">{{ app()!.description }}</p>
+        </section>
+
+        <section class="content-section">
+          <h2 class="section-title">Information</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">
+                <tui-icon icon="@tui.calendar" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+                Listed On
+              </span>
+              <span class="info-value">{{ formatDate(app()!.listingDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">
+                <tui-icon icon="@tui.clock" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+                Last Updated
+              </span>
+              <span class="info-value">{{ formatDate(app()!.updateDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">
+                <tui-icon icon="@tui.message-circle" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+                Reviews
+              </span>
+              <span class="info-value">{{ app()!.reviewNumber }} reviews</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">
+                <tui-icon icon="@tui.folder" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+                Category ID
+              </span>
+              <span class="info-value">{{ app()!.categoryId }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h2 class="section-title">Platforms</h2>
+          <div class="platforms-list">
+            @for (platformId of app()!.platformIds; track platformId) {
+              <span tuiBadge size="l" status="info">Platform {{ platformId }}</span>
+            }
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h2 class="section-title">Tags</h2>
+          <div class="tags-list">
+            @for (tagId of app()!.tagIds; track tagId) {
+              <span tuiBadge size="l" status="neutral">Tag {{ tagId }}</span>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+</div>

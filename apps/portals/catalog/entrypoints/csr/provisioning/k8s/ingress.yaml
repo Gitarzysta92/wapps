@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-csr-ingress
+  labels:
+    app: catalog-csr
+    app.kubernetes.io/name: catalog-csr
+    app.kubernetes.io/component: frontend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: catalog-csr.host.placeholder  # This will be overridden by environment overlays
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-csr-service
+            port:
+              number: 80
