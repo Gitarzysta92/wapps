@@ -24,12 +24,11 @@ spec:
                 secretKeyRef:
                   name: cloudflared-tunnel-credentials
                   key: TUNNEL_TOKEN
-          # Token is passed via --token; we need to substitute env. Use a wrapper.
-          command:
-            - /bin/sh
-            - -c
-            - |
-              exec cloudflared tunnel run --token "$TUNNEL_TOKEN" --config /etc/cloudflared/config.yaml
+          args:
+            - tunnel
+            - run
+            - --config
+            - /etc/cloudflared/config.yaml
           volumeMounts:
             - name: config
               mountPath: /etc/cloudflared
