@@ -83,7 +83,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "catalog-csr:build"
+        "browserTarget": "catalog-csr:build"
       }
     },
     "lint": {
@@ -96,6 +96,12 @@
       "options": {
         "jestConfig": "apps/portals/catalog/entrypoints/csr/jest.config.ts",
         "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
       }
     }
   }

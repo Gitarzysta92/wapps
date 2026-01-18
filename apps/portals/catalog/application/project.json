@@ -6,15 +6,6 @@
   "sourceRoot": "apps/portals/catalog/application/src",
   "tags": ["type:lib"],
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/portals/catalog/application",
-        "main": "apps/portals/catalog/application/src/index.ts",
-        "tsConfig": "apps/portals/catalog/application/tsconfig.app.json"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
