@@ -38,4 +38,16 @@ spec:
                 name: minio-console  # Console service created by Helm
                 port:
                   number: 9001
+    # Local CDN – public read for media-storage (and other buckets with policy: download)
+    # URL pattern: https://<localcdn-host>/media-storage/<object-key>
+    - host: localcdn.host.placeholder  # Overridden by environment overlay
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
 

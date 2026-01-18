@@ -14,6 +14,9 @@ patches:
       - op: replace
         path: /spec/rules/1/host
         value: minio-console.development.wapps.com
+      - op: replace
+        path: /spec/rules/2/host
+        value: localcdn.development.wapps.com
     target:
       kind: Ingress
       name: minio-ingress

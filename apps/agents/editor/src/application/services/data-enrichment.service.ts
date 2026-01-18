@@ -149,8 +149,8 @@ export class DataEnrichmentService {
       .replace('{{APP_SLUG}}', rawRecord.slug)
       .replace('{{APP_DESCRIPTION}}', rawRecord.description)
       .replace('{{APP_CATEGORY}}', rawRecord.category || 'Not specified')
-      .replace('{{APP_TAGS}}', rawRecord.tags.join(', ') || 'None')
-      .replace('{{APP_PLATFORMS}}', rawRecord.platforms.join(', ') || 'None')
+      .replace('{{APP_TAGS}}', (rawRecord.tags ?? []).join(', ') || 'None')
+      .replace('{{APP_PLATFORMS}}', (rawRecord.platforms ?? []).join(', ') || 'None')
       .replace('{{CATEGORIES}}', categoriesSummary)
       .replace('{{TAGS}}', tagsSummary)
       .replace('{{PLATFORMS}}', platformsSummary)
@@ -179,19 +179,24 @@ export class DataEnrichmentService {
         userPrompt
       );
 
-      // Convert slugs to UUIDs
+      // Convert slugs to UUIDs (guard against missing/partial arrays from OpenAI)
+      const tagSlugs = Array.isArray(openAIData.tagSlugs) ? openAIData.tagSlugs : [];
+      const platformSlugs = Array.isArray(openAIData.platformSlugs) ? openAIData.platformSlugs : [];
+      const deviceSlugs = Array.isArray(openAIData.deviceSlugs) ? openAIData.deviceSlugs : [];
+      const monetizationSlugs = Array.isArray(openAIData.monetizationModelSlugs) ? openAIData.monetizationModelSlugs : [];
+
       const enrichedData: EnrichedData = {
         categoryId: openAIData.categorySlug ? this.categoriesMap.get(openAIData.categorySlug) || null : null,
-        tagIds: openAIData.tagSlugs.map(slug => this.tagsMap.get(slug)).filter((id): id is string => !!id),
-        platformIds: openAIData.platformSlugs.map(slug => this.platformsMap.get(slug)).filter((id): id is string => !!id),
-        deviceIds: openAIData.deviceSlugs.map(slug => this.devicesMap.get(slug)).filter((id): id is string => !!id),
-        monetizationModelIds: openAIData.monetizationModelSlugs.map(slug => this.monetizationModelsMap.get(slug)).filter((id): id is string => !!id),
-        website: openAIData.website,
-        isPwa: openAIData.isPwa,
-        rating: openAIData.rating,
-        estimatedNumberOfUsers: openAIData.estimatedNumberOfUsers,
-        logoUrl: openAIData.logoUrl,
-        bannerUrl: openAIData.bannerUrl,
+        tagIds: tagSlugs.map(slug => this.tagsMap.get(slug)).filter((id): id is string => !!id),
+        platformIds: platformSlugs.map(slug => this.platformsMap.get(slug)).filter((id): id is string => !!id),
+        deviceIds: deviceSlugs.map(slug => this.devicesMap.get(slug)).filter((id): id is string => !!id),
+        monetizationModelIds: monetizationSlugs.map(slug => this.monetizationModelsMap.get(slug)).filter((id): id is string => !!id),
+        website: openAIData.website ?? null,
+        isPwa: openAIData.isPwa ?? false,
+        rating: openAIData.rating ?? null,
+        estimatedNumberOfUsers: openAIData.estimatedNumberOfUsers ?? null,
+        logoUrl: openAIData.logoUrl ?? null,
+        bannerUrl: openAIData.bannerUrl ?? null,
       };
 
       console.log(`✅ Data enriched successfully for: ${rawRecord.name}`);
@@ -213,9 +218,9 @@ export class DataEnrichmentService {
 
     // Match platforms by slug from static data
     interface PlatformData { id: number; name: string; slug: string }
-    const platformIds = rawRecord.platforms
+    const platformIds = (rawRecord.platforms ?? [])
       .map(p => {
-        const platformData = platforms.find((pl: PlatformData) => 
+        const platformData = platforms.find((pl: PlatformData) =>
           pl.slug === p.toLowerCase() || pl.name.toLowerCase() === p.toLowerCase()
         );
         return platformData?.slug ? this.platformsMap.get(platformData.slug) : undefined;
@@ -224,9 +229,9 @@ export class DataEnrichmentService {
 
     // Match tags by slug from static data
     interface TagData { id: number; name: string; slug: string }
-    const tagIds = rawRecord.tags
+    const tagIds = (rawRecord.tags ?? [])
       .map(t => {
-        const tagData = tags.find((tag: TagData) => 
+        const tagData = tags.find((tag: TagData) =>
           tag.slug === t.toLowerCase() || tag.name.toLowerCase() === t.toLowerCase()
         );
         return tagData?.slug ? this.tagsMap.get(tagData.slug) : undefined;

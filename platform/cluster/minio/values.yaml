@@ -52,7 +52,7 @@ buckets:
     policy: download
     purge: false
   - name: media-storage
-    policy: none
+    policy: download  # public read for localcdn: GET /media-storage/<key>
     purge: false
 
 # Users (optional)
