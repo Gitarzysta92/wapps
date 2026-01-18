@@ -26,7 +26,7 @@ export function getCatalogApiBaseUrl(): string {
   if (!ENVIRONMENT_NAME) {
     return "http://localhost:3000/api";
   }
-  return `https://api.${ENVIRONMENT_NAME}.${BASE_DOMAIN}/api`;
+  return `http://api.${ENVIRONMENT_NAME}.${BASE_DOMAIN}/api`;
 }
 
 /** Injected as CATALOG_API_URL; used by CatalogApiService to build /api/catalog/apps, /api/catalog/apps/:slug */

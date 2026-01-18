@@ -58,8 +58,8 @@ apps/portals/catalog/
 
 The portal uses **catalog-bff** as the only data source. Edit `application/src/environment.ts`:
 
-- **Local** (`ENVIRONMENT_NAME = ""`): catalog-bff at `http://localhost:3000/api` (paths `/api/catalog/apps`, `/api/catalog/apps/:slug`)
-- **Deployed**: `https://api.<env>.wapps.com/api` (e.g. `https://api.development.wapps.com/api`)
+- **Local** (`ENVIRONMENT_NAME = ""`): `http://localhost:3000/api`
+- **Deployed**: `http://api.<env>.wapps.com/api` (e.g. `http://api.development.wapps.com/api`)
 
 ## Development
 
