@@ -72,6 +72,10 @@ editorAgent
     // Set prefetch to process one message at a time
     queue.prefetch(1);
 
+    // Rate limit: at most 1 message consumed per 30 seconds
+    const CONSUMPTION_INTERVAL_MS = 30_000;
+    let lastProcessedAt = 0;
+
     // Track consecutive errors for exponential backoff
     const MAX_RETRIES = 5;
     const BASE_DELAY_MS = 1000; // 1 second
@@ -82,6 +86,15 @@ editorAgent
       RAW_RECORD_PROCESSING_SLUG,
       async (msg) => {
         if (!msg) return;
+
+        // Enforce 30s between processing
+        const elapsed = Date.now() - lastProcessedAt;
+        const toWait = Math.max(0, CONSUMPTION_INTERVAL_MS - elapsed);
+        if (toWait > 0) {
+          console.log(`⏳ Rate limit: waiting ${toWait}ms before next message...`);
+          await new Promise((resolve) => setTimeout(resolve, toWait));
+        }
+        lastProcessedAt = Date.now();
 
         try {
           const rawRecord: RawRecordDto = JSON.parse(msg.content.toString());
