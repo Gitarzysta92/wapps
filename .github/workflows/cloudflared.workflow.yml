@@ -1,0 +1,106 @@
+# Cloudflare Tunnel (cloudflared) – in-cluster. Manifest-only; no image build.
+name: 'Cloudflared - Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'platform/cluster/cloudflared/**'
+      - 'argocd/applications/platform/cloudflared.yaml'
+      - '.github/workflows/cloudflared.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  APP_NAME: cloudflared
+  NAMESPACE: cloudflared
+
+jobs:
+  deploy:
+    name: 'Deploy cloudflared'
+    runs-on: self-hosted
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}, ArgoCD: argocd.${ENV}.wapps.com"
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+          fi
+          argocd version --client
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.set-env.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for cloudflared..."
+          argocd app sync cloudflared --force --grpc-web
+          echo "Waiting for sync to complete..."
+          argocd app wait cloudflared --timeout 300 --grpc-web
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pick up ConfigMap changes
+        run: |
+          echo "Restarting cloudflared to reload config..."
+          kubectl rollout restart deployment/cloudflared -n ${{ env.NAMESPACE }}
+          echo "Waiting for rollout..."
+          kubectl rollout status deployment/cloudflared -n ${{ env.NAMESPACE }} --timeout=120s
+          echo "✅ Deployment restarted"
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Cloudflared (Cloudflare Tunnel) - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Cloudflared deployed. Tunnel should be connected in Zero Trust."
+            echo ""
+            echo "Next steps:"
+            echo "  1. Check tunnel: Zero Trust → Networks → Tunnels"
+            echo "  2. Logs: kubectl logs -n cloudflared -l app=cloudflared -f"
+            echo "  3. Ensure cloudflared-tunnel-credentials Secret exists with TUNNEL_TOKEN"
+          else
+            echo "⚠️ Deployment had issues. Check logs above."
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

@@ -25,7 +25,9 @@ const editorAgent = new ApplicationShell({
   port: { value: port },
   openaiApiKey: { value: openaiApiKey },
   editorialHost: { value: editorialHost },
-  editorialApiToken: { value: editorialApiToken },
+  // Optional: API token is not required for current implementation
+  // of the editorial service
+  editorialApiToken: { value: editorialApiToken, optional: true },
 });
 
 editorAgent

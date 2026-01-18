@@ -1,3 +1,4 @@
+# Workflow for catalog-csr @ apps/portals/catalog/entrypoints/csr
 name: 'Catalog CSR - Build & Deploy'
 
 on:

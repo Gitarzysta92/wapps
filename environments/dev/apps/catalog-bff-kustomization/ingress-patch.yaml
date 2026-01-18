@@ -22,3 +22,13 @@ spec:
             name: catalog-bff-service
             port:
               number: 80
+  - host: api.development.wapps.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-bff-service
+            port:
+              number: 80

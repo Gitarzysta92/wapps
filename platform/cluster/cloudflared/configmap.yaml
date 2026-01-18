@@ -1,0 +1,18 @@
+# cloudflared config: routes Public Hostnames to nginx ingress.
+# nginx performs Host-based routing to catalog-bff, catalog-csr, etc.
+# When using --token, omit 'tunnel' and 'credentials-file'.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: cloudflared
+data:
+  config.yaml: |
+    ingress:
+      - hostname: api.development.wapps.com
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+      - hostname: catalog.development.wapps.com
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+      - hostname: catalog-csr.development.wapps.com
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+      - service: http_status:404
