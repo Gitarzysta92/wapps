@@ -94,6 +94,7 @@
       ],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
+      "@foundation/content-core": ["libs/foundation/content-core/src/index.ts"],
       "@features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
       ],
