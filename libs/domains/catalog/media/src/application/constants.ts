@@ -24,3 +24,9 @@ export enum MediaExtension {
   MP3 = 'mp3'
 }
 
+export enum MediaPurpose {
+  LOGO = 'logo',
+  GALLERY = 'gallery',
+  OTHER = 'other'
+}
+

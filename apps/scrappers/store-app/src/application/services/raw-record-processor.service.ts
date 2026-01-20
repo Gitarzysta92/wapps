@@ -16,7 +16,7 @@ export class RawRecordProcessorService implements IRawRecordProcessor {
     private readonly queueName: string
   ) { }
 
-  processRawAppRecord(data: ScrapedApp | RawRecordDto): void {
+  processRawAppRecord(data: ScrapedApp): void {
     const rawRecord: RawRecordDto = {
       slug: data.slug,
       name: data.name,

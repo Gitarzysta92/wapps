@@ -59,6 +59,7 @@ export class MediaIngestionService {
         originalUrl: rawMedia.url,
         referenceIdentifier: rawMedia.referenceIdentifier as string ?? '',
         name: rawMedia.name,
+        purpose: rawMedia.purpose,
         type: rawMedia.type,
         extension: rawMedia.extension,
       }

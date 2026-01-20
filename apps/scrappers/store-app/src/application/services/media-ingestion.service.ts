@@ -1,4 +1,4 @@
-import { IMediaIngestor, RawMediaDto, MediaType, MediaExtension, RAW_MEDIA_INGESTION_SLUG } from '@domains/catalog/media';
+import { IMediaIngestor, RawMediaDto, MediaType, MediaExtension, MediaPurpose } from '@domains/catalog/media';
 import { QueueChannel } from '../../infrastructure/queue-client';
 
 
@@ -19,17 +19,18 @@ export class MediaIngestionService implements IMediaIngestor {
     await this.queue.assertQueue(this.queueName);
   }
 
-  mapAssetsToRawMedia(assets: Asset[]): RawMediaDto[] {
+  mapAssetsToRawMedia(referenceIdentifier: string, assets: Asset[]): RawMediaDto[] {
     return assets.map((asset, index) => {
       const extension = this.getExtensionFromUrl(asset.src);
       const fileName = asset.src.split('/').pop() || `asset-${index}`;
       
       return {
-        referenceIdentifier: null,
+        referenceIdentifier: referenceIdentifier,
         name: fileName,
         url: asset.src,
         extension: extension,
         type: MediaType.IMAGE,
+        purpose: asset.type === 'logo' ? MediaPurpose.LOGO : MediaPurpose.GALLERY,
       };
     });
   }

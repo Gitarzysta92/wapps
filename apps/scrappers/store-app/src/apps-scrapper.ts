@@ -69,7 +69,7 @@ storeAppScrapper
         const details = await detailsScrapper.handle(app);
         const data = { ...app, ...details };
         recordProcessingService.processRawAppRecord(data);
-        mediaIngestionService.ingestMedia(mediaIngestionService.mapAssetsToRawMedia(data.assets));
+        mediaIngestionService.ingestMedia(mediaIngestionService.mapAssetsToRawMedia(data.slug, data.assets));
         processedCount++;
         console.log(`✅ Processed (${processedCount}/${apps.length}): ${data.name}`);
       } catch (error) {

@@ -1,4 +1,4 @@
-import { MediaExtension } from "./constants";
+import { MediaExtension, MediaPurpose } from "./constants";
 import { MediaType } from "./constants";
 
 export type RawMediaDto = {
@@ -7,4 +7,5 @@ export type RawMediaDto = {
   url: string;
   extension: MediaExtension;
   type: MediaType;
+  purpose: MediaPurpose;
 }
