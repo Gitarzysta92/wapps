@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { map, catchError } from "rxjs/operators";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { ITagsProvider, TagDto } from "@domains/catalog/tags";
 
 @Injectable()

@@ -1,5 +1,6 @@
 import type { ContentId } from './content-id';
-import type { ContentState, ContentVisibility } from '../constants';
+import type { ContentRelationId } from './content-relation.dto';
+import type { ContentState, ContentVisibility, RelationType } from '../constants';
 
 /** Lifecycle events for eventual consistency and projection rebuilds. */
 export type ContentCreated = { type: 'ContentCreated'; contentId: ContentId };
@@ -16,23 +17,17 @@ export type ContentVisibilityChanged = {
   visibility: ContentVisibility;
 };
 
+/** Relation added (append-only; no ContentRelationRemoved per ADR-0002). */
 export type ContentRelationAdded = {
   type: 'ContentRelationAdded';
-  contentId: ContentId;
-  kind: string;
-  targetId: ContentId;
-};
-
-export type ContentRelationRemoved = {
-  type: 'ContentRelationRemoved';
-  contentId: ContentId;
-  kind: string;
-  targetId: ContentId;
+  relationId: ContentRelationId;
+  fromContentId: ContentId;
+  toContentId: ContentId;
+  relationType: RelationType;
 };
 
 export type ContentLifecycleEvent =
   | ContentCreated
   | ContentStateChanged
   | ContentVisibilityChanged
-  | ContentRelationAdded
-  | ContentRelationRemoved;
+  | ContentRelationAdded;

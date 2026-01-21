@@ -6,7 +6,7 @@ import {
   AuthenticationProvider, 
   AuthenticationMethodDto 
 } from "@domains/identity/authentication";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 
 /**
  * Mock authentication service for development/testing.

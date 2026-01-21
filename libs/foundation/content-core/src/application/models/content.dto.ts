@@ -6,14 +6,10 @@ import type {
   IntrinsicCapability,
 } from '../constants';
 
-export type ContentRelationRef = {
-  readonly kind: string;
-  readonly targetId: ContentId;
-};
-
 /**
- * Content as a semantic entity: identity, lifecycle, capabilities, relations.
- * Does not own: payload structure, rendering, storage, or search.
+ * Content as a semantic entity: identity, lifecycle, capabilities.
+ * Does not own: payload structure, rendering, storage, search, or relations.
+ * Relations are first-class facts in a separate store (ADR-0002).
  */
 export type Content = {
   readonly id: ContentId;
@@ -21,5 +17,4 @@ export type Content = {
   readonly intrinsicCapabilities: readonly IntrinsicCapability[];
   readonly state: ContentState;
   readonly visibility: ContentVisibility;
-  readonly relations?: readonly ContentRelationRef[];
 };

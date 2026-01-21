@@ -11,7 +11,7 @@ import {
   PrivacyPreferencesDto,
   AccessibilityPreferencesDto
 } from '@domains/customer/preferences';
-import { Result, ok } from '@standard';
+import { Result, ok } from '@foundation/standard';
 import { PREFERENCES_API_BASE_URL_PROVIDER } from '../application/infrastructure-providers.port';
 
 /**

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { IPlatformsProvider, PlatformDto } from "@domains/catalog/compatibility";
 
 @Injectable()

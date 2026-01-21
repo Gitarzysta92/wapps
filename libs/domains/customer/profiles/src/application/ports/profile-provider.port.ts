@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { CustomerProfileDto } from "../models/profile.dto";
 
 export interface IProfileProvider {

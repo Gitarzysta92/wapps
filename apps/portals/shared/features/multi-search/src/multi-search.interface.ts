@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { AddTypeToArray, Result } from "@standard";
+import { AddTypeToArray, Result } from "@foundation/standard";
 import { DiscoveryRecentSearchesDto, DiscoverySearchResultDto, DiscoverySearchResultGroupDto } from "@domains/discovery";
 
 

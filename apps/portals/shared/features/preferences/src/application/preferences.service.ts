@@ -11,7 +11,7 @@ import {
   PrivacyPreferencesDto,
   AccessibilityPreferencesDto
 } from '@domains/customer/preferences';
-import { Result } from '@standard';
+import { Result } from '@foundation/standard';
 import { IPreferencesStateProvider } from './preferences-state-provider.port';
 import { PreferencesState } from './preferences.state';
 

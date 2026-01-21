@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ICategoriesProvider, CategoryDto } from "@domains/catalog/category";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { CATEGORIES } from "@portals/shared/data";
 
 @Injectable()

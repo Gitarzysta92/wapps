@@ -6,7 +6,7 @@ import {
   AuthenticationProvider, 
   AuthenticationMethodDto 
 } from "@domains/identity/authentication";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { map, tap } from "rxjs";
 import { AUTHENTICATION_HANDLER } from "./authentication-handler.token";
 

@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/libs/primitives",
+    "outDir": "../../../dist/foundation/primitives",
     "rootDir": "src",
     "declaration": true,
     "composite": true,

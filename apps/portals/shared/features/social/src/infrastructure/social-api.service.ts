@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { ISocialsProvider } from "../application";
 import { ReferenceDto } from "@domains/catalog/references";
 

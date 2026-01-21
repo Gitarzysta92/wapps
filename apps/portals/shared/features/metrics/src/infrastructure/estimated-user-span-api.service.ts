@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { IEstimatedUserSpanProvider } from "../application/ports/estimated-user-span-provider.port";
 import { EstimatedUserSpanDto } from "../application/models/estimated-user-span.dto";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 
 @Injectable()
 export class EstimatedUserSpanApiService implements IEstimatedUserSpanProvider {

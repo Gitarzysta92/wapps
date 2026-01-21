@@ -39,3 +39,20 @@ export const PROJECTION_TYPES: readonly ProjectionType[] = [
   'search-text',
   'embedding-input',
 ] as const;
+
+/**
+ * Relation types as ubiquitous language (ADR-0002).
+ * Relations are typed, directional, append-only semantic facts.
+ * Extend this list when introducing new documented relation types.
+ */
+export const RELATION_TYPES = [
+  'reply_to',
+  'parent_of',
+  'discusses',
+  'references',
+  'derived_from',
+  'linked_to',
+  'annotates',
+] as const;
+
+export type RelationType = (typeof RELATION_TYPES)[number];

@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs';
-import type { Result } from '@standard';
+import type { Result } from '@foundation/standard';
 import type { Content } from '../models/content.dto';
 import type { ContentId } from '../models/content-id';
 import type { ContentState, ContentVisibility } from '../constants';

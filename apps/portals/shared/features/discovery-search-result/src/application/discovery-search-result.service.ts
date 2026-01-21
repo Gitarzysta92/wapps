@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { DiscoverySearchResultDto, IDiscoverySearchResultProvider } from "@domains/discovery";
 import { DISCOVERY_SEARCH_RESULT_PROVIDER } from "./discovery-search-result-provider.token";
 

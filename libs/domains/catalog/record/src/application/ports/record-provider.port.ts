@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { AppRecordDto } from "../models/record.dto";
 import { AppPreviewDto } from "../models/record-preview.dto";
 

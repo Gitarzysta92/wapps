@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { EstimatedUserSpanDto } from "../models/estimated-user-span.dto";
 import { InjectionToken } from "@angular/core";
 

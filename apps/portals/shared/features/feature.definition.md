@@ -14,7 +14,7 @@
 - **Interface Contracts**: Domain DTOs from `@domains/{domain}/{entity}`
 - **Domain Ports**: Create provider tokens based on domain port interfaces (e.g., `ICategoriesProvider`)
 - **Reactive Flow**: RxJS observables with `shareReplay` caching
-- **Result Types**: `@standard` Result pattern for error handling
+- **Result Types**: `@foundation/standard` Result pattern for error handling
 
 ## Standard Exports
 ```typescript

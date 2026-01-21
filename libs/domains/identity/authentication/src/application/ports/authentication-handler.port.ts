@@ -1,4 +1,4 @@
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { Observable } from "rxjs";
 import { CredentialsDto } from "../models/credentials.dto";
 import { AuthenticationProvider } from "../models/authentication-provider.enum";

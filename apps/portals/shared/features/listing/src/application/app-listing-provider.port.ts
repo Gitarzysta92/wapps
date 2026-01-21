@@ -1,6 +1,6 @@
 import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { AppListingQueryDto } from "./models/app-listing-query.dto";
 import { AppListingSliceDto } from "./models/record-listing.dto";
 

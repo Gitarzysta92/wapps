@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import amqp from 'amqplib';
-import { ApplicationShell } from '@standard';
+import { ApplicationShell } from '@foundation/standard';
 import { RAW_RECORD_PROCESSING_SLUG } from '@domains/catalog/record';
 import { RawRecordDto } from '@domains/catalog/record';
 import { QueueClient } from './infrastructure/queue-client';

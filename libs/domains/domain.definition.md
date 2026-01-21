@@ -41,7 +41,7 @@
 
 ### **Reactive Contracts**
 - **Observables**: RxJS-based reactive data contracts
-- **Result Types**: `@standard` Result pattern for error handling
+- **Result Types**: `@foundation/standard` Result pattern for error handling
 - **Async Operations**: All external interactions are asynchronous
 
 ## Standard Exports

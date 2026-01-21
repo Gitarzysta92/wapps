@@ -7,7 +7,7 @@ import { TuiButton, TuiIcon, TuiIconPipe } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
-import { AddTypeToArray } from '@standard/utility-types';
+import { AddTypeToArray } from '@foundation/standard/utility-types';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 

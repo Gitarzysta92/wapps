@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { CategoryDto, ICategoriesProvider } from "@domains/catalog/category";
 import { CATEGORIES } from "@portals/shared/data";
 

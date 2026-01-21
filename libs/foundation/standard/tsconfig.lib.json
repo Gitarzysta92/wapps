@@ -1,11 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/libs/standard",
+    "outDir": "../../../dist/foundation/standard",
     "rootDir": "src",
     "declaration": true,
     "composite": true,
-    "types": []
+    "types": [],
+    "tsBuildInfoFile": "../../../dist/foundation/standard/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "src/**/*"

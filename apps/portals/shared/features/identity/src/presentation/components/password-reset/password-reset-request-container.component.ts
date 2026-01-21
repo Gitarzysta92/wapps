@@ -1,7 +1,7 @@
 import { WA_WINDOW } from "@ng-web-apis/common";
 import { Component, inject } from "@angular/core";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
-import { TimedQueue } from "@primitives";
+import { TimedQueue } from "@foundation/primitives";
 import { PASSWORD_RESET_REQUEST_HANDLER } from "../../../application/password-reset-request-handler.token";
 import { PasswordResetRequestForm, PasswordResetRequestFormDto } from "@ui/password-reset";
 

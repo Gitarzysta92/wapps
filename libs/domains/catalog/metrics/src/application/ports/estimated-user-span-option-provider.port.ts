@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { EstimatedUserSpanOptionDto } from "../models/estimated-user-span-option.dto";
 
 export interface IEstimatedUserSpanOptionProvider {

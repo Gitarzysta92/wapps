@@ -216,11 +216,11 @@
       "@portals/shared/partials/filters-bar": [
         "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],
-      "@primitives": ["libs/primitives/src/index.ts"],
-      "@primitives/*": ["libs/primitives/src/*"],
+      "@foundation/primitives": ["libs/foundation/primitives/src/index.ts"],
+      "@foundation/primitives/*": ["libs/foundation/primitives/src/*"],
+      "@foundation/standard": ["libs/foundation/standard/src/index.ts"],
+      "@foundation/standard/*": ["libs/foundation/standard/src/*"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
-      "@standard": ["libs/standard/src/index.ts"],
-      "@standard/*": ["libs/standard/src/*"],
       "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
       "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/chat": ["libs/ui/chat/src/index.ts"],

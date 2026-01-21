@@ -17,7 +17,7 @@
   ],
   "references": [
     {
-      "path": "../../standard/tsconfig.lib.json"
+      "path": "../../foundation/standard/tsconfig.lib.json"
     }
   ]
 }

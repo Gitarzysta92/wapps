@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFeedItem } from '../models/feed-item.interface';
-import { Result } from '@standard';
+import { Result } from '@foundation/standard';
 
 export interface IFeedPage {
   items: IFeedItem[];
