@@ -1,9 +1,7 @@
 import { IContentNodeRepository } from '@foundation/content-system';
 import {
   AuthorityValidationService,
-  IAuthorityValidationContext,
 } from '@foundation/authority-system';
-import { IOperationContext } from '@foundation/workflow-system';
 import { err, isErr, Result } from '@foundation/standard';
 import {
   DISCUSSION_NODE_KIND,
@@ -20,6 +18,7 @@ import { IDiscussionIdentificatorGenerator } from './ports/discussion-identifica
 import { DiscussionCreationDto } from './models/discussion-creation.dto';
 import { CommentCreationDto } from './models/comment-creation.dto'
 import { IDiscussionPayloadRepository } from './ports/discussion-payload-repository.port';
+import { CommentCreationContext } from './models/comment-creation-context';
 
 export class DiscussionService {
   constructor(
@@ -32,7 +31,7 @@ export class DiscussionService {
   
   async addComment(
     payload: CommentCreationDto,
-    ctx: IOperationContext & IAuthorityValidationContext
+    ctx: CommentCreationContext
   ): Promise<Result<boolean, Error>> {
     const timestamp = Date.now();
 
@@ -84,8 +83,10 @@ export class DiscussionService {
 
   async addDiscussion(
     payload: DiscussionCreationDto,
-    ctx: IOperationContext & IAuthorityValidationContext
+    ctx: CommentCreationContext
   ): Promise<Result<boolean, Error>> {
+    const timestamp = Date.now();
+
     const authorityContext = Object.assign({
       actionName: CREATE_DISCUSSION_ACTION_NAME,
     }, ctx);
@@ -97,8 +98,7 @@ export class DiscussionService {
     }
 
     const discussionId = this.identificatorGenerator.generate();
-    const timestamp = Date.now();
-    const result = await this.contentNodeRepository.addNode(
+    let result = await this.contentNodeRepository.addNode(
       {
         id: discussionId,
         referenceKey: this.identificatorGenerator.generate(),
@@ -118,6 +118,17 @@ export class DiscussionService {
         },
       ]
     );
+
+    if (isErr(result)) {
+      return result;
+    }
+
+    result = await this.discussionPayloadRepository.addPayload(discussionId, payload);
+    if (isErr(result)) {
+      return result;
+    }
+
+    this.discussionProjectionService.requestMaterialization(discussionId);
     return result;
   }
 }

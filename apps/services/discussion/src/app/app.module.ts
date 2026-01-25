@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HealthController } from './health/health.controller';
 import { DiscussionsModule } from './discussions/discussions.module';
 import { Discussion } from './discussions/entities/discussion.entity';
+import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 
 @Module({
   imports: [
@@ -30,4 +31,8 @@ import { Discussion } from './discussions/entities/discussion.entity';
   controllers: [HealthController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthValidationMiddleware).forRoutes('*');
+  }
+}

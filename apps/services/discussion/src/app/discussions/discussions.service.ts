@@ -1,61 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Discussion } from './entities/discussion.entity';
-import { DiscussionCreationDto, DiscussionService, IDiscussionProjectionService } from '@domains/discussion';
+import { DiscussionCreationDto, DiscussionService } from '@domains/discussion';
+import { AuthorityValidationService } from '@foundation/authority-system';
+import { Result } from '@foundation/standard';
 import { IContentNodeRepository } from '@foundation/content-system';
-import { isErr, Result } from '@foundation/standard';
 import { IDiscussionPayloadRepository } from '@domains/discussion';
-
-class ContentSystemRepository implements IContentNodeRepository {
-  
-  addNode(c: IContentNode, relations?: IContentNodeRelation[]): Promise<Result<boolean, Error>> {
-    return Promise.resolve(true);
-  }
-
-  updateNode(c: IContentNode, relations: IContentNodeRelation[]): Promise<Result<boolean, Error>> {
-    return Promise.resolve(true);
-  }
-  
-  deleteNode(c: IContentNode): Promise<Result<boolean, Error>> {
-    return Promise.resolve(true);
-  }
-
-  getNode<T extends IContentNode>(id: Uuidv7): Promise<Result<T, Error>> {
-    return Promise.resolve(null);
-  }
-  
-}
-
-class AuthorityValidationService implements IAuthorityValidationService {
-}
-
-class DiscussionProjectionService implements IDiscussionProjectionService {
-}
-
-class IdentificatorGenerator {
-}
-
-class DiscussionPayloadRepository implements IDiscussionPayloadRepository {
-}
-
+import { IDiscussionProjectionService } from '@domains/discussion';
+import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
+import { MinioClient } from '../infrastructure/minio-client';
+import { QueueChannel } from '../infrastructure/queue-client';
+import { AllowAllPolicyEvaluator } from './infrastructure/allow-all-policy-evaluator';
+import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
+import { NoopContentNodeRepository } from './infrastructure/noop-content-node.repository';
+import { RabbitMqDiscussionProjectionService } from './infrastructure/discussion-projection.service';
+import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discussion-identificator.generator';
 
 @Injectable()
 export class DiscussionsService {
   private discussionService: DiscussionService;
-  discussionProjectionService: IDiscussionProjectionService
+
   constructor(
     @InjectRepository(Discussion)
     private discussionsRepository: Repository<Discussion>,
+    minioClient: MinioClient,
+    @Inject('DISCUSSION_QUEUE') queue: QueueChannel
   ) {
-    const contentSystemRepository = new ContentSystemRepository();
-    const authorityValidationService = new AuthorityValidationService();
-    const discussionProjectionService = new DiscussionProjectionService();
+    const contentNodeRepository: IContentNodeRepository = new NoopContentNodeRepository();
+    const authorityValidationService: AuthorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
+    const discussionPayloadRepository: IDiscussionPayloadRepository = new MinioDiscussionPayloadRepository(minioClient);
+    const discussionProjectionService: IDiscussionProjectionService = new RabbitMqDiscussionProjectionService(queue);
+    const identificatorGenerator: IDiscussionIdentificatorGenerator = new CryptoDiscussionIdentificatorGenerator();
 
-    const identificatorGenerator = new IdentificatorGenerator();
-    const discussionPayloadRepository = new DiscussionPayloadRepository();
     this.discussionService = new DiscussionService(
-      contentSystemRepository,
+      contentNodeRepository,
       authorityValidationService,
       discussionPayloadRepository,
       discussionProjectionService,
@@ -75,8 +54,11 @@ export class DiscussionsService {
     });
   }
 
-  create(data: DiscussionCreationDto, ctx: ?): Result<boolean, Error> {
-    return this.discussionService.addDiscussion(data, ctx)
+  create(
+    data: DiscussionCreationDto,
+    ctx: CommentCreationContext
+  ): Promise<Result<boolean, Error>> {
+    return this.discussionService.addDiscussion(data, ctx);
   }
 
   async update(id: string, data: Partial<Discussion>) {

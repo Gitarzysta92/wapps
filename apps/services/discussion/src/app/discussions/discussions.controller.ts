@@ -2,6 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { DiscussionsService } from './discussions.service';
 import { Discussion } from './entities/discussion.entity';
+import { DiscussionCreationDto } from '@domains/discussion';
+import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
 
 @ApiTags('discussions')
 @Controller('discussions')
@@ -22,8 +24,15 @@ export class DiscussionsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new discussion' })
-  create(@Body() data: Partial<Discussion>) {
-    return this.discussionsService.create(data);
+  create(@Body() data: DiscussionCreationDto, @AuthUser() user: AuthenticatedUser) {
+    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
+    const ctx = {
+      identityId: user.userId as string,
+      tenantId,
+      timestamp: Date.now(),
+    };
+
+    return this.discussionsService.create(data, ctx);
   }
 
   @Put(':id')
