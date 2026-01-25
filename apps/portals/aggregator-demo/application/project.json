@@ -7,13 +7,10 @@
   "tags": ["type:lib"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [],
       "options": {
-        "outputPath": "dist/apps/portals/aggregator-demo/application",
-        "main": "apps/portals/aggregator-demo/application/src/index.ts",
-        "tsConfig": "apps/portals/aggregator-demo/application/tsconfig.app.json",
-        "assets": ["apps/portals/aggregator-demo/application/*.md"]
+        "command": "tsc -p apps/portals/aggregator-demo/application/tsconfig.app.json --noEmit"
       }
     },
     "lint": {

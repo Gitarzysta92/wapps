@@ -19,8 +19,8 @@ export const PHOTO_SNAP:
   logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=PhotoSnap&backgroundColor=6366f1',
   isPwa: true,
   rating: 4.6,
-  tagIds: [71, 11, 12],
-  categoryId: 71,
+  tagIds: ['71', '11', '12'],
+  categoryId: '71',
   platformIds: [0, 1],
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -59,8 +59,8 @@ export const QUICK_TASK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibili
   logo: 'https://api.dicebear.com/7.x/icons/svg?seed=QuickTask&backgroundColor=10b981',
   isPwa: true,
   rating: 4.6,
-  tagIds: [25, 11, 12], // Productivity, Web Development, Mobile Development
-  categoryId: 19, // Project management software
+  tagIds: ['25', '11', '12'], // Productivity, Web Development, Mobile Development
+  categoryId: '19', // Project management software
   platformIds: [0, 1], // Web, Mobile
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -99,8 +99,8 @@ const SPEEDY_VPN: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto &
   logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=SpeedyVPN&backgroundColor=ef4444',
   isPwa: true,
   rating: 4.6,
-  tagIds: [8, 9, 11, 12], // Security, Networking, Web Development, Mobile Development
-  categoryId: 54, // VPN client
+  tagIds: ['8', '9', '11', '12'], // Security, Networking, Web Development, Mobile Development
+  categoryId: '54', // VPN client
   platformIds: [0, 1, 2], // Web, Mobile, Desktop
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -139,8 +139,8 @@ const BUDGET_BUDDY: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto
   logo: 'https://api.dicebear.com/7.x/icons/svg?seed=BudgetBuddy&backgroundColor=f59e0b',
   isPwa: true,
   rating: 4.6,
-  tagIds: [21, 25, 11, 12], // Finance, Productivity, Web Development, Mobile Development
-  categoryId: 83, // Budgeting apps
+  tagIds: ['21', '25', '11', '12'], // Finance, Productivity, Web Development, Mobile Development
+  categoryId: '83', // Budgeting apps
   platformIds: [0, 1], // Web, Mobile
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -179,8 +179,8 @@ const MINDFUL: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & Ap
   logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=Mindful&backgroundColor=8b5cf6',
   isPwa: true,
   rating: 4.6,
-  tagIds: [23, 25, 11, 12], // Health, Productivity, Web Development, Mobile Development
-  categoryId: 153, // Meditation apps
+  tagIds: ['23', '25', '11', '12'], // Health, Productivity, Web Development, Mobile Development
+  categoryId: '153', // Meditation apps
   platformIds: [0, 1], // Web, Mobile
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -219,8 +219,8 @@ const FIT_TRACK: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
   logo: 'https://api.dicebear.com/7.x/icons/svg?seed=FitTrack&backgroundColor=06b6d4',
   isPwa: true,
   rating: 4.6,
-  tagIds: [23, 25, 11, 12], // Health, Productivity, Web Development, Mobile Development
-  categoryId: 148, // Activity tracking
+  tagIds: ['23', '25', '11', '12'], // Health, Productivity, Web Development, Mobile Development
+  categoryId: '148', // Activity tracking
   platformIds: [0, 1], // Web, Mobile
   reviewNumber: 1234,
   updateDate: new Date(),
@@ -259,8 +259,8 @@ const SHOP_EASE: AppRecordDto & AppEstimatedUserSpanDto & AppCompatibilityDto & 
   logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=ShopEase&backgroundColor=ec4899',
   isPwa: true,
   rating: 4.6,
-  tagIds: [18, 21, 11, 12], // Ecommerce, Finance, Web Development, Mobile Development
-  categoryId: 178, // Ecommerce platforms
+  tagIds: ['18', '21', '11', '12'], // Ecommerce, Finance, Web Development, Mobile Development
+  categoryId: '178', // Ecommerce platforms
   platformIds: [0, 1], // Web, Mobile
   reviewNumber: 1234,
   updateDate: new Date(),

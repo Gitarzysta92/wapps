@@ -64,7 +64,7 @@ type RegisteredFeedItem = Array<
                   case APPLICATION_TEASER_FEED_ITEM_SELECTOR:
                     i.appLink = buildRoutePath(NAVIGATION.application.path, { appSlug: i.appSlug });
                     i.category.link = buildRoutePath(NAVIGATION.categories.path, { categorySlug: i.category.slug });
-                    i.tags.forEach(t => {
+                    i.tags.forEach((t: { slug: string; link?: string }) => {
                       t.link = buildRoutePath(NAVIGATION.tags.path, { tagSlug: t.slug });
                     });
                     i.reviewsLink = buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: i.appSlug });
@@ -133,7 +133,7 @@ export class ApplicationTimelinePageComponent {
       isPwa: true,
       rating: 4.7,
       tagIds: [],
-      categoryId: 0,
+      categoryId: '0',
       platformIds: [],
       reviewNumber: 1234,
       updateDate: new Date(),

@@ -139,7 +139,7 @@ export class ApplicationReviewsPageComponent implements
       isPwa: true,
       rating: 4.7,
       tagIds: [],
-      categoryId: 0,
+      categoryId: '0',
       platformIds: [],
       reviewNumber: 1234,
       updateDate: new Date(),

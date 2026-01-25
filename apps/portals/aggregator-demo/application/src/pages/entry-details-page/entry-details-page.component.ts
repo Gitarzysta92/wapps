@@ -49,7 +49,7 @@ export class EntryDetailsPageComponent {
       isPwa: true,
       rating: 4.6,
       tagIds: [],
-      categoryId: 0,
+      categoryId: '0',
       platformIds: [],
       reviewNumber: 1234,
       updateDate: new Date(),
