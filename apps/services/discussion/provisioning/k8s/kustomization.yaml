@@ -5,6 +5,7 @@ namespace: discussion
 
 resources:
   - discussion.namespace.yaml
+  - discussion.configmap.yaml
   - discussion.deployment.yaml
   - discussion.service.yaml
   - discussion.service-account.yaml

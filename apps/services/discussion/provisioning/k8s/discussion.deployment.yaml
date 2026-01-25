@@ -28,6 +28,9 @@ spec:
             - name: http
               containerPort: 1338
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: discussion-config
           env:
             - name: DISCUSSION_NODE_ENV
               value: "production"
@@ -60,6 +63,31 @@ spec:
                 secretKeyRef:
                   name: discussion-app-secrets
                   key: DISCUSSION_DATABASE_NAME
+            - name: QUEUE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: username
+            - name: QUEUE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: password
+            - name: DISCUSSION_STORAGE_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: accessKey
+            - name: DISCUSSION_STORAGE_SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: secretKey
+            - name: INGRESS_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ingress-auth-secret
+                  key: secret
           resources:
             requests:
               memory: "1Gi"
