@@ -3,7 +3,7 @@ import { IContentNode } from "./models/content-node";
 import { ContentNodeState, ContentNodeVisibility } from "./constants";
 import { IContentNodeRelation } from "./models/content-node-relation";
 
-export interface IContentSystemRepository {
+export interface IContentNodeRepository {
   addNode(c: IContentNode, relations?: IContentNodeRelation[]): Promise<Result<boolean, Error>>;
   updateNode(c: IContentNode, relations: IContentNodeRelation[]): Promise<Result<boolean, Error>>;
   deleteNode(c: IContentNode): Promise<Result<boolean, Error>>;

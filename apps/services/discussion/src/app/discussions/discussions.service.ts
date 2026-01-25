@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Discussion } from './entities/discussion.entity';
-import { DiscussionService } from '@domains/discussion';
-import { IContentSystemRepository } from '@foundation/content-system';
+import { DiscussionCreationDto, DiscussionService, IDiscussionProjectionService } from '@domains/discussion';
+import { IContentNodeRepository } from '@foundation/content-system';
+import { isErr, Result } from '../../../../../../libs/foundation/standard/src';
 
-class ContentSystemRepository implements IContentSystemRepository {
+class ContentSystemRepository implements IContentNodeRepository {
   
   addNode(c: IContentNode, relations?: IContentNodeRelation[]): Promise<Result<boolean, Error>> {
     return Promise.resolve(true);
@@ -34,10 +35,14 @@ class DiscussionProjectionService {
 class IdentificatorGenerator {
 }
 
+class DiscussionPayloadRepository {
+}
+
 
 @Injectable()
 export class DiscussionsService {
   private discussionService: DiscussionService;
+  discussionProjectionService: IDiscussionProjectionService
   constructor(
     @InjectRepository(Discussion)
     private discussionsRepository: Repository<Discussion>,
@@ -45,10 +50,13 @@ export class DiscussionsService {
     const contentSystemRepository = new ContentSystemRepository();
     const authorityValidationService = new AuthorityValidationService();
     const discussionProjectionService = new DiscussionProjectionService();
+
     const identificatorGenerator = new IdentificatorGenerator();
+    const discussionPayloadRepository = new DiscussionPayloadRepository();
     this.discussionService = new DiscussionService(
       contentSystemRepository,
       authorityValidationService,
+      discussionPayloadRepository,
       discussionProjectionService,
       identificatorGenerator,
     );
@@ -66,9 +74,8 @@ export class DiscussionsService {
     });
   }
 
-  create(data: Partial<Discussion>) {
-    const discussion = this.discussionService.addDiscussion(data);
-    return this.discussionsRepository.save(discussion);
+  create(data: DiscussionCreationDto, ctx: ?): Result<boolean, Error> {
+    return this.discussionService.addDiscussion(data, ctx)
   }
 
   async update(id: string, data: Partial<Discussion>) {

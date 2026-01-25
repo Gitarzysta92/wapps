@@ -1,4 +1,4 @@
-import { IContentSystemRepository } from '@foundation/content-system';
+import { IContentNodeRepository } from '@foundation/content-system';
 import {
   AuthorityValidationService,
   IAuthorityValidationContext,
@@ -19,11 +19,13 @@ import { IDiscussionProjectionService } from './ports/discussion-projection-serv
 import { IDiscussionIdentificatorGenerator } from './ports/discussion-identificator-generator.port';
 import { DiscussionCreationDto } from './models/discussion-creation.dto';
 import { CommentCreationDto } from './models/comment-creation.dto'
+import { IDiscussionPayloadRepository } from './ports/discussion-payload-repository.port';
 
 export class DiscussionService {
   constructor(
-    private readonly contentSystemRepository: IContentSystemRepository,
+    private readonly contentNodeRepository: IContentNodeRepository,
     private readonly authorityValidationService: AuthorityValidationService,
+    private readonly discussionPayloadRepository: IDiscussionPayloadRepository,
     private readonly discussionProjectionService: IDiscussionProjectionService,
     private readonly identificatorGenerator: IDiscussionIdentificatorGenerator
   ) { }
@@ -45,7 +47,7 @@ export class DiscussionService {
     }
 
     const commentId = this.identificatorGenerator.generate();
-    const result = await this.contentSystemRepository.addNode(
+    let result = await this.contentNodeRepository.addNode(
       {
         id: commentId,
         referenceKey: this.identificatorGenerator.generate(),
@@ -64,6 +66,15 @@ export class DiscussionService {
         },
       ]
     );
+
+    if (isErr(result)) {
+      return result;
+    }
+
+    result = await this.discussionPayloadRepository.addPayload(commentId, payload);
+    if (isErr(result)) {
+      return result;
+    }
 
     this.discussionProjectionService.requestMaterialization(commentId);
     return result;
@@ -87,7 +98,7 @@ export class DiscussionService {
 
     const discussionId = this.identificatorGenerator.generate();
     const timestamp = Date.now();
-    const result = await this.contentSystemRepository.addNode(
+    const result = await this.contentNodeRepository.addNode(
       {
         id: discussionId,
         referenceKey: this.identificatorGenerator.generate(),
@@ -107,8 +118,6 @@ export class DiscussionService {
         },
       ]
     );
-
-    this.discussionProjectionService.requestMaterialization(discussionId);
     return result;
   }
 }
