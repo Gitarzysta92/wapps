@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HealthController } from './health/health.controller';
@@ -7,6 +7,7 @@ import { Discussion } from './discussions/entities/discussion.entity';
 import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 import { ContentNodeEntity } from './discussions/infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './discussions/infrastructure/content-node-relation.entity';
+import { SeedService } from './seed/seed.service';
 
 @Module({
   imports: [
@@ -28,13 +29,21 @@ import { ContentNodeRelationEntity } from './discussions/infrastructure/content-
         logging: false,
       }),
     }),
+    TypeOrmModule.forFeature([ContentNodeEntity]),
     DiscussionsModule,
   ],
   controllers: [HealthController],
-  providers: [],
+  providers: [SeedService],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleInit {
+  constructor(private seedService: SeedService) {}
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthValidationMiddleware).forRoutes('*');
+  }
+
+  async onModuleInit() {
+    // Seed data on startup
+    await this.seedService.seed();
   }
 }

@@ -13,7 +13,13 @@
     "strictPropertyInitialization": false
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", ".keystone", "jest.config.ts"],
+  "exclude": [
+    "node_modules",
+    ".keystone",
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
   "references": [
     {
       "path": "../../../data/tsconfig.lib.json"
