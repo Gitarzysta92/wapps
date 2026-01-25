@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { Discussion } from './entities/discussion.entity';
 import { DiscussionCreationDto, DiscussionService, IDiscussionProjectionService } from '@domains/discussion';
 import { IContentNodeRepository } from '@foundation/content-system';
-import { isErr, Result } from '../../../../../../libs/foundation/standard/src';
+import { isErr, Result } from '@foundation/standard';
+import { IDiscussionPayloadRepository } from '@domains/discussion';
 
 class ContentSystemRepository implements IContentNodeRepository {
   
@@ -26,16 +27,16 @@ class ContentSystemRepository implements IContentNodeRepository {
   
 }
 
-class AuthorityValidationService {
+class AuthorityValidationService implements IAuthorityValidationService {
 }
 
-class DiscussionProjectionService {
+class DiscussionProjectionService implements IDiscussionProjectionService {
 }
 
 class IdentificatorGenerator {
 }
 
-class DiscussionPayloadRepository {
+class DiscussionPayloadRepository implements IDiscussionPayloadRepository {
 }
 
 
