@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DiscussionsService } from './discussions.service';
 import { Discussion } from './entities/discussion.entity';
-import { DiscussionCreationDto } from '@domains/discussion';
 import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
+import { CreateDiscussionRequestDto } from './dto/create-discussion.request.dto';
 
 @ApiTags('discussions')
 @Controller('discussions')
@@ -24,10 +24,14 @@ export class DiscussionsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new discussion' })
-  create(@Body() data: DiscussionCreationDto, @AuthUser() user: AuthenticatedUser) {
+  @ApiBody({ type: CreateDiscussionRequestDto })
+  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
+  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
+  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
+  create(@Body() data: CreateDiscussionRequestDto, @AuthUser({ optional: true }) user: AuthenticatedUser) {
     const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
     const ctx = {
-      identityId: user.userId as string,
+      identityId: user.userId ?? 'anonymous',
       tenantId,
       timestamp: Date.now(),
     };
