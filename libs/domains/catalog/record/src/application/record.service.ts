@@ -1,4 +1,4 @@
-import { ContentSystemRepository } from "@foundation/content-system";
+import { IContentNodeRepository } from "@foundation/content-system";
 import { AuthorityValidationService, IAuthorityValidationContext } from "@foundation/authority-system";
 import { IOperationContext } from "@foundation/workflow-system";
 import { err, isErr, Result } from "@foundation/standard";
@@ -18,7 +18,7 @@ import { RecordCreationDto } from "./models/record-creation.dto";
 
 export abstract class RecordService {
   constructor(
-    private readonly contentSystemRepository: ContentSystemRepository,
+    private readonly contentSystemRepository: IContentNodeRepository,
     private readonly authorityValidationService: AuthorityValidationService,
     private readonly recordProjectionService: IRecordProjectionService,
     private readonly identificatorGenerator: IRecordIdentificatorGenerator

@@ -152,11 +152,11 @@ jobs:
         run: |
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic discussion-app-secrets \
-            --from-literal=DISCUSSION_DATABASE_HOST="${{ vars.DISCUSSION_DATABASE_HOST }}" \
-            --from-literal=DISCUSSION_DATABASE_PORT="${{ vars.DISCUSSION_DATABASE_PORT }}" \
-            --from-literal=DISCUSSION_DATABASE_USERNAME="${{ secrets.DISCUSSION_DATABASE_USERNAME }}" \
-            --from-literal=DISCUSSION_DATABASE_PASSWORD="${{ secrets.DISCUSSION_DATABASE_PASSWORD }}" \
-            --from-literal=DISCUSSION_DATABASE_NAME="${{ vars.DISCUSSION_DATABASE_NAME }}" \
+            --from-literal=DISCUSSION_DATABASE_HOST="${{ vars.EDITORIAL_DATABASE_HOST }}" \
+            --from-literal=DISCUSSION_DATABASE_PORT="${{ vars.EDITORIAL_DATABASE_PORT }}" \
+            --from-literal=DISCUSSION_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
+            --from-literal=DISCUSSION_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
+            --from-literal=DISCUSSION_DATABASE_NAME="${{ vars.EDITORIAL_DATABASE_NAME }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
           echo "✅ Discussion DB secrets created/updated"

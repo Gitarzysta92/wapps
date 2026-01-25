@@ -207,8 +207,9 @@ export class CatalogService {
       description: editorial.description || '',
       logo: editorial.logoUrl || '',
       rating: editorial.rating || 0,
-      tagIds: editorial.tags?.map((t) => this.convertIdToNumber(t.id)) || [],
-      categoryId: editorial.category ? this.convertIdToNumber(editorial.category.id) : 0,
+      // Keep domain record DTO IDs as strings (UUIDs) and convert to numeric IDs only for response DTOs.
+      tagIds: editorial.tags?.map((t) => t.id) || [],
+      categoryId: editorial.category ? editorial.category.id : '',
       platformIds: this.extractPlatformIds(editorial),
       reviewNumber: 0, // Will be enriched
       updateTimestamp: new Date(editorial.updatedAt).getTime(),
@@ -425,8 +426,8 @@ export class CatalogService {
       logo: record.logo,
       isPwa: editorial.isPwa || false,
       rating: editorial.rating || 0,
-      tagIds: record.tagIds,
-      categoryId: record.categoryId,
+      tagIds: record.tagIds.map((id) => this.convertIdToNumber(id)),
+      categoryId: record.categoryId ? this.convertIdToNumber(record.categoryId) : 0,
       platformIds: record.platformIds,
       reviewNumber: record.reviewNumber,
       updateDate: new Date(editorial.updatedAt),
