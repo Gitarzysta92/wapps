@@ -94,7 +94,6 @@
       ],
       "@domains/publishing": ["libs/domains/publishing/src/index.ts"],
       "@domains/reliability": ["libs/domains/reliability/src/index.ts"],
-      "@foundation/content-core": ["libs/foundation/content-core/src/index.ts"],
       "@features/categories": [
         "apps/portals/shared/features/categories/src/index.ts"
       ],
@@ -217,9 +216,12 @@
         "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],
       "@foundation/primitives": ["libs/foundation/primitives/src/index.ts"],
-      "@foundation/primitives/*": ["libs/foundation/primitives/src/*"],
       "@foundation/standard": ["libs/foundation/standard/src/index.ts"],
-      "@foundation/standard/*": ["libs/foundation/standard/src/*"],
+      "@foundation/content-system": ["libs/foundation/content-system/src/index.ts"],
+      "@foundation/identity-system": ["libs/foundation/identity-system/src/index.ts"],
+      "@foundation/authority-system": ["libs/foundation/authority-system/src/index.ts"],
+      "@foundation/governance-system": ["libs/foundation/governance-system/src/index.ts"],
+      "@foundation/workflow-system": ["libs/foundation/workflow-system/src/index.ts"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
       "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
       "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],

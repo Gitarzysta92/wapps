@@ -21,6 +21,18 @@
   "references": [
     {
       "path": "../../../foundation/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../foundation/content-system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../foundation/identity-system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../foundation/authority-system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../foundation/workflow-system/tsconfig.lib.json"
     }
   ]
 }

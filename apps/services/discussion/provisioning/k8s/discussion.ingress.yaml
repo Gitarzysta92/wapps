@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: discussion-ingress
+  namespace: discussion
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Optional, for HTTP setups
+spec:
+  rules:
+    - host: discussion-service.wapps.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: discussion
+                port:
+                  number: 1338

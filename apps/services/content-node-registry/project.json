@@ -1,0 +1,57 @@
+{
+  "name": "apps.services.content-node-registry",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/content-node-registry/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:content", "layer:service"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/services/content-node-registry",
+        "main": "apps/services/content-node-registry/src/main.ts",
+        "tsConfig": "apps/services/content-node-registry/tsconfig.app.json",
+        "webpackConfig": "apps/services/content-node-registry/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "apps.services.content-node-registry:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "apps.services.content-node-registry:build:development"
+        },
+        "production": {
+          "buildTarget": "apps.services.content-node-registry:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/services/content-node-registry/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
