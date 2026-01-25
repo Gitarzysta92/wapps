@@ -5,7 +5,6 @@ import { Discussion } from './entities/discussion.entity';
 import { DiscussionCreationDto, DiscussionService } from '@domains/discussion';
 import { AuthorityValidationService } from '@foundation/authority-system';
 import { Result } from '@foundation/standard';
-import { IContentNodeRepository } from '@foundation/content-system';
 import { IDiscussionPayloadRepository } from '@domains/discussion';
 import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
@@ -13,7 +12,7 @@ import { MinioClient } from '../infrastructure/minio-client';
 import { QueueChannel } from '../infrastructure/queue-client';
 import { AllowAllPolicyEvaluator } from './infrastructure/allow-all-policy-evaluator';
 import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
-import { NoopContentNodeRepository } from './infrastructure/noop-content-node.repository';
+import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
 import { RabbitMqDiscussionProjectionService } from './infrastructure/discussion-projection.service';
 import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discussion-identificator.generator';
 
@@ -25,9 +24,9 @@ export class DiscussionsService {
     @InjectRepository(Discussion)
     private discussionsRepository: Repository<Discussion>,
     minioClient: MinioClient,
-    @Inject('DISCUSSION_QUEUE') queue: QueueChannel
+    @Inject('DISCUSSION_QUEUE') queue: QueueChannel,
+    contentNodeRepository: MysqlContentNodeRepository
   ) {
-    const contentNodeRepository: IContentNodeRepository = new NoopContentNodeRepository();
     const authorityValidationService: AuthorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
     const discussionPayloadRepository: IDiscussionPayloadRepository = new MinioDiscussionPayloadRepository(minioClient);
     const discussionProjectionService: IDiscussionProjectionService = new RabbitMqDiscussionProjectionService(queue);
