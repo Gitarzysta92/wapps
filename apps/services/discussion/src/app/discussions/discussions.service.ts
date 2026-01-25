@@ -13,7 +13,7 @@ import { QueueChannel } from '../infrastructure/queue-client';
 import { AllowAllPolicyEvaluator } from './infrastructure/allow-all-policy-evaluator';
 import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
-import { RabbitMqDiscussionProjectionService } from './infrastructure/discussion-projection.service';
+import { RabbitMqDiscussionProjectionService } from './infrastructure/rabbitmq-discussion-projection.service';
 import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discussion-identificator.generator';
 
 @Injectable()

@@ -8,7 +8,7 @@ import { MinioClient } from '../infrastructure/minio-client';
 import { QueueClient, QueueChannel } from '../infrastructure/queue-client';
 import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussion-payload.repository';
 import amqp from 'amqplib';
-import { DISCUSSION_PROJECTION_QUEUE_NAME } from './infrastructure/discussion-projection.service';
+import { DISCUSSION_PROJECTION_QUEUE_NAME } from './infrastructure/rabbitmq-discussion-projection.service';
 import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
