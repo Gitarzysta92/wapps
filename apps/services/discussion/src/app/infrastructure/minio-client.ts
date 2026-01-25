@@ -1,9 +1,12 @@
 import {
   CreateBucketCommand,
+  GetObjectCommand,
   HeadBucketCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
 
 export class MinioClient {
   private client: S3Client;
@@ -52,5 +55,54 @@ export class MinioClient {
 
     await this.client.send(command);
   }
+
+  async listObjectKeys(bucketName: string, prefix: string): Promise<string[]> {
+    const keys: string[] = [];
+    let continuationToken: string | undefined;
+
+    do {
+      const res = await this.client.send(
+        new ListObjectsV2Command({
+          Bucket: bucketName,
+          Prefix: prefix,
+          ContinuationToken: continuationToken,
+        })
+      );
+
+      for (const item of res.Contents ?? []) {
+        if (item.Key) keys.push(item.Key);
+      }
+
+      continuationToken = res.IsTruncated ? res.NextContinuationToken : undefined;
+    } while (continuationToken);
+
+    return keys;
+  }
+
+  async getJson<T = unknown>(bucketName: string, objectKey: string): Promise<T> {
+    const res = await this.client.send(
+      new GetObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey,
+      })
+    );
+
+    const body = res.Body;
+    if (!body) {
+      throw new Error(`MinIO object body is empty: ${bucketName}/${objectKey}`);
+    }
+
+    const text = await streamToString(body as Readable);
+    return JSON.parse(text) as T;
+  }
+}
+
+async function streamToString(stream: Readable): Promise<string> {
+  return await new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
 }
 

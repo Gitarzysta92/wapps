@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Discussion } from './entities/discussion.entity';
 import { DiscussionCreationDto, DiscussionService } from '@domains/discussion';
 import { AuthorityValidationService } from '@foundation/authority-system';
-import { Result } from '@foundation/standard';
+import { Result, isErr } from '@foundation/standard';
 import { IDiscussionPayloadRepository } from '@domains/discussion';
 import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
@@ -19,6 +19,7 @@ import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discuss
 @Injectable()
 export class DiscussionsService {
   private discussionService: DiscussionService;
+  private payloadRepository: MinioDiscussionPayloadRepository;
 
   constructor(
     @InjectRepository(Discussion)
@@ -28,7 +29,8 @@ export class DiscussionsService {
     contentNodeRepository: MysqlContentNodeRepository
   ) {
     const authorityValidationService: AuthorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
-    const discussionPayloadRepository: IDiscussionPayloadRepository = new MinioDiscussionPayloadRepository(minioClient);
+    this.payloadRepository = new MinioDiscussionPayloadRepository(minioClient);
+    const discussionPayloadRepository: IDiscussionPayloadRepository = this.payloadRepository;
     const discussionProjectionService: IDiscussionProjectionService = new RabbitMqDiscussionProjectionService(queue);
     const identificatorGenerator: IDiscussionIdentificatorGenerator = new CryptoDiscussionIdentificatorGenerator();
 
@@ -41,28 +43,36 @@ export class DiscussionsService {
     );
   }
 
-  findAll() {
-    return this.discussionsRepository.find({
-      order: { createdAt: 'DESC' },
-    });
+  async findAll(): Promise<unknown[]> {
+    const result = await this.payloadRepository.listAllPayloads<unknown>();
+    if (isErr(result)) {
+      throw result.error;
+    }
+    return result.value;
   }
 
-  findOne(id: string) {
-    return this.discussionsRepository.findOne({
-      where: { id },
-    });
+  async findOne(id: string): Promise<unknown> {
+    const result = await this.payloadRepository.getPayload<unknown>(id);
+    if (isErr(result)) {
+      throw result.error;
+    }
+    return result.value;
   }
+
+  async update(id: string, data: Partial<Discussion>): Promise<{ updated: true }> {
+    const result = await this.payloadRepository.updatePayload(id, data as unknown as Record<string, unknown>);
+    if (isErr(result)) {
+      throw result.error;
+    }
+    return { updated: true };
+  }
+
 
   create(
     data: DiscussionCreationDto,
     ctx: CommentCreationContext
   ): Promise<Result<boolean, Error>> {
     return this.discussionService.addDiscussion(data, ctx);
-  }
-
-  async update(id: string, data: Partial<Discussion>) {
-    await this.discussionsRepository.update(id, data);
-    return this.findOne(id);
   }
 
   async remove(id: string) {

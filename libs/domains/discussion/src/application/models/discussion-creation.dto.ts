@@ -5,7 +5,7 @@ export type DiscussionCreationDto = {
   /**
    * Discussion body content. Stored as payload (e.g. MinIO) by the app layer.
    */
-  content: string;
+  content: unknown;
   subjectId?: Uuidv7;
   state?: ContentNodeState;
   visibility?: ContentNodeVisibility;

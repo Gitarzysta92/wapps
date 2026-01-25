@@ -1,6 +1,8 @@
-import type { ContentId } from './content-id';
-import type { ContentRelationId } from './content-node-relation';
-import type { ContentState, ContentVisibility, RelationType } from '../constants';
+import type { Uuidv7 } from '@foundation/standard';
+import type { ContentNodeRelationType, ContentNodeState, ContentNodeVisibility } from '../constants';
+
+export type ContentId = Uuidv7;
+export type ContentRelationId = Uuidv7;
 
 /** Lifecycle events for eventual consistency and projection rebuilds. */
 export type ContentCreated = { type: 'ContentCreated'; contentId: ContentId };
@@ -8,13 +10,13 @@ export type ContentCreated = { type: 'ContentCreated'; contentId: ContentId };
 export type ContentStateChanged = {
   type: 'ContentStateChanged';
   contentId: ContentId;
-  state: ContentState;
+  state: ContentNodeState;
 };
 
 export type ContentVisibilityChanged = {
   type: 'ContentVisibilityChanged';
   contentId: ContentId;
-  visibility: ContentVisibility;
+  visibility: ContentNodeVisibility;
 };
 
 /** Relation added (append-only; no ContentRelationRemoved per ADR-0002). */
@@ -23,7 +25,7 @@ export type ContentRelationAdded = {
   relationId: ContentRelationId;
   fromContentId: ContentId;
   toContentId: ContentId;
-  relationType: RelationType;
+  relationType: ContentNodeRelationType | string;
 };
 
 export type ContentLifecycleEvent =
