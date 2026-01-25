@@ -17,6 +17,9 @@
   "references": [
     {
       "path": "../../../data/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/discussion/tsconfig.lib.json"
     }
   ]
 }

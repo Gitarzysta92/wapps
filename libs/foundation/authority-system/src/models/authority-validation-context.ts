@@ -1,4 +1,4 @@
-export interface IValidationContext {
+export interface IAuthorityValidationContext {
   identityId: string;
   tenantId: string;
   timestamp: number;

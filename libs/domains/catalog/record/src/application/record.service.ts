@@ -1,5 +1,5 @@
 import { ContentSystemRepository } from "@foundation/content-system";
-import { AuthorityValidationService, IValidationContext } from "@foundation/authority-system";
+import { AuthorityValidationService, IAuthorityValidationContext } from "@foundation/authority-system";
 import { IOperationContext } from "@foundation/workflow-system";
 import { err, isErr, Result } from "@foundation/standard";
 import {
@@ -26,7 +26,7 @@ export abstract class RecordService {
 
   async addRecord(
     payload: RecordCreationDto,
-    ctx: IOperationContext & IValidationContext
+    ctx: IOperationContext & IAuthorityValidationContext
   ): Promise<Result<boolean, Error>> {
     const validatableContext = {
       identityId: ctx.identityId,

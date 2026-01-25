@@ -1,6 +1,6 @@
 import { Result } from '@foundation/standard';
-import { IValidationContext } from "../models/validation-context";
+import { IAuthorityValidationContext } from "../models/authority-validation-context";
 
 export interface IPolicyEvaluator {
-  evaluate( ctx: IValidationContext): Promise<Result<boolean, Error>>;
+  evaluate( ctx: IAuthorityValidationContext): Promise<Result<boolean, Error>>;
 }
