@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/foundation/workflow-system",
+    "declaration": true,
+    "types": [],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmitOnError": false,
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../dist/foundation/workflow-system/tsconfig.lib.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../standard/tsconfig.lib.json"
+    }
+  ]
+}

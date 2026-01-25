@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { map, Observable, Subject, switchMap, tap, startWith, shareReplay } from "rxjs";
 import { CustomerFavoritesDto } from "@domains/customer/favorites";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { IMyFavoritesStateProvider } from "./my-favorites-state-provider.port";
 import { MyFavoritesState } from "./my-favorites.state";
 import { IMyFavoritesProvider } from "./my-favorites-provider.port";

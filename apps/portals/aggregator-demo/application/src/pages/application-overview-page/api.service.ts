@@ -2,7 +2,7 @@ import { AppPreviewDto, AppRecordDto, IRecordsProvider, RECORD_SUBDOMAIN_SLUG } 
 import { map, Observable, of } from 'rxjs';
 import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { API_BASE_URL } from '@portals/shared/boundary/http';
 
 export class ApiService implements IRecordsProvider {

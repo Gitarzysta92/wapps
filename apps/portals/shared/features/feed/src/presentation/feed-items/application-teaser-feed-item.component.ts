@@ -4,7 +4,7 @@ import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent, CardFo
 import { CoverImageComponent } from '@ui/cover-image';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
-import { AddTypeToArray } from '@standard/utility-types';
+import { AddTypeToArray } from '@foundation/standard/utility-types';
 import { 
   MediumTitleComponent,
 } from '@ui/content';

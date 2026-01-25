@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { IPasswordResetRequestHandler, RegistrationDto } from "@domains/identity/authentication";
 import { PasswordResetRequestDto } from "@domains/identity/authentication";
 

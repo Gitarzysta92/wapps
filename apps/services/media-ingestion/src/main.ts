@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { QueueClient } from './infrastructure/queue-client';
 import { MinioClient } from './infrastructure/minio-client';
 import { MediaIngestionService } from './application/media-ingestion.service';
-import { ApplicationShell } from '@standard';
+import { ApplicationShell } from '@foundation/standard';
 import { RAW_MEDIA_INGESTION_SLUG } from '@domains/catalog/media';
 
 dotenv.config();

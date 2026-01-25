@@ -110,7 +110,7 @@ import {
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { IAuthenticationHandler } from '../../application/authentication-handler.token';
 import { CredentialsDto } from '@domains/identity/authentication';
-import { Result, Ok, Err } from '@standard';
+import { Result, Ok, Err } from '@foundation/standard';
 import { FIREBASE_CONFIG, FirebaseConfig } from './firebase.config';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { map, Observable, Subject, switchMap, tap } from "rxjs";
 import { CustomerProfileDto, MY_PROFILE_PROVIDER, MY_PROFILE_UPDATER } from "@domains/customer/profiles";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { IMyProfileStateProvider } from "./my-profile-state-provider.port";
 import { MyProfileState } from "./my-profile.state";
 

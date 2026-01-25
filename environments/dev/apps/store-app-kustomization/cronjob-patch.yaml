@@ -1,7 +1,5 @@
 apiVersion: batch/v1
 kind: CronJob
-metadata:
-  name: store-app-scrapper
 spec:
   # Development: run daily at midnight
   schedule: "0 0 * * *"

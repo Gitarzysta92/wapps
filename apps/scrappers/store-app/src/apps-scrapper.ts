@@ -7,7 +7,7 @@ import { QueueClient } from './infrastructure/queue-client';
 import { BrowserClient } from './infrastructure/browser-client';
 import { RawRecordProcessorService } from './application/services/raw-record-processor.service';
 import { MediaIngestionService } from './application/services/media-ingestion.service';
-import { ApplicationShell } from '@standard';
+import { ApplicationShell } from '@foundation/standard';
 import { RAW_MEDIA_INGESTION_SLUG } from '@domains/catalog/media';
 import { RAW_RECORD_PROCESSING_SLUG } from '@domains/catalog/record';
 

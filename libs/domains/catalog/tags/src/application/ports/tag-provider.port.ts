@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { TagDto } from "../models/tag.dto";
 
 export interface ITagsProvider {

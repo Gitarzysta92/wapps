@@ -7,7 +7,7 @@ import {
   AuthenticationProvider,
   AuthenticationMethodDto
 } from "@domains/identity/authentication";
-import { Result, ok, err } from "@standard";
+import { Result, ok, err } from "@foundation/standard";
 import { AUTH_BFF_URL } from "./auth-bff-url.token";
 import { WA_WINDOW } from "@ng-web-apis/common";
 

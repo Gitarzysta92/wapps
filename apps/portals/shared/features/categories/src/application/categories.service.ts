@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, Observable, shareReplay } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { CategoryDto, ICategoriesProvider } from "@domains/catalog/category";
 import { CATEGORIES_PROVIDER } from "./categories-provider.token";
 

@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/apps/services/discussion",
+    "declaration": true,
+    "types": ["node"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmitOnError": false,
+    "composite": true,
+    "module": "commonjs",
+    "target": "es2020",
+    "strictPropertyInitialization": false
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", ".keystone", "jest.config.ts"],
+  "references": [
+    {
+      "path": "../../../data/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/discussion/tsconfig.lib.json"
+    }
+  ]
+}

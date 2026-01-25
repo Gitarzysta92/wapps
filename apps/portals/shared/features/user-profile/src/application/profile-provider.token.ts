@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CustomerProfileDto } from '@domains/customer/profiles';
-import { ProviderState } from '@standard';
+import { ProviderState } from '@foundation/standard';
 
 export const USER_PROFILE_PROVIDER = new InjectionToken<IUserProfileProvider>('USER_PROFILE_PROVIDER');
 

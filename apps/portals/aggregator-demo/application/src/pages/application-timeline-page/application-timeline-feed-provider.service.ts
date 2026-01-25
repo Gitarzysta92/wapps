@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { IFeedProviderPort, IFeedPage } from '@portals/shared/features/feed';
 import { APPLICATIONS } from '@portals/shared/data';
-import { Result } from '@standard';
+import { Result } from '@foundation/standard';
 
 import { 
   ARTICLES_DATA, 

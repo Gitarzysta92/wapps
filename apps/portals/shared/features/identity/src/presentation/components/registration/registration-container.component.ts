@@ -2,7 +2,7 @@ import { Component, inject } from "@angular/core";
 import { TuiNotification, TuiButton, TuiLoader } from "@taiga-ui/core";
 import { WA_WINDOW } from '@ng-web-apis/common';
 import { REGISTRATION_HANDLER } from "../../../application/registration-handler.token";
-import { TimedQueue } from "@primitives";
+import { TimedQueue } from "@foundation/primitives";
 import { RegistrationFormComponent } from "@ui/registration";
 import { RegistrationDto } from "@domains/identity/authentication";
 

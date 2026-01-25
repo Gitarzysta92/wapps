@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { Observable, of } from "rxjs";
 import { CustomerFavoritesDto } from "@domains/customer/favorites";
 import { APPLICATIONS } from "@portals/shared/data";

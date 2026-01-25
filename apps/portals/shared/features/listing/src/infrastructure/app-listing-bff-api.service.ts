@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { map, catchError } from "rxjs/operators";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { IAppListingProvider } from "../application";
 import { AppListingQueryDto } from "../application/models/app-listing-query.dto";
 import { AppListingSliceDto } from "../application/models/record-listing.dto";

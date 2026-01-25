@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: discussion-config
+  namespace: discussion
+data:
+  # RabbitMQ
+  QUEUE_HOST: rabbitmq.rabbitmq
+  QUEUE_PORT: "5672"
+
+  # MinIO (S3 compatible)
+  DISCUSSION_STORAGE_HOST: http://minio.minio:9000
+
+  # Service config
+  DISCUSSION_CORS_ORIGIN: "*"
+

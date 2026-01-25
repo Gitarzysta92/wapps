@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Result } from "@standard";
+import { Result } from "@foundation/standard";
 import { ISharingProvider } from "./sharing-provider.port";
 import { SHARING_PROVIDER } from "./sharing-provider.token";
 

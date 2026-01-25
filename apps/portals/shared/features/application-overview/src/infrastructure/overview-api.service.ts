@@ -1,6 +1,6 @@
 import { map, Observable } from "rxjs";
 import { IApplicationOverviewProvider } from "../application/overview-providers.port";
-import { Result } from '@standard'
+import { Result } from '@foundation/standard'
 import { OverviewDto } from "../application/overview.dto";
 import { OVERVIEW_API_URL } from "./overview-api-url.port";
 import { inject } from "@angular/core";

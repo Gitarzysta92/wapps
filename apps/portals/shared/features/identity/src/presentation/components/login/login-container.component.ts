@@ -7,7 +7,7 @@ import {
   AuthenticationMethodDto 
 } from "@domains/identity/authentication";
 import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
-import { TimedQueue } from "@primitives";
+import { TimedQueue } from "@foundation/primitives";
 import { WA_WINDOW } from "@ng-web-apis/common";
 import { AuthenticationService } from "../../../application/authentication.service";
 import { ProviderButtonsComponent } from "./provider-buttons.component";

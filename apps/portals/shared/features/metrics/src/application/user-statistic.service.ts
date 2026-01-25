@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { ESTIMATED_USER_SPAN_PROVIDER, IEstimatedUserSpanProvider } from "./ports/estimated-user-span-provider.port";
 import { defer, map, shareReplay } from "rxjs";
-import { isOk } from "@standard";
+import { isOk } from "@foundation/standard";
 
 @Injectable()
 export class UserStatisticService {
