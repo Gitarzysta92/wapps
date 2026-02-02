@@ -19,12 +19,16 @@
       include_tasks: system/configure.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Include K3s installation
+      include_tasks: k3s/install.yml
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Include MySQL installation
       include_tasks: mysql/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Include K3s installation
-      include_tasks: k3s/install.yml
+    - name: Include MongoDB installation
+      include_tasks: mongodb/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Create ArgoCD namespace

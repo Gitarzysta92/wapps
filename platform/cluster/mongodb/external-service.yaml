@@ -1,0 +1,80 @@
+---
+# This is a reference manifest showing the Kubernetes Service and Endpoints
+# that Ansible creates automatically for host-based MongoDB.
+# You don't need to apply this manually.
+# It's provided for documentation and reference purposes.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mongodb
+  labels:
+    name: mongodb
+
+---
+# Service provides a stable DNS name for MongoDB
+# Pods connect to: mongodb.mongodb or mongodb.mongodb.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: mongodb
+  labels:
+    app: mongodb
+    type: external-host-service
+  annotations:
+    description: "MongoDB server running on host machine"
+    provisioned-by: "ansible"
+spec:
+  type: ClusterIP
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+      protocol: TCP
+
+---
+# Endpoints specify the actual IP address to route traffic to
+# This points to the host machine's IP (automatically detected by Ansible)
+# NOTE: The IP address here is a placeholder - Ansible replaces it with the actual host IP
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: mongodb
+  namespace: mongodb
+  labels:
+    app: mongodb
+    type: external-host-service
+  annotations:
+    description: "Points to MongoDB server on host machine"
+    provisioned-by: "ansible"
+subsets:
+  - addresses:
+      - ip: 192.168.1.100  # PLACEHOLDER - Ansible replaces with {{ ansible_default_ipv4.address }}
+    ports:
+      - name: mongodb
+        port: 27017
+        protocol: TCP
+
+---
+# Shared MongoDB credentials secret (in mongodb namespace)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-credentials
+  namespace: mongodb
+  labels:
+    app: mongodb
+    component: credentials
+  annotations:
+    description: "Shared MongoDB credentials for applications"
+    provisioned-by: "ansible"
+type: Opaque
+stringData:
+  MONGODB_HOST: mongodb.mongodb
+  MONGODB_PORT: "27017"
+  MONGODB_AUTH_DB: admin
+  MONGODB_USERNAME: wapps_app
+  MONGODB_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password
+  MONGODB_URI: mongodb://wapps_app:PLACEHOLDER@mongodb.mongodb:27017/?authSource=admin
+
