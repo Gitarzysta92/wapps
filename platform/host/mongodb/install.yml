@@ -18,6 +18,24 @@
       MongoDB host provisioning currently supports Ubuntu only (uses official MongoDB apt repository).
       Detected ansible_distribution={{ ansible_distribution | default('unknown') }}.
 
+- name: Validate required MongoDB credentials are provided
+  assert:
+    that:
+      - (mongodb_root_password | default('', true)) | length > 0
+      - (mongodb_wapps_password | default('', true)) | length > 0
+    fail_msg: >
+      Missing MongoDB credentials. Provide non-empty Ansible vars:
+      mongodb_root_password and mongodb_wapps_password (via GitHub secrets or --extra-vars).
+
+- name: Map Ubuntu codename for MongoDB apt repo
+  set_fact:
+    mongodb_ubuntu_codename: >-
+      {% if (ansible_distribution_release | default('jammy')) in ['noble'] %}
+      jammy
+      {% else %}
+      {{ ansible_distribution_release | default('jammy') }}
+      {% endif %}
+
 # ==============================================
 # MongoDB APT repository (Ubuntu)
 # ==============================================
@@ -41,7 +59,7 @@
     dest: /etc/apt/sources.list.d/mongodb-org-7.0.list
     mode: '0644'
     content: |
-      deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release | default('jammy') }}/mongodb-org/7.0 multiverse
+      deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ mongodb_ubuntu_codename }}/mongodb-org/7.0 multiverse
 
 - name: Update apt cache (MongoDB repo)
   apt:
