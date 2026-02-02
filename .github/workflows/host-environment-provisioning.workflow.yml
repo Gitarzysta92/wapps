@@ -47,6 +47,15 @@ jobs:
         run: |
           echo "Debug: job.environment = ${{ job.environment }}"
           echo "Debug: github.event.inputs.env = ${{ github.event.inputs.env }}"
+          
+          # Fail fast if required secrets are missing for the selected GitHub Environment
+          for var in MYSQL_ROOT_PASSWORD MYSQL_WAPPS_PASSWORD MONGODB_ROOT_PASSWORD MONGODB_WAPPS_PASSWORD; do
+            if [ -z "${!var}" ]; then
+              echo "::error title=Missing required secret::$var is empty or not configured for environment '${{ github.event.inputs.env }}'"
+              exit 1
+            fi
+          done
+
           EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }} argocd_admin_password=$ARGOCD_ADMIN_PASSWORD git_token=$GIT_TOKEN tailscale_auth_key=$TAILSCALE_AUTH_KEY tailscale_api_token=$TAILSCALE_API_TOKEN tailscale_domain=$TAILSCALE_DOMAIN initial_username=$ARGO_INITIAL_USERNAME initial_password=$ARGO_INITIAL_PASSWORD mysql_root_password=$MYSQL_ROOT_PASSWORD mysql_wapps_password=$MYSQL_WAPPS_PASSWORD mongodb_root_password=$MONGODB_ROOT_PASSWORD mongodb_wapps_password=$MONGODB_WAPPS_PASSWORD"
 
           echo "$SUDO_PASS" | ansible-playbook -i platform/host/inventory.ini platform/host/main.yml \
