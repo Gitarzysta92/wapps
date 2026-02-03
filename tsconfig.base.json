@@ -39,10 +39,10 @@
     "types": [],
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
-      "@apps/shared": ["apps/shared/src/index.ts"],
       "@apps/portals/shared/features/health-status": [
         "apps/portals/shared/features/health-status/src/index.ts"
       ],
+      "@apps/shared": ["apps/shared/src/index.ts"],
       "@cross-cutting/events": ["libs/cross-cutting/events/src/index.ts"],
       "@data": ["data/src/index.ts"],
       "@domains/acquisition": ["libs/domains/acquisition/src/index.ts"],
@@ -118,12 +118,12 @@
       ],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
       "@identity/*": ["apps/portals/shared/features/identity/*"],
+      "@infrastructure/*": ["libs/infrastructure/*/src/index.ts"],
       "@infrastructure/mongo": ["libs/infrastructure/mongo/src/index.ts"],
       "@infrastructure/mysql": ["libs/infrastructure/mysql/src/index.ts"],
       "@infrastructure/platform-queue": [
         "libs/infrastructure/platform-queue/src/index.ts"
       ],
-      "@infrastructure/*": ["libs/infrastructure/*/src/index.ts"],
       "@portals/aggregator-demo/application": [
         "apps/portals/aggregator-demo/application/src/index.ts"
       ],
@@ -272,6 +272,7 @@
       "@ui/status-banner": ["libs/ui/status-banner/src/index.ts"],
       "@ui/tags": ["libs/ui/tags/src/index.ts"],
       "@ui/voting": ["libs/ui/voting/src/index.ts"],
+      "minio": ["libs/infrastructure/minio/src/index.ts"],
       "voting": ["apps/portals/shared/features/voting/src/index.ts"]
     }
   },

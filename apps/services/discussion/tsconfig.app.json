@@ -35,6 +35,9 @@
     },
     {
       "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/minio/tsconfig.lib.json"
     }
   ]
 }

@@ -24,10 +24,10 @@ export class MinioDiscussionPayloadRepository implements IDiscussionPayloadRepos
   async listAllPayloads<T = unknown>(): Promise<Result<T[], Error>> {
     try {
       const keys = await this.minioClient.listObjectKeys(DISCUSSION_CONTENT_BUCKET_NAME, DISCUSSION_PAYLOAD_PREFIX);
-      const payloadKeys = keys.filter((k) => k.endsWith(DISCUSSION_PAYLOAD_SUFFIX));
+      const payloadKeys = keys.filter((k: string) => k.endsWith(DISCUSSION_PAYLOAD_SUFFIX));
 
       const payloads = await Promise.all(
-        payloadKeys.map((k) => this.minioClient.getJson<T>(DISCUSSION_CONTENT_BUCKET_NAME, k))
+        payloadKeys.map((k: string) => this.minioClient.getJson<T>(DISCUSSION_CONTENT_BUCKET_NAME, k))
       );
 
       return ok(payloads);
