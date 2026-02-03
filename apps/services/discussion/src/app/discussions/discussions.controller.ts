@@ -49,4 +49,34 @@ export class DiscussionsController {
   remove(@Param('id') id: string) {
     return this.discussionsService.remove(id);
   }
+
+  @Post('comments/:id/like')
+  @ApiOperation({ summary: 'Like a comment (idempotent)' })
+  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
+  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
+  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
+  likeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
+    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
+    const ctx = {
+      identityId: user.userId ?? 'anonymous',
+      tenantId,
+      timestamp: Date.now(),
+    };
+    return this.discussionsService.likeComment(id, ctx);
+  }
+
+  @Delete('comments/:id/like')
+  @ApiOperation({ summary: 'Unlike a comment (idempotent)' })
+  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
+  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
+  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
+  unlikeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
+    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
+    const ctx = {
+      identityId: user.userId ?? 'anonymous',
+      tenantId,
+      timestamp: Date.now(),
+    };
+    return this.discussionsService.unlikeComment(id, ctx);
+  }
 }

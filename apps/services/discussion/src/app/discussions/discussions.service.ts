@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { DISCUSSION_NODE_KIND, DiscussionCreationDto, DiscussionService } from '@domains/discussion';
 import { AuthorityValidationService } from '@foundation/authority-system';
 import { Result, Uuidv7, isErr } from '@foundation/standard';
@@ -12,20 +12,26 @@ import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discuss
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
 import { RabbitMqDiscussionProjectionService } from './infrastructure/rabbitmq-discussion-projection.service';
 import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discussion-identificator.generator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CommentLikeEntity } from './infrastructure/comment-like.entity';
 
 @Injectable()
 export class DiscussionsService {
   private discussionService: DiscussionService;
   private payloadRepository: MinioDiscussionPayloadRepository;
   private readonly contentNodeRepository: MysqlContentNodeRepository;
+  private readonly authorityValidationService: AuthorityValidationService;
 
   constructor(
     minioClient: MinioClient,
     @Inject('DISCUSSION_QUEUE') queue: QueueChannel,
-    contentNodeRepository: MysqlContentNodeRepository
+    contentNodeRepository: MysqlContentNodeRepository,
+    @InjectRepository(CommentLikeEntity)
+    private readonly commentLikes: Repository<CommentLikeEntity>
   ) {
     this.contentNodeRepository = contentNodeRepository;
-    const authorityValidationService: AuthorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
+    this.authorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
     this.payloadRepository = new MinioDiscussionPayloadRepository(minioClient);
     const discussionPayloadRepository: IDiscussionPayloadRepository = this.payloadRepository;
     const discussionProjectionService: IDiscussionProjectionService = new RabbitMqDiscussionProjectionService(queue);
@@ -33,7 +39,7 @@ export class DiscussionsService {
 
     this.discussionService = new DiscussionService(
       contentNodeRepository,
-      authorityValidationService,
+      this.authorityValidationService,
       discussionPayloadRepository,
       discussionProjectionService,
       identificatorGenerator,
@@ -78,6 +84,49 @@ export class DiscussionsService {
     ctx: CommentCreationContext
   ): Promise<Result<boolean, Error>> {
     return this.discussionService.addDiscussion(data, ctx);
+  }
+
+  async likeComment(commentId: string, ctx: CommentCreationContext): Promise<{ liked: true }> {
+    const auth = await this.authorityValidationService.validate({
+      identityId: ctx.identityId,
+      tenantId: ctx.tenantId,
+      timestamp: ctx.timestamp,
+      actionName: 'discussion.comment.like',
+    });
+    if (isErr(auth)) throw auth.error;
+    if (auth.value !== true) throw new UnauthorizedException('Not allowed to like comment');
+
+    // Idempotent by unique index (commentId, actorIdentityId).
+    await this.commentLikes
+      .createQueryBuilder()
+      .insert()
+      .values({
+        commentId,
+        actorIdentityId: ctx.identityId,
+        createdAt: Date.now(),
+      })
+      // MySQL syntax; TypeORM will translate for supported drivers.
+      .orIgnore()
+      .execute();
+
+    return { liked: true };
+  }
+
+  async unlikeComment(commentId: string, ctx: CommentCreationContext): Promise<{ unliked: true }> {
+    const auth = await this.authorityValidationService.validate({
+      identityId: ctx.identityId,
+      tenantId: ctx.tenantId,
+      timestamp: ctx.timestamp,
+      actionName: 'discussion.comment.unlike',
+    });
+    if (isErr(auth)) throw auth.error;
+    if (auth.value !== true) throw new UnauthorizedException('Not allowed to unlike comment');
+
+    await this.commentLikes.delete({
+      commentId,
+      actorIdentityId: ctx.identityId,
+    });
+    return { unliked: true };
   }
 
   async remove(id: string) {

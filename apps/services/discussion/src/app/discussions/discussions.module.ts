@@ -9,10 +9,11 @@ import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussio
 import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
 import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
+import { CommentLikeEntity } from './infrastructure/comment-like.entity';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity])],
+  imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity, CommentLikeEntity])],
   controllers: [DiscussionsController],
   providers: [
     DiscussionsService,
