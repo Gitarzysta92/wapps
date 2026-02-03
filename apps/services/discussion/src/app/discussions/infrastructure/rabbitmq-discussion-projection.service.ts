@@ -1,13 +1,9 @@
 import { IDiscussionProjectionService } from '@domains/discussion';
+import {
+  DISCUSSION_PROJECTION_QUEUE_NAME,
+  DiscussionMaterializationRequestedEvent,
+} from '@apps/shared';
 import { QueueChannel } from '../../infrastructure/queue-client';
-
-export const DISCUSSION_PROJECTION_QUEUE_NAME = 'discussion-projection';
-
-export type DiscussionMaterializationRequestedEvent = {
-  type: 'discussion.materialization.requested';
-  discussionId: string;
-  timestamp: number;
-};
 
 export class RabbitMqDiscussionProjectionService implements IDiscussionProjectionService {
   constructor(

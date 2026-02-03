@@ -26,6 +26,9 @@
     },
     {
       "path": "../../../libs/domains/discussion/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../apps/shared/tsconfig.lib.json"
     }
   ]
 }

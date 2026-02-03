@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DiscussionsService } from './discussions.service';
-import { Discussion } from './entities/discussion.entity';
 import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
 import { CreateDiscussionRequestDto } from './dto/create-discussion.request.dto';
 
@@ -41,8 +40,8 @@ export class DiscussionsController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update discussion' })
-  update(@Param('id') id: string, @Body() data: Partial<Discussion>) {
-    return this.discussionsService.update(id, data);
+  update(@Param('id') id: string, @Body() patch: Record<string, unknown>) {
+    return this.discussionsService.update(id, patch);
   }
 
   @Delete(':id')

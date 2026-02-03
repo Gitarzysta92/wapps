@@ -1,5 +1,6 @@
 import {
   CreateBucketCommand,
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
   ListObjectsV2Command,
@@ -94,6 +95,15 @@ export class MinioClient {
 
     const text = await streamToString(body as Readable);
     return JSON.parse(text) as T;
+  }
+
+  async deleteObject(bucketName: string, objectKey: string): Promise<void> {
+    await this.client.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey,
+      })
+    );
   }
 }
 

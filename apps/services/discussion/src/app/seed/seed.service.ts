@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v7 as uuidv7 } from 'uuid';
+import { v5 as uuidv5 } from 'uuid';
 import { ContentNodeEntity } from '../discussions/infrastructure/content-node.entity';
 import { ContentNodeState, ContentNodeVisibility } from '@foundation/content-system';
-import { Uuidv7 } from '@foundation/standard';
+import { Uuidv7, isErr } from '@foundation/standard';
 import { DiscussionsService } from '../discussions/discussions.service';
-import { DISCUSSION_NODE_KIND } from '@domains/discussion';
+import { categories, tags } from '@data';
+import { CategoryTreeDto } from '@domains/catalog/category';
+import { TagOptionDto } from '@domains/catalog/tags';
 
 @Injectable()
 export class SeedService {
@@ -35,23 +37,16 @@ export class SeedService {
   private async seedSystemNodes() {
     this.logger.log('Seeding system content nodes...');
     const timestamp = Date.now();
-
-    const existingSystemNode = await this.contentNodeRepo.findOne({ where: { kind: 'system' } });
-    if (existingSystemNode) {
-      this.logger.log('✅ System node already present, skipping...');
-      return;
-    }
-
     const systemNode = this.contentNodeRepo.create({
-      id: uuidv7() as Uuidv7,
-      referenceKey: uuidv7() as Uuidv7,
+      id: this.buildSeedUuid('system-node'),
+      referenceKey: this.buildSeedUuid('system-node-ref'),
       kind: 'system',
       state: ContentNodeState.PUBLISHED,
       visibility: ContentNodeVisibility.PUBLIC,
       createdAt: timestamp,
     });
 
-    await this.contentNodeRepo.save(systemNode);
+    await this.contentNodeRepo.upsert(systemNode, ['id']);
     this.logger.log('✅ Seeded system content node');
   }
 
@@ -61,20 +56,13 @@ export class SeedService {
       return;
     }
 
-    const existingDiscussions = await this.contentNodeRepo.count({ where: { kind: DISCUSSION_NODE_KIND } });
-    if (existingDiscussions > 0) {
-      this.logger.log(`✅ Demo seed skipped (existing discussions=${existingDiscussions})`);
-      return;
-    }
-
     this.logger.log('🌱 Seeding demo discussion payload...');
 
+    const seedContent = this.buildSeedContent();
     const payload = {
-      content: {
-        type: 'demo',
-        title: 'Seeded discussion',
-        text: 'This discussion was seeded on startup. Set DISCUSSION_SEED_DEMO_DATA=false to disable.',
-      },
+      id: this.buildSeedUuid('demo-discussion'),
+      referenceKey: this.buildSeedUuid('demo-discussion-ref'),
+      content: seedContent,
     };
 
     const ctx = {
@@ -84,12 +72,73 @@ export class SeedService {
     };
 
     const result = await this.discussionsService.create(payload, ctx);
-    if ('error' in (result as any)) {
-      // Result<..., Error> from @foundation/standard
-      this.logger.error('❌ Demo discussion seed failed', (result as any).error);
+    if (isErr(result)) {
+      if (this.isDuplicateError(result.error)) {
+        this.logger.log('✅ Demo discussion already seeded, skipping...');
+        return;
+      }
+      this.logger.error('❌ Demo discussion seed failed', result.error);
       return;
     }
 
     this.logger.log('✅ Seeded demo discussion');
+  }
+
+  private buildSeedContent(): Record<string, unknown> {
+    const fallbackTags: TagOptionDto[] = [
+      { id: 0, name: 'Discussion', slug: 'discussion' },
+      { id: 1, name: 'Community', slug: 'community' },
+      { id: 2, name: 'Feedback', slug: 'feedback' },
+    ];
+    const fallbackCategories: CategoryTreeDto[] = [
+      { id: 0, slug: 'general', name: 'General', childs: [] },
+    ];
+
+    const availableTags = Array.isArray(tags) && tags.length > 0 ? tags : fallbackTags;
+    const availableCategories =
+      Array.isArray(categories) && categories.length > 0 ? categories : fallbackCategories;
+
+    const leafCategories = this.flattenCategories(availableCategories);
+    const selectedCategory = leafCategories[0] ?? fallbackCategories[0];
+    const selectedTags = availableTags.slice(0, 3);
+
+    return {
+      type: 'seed',
+      title: `Seeded discussion: ${selectedCategory.name}`,
+      text:
+        'This discussion was seeded from @data. Set DISCUSSION_SEED_DEMO_DATA=false to disable.',
+      category: {
+        id: selectedCategory.id,
+        slug: selectedCategory.slug,
+        name: selectedCategory.name,
+      },
+      tags: selectedTags.map((tag) => ({ id: tag.id, slug: tag.slug, name: tag.name })),
+    };
+  }
+
+  private flattenCategories(nodes: CategoryTreeDto[]): Array<Pick<CategoryTreeDto, 'id' | 'slug' | 'name'>> {
+    const result: Array<Pick<CategoryTreeDto, 'id' | 'slug' | 'name'>> = [];
+    for (const node of nodes) {
+      if (Array.isArray(node.childs) && node.childs.length > 0) {
+        result.push(...this.flattenCategories(node.childs));
+      } else {
+        result.push({ id: node.id, slug: node.slug, name: node.name });
+      }
+    }
+    return result;
+  }
+
+  private buildSeedUuid(name: string): Uuidv7 {
+    return uuidv5(`discussion:${name}`, uuidv5.DNS) as Uuidv7;
+  }
+
+  private isDuplicateError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+    const code = (error as { code?: string }).code;
+    const errno = (error as { errno?: number }).errno;
+    const message = (error as { message?: string }).message;
+    return code === 'ER_DUP_ENTRY' || errno === 1062 || !!message?.includes('Duplicate entry');
   }
 }

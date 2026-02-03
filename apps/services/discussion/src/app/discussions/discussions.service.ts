@@ -1,10 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Discussion } from './entities/discussion.entity';
-import { DiscussionCreationDto, DiscussionService } from '@domains/discussion';
+import { DISCUSSION_NODE_KIND, DiscussionCreationDto, DiscussionService } from '@domains/discussion';
 import { AuthorityValidationService } from '@foundation/authority-system';
-import { Result, isErr } from '@foundation/standard';
+import { Result, Uuidv7, isErr } from '@foundation/standard';
 import { IDiscussionPayloadRepository } from '@domains/discussion';
 import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
@@ -20,14 +17,14 @@ import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discuss
 export class DiscussionsService {
   private discussionService: DiscussionService;
   private payloadRepository: MinioDiscussionPayloadRepository;
+  private readonly contentNodeRepository: MysqlContentNodeRepository;
 
   constructor(
-    @InjectRepository(Discussion)
-    private discussionsRepository: Repository<Discussion>,
     minioClient: MinioClient,
     @Inject('DISCUSSION_QUEUE') queue: QueueChannel,
     contentNodeRepository: MysqlContentNodeRepository
   ) {
+    this.contentNodeRepository = contentNodeRepository;
     const authorityValidationService: AuthorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
     this.payloadRepository = new MinioDiscussionPayloadRepository(minioClient);
     const discussionPayloadRepository: IDiscussionPayloadRepository = this.payloadRepository;
@@ -59,8 +56,16 @@ export class DiscussionsService {
     return result.value;
   }
 
-  async update(id: string, data: Partial<Discussion>): Promise<{ updated: true }> {
-    const result = await this.payloadRepository.updatePayload(id, data as unknown as Record<string, unknown>);
+  async countDiscussions(): Promise<number> {
+    const result = await this.contentNodeRepository.getNodesByKind(DISCUSSION_NODE_KIND);
+    if (isErr(result)) {
+      throw result.error;
+    }
+    return result.value.length;
+  }
+
+  async update(id: string, patch: Record<string, unknown>): Promise<{ updated: true }> {
+    const result = await this.payloadRepository.updatePayload(id, patch);
     if (isErr(result)) {
       throw result.error;
     }
@@ -76,7 +81,21 @@ export class DiscussionsService {
   }
 
   async remove(id: string) {
-    await this.discussionsRepository.delete(id);
+    const payloadResult = await this.payloadRepository.deletePayload(id);
+    if (isErr(payloadResult)) {
+      throw payloadResult.error;
+    }
+
+    const nodeResult = await this.contentNodeRepository.getNode(id as unknown as Uuidv7);
+    if (isErr(nodeResult)) {
+      throw nodeResult.error;
+    }
+
+    const deleteNodeResult = await this.contentNodeRepository.deleteNode(nodeResult.value);
+    if (isErr(deleteNodeResult)) {
+      throw deleteNodeResult.error;
+    }
+
     return { deleted: true };
   }
 }

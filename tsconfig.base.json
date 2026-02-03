@@ -39,6 +39,7 @@
     "types": [],
     "paths": {
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
+      "@apps/shared": ["apps/shared/src/index.ts"],
       "@apps/portals/shared/features/health-status": [
         "apps/portals/shared/features/health-status/src/index.ts"
       ],
@@ -98,8 +99,31 @@
         "apps/portals/shared/features/categories/src/index.ts"
       ],
       "@features/identity": ["libs/features/identity/index.ts"],
+      "@foundation/authority-system": [
+        "libs/foundation/authority-system/src/index.ts"
+      ],
+      "@foundation/content-system": [
+        "libs/foundation/content-system/src/index.ts"
+      ],
+      "@foundation/governance-system": [
+        "libs/foundation/governance-system/src/index.ts"
+      ],
+      "@foundation/identity-system": [
+        "libs/foundation/identity-system/src/index.ts"
+      ],
+      "@foundation/primitives": ["libs/foundation/primitives/src/index.ts"],
+      "@foundation/standard": ["libs/foundation/standard/src/index.ts"],
+      "@foundation/workflow-system": [
+        "libs/foundation/workflow-system/src/index.ts"
+      ],
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
       "@identity/*": ["apps/portals/shared/features/identity/*"],
+      "@infrastructure/mongo": ["libs/infrastructure/mongo/src/index.ts"],
+      "@infrastructure/mysql": ["libs/infrastructure/mysql/src/index.ts"],
+      "@infrastructure/platform-queue": [
+        "libs/infrastructure/platform-queue/src/index.ts"
+      ],
+      "@infrastructure/*": ["libs/infrastructure/*/src/index.ts"],
       "@portals/aggregator-demo/application": [
         "apps/portals/aggregator-demo/application/src/index.ts"
       ],
@@ -215,13 +239,6 @@
       "@portals/shared/partials/filters-bar": [
         "apps/portals/shared/partials/filters-bar/src/index.ts"
       ],
-      "@foundation/primitives": ["libs/foundation/primitives/src/index.ts"],
-      "@foundation/standard": ["libs/foundation/standard/src/index.ts"],
-      "@foundation/content-system": ["libs/foundation/content-system/src/index.ts"],
-      "@foundation/identity-system": ["libs/foundation/identity-system/src/index.ts"],
-      "@foundation/authority-system": ["libs/foundation/authority-system/src/index.ts"],
-      "@foundation/governance-system": ["libs/foundation/governance-system/src/index.ts"],
-      "@foundation/workflow-system": ["libs/foundation/workflow-system/src/index.ts"],
       "@scrappers/store-app": ["apps/scrappers/store-app/src/index.ts"],
       "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
       "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
