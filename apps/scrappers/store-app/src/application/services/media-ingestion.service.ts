@@ -1,5 +1,5 @@
 import { IMediaIngestor, RawMediaDto, MediaType, MediaExtension, MediaPurpose } from '@domains/catalog/media';
-import { QueueChannel } from '../../infrastructure/queue-client';
+import { QueueChannel } from '@infrastructure/platform-queue';
 
 
 type Asset = {

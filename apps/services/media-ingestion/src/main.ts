@@ -1,6 +1,5 @@
-import amqp from 'amqplib';
 import dotenv from 'dotenv';
-import { QueueClient } from './infrastructure/queue-client';
+import { QueueClient } from '@infrastructure/platform-queue';
 import { MinioClient } from './infrastructure/minio-client';
 import { MediaIngestionService } from './application/media-ingestion.service';
 import { ApplicationShell } from '@foundation/standard';
@@ -28,7 +27,7 @@ const mediaIngestionApp = new ApplicationShell({
 
 mediaIngestionApp
   .initialize(async (params) => {
-    const queueClient = new QueueClient(amqp);
+    const queueClient = new QueueClient();
     const queue = await queueClient.connect({
       host: params.host,
       port: params.port,

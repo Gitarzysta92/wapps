@@ -6,7 +6,7 @@ import { IDiscussionPayloadRepository } from '@domains/discussion';
 import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
 import { MinioClient } from '../infrastructure/minio-client';
-import { QueueChannel } from '../infrastructure/queue-client';
+import { QueueChannel } from '@infrastructure/platform-queue';
 import { AllowAllPolicyEvaluator } from './infrastructure/allow-all-policy-evaluator';
 import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';

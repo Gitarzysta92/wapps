@@ -4,7 +4,7 @@ import { APPLICATIONS } from './applications';
 export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
   {
     id: '1',
-    correlationId: APPLICATIONS[0].id,
+    associationId: APPLICATIONS[0].id,
     title: 'How to integrate with external APIs?',
     author: 'Sarah Chen',
     authorAvatar: 'https://i.pravatar.cc/40?img=1',
@@ -15,11 +15,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['integration', 'api', 'help'],
     excerpt: 'I\'m trying to integrate this app with our existing API infrastructure but running into authentication issues...',
     slug: 'how-to-integrate-with-external-apis',
-    correlationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug
   },
   {
     id: '2',
-    correlationId: APPLICATIONS[0].id,
+    associationId: APPLICATIONS[0].id,
     title: 'Performance optimization tips',
     author: 'Mike Johnson',
     authorAvatar: 'https://i.pravatar.cc/40?img=2',
@@ -30,11 +30,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['performance', 'optimization'],
     excerpt: 'After using this app for a few weeks, I\'ve discovered some great performance optimization techniques...',
     slug: 'performance-optimization-tips',
-    correlationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug
   },
   {
     id: '3',
-    correlationId: APPLICATIONS[0].id,
+    associationId: APPLICATIONS[0].id,
     title: 'Feature request: Dark mode support',
     author: 'Emma Wilson',
     authorAvatar: 'https://i.pravatar.cc/40?img=3',
@@ -45,11 +45,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['feature-request', 'ui', 'dark-mode'],
     excerpt: 'Would love to see dark mode support added to the application. Many users have requested this feature...',
     slug: 'feature-request-dark-mode-support',
-    correlationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug
   },
   {
     id: '4',
-    correlationId: APPLICATIONS[0].id,
+    associationId: APPLICATIONS[0].id,
     title: 'Bug report: Login issues on mobile',
     author: 'David Kim',
     authorAvatar: 'https://i.pravatar.cc/40?img=4',
@@ -60,11 +60,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['bug-report', 'mobile', 'login'],
     excerpt: 'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
     slug: 'bug-report-login-issues-on-mobile',
-    correlationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug
   },
   {
     id: '5',
-    correlationId: APPLICATIONS[0].id,
+    associationId: APPLICATIONS[0].id,
     title: 'Best practices for team collaboration',
     author: 'Lisa Rodriguez',
     authorAvatar: 'https://i.pravatar.cc/40?img=5',
@@ -75,12 +75,12 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['collaboration', 'best-practices', 'team'],
     excerpt: 'Sharing some tips and tricks we\'ve learned for effective team collaboration using this platform...',
     slug: 'best-practices-for-team-collaboration',
-    correlationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug
   },
 
   {
     id: '6',
-    correlationId: APPLICATIONS[1].id,
+    associationId: APPLICATIONS[1].id,
     title: 'How to integrate with external APIs?',
     author: 'Sarah Chen',
     authorAvatar: 'https://i.pravatar.cc/40?img=1',
@@ -91,11 +91,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['integration', 'api', 'help'],
     excerpt: 'I\'m trying to integrate this app with our existing API infrastructure but running into authentication issues...',
     slug: 'how-to-integrate-with-external-apis',
-    correlationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug
   },
   {
     id: '7',
-    correlationId: APPLICATIONS[1].id,
+    associationId: APPLICATIONS[1].id,
     title: 'Performance optimization tips',
     author: 'Mike Johnson',
     authorAvatar: 'https://i.pravatar.cc/40?img=2',
@@ -106,11 +106,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['performance', 'optimization'],
     excerpt: 'After using this app for a few weeks, I\'ve discovered some great performance optimization techniques...',
     slug: 'performance-optimization-tips',
-    correlationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug
   },
   {
     id: '8',
-    correlationId: APPLICATIONS[1].id,
+    associationId: APPLICATIONS[1].id,
     title: 'Feature request: Dark mode support',
     author: 'Emma Wilson',
     authorAvatar: 'https://i.pravatar.cc/40?img=3',
@@ -121,11 +121,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['feature-request', 'ui', 'dark-mode'],
     excerpt: 'Would love to see dark mode support added to the application. Many users have requested this feature...',
     slug: 'feature-request-dark-mode-support',
-    correlationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug
   },
   {
     id: '9',
-    correlationId: APPLICATIONS[1].id,
+    associationId: APPLICATIONS[1].id,
     title: 'Bug report: Login issues on mobile',
     author: 'David Kim',
     authorAvatar: 'https://i.pravatar.cc/40?img=4',
@@ -136,11 +136,11 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['bug-report', 'mobile', 'login'],
     excerpt: 'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
     slug: 'bug-report-login-issues-on-mobile',
-    correlationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug
   },
   {
     id: '10',
-    correlationId: APPLICATIONS[1].id,
+    associationId: APPLICATIONS[1].id,
     title: 'Best practices for team collaboration',
     author: 'Lisa Rodriguez',
     authorAvatar: 'https://i.pravatar.cc/40?img=5',
@@ -151,6 +151,6 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     tags: ['collaboration', 'best-practices', 'team'],
     excerpt: 'Sharing some tips and tricks we\'ve learned for effective team collaboration using this platform...',
     slug: 'best-practices-for-team-collaboration',
-    correlationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug
   }
 ]

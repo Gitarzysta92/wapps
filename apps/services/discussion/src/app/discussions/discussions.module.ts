@@ -4,9 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { DiscussionsController } from './discussions.controller';
 import { DiscussionsService } from './discussions.service';
 import { MinioClient } from '../infrastructure/minio-client';
-import { QueueClient, QueueChannel } from '../infrastructure/queue-client';
+import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussion-payload.repository';
-import amqp from 'amqplib';
 import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
 import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
@@ -30,7 +29,7 @@ import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.
     },
     {
       provide: QueueClient,
-      useFactory: () => new QueueClient(amqp),
+      useFactory: () => new QueueClient(),
     },
     {
       provide: 'DISCUSSION_QUEUE',

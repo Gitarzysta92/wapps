@@ -29,6 +29,12 @@
     },
     {
       "path": "../../../apps/shared/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/cross-cutting/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "name": "events",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "cross-cutting/events/src",
+  "sourceRoot": "libs/cross-cutting/events/src",
   "projectType": "library",
   "tags": [],
   "targets": {

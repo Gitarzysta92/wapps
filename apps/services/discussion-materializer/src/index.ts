@@ -2,7 +2,11 @@ import { ApplicationShell } from '@foundation/standard';
 import { PlatformMongoClient } from '@infrastructure/mongo';
 import { QueueClient } from '@infrastructure/platform-queue';
 import { MysqlClient } from '@infrastructure/mysql';
-import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
+import {
+  DISCUSSION_PROJECTION_QUEUE_NAME,
+  DiscussionMaterializationRequestedEvent,
+} from '@apps/shared';
+import { isEventEnvelope } from '@cross-cutting/events';
 
 const application = new ApplicationShell({
   mongoHost: { value: process.env.MONGO_HOST as string },
@@ -52,21 +56,34 @@ application.initialize(async (params) => {
 
   return { mongoClient, queueClient, queue };
 }).run(async ({ mongoClient, queueClient, queue }) => {
-  
   await queue.assertQueue(DISCUSSION_PROJECTION_QUEUE_NAME, { durable: true });
   await queue.assertExchange(DISCUSSION_PROJECTION_QUEUE_NAME, 'direct', { durable: true });
   await queue.bindQueue(DISCUSSION_PROJECTION_QUEUE_NAME, DISCUSSION_PROJECTION_QUEUE_NAME, { durable: true });
 
-  queue.consume(DISCUSSION_PROJECTION_QUEUE_NAME, (message) => {
-    mongoClient.db
-    if (!message) return;
-    console.log('🚀 Discussion Materializer received message:', message.content.toString('utf-8'));
-    queue.ack(message);
-  });
+  await queue.consumeJson<DiscussionMaterializationRequestedEvent>(
+    DISCUSSION_PROJECTION_QUEUE_NAME,
+    async (evt) => {
+      console.log('🚀 Discussion Materializer received event:', evt.meta.type, evt.payload);
+      // TODO: persist materialized projection into MongoDB (by evt.payload.discussionId)
+      void mongoClient; // placeholder until materialization logic is implemented
+      void queueClient;
+    },
+    {
+      ack: 'onSuccess',
+      nackOnError: true,
+      requeueOnError: true,
+      parse: (value: unknown) => {
+        if (!isEventEnvelope(value)) {
+          throw new Error('Invalid event envelope');
+        }
+        if (value.meta.type !== 'discussion.materialization.requested') {
+          throw new Error(`Unexpected event type: ${value.meta.type}`);
+        }
+        return value as DiscussionMaterializationRequestedEvent;
+      },
+    }
+  );
 
-
-}).finally(async ({ mongoClient, queueClient, queue }) => {
-  // await mongoClient.close();
-  // await queueClient.close();
-  // await mysqlClient.close();
+}).finally(async () => {
+  // TODO: close clients on shutdown (mongo, queue, mysql)
 });

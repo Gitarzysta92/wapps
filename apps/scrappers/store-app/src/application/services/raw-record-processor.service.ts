@@ -1,5 +1,5 @@
 import { IRawRecordProcessor, RawRecordDto } from "@domains/catalog/record";
-import { QueueChannel } from "../../infrastructure/queue-client";
+import { QueueChannel } from "@infrastructure/platform-queue";
 
 type ScrapedApp = {
   name: string;
