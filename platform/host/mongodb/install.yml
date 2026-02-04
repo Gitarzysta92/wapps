@@ -169,18 +169,65 @@
         authorization: enabled
   register: mongod_config
 
-- name: Restart MongoDB if configuration changed
-  systemd:
-    name: mongod
-    state: restarted
+- name: Restart MongoDB and verify it comes back up (with diagnostics)
   when: mongod_config.changed
+  block:
+    - name: Restart MongoDB if configuration changed
+      systemd:
+        name: mongod
+        state: restarted
 
-- name: Wait for MongoDB after restart
-  wait_for:
-    port: 27017
-    host: 127.0.0.1
-    timeout: 60
-  when: mongod_config.changed
+    - name: Wait for MongoDB after restart
+      wait_for:
+        port: 27017
+        host: 127.0.0.1
+        timeout: 60
+  rescue:
+    - name: Read mongod service status
+      command: systemctl status mongod --no-pager -l
+      register: mongod_systemctl_status
+      changed_when: false
+      failed_when: false
+
+    - name: Read mongod journal (last 200 lines)
+      command: journalctl -u mongod --no-pager -n 200
+      register: mongod_journal
+      changed_when: false
+      failed_when: false
+
+    - name: Read /etc/mongod.conf
+      command: cat /etc/mongod.conf
+      register: mongod_conf
+      changed_when: false
+      failed_when: false
+
+    - name: Read mongod log (last 200 lines, if present)
+      shell: |
+        set -e
+        test -f /var/log/mongodb/mongod.log || exit 0
+        tail -n 200 /var/log/mongodb/mongod.log
+      args:
+        executable: /bin/bash
+      register: mongod_log_tail
+      changed_when: false
+      failed_when: false
+
+    - name: Fail with mongod diagnostics
+      fail:
+        msg: |
+          MongoDB did not come back up after restarting mongod.
+
+          systemctl status mongod:
+          {{ mongod_systemctl_status.stdout | default('') }}
+
+          journalctl -u mongod (last 200 lines):
+          {{ mongod_journal.stdout | default('') }}
+
+          /etc/mongod.conf:
+          {{ mongod_conf.stdout | default('') }}
+
+          /var/log/mongodb/mongod.log (tail, if present):
+          {{ mongod_log_tail.stdout | default('') }}
 
 # ==============================================
 # Users (admin + shared app user)
