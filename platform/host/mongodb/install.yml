@@ -63,7 +63,10 @@
 - name: Update apt cache (MongoDB repo)
   apt:
     update_cache: yes
-    cache_valid_time: 3600
+    # Force refresh even if the cache was just updated earlier in the workflow.
+    # GitHub Actions installs dependencies with apt-get update right before Ansible runs,
+    # and apt's "fresh cache" heuristic would otherwise skip fetching the newly-added MongoDB repo.
+    cache_valid_time: 0
 
 - name: Display MongoDB apt source list entry
   command: cat /etc/apt/sources.list.d/mongodb-org-7.0.list
