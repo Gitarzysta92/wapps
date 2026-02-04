@@ -65,6 +65,15 @@
     update_cache: yes
     cache_valid_time: 3600
 
+- name: Display MongoDB apt source list entry
+  command: cat /etc/apt/sources.list.d/mongodb-org-7.0.list
+  register: mongodb_apt_source
+  changed_when: false
+
+- name: Display MongoDB apt source list content
+  debug:
+    msg: "{{ mongodb_apt_source.stdout | default('') }}"
+
 - name: Display host facts relevant to MongoDB packages
   debug:
     msg:
@@ -77,17 +86,21 @@
 - name: Verify MongoDB apt repo exposes mongodb-org package
   shell: |
     set -e
-    apt-cache policy mongodb-org 2>&1
+    apt-cache policy mongodb-org
     echo '---'
-    apt-cache madison mongodb-org 2>&1 || true
+    apt-cache madison mongodb-org || true
   args:
     executable: /bin/bash
   register: mongodb_org_policy
   changed_when: false
+  failed_when: false
 
-- name: Display mongodb-org apt-cache output
+- name: Display mongodb-org apt-cache output (stdout/stderr)
   debug:
-    msg: "{{ mongodb_org_policy.stdout | default('') }}"
+    msg:
+      - "rc={{ mongodb_org_policy.rc | default('') }}"
+      - "stdout={{ mongodb_org_policy.stdout | default('') }}"
+      - "stderr={{ mongodb_org_policy.stderr | default('') }}"
 
 - name: Fail early if mongodb-org is not available
   fail:
@@ -95,12 +108,18 @@
       mongodb-org package is not available after adding MongoDB apt repo.
 
       Output:
+      stdout:
       {{ mongodb_org_policy.stdout | default('') }}
+
+      stderr:
+      {{ mongodb_org_policy.stderr | default('') }}
   when: >
     mongodb_org_policy.stdout is not defined or
     (mongodb_org_policy.stdout | trim) == '' or
+    'mongodb-org:' not in mongodb_org_policy.stdout or
     'Candidate: (none)' in mongodb_org_policy.stdout or
-    'Unable to locate package' in mongodb_org_policy.stdout
+    'Unable to locate package' in mongodb_org_policy.stdout or
+    mongodb_org_policy.stderr is defined and (mongodb_org_policy.stderr | trim) != ''
 
 # ==============================================
 # MongoDB installation & service
