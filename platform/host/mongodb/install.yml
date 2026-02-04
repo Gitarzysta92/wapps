@@ -31,12 +31,9 @@
 
 - name: Map Ubuntu codename for MongoDB apt repo
   set_fact:
-    mongodb_ubuntu_codename: >-
-      {% if (ansible_distribution_release | default('jammy')) in ['noble'] %}
-      jammy
-      {% else %}
-      {{ ansible_distribution_release | default('jammy') }}
-      {% endif %}
+    # MongoDB's apt repos sometimes lag behind the newest Ubuntu codenames.
+    # Keep the value a clean single token (no whitespace/newlines), otherwise the apt source line breaks.
+    mongodb_ubuntu_codename: "{{ 'jammy' if (ansible_distribution_release | default('jammy')) in ['noble', 'oracular', 'plucky'] else (ansible_distribution_release | default('jammy')) }}"
 
 # ==============================================
 # MongoDB APT repository (Ubuntu)
@@ -61,12 +58,30 @@
     dest: /etc/apt/sources.list.d/mongodb-org-7.0.list
     mode: '0644'
     content: |
-      deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ mongodb_ubuntu_codename }}/mongodb-org/7.0 multiverse
+      deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ mongodb_ubuntu_codename | trim }}/mongodb-org/7.0 multiverse
 
 - name: Update apt cache (MongoDB repo)
   apt:
     update_cache: yes
     cache_valid_time: 3600
+
+- name: Verify MongoDB apt repo exposes mongodb-org package
+  command: apt-cache policy mongodb-org
+  register: mongodb_org_policy
+  changed_when: false
+
+- name: Fail early if mongodb-org is not available
+  fail:
+    msg: |
+      mongodb-org package is not available after adding MongoDB apt repo.
+
+      Debug:
+        ansible_distribution_release={{ ansible_distribution_release | default('unknown') }}
+        mongodb_ubuntu_codename={{ mongodb_ubuntu_codename | default('unset') }}
+
+      apt-cache policy mongodb-org:
+      {{ mongodb_org_policy.stdout | default('') }}
+  when: 'mongodb_org_policy.stdout is not defined or "Candidate: (none)" in mongodb_org_policy.stdout'
 
 # ==============================================
 # MongoDB installation & service
