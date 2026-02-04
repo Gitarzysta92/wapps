@@ -85,6 +85,10 @@
   register: mongodb_org_policy
   changed_when: false
 
+- name: Display mongodb-org apt-cache output
+  debug:
+    msg: "{{ mongodb_org_policy.stdout | default('') }}"
+
 - name: Fail early if mongodb-org is not available
   fail:
     msg: |
@@ -102,9 +106,8 @@
 # MongoDB installation & service
 # ==============================================
 - name: Install MongoDB (mongodb-org)
-  package:
-    name:
-      - mongodb-org
+  apt:
+    name: mongodb-org
     state: present
 
 - name: Ensure mongod service is started and enabled
