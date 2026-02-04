@@ -65,8 +65,19 @@
     update_cache: yes
     cache_valid_time: 3600
 
+- name: Display host facts relevant to MongoDB packages
+  debug:
+    msg:
+      - "ansible_distribution={{ ansible_distribution | default('unknown') }}"
+      - "ansible_distribution_release={{ ansible_distribution_release | default('unknown') }}"
+      - "ansible_architecture={{ ansible_architecture | default('unknown') }}"
+      - "ansible_userspace_architecture={{ ansible_userspace_architecture | default('unknown') }}"
+      - "mongodb_ubuntu_codename={{ mongodb_ubuntu_codename | default('unset') }}"
+
 - name: Verify MongoDB apt repo exposes mongodb-org package
-  command: apt-cache policy mongodb-org
+  shell: |
+    set -euo pipefail
+    (apt-cache policy mongodb-org; echo '---'; apt-cache madison mongodb-org) 2>&1
   register: mongodb_org_policy
   changed_when: false
 
@@ -75,13 +86,13 @@
     msg: |
       mongodb-org package is not available after adding MongoDB apt repo.
 
-      Debug:
-        ansible_distribution_release={{ ansible_distribution_release | default('unknown') }}
-        mongodb_ubuntu_codename={{ mongodb_ubuntu_codename | default('unset') }}
-
-      apt-cache policy mongodb-org:
+      Output:
       {{ mongodb_org_policy.stdout | default('') }}
-  when: 'mongodb_org_policy.stdout is not defined or "Candidate: (none)" in mongodb_org_policy.stdout'
+  when: >
+    mongodb_org_policy.stdout is not defined or
+    (mongodb_org_policy.stdout | trim) == '' or
+    'Candidate: (none)' in mongodb_org_policy.stdout or
+    'Unable to locate package' in mongodb_org_policy.stdout
 
 # ==============================================
 # MongoDB installation & service
