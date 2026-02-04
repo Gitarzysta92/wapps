@@ -76,8 +76,12 @@
 
 - name: Verify MongoDB apt repo exposes mongodb-org package
   shell: |
-    set -euo pipefail
-    (apt-cache policy mongodb-org; echo '---'; apt-cache madison mongodb-org) 2>&1
+    set -e
+    apt-cache policy mongodb-org 2>&1
+    echo '---'
+    apt-cache madison mongodb-org 2>&1 || true
+  args:
+    executable: /bin/bash
   register: mongodb_org_policy
   changed_when: false
 
