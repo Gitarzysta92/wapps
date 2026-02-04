@@ -230,20 +230,22 @@
 # ==============================================
 # Users (admin + shared app user)
 # ==============================================
-# We try auth first (idempotent updates); if that fails (fresh bootstrap),
-# fall back to localhost bootstrap without auth.
-- name: Ensure admin user exists / password is up-to-date (try authenticated)
+# We try to authenticate as admin using the provided password.
+# If that fails, we try the localhost exception bootstrap (only works when *no users exist*).
+# If bootstrap also fails with "not authorized", it means users already exist and the provided
+# mongodb_root_password does not match the existing admin user's password.
+- name: Test admin credentials (auth)
   shell: |
     mongosh --quiet \
       --username "admin" \
       --password "{{ mongodb_root_password }}" \
       --authenticationDatabase "admin" \
-      --eval 'db.getSiblingDB("admin").updateUser("admin", {pwd: "{{ mongodb_root_password }}"});'
-  register: mongodb_admin_update_auth
+      --eval 'db.runCommand({ ping: 1 })'
+  register: mongodb_admin_auth_test
   changed_when: false
   failed_when: false
 
-- name: Ensure admin user exists (bootstrap without auth if needed)
+- name: Bootstrap admin user via localhost exception (only if auth failed)
   shell: |
     mongosh --quiet --eval '
       const adm = db.getSiblingDB("admin");
@@ -261,7 +263,60 @@
     '
   register: mongodb_admin_bootstrap
   changed_when: "'created_admin_user' in mongodb_admin_bootstrap.stdout"
-  when: mongodb_admin_update_auth.rc != 0
+  failed_when: false
+  when: mongodb_admin_auth_test.rc != 0
+
+- name: Re-test admin credentials after bootstrap (if attempted)
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval 'db.runCommand({ ping: 1 })'
+  register: mongodb_admin_auth_test_after_bootstrap
+  changed_when: false
+  failed_when: false
+  when: mongodb_admin_auth_test.rc != 0
+
+- name: Fail if admin authentication is not possible (wrong mongodb_root_password?)
+  fail:
+    msg: |
+      Could not authenticate as MongoDB admin using the provided mongodb_root_password,
+      and bootstrap via localhost exception did not succeed.
+
+      This usually means MongoDB already has users configured and the existing admin password
+      is different than the secret you provided.
+
+      Quick manual check on host:
+        sudo mongosh --username admin --authenticationDatabase admin
+
+      Ansible outputs:
+      - auth_test rc={{ mongodb_admin_auth_test.rc | default('') }}
+        stderr={{ mongodb_admin_auth_test.stderr | default('') }}
+      - bootstrap rc={{ mongodb_admin_bootstrap.rc | default('') }}
+        stderr={{ mongodb_admin_bootstrap.stderr | default('') }}
+      - auth_test_after_bootstrap rc={{ mongodb_admin_auth_test_after_bootstrap.rc | default('') }}
+        stderr={{ mongodb_admin_auth_test_after_bootstrap.stderr | default('') }}
+  when: >
+    mongodb_admin_auth_test.rc != 0 and
+    (
+      mongodb_admin_auth_test_after_bootstrap is not defined or
+      mongodb_admin_auth_test_after_bootstrap.rc != 0
+    )
+
+- name: Ensure admin password is up-to-date (authenticated)
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval 'db.getSiblingDB("admin").updateUser("admin", {pwd: "{{ mongodb_root_password }}"});'
+  register: mongodb_admin_update_auth
+  changed_when: false
+  failed_when: false
+  when: >
+    mongodb_admin_auth_test.rc == 0 or
+    (mongodb_admin_auth_test_after_bootstrap is defined and mongodb_admin_auth_test_after_bootstrap.rc == 0)
 
 - name: Ensure app user exists / password is up-to-date
   shell: |
