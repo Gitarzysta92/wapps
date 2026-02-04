@@ -22,7 +22,8 @@ MongoDB is installed/configured by the host provisioning playbook:
 Secrets are sourced from GitHub Actions / Ansible vars:
 
 - `mongodb_root_password` (admin user `admin`)
-- `mongodb_wapps_password` (shared user `wapps_app`)
+- `mongodb_wapps_username` (shared app user username)
+- `mongodb_wapps_password` (shared app user password)
 
 ## What gets created in Kubernetes
 

@@ -74,7 +74,6 @@ stringData:
   MONGODB_HOST: mongodb.mongodb
   MONGODB_PORT: "27017"
   MONGODB_AUTH_DB: admin
-  MONGODB_USERNAME: wapps_app
+  MONGODB_USERNAME: PLACEHOLDER  # Ansible replaces with actual username
   MONGODB_PASSWORD: PLACEHOLDER  # Ansible replaces with actual password
-  MONGODB_URI: mongodb://wapps_app:PLACEHOLDER@mongodb.mongodb:27017/?authSource=admin
 
