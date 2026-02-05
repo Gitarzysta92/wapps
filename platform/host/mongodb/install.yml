@@ -429,6 +429,23 @@
   register: mongodb_shared_secret
 
 # ==============================================
+# Mongo Express Admin Credentials Secret
+# ==============================================
+# mongo-express needs elevated privileges for some admin UI operations (e.g. listing collections
+# in system DBs). Keep these credentials separate from the shared app credentials.
+- name: Create Mongo Express admin credentials secret in mongodb namespace
+  shell: |
+    kubectl create secret generic mongodb-admin-credentials \
+      --namespace=mongodb \
+      --from-literal=MONGODB_HOST=mongodb.mongodb \
+      --from-literal=MONGODB_PORT=27017 \
+      --from-literal=MONGODB_AUTH_DB=admin \
+      --from-literal=MONGODB_ADMIN_USERNAME=admin \
+      --from-literal=MONGODB_ADMIN_PASSWORD={{ mongodb_root_password }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: mongodb_admin_secret
+
+# ==============================================
 # Verification Tests
 # ==============================================
 - name: Test MongoDB connection from cluster
