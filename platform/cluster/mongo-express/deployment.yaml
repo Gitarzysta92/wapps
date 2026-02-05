@@ -64,16 +64,16 @@ spec:
                   key: MONGODB_PASSWORD
 
           readinessProbe:
-            httpGet:
-              path: /
+            # UI is protected by BasicAuth, so an HTTP probe would get 401.
+            # Use a TCP probe to verify the process is listening.
+            tcpSocket:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 20
