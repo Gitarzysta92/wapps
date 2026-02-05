@@ -26,6 +26,21 @@
     },
     {
       "path": "../../../libs/domains/discussion/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../apps/shared/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/cross-cutting/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/minio/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/mongo/tsconfig.lib.json"
     }
   ]
 }

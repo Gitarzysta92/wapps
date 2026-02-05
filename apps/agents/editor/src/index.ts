@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
-import amqp from 'amqplib';
 import { ApplicationShell } from '@foundation/standard';
 import { RAW_RECORD_PROCESSING_SLUG } from '@domains/catalog/record';
 import { RawRecordDto } from '@domains/catalog/record';
-import { QueueClient } from './infrastructure/queue-client';
+import { QueueClient } from '@infrastructure/platform-queue';
 import { OpenAIClient } from './infrastructure/openai-client';
 import { EditorialClient } from './infrastructure/editorial-client';
 import { DataEnrichmentService } from './application/services/data-enrichment.service';
@@ -38,7 +37,7 @@ editorAgent
     console.log(`🤖 OpenAI: ✓ Configured`);
 
     // Initialize clients
-    const queueClient = new QueueClient(amqp);
+    const queueClient = new QueueClient();
     const queue = await queueClient.connect({
       host: params.host,
       port: params.port,

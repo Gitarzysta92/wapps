@@ -1,0 +1,57 @@
+name: 'Platform - OPA - Sync'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'platform/cluster/opa/**'
+      - 'argocd/applications/platform/opa.yaml'
+      - 'environments/dev/platform/opa-kustomization/**'
+      - 'libs/utils/opa/bundles/discussion/**'
+      - '.github/workflows/opa.workflow.yml'
+      - '.github/actions/sync-argocd-app/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  APP_NAME: opa
+
+jobs:
+  sync:
+    name: 'Sync OPA ArgoCD app'
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Sync ArgoCD Application
+        uses: ./.github/actions/sync-argocd-app
+        with:
+          app-name: ${{ env.APP_NAME }}
+          argocd-server: ${{ steps.env-vars.outputs.server }}
+          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
+          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
+          app-manifest-path: argocd/applications/platform/opa.yaml
+          sync-timeout: '300'
+          force-sync: 'true'
+

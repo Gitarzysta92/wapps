@@ -1,20 +1,20 @@
 import { Inject, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Discussion } from './entities/discussion.entity';
 import { DiscussionsController } from './discussions.controller';
 import { DiscussionsService } from './discussions.service';
 import { MinioClient } from '../infrastructure/minio-client';
-import { QueueClient, QueueChannel } from '../infrastructure/queue-client';
+import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussion-payload.repository';
-import amqp from 'amqplib';
-import { DISCUSSION_PROJECTION_QUEUE_NAME } from './infrastructure/rabbitmq-discussion-projection.service';
+import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
 import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
+import { CommentLikeEntity } from './infrastructure/comment-like.entity';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
+import { PlatformMongoClient } from '@infrastructure/mongo';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Discussion, ContentNodeEntity, ContentNodeRelationEntity])],
+  imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity, CommentLikeEntity])],
   controllers: [DiscussionsController],
   providers: [
     DiscussionsService,
@@ -31,7 +31,22 @@ import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.
     },
     {
       provide: QueueClient,
-      useFactory: () => new QueueClient(amqp),
+      useFactory: () => new QueueClient(),
+    },
+    {
+      provide: PlatformMongoClient,
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const client = new PlatformMongoClient();
+        await client.connect({
+          host: config.get('MONGO_HOST') as string,
+          port: config.get('MONGO_PORT') as string,
+          username: config.get('MONGO_USERNAME') as string,
+          password: config.get('MONGO_PASSWORD') as string,
+          database: config.get('MONGO_DATABASE') as string,
+        });
+        return client;
+      },
     },
     {
       provide: 'DISCUSSION_QUEUE',

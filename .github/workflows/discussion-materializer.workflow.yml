@@ -1,0 +1,187 @@
+name: 'Discussion Materializer - Build & Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/services/discussion-materializer/**'
+      - 'libs/infrastructure/**'
+      - 'libs/cross-cutting/**'
+      - 'apps/shared/**'
+      - 'environments/dev/apps/discussion-materializer-kustomization/**'
+      - 'argocd/applications/backend/discussion-materializer.yaml'
+      - '.github/workflows/discussion-materializer.workflow.yml'
+      - '.github/actions/sync-argocd-app/**'
+      - '.github/actions/extract-namespace/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  SERVICE_NAME: discussion-materializer
+  REGISTRY: ghcr.io
+  IMAGE_NAME: gitarzysta92/wapps/discussion-materializer
+  NAMESPACE_MANIFEST: apps/services/discussion-materializer/provisioning/k8s/discussion.namespace.yaml
+
+jobs:
+  build:
+    name: 'Build Docker Image'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npx nx build apps.services.discussion-materializer --configuration=production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: dist/apps/services/discussion-materializer
+          file: apps/services/discussion-materializer/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          no-cache: true
+
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
+    needs: build
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Extract namespace
+        id: ns
+        uses: ./.github/actions/extract-namespace
+        with:
+          manifest: ${{ env.NAMESPACE_MANIFEST }}
+
+      - name: Create RabbitMQ credentials secret
+        run: |
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          kubectl create secret generic rabbitmq-credentials \
+            --from-literal=username="${{ secrets.RABBITMQ_USERNAME }}" \
+            --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+      - name: Create MinIO credentials secret
+        run: |
+          ACCESS_KEY="${{ secrets.MINIO_ROOT_USER }}"
+          SECRET_KEY="${{ secrets.MINIO_ROOT_PASSWORD }}"
+          [ -z "$ACCESS_KEY" ] && ACCESS_KEY="admin"
+          [ -z "$SECRET_KEY" ] && SECRET_KEY="changeme"
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          kubectl create secret generic minio-credentials \
+            --from-literal=accessKey="$ACCESS_KEY" \
+            --from-literal=secretKey="$SECRET_KEY" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+      - name: "Create MySQL credentials secret (shared: discussion-app-secrets)"
+        run: |
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          kubectl create secret generic discussion-app-secrets \
+            --from-literal=DISCUSSION_DATABASE_HOST="${{ vars.EDITORIAL_DATABASE_HOST }}" \
+            --from-literal=DISCUSSION_DATABASE_PORT="${{ vars.EDITORIAL_DATABASE_PORT }}" \
+            --from-literal=DISCUSSION_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
+            --from-literal=DISCUSSION_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
+            --from-literal=DISCUSSION_DATABASE_NAME="${{ vars.EDITORIAL_DATABASE_NAME }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+      - name: Create MongoDB credentials secret (materializer)
+        run: |
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          kubectl create secret generic discussion-materializer-mongo \
+            --from-literal=username="${{ secrets.MONGODB_WAPPS_USERNAME }}" \
+            --from-literal=password="${{ secrets.MONGODB_WAPPS_PASSWORD }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+      - name: Create GHCR image pull secret
+        run: |
+          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=${{ steps.ns.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+      - name: Sync ArgoCD Application
+        uses: ./.github/actions/sync-argocd-app
+        with:
+          app-name: ${{ env.SERVICE_NAME }}
+          argocd-server: ${{ steps.env-vars.outputs.server }}
+          argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
+          argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
+          app-manifest-path: argocd/applications/backend/discussion-materializer.yaml
+          sync-timeout: '300'
+          force-sync: 'true'
+
+      - name: Restart deployment to pull latest image
+        run: |
+          kubectl rollout restart deployment/discussion-materializer -n ${{ steps.ns.outputs.namespace }}
+          kubectl rollout status deployment/discussion-materializer -n ${{ steps.ns.outputs.namespace }} --timeout=600s
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          if [ -d "environments/${ENV_SHORT}/apps/discussion-materializer-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/discussion-materializer-kustomization/
+          fi
+

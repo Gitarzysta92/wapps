@@ -1,9 +1,8 @@
-import amqp from 'amqplib';
 import dotenv from 'dotenv';
 import { ScrapAppListFromStoreApp } from './application/tasks/scrap-app-list-from-store-app.task';
 import puppeteer from 'puppeteer';
 import { ScrapAppDetailsFromStoreApp } from './application/tasks/scrap-app-details-from-store-app.task';
-import { QueueClient } from './infrastructure/queue-client';
+import { QueueClient } from '@infrastructure/platform-queue';
 import { BrowserClient } from './infrastructure/browser-client';
 import { RawRecordProcessorService } from './application/services/raw-record-processor.service';
 import { MediaIngestionService } from './application/services/media-ingestion.service';
@@ -32,7 +31,7 @@ const storeAppScrapper = new ApplicationShell({
 
 storeAppScrapper
   .initialize(async (params) => {
-    const queueClient = new QueueClient(amqp);
+    const queueClient = new QueueClient();
     const browserClient = new BrowserClient(puppeteer);
     const queue = await queueClient.connect({
       host: params.host,

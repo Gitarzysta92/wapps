@@ -1,3 +1,3 @@
-export function events(): string {
-  return 'events';
-}
+export * from './event-envelope';
+export * from './guards';
+export * from './rabbitmq';

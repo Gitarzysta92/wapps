@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DiscussionsService } from './discussions.service';
-import { Discussion } from './entities/discussion.entity';
 import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
 import { CreateDiscussionRequestDto } from './dto/create-discussion.request.dto';
 
@@ -41,13 +40,43 @@ export class DiscussionsController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update discussion' })
-  update(@Param('id') id: string, @Body() data: Partial<Discussion>) {
-    return this.discussionsService.update(id, data);
+  update(@Param('id') id: string, @Body() patch: Record<string, unknown>) {
+    return this.discussionsService.update(id, patch);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete discussion' })
   remove(@Param('id') id: string) {
     return this.discussionsService.remove(id);
+  }
+
+  @Post('comments/:id/like')
+  @ApiOperation({ summary: 'Like a comment (idempotent)' })
+  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
+  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
+  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
+  likeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
+    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
+    const ctx = {
+      identityId: user.userId ?? 'anonymous',
+      tenantId,
+      timestamp: Date.now(),
+    };
+    return this.discussionsService.likeComment(id, ctx);
+  }
+
+  @Delete('comments/:id/like')
+  @ApiOperation({ summary: 'Unlike a comment (idempotent)' })
+  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
+  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
+  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
+  unlikeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
+    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
+    const ctx = {
+      identityId: user.userId ?? 'anonymous',
+      tenantId,
+      timestamp: Date.now(),
+    };
+    return this.discussionsService.unlikeComment(id, ctx);
   }
 }

@@ -1,4 +1,4 @@
-import { QueueChannel } from '../infrastructure/queue-client';
+import { QueueChannel } from '@infrastructure/platform-queue';
 import { MinioClient } from '../infrastructure/minio-client';
 import { downloadImageFromUrl } from '../infrastructure/image-downloader';
 import { RawMediaDto } from '@domains/catalog/media';

@@ -11,6 +11,14 @@ data:
   # MinIO (S3 compatible)
   DISCUSSION_STORAGE_HOST: http://minio.minio:9000
 
+  # OPA (policy engine)
+  OPA_URL: http://opa.opa:8181
+
+  # MongoDB (materialized projections)
+  MONGO_HOST: mongodb.mongodb
+  MONGO_PORT: "27017"
+  MONGO_DATABASE: wapps
+
   # Service config
   DISCUSSION_CORS_ORIGIN: "*"
 

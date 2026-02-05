@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  namespace: opa
+  labels:
+    app: opa
+    app.kubernetes.io/name: opa
+    app.kubernetes.io/component: policy-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+    spec:
+      containers:
+        - name: opa
+          image: openpolicyagent/opa:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - "run"
+            - "--server"
+            - "--data=/bundles/discussion/data.json"
+            - "--data=/bundles/discussion/policy.rego"
+            - "--set=decision_logs.console=true"
+          ports:
+            - name: http
+              containerPort: 8181
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8181
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8181
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          volumeMounts:
+            - name: bundle-discussion
+              mountPath: /bundles/discussion
+      volumes:
+        - name: bundle-discussion
+          configMap:
+            name: opa-bundle-discussion
+            items:
+              - key: data.json
+                path: data.json
+              - key: policy.rego
+                path: policy.rego
+

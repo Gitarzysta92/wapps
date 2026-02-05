@@ -83,6 +83,16 @@ spec:
                 secretKeyRef:
                   name: minio-credentials
                   key: secretKey
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: discussion-mongo
+                  key: username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: discussion-mongo
+                  key: password
             - name: INGRESS_AUTH_SECRET
               valueFrom:
                 secretKeyRef:

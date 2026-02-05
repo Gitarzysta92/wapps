@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/apps/shared",
+    "declaration": true,
+    "rootDir": "src",
+    "composite": true,
+    "types": ["node"]
+  },
+  "references": [
+    {
+      "path": "../../libs/cross-cutting/events/tsconfig.lib.json"
+    }
+  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+}
+

@@ -97,27 +97,29 @@ export class DiscussionService {
       return err<Error>(authorityValidationResult.error);
     }
 
-    const discussionId = this.identificatorGenerator.generate();
-    let result = await this.contentNodeRepository.addNode(
-      {
-        id: discussionId,
-        referenceKey: this.identificatorGenerator.generate(),
-        kind: DISCUSSION_NODE_KIND,
-        state: payload.state || DEFAULT_CONTENT_NODE_STATE,
-        visibility: payload.visibility || DEFAULT_CONTENT_NODE_VISIBILITY,
+    const discussionId = payload.id ?? this.identificatorGenerator.generate();
+    const referenceKey = payload.referenceKey ?? this.identificatorGenerator.generate();
+    const node = {
+      id: discussionId,
+      referenceKey,
+      kind: DISCUSSION_NODE_KIND,
+      state: payload.state || DEFAULT_CONTENT_NODE_STATE,
+      visibility: payload.visibility || DEFAULT_CONTENT_NODE_VISIBILITY,
+      createdAt: timestamp,
+    }
+
+    const relations = [];
+    if (payload.subjectId) {
+      relations.push({
+        id: this.identificatorGenerator.generate(),
+        fromContentId: discussionId,
+        toContentId: payload.subjectId,
+        relationType: DISCUSSES_RELATION_TYPE,
         createdAt: timestamp,
-      },
-      !payload.subjectId ? [] :
-      [
-        {
-          id: this.identificatorGenerator.generate(),
-          fromContentId: discussionId,
-          toContentId: payload.subjectId,
-          relationType: DISCUSSES_RELATION_TYPE,
-          createdAt: timestamp,
-        },
-      ]
-    );
+      })
+    }
+
+    let result = await this.contentNodeRepository.addNode(node, relations);
 
     if (isErr(result)) {
       return result;

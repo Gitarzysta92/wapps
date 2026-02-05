@@ -33,6 +33,16 @@ export abstract class RecordService {
       tenantId: ctx.tenantId,
       timestamp: ctx.timestamp,
       actionName: CREATE_RECORD_ACTION_NAME,
+      resource: {
+        type: 'record',
+        attributes: {
+          categoryId: payload.categoryId,
+          tagIds: payload.tagIds,
+          platformIds: payload.platformIds,
+          state: payload.state,
+          visibility: payload.visibility,
+        },
+      },
     };
 
     const authorityValidationResult = await this.authorityValidationService.validate(validatableContext);

@@ -1,0 +1,26 @@
+{
+  "name": "platform-queue",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/platform-queue/src",
+  "projectType": "library",
+  "tags": ["type:infra", "scope:infrastructure"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/infrastructure/platform-queue",
+        "main": "libs/infrastructure/platform-queue/src/index.ts",
+        "tsConfig": "libs/infrastructure/platform-queue/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/infrastructure/platform-queue/jest.config.ts"
+      }
+    }
+  }
+}

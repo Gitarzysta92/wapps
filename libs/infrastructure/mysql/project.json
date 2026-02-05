@@ -1,0 +1,26 @@
+{
+  "name": "mysql",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/mysql/src",
+  "projectType": "library",
+  "tags": ["type:infra", "scope:infrastructure"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/infrastructure/mysql",
+        "main": "libs/infrastructure/mysql/src/index.ts",
+        "tsConfig": "libs/infrastructure/mysql/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/infrastructure/mysql/jest.config.ts"
+      }
+    }
+  }
+}

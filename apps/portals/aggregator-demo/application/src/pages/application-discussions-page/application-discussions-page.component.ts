@@ -79,7 +79,7 @@ export class ApplicationDiscussionsPageComponent implements
   public readonly discussions = rxResource({
     request: () => this.app.value(),
     loader: ({ request: app }) => {
-      const discussions = DISCUSSION_PREVIEW_DATA.filter(d => d.correlationId === app?.id);
+      const discussions = DISCUSSION_PREVIEW_DATA.filter(d => d.associationId === app?.id);
       return of(discussions).pipe(delay(1200))
     }
   });

@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HealthController } from './health/health.controller';
 import { DiscussionsModule } from './discussions/discussions.module';
-import { Discussion } from './discussions/entities/discussion.entity';
 import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 import { ContentNodeEntity } from './discussions/infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './discussions/infrastructure/content-node-relation.entity';
@@ -24,7 +23,7 @@ import { SeedService } from './seed/seed.service';
         username: configService.get('DISCUSSION_DATABASE_USERNAME') || 'root',
         password: configService.get('DISCUSSION_DATABASE_PASSWORD') || 'password',
         database: configService.get('DISCUSSION_DATABASE_NAME') || 'discussion',
-        entities: [Discussion, ContentNodeEntity, ContentNodeRelationEntity],
+        entities: [ContentNodeEntity, ContentNodeRelationEntity],
         synchronize: true, // Auto-create tables (disable in production)
         logging: false,
       }),
