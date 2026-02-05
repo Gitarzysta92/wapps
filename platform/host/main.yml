@@ -19,12 +19,16 @@
       include_tasks: system/configure.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
+    - name: Include K3s installation
+      include_tasks: k3s/install.yml
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
     - name: Include MySQL installation
       include_tasks: mysql/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
-    - name: Include K3s installation
-      include_tasks: k3s/install.yml
+    - name: Include MongoDB installation
+      include_tasks: mongodb/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Create ArgoCD namespace
@@ -34,7 +38,9 @@
 
     - name: Install ArgoCD in cluster
       shell: |
-        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        # Use server-side apply to avoid exceeding the 256KiB annotation limit on large CRDs
+        # (kubectl client-side apply stores the whole manifest in last-applied-configuration).
+        kubectl apply --server-side --force-conflicts -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
       register: argocd_install
       when: target_env | default('staging') in ['development', 'staging', 'production']
 

@@ -1,0 +1,513 @@
+---
+# ==============================================
+# MongoDB Installation on Host for Kubernetes Cluster
+# ==============================================
+# This playbook installs MongoDB on the host machine and configures it to be
+# accessible from pods running in the Kubernetes cluster.
+# It creates a Kubernetes Service with manual Endpoints pointing to the host IP.
+#
+# Credentials come from Ansible vars:
+#   - mongodb_root_password (admin/root user)
+#   - mongodb_wapps_username (shared app user username)
+#   - mongodb_wapps_password (shared app user password)
+
+- name: Validate host OS is Ubuntu (MongoDB install expects apt)
+  assert:
+    that:
+      - ansible_distribution | lower == 'ubuntu'
+    fail_msg: >
+      MongoDB host provisioning currently supports Ubuntu only (uses official MongoDB apt repository).
+      Detected ansible_distribution={{ ansible_distribution | default('unknown') }}.
+
+- name: Validate required MongoDB credentials are provided
+  assert:
+    that:
+      - (mongodb_root_password | default('', true)) | length > 0
+      - (mongodb_wapps_username | default('', true)) | length > 0
+      - (mongodb_wapps_password | default('', true)) | length > 0
+    fail_msg: >
+      Missing MongoDB credentials. Provide non-empty Ansible vars:
+      mongodb_root_password, mongodb_wapps_username and mongodb_wapps_password (via GitHub secrets or --extra-vars).
+
+- name: Map Ubuntu codename for MongoDB apt repo
+  set_fact:
+    # MongoDB's apt repos sometimes lag behind the newest Ubuntu codenames.
+    # Keep the value a clean single token (no whitespace/newlines), otherwise the apt source line breaks.
+    mongodb_ubuntu_codename: "{{ 'jammy' if (ansible_distribution_release | default('jammy')) in ['noble', 'oracular', 'plucky'] else (ansible_distribution_release | default('jammy')) }}"
+
+# ==============================================
+# MongoDB APT repository (Ubuntu)
+# ==============================================
+- name: Install MongoDB prerequisites
+  package:
+    name:
+      - curl
+      - gnupg
+      - ca-certificates
+    state: present
+
+- name: Add MongoDB 7.0 GPG keyring
+  shell: |
+    set -e
+    curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+  args:
+    creates: /usr/share/keyrings/mongodb-server-7.0.gpg
+
+- name: Add MongoDB 7.0 APT repository
+  copy:
+    dest: /etc/apt/sources.list.d/mongodb-org-7.0.list
+    mode: '0644'
+    content: |
+      deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ mongodb_ubuntu_codename | trim }}/mongodb-org/7.0 multiverse
+
+- name: Update apt cache (MongoDB repo)
+  apt:
+    update_cache: yes
+    # Force refresh even if the cache was just updated earlier in the workflow.
+    # GitHub Actions installs dependencies with apt-get update right before Ansible runs,
+    # and apt's "fresh cache" heuristic would otherwise skip fetching the newly-added MongoDB repo.
+    cache_valid_time: 0
+
+- name: Display MongoDB apt source list entry
+  command: cat /etc/apt/sources.list.d/mongodb-org-7.0.list
+  register: mongodb_apt_source
+  changed_when: false
+
+- name: Display MongoDB apt source list content
+  debug:
+    msg: "{{ mongodb_apt_source.stdout | default('') }}"
+
+- name: Display host facts relevant to MongoDB packages
+  debug:
+    msg:
+      - "ansible_distribution={{ ansible_distribution | default('unknown') }}"
+      - "ansible_distribution_release={{ ansible_distribution_release | default('unknown') }}"
+      - "ansible_architecture={{ ansible_architecture | default('unknown') }}"
+      - "ansible_userspace_architecture={{ ansible_userspace_architecture | default('unknown') }}"
+      - "mongodb_ubuntu_codename={{ mongodb_ubuntu_codename | default('unset') }}"
+
+- name: Verify MongoDB apt repo exposes mongodb-org package
+  shell: |
+    set -e
+    apt-cache policy mongodb-org
+    echo '---'
+    apt-cache madison mongodb-org || true
+  args:
+    executable: /bin/bash
+  register: mongodb_org_policy
+  changed_when: false
+  failed_when: false
+
+- name: Display mongodb-org apt-cache output (stdout/stderr)
+  debug:
+    msg:
+      - "rc={{ mongodb_org_policy.rc | default('') }}"
+      - "stdout={{ mongodb_org_policy.stdout | default('') }}"
+      - "stderr={{ mongodb_org_policy.stderr | default('') }}"
+
+- name: Fail early if mongodb-org is not available
+  fail:
+    msg: |
+      mongodb-org package is not available after adding MongoDB apt repo.
+
+      Output:
+      stdout:
+      {{ mongodb_org_policy.stdout | default('') }}
+
+      stderr:
+      {{ mongodb_org_policy.stderr | default('') }}
+  when: >
+    mongodb_org_policy.stdout is not defined or
+    (mongodb_org_policy.stdout | trim) == '' or
+    'mongodb-org:' not in mongodb_org_policy.stdout or
+    'Candidate: (none)' in mongodb_org_policy.stdout or
+    'Unable to locate package' in mongodb_org_policy.stdout or
+    mongodb_org_policy.stderr is defined and (mongodb_org_policy.stderr | trim) != ''
+
+# ==============================================
+# MongoDB installation & service
+# ==============================================
+- name: Install MongoDB (mongodb-org)
+  apt:
+    name: mongodb-org
+    state: present
+
+- name: Ensure mongod service is started and enabled
+  systemd:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Wait for MongoDB to be ready (localhost)
+  wait_for:
+    port: 27017
+    host: 127.0.0.1
+    timeout: 60
+
+# ==============================================
+# MongoDB configuration (bind to host, enable auth)
+# ==============================================
+- name: Create MongoDB configuration for cluster access (bind + auth)
+  copy:
+    dest: /etc/mongod.conf
+    mode: '0644'
+    content: |
+      storage:
+        dbPath: /var/lib/mongodb
+      systemLog:
+        destination: file
+        logAppend: true
+        path: /var/log/mongodb/mongod.log
+      net:
+        port: 27017
+        bindIp: 0.0.0.0
+      processManagement:
+        timeZoneInfo: /usr/share/zoneinfo
+      security:
+        authorization: enabled
+  register: mongod_config
+
+- name: Restart MongoDB and verify it comes back up (with diagnostics)
+  when: mongod_config.changed
+  block:
+    - name: Restart MongoDB if configuration changed
+      systemd:
+        name: mongod
+        state: restarted
+
+    - name: Wait for MongoDB after restart
+      wait_for:
+        port: 27017
+        host: 127.0.0.1
+        timeout: 60
+  rescue:
+    - name: Read mongod service status
+      command: systemctl status mongod --no-pager -l
+      register: mongod_systemctl_status
+      changed_when: false
+      failed_when: false
+
+    - name: Read mongod journal (last 200 lines)
+      command: journalctl -u mongod --no-pager -n 200
+      register: mongod_journal
+      changed_when: false
+      failed_when: false
+
+    - name: Read /etc/mongod.conf
+      command: cat /etc/mongod.conf
+      register: mongod_conf
+      changed_when: false
+      failed_when: false
+
+    - name: Read mongod log (last 200 lines, if present)
+      shell: |
+        set -e
+        test -f /var/log/mongodb/mongod.log || exit 0
+        tail -n 200 /var/log/mongodb/mongod.log
+      args:
+        executable: /bin/bash
+      register: mongod_log_tail
+      changed_when: false
+      failed_when: false
+
+    - name: Fail with mongod diagnostics
+      fail:
+        msg: |
+          MongoDB did not come back up after restarting mongod.
+
+          systemctl status mongod:
+          {{ mongod_systemctl_status.stdout | default('') }}
+
+          journalctl -u mongod (last 200 lines):
+          {{ mongod_journal.stdout | default('') }}
+
+          /etc/mongod.conf:
+          {{ mongod_conf.stdout | default('') }}
+
+          /var/log/mongodb/mongod.log (tail, if present):
+          {{ mongod_log_tail.stdout | default('') }}
+
+# ==============================================
+# Users (admin + shared app user)
+# ==============================================
+# We try to authenticate as admin using the provided password.
+# If that fails, we try the localhost exception bootstrap (only works when *no users exist*).
+# If bootstrap also fails with "not authorized", it means users already exist and the provided
+# mongodb_root_password does not match the existing admin user's password.
+- name: Test admin credentials (auth)
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval 'db.runCommand({ ping: 1 })'
+  register: mongodb_admin_auth_test
+  changed_when: false
+  failed_when: false
+
+- name: Bootstrap admin user via localhost exception (only if auth failed)
+  shell: |
+    mongosh --quiet --eval '
+      const adm = db.getSiblingDB("admin");
+      const user = adm.getUser("admin");
+      if (!user) {
+        adm.createUser({
+          user: "admin",
+          pwd: "{{ mongodb_root_password }}",
+          roles: [ { role: "root", db: "admin" } ]
+        });
+        print("created_admin_user");
+      } else {
+        print("admin_user_exists");
+      }
+    '
+  register: mongodb_admin_bootstrap
+  changed_when: "'created_admin_user' in mongodb_admin_bootstrap.stdout"
+  failed_when: false
+  when: mongodb_admin_auth_test.rc != 0
+
+- name: Re-test admin credentials after bootstrap (if attempted)
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval 'db.runCommand({ ping: 1 })'
+  register: mongodb_admin_auth_test_after_bootstrap
+  changed_when: false
+  failed_when: false
+  when: mongodb_admin_auth_test.rc != 0
+
+- name: Fail if admin authentication is not possible (wrong mongodb_root_password?)
+  fail:
+    msg: |
+      Could not authenticate as MongoDB admin using the provided mongodb_root_password,
+      and bootstrap via localhost exception did not succeed.
+
+      This usually means MongoDB already has users configured and the existing admin password
+      is different than the secret you provided.
+
+      Quick manual check on host:
+        sudo mongosh --username admin --authenticationDatabase admin
+
+      Ansible outputs:
+      - auth_test rc={{ mongodb_admin_auth_test.rc | default('') }}
+        stderr={{ mongodb_admin_auth_test.stderr | default('') }}
+      - bootstrap rc={{ mongodb_admin_bootstrap.rc | default('') }}
+        stderr={{ mongodb_admin_bootstrap.stderr | default('') }}
+      - auth_test_after_bootstrap rc={{ mongodb_admin_auth_test_after_bootstrap.rc | default('') }}
+        stderr={{ mongodb_admin_auth_test_after_bootstrap.stderr | default('') }}
+  when: >
+    mongodb_admin_auth_test.rc != 0 and
+    (
+      mongodb_admin_auth_test_after_bootstrap is not defined or
+      mongodb_admin_auth_test_after_bootstrap.rc != 0
+    )
+
+- name: Ensure admin password is up-to-date (authenticated)
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval 'db.getSiblingDB("admin").updateUser("admin", {pwd: "{{ mongodb_root_password }}"});'
+  register: mongodb_admin_update_auth
+  changed_when: false
+  failed_when: false
+  when: >
+    mongodb_admin_auth_test.rc == 0 or
+    (mongodb_admin_auth_test_after_bootstrap is defined and mongodb_admin_auth_test_after_bootstrap.rc == 0)
+
+- name: Ensure app user exists / password is up-to-date
+  shell: |
+    mongosh --quiet \
+      --username "admin" \
+      --password "{{ mongodb_root_password }}" \
+      --authenticationDatabase "admin" \
+      --eval '
+        const adm = db.getSiblingDB("admin");
+        const u = adm.getUser("{{ mongodb_wapps_username }}");
+        if (!u) {
+          adm.createUser({
+            user: "{{ mongodb_wapps_username }}",
+            pwd: "{{ mongodb_wapps_password }}",
+            roles: [ { role: "readWriteAnyDatabase", db: "admin" } ]
+          });
+          print("created_app_user");
+        } else {
+          adm.updateUser("{{ mongodb_wapps_username }}", { pwd: "{{ mongodb_wapps_password }}" });
+          print("updated_app_user");
+        }
+      '
+  register: mongodb_app_user
+  changed_when: "'created_app_user' in mongodb_app_user.stdout or 'updated_app_user' in mongodb_app_user.stdout"
+
+# ==============================================
+# Firewall configuration
+# ==============================================
+- name: Allow MongoDB through firewall
+  ufw:
+    rule: allow
+    port: "27017"
+    proto: tcp
+    comment: "MongoDB for Kubernetes cluster"
+
+# ==============================================
+# Kubernetes Service Integration (external host service)
+# ==============================================
+- name: Get host primary IP address
+  set_fact:
+    host_ip: "{{ ansible_default_ipv4.address }}"
+
+- name: Display detected host IP for verification
+  debug:
+    msg: "Detected host IP address: {{ host_ip }}"
+
+- name: Create MongoDB namespace in Kubernetes
+  shell: kubectl create namespace mongodb --dry-run=client -o yaml | kubectl apply -f -
+  register: mongodb_namespace
+
+- name: Create Kubernetes Service for host MongoDB
+  shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: mongodb
+      namespace: mongodb
+      labels:
+        app: mongodb
+        type: external-host-service
+      annotations:
+        description: "MongoDB running on host machine"
+    spec:
+      type: ClusterIP
+      ports:
+        - name: mongodb
+          port: 27017
+          targetPort: 27017
+          protocol: TCP
+    EOF
+  register: mongodb_k8s_service
+
+- name: Create Kubernetes Endpoints for host MongoDB
+  shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Endpoints
+    metadata:
+      name: mongodb
+      namespace: mongodb
+      labels:
+        app: mongodb
+        type: external-host-service
+      annotations:
+        description: "Points to MongoDB on host at {{ host_ip }}"
+    subsets:
+      - addresses:
+          - ip: {{ host_ip }}
+        ports:
+          - name: mongodb
+            port: 27017
+            protocol: TCP
+    EOF
+  register: mongodb_k8s_endpoints
+
+# ==============================================
+# Shared MongoDB Credentials Secret
+# ==============================================
+- name: Create shared MongoDB credentials secret in mongodb namespace
+  shell: |
+    kubectl create secret generic mongodb-credentials \
+      --namespace=mongodb \
+      --from-literal=MONGODB_HOST=mongodb.mongodb \
+      --from-literal=MONGODB_PORT=27017 \
+      --from-literal=MONGODB_AUTH_DB=admin \
+      --from-literal=MONGODB_USERNAME={{ mongodb_wapps_username }} \
+      --from-literal=MONGODB_PASSWORD={{ mongodb_wapps_password }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: mongodb_shared_secret
+
+# ==============================================
+# Mongo Express Admin Credentials Secret
+# ==============================================
+# mongo-express needs elevated privileges for some admin UI operations (e.g. listing collections
+# in system DBs). Keep these credentials separate from the shared app credentials.
+- name: Create Mongo Express admin credentials secret in mongodb namespace
+  shell: |
+    kubectl create secret generic mongodb-admin-credentials \
+      --namespace=mongodb \
+      --from-literal=MONGODB_HOST=mongodb.mongodb \
+      --from-literal=MONGODB_PORT=27017 \
+      --from-literal=MONGODB_AUTH_DB=admin \
+      --from-literal=MONGODB_ADMIN_USERNAME=admin \
+      --from-literal=MONGODB_ADMIN_PASSWORD={{ mongodb_root_password }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  register: mongodb_admin_secret
+
+# ==============================================
+# Verification Tests
+# ==============================================
+- name: Test MongoDB connection from cluster
+  shell: |
+    kubectl run mongodb-connection-test \
+      --rm -i --restart=Never \
+      --image=mongo:7.0 \
+      --namespace=mongodb \
+      --command -- \
+      mongosh "mongodb://{{ mongodb_wapps_username }}:{{ mongodb_wapps_password }}@mongodb.mongodb:27017/admin?authSource=admin" \
+      --eval 'db.runCommand({ ping: 1 })'
+  register: mongodb_cluster_test
+  changed_when: false
+  failed_when: false
+
+- name: Get Kubernetes Service ClusterIP
+  shell: kubectl get service mongodb -n mongodb -o jsonpath='{.spec.clusterIP}'
+  register: mongodb_service_ip
+  changed_when: false
+
+- name: Get Kubernetes Endpoints IP
+  shell: kubectl get endpoints mongodb -n mongodb -o jsonpath='{.subsets[0].addresses[0].ip}'
+  register: mongodb_endpoint_ip
+  changed_when: false
+
+# ==============================================
+# Display Installation Summary
+# ==============================================
+- name: Display MongoDB installation summary
+  debug:
+    msg: |
+      ╔════════════════════════════════════════════════════════════════╗
+      ║          MongoDB Installation Complete                         ║
+      ╚════════════════════════════════════════════════════════════════╝
+      
+      📊 DATABASE INFORMATION:
+      ├─ Host IP: {{ host_ip }}
+      ├─ Port: 27017
+      ├─ Bind Address: 0.0.0.0 (accessible from cluster)
+      └─ Auth: enabled (admin + app user)
+      
+      👤 USERS:
+      ├─ Admin user: admin (auth DB: admin)
+      └─ App user: {{ mongodb_wapps_username }} (role: readWriteAnyDatabase)
+      
+      ☸️  KUBERNETES INTEGRATION:
+      ├─ Namespace: mongodb
+      ├─ Service Name: mongodb
+      ├─ Service ClusterIP: {{ mongodb_service_ip.stdout }}
+      ├─ Endpoint IP: {{ mongodb_endpoint_ip.stdout }} (host)
+      └─ DNS: mongodb.mongodb.svc.cluster.local
+      
+      🔐 KUBERNETES SECRETS CREATED:
+      └─ mongodb-credentials (namespace: mongodb)
+      
+      ✅ CONNECTION TESTS:
+      └─ From Cluster: {{ 'PASSED ✓' if mongodb_cluster_test.rc == 0 else 'CHECK LOGS' }}
+      
+      📝 USAGE IN PODS:
+        envFrom:
+          - secretRef:
+              name: mongodb-credentials
+      
+      MongoDB is accessible from pods via: mongodb.mongodb:27017
+

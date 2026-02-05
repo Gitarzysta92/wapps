@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  namespace: mongodb
+  labels:
+    app: mongo-express
+    app.kubernetes.io/name: mongo-express
+    app.kubernetes.io/part-of: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+        - name: mongo-express
+          image: mongo-express:1.0.2-20
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          env:
+            # MongoDB connection (created by host provisioning Ansible as Secret/mongodb-credentials)
+            - name: ME_CONFIG_MONGODB_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGODB_HOST
+            - name: ME_CONFIG_MONGODB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGODB_PORT
+            - name: ME_CONFIG_MONGODB_AUTH_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGODB_AUTH_DB
+            - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-admin-credentials
+                  key: MONGODB_ADMIN_USERNAME
+            - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-admin-credentials
+                  key: MONGODB_ADMIN_PASSWORD
+
+            # Protect the UI (avoid default admin/pass).
+            # Note: this uses the same password as the app DB user; rotate via host provisioning secrets.
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              value: mongo
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGODB_PASSWORD
+
+          readinessProbe:
+            # UI is protected by BasicAuth, so an HTTP probe would get 401.
+            # Use a TCP probe to verify the process is listening.
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
