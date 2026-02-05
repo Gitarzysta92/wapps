@@ -111,6 +111,9 @@
       "@foundation/identity-system": [
         "libs/foundation/identity-system/src/index.ts"
       ],
+      "@foundation/interaction-system": [
+        "libs/foundation/interaction-system/src/index.ts"
+      ],
       "@foundation/primitives": ["libs/foundation/primitives/src/index.ts"],
       "@foundation/standard": ["libs/foundation/standard/src/index.ts"],
       "@foundation/workflow-system": [
@@ -273,7 +276,9 @@
       "@ui/tags": ["libs/ui/tags/src/index.ts"],
       "@ui/voting": ["libs/ui/voting/src/index.ts"],
       "minio": ["libs/infrastructure/minio/src/index.ts"],
-      "voting": ["apps/portals/shared/features/voting/src/index.ts"]
+      "voting": ["apps/portals/shared/features/voting/src/index.ts"],
+      "@utils/opa": ["libs/utils/opa/src/index.ts"],
+      "@utils/opa/*": ["libs/utils/opa/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"],

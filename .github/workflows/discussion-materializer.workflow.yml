@@ -1,16 +1,16 @@
-name: 'Discussion Service - Build & Deploy'
+name: 'Discussion Materializer - Build & Deploy'
 
 on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/services/discussion/**'
-      - 'libs/domains/discussion/**'
-      - 'libs/foundation/**'
-      - 'environments/dev/apps/discussion-kustomization/**'
-      - 'argocd/applications/backend/discussion.yaml'
-      - '.github/workflows/discussion.workflow.yml'
-      - '.github/actions/deploy-to-argocd/**'
+      - 'apps/services/discussion-materializer/**'
+      - 'libs/infrastructure/**'
+      - 'libs/cross-cutting/**'
+      - 'apps/shared/**'
+      - 'environments/dev/apps/discussion-materializer-kustomization/**'
+      - 'argocd/applications/backend/discussion-materializer.yaml'
+      - '.github/workflows/discussion-materializer.workflow.yml'
       - '.github/actions/sync-argocd-app/**'
       - '.github/actions/extract-namespace/**'
   workflow_dispatch:
@@ -25,10 +25,10 @@ on:
           - production
 
 env:
-  SERVICE_NAME: discussion
+  SERVICE_NAME: discussion-materializer
   REGISTRY: ghcr.io
-  IMAGE_NAME: gitarzysta92/wapps/discussion
-  NAMESPACE_MANIFEST: apps/services/discussion/provisioning/k8s/discussion.namespace.yaml
+  IMAGE_NAME: gitarzysta92/wapps/discussion-materializer
+  NAMESPACE_MANIFEST: apps/services/discussion-materializer/provisioning/k8s/discussion.namespace.yaml
 
 jobs:
   build:
@@ -54,7 +54,6 @@ jobs:
             ENV="development"
           fi
           echo "environment=${ENV}" >> $GITHUB_OUTPUT
-          echo "Environment: ${ENV}"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -66,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build apps.services.discussion --configuration=production
+        run: npx nx build apps.services.discussion-materializer --configuration=production
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -81,15 +80,11 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: dist/apps/services/discussion
-          file: apps/services/discussion/Dockerfile
+          context: dist/apps/services/discussion-materializer
+          file: apps/services/discussion-materializer/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           no-cache: true
-
-      - name: Image pushed
-        run: |
-          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
   deploy:
     name: 'Deploy to ${{ needs.build.outputs.environment }}'
@@ -122,7 +117,6 @@ jobs:
             --from-literal=password="${{ secrets.RABBITMQ_PASSWORD }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ RabbitMQ credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
       - name: Create MinIO credentials secret
         run: |
@@ -130,25 +124,14 @@ jobs:
           SECRET_KEY="${{ secrets.MINIO_ROOT_PASSWORD }}"
           [ -z "$ACCESS_KEY" ] && ACCESS_KEY="admin"
           [ -z "$SECRET_KEY" ] && SECRET_KEY="changeme"
-
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic minio-credentials \
             --from-literal=accessKey="$ACCESS_KEY" \
             --from-literal=secretKey="$SECRET_KEY" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ MinIO credentials secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
-      - name: Create ingress auth secret
-        run: |
-          kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
-          kubectl create secret generic ingress-auth-secret \
-            --from-literal=secret="${{ secrets.INGRESS_AUTH_SECRET }}" \
-            --namespace=${{ steps.ns.outputs.namespace }} \
-            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ Ingress auth secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
-
-      - name: Create MySQL credentials secret
+      - name: "Create MySQL credentials secret (shared: discussion-app-secrets)"
         run: |
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic discussion-app-secrets \
@@ -159,17 +142,15 @@ jobs:
             --from-literal=DISCUSSION_DATABASE_NAME="${{ vars.EDITORIAL_DATABASE_NAME }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ Discussion DB secrets created/updated"
 
-      - name: Create MongoDB credentials secret (read projections)
+      - name: Create MongoDB credentials secret (materializer)
         run: |
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
-          kubectl create secret generic discussion-mongo \
+          kubectl create secret generic discussion-materializer-mongo \
             --from-literal=username="${{ secrets.MONGODB_WAPPS_USERNAME }}" \
             --from-literal=password="${{ secrets.MONGODB_WAPPS_PASSWORD }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ Discussion MongoDB secrets created/updated"
 
       - name: Create GHCR image pull secret
         run: |
@@ -180,7 +161,6 @@ jobs:
             --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-          echo "✅ GHCR image pull secret created/updated in ${{ steps.ns.outputs.namespace }} namespace"
 
       - name: Sync ArgoCD Application
         uses: ./.github/actions/sync-argocd-app
@@ -189,60 +169,19 @@ jobs:
           argocd-server: ${{ steps.env-vars.outputs.server }}
           argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
           argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
-          app-manifest-path: argocd/applications/backend/discussion.yaml
+          app-manifest-path: argocd/applications/backend/discussion-materializer.yaml
           sync-timeout: '300'
           force-sync: 'true'
 
       - name: Restart deployment to pull latest image
         run: |
-          kubectl rollout restart deployment/discussion -n ${{ steps.ns.outputs.namespace }}
-          kubectl rollout status deployment/discussion -n ${{ steps.ns.outputs.namespace }} --timeout=600s
+          kubectl rollout restart deployment/discussion-materializer -n ${{ steps.ns.outputs.namespace }}
+          kubectl rollout status deployment/discussion-materializer -n ${{ steps.ns.outputs.namespace }} --timeout=600s
 
       - name: Apply environment configuration
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-          if [ -d "environments/${ENV_SHORT}/apps/discussion-kustomization" ]; then
-            kubectl apply -k environments/${ENV_SHORT}/apps/discussion-kustomization/
-            echo "✅ Environment configuration applied"
+          if [ -d "environments/${ENV_SHORT}/apps/discussion-materializer-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/discussion-materializer-kustomization/
           fi
-
-      - name: Apply network policies
-        run: |
-          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
-            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
-            echo "✅ Network policies applied"
-          fi
-
-  summary:
-    name: 'Deployment Summary'
-    runs-on: ubuntu-latest
-    needs: [build, deploy]
-    if: always()
-    steps:
-      - name: Print summary
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Discussion Service - Deployment Summary"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          echo "Environment: ${{ needs.build.outputs.environment }}"
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          echo ""
-          echo "Job Results:"
-          echo "  - Build: ${{ needs.build.result }}"
-          echo "  - Deploy: ${{ needs.deploy.result }}"
-          echo ""
-          if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Discussion Service deployed successfully!"
-            echo ""
-            echo "Service endpoints:"
-            echo "  - API: https://discussion.${{ needs.build.outputs.environment }}.wapps.com/api"
-            echo "  - Swagger Docs: https://discussion.${{ needs.build.outputs.environment }}.wapps.com/api/docs"
-            echo "  - Health: https://discussion.${{ needs.build.outputs.environment }}.wapps.com/api/health"
-          else
-            echo "⚠️ Deployment completed with issues. Check logs above."
-          fi
-          echo ""
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

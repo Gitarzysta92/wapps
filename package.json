@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "agents:editor:dev": "npx nx serve editor-agent",
-    "scrappers:storeapp:dev": "npx nx serve store-app"
+    "scrappers:storeapp:dev": "npx nx serve store-app",
+    "opa:generate": "node libs/utils/opa/scripts/generate.cjs"
   },
   "author": "",
   "license": "ISC",

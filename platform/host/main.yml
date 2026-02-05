@@ -131,7 +131,6 @@
       when:
         - target_env | default('staging') in ['development', 'staging', 'production']
         - git_token | default('') != ''
-        - argocd_repo_secret_check.stdout == "NOT_FOUND" or argocd_repo_secret_check.rc != 0
 
     - name: Verify ArgoCD repository secret
       shell: kubectl get secret wapps-repo-secret -n argocd -o jsonpath='{.metadata.labels.argocd\.argoproj\.io/secret-type}'

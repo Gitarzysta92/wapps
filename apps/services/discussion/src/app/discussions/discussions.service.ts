@@ -7,7 +7,7 @@ import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
 import { MinioClient } from '../infrastructure/minio-client';
 import { QueueChannel } from '@infrastructure/platform-queue';
-import { AllowAllPolicyEvaluator } from './infrastructure/allow-all-policy-evaluator';
+import { OpaPolicyEvaluator } from './infrastructure/opa-policy-evaluator';
 import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
 import { RabbitMqDiscussionProjectionService } from './infrastructure/rabbitmq-discussion-projection.service';
@@ -15,6 +15,24 @@ import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discuss
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CommentLikeEntity } from './infrastructure/comment-like.entity';
+import { PlatformMongoClient } from '@infrastructure/mongo';
+import type { Document } from 'mongodb';
+
+type DiscussionAggregateProjection = Document & {
+  _id: string; // discussionId
+  lastActivityAt?: number;
+  createdAt?: number;
+  descendantsCount?: number;
+  subjectId?: string | null;
+  subjectReferenceKey?: string | null;
+};
+
+type DiscussionNodeProjection = Document & {
+  _id: string; // content node id
+  discussionId: string;
+  depth?: number;
+  createdAt?: number;
+};
 
 @Injectable()
 export class DiscussionsService {
@@ -22,16 +40,19 @@ export class DiscussionsService {
   private payloadRepository: MinioDiscussionPayloadRepository;
   private readonly contentNodeRepository: MysqlContentNodeRepository;
   private readonly authorityValidationService: AuthorityValidationService;
+  private readonly mongo: PlatformMongoClient;
 
   constructor(
     minioClient: MinioClient,
     @Inject('DISCUSSION_QUEUE') queue: QueueChannel,
     contentNodeRepository: MysqlContentNodeRepository,
+    mongoClient: PlatformMongoClient,
     @InjectRepository(CommentLikeEntity)
     private readonly commentLikes: Repository<CommentLikeEntity>
   ) {
     this.contentNodeRepository = contentNodeRepository;
-    this.authorityValidationService = new (class extends AuthorityValidationService {})(new AllowAllPolicyEvaluator());
+    this.mongo = mongoClient;
+    this.authorityValidationService = new (class extends AuthorityValidationService {})(new OpaPolicyEvaluator());
     this.payloadRepository = new MinioDiscussionPayloadRepository(minioClient);
     const discussionPayloadRepository: IDiscussionPayloadRepository = this.payloadRepository;
     const discussionProjectionService: IDiscussionProjectionService = new RabbitMqDiscussionProjectionService(queue);
@@ -47,19 +68,22 @@ export class DiscussionsService {
   }
 
   async findAll(): Promise<unknown[]> {
-    const result = await this.payloadRepository.listAllPayloads<unknown>();
-    if (isErr(result)) {
-      throw result.error;
-    }
-    return result.value;
+    // Read from materialized projections (MongoDB).
+    // discussion-materializer maintains `discussion_aggregates` for fast listing.
+    const aggregates = this.mongo.collection<DiscussionAggregateProjection>('discussion_aggregates');
+    return await aggregates.find({}).sort({ lastActivityAt: -1 }).limit(100).toArray();
   }
 
   async findOne(id: string): Promise<unknown> {
-    const result = await this.payloadRepository.getPayload<unknown>(id);
-    if (isErr(result)) {
-      throw result.error;
-    }
-    return result.value;
+    // Read from materialized projections (MongoDB).
+    // Return the aggregate (root) and all nodes belonging to this discussionId.
+    const aggregates = this.mongo.collection<DiscussionAggregateProjection>('discussion_aggregates');
+    const nodes = this.mongo.collection<DiscussionNodeProjection>('discussion_nodes');
+
+    const aggregate = await aggregates.findOne({ _id: id });
+    const discussionNodes = await nodes.find({ discussionId: id }).sort({ depth: 1, createdAt: 1 }).toArray();
+
+    return { aggregate, nodes: discussionNodes };
   }
 
   async countDiscussions(): Promise<number> {
@@ -92,6 +116,10 @@ export class DiscussionsService {
       tenantId: ctx.tenantId,
       timestamp: ctx.timestamp,
       actionName: 'discussion.comment.like',
+      resource: {
+        type: 'comment',
+        id: commentId,
+      },
     });
     if (isErr(auth)) throw auth.error;
     if (auth.value !== true) throw new UnauthorizedException('Not allowed to like comment');
@@ -118,6 +146,10 @@ export class DiscussionsService {
       tenantId: ctx.tenantId,
       timestamp: ctx.timestamp,
       actionName: 'discussion.comment.unlike',
+      resource: {
+        type: 'comment',
+        id: commentId,
+      },
     });
     if (isErr(auth)) throw auth.error;
     if (auth.value !== true) throw new UnauthorizedException('Not allowed to unlike comment');

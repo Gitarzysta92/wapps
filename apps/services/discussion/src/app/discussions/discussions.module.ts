@@ -11,6 +11,7 @@ import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
 import { CommentLikeEntity } from './infrastructure/comment-like.entity';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
+import { PlatformMongoClient } from '@infrastructure/mongo';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity, CommentLikeEntity])],
@@ -31,6 +32,21 @@ import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.
     {
       provide: QueueClient,
       useFactory: () => new QueueClient(),
+    },
+    {
+      provide: PlatformMongoClient,
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const client = new PlatformMongoClient();
+        await client.connect({
+          host: config.get('MONGO_HOST') as string,
+          port: config.get('MONGO_PORT') as string,
+          username: config.get('MONGO_USERNAME') as string,
+          password: config.get('MONGO_PASSWORD') as string,
+          database: config.get('MONGO_DATABASE') as string,
+        });
+        return client;
+      },
     },
     {
       provide: 'DISCUSSION_QUEUE',

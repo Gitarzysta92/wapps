@@ -1,0 +1,24 @@
+{
+  "authority": {
+    "permissions_by_role": {
+      "admin": [
+        "*"
+      ],
+      "discussion:writer": [
+        "create-discussion",
+        "create-comment",
+        "discussion.comment.like",
+        "discussion.comment.unlike"
+      ],
+      "discussion:reader": [
+        "discussion.comment.like",
+        "discussion.comment.unlike"
+      ]
+    },
+    "roles_by_identity": {
+      "example-user": [
+        "discussion:writer"
+      ]
+    }
+  }
+}

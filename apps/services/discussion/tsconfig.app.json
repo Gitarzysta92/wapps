@@ -38,6 +38,9 @@
     },
     {
       "path": "../../../libs/infrastructure/minio/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/mongo/tsconfig.lib.json"
     }
   ]
 }
