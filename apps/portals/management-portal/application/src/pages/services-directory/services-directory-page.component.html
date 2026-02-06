@@ -1,0 +1,70 @@
+<section class="page">
+  <header class="page__header">
+    <h1 class="page__title">Service directory</h1>
+    <p class="page__subtitle">
+      All services with their public addresses (generated from repo manifests).
+    </p>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    @switch (vm.state) {
+      @case ('loading') {
+        <div class="page__state">Loading…</div>
+      }
+      @case ('error') {
+        <div class="page__state page__state--error">
+          {{ vm.message }}
+        </div>
+      }
+      @case ('loaded') {
+        <div class="meta">
+          <div class="meta__row">
+            <span class="meta__label">Environment</span>
+            <span class="meta__value">{{ vm.directory.environment || 'unknown' }}</span>
+          </div>
+          <div class="meta__row">
+            <span class="meta__label">Generated</span>
+            <span class="meta__value">{{ vm.directory.generatedAt || 'unknown' }}</span>
+          </div>
+        </div>
+
+        @if (vm.directory.services.length === 0) {
+          <div class="page__state">
+            No services found. Check `environments/*/apps/**/ingress-patch.yaml` and regenerate.
+          </div>
+        } @else {
+          <div class="services">
+            @for (svc of vm.directory.services; track svc.id) {
+              <article class="service">
+                <div class="service__header">
+                  <h2 class="service__title">{{ svc.name }}</h2>
+                  <div class="service__id">{{ svc.id }}</div>
+                </div>
+
+                <ul class="service__urls">
+                  @for (u of svc.urls; track u) {
+                    <li class="service__url">
+                      <a [href]="u" target="_blank" rel="noopener noreferrer">{{ u }}</a>
+                    </li>
+                  }
+                </ul>
+              </article>
+            }
+          </div>
+
+          @if (vm.directory.sources.length) {
+            <details class="sources">
+              <summary>Sources</summary>
+              <ul>
+                @for (s of vm.directory.sources; track s) {
+                  <li><code>{{ s }}</code></li>
+                }
+              </ul>
+            </details>
+          }
+        }
+      }
+    }
+  }
+</section>
+
