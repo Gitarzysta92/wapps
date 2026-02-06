@@ -10,6 +10,7 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "rootDir": ".",
         "outputPath": "dist/apps/portals/shared/features/discussion",
         "main": "apps/portals/shared/features/discussion/src/index.ts",
         "tsConfig": "apps/portals/shared/features/discussion/tsconfig.lib.json",

@@ -1,3 +1,11 @@
-import { FilterVm as FilterBaseVm } from "@ui/filters";
+export type FilterVm = {
+  key: string;
+  name: string;
+  options: FilterOptionVm[];
+}
 
-export type FilterVm = FilterBaseVm;
+export type FilterOptionVm = {
+  name: string;
+  value: string;
+  isSelected: boolean;
+}

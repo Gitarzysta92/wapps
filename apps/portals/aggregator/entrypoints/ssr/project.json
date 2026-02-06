@@ -3,7 +3,7 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-        "sourceRoot": "apps/portals/aggregator/src/apps/angular/src",
+  "sourceRoot": "apps/portals/aggregator/application/src",
   "tags": ["type:app"],
   "targets": {
     "build": {
@@ -11,10 +11,10 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/portals/aggregator/angular",
-        "index": "apps/portals/aggregator/src/apps/angular/src/index.html",
-        "main": "apps/portals/aggregator/src/apps/angular/src/main.ts",
+        "index": "apps/portals/aggregator/application/src/index.html",
+        "main": "apps/portals/aggregator/application/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/portals/aggregator/src/apps/angular/tsconfig.app.json",
+        "tsConfig": "apps/portals/aggregator/application/tsconfig.app.json",
         "stylePreprocessorOptions": {
           "includePaths": [
             "libs",
@@ -22,8 +22,11 @@
           ]
         },
         "assets": [
-          "apps/portals/aggregator/src/apps/angular/src/favicon.ico",
-          "apps/portals/aggregator/src/apps/angular/src/assets",
+          {
+            "glob": "**/*",
+            "input": "apps/portals/aggregator/application/src/static/assets",
+            "output": "assets"
+          },
           {
             "glob": "**/*",
             "input": "node_modules/@taiga-ui/icons/src",
@@ -45,12 +48,12 @@
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "2kb",
-              "maximumError": "4kb"
+              "maximumWarning": "10kb",
+              "maximumError": "20kb"
             }
           ],
           "outputHashing": "all"

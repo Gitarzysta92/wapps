@@ -1,6 +1,6 @@
-import { CategoryDto } from "@domains/catalog/category"
+import type { CategoryTreeDto } from "@domains/catalog/category"
 
-export const CATEGORIES: CategoryDto[] = [
+export const CATEGORIES: CategoryTreeDto[] = [
   {
     id: 1,
     name: "Work & Productivity",
@@ -43,7 +43,9 @@ export const CATEGORIES: CategoryDto[] = [
 ]
 
 
-export const CATEGORIES2 = [
+// Legacy dataset (incomplete typing) kept only for reference.
+// It doesn't match `CategoryTreeDto` (many entries are missing `slug`).
+export const CATEGORIES2: any[] = [
   {
     "id": 1,
     "name": "Work & Productivity",

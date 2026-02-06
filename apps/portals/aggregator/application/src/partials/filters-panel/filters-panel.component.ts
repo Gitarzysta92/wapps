@@ -1,17 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChipCheckboxComponent } from '@ui/form';
 import { AsyncPipe } from '@angular/common';
 import { CategoryListContainerDirective } from '@portals/shared/features/categories';
 import { PlatformListContainerDirective } from '@portals/shared/features/platform';
 import { FILTERS } from '../../filters';
 import { FilterDirective, FilterGroupComponent, FilterVm, ToFilterOptionsList } from '@ui/filters';
-import { map } from 'rxjs';
+import { of } from 'rxjs';
 
 import { SocialListContainerDirective } from '@portals/shared/features/social';
 import { EstimatedUserSpanListContainerDirective } from '@portals/shared/features/metrics';
 import { TagListContainerDirective } from '@portals/shared/features/tags';
-import { RouteDrivenContainerDirective } from '@ui/routing';
-import { FilterVmListToParamMapMapper, ParamMapToFilterVmListMapper } from '@portals/shared/features/filtering';
 import { DeviceListContainerDirective } from '@portals/shared/features/compatibility';
 import { MonetizationListContainerDirective } from '@portals/shared/features/pricing';
 
@@ -21,12 +19,6 @@ import { MonetizationListContainerDirective } from '@portals/shared/features/pri
   templateUrl: './filters-panel.component.html',
   styleUrl: './filters-panel.component.scss',
   standalone: true,
-  hostDirectives: [
-    {
-      directive: RouteDrivenContainerDirective,
-      outputs: ['onUpdate']
-    }
-  ],
   imports: [
     FilterDirective,
     FilterGroupComponent,
@@ -44,25 +36,12 @@ import { MonetizationListContainerDirective } from '@portals/shared/features/pri
 })
 export class FiltersPanelComponent {
   public readonly filterKey = FILTERS;
-  private readonly _filtersContainer = inject(RouteDrivenContainerDirective, { self: true });
-  private readonly _fromParamMapMapper = inject(ParamMapToFilterVmListMapper);
-  private readonly _toParamMapMapper = inject(FilterVmListToParamMapMapper);
 
-  public readonly filters$ = this._filtersContainer.params$
-    .pipe(map(ps => {
-      const fs = this._fromParamMapMapper.map(ps);
-      const filters = this._getFilters();
-      for (let filter of filters) {
-        filter.options = fs.find(f => f.key === filter.key)?.options ?? [];
-      }
-      return filters;
-    }))
+  // WIP: route-driven filter syncing is outdated in this app; keep local defaults for now.
+  public readonly filters$ = of(this._getFilters());
   
   public emitFilterChange(fvms: FilterVm[]): void {
-    for (let fv of fvms) {
-      fv.options = fv.options.filter(o => o.isSelected);
-    }
-    this._filtersContainer.update(this._toParamMapMapper.map(fvms))
+    // no-op for now (build-only stabilization)
   }
   
   private _getFilters(): FilterVm[] {

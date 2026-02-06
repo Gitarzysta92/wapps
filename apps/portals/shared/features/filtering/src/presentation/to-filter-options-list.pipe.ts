@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FilterOptionVm } from '../../../../../../../libs/ui/filters/src/models/filter.vm';
+import { FilterOptionVm } from './models/filter.vm';
 import { generateSlug } from '@domains/catalog/record';
 
 @Pipe({

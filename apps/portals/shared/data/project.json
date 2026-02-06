@@ -10,6 +10,7 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "rootDir": ".",
         "outputPath": "dist/apps/portals/shared/data",
         "main": "apps/portals/shared/data/src/index.ts",
         "tsConfig": "apps/portals/shared/data/tsconfig.lib.json",

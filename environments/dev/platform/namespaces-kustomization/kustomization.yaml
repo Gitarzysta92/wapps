@@ -8,4 +8,5 @@ resources:
   - agents.yaml
   - catalog.yaml
   - ingestion-services-media-ingestion.yaml
+  - ingestion-scrappers-store-app.yaml
 

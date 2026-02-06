@@ -6,5 +6,6 @@ export const FILTERS = {
   device: "device",
   monetization: "monetization",
   social: "social",
-  estimatedUsers: "estimated-users"
+  estimatedUsers: "estimated-users",
+  search: "search"
 }

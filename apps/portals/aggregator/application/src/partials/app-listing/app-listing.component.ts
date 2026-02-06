@@ -9,12 +9,12 @@ import { AsyncPipe } from '@angular/common';
 import { InfiniteScrollDirective } from '@ui/infinite-scroll';
 import { TuiIcon, TuiButton } from '@taiga-ui/core';
 import { RouterLink } from '@angular/router';
-import { MediumTileComponent } from '@ui/layout';
 
 // Shared features imports using aliases
 import { AppListingService } from '@portals/shared/features/listing';
 import { AppPreviewDto } from '@domains/catalog/record';
-import { AppListingSliceDto } from '../../../../../shared/features/listing/src/application/models/record-listing.dto';
+// NOTE: avoid deep imports into shared feature internals in this app (kept minimal for build stability).
+type AppListingSliceDto = any;
 
 // Generic interfaces for abstraction
 interface IListingItem {
@@ -41,7 +41,6 @@ interface IListingItem {
     TuiIcon,
     TuiButton,
     RouterLink,
-    MediumTileComponent
   ],
   providers: [
     LoadingListingSliceFactory,

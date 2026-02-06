@@ -3,7 +3,7 @@ import { createAppConfig } from './app-config';
 import { mergeApplicationConfig } from '@angular/core';
 // import { appConfigCSR } from './app-config.csr';
 import { routes } from './routes';
-import { provideProfileFeature } from '@portals/shared/features/user-profile';
+import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
 import {
   provideIdentityRegistrationFeature,
   providePasswordResetRequestFeature,
@@ -41,7 +41,7 @@ bootstrapApplication(AppRootComponent,
     providePasswordResetRequestFeature({
       validationMessages: VALIDATION_MESSAGES
     }),
-    provideProfileFeature(),
+    provideUserProfileFeature(),
     provideCategoryFeature({
       path: NAVIGATION.categories.path
     }),

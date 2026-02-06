@@ -11,7 +11,6 @@ import { UserPanelComponent } from '../user-panel/user-panel.component';
 import { AsyncPipe } from '@angular/common';
 import { GuestPanelComponent } from '../guest-panel/guest-panel.component';
 import { OutsideClickDirective } from '@ui/misc';
-import { NavigationService } from '@ui/navigation';
 import { GlobalStateService } from '../../state/global-state.service';
 import { ApplicationsPanelComponent } from '../applications-panel/applications-panel.component';
 import { BehaviorSubject } from 'rxjs';
@@ -36,7 +35,6 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class HeaderPartialComponent {
   public readonly state = inject(GlobalStateService);
-  public readonly navigation = inject(NavigationService).config;
   
   // Mock authentication service - replace with actual implementation
   public readonly authentication = {

@@ -5,10 +5,9 @@ import { TuiButton, TuiIcon } from "@taiga-ui/core";
 
 import { ThemeToggleComponent, THEME_PROVIDER_TOKEN, ThemingDescriptorDirective } from "@portals/cross-cutting/theming";
 import { MyProfileNameComponent } from "@ui/my-profile";
-import { NavigationService } from "@ui/navigation";
 import { MyProfileAvatarComponent } from "@ui/my-profile";
-import { Menu } from "../../navigation";
 import { AuthenticationService } from "@portals/shared/features/identity";
+import type { NavigationDeclaration } from "@ui/navigation";
 
 
 @Component({
@@ -31,8 +30,8 @@ import { AuthenticationService } from "@portals/shared/features/identity";
 })
 export class UserPanelComponent {
   public readonly service = inject(AuthenticationService);
-  private readonly _navigationService = inject(NavigationService);
-  public readonly navigationPrimary = this._navigationService.getNavigationFor(Menu.UserPanelPrimary);
-  public readonly navigationSecondary = this._navigationService.getNavigationFor(Menu.UserPanelSecondary);
+  // WIP: Aggregator navigation wiring is outdated; keep panel minimal until re-aligned to aggregator-demo.
+  public readonly navigationPrimary: NavigationDeclaration[] = [];
+  public readonly navigationSecondary: NavigationDeclaration[] = [];
   public readonly theme = inject(THEME_PROVIDER_TOKEN); 
 }

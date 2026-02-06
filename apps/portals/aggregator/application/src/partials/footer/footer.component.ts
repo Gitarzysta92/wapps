@@ -1,8 +1,7 @@
-import { Component, inject } from "@angular/core";
+import { Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiLink } from "@taiga-ui/core";
-import { NavigationService } from "@ui/navigation";
-import { Menu } from "../../navigation";
+import type { NavigationDeclaration } from "@ui/navigation";
 
 
 
@@ -17,10 +16,9 @@ import { Menu } from "../../navigation";
   ]
 })
 export class FooterPartialComponent {
-  private readonly _navigationService = inject(NavigationService);
-
-  public readonly navFirst = this._navigationService.getNavigationFor(Menu.FooterFirst);
-  public readonly navSecond = this._navigationService.getNavigationFor(Menu.FooterSecond);
-  public readonly navThird = this._navigationService.getNavigationFor(Menu.FooterSecond);
-  public readonly navFourth = this._navigationService.getNavigationFor(Menu.FooterFourth);
+  // WIP: Aggregator navigation wiring is outdated; keep footer minimal until re-aligned to aggregator-demo.
+  public readonly navFirst: NavigationDeclaration[] = [];
+  public readonly navSecond: NavigationDeclaration[] = [];
+  public readonly navThird: NavigationDeclaration[] = [];
+  public readonly navFourth: NavigationDeclaration[] = [];
 }
