@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: management-portal-csr
+  name: platform-portal-csr
 spec:
   replicas: 1
   template:
     spec:
       containers:
-      - name: management-portal-csr
+      - name: platform-portal-csr
         env:
         - name: NODE_ENV
           value: "development"

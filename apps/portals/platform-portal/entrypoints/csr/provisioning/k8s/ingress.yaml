@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: management-portal-csr-ingress
+  name: platform-portal-csr-ingress
   labels:
-    app: management-portal-csr
-    app.kubernetes.io/name: management-portal-csr
+    app: platform-portal-csr
+    app.kubernetes.io/name: platform-portal-csr
     app.kubernetes.io/component: frontend
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
@@ -13,14 +13,14 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: management-portal-csr.host.placeholder  # overridden by environment overlays
+  - host: platform-portal-csr.host.placeholder  # overridden by environment overlays
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: management-portal-csr-service
+            name: platform-portal-csr-service
             port:
               number: 80
 

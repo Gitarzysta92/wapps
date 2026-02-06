@@ -2,10 +2,10 @@
 FROM nginx:alpine AS production
 
 # Copy pre-built application to nginx
-COPY dist/apps/portals/management-portal/entrypoints/csr /usr/share/nginx/html
+COPY dist/apps/portals/platform-portal/entrypoints/csr /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY apps/portals/management-portal/entrypoints/csr/nginx.conf /etc/nginx/nginx.conf
+COPY apps/portals/platform-portal/entrypoints/csr/nginx.conf /etc/nginx/nginx.conf
 
 # Expose port
 EXPOSE 80

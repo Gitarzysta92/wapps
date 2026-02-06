@@ -12,7 +12,7 @@
     "environments/dev/apps/discussion-kustomization/ingress-patch.yaml",
     "environments/dev/apps/editorial-kustomization/ingress-patch.yaml",
     "environments/dev/apps/firebase-auth-validator-kustomization/ingress-patch.yaml",
-    "environments/dev/apps/management-portal-csr-kustomization/ingress-patch.yaml",
+    "environments/dev/apps/platform-portal-csr-kustomization/ingress-patch.yaml",
     "environments/dev/platform/argocd-kustomization/kustomization.yaml"
   ],
   "services": [
@@ -128,13 +128,13 @@
       ]
     },
     {
-      "id": "management-portal-csr",
-      "name": "Management Portal Csr",
+      "id": "platform-portal-csr",
+      "name": "Platform Portal Csr",
       "urls": [
-        "https://management-portal-csr.development.wapps.com/"
+        "https://platform-portal-csr.development.wapps.com/"
       ],
       "sources": [
-        "environments/dev/apps/management-portal-csr-kustomization/ingress-patch.yaml"
+        "environments/dev/apps/platform-portal-csr-kustomization/ingress-patch.yaml"
       ]
     }
   ]

@@ -1,21 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: management-portal-csr-ingress
+  name: platform-portal-csr-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
-  - host: management-portal-csr.development.wapps.com
+  - host: platform-portal-csr.development.wapps.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: management-portal-csr-service
+            name: platform-portal-csr-service
             port:
               number: 80
   - host: platform.development.wapps.com
@@ -25,7 +25,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: management-portal-csr-service
+            name: platform-portal-csr-service
             port:
               number: 80
 

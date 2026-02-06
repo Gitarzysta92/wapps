@@ -5,7 +5,7 @@ import {
   AppRootComponent,
   createAppConfig,
   routes,
-} from '@portals/management-portal/application';
+} from '@portals/platform-portal/application';
 
 bootstrapApplication(
   AppRootComponent,

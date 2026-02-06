@@ -1,8 +1,8 @@
 export default {
-  displayName: 'management-portal-csr',
+  displayName: 'platform-portal-csr',
   preset: '../../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../../../coverage/apps/portals/management-portal/csr',
+  coverageDirectory: '../../../../../coverage/apps/portals/platform-portal/csr',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

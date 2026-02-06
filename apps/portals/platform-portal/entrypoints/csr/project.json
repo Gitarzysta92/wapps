@@ -1,20 +1,20 @@
 {
-  "name": "management-portal-csr",
+  "name": "platform-portal-csr",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "management",
-  "sourceRoot": "apps/portals/management-portal/entrypoints/csr/src",
+  "prefix": "platform",
+  "sourceRoot": "apps/portals/platform-portal/entrypoints/csr/src",
   "tags": ["type:app"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/portals/management-portal/entrypoints/csr",
-        "index": "apps/portals/management-portal/entrypoints/csr/src/index.html",
-        "main": "apps/portals/management-portal/entrypoints/csr/src/main.ts",
+        "outputPath": "dist/apps/portals/platform-portal/entrypoints/csr",
+        "index": "apps/portals/platform-portal/entrypoints/csr/src/index.html",
+        "main": "apps/portals/platform-portal/entrypoints/csr/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/portals/management-portal/entrypoints/csr/tsconfig.app.json",
+        "tsConfig": "apps/portals/platform-portal/entrypoints/csr/tsconfig.app.json",
         "stylePreprocessorOptions": {
           "includePaths": [
             "libs",
@@ -22,7 +22,7 @@
           ]
         },
         "assets": [
-          "apps/portals/management-portal/entrypoints/csr/src/assets",
+          "apps/portals/platform-portal/entrypoints/csr/src/assets",
           {
             "glob": "**/*",
             "input": "node_modules/@taiga-ui/icons/src",
@@ -30,7 +30,7 @@
           }
         ],
         "styles": [
-          "apps/portals/management-portal/application/src/styles.scss",
+          "apps/portals/platform-portal/application/src/styles.scss",
           {
             "input": "node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
             "bundleName": "taiga-theme"
@@ -68,14 +68,14 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "buildTarget": "management-portal-csr:build"
+        "buildTarget": "platform-portal-csr:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "management-portal-csr:build:production"
+          "buildTarget": "platform-portal-csr:build:production"
         },
         "development": {
-          "buildTarget": "management-portal-csr:build:development"
+          "buildTarget": "platform-portal-csr:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "management-portal-csr:build"
+        "browserTarget": "platform-portal-csr:build"
       }
     },
     "lint": {
@@ -94,7 +94,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/portals/management-portal/entrypoints/csr/jest.config.ts",
+        "jestConfig": "apps/portals/platform-portal/entrypoints/csr/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

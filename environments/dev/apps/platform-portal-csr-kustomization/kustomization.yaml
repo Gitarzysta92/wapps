@@ -4,15 +4,15 @@ kind: Kustomization
 namespace: aggregator
 
 resources:
-  - ../../../../apps/portals/management-portal/entrypoints/csr/provisioning/k8s
+  - ../../../../apps/portals/platform-portal/entrypoints/csr/provisioning/k8s
 
 patches:
   - path: deployment-patch.yaml
     target:
       kind: Deployment
-      name: management-portal-csr
+      name: platform-portal-csr
   - path: ingress-patch.yaml
     target:
       kind: Ingress
-      name: management-portal-csr-ingress
+      name: platform-portal-csr-ingress
 

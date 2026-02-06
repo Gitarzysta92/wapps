@@ -1,16 +1,16 @@
-name: 'Management Portal CSR - Build & Deploy'
+name: 'Platform Portal CSR - Build & Deploy'
 
 on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/portals/management-portal/entrypoints/csr/**'
-      - 'apps/portals/management-portal/application/**'
-      - 'environments/dev/apps/management-portal-csr-kustomization/**'
+      - 'apps/portals/platform-portal/entrypoints/csr/**'
+      - 'apps/portals/platform-portal/application/**'
+      - 'environments/dev/apps/platform-portal-csr-kustomization/**'
       - 'environments/**/apps/**/ingress-patch.yaml'
       - 'environments/**/platform/argocd-kustomization/**'
       - 'scripts/service-directory/**'
-      - '.github/workflows/management-portal-csr.workflow.yml'
+      - '.github/workflows/platform-portal-csr.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
     inputs:
@@ -24,9 +24,9 @@ on:
           - production
 
 env:
-  SERVICE_NAME: management-portal-csr
+  SERVICE_NAME: platform-portal-csr
   REGISTRY: ghcr.io
-  IMAGE_NAME: gitarzysta92/wapps/management-portal-csr
+  IMAGE_NAME: gitarzysta92/wapps/platform-portal-csr
 
 jobs:
   build:
@@ -67,10 +67,10 @@ jobs:
         run: |
           node scripts/service-directory/generate.mjs \
             --environment "${{ steps.set-env.outputs.environment }}" \
-            --out "apps/portals/management-portal/entrypoints/csr/src/assets/service-directory.json"
+            --out "apps/portals/platform-portal/entrypoints/csr/src/assets/service-directory.json"
 
       - name: Build application
-        run: npx nx build management-portal-csr --configuration=production --excludeTaskDependencies
+        run: npx nx build platform-portal-csr --configuration=production --excludeTaskDependencies
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -86,7 +86,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: apps/portals/management-portal/entrypoints/csr/Dockerfile
+          file: apps/portals/platform-portal/entrypoints/csr/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
@@ -134,21 +134,21 @@ jobs:
 
       - name: Trigger ArgoCD sync
         run: |
-          echo "Triggering ArgoCD sync for management-portal-csr..."
-          argocd app sync management-portal-csr --force --grpc-web
+          echo "Triggering ArgoCD sync for platform-portal-csr..."
+          argocd app sync platform-portal-csr --force --grpc-web
           
           echo "Waiting for sync to complete..."
-          argocd app wait management-portal-csr --timeout 300 --grpc-web
+          argocd app wait platform-portal-csr --timeout 300 --grpc-web
           
           echo "✅ ArgoCD sync completed"
 
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/management-portal-csr -n aggregator
+          kubectl rollout restart deployment/platform-portal-csr -n aggregator
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/management-portal-csr -n aggregator --timeout=300s
+          kubectl rollout status deployment/platform-portal-csr -n aggregator --timeout=300s
           
           echo "✅ Deployment restarted successfully"
 
@@ -156,8 +156,8 @@ jobs:
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
           
-          if [ -d "environments/${ENV_SHORT}/apps/management-portal-csr-kustomization" ]; then
-            kubectl apply -k environments/${ENV_SHORT}/apps/management-portal-csr-kustomization/
+          if [ -d "environments/${ENV_SHORT}/apps/platform-portal-csr-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/platform-portal-csr-kustomization/
             echo "✅ Environment configuration applied"
           fi
 

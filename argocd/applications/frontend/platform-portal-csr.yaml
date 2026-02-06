@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: management-portal-csr
+  name: platform-portal-csr
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
-    path: environments/dev/apps/management-portal-csr-kustomization
+    path: environments/dev/apps/platform-portal-csr-kustomization
   destination:
     server: https://kubernetes.default.svc
     namespace: aggregator

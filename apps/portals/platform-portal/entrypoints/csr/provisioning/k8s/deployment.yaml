@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: management-portal-csr
+  name: platform-portal-csr
   labels:
-    app: management-portal-csr
-    app.kubernetes.io/name: management-portal-csr
+    app: platform-portal-csr
+    app.kubernetes.io/name: platform-portal-csr
     app.kubernetes.io/component: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: management-portal-csr
+      app: platform-portal-csr
   template:
     metadata:
       labels:
-        app: management-portal-csr
-        app.kubernetes.io/name: management-portal-csr
+        app: platform-portal-csr
+        app.kubernetes.io/name: platform-portal-csr
         app.kubernetes.io/component: frontend
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-        - name: management-portal-csr
-          image: ghcr.io/gitarzysta92/wapps/management-portal-csr:latest
+        - name: platform-portal-csr
+          image: ghcr.io/gitarzysta92/wapps/platform-portal-csr:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
