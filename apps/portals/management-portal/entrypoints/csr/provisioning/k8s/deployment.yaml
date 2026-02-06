@@ -18,6 +18,8 @@ spec:
         app.kubernetes.io/name: management-portal-csr
         app.kubernetes.io/component: frontend
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: management-portal-csr
           image: ghcr.io/gitarzysta92/wapps/management-portal-csr:latest
