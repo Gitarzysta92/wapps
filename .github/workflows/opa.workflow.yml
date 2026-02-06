@@ -28,6 +28,7 @@ jobs:
   sync:
     name: 'Sync OPA ArgoCD app'
     runs-on: self-hosted
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +39,7 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             ENV="${{ github.event.inputs.environment }}"
           elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            ENV="development"
+            ENV="production"
           else
             ENV="development"
           fi
