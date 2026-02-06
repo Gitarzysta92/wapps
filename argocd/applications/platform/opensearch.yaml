@@ -26,6 +26,17 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: opensearch
+  ignoreDifferences:
+    # With ServerSideApply enabled, Kubernetes may persist defaulted/extraneous
+    # fields on the StatefulSet's PVC templates (e.g. apiVersion/kind/status),
+    # which causes ArgoCD OutOfSync even though the effective spec is the same.
+    - group: apps
+      kind: StatefulSet
+      name: opensearch-cluster-master
+      jqPathExpressions:
+        - .spec.volumeClaimTemplates[].apiVersion
+        - .spec.volumeClaimTemplates[].kind
+        - .spec.volumeClaimTemplates[].status
   syncPolicy:
     automated:
       prune: true
