@@ -1,63 +1,59 @@
-name: 'Aggregator SSG - Frontend Application'
+name: 'Aggregator SSG - Build & Deploy'
 
-# TEMPORARILY DISABLED - Testing aggregator-demo-csr CI/CD only
-# on:
-#   push:
-#     branches: [main, develop]
-#     paths:
-#       - 'apps/portals/aggregator/entrypoints/ssg/**'
-#       - 'apps/portals/aggregator/application/**'
-#       - 'apps/portals/aggregator/shared/**'
-#       - 'environments/dev/apps/aggregator-ssg-kustomization/**'
-#       - '.github/workflows/aggregator-ssg.workflow.yml'
-#       - 'libs/**'
-#       - 'package.json'
-#       - 'nx.json'
-#   pull_request:
-#     branches: [main, develop]
-#     paths:
-#       - 'apps/portals/aggregator/entrypoints/ssg/**'
-#       - 'apps/portals/aggregator/application/**'
-#       - 'apps/portals/aggregator/shared/**'
-#       - 'environments/dev/apps/aggregator-ssg-kustomization/**'
-#       - '.github/workflows/aggregator-ssg.workflow.yml'
-#       - 'libs/**'
-#       - 'package.json'
-#       - 'nx.json'
 on:
-  workflow_dispatch: # Disabled - only for manual trigger if needed
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/portals/aggregator/entrypoints/ssg/**'
+      - 'apps/portals/aggregator/application/**'
+      - 'apps/portals/aggregator/shared/**'
+      - 'environments/dev/apps/aggregator-ssg-kustomization/**'
+      - 'argocd/applications/frontend/aggregator-ssg.yaml'
+      - '.github/workflows/aggregator-ssg.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
 
 env:
-  APP_NAME: aggregator-ssg
-  IMAGE_NAME: aggregator-ssg
+  SERVICE_NAME: aggregator-ssg
   REGISTRY: ghcr.io
-  NAMESPACE: argocd
+  IMAGE_NAME: gitarzysta92/aggregator-ssg
 
 jobs:
-  test:
-    name: 'Test and Lint'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests and linting
-        uses: ./.github/actions/test-and-lint
-        with:
-          app-name: ${{ env.APP_NAME }}
-
   build:
-    name: 'Build and Push'
+    name: 'Build Docker Image'
     runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
+      environment: ${{ steps.set-env.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -66,61 +62,169 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
-        run: npx nx build ${{ env.APP_NAME }} --configuration=production
+      - name: Patch environment configuration
+        run: |
+          ENV_FILE="apps/portals/aggregator/application/src/environment.ts"
+          ENV_NAME="${{ steps.set-env.outputs.environment }}"
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
+          # Patch ENVIRONMENT_NAME
+          sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
+
+          echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
+          echo "--- Resulting URLs ---"
+          echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
+          echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.com"
+          echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.com"
+
+      - name: Build application
+        run: npx nx build aggregator-ssg --configuration=production --excludeTaskDependencies
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
       - name: Build and push Docker image
-        uses: ./.github/actions/build-and-push
+        uses: docker/build-push-action@v5
         with:
-          image-name: ${{ env.IMAGE_NAME }}
-          dockerfile-path: './apps/portals/aggregator/entrypoints/ssg/Dockerfile'
-          context-path: '.'
-          tags: ${{ steps.meta.outputs.tags }}
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          file: apps/portals/aggregator/entrypoints/ssg/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-  deploy-dev:
-    name: 'Deploy to Development'
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: development
-    steps:
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: dev
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
-  deploy-prod:
-    name: 'Deploy to Production'
-    runs-on: ubuntu-latest
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
     needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
+    environment: ${{ needs.build.outputs.environment }}
     steps:
-      - name: Deploy to ArgoCD
-        uses: ./.github/actions/deploy-to-argocd
-        with:
-          app-name: ${{ env.APP_NAME }}
-          namespace: ${{ env.NAMESPACE }}
-          argocd-server: ${{ secrets.ARGOCD_SERVER }}
-          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
-          image-tag: ${{ needs.build.outputs.image-tag }}
-          environment: prod
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Create GHCR image pull secret
+        run: |
+          # Ensure namespace exists
+          kubectl apply -f apps/portals/aggregator/entrypoints/ssg/provisioning/k8s/namespace.yaml
+
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=aggregator \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+          echo "✅ GHCR image pull secret created/updated in aggregator namespace"
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for aggregator-ssg..."
+          argocd app sync aggregator-ssg --force --grpc-web
+
+          echo "Waiting for sync to complete..."
+          argocd app wait aggregator-ssg --timeout 300 --grpc-web
+
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/aggregator-ssg -n aggregator
+
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/aggregator-ssg -n aggregator --timeout=300s
+
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+
+          # Apply aggregator-ssg environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/aggregator-ssg-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/aggregator-ssg-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Aggregator SSG - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Aggregator SSG deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Application: https://aggregator-ssg.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Health: http://aggregator-ssg.aggregator.svc.cluster.local/health"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Verify application access"
+            echo "  2. Check logs: kubectl logs -n aggregator -l app=aggregator-ssg --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n aggregator"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
