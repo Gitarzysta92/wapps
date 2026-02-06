@@ -3,6 +3,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Nx daemon can leave a stale socket between Docker RUN layers.
+# Disable it for deterministic CI/docker builds.
+ENV NX_DAEMON=false
+ENV NODE_ENV=production
+
 # Copy package files
 COPY package*.json ./
 COPY nx.json ./
@@ -15,8 +20,8 @@ RUN npm ci
 COPY . .
 
 # Build the application
-RUN npx nx build aggregator-ssr --configuration=production
-RUN npx nx run aggregator-ssr:build-server
+RUN npx nx build aggregator-ssr --configuration=production \
+  && npx nx run aggregator-ssr:build-server --configuration=production
 
 # Production stage
 FROM node:20-alpine AS production
