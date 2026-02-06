@@ -9,7 +9,7 @@ import {
   AppRootComponent,
   createAppConfig,
   routes,
-} from '../../../application/src/index';
+} from '@portals/aggregator/application';
 
 const staticDir = join(process.cwd(), 'browser');
 

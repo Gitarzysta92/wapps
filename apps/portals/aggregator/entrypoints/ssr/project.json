@@ -71,16 +71,19 @@
       "defaultConfiguration": "production"
     },
     "build-server": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@angular-devkit/build-angular:server",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "target": "node",
-        "compiler": "tsc",
         "outputPath": "dist/apps/portals/aggregator/ssr",
         "main": "apps/portals/aggregator/entrypoints/ssr/src/main.ts",
-        "tsConfig": "apps/portals/aggregator/entrypoints/ssr/tsconfig.app.json",
-        "webpackConfig": "apps/portals/aggregator/entrypoints/ssr/webpack.config.js"
+        "tsConfig": "apps/portals/aggregator/entrypoints/ssr/tsconfig.server.json",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "libs",
+            "libs/ui/design-system/src"
+          ]
+        }
       },
       "configurations": {
         "development": {

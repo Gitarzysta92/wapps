@@ -1,0 +1,15 @@
+node_modules
+dist
+tmp
+.nx/cache
+.angular/cache
+coverage
+.vscode
+.idea
+.git
+.gitignore
+*.log
+.env
+.env.*
+**/.DS_Store
+
