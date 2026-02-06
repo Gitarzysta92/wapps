@@ -18,4 +18,14 @@ spec:
             name: management-portal-csr-service
             port:
               number: 80
+  - host: platform.development.wapps.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: management-portal-csr-service
+            port:
+              number: 80
 
