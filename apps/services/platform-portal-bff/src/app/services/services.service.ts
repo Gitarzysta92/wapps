@@ -30,7 +30,10 @@ function titleCaseFromId(id: string) {
 
 function safeOrigin(url: string): string | null {
   try {
-    return new URL(url).origin;
+    // Node's WHATWG URL returns the literal string "null" for opaque origins
+    // (e.g. custom schemes like k8s://..., and file://). Treat those as invalid.
+    const origin = new URL(url).origin;
+    return origin === 'null' ? null : origin;
   } catch {
     return null;
   }
@@ -52,6 +55,44 @@ function normalizeManifest(input: PlatformManifest | null, fallback: { id: strin
     tags: m.tags || [],
     owner: m.owner,
   };
+}
+
+function joinOriginAndPath(origin: string, path: string): string | null {
+  if (!path) return null;
+  if (!path.startsWith('/')) return null;
+  return `${origin}${path}`;
+}
+
+function extrasFromManifestEndpoints(
+  origin: string | null,
+  endpoints: Record<string, string> | undefined
+): Array<{ label: string; url: string }> {
+  if (!origin) return [];
+  if (!endpoints) return [];
+
+  const items: Array<{ label: string; url: string } | null> = [
+    endpoints.docs ? { label: 'Swagger', url: joinOriginAndPath(origin, endpoints.docs) || '' } : null,
+    endpoints.openapiJson
+      ? { label: 'OpenAPI JSON', url: joinOriginAndPath(origin, endpoints.openapiJson) || '' }
+      : null,
+    endpoints.health ? { label: 'Health', url: joinOriginAndPath(origin, endpoints.health) || '' } : null,
+    endpoints.ready ? { label: 'Ready', url: joinOriginAndPath(origin, endpoints.ready) || '' } : null,
+    endpoints.platform
+      ? { label: 'Platform manifest', url: joinOriginAndPath(origin, endpoints.platform) || '' }
+      : null,
+  ];
+
+  // Filter invalid + dedupe by URL (preserve order).
+  const out: Array<{ label: string; url: string }> = [];
+  const seen = new Set<string>();
+  for (const it of items) {
+    if (!it) continue;
+    if (!it.url) continue;
+    if (seen.has(it.url)) continue;
+    seen.add(it.url);
+    out.push(it);
+  }
+  return out;
 }
 
 @Injectable()
@@ -108,13 +149,13 @@ export class ServicesService {
 
   private async enrichWithPlatformManifest(
     svc: DiscoveredService
-  ): Promise<{ manifest: PlatformManifest | null; inferredExtras: Array<{ label: string; url: string }> }> {
+  ): Promise<{ origin: string | null; manifest: PlatformManifest | null; inferredExtras: Array<{ label: string; url: string }> }> {
     const publicOrigins = Array.from(new Set(svc.publicUrls.map(safeOrigin).filter(Boolean))) as string[];
     const internalOrigins = Array.from(new Set(svc.internalUrls.map(safeOrigin).filter(Boolean))) as string[];
     const origin = publicOrigins[0] || internalOrigins[0];
     const allUrls = [...svc.publicUrls, ...svc.internalUrls];
     const hinted = isPlatformManifest(svc.manifestHint) ? (svc.manifestHint as PlatformManifest) : null;
-    if (!origin) return { manifest: hinted, inferredExtras: this.inferExtrasFromUrls(allUrls) };
+    if (!origin) return { origin: null, manifest: hinted, inferredExtras: this.inferExtrasFromUrls(allUrls) };
 
     const manifest =
       hinted ||
@@ -122,6 +163,7 @@ export class ServicesService {
       (await this.tryFetchJson<PlatformManifest>(`${origin}/api/platform`, this.enrichTimeoutMs));
 
     return {
+      origin,
       manifest,
       inferredExtras: this.inferExtrasFromUrls(allUrls),
     };
@@ -138,10 +180,13 @@ export class ServicesService {
 
     const services = await Promise.all(
       discovered.map(async (svc) => {
-        const { manifest, inferredExtras } = await this.enrichWithPlatformManifest(svc);
+        const { origin, manifest, inferredExtras } = await this.enrichWithPlatformManifest(svc);
         const name = manifest?.name || titleCaseFromId(svc.id);
         const normalized = normalizeManifest(manifest, { id: svc.id, name });
-        const extras = (manifest?.extras?.length ? manifest.extras : inferredExtras).slice(0, 25);
+        const inferredFromManifest = extrasFromManifestEndpoints(origin, normalized.endpoints);
+        const extras = (
+          normalized.extras?.length ? normalized.extras : inferredFromManifest.length ? inferredFromManifest : inferredExtras
+        ).slice(0, 25);
 
         return {
           id: svc.id,
