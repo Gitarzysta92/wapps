@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-adminer
+  namespace: mysql
+  labels:
+    app: mysql-adminer
+    app.kubernetes.io/name: mysql-adminer
+    app.kubernetes.io/part-of: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-adminer
+  template:
+    metadata:
+      labels:
+        app: mysql-adminer
+    spec:
+      containers:
+        - name: adminer
+          image: adminer:4.8.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            # Default server shown in the UI; login still requires DB creds.
+            # MySQL Service is created by host provisioning Ansible.
+            - name: ADMINER_DEFAULT_SERVER
+              value: mysql.mysql
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+

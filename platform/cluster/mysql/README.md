@@ -90,6 +90,17 @@ ansible-playbook platform/host/main.yml \
    - `catalog-db-credentials` (in catalog namespace)
 8. **Firewall Rule**: Allow port 3306
 
+## MySQL Web UI (Adminer)
+
+For a browser-based MySQL editor (similar to Mongo Express), this repo ships **Adminer** as a small platform component:
+
+- **Kubernetes manifests**: `platform/cluster/mysql-adminer/`
+- **Dev hostname**: `mysql-adminer.development.wapps.com`
+- **Namespace**: `mysql`
+- **Default server**: `mysql.mysql` (pre-filled in the UI)
+
+Log in with the MySQL user created by host provisioning (typically `wapps_app`) and the password stored in the `mysql-credentials` secret.
+
 ## Accessing MySQL from Pods
 
 ### Method 1: Service-Specific Secret (Recommended)
