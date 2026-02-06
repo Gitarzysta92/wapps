@@ -1,0 +1,30 @@
+<a routerLink="/discussions" class="back">
+  <tui-icon icon="@tui.arrow-left" [style.width.rem]="1" [style.height.rem]="1"></tui-icon>
+  Back to discussions
+</a>
+
+@if (discussion.isLoading()) {
+  <div class="loading">Loading…</div>
+} @else if (discussion.value() === null) {
+  <div class="not-found">
+    <h2>Discussion not found</h2>
+    <p>Pick a discussion from the list.</p>
+  </div>
+} @else {
+  <section class="header">
+    <h1 class="title">{{ discussion.value()?.title }}</h1>
+    <discussion-stats-badge class="stats" [stats]="stats()" />
+  </section>
+
+  @if (openingPost(); as post) {
+    <opening-post class="opening" [post]="post" />
+  }
+
+  <section class="comments">
+    <h2 class="comments__title">Top replies</h2>
+    @for (c of topComments(); track c.content) {
+      <top-comment class="comment" [comment]="c" />
+    }
+  </section>
+}
+

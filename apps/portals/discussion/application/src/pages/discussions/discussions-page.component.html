@@ -1,0 +1,25 @@
+<section class="page-header">
+  <div class="title">
+    <h1>Discussions</h1>
+    <p class="subtitle">Use this portal to test discussion UI and flows.</p>
+  </div>
+
+  <div class="stats">
+    <span class="stat">{{ stats().topics }} topics</span>
+    <span class="stat">{{ stats().totalReplies }} replies</span>
+    <span class="stat">{{ stats().totalViews }} views</span>
+  </div>
+</section>
+
+<section class="grid">
+  @for (d of discussions(); track d.slug; let i = $index) {
+    <button class="card-button" type="button" (click)="open(d)">
+      @if (i === 0) {
+        <discussion-medium-card tuiAppearance="card-elevated" [data]="d" />
+      } @else {
+        <discussion-small-card tuiAppearance="card-elevated" [data]="d" />
+      }
+    </button>
+  }
+</section>
+
