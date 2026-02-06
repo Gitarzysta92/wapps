@@ -25,10 +25,30 @@ env:
   APP_NAME: opa
 
 jobs:
+  set-env:
+    name: 'Set environment'
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
   sync:
     name: 'Sync OPA ArgoCD app'
     runs-on: self-hosted
-    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+    needs: set-env
+    environment: ${{ needs.set-env.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,13 +56,7 @@ jobs:
       - name: Set environment variables
         id: env-vars
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            ENV="production"
-          else
-            ENV="development"
-          fi
+          ENV="${{ needs.set-env.outputs.environment }}"
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
       - name: Sync ArgoCD Application
