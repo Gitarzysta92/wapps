@@ -24,9 +24,9 @@ spec:
           args:
             - "run"
             - "--server"
-            - "--data=/bundles/discussion/data.json"
-            - "--data=/bundles/discussion/policy.rego"
             - "--set=decision_logs.console=true"
+            - "/bundles/discussion/policy.rego"
+            - "/bundles/discussion/data.json"
           ports:
             - name: http
               containerPort: 8181
