@@ -8,6 +8,7 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
+      "dependsOn": [],
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/portals/discussion/entrypoints/csr",
