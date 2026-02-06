@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: management-portal-csr-service
+  labels:
+    app: management-portal-csr
+    app.kubernetes.io/name: management-portal-csr
+    app.kubernetes.io/component: frontend
+spec:
+  selector:
+    app: management-portal-csr
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+

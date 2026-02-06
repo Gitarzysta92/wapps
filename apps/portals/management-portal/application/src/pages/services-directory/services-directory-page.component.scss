@@ -1,0 +1,119 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+}
+
+.page {
+  padding: $space-6 $space-4;
+  border-radius: $radius-sm;
+  background: var(--tui-background-neutral-1);
+}
+
+.page__header {
+  margin-bottom: $space-5;
+  text-align: center;
+}
+
+.page__title {
+  margin: 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.page__subtitle {
+  margin: $space-2 0 0;
+  color: var(--tui-text-secondary);
+  font-size: $font-size-sm;
+}
+
+.page__state {
+  padding: $space-4;
+  background: var(--tui-background-neutral-2);
+  border-radius: $radius-sm;
+}
+
+.page__state--error {
+  border: 1px solid rgba(255, 0, 0, 0.25);
+}
+
+.meta {
+  max-width: 52rem;
+  margin: 0 auto $space-5;
+  padding: $space-4;
+  background: var(--tui-background-neutral-2);
+  border-radius: $radius-sm;
+}
+
+.meta__row {
+  display: flex;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-1_5 0;
+}
+
+.meta__label {
+  color: var(--tui-text-secondary);
+}
+
+.meta__value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.services {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: grid;
+  gap: $space-4;
+}
+
+.service {
+  padding: $space-4;
+  background: var(--tui-background-neutral-2);
+  border-radius: $radius-sm;
+}
+
+.service__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: $space-3;
+  margin-bottom: $space-3;
+}
+
+.service__title {
+  margin: 0;
+  font-size: $font-size-lg;
+}
+
+.service__id {
+  color: var(--tui-text-secondary);
+  font-size: $font-size-xs;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.service__urls {
+  margin: 0;
+  padding-left: $space-4;
+  display: grid;
+  gap: $space-1;
+}
+
+.service__url a {
+  word-break: break-word;
+}
+
+.sources {
+  max-width: 52rem;
+  margin: $space-6 auto 0;
+  color: var(--tui-text-secondary);
+}
+
+.sources summary {
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: $space-2;
+}
+
