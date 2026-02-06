@@ -49,6 +49,7 @@ jobs:
         with:
           app-name: ${{ env.APP_NAME }}
           argocd-server: ${{ steps.env-vars.outputs.server }}
+          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
           argocd-username: ${{ secrets.ARGO_INITIAL_USERNAME }}
           argocd-password: ${{ secrets.ARGO_INITIAL_PASSWORD }}
           app-manifest-path: argocd/applications/platform/opa.yaml
