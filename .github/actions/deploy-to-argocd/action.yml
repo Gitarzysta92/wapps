@@ -47,12 +47,27 @@ runs:
 
     - name: Login to ArgoCD
       run: |
-        if [ -n "${{ inputs.argocd-token }}" ]; then
+        login_with_token() {
           echo "Logging in with token authentication"
           argocd login ${{ inputs.argocd-server }} --auth-token "${{ inputs.argocd-token }}" --insecure --grpc-web
-        elif [ -n "${{ inputs.argocd-username }}" ] && [ -n "${{ inputs.argocd-password }}" ]; then
+        }
+
+        login_with_userpass() {
           echo "Logging in with username/password authentication"
           argocd login ${{ inputs.argocd-server }} --username ${{ inputs.argocd-username }} --password ${{ inputs.argocd-password }} --insecure --grpc-web
+        }
+
+        if [ -n "${{ inputs.argocd-token }}" ]; then
+          if ! login_with_token; then
+            echo "Token login failed; falling back to username/password (if provided)."
+            if [ -n "${{ inputs.argocd-username }}" ] && [ -n "${{ inputs.argocd-password }}" ]; then
+              login_with_userpass
+            else
+              exit 1
+            fi
+          fi
+        elif [ -n "${{ inputs.argocd-username }}" ] && [ -n "${{ inputs.argocd-password }}" ]; then
+          login_with_userpass
         else
           echo "Error: Either argocd-token or both argocd-username and argocd-password must be provided"
           exit 1
