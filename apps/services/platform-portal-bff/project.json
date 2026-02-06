@@ -1,0 +1,58 @@
+{
+  "name": "apps.services.platform-portal-bff",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/platform-portal-bff/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:platform", "layer:bff"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/services/platform-portal-bff",
+        "main": "apps/services/platform-portal-bff/src/main.ts",
+        "tsConfig": "apps/services/platform-portal-bff/tsconfig.app.json",
+        "webpackConfig": "apps/services/platform-portal-bff/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "apps.services.platform-portal-bff:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "apps.services.platform-portal-bff:build:development"
+        },
+        "production": {
+          "buildTarget": "apps.services.platform-portal-bff:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/services/platform-portal-bff/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

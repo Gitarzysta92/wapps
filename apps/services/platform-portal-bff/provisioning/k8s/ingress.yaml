@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform-portal-bff-ingress
+  labels:
+    app: platform-portal-bff
+    app.kubernetes.io/name: platform-portal-bff
+    app.kubernetes.io/component: backend
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: platform.host.placeholder # overridden by environment overlays
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-portal-bff-service
+                port:
+                  number: 80
+

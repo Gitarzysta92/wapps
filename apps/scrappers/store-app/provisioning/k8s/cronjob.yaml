@@ -2,6 +2,16 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: store-app-scrapper
+  annotations:
+    platform.wapps.com/manifest: |
+      {
+        "id": "store-app",
+        "name": "Store App Scrapper",
+        "type": "scrapper",
+        "runtime": "node-cronjob",
+        "endpoints": {},
+        "tags": ["scope:scrappers", "layer:job"]
+      }
 spec:
   schedule: "0 0 * * *"  # Daily at midnight
   concurrencyPolicy: Forbid

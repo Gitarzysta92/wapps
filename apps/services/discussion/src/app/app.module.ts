@@ -7,6 +7,7 @@ import { AuthValidationMiddleware } from './middleware/auth-validation.middlewar
 import { ContentNodeEntity } from './discussions/infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './discussions/infrastructure/content-node-relation.entity';
 import { SeedService } from './seed/seed.service';
+import { PlatformController } from './platform/platform.controller';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { SeedService } from './seed/seed.service';
     TypeOrmModule.forFeature([ContentNodeEntity]),
     DiscussionsModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, PlatformController],
   providers: [SeedService],
 })
 export class AppModule implements NestModule, OnModuleInit {

@@ -7,6 +7,16 @@ metadata:
     app: discord-notifier
     app.kubernetes.io/name: discord-notifier
     app.kubernetes.io/component: agent
+  annotations:
+    platform.wapps.com/manifest: |
+      {
+        "id": "discord-notifier",
+        "name": "Discord Notifier",
+        "type": "agent",
+        "runtime": "node-worker",
+        "endpoints": {},
+        "tags": ["scope:agents", "layer:worker"]
+      }
 spec:
   replicas: 1
   selector:

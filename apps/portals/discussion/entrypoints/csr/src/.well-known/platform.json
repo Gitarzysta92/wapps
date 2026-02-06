@@ -1,0 +1,14 @@
+{
+  "id": "discussion-csr",
+  "name": "Discussion",
+  "type": "portal",
+  "runtime": "angular-csr",
+  "endpoints": {
+    "home": "/",
+    "health": "/health",
+    "ready": "/ready",
+    "platform": "/.well-known/platform.json"
+  },
+  "tags": ["scope:discussion", "layer:portal"]
+}
+

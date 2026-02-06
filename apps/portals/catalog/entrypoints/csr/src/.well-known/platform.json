@@ -1,0 +1,14 @@
+{
+  "id": "catalog-csr",
+  "name": "Catalog",
+  "type": "portal",
+  "runtime": "angular-csr",
+  "endpoints": {
+    "home": "/",
+    "health": "/health",
+    "ready": "/ready",
+    "platform": "/.well-known/platform.json"
+  },
+  "tags": ["scope:catalog", "layer:portal"]
+}
+

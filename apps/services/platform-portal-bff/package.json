@@ -1,0 +1,20 @@
+{
+  "name": "@wapps/platform-portal-bff",
+  "version": "0.0.1",
+  "description": "Platform Portal BFF - service directory and platform metadata aggregation",
+  "private": true,
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.4.2",
+    "@kubernetes/client-node": "^1.4.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.0"
+  }
+}
+

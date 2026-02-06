@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './health/health.controller';
+import { PlatformController } from './platform/platform.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { HealthController } from './health/health.controller';
     }),
     CatalogModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, PlatformController],
 })
 export class AppModule {}
 

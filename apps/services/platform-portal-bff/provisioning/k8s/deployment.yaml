@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-portal-bff
+  labels:
+    app: platform-portal-bff
+    app.kubernetes.io/name: platform-portal-bff
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-portal-bff
+  template:
+    metadata:
+      labels:
+        app: platform-portal-bff
+        app.kubernetes.io/name: platform-portal-bff
+        app.kubernetes.io/component: backend
+    spec:
+      serviceAccountName: platform-portal-bff
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: platform-portal-bff
+          image: ghcr.io/gitarzysta92/wapps/platform-portal-bff:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: ENVIRONMENT
+              value: "development"
+          ports:
+            - containerPort: 3000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /api/health/ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+

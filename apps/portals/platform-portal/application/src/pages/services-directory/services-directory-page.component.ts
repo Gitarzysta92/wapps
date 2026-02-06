@@ -6,12 +6,38 @@ import { catchError, map, of, shareReplay, startWith } from 'rxjs';
 type ServiceDirectory = {
   generatedAt: string;
   environment: string;
-  sources: string[];
   services: Array<{
     id: string;
     name: string;
-    urls: string[];
-    sources: string[];
+    publicUrls: string[];
+    internalUrls: string[];
+    extras?: Array<{ label: string; url: string }>;
+    deployments: Array<{
+      kind: 'Deployment';
+      namespace: string;
+      name: string;
+      replicas: number;
+      readyReplicas: number;
+      updatedReplicas: number;
+      availableReplicas: number;
+      images: string[];
+    }>;
+    cronJobs: Array<{
+      kind: 'CronJob';
+      namespace: string;
+      name: string;
+      schedule: string;
+      suspend: boolean;
+      concurrencyPolicy?: string;
+      lastScheduleTime?: string;
+      lastSuccessfulTime?: string;
+      recentRuns: Array<{
+        name: string;
+        startedAt?: string;
+        finishedAt?: string;
+        status: 'active' | 'succeeded' | 'failed' | 'unknown';
+      }>;
+    }>;
   }>;
 };
 
@@ -30,14 +56,14 @@ type Vm =
 export class ServicesDirectoryPageComponent {
   private readonly http = inject(HttpClient);
 
-  readonly vm$ = this.http.get<ServiceDirectory>('assets/service-directory.json').pipe(
+  readonly vm$ = this.http.get<ServiceDirectory>('/api/services').pipe(
     map((directory) => ({ state: 'loaded' as const, directory })),
     catchError((err) =>
       of({
         state: 'error' as const,
         message:
           err?.status === 404
-            ? `Missing assets/service-directory.json (run: npm run service-directory:generate -- --environment development)`
+            ? `Service directory API is not available (expected: GET /api/services)`
             : `Failed to load service directory`,
       })
     ),

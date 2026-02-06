@@ -7,9 +7,6 @@ on:
       - 'apps/portals/platform-portal/entrypoints/csr/**'
       - 'apps/portals/platform-portal/application/**'
       - 'environments/dev/apps/platform-portal-csr-kustomization/**'
-      - 'environments/**/apps/**/ingress-patch.yaml'
-      - 'environments/**/platform/argocd-kustomization/**'
-      - 'scripts/service-directory/**'
       - '.github/workflows/platform-portal-csr.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
@@ -62,12 +59,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Generate service directory
-        run: |
-          node scripts/service-directory/generate.mjs \
-            --environment "${{ steps.set-env.outputs.environment }}" \
-            --out "apps/portals/platform-portal/entrypoints/csr/src/assets/service-directory.json"
 
       - name: Build application
         run: npx nx build platform-portal-csr --configuration=production --excludeTaskDependencies

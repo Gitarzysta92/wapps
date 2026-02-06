@@ -26,6 +26,11 @@
           "apps/portals/aggregator-demo/entrypoints/csr/src/assets",
           {
             "glob": "**/*",
+            "input": "apps/portals/aggregator-demo/entrypoints/csr/src/.well-known",
+            "output": ".well-known"
+          },
+          {
+            "glob": "**/*",
             "input": "node_modules/@taiga-ui/icons/src",
             "output": "assets/taiga-ui/icons"
           }

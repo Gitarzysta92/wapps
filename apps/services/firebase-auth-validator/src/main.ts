@@ -388,6 +388,27 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'healthy' });
 });
 
+// Platform manifest (used by platform-portal-bff for enrichment)
+app.get('/api/platform', (req: Request, res: Response) => {
+  res.status(200).json({
+    id: 'firebase-auth-validator',
+    name: 'Firebase Auth Validator',
+    type: 'service',
+    runtime: 'express',
+    environment: process.env.ENVIRONMENT || process.env.NODE_ENV || 'unknown',
+    version: process.env.APP_VERSION,
+    commitSha: process.env.COMMIT_SHA || process.env.GITHUB_SHA,
+    builtAt: process.env.BUILT_AT,
+    endpoints: {
+      health: '/health',
+      docs: '/api-docs',
+      openapiJson: '/api-docs.json',
+      platform: '/api/platform',
+    },
+    tags: ['scope:platform', 'layer:auth'],
+  });
+});
+
 // ===========================================
 // VALIDATION ENDPOINTS (for ingress-nginx)
 // ===========================================

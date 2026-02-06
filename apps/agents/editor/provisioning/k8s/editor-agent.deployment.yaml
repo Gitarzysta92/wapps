@@ -7,6 +7,16 @@ metadata:
     app: editor-agent
     app.kubernetes.io/name: editor-agent
     app.kubernetes.io/component: agent
+  annotations:
+    platform.wapps.com/manifest: |
+      {
+        "id": "editor-agent",
+        "name": "Editor Agent",
+        "type": "agent",
+        "runtime": "node-worker",
+        "endpoints": {},
+        "tags": ["scope:agents", "layer:worker"]
+      }
 spec:
   replicas: 1
   selector:
