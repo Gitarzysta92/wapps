@@ -64,10 +64,10 @@ jobs:
         run: |
           ENV_FILE="apps/portals/aggregator-demo/application/src/environment.ts"
           ENV_NAME="${{ steps.set-env.outputs.environment }}"
-          
+
           # Patch ENVIRONMENT_NAME
           sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
-          
+
           echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
           echo "--- Resulting URLs ---"
           echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
@@ -116,7 +116,7 @@ jobs:
           ENV="${{ needs.build.outputs.environment }}"
           ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
-          
+
           # Set ArgoCD server
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
@@ -137,30 +137,44 @@ jobs:
             --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
             --insecure --grpc-web
 
+      - name: Create GHCR image pull secret
+        run: |
+          # Ensure namespace exists
+          kubectl apply -f apps/portals/aggregator-demo/entrypoints/csr/provisioning/k8s/namespace.yaml
+
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=gitarzysta92 \
+            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
+            --namespace=aggregator \
+            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
+
+          echo "✅ GHCR image pull secret created/updated in aggregator namespace"
+
       - name: Trigger ArgoCD sync
         run: |
           echo "Triggering ArgoCD sync for aggregator-demo-csr..."
           argocd app sync aggregator-demo-csr --force --grpc-web
-          
+
           echo "Waiting for sync to complete..."
           argocd app wait aggregator-demo-csr --timeout 300 --grpc-web
-          
+
           echo "✅ ArgoCD sync completed"
 
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
           kubectl rollout restart deployment/aggregator-demo-csr -n aggregator
-          
+
           echo "Waiting for rollout to complete..."
           kubectl rollout status deployment/aggregator-demo-csr -n aggregator --timeout=300s
-          
+
           echo "✅ Deployment restarted successfully"
 
       - name: Apply environment configuration
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-          
+
           # Apply aggregator-demo-csr environment kustomization
           if [ -d "environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization" ]; then
             kubectl apply -k environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization/
@@ -170,7 +184,7 @@ jobs:
       - name: Apply network policies
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-          
+
           if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
             kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
             echo "✅ Network policies applied"
@@ -195,7 +209,7 @@ jobs:
           echo "  - Build: ${{ needs.build.result }}"
           echo "  - Deploy: ${{ needs.deploy.result }}"
           echo ""
-          
+
           if [ "${{ needs.deploy.result }}" == "success" ]; then
             echo "✅ Aggregator Demo CSR deployed successfully!"
             echo ""
