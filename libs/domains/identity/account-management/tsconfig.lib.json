@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/domains/identity/account-management",
+    "types": [],
+    "rootDir": "src",
+    "composite": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../foundation/standard/tsconfig.lib.json" },
+    { "path": "../../../foundation/authority-system/tsconfig.lib.json" }
+  ]
+}
+

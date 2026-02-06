@@ -1,0 +1,181 @@
+name: 'Account Management - Build & Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/services/account-management/**'
+      - 'environments/dev/apps/account-management-kustomization/**'
+      - 'argocd/applications/platform/account-management.yaml'
+      - '.github/workflows/account-management.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  SERVICE_NAME: account-management
+  REGISTRY: ghcr.io
+  IMAGE_NAME: gitarzysta92/wapps/account-management
+
+jobs:
+  build:
+    name: 'Build Docker Image'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npx nx build apps.services.account-management --configuration=production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/services/account-management/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
+    needs: build
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Update Firebase Project ID secret
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          if [ "${ENV}" == "production" ]; then
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_PROD }}"
+          else
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
+          fi
+          if [ -z "$FIREBASE_ID" ]; then
+            echo "::error::Firebase Project ID not configured for ${ENV} environment"
+            exit 1
+          fi
+          kubectl create secret generic firebase-config \
+            --from-literal=project-id="${FIREBASE_ID}" \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ Firebase config secret updated"
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for account-management..."
+          argocd app sync account-management --force --grpc-web
+          echo "Waiting for sync to complete..."
+          argocd app wait account-management --timeout 300 --grpc-web
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          kubectl rollout restart deployment/account-management -n default
+          kubectl rollout status deployment/account-management -n default --timeout=300s
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          if [ -d "environments/${ENV_SHORT}/apps/account-management-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/account-management-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Account Management - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Deploy: ${{ needs.deploy.result }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

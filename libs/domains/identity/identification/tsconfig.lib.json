@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/domains/identity/identification",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../dist/domains/identity/identification/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../foundation/standard/tsconfig.lib.json" },
+    { "path": "../../../foundation/identity-system/tsconfig.lib.json" },
+    { "path": "../authentication/tsconfig.lib.json" }
+  ]
+}
+

@@ -1,7 +1,21 @@
 import express, { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import swaggerUi from 'swagger-ui-express';
-import fetch from 'node-fetch';
+import { IdentificationService } from '@domains/identity/identification';
+import {
+  FirebaseAdminIdTokenVerifier,
+  FirebaseAdminUserProvisioner,
+  FirebaseRestSessionGateway,
+  OAuthCodeExchanger,
+  TokenValidationError,
+} from '@infrastructure/firebase-identity';
+import { PlatformMongoClient } from '@infrastructure/mongo';
+import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
+import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
+import { IdentityProvisioner } from './infrastructure/identity/identity-provisioner';
+import { MongoIdentityGraphProvisionerAdapter } from './infrastructure/identity/mongo-identity-graph-provisioner.adapter';
+import { EmittingIdentityGraphProvisioner } from './infrastructure/identity/emitting-identity-graph-provisioner';
+import { RabbitMqIdentityEventsPublisher } from './infrastructure/identity/rabbitmq-identity-events.publisher';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -27,6 +41,74 @@ const ENABLE_ANONYMOUS = process.env.ENABLE_ANONYMOUS === 'true';
 admin.initializeApp({
   projectId: FIREBASE_PROJECT_ID,
 });
+
+// Optional identity graph (Mongo) - enable by providing MONGO_* env vars
+let identityGraphProvisioner: any | undefined;
+let identityEventsPublisher: RabbitMqIdentityEventsPublisher | undefined;
+
+// Optional identity events publisher (RabbitMQ) - enable by providing QUEUE_* env vars
+if (process.env.QUEUE_HOST && process.env.QUEUE_PORT && process.env.QUEUE_USERNAME && process.env.QUEUE_PASSWORD) {
+  const queueClient = new QueueClient();
+  void queueClient
+    .connect({
+      host: process.env.QUEUE_HOST,
+      port: process.env.QUEUE_PORT,
+      username: process.env.QUEUE_USERNAME,
+      password: process.env.QUEUE_PASSWORD,
+    })
+    .then(async (ch: QueueChannel) => {
+      await ch.assertQueue(IDENTITY_EVENTS_QUEUE_NAME);
+      identityEventsPublisher = new RabbitMqIdentityEventsPublisher(ch);
+      console.log('📣 Identity events enabled (RabbitMQ)');
+    })
+    .catch((e) => {
+      console.warn('⚠️  Identity events disabled (RabbitMQ connect failed):', e?.message ?? e);
+    });
+}
+
+if (process.env.MONGO_HOST) {
+  const mongo = new PlatformMongoClient();
+  void mongo
+    .connect({
+      host: process.env.MONGO_HOST,
+      port: process.env.MONGO_PORT,
+      username: process.env.MONGO_USERNAME,
+      password: process.env.MONGO_PASSWORD,
+      database: process.env.MONGO_DATABASE,
+    })
+    .then(() => {
+      const base = new MongoIdentityGraphProvisionerAdapter(new IdentityProvisioner(mongo));
+      identityGraphProvisioner =
+        identityEventsPublisher ? (new EmittingIdentityGraphProvisioner(base, identityEventsPublisher) as any) : base;
+      console.log('🧠 Identity graph provisioning enabled (Mongo)');
+    })
+    .catch((e) => {
+      console.warn('⚠️  Identity graph provisioning disabled (Mongo connect failed):', e?.message ?? e);
+    });
+}
+
+// Domain wiring (identification-only; no authorization)
+const identificationService = new IdentificationService(
+  new FirebaseAdminIdTokenVerifier(),
+  new FirebaseRestSessionGateway(FIREBASE_WEB_API_KEY),
+  new FirebaseAdminUserProvisioner(),
+  new OAuthCodeExchanger({
+    googleClientId: GOOGLE_CLIENT_ID,
+    googleClientSecret: GOOGLE_CLIENT_SECRET,
+    githubClientId: GITHUB_CLIENT_ID,
+    githubClientSecret: GITHUB_CLIENT_SECRET,
+  }),
+  {
+    enabledEmailPassword: ENABLE_EMAIL_PASSWORD,
+    enabledGoogle: ENABLE_GOOGLE,
+    enabledGithub: ENABLE_GITHUB,
+    enabledAnonymous: ENABLE_ANONYMOUS,
+    googleClientId: GOOGLE_CLIENT_ID,
+    githubClientId: GITHUB_CLIENT_ID,
+    firebaseWebApiKey: FIREBASE_WEB_API_KEY,
+  },
+  () => identityGraphProvisioner
+);
 
 // Middleware
 app.use(express.json());
@@ -311,61 +393,52 @@ app.get('/health', (req: Request, res: Response) => {
 // ===========================================
 
 app.get('/validate', async (req: Request, res: Response) => {
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader) {
-      console.log('No Authorization header provided');
-      return res.status(401).json({ error: 'No authorization header' });
-    }
+  const result = await identificationService.validateRequired(req.headers.authorization);
+  if (!result.ok) {
+    console.error('❌ Token validation failed:', result.error.message);
 
-    const token = authHeader.replace(/^Bearer\s+/i, '');
-    
-    if (!token || token === authHeader) {
-      console.log('Invalid Authorization header format');
-      return res.status(401).json({ error: 'Invalid authorization header format' });
-    }
+    const code =
+      result.error instanceof TokenValidationError
+        ? result.error.code
+        : (result.error as any)?.code;
 
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    
-    res.setHeader('X-User-Id', decodedToken.uid);
-    res.setHeader('X-User-Email', decodedToken.email || '');
-    res.setHeader('X-Auth-Time', decodedToken.auth_time?.toString() || '');
-    
-    if (INGRESS_AUTH_SECRET) {
-      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-    }
-    
-    if (decodedToken.custom_claims) {
-      res.setHeader('X-User-Claims', JSON.stringify(decodedToken.custom_claims));
-    }
-    
-    console.log(`✅ Token validated for user: ${decodedToken.uid}`);
-    
-    return res.status(200).json({ 
-      authenticated: true,
-      uid: decodedToken.uid 
-    });
-    
-  } catch (error: any) {
-    console.error('❌ Token validation failed:', error.message);
-    
-    if (error.code === 'auth/id-token-expired') {
+    if (code === 'auth/id-token-expired') {
       return res.status(401).json({ error: 'Token expired' });
     }
-    
-    if (error.code === 'auth/argument-error') {
+
+    if (code === 'auth/argument-error') {
       return res.status(401).json({ error: 'Invalid token format' });
     }
-    
+
     return res.status(401).json({ error: 'Token validation failed' });
   }
+
+  const principal = result.value;
+
+  res.setHeader('X-User-Id', principal.uid);
+  res.setHeader('X-User-Email', principal.email || '');
+  res.setHeader('X-Auth-Time', principal.authTime?.toString() || '');
+
+  if (INGRESS_AUTH_SECRET) {
+    res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
+  }
+
+  if (principal.claims) {
+    res.setHeader('X-User-Claims', JSON.stringify(principal.claims));
+  }
+
+  console.log(`✅ Token validated for user: ${principal.uid}`);
+
+  return res.status(200).json({
+    authenticated: true,
+    uid: principal.uid,
+  });
 });
 
 app.get('/validate-optional', async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader) {
+  const result = await identificationService.validateOptional(req.headers.authorization);
+
+  if (!result.ok || result.value.authenticated !== true) {
     res.setHeader('X-Anonymous', 'true');
     if (INGRESS_AUTH_SECRET) {
       res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
@@ -373,28 +446,18 @@ app.get('/validate-optional', async (req: Request, res: Response) => {
     return res.status(200).json({ authenticated: false, anonymous: true });
   }
 
-  try {
-    const token = authHeader.replace(/^Bearer\s+/i, '');
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    
-    res.setHeader('X-User-Id', decodedToken.uid);
-    res.setHeader('X-User-Email', decodedToken.email || '');
-    
-    if (INGRESS_AUTH_SECRET) {
-      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-    }
-    
-    return res.status(200).json({ 
-      authenticated: true,
-      uid: decodedToken.uid 
-    });
-  } catch (error) {
-    res.setHeader('X-Anonymous', 'true');
-    if (INGRESS_AUTH_SECRET) {
-      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-    }
-    return res.status(200).json({ authenticated: false, anonymous: true });
+  const principal = result.value.principal;
+  res.setHeader('X-User-Id', principal.uid);
+  res.setHeader('X-User-Email', principal.email || '');
+
+  if (INGRESS_AUTH_SECRET) {
+    res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
   }
+
+  return res.status(200).json({
+    authenticated: true,
+    uid: principal.uid,
+  });
 });
 
 // ===========================================
@@ -405,46 +468,7 @@ app.get('/validate-optional', async (req: Request, res: Response) => {
  * Get available authentication methods
  */
 app.get('/auth/methods', (req: Request, res: Response) => {
-  const methods = [];
-  
-  if (ENABLE_EMAIL_PASSWORD) {
-    methods.push({
-      provider: 'EMAIL_PASSWORD',
-      displayName: 'Email & Password',
-      icon: 'mail',
-      enabled: true
-    });
-  }
-  
-  if (ENABLE_GOOGLE && GOOGLE_CLIENT_ID) {
-    methods.push({
-      provider: 'GOOGLE',
-      displayName: 'Google',
-      icon: 'google',
-      enabled: true,
-      authUrl: '/auth/oauth/google/authorize'
-    });
-  }
-  
-  if (ENABLE_GITHUB && GITHUB_CLIENT_ID) {
-    methods.push({
-      provider: 'GITHUB',
-      displayName: 'GitHub',
-      icon: 'github',
-      enabled: true,
-      authUrl: '/auth/oauth/github/authorize'
-    });
-  }
-  
-  if (ENABLE_ANONYMOUS) {
-    methods.push({
-      provider: 'ANONYMOUS',
-      displayName: 'Continue as Guest',
-      icon: 'user',
-      enabled: true
-    });
-  }
-  
+  const methods = identificationService.getAvailableMethods();
   return res.status(200).json({ methods });
 });
 
@@ -452,98 +476,38 @@ app.get('/auth/methods', (req: Request, res: Response) => {
  * Sign in with email and password
  */
 app.post('/auth/signin', async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-    
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-    
-    if (!FIREBASE_WEB_API_KEY) {
-      return res.status(500).json({ error: 'Email/password authentication not configured' });
-    }
-    
-    const firebaseAuthUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_WEB_API_KEY}`;
-    
-    const response = await fetch(firebaseAuthUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-    });
+  const { email, password } = req.body ?? {};
 
-    if (!response.ok) {
-      const errorData = await response.json() as any;
-      console.error('Firebase auth error:', errorData);
-      
-      const errorMessage = mapFirebaseError(errorData.error?.message);
-      return res.status(401).json({ error: errorMessage });
-    }
-
-    const data = await response.json() as any;
-    
-    console.log(`✅ User signed in: ${data.localId}`);
-    
-    return res.status(200).json({
-      token: data.idToken,
-      refreshToken: data.refreshToken,
-      expiresIn: data.expiresIn,
-      uid: data.localId
-    });
-
-  } catch (error: any) {
-    console.error('Sign in error:', error);
-    return res.status(500).json({ error: 'Authentication failed' });
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
   }
+
+  const result = await identificationService.signInWithEmailPassword(email, password);
+  if (!result.ok) {
+    const status = result.error.message.includes('not configured') ? 500 : 401;
+    return res.status(status).json({ error: result.error.message });
+  }
+
+  console.log(`✅ User signed in: ${result.value.uid}`);
+  return res.status(200).json(result.value);
 });
 
 /**
  * Sign in anonymously
  */
 app.post('/auth/signin/anonymous', async (req: Request, res: Response) => {
-  try {
-    if (!ENABLE_ANONYMOUS) {
-      return res.status(400).json({ error: 'Anonymous authentication not enabled' });
-    }
-    
-    if (!FIREBASE_WEB_API_KEY) {
-      return res.status(500).json({ error: 'Anonymous authentication not configured' });
-    }
-    
-    const firebaseAuthUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_WEB_API_KEY}`;
-    
-    const response = await fetch(firebaseAuthUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        returnSecureToken: true
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json() as any;
-      console.error('Firebase anonymous auth error:', errorData);
-      return res.status(401).json({ error: 'Anonymous authentication failed' });
+  const result = await identificationService.signInAnonymously();
+  if (!result.ok) {
+    if (result.error.message.includes('not enabled')) {
+      return res.status(400).json({ error: result.error.message });
     }
 
-    const data = await response.json() as any;
-    
-    console.log(`✅ Anonymous user created: ${data.localId}`);
-    
-    return res.status(200).json({
-      token: data.idToken,
-      refreshToken: data.refreshToken,
-      expiresIn: data.expiresIn,
-      uid: data.localId
-    });
-
-  } catch (error: any) {
-    console.error('Anonymous sign in error:', error);
-    return res.status(500).json({ error: 'Anonymous authentication failed' });
+    const status = result.error.message.includes('not configured') ? 500 : 401;
+    return res.status(status).json({ error: result.error.message });
   }
+
+  console.log(`✅ Anonymous user created: ${result.value.uid}`);
+  return res.status(200).json(result.value);
 });
 
 /**
@@ -595,130 +559,53 @@ app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
  * Exchange OAuth code for Firebase token
  */
 app.post('/auth/signin/oauth', async (req: Request, res: Response) => {
-  try {
-    const { provider, code, redirectUri } = req.body;
-    
-    if (!provider || !code) {
-      return res.status(400).json({ error: 'Provider and code are required' });
-    }
-    
-    let userInfo: { email: string; name?: string; picture?: string; emailVerified?: boolean };
-    
-    switch (provider.toLowerCase()) {
-      case 'google':
-        userInfo = await exchangeGoogleCode(code, redirectUri);
-        break;
-        
-      case 'github':
-        userInfo = await exchangeGitHubCode(code, redirectUri);
-        break;
-        
-      default:
-        return res.status(400).json({ error: `Unknown provider: ${provider}` });
-    }
-    
-    // Get or create Firebase user
-    let firebaseUser: admin.auth.UserRecord;
-    try {
-      firebaseUser = await admin.auth().getUserByEmail(userInfo.email);
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
-        firebaseUser = await admin.auth().createUser({
-          email: userInfo.email,
-          displayName: userInfo.name,
-          photoURL: userInfo.picture,
-          emailVerified: userInfo.emailVerified ?? true
-        });
-        console.log(`✅ Created new Firebase user: ${firebaseUser.uid}`);
-      } else {
-        throw error;
-      }
-    }
-    
-    // Create custom token
-    const customToken = await admin.auth().createCustomToken(firebaseUser.uid);
-    
-    // Exchange custom token for ID token
-    if (!FIREBASE_WEB_API_KEY) {
-      return res.status(500).json({ error: 'Firebase configuration incomplete' });
-    }
-    
-    const tokenUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${FIREBASE_WEB_API_KEY}`;
-    
-    const tokenResponse = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: customToken, returnSecureToken: true })
-    });
-    
-    if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json();
-      console.error('Custom token exchange error:', errorData);
-      return res.status(500).json({ error: 'Failed to create session' });
-    }
-    
-    const tokenData = await tokenResponse.json() as any;
-    
-    console.log(`✅ OAuth sign in successful for: ${firebaseUser.uid}`);
-    
-    return res.status(200).json({
-      token: tokenData.idToken,
-      refreshToken: tokenData.refreshToken,
-      expiresIn: tokenData.expiresIn,
-      uid: firebaseUser.uid
-    });
-    
-  } catch (error: any) {
-    console.error('OAuth sign in error:', error);
-    return res.status(401).json({ error: error.message || 'OAuth authentication failed' });
+  const { provider, code, redirectUri } = req.body ?? {};
+
+  if (!provider || !code) {
+    return res.status(400).json({ error: 'Provider and code are required' });
   }
+
+  if (!redirectUri) {
+    return res.status(400).json({ error: 'redirectUri is required' });
+  }
+
+  const normalizedProvider = String(provider).toLowerCase();
+  if (normalizedProvider !== 'google' && normalizedProvider !== 'github') {
+    return res.status(400).json({ error: `Unknown provider: ${provider}` });
+  }
+
+  const result = await identificationService.exchangeOAuthCodeForSession(
+    normalizedProvider as 'google' | 'github',
+    code,
+    redirectUri
+  );
+
+  if (!result.ok) {
+    const status = result.error.message.includes('incomplete') ? 500 : 401;
+    return res.status(status).json({ error: result.error.message || 'OAuth authentication failed' });
+  }
+
+  console.log(`✅ OAuth sign in successful for: ${result.value.uid}`);
+  return res.status(200).json(result.value);
 });
 
 /**
  * Refresh token
  */
 app.post('/auth/refresh', async (req: Request, res: Response) => {
-  try {
-    const { refreshToken } = req.body;
-    
-    if (!refreshToken) {
-      return res.status(400).json({ error: 'Refresh token is required' });
-    }
-    
-    if (!FIREBASE_WEB_API_KEY) {
-      return res.status(500).json({ error: 'Token refresh not configured' });
-    }
-    
-    const refreshUrl = `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_WEB_API_KEY}`;
-    
-    const response = await fetch(refreshUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken
-      })
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Token refresh error:', errorData);
-      return res.status(401).json({ error: 'Invalid refresh token' });
-    }
-    
-    const data = await response.json() as any;
-    
-    return res.status(200).json({
-      token: data.id_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
-      uid: data.user_id
-    });
-    
-  } catch (error: any) {
-    console.error('Token refresh error:', error);
-    return res.status(500).json({ error: 'Token refresh failed' });
+  const { refreshToken } = req.body ?? {};
+
+  if (!refreshToken) {
+    return res.status(400).json({ error: 'Refresh token is required' });
   }
+
+  const result = await identificationService.refresh(refreshToken);
+  if (!result.ok) {
+    const status = result.error.message.includes('not configured') ? 500 : 401;
+    return res.status(status).json({ error: status === 401 ? 'Invalid refresh token' : result.error.message });
+  }
+
+  return res.status(200).json(result.value);
 });
 
 /**
@@ -729,140 +616,6 @@ app.post('/auth/signout', async (req: Request, res: Response) => {
   // For now, just acknowledge the sign out
   return res.status(200).json({ message: 'Signed out successfully' });
 });
-
-// ===========================================
-// HELPER FUNCTIONS
-// ===========================================
-
-async function exchangeGoogleCode(code: string, redirectUri: string): Promise<{ email: string; name?: string; picture?: string; emailVerified?: boolean }> {
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-    throw new Error('Google OAuth not configured');
-  }
-  
-  // Exchange code for tokens
-  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      code,
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
-      redirect_uri: redirectUri,
-      grant_type: 'authorization_code'
-    }).toString()
-  });
-  
-  if (!tokenResponse.ok) {
-    const error = await tokenResponse.json();
-    console.error('Google token exchange error:', error);
-    throw new Error('Failed to exchange Google authorization code');
-  }
-  
-  const tokens = await tokenResponse.json() as any;
-  
-  // Get user info from ID token
-  const userInfoResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${tokens.id_token}`);
-  
-  if (!userInfoResponse.ok) {
-    throw new Error('Failed to get Google user info');
-  }
-  
-  const userInfo = await userInfoResponse.json() as any;
-  
-  return {
-    email: userInfo.email,
-    name: userInfo.name,
-    picture: userInfo.picture,
-    emailVerified: userInfo.email_verified === 'true'
-  };
-}
-
-async function exchangeGitHubCode(code: string, redirectUri: string): Promise<{ email: string; name?: string; picture?: string }> {
-  if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-    throw new Error('GitHub OAuth not configured');
-  }
-  
-  // Exchange code for access token
-  const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({
-      code,
-      client_id: GITHUB_CLIENT_ID,
-      client_secret: GITHUB_CLIENT_SECRET,
-      redirect_uri: redirectUri
-    })
-  });
-  
-  if (!tokenResponse.ok) {
-    throw new Error('Failed to exchange GitHub authorization code');
-  }
-  
-  const tokens = await tokenResponse.json() as any;
-  
-  if (tokens.error) {
-    console.error('GitHub token error:', tokens);
-    throw new Error(tokens.error_description || 'GitHub authentication failed');
-  }
-  
-  // Get user info
-  const userResponse = await fetch('https://api.github.com/user', {
-    headers: {
-      'Authorization': `Bearer ${tokens.access_token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    }
-  });
-  
-  if (!userResponse.ok) {
-    throw new Error('Failed to get GitHub user info');
-  }
-  
-  const user = await userResponse.json() as any;
-  
-  // Get user emails (in case primary email is private)
-  const emailsResponse = await fetch('https://api.github.com/user/emails', {
-    headers: {
-      'Authorization': `Bearer ${tokens.access_token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    }
-  });
-  
-  let email = user.email;
-  
-  if (!email && emailsResponse.ok) {
-    const emails = await emailsResponse.json() as any[];
-    const primaryEmail = emails.find(e => e.primary && e.verified);
-    email = primaryEmail?.email || emails[0]?.email;
-  }
-  
-  if (!email) {
-    throw new Error('Could not get email from GitHub account');
-  }
-  
-  return {
-    email,
-    name: user.name || user.login,
-    picture: user.avatar_url
-  };
-}
-
-function mapFirebaseError(errorCode: string): string {
-  const errorMessages: Record<string, string> = {
-    'EMAIL_NOT_FOUND': 'No account found with this email',
-    'INVALID_PASSWORD': 'Incorrect password',
-    'INVALID_LOGIN_CREDENTIALS': 'Invalid email or password',
-    'USER_DISABLED': 'This account has been disabled',
-    'TOO_MANY_ATTEMPTS_TRY_LATER': 'Too many failed attempts. Please try again later',
-    'EMAIL_EXISTS': 'An account with this email already exists',
-    'WEAK_PASSWORD': 'Password should be at least 6 characters',
-    'INVALID_EMAIL': 'Invalid email address'
-  };
-
-  return errorMessages[errorCode] || 'Authentication failed. Please try again';
-}
 
 // ===========================================
 // START SERVER

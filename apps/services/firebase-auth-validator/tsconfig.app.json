@@ -5,6 +5,14 @@
     "module": "commonjs",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../../libs/foundation/standard/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/identity/identification/tsconfig.lib.json" },
+    { "path": "../../../libs/infrastructure/firebase-identity/tsconfig.lib.json" },
+    { "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json" },
+    { "path": "../../../libs/infrastructure/mongo/tsconfig.lib.json" },
+    { "path": "../../../apps/shared/tsconfig.lib.json" }
+  ]
 }
 
