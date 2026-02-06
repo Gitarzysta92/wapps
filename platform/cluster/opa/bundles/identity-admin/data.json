@@ -1,0 +1,26 @@
+{
+  "authority": {
+    "permissions_by_role": {
+      "admin": [
+        "*"
+      ],
+      "identity:admin": [
+        "identity.graph.read",
+        "identity.user.disable",
+        "identity.user.enable",
+        "identity.user.revoke_tokens",
+        "identity.user.delete",
+        "identity.user.update_email",
+        "identity.user.update_password",
+        "identity.user.unlink_provider",
+        "identity.user.generate_password_reset_link",
+        "identity.user.generate_email_verification_link"
+      ]
+    },
+    "roles_by_identity": {
+      "example-admin": [
+        "identity:admin"
+      ]
+    }
+  }
+}

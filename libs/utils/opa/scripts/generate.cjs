@@ -9,6 +9,8 @@ const path = require('node:path');
 
 /** @type {{ discussionPolicy: import('../src/types').DiscussionPolicyDefinition }} */
 const { discussionPolicy } = require('../src/discussion.policy');
+/** @type {{ identityAdminPolicy: import('../src/types').DiscussionPolicyDefinition }} */
+const { identityAdminPolicy } = require('../src/identity-admin.policy');
 
 function workspaceRoot() {
   // scripts are under libs/utils/opa/scripts -> workspace root is 4 levels up
@@ -27,7 +29,7 @@ function jsonStable(obj) {
   return JSON.stringify(obj, null, 2) + '\n';
 }
 
-function renderDiscussionBundle(def) {
+function renderPolicyBundle(def, sourceFileForHeader) {
   const data = {
     authority: {
       permissions_by_role: def.rolePermissions,
@@ -44,7 +46,7 @@ function renderDiscussionBundle(def) {
 
   let rego = [
     '# GENERATED FILE. DO NOT EDIT MANUALLY.',
-    '# Source: libs/utils/opa/src/discussion.policy.ts',
+    `# Source: ${sourceFileForHeader}`,
     `package ${def.packageName}`,
     '',
     'default allow := false',
@@ -162,18 +164,33 @@ function renderDiscussionBundle(def) {
 
 function main() {
   const root = workspaceRoot();
-  const outDirs = [
-    // Source-of-truth bundle (developer-facing).
-    path.join(root, 'libs', 'utils', 'opa', 'bundles', 'discussion'),
-    // Deployment bundle (GitOps, ArgoCD-managed).
-    path.join(root, 'platform', 'cluster', 'opa', 'bundles', 'discussion'),
+  const policies = [
+    {
+      name: 'discussion',
+      def: discussionPolicy,
+      source: 'libs/utils/opa/src/discussion.policy.ts',
+    },
+    {
+      name: 'identity-admin',
+      def: identityAdminPolicy,
+      source: 'libs/utils/opa/src/identity-admin.policy.ts',
+    },
   ];
-  for (const dir of outDirs) ensureDir(dir);
 
-  const rendered = renderDiscussionBundle(discussionPolicy);
-  for (const dir of outDirs) {
-    writeFile(path.join(dir, 'data.json'), jsonStable(rendered.data));
-    writeFile(path.join(dir, 'policy.rego'), rendered.rego);
+  for (const p of policies) {
+    const outDirs = [
+      // Source-of-truth bundle (developer-facing).
+      path.join(root, 'libs', 'utils', 'opa', 'bundles', p.name),
+      // Deployment bundle (GitOps, ArgoCD-managed).
+      path.join(root, 'platform', 'cluster', 'opa', 'bundles', p.name),
+    ];
+    for (const dir of outDirs) ensureDir(dir);
+
+    const rendered = renderPolicyBundle(p.def, p.source);
+    for (const dir of outDirs) {
+      writeFile(path.join(dir, 'data.json'), jsonStable(rendered.data));
+      writeFile(path.join(dir, 'policy.rego'), rendered.rego);
+    }
   }
 }
 

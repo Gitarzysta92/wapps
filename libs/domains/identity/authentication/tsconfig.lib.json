@@ -4,7 +4,8 @@
     "outDir": "../../../../dist/domains/identity/authentication",
     "types": [],
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "tsBuildInfoFile": "../../../../dist/domains/identity/authentication/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "**/*.ts"

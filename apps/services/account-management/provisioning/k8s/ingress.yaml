@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: account-management-ingress
+  namespace: default
+  labels:
+    app: account-management
+    app.kubernetes.io/name: account-management
+    app.kubernetes.io/component: identity-admin
+    app.kubernetes.io/part-of: platform
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # Restrict access at the ingress layer (override per environment)
+    # nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: account-management.host.placeholder # Overridden by environment
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: account-management
+                port:
+                  number: 80
+

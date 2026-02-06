@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-management
+  namespace: default
+  labels:
+    app: account-management
+    app.kubernetes.io/name: account-management
+    app.kubernetes.io/component: identity-admin
+    app.kubernetes.io/part-of: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-management
+  template:
+    metadata:
+      labels:
+        app: account-management
+        app.kubernetes.io/name: account-management
+        app.kubernetes.io/component: identity-admin
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: account-management
+          image: ghcr.io/gitarzysta92/wapps/account-management:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 1340
+              name: http
+          env:
+            - name: ACCOUNT_MANAGEMENT_PORT
+              value: "1340"
+            - name: FIREBASE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: firebase-config
+                  key: project-id
+            - name: INGRESS_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ingress-auth-secret
+                  key: secret
+                  optional: true
+            - name: OPA_URL
+              value: "http://opa.default.svc.cluster.local:8181"
+            - name: OPA_IDENTITY_ADMIN_ALLOW_PATH
+              value: "/v1/data/wapps/identity_admin/authz/allow"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 1340
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 1340
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
