@@ -1,0 +1,203 @@
+# Workflow for discussion-csr @ apps/portals/discussion/entrypoints/csr
+name: 'Discussion CSR - Build & Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/portals/discussion/entrypoints/csr/**'
+      - 'apps/portals/discussion/application/**'
+      - 'environments/dev/apps/discussion-csr-kustomization/**'
+      - 'argocd/applications/frontend/discussion-csr.yaml'
+      - '.github/workflows/discussion-csr.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  SERVICE_NAME: discussion-csr
+  REGISTRY: ghcr.io
+  IMAGE_NAME: gitarzysta92/wapps/discussion-csr
+
+jobs:
+  build:
+    name: 'Build Docker Image'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npx nx build discussion-csr --configuration=production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/portals/discussion/entrypoints/csr/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
+    needs: build
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for discussion-csr..."
+          argocd app sync discussion-csr --force --grpc-web
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait discussion-csr --timeout 300 --grpc-web
+          
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/discussion-csr -n aggregator
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/discussion-csr -n aggregator --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply discussion-csr environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/discussion-csr-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/discussion-csr-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Discussion CSR - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Discussion CSR deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Application: https://discussion-csr.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Health: http://discussion-csr.aggregator.svc.cluster.local/health"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Open the portal and log in"
+            echo "  2. Verify auth BFF: https://auth.${{ needs.build.outputs.environment }}.wapps.com/auth/methods"
+            echo "  3. Check logs: kubectl logs -n aggregator -l app=discussion-csr --tail=50"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

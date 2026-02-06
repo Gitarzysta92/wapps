@@ -142,6 +142,9 @@
       "@portals/catalog/application": [
         "apps/portals/catalog/application/src/index.ts"
       ],
+      "@portals/discussion/application": [
+        "apps/portals/discussion/application/src/index.ts"
+      ],
       "@portals/cross-cutting/configuration": [
         "apps/portals/shared/cross-cutting/configuration/src/index.ts"
       ],

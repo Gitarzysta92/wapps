@@ -1,0 +1,54 @@
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  gap: 1.5rem;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--tui-text-primary);
+  font-weight: 700;
+}
+
+.logo-text {
+  font-size: 1.1rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  color: var(--tui-text-primary);
+
+  &:hover {
+    background: var(--tui-background-neutral-1);
+    text-decoration: none;
+  }
+
+  &.active {
+    background: var(--tui-background-neutral-2);
+    border: 1px solid var(--tui-border-normal);
+  }
+}
+
+.logout {
+  border: 0;
+  background: transparent;
+}
+

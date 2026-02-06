@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: discussion-csr
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: wapps-platform
+  source:
+    # TODO: Move repoURL to environment variable or Kustomize parameter
+    # Currently hardcoded to: https://github.com/Gitarzysta92/wapps.git
+    repoURL: https://github.com/Gitarzysta92/wapps.git
+    targetRevision: HEAD
+    path: environments/dev/apps/discussion-csr-kustomization
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aggregator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
