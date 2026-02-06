@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: editorial
 
 resources:
-  - editor-agent.namespace.yaml
   - editor-agent.deployment.yaml
   - editor-agent.service-account.yaml
   - editor-agent.config-map.yaml

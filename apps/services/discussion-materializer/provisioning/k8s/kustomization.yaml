@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: discussion
 
 resources:
-  - discussion.namespace.yaml
   - discussion-materializer.configmap.yaml
   - discussion-materializer.service-account.yaml
   - discussion-materializer.deployment.yaml

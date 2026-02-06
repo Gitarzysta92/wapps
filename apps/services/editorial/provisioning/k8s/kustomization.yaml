@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: editorial
 
 resources:
-  - editorial.namespace.yaml
   - editorial.deployment.yaml
   - editorial.service.yaml
   - editorial.service-account.yaml

@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: agents
 
 resources:
-  - discord-notifier.namespace.yaml
   - discord-notifier.deployment.yaml
   - discord-notifier.service-account.yaml
   - discord-notifier.config-map.yaml

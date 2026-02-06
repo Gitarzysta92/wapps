@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - aggregator.yaml
+  - discussion.yaml
+  - editorial.yaml
+  - agents.yaml
+  - catalog.yaml
+  - ingestion-services-media-ingestion.yaml
+
