@@ -1,0 +1,85 @@
+name: 'Bootstrap MySQL DB + user'
+description: 'Create a MySQL database and service user using admin credentials (idempotent).'
+
+inputs:
+  mysql-host:
+    description: 'MySQL host (e.g., mysql.mysql)'
+    required: true
+  mysql-port:
+    description: 'MySQL port (e.g., 3306)'
+    required: true
+  mysql-admin-username:
+    description: 'MySQL admin username'
+    required: true
+  mysql-admin-password:
+    description: 'MySQL admin password'
+    required: true
+  database-name:
+    description: 'Database name to create (e.g., discussion_dev)'
+    required: true
+  app-username:
+    description: 'Service DB username to create/update (e.g., discussion_app)'
+    required: true
+  app-password:
+    description: 'Service DB user password (rotated on each run)'
+    required: true
+  mysql-client-namespace:
+    description: 'Namespace to run the temporary mysql client pod in'
+    required: false
+    default: 'mysql'
+  mysql-client-image:
+    description: 'Image to use for the mysql client pod'
+    required: false
+    default: 'mysql:8'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Bootstrap database + user
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        MYSQL_HOST="${{ inputs.mysql-host }}"
+        MYSQL_PORT="${{ inputs.mysql-port }}"
+        MYSQL_ADMIN_USER="${{ inputs.mysql-admin-username }}"
+        MYSQL_ADMIN_PASS="${{ inputs.mysql-admin-password }}"
+        DB_NAME="${{ inputs.database-name }}"
+        APP_USER="${{ inputs.app-username }}"
+        APP_PASS="${{ inputs.app-password }}"
+        NS="${{ inputs.mysql-client-namespace }}"
+        IMG="${{ inputs.mysql-client-image }}"
+
+        # Prevent SQL injection through identifiers.
+        validate_identifier() {
+          local v="$1"
+          if [[ ! "$v" =~ ^[A-Za-z0-9_]+$ ]]; then
+            echo "::error::Invalid identifier '$v' (allowed: [A-Za-z0-9_]+)"
+            exit 1
+          fi
+        }
+
+        validate_port() {
+          local v="$1"
+          if [[ ! "$v" =~ ^[0-9]+$ ]] || (( v < 1 || v > 65535 )); then
+            echo "::error::Invalid port '$v'"
+            exit 1
+          fi
+        }
+
+        validate_identifier "$DB_NAME"
+        validate_identifier "$APP_USER"
+        validate_port "$MYSQL_PORT"
+
+        # Single-line SQL makes quoting/transport easier.
+        SQL="CREATE DATABASE IF NOT EXISTS \\\`$DB_NAME\\\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER IF NOT EXISTS '$APP_USER'@'%' IDENTIFIED BY '$APP_PASS'; ALTER USER '$APP_USER'@'%' IDENTIFIED BY '$APP_PASS'; GRANT ALL PRIVILEGES ON \\\`$DB_NAME\\\`.* TO '$APP_USER'@'%'; FLUSH PRIVILEGES;"
+
+        # Use an ephemeral mysql client pod inside the cluster.
+        # This avoids needing mysql client on the runner and ensures connectivity matches pods.
+        POD_NAME="mysql-client-${GITHUB_RUN_ID:-local}-${GITHUB_RUN_ATTEMPT:-0}-${RANDOM}"
+        kubectl run -n "$NS" --rm -i --restart=Never "$POD_NAME" \
+          --image="$IMG" \
+          --env="MYSQL_PWD=$MYSQL_ADMIN_PASS" \
+          --command -- sh -ceu "
+            mysql -h '$MYSQL_HOST' -P '$MYSQL_PORT' -u '$MYSQL_ADMIN_USER' --protocol=TCP --connect-timeout=10 -e \"$SQL\"
+          "

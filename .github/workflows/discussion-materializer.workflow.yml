@@ -103,6 +103,39 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
+          # MySQL connection (required via GitHub Environment vars)
+          MYSQL_HOST="${{ vars.DISCUSSION_MYSQL_DATABASE_HOST }}"
+          MYSQL_PORT="${{ vars.DISCUSSION_MYSQL_DATABASE_PORT }}"
+          if [ -z "$MYSQL_HOST" ]; then
+            echo "::error::Missing required GitHub Environment var DISCUSSION_MYSQL_DATABASE_HOST"
+            exit 1
+          fi
+          if [ -z "$MYSQL_PORT" ]; then
+            echo "::error::Missing required GitHub Environment var DISCUSSION_MYSQL_DATABASE_PORT"
+            exit 1
+          fi
+          if ! [[ "$MYSQL_PORT" =~ ^[0-9]+$ ]] || [ "$MYSQL_PORT" -lt 1 ] || [ "$MYSQL_PORT" -gt 65535 ]; then
+            echo "::error::Invalid MYSQL_PORT '$MYSQL_PORT'"
+            exit 1
+          fi
+          echo "mysql_host=${MYSQL_HOST}" >> $GITHUB_OUTPUT
+          echo "mysql_port=${MYSQL_PORT}" >> $GITHUB_OUTPUT
+
+          # Discussion DB naming (required via GitHub Environment vars)
+          DB_NAME="${{ vars.DISCUSSION_MYSQL_DATABASE_NAME }}"
+          if [ -z "$DB_NAME" ]; then
+            echo "::error::Missing required GitHub Environment var DISCUSSION_MYSQL_DATABASE_NAME"
+            exit 1
+          fi
+          echo "db_name=${DB_NAME}" >> $GITHUB_OUTPUT
+
+          DB_USERNAME="${{ vars.DISCUSSION_MYSQL_DATABASE_USERNAME }}"
+          if [ -z "$DB_USERNAME" ]; then
+            echo "::error::Missing required GitHub Environment var DISCUSSION_MYSQL_DATABASE_USERNAME"
+            exit 1
+          fi
+          echo "db_username=${DB_USERNAME}" >> $GITHUB_OUTPUT
+
       - name: Extract namespace
         id: ns
         uses: ./.github/actions/extract-namespace
@@ -131,15 +164,39 @@ jobs:
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
 
+      - name: Fail fast if MySQL secrets missing (discussion)
+        run: |
+          for var in MYSQL_DATABASE_USERNAME MYSQL_DATABASE_PASSWORD DISCUSSION_MYSQL_DATABASE_PASSWORD; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Missing required GitHub Environment secret $var"
+              exit 1
+            fi
+          done
+        env:
+          MYSQL_DATABASE_USERNAME: ${{ vars.MYSQL_DATABASE_USERNAME }}
+          MYSQL_DATABASE_PASSWORD: ${{ secrets.MYSQL_DATABASE_PASSWORD }}
+          DISCUSSION_MYSQL_DATABASE_PASSWORD: ${{ secrets.DISCUSSION_MYSQL_DATABASE_PASSWORD }}
+
+      - name: Bootstrap MySQL database + user (discussion)
+        uses: ./.github/actions/bootstrap-mysql-db
+        with:
+          mysql-host: ${{ steps.env-vars.outputs.mysql_host }}
+          mysql-port: ${{ steps.env-vars.outputs.mysql_port }}
+          mysql-admin-username: ${{ vars.MYSQL_DATABASE_USERNAME }}
+          mysql-admin-password: ${{ secrets.MYSQL_DATABASE_PASSWORD }}
+          database-name: ${{ steps.env-vars.outputs.db_name }}
+          app-username: ${{ steps.env-vars.outputs.db_username }}
+          app-password: ${{ secrets.DISCUSSION_MYSQL_DATABASE_PASSWORD }}
+
       - name: "Create MySQL credentials secret (shared: discussion-app-secrets)"
         run: |
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic discussion-app-secrets \
-            --from-literal=DISCUSSION_DATABASE_HOST="${{ vars.EDITORIAL_DATABASE_HOST }}" \
-            --from-literal=DISCUSSION_DATABASE_PORT="${{ vars.EDITORIAL_DATABASE_PORT }}" \
-            --from-literal=DISCUSSION_DATABASE_USERNAME="${{ secrets.EDITORIAL_DATABASE_USERNAME }}" \
-            --from-literal=DISCUSSION_DATABASE_PASSWORD="${{ secrets.EDITORIAL_DATABASE_PASSWORD }}" \
-            --from-literal=DISCUSSION_DATABASE_NAME="${{ vars.EDITORIAL_DATABASE_NAME }}" \
+            --from-literal=DISCUSSION_DATABASE_HOST="${{ steps.env-vars.outputs.mysql_host }}" \
+            --from-literal=DISCUSSION_DATABASE_PORT="${{ steps.env-vars.outputs.mysql_port }}" \
+            --from-literal=DISCUSSION_DATABASE_USERNAME="${{ steps.env-vars.outputs.db_username }}" \
+            --from-literal=DISCUSSION_DATABASE_PASSWORD="${{ secrets.DISCUSSION_MYSQL_DATABASE_PASSWORD }}" \
+            --from-literal=DISCUSSION_DATABASE_NAME="${{ steps.env-vars.outputs.db_name }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
 

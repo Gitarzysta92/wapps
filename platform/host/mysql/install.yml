@@ -106,7 +106,12 @@
     - catalog_dev
     - catalog_staging
     - catalog_prod
+    # Discussion service
+    - discussion_dev
+    - discussion_staging
+    - discussion_prod
     # Add more service databases here as needed
+  when: mysql_provision_service_dbs | default(false)
 
 # ==============================================
 # Shared Database User Creation
@@ -117,19 +122,48 @@
   mysql_user:
     name: wapps_app
     password: "{{ mysql_wapps_password | default('wapps_password') }}"
-    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL'
+    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL/discussion_dev.*:ALL/discussion_staging.*:ALL/discussion_prod.*:ALL'
     host: '%'
     state: present
     login_user: root
     login_password: "{{ mysql_root_password | default('root_password') }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: mysql_provision_service_dbs | default(false)
 
 # Create user for 'localhost' (local access from host machine)
 - name: Create shared wapps_app database user for localhost
   mysql_user:
     name: wapps_app
     password: "{{ mysql_wapps_password | default('wapps_password') }}"
-    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL'
+    priv: 'editorial_dev.*:ALL/editorial_staging.*:ALL/editorial_prod.*:ALL/catalog_dev.*:ALL/catalog_staging.*:ALL/catalog_prod.*:ALL/discussion_dev.*:ALL/discussion_staging.*:ALL/discussion_prod.*:ALL'
+    host: 'localhost'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: mysql_provision_service_dbs | default(false)
+
+# ==============================================
+# Remote Admin User (for CI/CD DB provisioning)
+# ==============================================
+# Workflows connect over TCP (via mysql.mysql) and cannot use the root unix socket.
+# Create a dedicated remote-capable admin user that can create per-service DBs/users.
+- name: "Create MySQL admin user for remote provisioning (host: %)"
+  mysql_user:
+    name: "{{ mysql_admin_username | default('wapps_admin') }}"
+    password: "{{ mysql_admin_password | default(mysql_root_password | default('root_password')) }}"
+    priv: '*.*:ALL,GRANT'
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password | default('root_password') }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: "Create MySQL admin user for localhost provisioning (host: localhost)"
+  mysql_user:
+    name: "{{ mysql_admin_username | default('wapps_admin') }}"
+    password: "{{ mysql_admin_password | default(mysql_root_password | default('root_password')) }}"
+    priv: '*.*:ALL,GRANT'
     host: 'localhost'
     state: present
     login_user: root
