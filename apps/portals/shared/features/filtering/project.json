@@ -10,7 +10,6 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "rootDir": ".",
         "outputPath": "dist/apps/portals/shared/features/filtering",
         "main": "apps/portals/shared/features/filtering/src/index.ts",
         "tsConfig": "apps/portals/shared/features/filtering/tsconfig.lib.json",
