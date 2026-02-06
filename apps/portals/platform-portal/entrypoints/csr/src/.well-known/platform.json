@@ -1,0 +1,14 @@
+{
+  "id": "platform-portal-csr",
+  "name": "Platform Portal",
+  "type": "portal",
+  "runtime": "angular-csr",
+  "endpoints": {
+    "home": "/",
+    "health": "/health",
+    "ready": "/ready",
+    "platform": "/.well-known/platform.json"
+  },
+  "tags": ["scope:platform", "layer:portal"]
+}
+

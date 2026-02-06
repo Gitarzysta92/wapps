@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './health/health.controller';
 import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 import { AccountManagementController } from './controllers/account-management.controller';
+import { PlatformController } from './controllers/platform.controller';
 import { AccountManagementAppService } from './services/account-management-app.service';
 import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +18,7 @@ import { IdentityProvisioner } from './infrastructure/identity/identity-provisio
       isGlobal: true,
     }),
   ],
-  controllers: [HealthController, AccountManagementController],
+  controllers: [HealthController, AccountManagementController, PlatformController],
   providers: [
     AccountManagementAppService,
     {

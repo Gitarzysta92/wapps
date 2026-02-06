@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-portal-csr
+  labels:
+    app: platform-portal-csr
+    app.kubernetes.io/name: platform-portal-csr
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-portal-csr
+  template:
+    metadata:
+      labels:
+        app: platform-portal-csr
+        app.kubernetes.io/name: platform-portal-csr
+        app.kubernetes.io/component: frontend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: platform-portal-csr
+          image: ghcr.io/gitarzysta92/wapps/platform-portal-csr:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+

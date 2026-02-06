@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { HealthController } from './health/health.controller';
+import { PlatformController } from './platform/platform.controller';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { HealthController } from './health/health.controller';
       maxRedirects: 5,
     }),
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, PlatformController],
 })
 export class AppModule {}

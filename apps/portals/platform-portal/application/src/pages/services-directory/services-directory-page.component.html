@@ -1,0 +1,113 @@
+<section class="page">
+  <header class="page__header">
+    <h1 class="page__title">Service directory</h1>
+    <p class="page__subtitle">
+      All services with their public addresses (discovered from the cluster).
+    </p>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    @switch (vm.state) {
+      @case ('loading') {
+        <div class="page__state">Loading…</div>
+      }
+      @case ('error') {
+        <div class="page__state page__state--error">
+          {{ vm.message }}
+        </div>
+      }
+      @case ('loaded') {
+        <div class="meta">
+          <div class="meta__row">
+            <span class="meta__label">Environment</span>
+            <span class="meta__value">{{ vm.directory.environment || 'unknown' }}</span>
+          </div>
+          <div class="meta__row">
+            <span class="meta__label">Generated</span>
+            <span class="meta__value">{{ vm.directory.generatedAt || 'unknown' }}</span>
+          </div>
+        </div>
+
+        @if (vm.directory.services.length === 0) {
+          <div class="page__state">
+            No services found.
+          </div>
+        } @else {
+          <div class="services">
+            @for (svc of vm.directory.services; track svc.id) {
+              <article class="service">
+                <div class="service__header">
+                  <h2 class="service__title">{{ svc.name }}</h2>
+                  <div class="service__id">{{ svc.id }}</div>
+                </div>
+
+                <ul class="service__urls">
+                  @for (u of svc.publicUrls; track u) {
+                    <li class="service__url">
+                      <a [href]="u" target="_blank" rel="noopener noreferrer">{{ u }}</a>
+                    </li>
+                  }
+                </ul>
+
+                @if (svc.internalUrls.length) {
+                  <ul class="service__urls">
+                    @for (u of svc.internalUrls; track u) {
+                      <li class="service__url">
+                        <code>{{ u }}</code>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                @if (svc.deployments.length) {
+                  <ul class="service__urls">
+                    @for (d of svc.deployments; track d.namespace + '/' + d.name) {
+                      <li class="service__url">
+                        <strong>Deployment</strong>
+                        <code>{{ d.namespace }}/{{ d.name }}</code>
+                        <span>ready {{ d.readyReplicas }}/{{ d.replicas }}</span>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                @if (svc.cronJobs.length) {
+                  <ul class="service__urls">
+                    @for (cj of svc.cronJobs; track cj.namespace + '/' + cj.name) {
+                      <li class="service__url">
+                        <strong>CronJob</strong>
+                        <code>{{ cj.namespace }}/{{ cj.name }}</code>
+                        <span>schedule <code>{{ cj.schedule }}</code></span>
+                        @if (cj.lastScheduleTime) {
+                          <span>last {{ cj.lastScheduleTime }}</span>
+                        }
+                        @if (cj.recentRuns.length) {
+                          <span>
+                            latest {{ cj.recentRuns[0].status }} ({{ cj.recentRuns[0].name }})
+                          </span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+
+                @if (svc.extras?.length) {
+                  <ul class="service__urls">
+                    @for (x of svc.extras; track x.url) {
+                      <li class="service__url">
+                        <a [href]="x.url" target="_blank" rel="noopener noreferrer">
+                          {{ x.label }} → {{ x.url }}
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                }
+              </article>
+            }
+          </div>
+        }
+      }
+    }
+  }
+</section>
+

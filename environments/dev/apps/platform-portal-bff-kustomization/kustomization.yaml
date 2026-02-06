@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: aggregator
+
+resources:
+  - ../../../../apps/services/platform-portal-bff/provisioning/k8s
+
+patches:
+  - path: ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: platform-portal-bff-ingress
+

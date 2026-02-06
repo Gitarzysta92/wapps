@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-portal-csr
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: platform-portal-csr
+        env:
+        - name: NODE_ENV
+          value: "development"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+

@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { AppsModule } from './apps/apps.module';
 import { ReferenceModule } from './reference/reference.module';
+import { PlatformController } from './platform/platform.controller';
 
 // Import entities
 import { Category } from './categories/entities/category.entity';
@@ -54,7 +55,7 @@ import { UserSpan } from './reference/entities/user-span.entity';
     AppsModule,
     ReferenceModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, PlatformController],
   providers: [SeedService],
 })
 export class AppModule implements OnModuleInit {
