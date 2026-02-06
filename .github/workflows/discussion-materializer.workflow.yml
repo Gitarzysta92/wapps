@@ -204,7 +204,7 @@ jobs:
         run: |
           kubectl apply -f ${{ env.NAMESPACE_MANIFEST }}
           kubectl create secret generic discussion-materializer-mongo \
-            --from-literal=username="${{ secrets.MONGODB_WAPPS_USERNAME }}" \
+            --from-literal=username="${{ vars.MONGODB_WAPPS_USERNAME }}" \
             --from-literal=password="${{ secrets.MONGODB_WAPPS_PASSWORD }}" \
             --namespace=${{ steps.ns.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -

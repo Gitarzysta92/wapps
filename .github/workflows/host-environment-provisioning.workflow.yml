@@ -48,7 +48,7 @@ jobs:
           MYSQL_DATABASE_USERNAME: ${{ vars.MYSQL_DATABASE_USERNAME }}
           MYSQL_DATABASE_PASSWORD: ${{ secrets.MYSQL_DATABASE_PASSWORD }}
           MONGODB_ROOT_PASSWORD: ${{ secrets.MONGODB_ROOT_PASSWORD }}
-          MONGODB_WAPPS_USERNAME: ${{ secrets.MONGODB_WAPPS_USERNAME }}
+          MONGODB_WAPPS_USERNAME: ${{ vars.MONGODB_WAPPS_USERNAME }}
           MONGODB_WAPPS_PASSWORD: ${{ secrets.MONGODB_WAPPS_PASSWORD }}
         run: |
           # Fail fast if required secrets are missing for the selected GitHub Environment
