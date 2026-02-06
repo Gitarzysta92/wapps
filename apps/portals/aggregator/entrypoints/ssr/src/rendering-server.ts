@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 
 export interface IRenderingServerConfiguration {
-  publicDir: string;
+  staticDir: string;
   index: string;
 }
 
@@ -13,15 +13,21 @@ export class RenderingServer {
     private readonly _cfg: IRenderingServerConfiguration
   ) {
     this._express = express();
-    this._express.get(
-      '**',
-      express.static(this._cfg.publicDir, {
+
+    // Kubernetes probes (and Docker healthcheck) expect these.
+    this._express.get('/health', (_req, res) => res.status(200).send('ok'));
+    this._express.get('/ready', (_req, res) => res.status(200).send('ok'));
+
+    // Serve static assets (JS/CSS/images). Do NOT serve index here; SSR should handle HTML.
+    this._express.use(
+      express.static(this._cfg.staticDir, {
         maxAge: '1y',
-        index: this._cfg.index
+        index: false,
       }),
     );
 
-    this._cfg.index = `${this._cfg.publicDir}/${this._cfg.index}`
+    // Resolve index.html to an absolute filesystem path for SSR engine.
+    this._cfg.index = `${this._cfg.staticDir}/${this._cfg.index}`;
   }
 
   start(args: { port: number; }) {

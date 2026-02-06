@@ -9,6 +9,7 @@
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": [],
       "options": {
         "outputPath": "dist/apps/portals/aggregator/angular",
         "index": "apps/portals/aggregator/application/src/index.html",
@@ -68,6 +69,29 @@
         }
       },
       "defaultConfiguration": "production"
+    },
+    "build-server": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/portals/aggregator/ssr",
+        "main": "apps/portals/aggregator/entrypoints/ssr/src/main.ts",
+        "tsConfig": "apps/portals/aggregator/entrypoints/ssr/tsconfig.app.json",
+        "webpackConfig": "apps/portals/aggregator/entrypoints/ssr/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",

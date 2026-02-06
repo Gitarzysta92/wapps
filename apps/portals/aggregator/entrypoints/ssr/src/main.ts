@@ -1,34 +1,30 @@
-import 'zone.js';
-import { bootstrapApplication } from "@angular/platform-browser";
-import { join } from "node:path";
-import { CommonEngine } from "@angular/ssr/node";
-import { mergeApplicationConfig } from "@angular/core";
-import { appConfigSSR } from "./app-config.ssr";
-import { state } from '../web-client/state';
-import { provideIdentityAspect } from '../../aspects/identity/identity.providers';
-import { IdentityService } from '../../features/identity/login/application/identity.service';
+import 'zone.js/node';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { join } from 'node:path';
+import { CommonEngine } from '@angular/ssr/node';
+import { mergeApplicationConfig } from '@angular/core';
+import { appConfigSSR } from './app-config.ssr';
 import { RenderingServer } from './rendering-server';
+import {
+  AppRootComponent,
+  createAppConfig,
+  routes,
+} from '../../../application/src/index';
 
+const staticDir = join(process.cwd(), 'browser');
 
 const commonEngine = new CommonEngine();
 const renderingServer = new RenderingServer({
-  publicDir: join(process.cwd(), 'dist/web-client/browser'),
+  staticDir,
   index: 'index.html',
 });
 
 const appConfig = mergeApplicationConfig(
-  createAppConfig({
-    routes: routes,
-    state: state,
-    effects: [],
-    metareducers: []
-  }),
-  provideIdentityAspect(IdentityService),
-  appConfigSSR,
-) 
+  createAppConfig({ routes }),
+  appConfigSSR
+);
 
 renderingServer.onRenderRequest((req, cfg) => {
-  console.log(cfg.index);
   return commonEngine
     .render({
       bootstrap: () => bootstrapApplication(AppRootComponent, appConfig),
@@ -39,5 +35,5 @@ renderingServer.onRenderRequest((req, cfg) => {
     })
 })
 
-const port = (process.env['PORT'] ?? 4000) as number;
+const port = Number.parseInt(process.env['PORT'] ?? '4000', 10);
 renderingServer.start({ port });  

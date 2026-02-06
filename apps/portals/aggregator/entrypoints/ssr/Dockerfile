@@ -16,6 +16,7 @@ COPY . .
 
 # Build the application
 RUN npx nx build aggregator-ssr --configuration=production
+RUN npx nx run aggregator-ssr:build-server
 
 # Production stage
 FROM node:20-alpine AS production
@@ -30,7 +31,8 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
 # Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/portals/aggregator/angular ./
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/portals/aggregator/angular ./browser
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/portals/aggregator/ssr ./server
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Switch to non-root user
@@ -45,4 +47,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Start the application
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "main.js"]
+CMD ["node", "server/main.js"]
