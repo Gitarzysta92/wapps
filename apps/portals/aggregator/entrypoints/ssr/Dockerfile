@@ -1,32 +1,22 @@
-# Multi-stage build for Angular SSR application
-FROM node:20-alpine AS builder
+# syntax=docker/dockerfile:1.7
+# Multi-stage runtime image for prebuilt Angular SSR artifacts.
+# The Angular/Nx build should run outside Docker (CI runner) and produce:
+# - dist/apps/portals/aggregator/angular
+# - dist/apps/portals/aggregator/ssr
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-# Nx daemon can leave a stale socket between Docker RUN layers.
-# Disable it for deterministic CI/docker builds.
-ENV NX_DAEMON=false
-ENV NODE_ENV=production
-
-# Copy package files
+# Install production dependencies only (faster + smaller).
 COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
-
-# Install dependencies
-RUN npm ci --no-audit --no-fund
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npx nx build aggregator-ssr --configuration=production \
-  && npx nx run aggregator-ssr:build-server --configuration=production
+RUN --mount=type=cache,target=/root/.npm \
+  npm ci --omit=dev --no-audit --no-fund
 
 # Production stage
 FROM node:20-alpine AS production
 
 WORKDIR /app
+ENV NODE_ENV=production
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -35,10 +25,10 @@ RUN apk add --no-cache dumb-init
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/portals/aggregator/angular ./browser
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/portals/aggregator/ssr ./server
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copy runtime deps and prebuilt artifacts
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --chown=nextjs:nodejs dist/apps/portals/aggregator/angular ./browser
+COPY --chown=nextjs:nodejs dist/apps/portals/aggregator/ssr ./server
 
 # Switch to non-root user
 USER nextjs

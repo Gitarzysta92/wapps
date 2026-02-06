@@ -1,5 +1,7 @@
 node_modules
-dist
+dist/**
+!dist/apps/portals/aggregator/angular/**
+!dist/apps/portals/aggregator/ssr/**
 tmp
 .nx/cache
 .angular/cache
