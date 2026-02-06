@@ -1,0 +1,22 @@
+@if (headerComponent$ | async; as header) {
+  <header class="container header">
+    <ng-container
+      [safeComponentOutlet]="header.component"
+      [safeComponentOutletInputs]="header.inputs">
+    </ng-container>
+  </header>
+}
+
+<main class="container main">
+  <router-outlet></router-outlet>
+</main>
+
+@if (footerComponent$ | async; as footer) {
+  <footer class="container footer">
+    <ng-container
+      [safeComponentOutlet]="footer.component"
+      [safeComponentOutletInputs]="footer.inputs">
+    </ng-container>
+  </footer>
+}
+

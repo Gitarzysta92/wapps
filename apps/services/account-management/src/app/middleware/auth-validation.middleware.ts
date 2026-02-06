@@ -15,13 +15,17 @@ export class AuthValidationMiddleware implements NestMiddleware {
     const ingressAuth = req.headers['x-ingress-auth'] as string;
 
     // For admin service, require authentication headers on all routes except health/docs.
-    const path = req.path || '';
+    // NOTE: `req.path` alone can be just "/" when middleware is mounted on a specific route.
+    // Use the original URL (or baseUrl+path) so health checks remain public.
+    const urlPathRaw = (req.originalUrl || `${req.baseUrl || ''}${req.path || ''}`).split('?')[0] || '';
+    const urlPath = urlPathRaw.length > 1 ? urlPathRaw.replace(/\/$/, '') : urlPathRaw;
     const isPublic =
-      path === '/api/health' ||
-      path === '/health' ||
-      path.startsWith('/api/docs') ||
-      path.startsWith('/api-docs') ||
-      path.startsWith('/api-docs.json');
+      urlPath === '/api/health' ||
+      urlPath === '/health' ||
+      urlPath === '/api/docs' ||
+      urlPath.startsWith('/api/docs/') ||
+      urlPath.startsWith('/api-docs') ||
+      urlPath.startsWith('/api-docs.json');
 
     if (isPublic) {
       return next();

@@ -3,17 +3,14 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "id",
-  "sourceRoot": "apps/portals/shared/features/identity",
+  "sourceRoot": "apps/portals/shared/features/identity/src",
   "tags": ["type:identity", "scope:auth"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": [],
       "options": {
-        "outputPath": "dist/apps/portals/shared/features/identity",
-        "main": "apps/portals/shared/features/identity/index.ts",
-        "tsConfig": "apps/portals/shared/features/identity/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/features/identity/*.md"]
+        "command": "npx tsc -p apps/portals/shared/features/identity/tsconfig.lib.json --noEmit"
       }
     },
     "test": {

@@ -1,0 +1,35 @@
+<div class="header-content">
+  <div class="header-logo">
+    <a [routerLink]="homeNavigation.path" class="logo-link">
+      <tui-icon icon="@tui.message-circle" [style.width.rem]="1.5" [style.height.rem]="1.5"></tui-icon>
+      <span class="logo-text">Discussion Portal</span>
+    </a>
+  </div>
+
+  <nav class="header-nav">
+    @for (item of navigation; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        class="nav-item">
+        <tui-icon [icon]="item.icon" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="auth">
+    @if (auth.isAuthenticated$ | async) {
+      <button class="nav-item logout" type="button" (click)="logout()">
+        <tui-icon icon="@tui.log-out" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+        Logout
+      </button>
+    } @else {
+      <a [routerLink]="'/login'" routerLinkActive="active" class="nav-item">
+        <tui-icon icon="@tui.log-in" [style.width.rem]="1.25" [style.height.rem]="1.25"></tui-icon>
+        Login
+      </a>
+    }
+  </div>
+</div>
+

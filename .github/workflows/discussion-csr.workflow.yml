@@ -1,13 +1,15 @@
-name: 'Aggregator Demo CSR - Build & Deploy'
+# Workflow for discussion-csr @ apps/portals/discussion/entrypoints/csr
+name: 'Discussion CSR - Build & Deploy'
 
 on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/portals/aggregator-demo/entrypoints/csr/**'
-      - 'apps/portals/aggregator-demo/application/**'
-      - 'environments/dev/apps/aggregator-demo-csr-kustomization/**'
-      - '.github/workflows/aggregator-demo-csr.workflow.yml'
+      - 'apps/portals/discussion/entrypoints/csr/**'
+      - 'apps/portals/discussion/application/**'
+      - 'environments/dev/apps/discussion-csr-kustomization/**'
+      - 'argocd/applications/frontend/discussion-csr.yaml'
+      - '.github/workflows/discussion-csr.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
     inputs:
@@ -21,9 +23,9 @@ on:
           - production
 
 env:
-  SERVICE_NAME: aggregator-demo-csr
+  SERVICE_NAME: discussion-csr
   REGISTRY: ghcr.io
-  IMAGE_NAME: gitarzysta92/wapps/aggregator-demo-csr
+  IMAGE_NAME: gitarzysta92/wapps/discussion-csr
 
 jobs:
   build:
@@ -60,22 +62,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Patch environment configuration
-        run: |
-          ENV_FILE="apps/portals/aggregator-demo/application/src/environment.ts"
-          ENV_NAME="${{ steps.set-env.outputs.environment }}"
-
-          # Patch ENVIRONMENT_NAME
-          sed -i "s/export const ENVIRONMENT_NAME = \"\";/export const ENVIRONMENT_NAME = \"${ENV_NAME}\";/" "$ENV_FILE"
-
-          echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
-          echo "--- Resulting URLs ---"
-          echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
-          echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.com"
-          echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.com"
-
       - name: Build application
-        run: npx nx build aggregator-demo-csr --configuration=production --excludeTaskDependencies
+        run: npx nx build discussion-csr --configuration=production
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,7 +79,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: apps/portals/aggregator-demo/entrypoints/csr/Dockerfile
+          file: apps/portals/discussion/entrypoints/csr/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
@@ -116,7 +104,7 @@ jobs:
           ENV="${{ needs.build.outputs.environment }}"
           ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
-
+          
           # Set ArgoCD server
           echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
 
@@ -137,54 +125,40 @@ jobs:
             --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
             --insecure --grpc-web
 
-      - name: Create GHCR image pull secret
-        run: |
-          # Ensure namespace exists
-          kubectl apply -f apps/portals/aggregator-demo/entrypoints/csr/provisioning/k8s/namespace.yaml
-
-          kubectl create secret docker-registry ghcr-secret \
-            --docker-server=ghcr.io \
-            --docker-username=gitarzysta92 \
-            --docker-password="${{ secrets.CONTAINER_REGISTRY_TOKEN }}" \
-            --namespace=aggregator \
-            --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
-
-          echo "✅ GHCR image pull secret created/updated in aggregator namespace"
-
       - name: Trigger ArgoCD sync
         run: |
-          echo "Triggering ArgoCD sync for aggregator-demo-csr..."
-          argocd app sync aggregator-demo-csr --force --grpc-web
-
+          echo "Triggering ArgoCD sync for discussion-csr..."
+          argocd app sync discussion-csr --force --grpc-web
+          
           echo "Waiting for sync to complete..."
-          argocd app wait aggregator-demo-csr --timeout 300 --grpc-web
-
+          argocd app wait discussion-csr --timeout 300 --grpc-web
+          
           echo "✅ ArgoCD sync completed"
 
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/aggregator-demo-csr -n aggregator
-
+          kubectl rollout restart deployment/discussion-csr -n aggregator
+          
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/aggregator-demo-csr -n aggregator --timeout=300s
-
+          kubectl rollout status deployment/discussion-csr -n aggregator --timeout=300s
+          
           echo "✅ Deployment restarted successfully"
 
       - name: Apply environment configuration
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-
-          # Apply aggregator-demo-csr environment kustomization
-          if [ -d "environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization" ]; then
-            kubectl apply -k environments/${ENV_SHORT}/apps/aggregator-demo-csr-kustomization/
+          
+          # Apply discussion-csr environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/discussion-csr-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/discussion-csr-kustomization/
             echo "✅ Environment configuration applied"
           fi
 
       - name: Apply network policies
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
-
+          
           if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
             kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
             echo "✅ Network policies applied"
@@ -199,7 +173,7 @@ jobs:
       - name: Print summary
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Aggregator Demo CSR - Deployment Summary"
+          echo "Discussion CSR - Deployment Summary"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "Environment: ${{ needs.build.outputs.environment }}"
@@ -209,20 +183,21 @@ jobs:
           echo "  - Build: ${{ needs.build.result }}"
           echo "  - Deploy: ${{ needs.deploy.result }}"
           echo ""
-
+          
           if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Aggregator Demo CSR deployed successfully!"
+            echo "✅ Discussion CSR deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - Application: https://aggregator-demo.${{ needs.build.outputs.environment }}.wapps.com"
-            echo "  - Health: http://aggregator-demo-csr.aggregator.svc.cluster.local/health"
+            echo "  - Application: https://discussion-csr.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Health: http://discussion-csr.aggregator.svc.cluster.local/health"
             echo ""
             echo "Next steps:"
-            echo "  1. Verify application access"
-            echo "  2. Check logs: kubectl logs -n aggregator -l app=aggregator-demo-csr --tail=50"
-            echo "  3. Verify ingress: kubectl get ingress -n aggregator"
+            echo "  1. Open the portal and log in"
+            echo "  2. Verify auth BFF: https://auth.${{ needs.build.outputs.environment }}.wapps.com/auth/methods"
+            echo "  3. Check logs: kubectl logs -n aggregator -l app=discussion-csr --tail=50"
           else
             echo "⚠️ Deployment completed with issues. Check logs above."
           fi
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

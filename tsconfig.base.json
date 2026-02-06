@@ -144,6 +144,8 @@
       ],
       "@portals/management-portal/application": [
         "apps/portals/management-portal/application/src/index.ts"
+      "@portals/discussion/application": [
+        "apps/portals/discussion/application/src/index.ts"
       ],
       "@portals/cross-cutting/configuration": [
         "apps/portals/shared/cross-cutting/configuration/src/index.ts"
