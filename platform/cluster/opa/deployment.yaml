@@ -24,6 +24,7 @@ spec:
           args:
             - "run"
             - "--server"
+            - "--addr=0.0.0.0:8181"
             - "--set=decision_logs.console=true"
             - "/bundles/discussion/policy.rego"
             - "/bundles/discussion/data.json"
