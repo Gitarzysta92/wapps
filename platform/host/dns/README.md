@@ -12,7 +12,7 @@ This directory contains Ansible playbooks and templates for configuring DNS reso
 
 ## Configuration
 
-The DNS setup creates a wildcard DNS resolution for `{{ target_env }}.wapps.com` domains that resolves to `{{ target_ip }}`.
+The DNS setup creates a wildcard DNS resolution for `{{ target_env }}.wapps.ai` domains that resolves to `{{ target_ip }}`.
 
 ### Key Features
 

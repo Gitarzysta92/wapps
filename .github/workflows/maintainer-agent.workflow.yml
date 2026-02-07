@@ -96,7 +96,7 @@ jobs:
       - name: Set ArgoCD server URL
         id: argocd-url
         run: |
-          echo "server=argocd.development.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.development.wapps.ai" >> $GITHUB_OUTPUT
         shell: bash
       
       - name: Deploy to ArgoCD

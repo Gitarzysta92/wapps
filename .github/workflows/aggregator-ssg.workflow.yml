@@ -72,9 +72,9 @@ jobs:
 
           echo "✅ Patched environment.ts with ENVIRONMENT_NAME=${ENV_NAME}"
           echo "--- Resulting URLs ---"
-          echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.com"
-          echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.com"
-          echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.com"
+          echo "AUTH_BFF_URL: https://auth.${ENV_NAME}.wapps.ai"
+          echo "API_BASE_URL: https://api.${ENV_NAME}.wapps.ai"
+          echo "AVATAR_BASE_URL: https://avatar.${ENV_NAME}.wapps.ai"
 
       - name: Build application
         run: npx nx build aggregator-ssg --configuration=production --excludeTaskDependencies
@@ -120,7 +120,7 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
 
           # Set ArgoCD server
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Install ArgoCD CLI
         run: |
@@ -216,7 +216,7 @@ jobs:
             echo "✅ Aggregator SSG deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - Application: https://aggregator-ssg.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Application: https://aggregator-ssg.${{ needs.build.outputs.environment }}.wapps.ai"
             echo "  - Health: http://aggregator-ssg.aggregator.svc.cluster.local/health"
             echo ""
             echo "Next steps:"

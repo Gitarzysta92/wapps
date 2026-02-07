@@ -10,7 +10,7 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/rules/0/host
-        value: argocd.development.wapps.com
+        value: argocd.development.wapps.ai
     target:
       kind: Ingress
       name: argocd-ingress

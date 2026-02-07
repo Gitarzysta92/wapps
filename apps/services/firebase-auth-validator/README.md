@@ -142,9 +142,9 @@ The frontend builds the auth URL dynamically based on `ENVIRONMENT_NAME`:
 // In environment.ts (patched by CI)
 export const ENVIRONMENT_NAME = "development"; // Set by CI
 
-// URL is built as: auth.<environment>.wapps.com
+// URL is built as: auth.<environment>.wapps.ai
 export const AUTH_BFF_URL = buildServiceUrl("auth");
-// Results in: https://auth.development.wapps.com
+// Results in: https://auth.development.wapps.ai
 
 // In root.ts
 provideIdentityLoginFeature({
@@ -166,7 +166,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-Ingress-Auth"
 spec:
   rules:
-  - host: api.development.wapps.com
+  - host: api.development.wapps.ai
     http:
       paths:
       - path: /my-api

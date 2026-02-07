@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: store-app-scrapper
   annotations:
-    platform.wapps.com/manifest: |
+    platform.wapps.ai/manifest: |
       {
         "id": "store-app",
         "name": "Store App Scrapper",

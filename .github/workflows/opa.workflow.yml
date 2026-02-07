@@ -57,7 +57,7 @@ jobs:
         id: env-vars
         run: |
           ENV="${{ needs.set-env.outputs.environment }}"
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Sync ArgoCD Application
         uses: ./.github/actions/sync-argocd-app

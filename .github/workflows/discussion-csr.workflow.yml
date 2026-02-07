@@ -110,7 +110,7 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           
           # Set ArgoCD server
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Install ArgoCD CLI
         run: |
@@ -192,12 +192,12 @@ jobs:
             echo "✅ Discussion CSR deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - Application: https://discussion-csr.${{ needs.build.outputs.environment }}.wapps.com"
+            echo "  - Application: https://discussion-csr.${{ needs.build.outputs.environment }}.wapps.ai"
             echo "  - Health: http://discussion-csr.aggregator.svc.cluster.local/health"
             echo ""
             echo "Next steps:"
             echo "  1. Open the portal and log in"
-            echo "  2. Verify auth BFF: https://auth.${{ needs.build.outputs.environment }}.wapps.com/auth/methods"
+            echo "  2. Verify auth BFF: https://auth.${{ needs.build.outputs.environment }}.wapps.ai/auth/methods"
             echo "  3. Check logs: kubectl logs -n aggregator -l app=discussion-csr --tail=50"
           else
             echo "⚠️ Deployment completed with issues. Check logs above."

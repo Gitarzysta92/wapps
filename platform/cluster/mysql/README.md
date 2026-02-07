@@ -95,7 +95,7 @@ ansible-playbook platform/host/main.yml \
 For a browser-based MySQL editor (similar to Mongo Express), this repo ships **Adminer** as a small platform component:
 
 - **Kubernetes manifests**: `platform/cluster/mysql-adminer/`
-- **Dev hostname**: `mysql-adminer.development.wapps.com`
+- **Dev hostname**: `mysql-adminer.development.wapps.ai`
 - **Namespace**: `mysql`
 - **Default server**: `mysql.mysql` (pre-filled in the UI)
 

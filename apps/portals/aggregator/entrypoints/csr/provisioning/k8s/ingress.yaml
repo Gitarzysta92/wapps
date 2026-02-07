@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-  - host: aggregator-csr.wapps.com
+  - host: aggregator-csr.wapps.ai
     http:
       paths:
       - path: /

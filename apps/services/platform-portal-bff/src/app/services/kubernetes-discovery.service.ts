@@ -55,7 +55,7 @@ export class KubernetesDiscoveryService {
 
   private readonly scheme = process.env.PUBLIC_URL_SCHEME || 'https';
   private readonly hostSuffixAllowList = (process.env.PUBLIC_HOST_SUFFIX_ALLOW_LIST ||
-    '.wapps.com,.wapps.local')
+    '.wapps.ai,.wapps.local')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
@@ -84,7 +84,7 @@ export class KubernetesDiscoveryService {
     const annotations = meta.annotations || {};
     const labels = meta.labels || {};
 
-    const discover = (annotations['platform.wapps.com/discover'] || '').toLowerCase();
+    const discover = (annotations['platform.wapps.ai/discover'] || '').toLowerCase();
     if (discover === 'false' || discover === '0' || discover === 'no') return false;
     if (discover === 'true' || discover === '1' || discover === 'yes') return true;
 
@@ -141,7 +141,7 @@ export class KubernetesDiscoveryService {
 
   private parseManifestHint(annotations: Record<string, string> | undefined): PlatformManifestHint | undefined {
     if (!annotations) return undefined;
-    const raw = annotations['platform.wapps.com/manifest'];
+    const raw = annotations['platform.wapps.ai/manifest'];
     if (!raw) return undefined;
     try {
       return JSON.parse(raw.trim()) as PlatformManifestHint;

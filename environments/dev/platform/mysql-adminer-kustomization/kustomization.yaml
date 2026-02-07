@@ -10,7 +10,7 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/rules/0/host
-        value: mysql-adminer.development.wapps.com
+        value: mysql-adminer.development.wapps.ai
     target:
       kind: Ingress
       name: mysql-adminer-ingress

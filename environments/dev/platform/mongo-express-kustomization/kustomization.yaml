@@ -10,7 +10,7 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/rules/0/host
-        value: mongo-express.development.wapps.com
+        value: mongo-express.development.wapps.ai
     target:
       kind: Ingress
       name: mongo-express-ingress

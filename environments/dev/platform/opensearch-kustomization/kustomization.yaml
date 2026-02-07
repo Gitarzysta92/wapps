@@ -10,7 +10,7 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/rules/0/host
-        value: opensearch.development.wapps.com
+        value: opensearch.development.wapps.ai
     target:
       kind: Ingress
       name: opensearch-dashboards-ingress

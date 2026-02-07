@@ -59,7 +59,7 @@ apps/portals/catalog/
 The portal uses **catalog-bff** as the only data source. API and CDN hostnames are **resolved at runtime** from `window.location.hostname` in `application/src/environment.ts`:
 
 - **localhost / 127.0.0.1**: `http://localhost:3000/api`, CDN empty
-- **\*.wapps.com** (e.g. `catalog-csr.development.wapps.com`): `https://catalog.<env>.wapps.com/api`, `https://cdn.<env>.wapps.com` (env taken from hostname)
+- **\*.wapps.ai** (e.g. `catalog-csr.development.wapps.ai`): `https://catalog.<env>.wapps.ai/api`, `https://cdn.<env>.wapps.ai` (env taken from hostname)
 - **appcatalog.pl** or **\*.appcatalog.pl**: `https://catalog.appcatalog.pl/api`, `https://cdn.appcatalog.pl`
 
 ## Development

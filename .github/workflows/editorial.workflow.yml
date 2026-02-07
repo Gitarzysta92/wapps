@@ -108,7 +108,7 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           
           # Set ArgoCD server
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
           # MySQL connection (required via GitHub Environment vars)
           MYSQL_HOST="${{ vars.EDITORIAL_MYSQL_DATABASE_HOST }}"
@@ -276,9 +276,9 @@ jobs:
             echo "✅ Editorial Service deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api"
-            echo "  - Swagger Docs: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/docs"
-            echo "  - Health: https://editorial.${{ needs.build.outputs.environment }}.wapps.com/api/health"
+            echo "  - API: https://editorial.${{ needs.build.outputs.environment }}.wapps.ai/api"
+            echo "  - Swagger Docs: https://editorial.${{ needs.build.outputs.environment }}.wapps.ai/api/docs"
+            echo "  - Health: https://editorial.${{ needs.build.outputs.environment }}.wapps.ai/api/health"
             echo ""
             echo "Next steps:"
             echo "  1. Test API endpoints"

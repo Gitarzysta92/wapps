@@ -108,7 +108,7 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           
           # Set ArgoCD server
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Install ArgoCD CLI
         run: |

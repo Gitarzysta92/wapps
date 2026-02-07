@@ -34,7 +34,7 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     provideIdentityLoginFeature({
       validationMessages: LOGIN_VALIDATION_MESSAGES,
       // AUTH_BFF_URL is built dynamically from ENVIRONMENT_NAME
-      // Empty in local dev (uses mock), set to https://auth.<env>.wapps.com in CI
+      // Empty in local dev (uses mock), set to https://auth.<env>.wapps.ai in CI
       authBffUrl: AUTH_BFF_URL || undefined
     }),
     provideIdentityManagementFeature(),

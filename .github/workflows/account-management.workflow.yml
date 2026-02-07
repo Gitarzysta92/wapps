@@ -102,7 +102,7 @@ jobs:
           ENV="${{ needs.build.outputs.environment }}"
           ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Update Firebase Project ID secret
         run: |

@@ -123,7 +123,7 @@ function parseArgoCdHostFromKustomize(workspaceRoot, envFolder) {
   const text = readIfExists(kustomizePath);
   if (!text) return null;
 
-  // Looks like: value: argocd.development.wapps.com
+  // Looks like: value: argocd.development.wapps.ai
   const m = text.match(/^\s*value:\s*([^\s#]+)\s*$/m);
   if (!m) return null;
 

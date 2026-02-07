@@ -102,7 +102,7 @@ jobs:
 
       - name: Login to ArgoCD
         run: |
-          argocd login argocd.development.wapps.com \
+          argocd login argocd.development.wapps.ai \
             --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
             --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
             --insecure --grpc-web

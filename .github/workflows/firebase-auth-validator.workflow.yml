@@ -103,7 +103,7 @@ jobs:
           echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
           
           # Set ArgoCD server
-          echo "server=argocd.${ENV}.wapps.com" >> $GITHUB_OUTPUT
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
       - name: Update Firebase Project ID secret
         run: |
@@ -212,7 +212,7 @@ jobs:
             echo "  - Validate: http://firebase-auth-validator.default.svc.cluster.local/validate"
             echo "  - Validate Optional: http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
             echo "  - Health: http://firebase-auth-validator.default.svc.cluster.local/health"
-            echo "  - Swagger UI: http://api.firebase-auth-validator.development.wapps.com/api-docs"
+            echo "  - Swagger UI: http://api.firebase-auth-validator.development.wapps.ai/api-docs"
             echo ""
             echo "Next steps:"
             echo "  1. Test with a Firebase token"

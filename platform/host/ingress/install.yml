@@ -91,7 +91,7 @@
   register: node_exporter_service
 
 # Note: ArgoCD ingress is managed by platform/cluster/argocd/ingress.yaml
-# Applied in main.yml to ensure correct hostname (argocd.development.wapps.com)
+# Applied in main.yml to ensure correct hostname (argocd.development.wapps.ai)
 
 - name: Display Ingress Status
   debug:
@@ -103,4 +103,4 @@
       - Metrics: metrics.\{\{ tailscale_domain | default('development-wapps.ts.net') }}
       
       Note: ArgoCD ingress is managed separately via platform/cluster/argocd/ingress.yaml
-      with hostname: argocd.development.wapps.com (applied in main.yml)
+      with hostname: argocd.development.wapps.ai (applied in main.yml)

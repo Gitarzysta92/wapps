@@ -12,13 +12,13 @@ data:
       - hostname: appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         originRequest:
-          httpHostHeader: catalog-csr.development.wapps.com
+          httpHostHeader: catalog-csr.development.wapps.ai
       - hostname: api.appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         originRequest:
-          httpHostHeader: catalog.development.wapps.com
+          httpHostHeader: catalog.development.wapps.ai
       - hostname: cdn.appcatalog.pl
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         originRequest:
-          httpHostHeader: cdn.development.wapps.com
+          httpHostHeader: cdn.development.wapps.ai
       - service: http_status:404

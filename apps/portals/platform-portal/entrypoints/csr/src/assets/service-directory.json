@@ -20,7 +20,7 @@
       "id": "account-management",
       "name": "Account Management",
       "urls": [
-        "https://account-management.development.wapps.com/"
+        "https://account-management.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/account-management-kustomization/ingress-patch.yaml"
@@ -30,7 +30,7 @@
       "id": "aggregator-csr",
       "name": "Aggregator Csr",
       "urls": [
-        "https://aggregator-csr.development.wapps.com/"
+        "https://aggregator-csr.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/aggregator-csr-kustomization/ingress-patch.yaml"
@@ -40,7 +40,7 @@
       "id": "aggregator-demo-csr",
       "name": "Aggregator Demo Csr",
       "urls": [
-        "https://aggregator-demo-csr.development.wapps.com/"
+        "https://aggregator-demo-csr.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/aggregator-demo-csr-kustomization/ingress-patch.yaml"
@@ -50,7 +50,7 @@
       "id": "aggregator-ssg",
       "name": "Aggregator Ssg",
       "urls": [
-        "https://aggregator-ssg.development.wapps.com/"
+        "https://aggregator-ssg.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/aggregator-ssg-kustomization/ingress-patch.yaml"
@@ -60,7 +60,7 @@
       "id": "aggregator-ssr",
       "name": "Aggregator Ssr",
       "urls": [
-        "https://aggregator-ssr.development.wapps.com/"
+        "https://aggregator-ssr.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/aggregator-ssr-kustomization/ingress-patch.yaml"
@@ -70,7 +70,7 @@
       "id": "argocd",
       "name": "Argo CD",
       "urls": [
-        "https://argocd.development.wapps.com/"
+        "https://argocd.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/platform/argocd-kustomization/kustomization.yaml"
@@ -80,8 +80,8 @@
       "id": "catalog-bff",
       "name": "Catalog Bff",
       "urls": [
-        "https://api.development.wapps.com/api",
-        "https://catalog.development.wapps.com/api"
+        "https://api.development.wapps.ai/api",
+        "https://catalog.development.wapps.ai/api"
       ],
       "sources": [
         "environments/dev/apps/catalog-bff-kustomization/ingress-patch.yaml"
@@ -91,7 +91,7 @@
       "id": "catalog-csr",
       "name": "Catalog Csr",
       "urls": [
-        "https://catalog-csr.development.wapps.com/"
+        "https://catalog-csr.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/catalog-csr-kustomization/ingress-patch.yaml"
@@ -101,7 +101,7 @@
       "id": "discussion",
       "name": "Discussion",
       "urls": [
-        "https://discussion.development.wapps.com/"
+        "https://discussion.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/discussion-kustomization/ingress-patch.yaml"
@@ -111,7 +111,7 @@
       "id": "editorial",
       "name": "Editorial",
       "urls": [
-        "https://editorial.development.wapps.com/"
+        "https://editorial.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/editorial-kustomization/ingress-patch.yaml"
@@ -121,7 +121,7 @@
       "id": "firebase-auth-validator",
       "name": "Firebase Auth Validator",
       "urls": [
-        "https://auth.development.wapps.com/"
+        "https://auth.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/firebase-auth-validator-kustomization/ingress-patch.yaml"
@@ -131,7 +131,7 @@
       "id": "platform-portal-csr",
       "name": "Platform Portal Csr",
       "urls": [
-        "https://platform-portal-csr.development.wapps.com/"
+        "https://platform-portal-csr.development.wapps.ai/"
       ],
       "sources": [
         "environments/dev/apps/platform-portal-csr-kustomization/ingress-patch.yaml"

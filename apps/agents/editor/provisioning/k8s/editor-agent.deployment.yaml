@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: editor-agent
     app.kubernetes.io/component: agent
   annotations:
-    platform.wapps.com/manifest: |
+    platform.wapps.ai/manifest: |
       {
         "id": "editor-agent",
         "name": "Editor Agent",
