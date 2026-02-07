@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: platform-portal-csr.development.wapps.com
+  - host: platform-portal-csr.development.wapps.ai
     http:
       paths:
       - path: /
@@ -18,7 +18,7 @@ spec:
             name: platform-portal-csr-service
             port:
               number: 80
-  - host: platform.development.wapps.com
+  - host: platform.development.wapps.ai
     http:
       paths:
       - path: /

@@ -12,10 +12,10 @@ log-queries
 log-dhcp
 log-facility=/var/log/dnsmasq.log
 
-# Only handle {{ target_env }}.wapps.com domain and subdomains
+# Only handle {{ target_env }}.wapps.ai domain and subdomains
 # This will resolve ANY subdomain to the specified IP
-address=/{{ target_env }}.wapps.com/{{ target_ip }}
-address=/*.{{ target_env }}.wapps.com/{{ target_ip }}
+address=/{{ target_env }}.wapps.ai/{{ target_ip }}
+address=/*.{{ target_env }}.wapps.ai/{{ target_ip }}
 
 # Forward other queries to upstream DNS
 no-resolv

@@ -12,7 +12,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: catalog.development.wapps.com
+  - host: catalog.development.wapps.ai
     http:
       paths:
       - path: /api
@@ -22,7 +22,7 @@ spec:
             name: catalog-bff-service
             port:
               number: 80
-  - host: api.development.wapps.com
+  - host: api.development.wapps.ai
     http:
       paths:
       - path: /api

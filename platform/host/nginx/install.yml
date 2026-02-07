@@ -93,7 +93,7 @@
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
       -keyout /etc/ssl/private/nginx-selfsigned.key \
       -out /etc/ssl/certs/nginx-selfsigned.crt \
-      -subj "/C=US/ST=State/L=City/O=Organization/CN={{ target_env }}.wapps.com"
+      -subj "/C=US/ST=State/L=City/O=Organization/CN={{ target_env }}.wapps.ai"
   args:
     creates: /etc/ssl/certs/nginx-selfsigned.crt
 
@@ -119,7 +119,7 @@
 
 - name: Test reverse proxy
   shell: |
-    curl -s -o /dev/null -w "%{http_code}" http://argocd.{{ target_env }}.wapps.com || echo "Failed"
+    curl -s -o /dev/null -w "%{http_code}" http://argocd.{{ target_env }}.wapps.ai || echo "Failed"
   register: nginx_test_result
   changed_when: false
   failed_when: false
@@ -135,10 +135,10 @@
       ✅ Nginx reverse proxy configured successfully!
       
       🌐 Service URLs:
-      - ArgoCD: https://argocd.{{ target_env }}.wapps.com
-      - K3s API: https://k3s-api.{{ target_env }}.wapps.com  
-      - Node Exporter: http://metrics.{{ target_env }}.wapps.com
-      - Cluster Services: https://any-service.{{ target_env }}.wapps.com (via ingress)
+      - ArgoCD: https://argocd.{{ target_env }}.wapps.ai
+      - K3s API: https://k3s-api.{{ target_env }}.wapps.ai  
+      - Node Exporter: http://metrics.{{ target_env }}.wapps.ai
+      - Cluster Services: https://any-service.{{ target_env }}.wapps.ai (via ingress)
       - RabbitMQ AMQP: <host-ip>:5672 (TCP via nginx stream)
       
       🔧 Configuration:

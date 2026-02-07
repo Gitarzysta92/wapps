@@ -3,7 +3,7 @@
  *
  * Catalog uses catalog-bff as the source of data.
  * API and CDN hostnames are resolved at runtime from window.location.hostname:
- * - *.wapps.com     → catalog.<env>.wapps.com, cdn.<env>.wapps.com  (env from host, e.g. catalog-csr.development.wapps.com → development)
+ * - *.wapps.ai      → catalog.<env>.wapps.ai, cdn.<env>.wapps.ai  (env from host, e.g. catalog-csr.development.wapps.ai → development)
  * - *appcatalog.pl  → catalog.appcatalog.pl, cdn.appcatalog.pl
  * - localhost       → http://localhost:3000/api, CDN empty
  */
@@ -15,10 +15,10 @@ export function getCatalogApiBaseUrl(): string {
   if (h === "localhost" || h === "127.0.0.1") {
     return "http://localhost:3000/api";
   }
-  if (h.endsWith(".wapps.com")) {
+  if (h.endsWith(".wapps.ai")) {
     const parts = h.split(".");
     const env = parts.length >= 3 ? parts[parts.length - 3] : "development";
-    return `https://catalog.${env}.wapps.com/api`;
+    return `https://catalog.${env}.wapps.ai/api`;
   }
   if (h === "appcatalog.pl" || h.endsWith(".appcatalog.pl")) {
     return "https://catalog.appcatalog.pl/api";
@@ -33,10 +33,10 @@ export function getCdnBaseUrl(): string {
   if (typeof window === "undefined") return "";
   const h = window.location.hostname;
   if (h === "localhost" || h === "127.0.0.1") return "";
-  if (h.endsWith(".wapps.com")) {
+  if (h.endsWith(".wapps.ai")) {
     const parts = h.split(".");
     const env = parts.length >= 3 ? parts[parts.length - 3] : "development";
-    return `https://cdn.${env}.wapps.com`;
+    return `https://cdn.${env}.wapps.ai`;
   }
   if (h === "appcatalog.pl" || h.endsWith(".appcatalog.pl")) {
     return "https://cdn.appcatalog.pl";

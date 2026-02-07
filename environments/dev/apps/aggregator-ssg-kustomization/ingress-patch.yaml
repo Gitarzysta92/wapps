@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: aggregator-ssg.development.wapps.com
+  - host: aggregator-ssg.development.wapps.ai
     http:
       paths:
       - path: /

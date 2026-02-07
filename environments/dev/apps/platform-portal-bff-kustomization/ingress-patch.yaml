@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: platform.development.wapps.com
+    - host: platform.development.wapps.ai
       http:
         paths:
           - path: /api
@@ -17,7 +17,7 @@ spec:
                 name: platform-portal-bff-service
                 port:
                   number: 80
-    - host: platform-portal-csr.development.wapps.com
+    - host: platform-portal-csr.development.wapps.ai
       http:
         paths:
           - path: /api

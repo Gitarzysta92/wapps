@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: discussion-csr.development.wapps.com
+  - host: discussion-csr.development.wapps.ai
     http:
       paths:
       - path: /
