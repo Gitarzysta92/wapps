@@ -7,6 +7,10 @@ resources:
   - ../../../../apps/services/platform-portal-bff/provisioning/k8s
 
 patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: platform-portal-bff
   - path: ingress-patch.yaml
     target:
       kind: Ingress
