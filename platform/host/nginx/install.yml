@@ -88,14 +88,8 @@
     state: present
   # Note: Stream block must be at top level, before events/http blocks. Requires nginx-full on Debian/Ubuntu.
 
-- name: Generate self-signed SSL certificate
-  shell: |
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-      -keyout /etc/ssl/private/nginx-selfsigned.key \
-      -out /etc/ssl/certs/nginx-selfsigned.crt \
-      -subj "/C=US/ST=State/L=City/O=Organization/CN={{ target_env }}.wapps.com"
-  args:
-    creates: /etc/ssl/certs/nginx-selfsigned.crt
+## Certificate generation is handled by `platform/host/certificates/install.yml`.
+## (LetsEncrypt DNS-01 via acme.sh; self-signed fallback at nginx_ssl_certificate_path/key_path.)
 
 - name: Test nginx configuration
   shell: nginx -t
@@ -145,12 +139,12 @@
       - Environment: {{ target_env }}
       - Nginx Config: /etc/nginx/sites-available/{{ target_env }}-wapps
       - Template: nginx/templates/nginx-site.conf.j2
-      - SSL Certificate: Self-signed (browser warning expected)
+      - SSL Certificate: Provided by ACME (or self-signed fallback)
       - Port: 80 (HTTP) and 443 (HTTPS)
       - Default routing: All unknown subdomains → Kubernetes cluster
       
       📋 Notes:
       - All HTTP traffic redirects to HTTPS
-      - Self-signed SSL certificates are used
+      - TLS certs are managed by `platform/host/certificates/install.yml`
       - Unknown subdomains are routed to the Kubernetes cluster
       - Cluster services are handled by the ingress controller
