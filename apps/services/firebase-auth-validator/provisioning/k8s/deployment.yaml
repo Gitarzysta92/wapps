@@ -37,6 +37,12 @@ spec:
             secretKeyRef:
               name: firebase-config
               key: project-id
+        - name: FIREBASE_WEB_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: firebase-config
+              key: web-api-key
+              optional: true
         - name: INGRESS_AUTH_SECRET
           valueFrom:
             secretKeyRef:
