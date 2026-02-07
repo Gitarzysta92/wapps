@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-portal-bff
+spec:
+  template:
+    spec:
+      containers:
+        - name: platform-portal-bff
+          env:
+            - name: PLATFORM_PUBLIC_URL
+              value: "https://platform.development.wapps.ai"
+            - name: NODE_ENV
+              value: "production"
+            - name: ENVIRONMENT
+              value: "development"

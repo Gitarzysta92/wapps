@@ -59,6 +59,11 @@
 .meta__value {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
+
+  a {
+    color: var(--tui-link);
+    word-break: break-all;
+  }
 }
 
 .services {
@@ -103,6 +108,17 @@
 
 .service__url a {
   word-break: break-word;
+}
+
+.service__url--row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: $space-2;
+
+  .service__deployment-status {
+    white-space: nowrap;
+  }
 }
 
 .sources {

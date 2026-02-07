@@ -1,6 +1,6 @@
 <section class="page">
   <header class="page__header">
-    <h1 class="page__title">Service directory</h1>
+    <h1 class="page__title">Platform portal</h1>
     <p class="page__subtitle">
       All services with their public addresses (discovered from the cluster).
     </p>
@@ -18,6 +18,14 @@
       }
       @case ('loaded') {
         <div class="meta">
+          @if (vm.directory.publicBaseUrl) {
+            <div class="meta__row">
+              <span class="meta__label">Portal (public)</span>
+              <span class="meta__value">
+                <a [href]="vm.directory.publicBaseUrl" target="_blank" rel="noopener noreferrer">{{ vm.directory.publicBaseUrl }}</a>
+              </span>
+            </div>
+          }
           <div class="meta__row">
             <span class="meta__label">Environment</span>
             <span class="meta__value">{{ vm.directory.environment || 'unknown' }}</span>
@@ -49,23 +57,24 @@
                   }
                 </ul>
 
-                @if (svc.internalUrls.length) {
+                @if (svc.deployments.length) {
                   <ul class="service__urls">
-                    @for (u of svc.internalUrls; track u) {
-                      <li class="service__url">
-                        <code>{{ u }}</code>
+                    @for (d of svc.deployments; track d.namespace + '/' + d.name) {
+                      <li class="service__url service__url--row">
+                        <code>k8s://deployment/{{ d.namespace }}/{{ d.name }}</code>
+                        <span class="service__deployment-status">
+                          Deployment {{ d.namespace }}/{{ d.name }} ready {{ d.readyReplicas }}/{{ d.replicas }}
+                        </span>
                       </li>
                     }
                   </ul>
                 }
 
-                @if (svc.deployments.length) {
+                @if (getOtherInternalUrls(svc).length) {
                   <ul class="service__urls">
-                    @for (d of svc.deployments; track d.namespace + '/' + d.name) {
+                    @for (u of getOtherInternalUrls(svc); track u) {
                       <li class="service__url">
-                        <strong>Deployment</strong>
-                        <code>{{ d.namespace }}/{{ d.name }}</code>
-                        <span>ready {{ d.readyReplicas }}/{{ d.replicas }}</span>
+                        <code>{{ u }}</code>
                       </li>
                     }
                   </ul>
@@ -74,18 +83,17 @@
                 @if (svc.cronJobs.length) {
                   <ul class="service__urls">
                     @for (cj of svc.cronJobs; track cj.namespace + '/' + cj.name) {
-                      <li class="service__url">
-                        <strong>CronJob</strong>
-                        <code>{{ cj.namespace }}/{{ cj.name }}</code>
-                        <span>schedule <code>{{ cj.schedule }}</code></span>
-                        @if (cj.lastScheduleTime) {
-                          <span>last {{ cj.lastScheduleTime }}</span>
-                        }
-                        @if (cj.recentRuns.length) {
-                          <span>
+                      <li class="service__url service__url--row">
+                        <code>k8s://cronjob/{{ cj.namespace }}/{{ cj.name }}</code>
+                        <span>
+                          CronJob {{ cj.namespace }}/{{ cj.name }} schedule <code>{{ cj.schedule }}</code>
+                          @if (cj.lastScheduleTime) {
+                            last {{ cj.lastScheduleTime }}
+                          }
+                          @if (cj.recentRuns.length) {
                             latest {{ cj.recentRuns[0].status }} ({{ cj.recentRuns[0].name }})
-                          </span>
-                        }
+                          }
+                        </span>
                       </li>
                     }
                   </ul>

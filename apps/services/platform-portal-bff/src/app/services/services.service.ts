@@ -169,6 +169,19 @@ export class ServicesService {
     };
   }
 
+  private normalizePublicBaseUrl(raw: string | undefined): string | null {
+    if (!raw || typeof raw !== 'string') return null;
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    try {
+      const u = new URL(trimmed);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+      return u.origin + (u.pathname.endsWith('/') ? u.pathname : u.pathname + '/');
+    } catch {
+      return null;
+    }
+  }
+
   async list(opts?: { refresh?: boolean }) {
     const now = Date.now();
     if (!opts?.refresh && this.cache && now - this.cache.at < this.cacheTtlMs) {
@@ -176,6 +189,7 @@ export class ServicesService {
     }
 
     const environment = process.env.ENVIRONMENT || process.env.NODE_ENV || 'unknown';
+    const publicBaseUrl = this.normalizePublicBaseUrl(process.env.PLATFORM_PUBLIC_URL);
     const discovered = await this.discovery.discover();
 
     const services = await Promise.all(
@@ -188,10 +202,17 @@ export class ServicesService {
           normalized.extras?.length ? normalized.extras : inferredFromManifest.length ? inferredFromManifest : inferredExtras
         ).slice(0, 25);
 
+        let publicUrls = [...svc.publicUrls];
+        if (publicBaseUrl && (svc.id === 'platform-portal-csr' || svc.id === 'platform-portal-bff')) {
+          if (!publicUrls.includes(publicBaseUrl)) {
+            publicUrls = [publicBaseUrl, ...publicUrls];
+          }
+        }
+
         return {
           id: svc.id,
           name,
-          publicUrls: svc.publicUrls,
+          publicUrls,
           internalUrls: svc.internalUrls,
           extras,
           manifest: normalized,
@@ -205,6 +226,7 @@ export class ServicesService {
     const payload = {
       generatedAt: new Date().toISOString(),
       environment,
+      ...(publicBaseUrl && { publicBaseUrl }),
       services,
     };
 

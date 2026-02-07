@@ -6,11 +6,14 @@ import { catchError, map, of, shareReplay, startWith } from 'rxjs';
 type ServiceDirectory = {
   generatedAt: string;
   environment: string;
+  /** When set (e.g. PLATFORM_PUBLIC_URL), the portal’s public wapps.ai base URL. */
+  publicBaseUrl?: string;
   services: Array<{
     id: string;
     name: string;
     publicUrls: string[];
     internalUrls: string[];
+    sources?: Array<{ kind: 'Ingress' | 'Service'; namespace?: string; name?: string }>;
     extras?: Array<{ label: string; url: string }>;
     deployments: Array<{
       kind: 'Deployment';
@@ -55,6 +58,19 @@ type Vm =
 })
 export class ServicesDirectoryPageComponent {
   private readonly http = inject(HttpClient);
+
+  /** Internal URLs that are not k8s deployment refs already shown with deployments. */
+  getOtherInternalUrls(svc: ServiceDirectory['services'][0]): string[] {
+    const deploymentRefs = new Set(
+      svc.deployments.map((d) => `k8s://deployment/${d.namespace}/${d.name}`)
+    );
+    const cronRefs = new Set(
+      svc.cronJobs.map((cj) => `k8s://cronjob/${cj.namespace}/${cj.name}`)
+    );
+    return svc.internalUrls.filter(
+      (u) => !deploymentRefs.has(u) && !cronRefs.has(u)
+    );
+  }
 
   readonly vm$ = this.http.get<ServiceDirectory>('/api/services').pipe(
     map((directory) => ({ state: 'loaded' as const, directory })),
