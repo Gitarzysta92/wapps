@@ -14,21 +14,12 @@
 # - {{ nginx_ssl_certificate_key_path }}
 #
 # Notes:
-# - If `acme_dns_provider` is not set, this role will NOT attempt ACME issuance.
-#   By default, we FAIL FAST (no self-signed fallback) to avoid silently provisioning insecure TLS.
-#   If you really want a self-signed fallback, set `allow_selfsigned_fallback=true`.
+# - ACME is optional. If ACME is not configured (or issuance fails), this role will generate
+#   a self-signed certificate as a fallback so nginx can still start.
 
-- name: Fail fast when ACME is not configured
-  fail:
-    msg: >-
-      ACME is not configured. Provide either:
-      - Cloudflare secrets via workflow (cloudflare_api_token), OR
-      - acme_dns_provider + acme_dns_env (for another DNS provider).
-      To allow insecure fallback self-signed certs, set allow_selfsigned_fallback=true.
-  when:
-    - (cloudflare_api_token | default('') | length == 0)
-    - (acme_dns_provider is not defined) or (acme_dns_provider | length == 0)
-    - (allow_selfsigned_fallback | default(false)) == false
+- name: Set base domain default
+  set_fact:
+    wapps_base_domain: "{{ wapps_base_domain | default('wapps.ai') }}"
 
 - name: Configure Cloudflare DNS provider when credentials are provided (from workflow extra-vars)
   set_fact:
@@ -50,7 +41,7 @@
   when:
     - (acme_dns_provider | default('')) == 'dns_cf'
     - (cloudflare_api_token | default('')) | length == 0
-    - acme_dns_env is not defined
+    - (acme_dns_env_normalized is not defined) or (acme_dns_env_normalized | length == 0)
 
 - name: Ensure wapps system config directory exists
   file:
@@ -99,28 +90,39 @@
     dest: /etc/wapps/acme.env
     mode: "0600"
   no_log: true
-  when: acme_dns_env_normalized is defined
+  when: acme_dns_env_normalized is defined and (acme_dns_env_normalized | length) > 0
+
+- name: Determine whether ACME is configured
+  set_fact:
+    acme_enabled: >-
+      {{
+        (acme_dns_provider is defined)
+        and (acme_dns_provider | length > 0)
+        and (acme_dns_env_normalized is defined)
+        and (acme_dns_env_normalized | length > 0)
+      }}
 
 - name: Build certificate SAN list for this environment
   set_fact:
     wapps_acme_domains: >-
       {{
         [
-          '*.' ~ (target_env | default('development')) ~ '.wapps.com',
-          (target_env | default('development')) ~ '.wapps.com'
+          '*.' ~ (target_env | default('development')) ~ '.' ~ wapps_base_domain,
+          (target_env | default('development')) ~ '.' ~ wapps_base_domain
         ]
         + (
           wapps_enable_api_gateway_domain | default(true)
           | ternary(
               [
-                '*.api.' ~ (target_env | default('development')) ~ '.wapps.com',
-                'api.' ~ (target_env | default('development')) ~ '.wapps.com'
+                # NOTE: Do NOT include both '*.api.<env>.<domain>' and 'api.<env>.<domain>' in one request.
+                # LetsEncrypt rejects exact hostnames that are already covered by a wildcard in the same order.
+                '*.api.' ~ (target_env | default('development')) ~ '.' ~ wapps_base_domain
               ],
               []
             )
         )
       }}
-    wapps_acme_main_domain: "{{ '*.' ~ (target_env | default('development')) ~ '.wapps.com' }}"
+    wapps_acme_main_domain: "{{ '*.' ~ (target_env | default('development')) ~ '.' ~ wapps_base_domain }}"
 
 - name: Issue/renew LetsEncrypt certificate via DNS-01 (acme.sh)
   shell: |
@@ -130,7 +132,7 @@
   args:
     executable: /bin/bash
   environment: "{{ acme_dns_env_normalized | default({}) }}"
-  when: acme_dns_provider is defined and (acme_dns_provider | length) > 0
+  when: acme_enabled == true
 
 - name: Install certificate to nginx paths (fullchain + key)
   shell: |
@@ -142,7 +144,7 @@
   args:
     executable: /bin/bash
   environment: "{{ acme_dns_env_normalized | default({}) }}"
-  when: acme_dns_provider is defined and (acme_dns_provider | length) > 0
+  when: acme_enabled == true
 
 - name: Check if nginx cert files exist (fallback guard)
   stat:
@@ -152,20 +154,20 @@
     - "{{ nginx_ssl_certificate_path }}"
     - "{{ nginx_ssl_certificate_key_path }}"
 
-- name: Generate self-signed fallback cert (explicit opt-in)
+- name: Generate self-signed fallback cert (default)
   shell: |
     set -euo pipefail
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
       -keyout "{{ nginx_ssl_certificate_key_path }}" \
       -out "{{ nginx_ssl_certificate_path }}" \
-      -subj "/C=US/ST=State/L=City/O=Wapps Homelab/CN={{ target_env | default('development') }}.wapps.com"
+      -subj "/C=US/ST=State/L=City/O=Wapps Homelab/CN={{ target_env | default('development') }}.{{ wapps_base_domain }}"
     chmod 0600 "{{ nginx_ssl_certificate_key_path }}"
     chmod 0644 "{{ nginx_ssl_certificate_path }}"
   args:
     executable: /bin/bash
     creates: "{{ nginx_ssl_certificate_path }}"
   when:
-    - (allow_selfsigned_fallback | default(false)) == true
+    - (allow_selfsigned_fallback | default(true)) == true
     - _wapps_cert_stats.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
 
 - name: Install systemd unit for ACME renewals
@@ -173,12 +175,14 @@
     src: certificates/templates/wapps-acme-renew.service.j2
     dest: /etc/systemd/system/wapps-acme-renew.service
     mode: "0644"
+  when: acme_enabled == true
 
 - name: Install systemd timer for ACME renewals
   template:
     src: certificates/templates/wapps-acme-renew.timer.j2
     dest: /etc/systemd/system/wapps-acme-renew.timer
     mode: "0644"
+  when: acme_enabled == true
 
 - name: Enable and start ACME renew timer
   systemd:
@@ -186,4 +190,5 @@
     state: started
     enabled: yes
     daemon_reload: yes
+  when: acme_enabled == true
 

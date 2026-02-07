@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: discussion.development.wapps.com
+    - host: discussion.development.wapps.ai
       http:
         paths:
           - path: /

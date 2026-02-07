@@ -4,7 +4,7 @@
 # K3s API - Kubernetes API Server
 server {
     listen 80;
-    server_name k3s-api.{{ target_env }}.wapps.com;
+    server_name k3s-api.{{ target_env }}.wapps.ai;
     
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
@@ -12,7 +12,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name k3s-api.{{ target_env }}.wapps.com;
+    server_name k3s-api.{{ target_env }}.wapps.ai;
     
     # SSL configuration
     ssl_certificate {{ nginx_ssl_certificate_path }};
@@ -42,7 +42,7 @@ server {
 # Node Exporter - Metrics
 server {
     listen 80;
-    server_name metrics.{{ target_env }}.wapps.com;
+    server_name metrics.{{ target_env }}.wapps.ai;
     
     # Proxy to Node Exporter
     location / {
@@ -64,7 +64,7 @@ server {
 # API Gateway - All API traffic goes through ingress-nginx
 server {
     listen 80;
-    server_name *.api.{{ target_env }}.wapps.com;
+    server_name *.api.{{ target_env }}.wapps.ai;
     
     # Route HTTP API traffic through ingress-nginx
     # This enables firebase-auth-validator integration via ingress annotations
@@ -103,7 +103,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name *.api.{{ target_env }}.wapps.com;
+    server_name *.api.{{ target_env }}.wapps.ai;
     
     # SSL configuration
     ssl_certificate {{ nginx_ssl_certificate_path }};
@@ -150,7 +150,7 @@ server {
 # ArgoCD - Requires SSL passthrough for ingress-nginx
 server {
     listen 80;
-    server_name argocd.{{ target_env }}.wapps.com;
+    server_name argocd.{{ target_env }}.wapps.ai;
     
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
@@ -158,7 +158,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name argocd.{{ target_env }}.wapps.com;
+    server_name argocd.{{ target_env }}.wapps.ai;
     
     # SSL configuration
     ssl_certificate {{ nginx_ssl_certificate_path }};
@@ -226,7 +226,7 @@ server {
     
     # Error page for services not found in cluster
     location @cluster_error {
-        return 200 '<!DOCTYPE html><html><head><title>Service Not Found - {{ target_env | title }} Environment</title><style>body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}.container{max-width:800px;margin:0 auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}h1{color:#333;border-bottom:2px solid #dc3545;padding-bottom:10px}.service{margin:20px 0;padding:15px;background:#f8f9fa;border-left:4px solid #007acc;border-radius:4px}.service h3{margin:0 0 10px 0;color:#007acc}.service p{margin:5px 0;color:#666}.url{font-family:monospace;background:#e9ecef;padding:2px 6px;border-radius:3px}.status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:bold}.status.available{background:#d4edda;color:#155724}.status.not-found{background:#f8d7da;color:#721c24}</style></head><body><div class="container"><h1>Service Not Found - {{ target_env | title }} Environment</h1><p>The service <strong><span class="url">$host</span></strong> was not found in the Kubernetes cluster.</p><div class="service"><h3>🔍 Available Host-Level Services</h3><p><strong>ArgoCD:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p><p><strong>K3s API:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p><p><strong>Node Exporter:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p></div><div class="service"><h3>☸️ Cluster Services</h3><p>Other services should be deployed to the Kubernetes cluster and will be handled by the ingress controller.</p><p><strong>Status:</strong> <span class="status not-found">Service not found in cluster</span></p></div><div style="margin-top:30px;padding:15px;background:#fff3cd;border-radius:4px;border-left:4px solid #ffc107"><p><strong>💡 Tip:</strong> Deploy your service to the Kubernetes cluster with an ingress resource to make it accessible.</p><p><strong>🔧 Check:</strong> Verify the service is running with <code>kubectl get services</code> and has an ingress configured.</p></div></div></body></html>';
+        return 200 '<!DOCTYPE html><html><head><title>Service Not Found - {{ target_env | title }} Environment</title><style>body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}.container{max-width:800px;margin:0 auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}h1{color:#333;border-bottom:2px solid #dc3545;padding-bottom:10px}.service{margin:20px 0;padding:15px;background:#f8f9fa;border-left:4px solid #007acc;border-radius:4px}.service h3{margin:0 0 10px 0;color:#007acc}.service p{margin:5px 0;color:#666}.url{font-family:monospace;background:#e9ecef;padding:2px 6px;border-radius:3px}.status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:bold}.status.available{background:#d4edda;color:#155724}.status.not-found{background:#f8d7da;color:#721c24}</style></head><body><div class="container"><h1>Service Not Found - {{ target_env | title }} Environment</h1><p>The service <strong><span class="url">$host</span></strong> was not found in the Kubernetes cluster.</p><div class="service"><h3>🔍 Available Host-Level Services</h3><p><strong>ArgoCD:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p><p><strong>K3s API:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p><p><strong>Node Exporter:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p></div><div class="service"><h3>☸️ Cluster Services</h3><p>Other services should be deployed to the Kubernetes cluster and will be handled by the ingress controller.</p><p><strong>Status:</strong> <span class="status not-found">Service not found in cluster</span></p></div><div style="margin-top:30px;padding:15px;background:#fff3cd;border-radius:4px;border-left:4px solid #ffc107"><p><strong>💡 Tip:</strong> Deploy your service to the Kubernetes cluster with an ingress resource to make it accessible.</p><p><strong>🔧 Check:</strong> Verify the service is running with <code>kubectl get services</code> and has an ingress configured.</p></div></div></body></html>';
         add_header Content-Type text/html;
     }
 }
@@ -274,7 +274,7 @@ server {
     
     # Error page for services not found in cluster
     location @cluster_error {
-        return 200 '<!DOCTYPE html><html><head><title>Service Not Found - {{ target_env | title }} Environment</title><style>body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}.container{max-width:800px;margin:0 auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}h1{color:#333;border-bottom:2px solid #dc3545;padding-bottom:10px}.service{margin:20px 0;padding:15px;background:#f8f9fa;border-left:4px solid #007acc;border-radius:4px}.service h3{margin:0 0 10px 0;color:#007acc}.service p{margin:5px 0;color:#666}.url{font-family:monospace;background:#e9ecef;padding:2px 6px;border-radius:3px}.status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:bold}.status.available{background:#d4edda;color:#155724}.status.not-found{background:#f8d7da;color:#721c24}</style></head><body><div class="container"><h1>Service Not Found - {{ target_env | title }} Environment</h1><p>The service <strong><span class="url">$host</span></strong> was not found in the Kubernetes cluster.</p><div class="service"><h3>🔍 Available Host-Level Services</h3><p><strong>ArgoCD:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p><p><strong>K3s API:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p><p><strong>Node Exporter:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.com</span> <span class="status available">Available</span></p></div><div class="service"><h3>☸️ Cluster Services</h3><p>Other services should be deployed to the Kubernetes cluster and will be handled by the ingress controller.</p><p><strong>Status:</strong> <span class="status not-found">Service not found in cluster</span></p></div><div style="margin-top:30px;padding:15px;background:#fff3cd;border-radius:4px;border-left:4px solid #ffc107"><p><strong>💡 Tip:</strong> Deploy your service to the Kubernetes cluster with an ingress resource to make it accessible.</p><p><strong>🔧 Check:</strong> Verify the service is running with <code>kubectl get services</code> and has an ingress configured.</p></div></div></body></html>';
+        return 200 '<!DOCTYPE html><html><head><title>Service Not Found - {{ target_env | title }} Environment</title><style>body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}.container{max-width:800px;margin:0 auto;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}h1{color:#333;border-bottom:2px solid #dc3545;padding-bottom:10px}.service{margin:20px 0;padding:15px;background:#f8f9fa;border-left:4px solid #007acc;border-radius:4px}.service h3{margin:0 0 10px 0;color:#007acc}.service p{margin:5px 0;color:#666}.url{font-family:monospace;background:#e9ecef;padding:2px 6px;border-radius:3px}.status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:bold}.status.available{background:#d4edda;color:#155724}.status.not-found{background:#f8d7da;color:#721c24}</style></head><body><div class="container"><h1>Service Not Found - {{ target_env | title }} Environment</h1><p>The service <strong><span class="url">$host</span></strong> was not found in the Kubernetes cluster.</p><div class="service"><h3>🔍 Available Host-Level Services</h3><p><strong>ArgoCD:</strong> <span class="url">https://argocd.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p><p><strong>K3s API:</strong> <span class="url">https://k3s-api.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p><p><strong>Node Exporter:</strong> <span class="url">http://metrics.{{ target_env }}.wapps.ai</span> <span class="status available">Available</span></p></div><div class="service"><h3>☸️ Cluster Services</h3><p>Other services should be deployed to the Kubernetes cluster and will be handled by the ingress controller.</p><p><strong>Status:</strong> <span class="status not-found">Service not found in cluster</span></p></div><div style="margin-top:30px;padding:15px;background:#fff3cd;border-radius:4px;border-left:4px solid #ffc107"><p><strong>💡 Tip:</strong> Deploy your service to the Kubernetes cluster with an ingress resource to make it accessible.</p><p><strong>🔧 Check:</strong> Verify the service is running with <code>kubectl get services</code> and has an ingress configured.</p></div></div></body></html>';
         add_header Content-Type text/html;
     }
 }

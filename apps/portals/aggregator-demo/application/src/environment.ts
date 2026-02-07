@@ -1,7 +1,7 @@
 /**
  * Environment configuration
  * 
- * URL pattern: <resource>.<environment>.wapps.com
+ * URL pattern: <resource>.<environment>.wapps.ai
  * 
  * ENVIRONMENT_NAME values:
  * - "" (empty): Local development, uses mock services
@@ -14,7 +14,7 @@ export const ENVIRONMENT_NAME = "";
 /**
  * Base domain for all services
  */
-export const BASE_DOMAIN = "wapps.com";
+export const BASE_DOMAIN = "wapps.ai";
 
 /**
  * Build a service URL based on environment

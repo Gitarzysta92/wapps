@@ -36,7 +36,7 @@
 
 - name: Test DNS resolution through systemd-resolved
   shell: |
-    nslookup argocd.{{ target_env }}.wapps.com 127.0.0.53
+    nslookup argocd.{{ target_env }}.wapps.ai 127.0.0.53
   register: dns_test_result
   changed_when: false
   failed_when: false
@@ -45,7 +45,7 @@
 - name: Debug DNS test result
   debug:
     msg: |
-      DNS Test Result for {{ target_env }}.wapps.com:
+      DNS Test Result for {{ target_env }}.wapps.ai:
       {{ dns_test_result.stdout | default('DNS test not run') }}
   when: dns_test_result is defined
 
@@ -55,15 +55,15 @@
       {% if target_ip is defined and target_ip != "" %}
       ✅ DNS configuration completed successfully!
       
-      🌐 Wildcard DNS: *.{{ target_env }}.wapps.com → {{ target_ip }}
+      🌐 Wildcard DNS: *.{{ target_env }}.wapps.ai → {{ target_ip }}
       
       📍 Service URLs (all resolve to the same IP):
-      - ArgoCD: https://argocd.{{ target_env }}.wapps.com
-      - K3s API: https://k3s-api.{{ target_env }}.wapps.com
-      - Node Exporter: http://metrics.{{ target_env }}.wapps.com
-      - Grafana: https://grafana.{{ target_env }}.wapps.com
-      - Prometheus: https://prometheus.{{ target_env }}.wapps.com
-      - ANY service: https://anything.{{ target_env }}.wapps.com
+      - ArgoCD: https://argocd.{{ target_env }}.wapps.ai
+      - K3s API: https://k3s-api.{{ target_env }}.wapps.ai
+      - Node Exporter: http://metrics.{{ target_env }}.wapps.ai
+      - Grafana: https://grafana.{{ target_env }}.wapps.ai
+      - Prometheus: https://prometheus.{{ target_env }}.wapps.ai
+      - ANY service: https://anything.{{ target_env }}.wapps.ai
       
       🔧 DNS Server info:
       - systemd-resolved: 127.0.0.53:53 (stub listener)
@@ -74,7 +74,7 @@
       📋 How it works:
       1. Apps query 127.0.0.53:53 (systemd-resolved)
       2. systemd-resolved forwards to 127.0.0.1:5353 (dnsmasq)
-      3. dnsmasq resolves {{ target_env }}.wapps.com domains to {{ target_ip }}
+      3. dnsmasq resolves {{ target_env }}.wapps.ai domains to {{ target_ip }}
       4. Other domains are forwarded to 1.1.1.1 and 9.9.9.9
       {% else %}
       ❌ DNS configuration failed - missing target_ip variable

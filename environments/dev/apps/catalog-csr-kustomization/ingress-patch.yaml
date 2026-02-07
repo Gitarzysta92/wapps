@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: catalog-csr.development.wapps.com
+  - host: catalog-csr.development.wapps.ai
     http:
       paths:
       - path: /

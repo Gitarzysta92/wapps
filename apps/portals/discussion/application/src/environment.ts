@@ -3,7 +3,7 @@
  *
  * We primarily need AUTH BFF URL for login feature.
  * - localhost → http://localhost:8080 (firebase-auth-validator running locally)
- * - *.wapps.com → https://auth.<env>.wapps.com (env derived from host)
+ * - *.wapps.ai → https://auth.<env>.wapps.ai (env derived from host)
  */
 export function getAuthBffUrl(): string {
   if (typeof window === 'undefined') {
@@ -15,10 +15,10 @@ export function getAuthBffUrl(): string {
     return 'http://localhost:8080';
   }
 
-  if (h.endsWith('.wapps.com')) {
+  if (h.endsWith('.wapps.ai')) {
     const parts = h.split('.');
     const env = parts.length >= 3 ? parts[parts.length - 3] : 'development';
-    return `https://auth.${env}.wapps.com`;
+    return `https://auth.${env}.wapps.ai`;
   }
 
   return 'http://localhost:8080';
