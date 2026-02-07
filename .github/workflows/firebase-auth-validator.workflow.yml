@@ -105,7 +105,7 @@ jobs:
           # Set ArgoCD server
           echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
 
-      - name: Update Firebase Project ID secret
+      - name: Update Firebase config secret
         run: |
           ENV="${{ needs.build.outputs.environment }}"
           
@@ -115,15 +115,22 @@ jobs:
           else
             FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
           fi
+          FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}"
           
           if [ -z "$FIREBASE_ID" ]; then
             echo "::error::Firebase Project ID not configured for ${ENV} environment"
             exit 1
           fi
           
+          if [ -z "$FIREBASE_WEB_API_KEY" ]; then
+            echo "::error::FIREBASE_WEB_API_KEY not configured (set FIREBASE_WEB_API_KEY secret)"
+            exit 1
+          fi
+          
           # Create or update secret
           kubectl create secret generic firebase-config \
             --from-literal=project-id="${FIREBASE_ID}" \
+            --from-literal=web-api-key="${FIREBASE_WEB_API_KEY}" \
             --namespace=default \
             --dry-run=client -o yaml | kubectl apply -f -
           

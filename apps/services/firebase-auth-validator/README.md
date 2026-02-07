@@ -102,6 +102,8 @@ This service provides two main functions:
 
 \* Required if the corresponding feature is enabled.
 
+**Note:** The bundled Kubernetes deployment (`provisioning/k8s/deployment.yaml`) reads from the `firebase-config` secret. For email/password sign-in to work, ensure that secret contains the key `web-api-key` (Firebase Web API Key). Without it, `POST /auth/signin` returns 500 with "Email/password authentication not configured".
+
 ### Kubernetes ConfigMap & Secret
 
 ```yaml
