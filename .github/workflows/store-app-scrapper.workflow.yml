@@ -91,7 +91,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: dist/apps/scrappers/store-app
           file: apps/scrappers/store-app/Dockerfile
           push: true
           # TODO: Use here externally computed tag, with sha and branch name

@@ -2,7 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY dist/apps/agents/discord-notifier ./
+# Build context should be the prebuilt dist output directory:
+# dist/apps/agents/discord-notifier
+COPY . ./
 
 # Install production dependencies
 RUN npm install

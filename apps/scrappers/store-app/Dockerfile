@@ -24,7 +24,9 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy pre-built output from the Nx build (includes generated package.json)
-COPY dist/apps/scrappers/store-app ./
+# Build context should be the prebuilt dist output directory:
+# dist/apps/scrappers/store-app
+COPY . ./
 
 # Install production dependencies (generated package.json contains only what's needed)
 RUN npm install --production

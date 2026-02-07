@@ -77,6 +77,10 @@ jobs:
       - name: Build application
         run: npx nx build aggregator-demo-csr --configuration=production --excludeTaskDependencies
 
+      - name: Stage nginx.conf into dist output
+        run: |
+          cp apps/portals/aggregator-demo/entrypoints/csr/nginx.conf dist/apps/portals/aggregator-demo/entrypoints/csr/nginx.conf
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -90,7 +94,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: dist/apps/portals/aggregator-demo/entrypoints/csr
           file: apps/portals/aggregator-demo/entrypoints/csr/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

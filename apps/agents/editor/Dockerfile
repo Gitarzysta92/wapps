@@ -2,7 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY dist/apps/agents/editor ./
+# Build context should be the prebuilt dist output directory:
+# dist/apps/agents/editor
+COPY . ./
 
 # Install production dependencies
 RUN npm install
