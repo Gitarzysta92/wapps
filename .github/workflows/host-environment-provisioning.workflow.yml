@@ -38,6 +38,8 @@ jobs:
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
           ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          # Cloudflare DNS-01 (optional). If provided, host provisioning will request/renew TLS certs via acme.sh.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
           TAILSCALE_API_TOKEN: ${{ secrets.TAILSCALE_API_TOKEN }}
           TAILSCALE_DOMAIN: ${{ secrets.TAILSCALE_DOMAIN }}
@@ -59,7 +61,7 @@ jobs:
             fi
           done
 
-          EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }} argocd_admin_password=$ARGOCD_ADMIN_PASSWORD git_token=$GIT_TOKEN tailscale_auth_key=$TAILSCALE_AUTH_KEY tailscale_api_token=$TAILSCALE_API_TOKEN tailscale_domain=$TAILSCALE_DOMAIN initial_username=$ARGO_INITIAL_USERNAME initial_password=$ARGO_INITIAL_PASSWORD mysql_root_password=$MYSQL_ROOT_PASSWORD mysql_wapps_password=$MYSQL_WAPPS_PASSWORD mysql_admin_username=$MYSQL_DATABASE_USERNAME mysql_admin_password=$MYSQL_DATABASE_PASSWORD mongodb_root_password=$MONGODB_ROOT_PASSWORD mongodb_wapps_username=$MONGODB_WAPPS_USERNAME mongodb_wapps_password=$MONGODB_WAPPS_PASSWORD"
+          EXTRA_VARS="target_env=${{ github.event.inputs.env }} git_sha=${{ github.sha }} argocd_admin_password=$ARGOCD_ADMIN_PASSWORD git_token=$GIT_TOKEN tailscale_auth_key=$TAILSCALE_AUTH_KEY tailscale_api_token=$TAILSCALE_API_TOKEN tailscale_domain=$TAILSCALE_DOMAIN initial_username=$ARGO_INITIAL_USERNAME initial_password=$ARGO_INITIAL_PASSWORD mysql_root_password=$MYSQL_ROOT_PASSWORD mysql_wapps_password=$MYSQL_WAPPS_PASSWORD mysql_admin_username=$MYSQL_DATABASE_USERNAME mysql_admin_password=$MYSQL_DATABASE_PASSWORD mongodb_root_password=$MONGODB_ROOT_PASSWORD mongodb_wapps_username=$MONGODB_WAPPS_USERNAME mongodb_wapps_password=$MONGODB_WAPPS_PASSWORD cloudflare_api_token=$CLOUDFLARE_API_TOKEN"
 
           echo "$SUDO_PASS" | ansible-playbook -i platform/host/inventory.ini platform/host/main.yml \
             --extra-vars "$EXTRA_VARS" \

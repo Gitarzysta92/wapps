@@ -5,6 +5,11 @@
   vars:
     apps_dir: "/opt/wapps"
     ansible_user: "{{ ansible_env.USER | default('root') }}"
+    # Default TLS certificate paths used by host nginx vhosts (override if needed)
+    nginx_ssl_certificate_path: "/etc/ssl/wapps/fullchain.pem"
+    nginx_ssl_certificate_key_path: "/etc/ssl/wapps/private/privkey.pem"
+    # When true, we will include *.api.<env>.<domain> in certificate SANs
+    wapps_enable_api_gateway_domain: true
 
   tasks:
     - name: Display provisioning start
@@ -420,6 +425,10 @@
 
     - name: Include Ingress installation
       include_tasks: ingress/install.yml
+      when: target_env | default('staging') in ['development', 'staging', 'production']
+
+    - name: Include TLS certificate provisioning (Let's Encrypt / DNS-01)
+      include_tasks: certificates/install.yml
       when: target_env | default('staging') in ['development', 'staging', 'production']
 
     - name: Include Nginx reverse proxy installation

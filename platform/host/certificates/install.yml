@@ -1,0 +1,189 @@
+---
+# TLS certificate provisioning for host nginx (LetsEncrypt via DNS-01 using acme.sh).
+#
+# Usage:
+# - Set `acme_dns_provider` to the acme.sh DNS plugin name (e.g. dns_cf, dns_route53, dns_gd, ...).
+# - Provide provider secrets via `acme_dns_env` (dict) so acme.sh can create TXT records.
+#
+# Example (Cloudflare):
+#   -e acme_dns_provider=dns_cf
+#   -e 'acme_dns_env={"CF_Token":"..."}'
+#
+# Outputs (defaults can be overridden in main.yml / extra-vars):
+# - {{ nginx_ssl_certificate_path }}
+# - {{ nginx_ssl_certificate_key_path }}
+#
+# Notes:
+# - If `acme_dns_provider` is not set, this role will NOT attempt ACME issuance.
+#   By default, we FAIL FAST (no self-signed fallback) to avoid silently provisioning insecure TLS.
+#   If you really want a self-signed fallback, set `allow_selfsigned_fallback=true`.
+
+- name: Fail fast when ACME is not configured
+  fail:
+    msg: >-
+      ACME is not configured. Provide either:
+      - Cloudflare secrets via workflow (cloudflare_api_token), OR
+      - acme_dns_provider + acme_dns_env (for another DNS provider).
+      To allow insecure fallback self-signed certs, set allow_selfsigned_fallback=true.
+  when:
+    - (cloudflare_api_token | default('') | length == 0)
+    - (acme_dns_provider is not defined) or (acme_dns_provider | length == 0)
+    - (allow_selfsigned_fallback | default(false)) == false
+
+- name: Configure Cloudflare DNS provider when credentials are provided (from workflow extra-vars)
+  set_fact:
+    acme_dns_provider: "{{ acme_dns_provider | default('dns_cf') }}"
+    acme_dns_env_normalized: >-
+      {{
+        {
+          'CF_Token': (cloudflare_api_token | default(''))
+        }
+      }}
+  when:
+    - (cloudflare_api_token | default('')) | length > 0
+
+- name: Validate Cloudflare ACME configuration
+  fail:
+    msg: >-
+      Cloudflare ACME is enabled (acme_dns_provider=dns_cf) but cloudflare_api_token is missing.
+      Provide GitHub Environment secret CLOUDFLARE_API_TOKEN (workflow passes it as cloudflare_api_token).
+  when:
+    - (acme_dns_provider | default('')) == 'dns_cf'
+    - (cloudflare_api_token | default('')) | length == 0
+    - acme_dns_env is not defined
+
+- name: Ensure wapps system config directory exists
+  file:
+    path: /etc/wapps
+    state: directory
+    mode: "0755"
+
+- name: Ensure certificate directories exist
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "/etc/ssl/wapps", mode: "0755" }
+    - { path: "/etc/ssl/wapps/private", mode: "0700" }
+
+- name: Install packages required for ACME client
+  package:
+    name:
+      - curl
+      - openssl
+      - socat
+      - ca-certificates
+    state: present
+
+- name: Install acme.sh if missing
+  shell: |
+    set -euo pipefail
+    curl -fsSL https://get.acme.sh | sh
+  args:
+    executable: /bin/bash
+    creates: /root/.acme.sh/acme.sh
+
+- name: Normalize ACME DNS env (dict or JSON string)
+  set_fact:
+    acme_dns_env_normalized: >-
+      {{
+        (acme_dns_env is string)
+        | ternary(acme_dns_env | from_json, acme_dns_env)
+      }}
+  when: acme_dns_env is defined
+
+- name: Write ACME DNS provider environment file (for renewals)
+  template:
+    src: certificates/templates/acme.env.j2
+    dest: /etc/wapps/acme.env
+    mode: "0600"
+  no_log: true
+  when: acme_dns_env_normalized is defined
+
+- name: Build certificate SAN list for this environment
+  set_fact:
+    wapps_acme_domains: >-
+      {{
+        [
+          '*.' ~ (target_env | default('development')) ~ '.wapps.com',
+          (target_env | default('development')) ~ '.wapps.com'
+        ]
+        + (
+          wapps_enable_api_gateway_domain | default(true)
+          | ternary(
+              [
+                '*.api.' ~ (target_env | default('development')) ~ '.wapps.com',
+                'api.' ~ (target_env | default('development')) ~ '.wapps.com'
+              ],
+              []
+            )
+        )
+      }}
+    wapps_acme_main_domain: "{{ '*.' ~ (target_env | default('development')) ~ '.wapps.com' }}"
+
+- name: Issue/renew LetsEncrypt certificate via DNS-01 (acme.sh)
+  shell: |
+    set -euo pipefail
+    /root/.acme.sh/acme.sh --issue --server letsencrypt --dns "{{ acme_dns_provider }}" \
+      {% for d in wapps_acme_domains %}-d "{{ d }}" {% endfor %}
+  args:
+    executable: /bin/bash
+  environment: "{{ acme_dns_env_normalized | default({}) }}"
+  when: acme_dns_provider is defined and (acme_dns_provider | length) > 0
+
+- name: Install certificate to nginx paths (fullchain + key)
+  shell: |
+    set -euo pipefail
+    /root/.acme.sh/acme.sh --install-cert -d "{{ wapps_acme_main_domain }}" \
+      --fullchain-file "{{ nginx_ssl_certificate_path }}" \
+      --key-file "{{ nginx_ssl_certificate_key_path }}" \
+      --reloadcmd "systemctl reload nginx || true"
+  args:
+    executable: /bin/bash
+  environment: "{{ acme_dns_env_normalized | default({}) }}"
+  when: acme_dns_provider is defined and (acme_dns_provider | length) > 0
+
+- name: Check if nginx cert files exist (fallback guard)
+  stat:
+    path: "{{ item }}"
+  register: _wapps_cert_stats
+  loop:
+    - "{{ nginx_ssl_certificate_path }}"
+    - "{{ nginx_ssl_certificate_key_path }}"
+
+- name: Generate self-signed fallback cert (explicit opt-in)
+  shell: |
+    set -euo pipefail
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout "{{ nginx_ssl_certificate_key_path }}" \
+      -out "{{ nginx_ssl_certificate_path }}" \
+      -subj "/C=US/ST=State/L=City/O=Wapps Homelab/CN={{ target_env | default('development') }}.wapps.com"
+    chmod 0600 "{{ nginx_ssl_certificate_key_path }}"
+    chmod 0644 "{{ nginx_ssl_certificate_path }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ nginx_ssl_certificate_path }}"
+  when:
+    - (allow_selfsigned_fallback | default(false)) == true
+    - _wapps_cert_stats.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+
+- name: Install systemd unit for ACME renewals
+  template:
+    src: certificates/templates/wapps-acme-renew.service.j2
+    dest: /etc/systemd/system/wapps-acme-renew.service
+    mode: "0644"
+
+- name: Install systemd timer for ACME renewals
+  template:
+    src: certificates/templates/wapps-acme-renew.timer.j2
+    dest: /etc/systemd/system/wapps-acme-renew.timer
+    mode: "0644"
+
+- name: Enable and start ACME renew timer
+  systemd:
+    name: wapps-acme-renew.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes
+

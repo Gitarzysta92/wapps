@@ -1,0 +1,10 @@
+[Unit]
+Description=Wapps ACME certificate renewal (acme.sh)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/wapps/acme.env
+ExecStart=/root/.acme.sh/acme.sh --cron --home /root/.acme.sh
+

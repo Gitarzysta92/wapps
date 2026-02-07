@@ -15,8 +15,8 @@ server {
     server_name k3s-api.{{ target_env }}.wapps.com;
     
     # SSL configuration
-    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    ssl_certificate {{ nginx_ssl_certificate_path }};
+    ssl_certificate_key {{ nginx_ssl_certificate_key_path }};
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
@@ -106,8 +106,8 @@ server {
     server_name *.api.{{ target_env }}.wapps.com;
     
     # SSL configuration
-    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    ssl_certificate {{ nginx_ssl_certificate_path }};
+    ssl_certificate_key {{ nginx_ssl_certificate_key_path }};
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
@@ -161,8 +161,8 @@ server {
     server_name argocd.{{ target_env }}.wapps.com;
     
     # SSL configuration
-    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    ssl_certificate {{ nginx_ssl_certificate_path }};
+    ssl_certificate_key {{ nginx_ssl_certificate_key_path }};
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
@@ -236,8 +236,8 @@ server {
     server_name _;
     
     # SSL configuration for default server
-    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    ssl_certificate {{ nginx_ssl_certificate_path }};
+    ssl_certificate_key {{ nginx_ssl_certificate_key_path }};
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
