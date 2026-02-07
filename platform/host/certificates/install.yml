@@ -114,8 +114,8 @@
           wapps_enable_api_gateway_domain | default(true)
           | ternary(
               [
-                # NOTE: Do NOT include both '*.api.<env>.<domain>' and 'api.<env>.<domain>' in one request.
-                # LetsEncrypt rejects exact hostnames that are already covered by a wildcard in the same order.
+                {# NOTE: Do NOT include both '*.api.<env>.<domain>' and 'api.<env>.<domain>' in one request. #}
+                {# LetsEncrypt rejects exact hostnames that are already covered by a wildcard in the same order. #}
                 '*.api.' ~ (target_env | default('development')) ~ '.' ~ wapps_base_domain
               ],
               []
