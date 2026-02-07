@@ -1,28 +1,16 @@
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy built files
-COPY dist/apps/services/platform-portal-bff/ ./
-
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001 -G nodejs
+# Build context should be the prebuilt dist output directory:
+# dist/apps/services/platform-portal-bff
+COPY . ./
 
-# Copy from builder
-COPY --from=builder --chown=nestjs:nodejs /app ./
+# Install production dependencies (generated package.json contains only what's needed)
+RUN npm install --omit=dev
 
-USER nestjs
+# Run as non-root user (present in the official node image)
+USER node
 
 ENV NODE_ENV=production
 ENV PORT=3000

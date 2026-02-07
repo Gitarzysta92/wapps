@@ -2,7 +2,9 @@ FROM node:18-slim
 
 WORKDIR /app
 
-COPY dist/apps/services/media-ingestion ./
+# Build context should be the prebuilt dist output directory:
+# dist/apps/services/media-ingestion
+COPY . ./
 
 RUN npm install --production
 

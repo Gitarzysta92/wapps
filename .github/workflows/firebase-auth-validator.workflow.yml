@@ -75,7 +75,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: dist/apps/services/firebase-auth-validator
           file: apps/services/firebase-auth-validator/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
