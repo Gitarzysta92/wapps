@@ -86,19 +86,6 @@ export class OAuthCallbackComponent implements OnInit {
         }
       }, 100);
       return;
-    }
-
-    // If this is the OAuth popup/tab (named window), prefer closing after broadcast
-    // so the user returns to the original tab.
-    if (this._window.name === 'oauth_popup') {
-      setTimeout(() => {
-        try {
-          this._window.close();
-        } catch {
-          // ignore
-        }
-      }, 150);
-      return;
     } else {
       // No opener: complete sign-in in the current window (redirect-based fallback)
       void this._completeInSameWindow(code, state, error || errorDescription);
@@ -172,7 +159,19 @@ export class OAuthCallbackComponent implements OnInit {
       // Trigger cross-window listeners (storage event)
       this._localStorage.setItem('oauth_completed_at', String(Date.now()));
 
-      this._window.location.href = '/';
+      // If this is the named OAuth popup/tab, close it after success.
+      // Otherwise (redirect fallback), navigate back to home.
+      if (this._window.name === 'oauth_popup') {
+        setTimeout(() => {
+          try {
+            this._window.close();
+          } catch {
+            // ignore
+          }
+        }, 150);
+      } else {
+        this._window.location.href = '/';
+      }
     } catch (e: any) {
       console.error('OAuth redirect completion failed:', e?.message ?? e);
       this._window.location.href = '/';
