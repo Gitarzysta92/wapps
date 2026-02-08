@@ -63,6 +63,12 @@ spec:
               name: ingress-auth-secret
               key: secret
               optional: true
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/var/secrets/firebase/serviceAccount.json"
+        volumeMounts:
+        - name: firebase-admin-credentials
+          mountPath: /var/secrets/firebase
+          readOnly: true
         resources:
           requests:
             cpu: 100m
@@ -82,4 +88,9 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
+      volumes:
+      - name: firebase-admin-credentials
+        secret:
+          secretName: firebase-admin-credentials
+          optional: true
 

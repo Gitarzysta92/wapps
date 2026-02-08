@@ -126,6 +126,8 @@ To enable it you need:
 - **Kubernetes secret** `firebase-config`:
   - `google-client-id`: Google OAuth Client ID
   - `google-client-secret`: Google OAuth Client Secret
+- **Kubernetes secret** `firebase-admin-credentials`:
+  - `serviceAccount.json`: Firebase Admin SDK service account key (required for `admin.auth()` calls like `createCustomToken`)
 - **Environment**:
   - `ENABLE_GOOGLE=true`
 
