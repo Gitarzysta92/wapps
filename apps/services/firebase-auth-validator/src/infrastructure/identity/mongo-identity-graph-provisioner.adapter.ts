@@ -1,5 +1,5 @@
 import { err, ok, Result } from '@foundation/standard';
-import { IIdentityGraphProvisioner } from '@domains/identity/identification';
+import { IIdentityGraphProvisioner } from '@domains/identity/authentication';
 import { IdentityProvisioner } from './identity-provisioner';
 
 export class MongoIdentityGraphProvisionerAdapter implements IIdentityGraphProvisioner {

@@ -6,13 +6,10 @@
   "tags": ["type:infra", "scope:infrastructure"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/../../../dist/libs/infrastructure/mysql"],
       "options": {
-        "outputPath": "dist/libs/infrastructure/mysql",
-        "main": "libs/infrastructure/mysql/src/index.ts",
-        "tsConfig": "libs/infrastructure/mysql/tsconfig.lib.json",
-        "assets": []
+        "command": "tsc --build libs/infrastructure/mysql/tsconfig.lib.json"
       }
     },
     "test": {

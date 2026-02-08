@@ -12,7 +12,7 @@ import {
   IDENTITY_USER_UPDATE_EMAIL_ACTION,
   IDENTITY_USER_UPDATE_PASSWORD_ACTION,
 } from './constants';
-import { AccountManagementContext } from './models/account-management-context';
+import { IdentityManagementContext } from './models/identity-management-context';
 import { UserUpdateDto } from './models/user-update.dto';
 import { IUserAdminPort } from './ports/user-admin.port';
 
@@ -20,7 +20,7 @@ function forbidden(actionName: string): Error {
   return new Error(`Forbidden: ${actionName}`);
 }
 
-export class AccountManagementService {
+export class IdentityManagementService {
   constructor(
     private readonly authorityValidationService: AuthorityValidationService,
     private readonly userAdmin: IUserAdminPort
@@ -29,7 +29,7 @@ export class AccountManagementService {
   private async authorize(
     actionName: string,
     targetUid: string,
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<true, Error>> {
     const result = await this.authorityValidationService.validate({
       ...ctx,
@@ -43,25 +43,25 @@ export class AccountManagementService {
     return ok(true);
   }
 
-  async disableUser(targetUid: string, ctx: AccountManagementContext): Promise<Result<boolean, Error>> {
+  async disableUser(targetUid: string, ctx: IdentityManagementContext): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_DISABLE_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
     return this.userAdmin.updateUser(targetUid, { disabled: true });
   }
 
-  async enableUser(targetUid: string, ctx: AccountManagementContext): Promise<Result<boolean, Error>> {
+  async enableUser(targetUid: string, ctx: IdentityManagementContext): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_ENABLE_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
     return this.userAdmin.updateUser(targetUid, { disabled: false });
   }
 
-  async revokeTokens(targetUid: string, ctx: AccountManagementContext): Promise<Result<boolean, Error>> {
+  async revokeTokens(targetUid: string, ctx: IdentityManagementContext): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_REVOKE_TOKENS_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
     return this.userAdmin.revokeRefreshTokens(targetUid);
   }
 
-  async deleteUser(targetUid: string, ctx: AccountManagementContext): Promise<Result<boolean, Error>> {
+  async deleteUser(targetUid: string, ctx: IdentityManagementContext): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_DELETE_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
     return this.userAdmin.deleteUser(targetUid);
@@ -70,7 +70,7 @@ export class AccountManagementService {
   async updateEmail(
     targetUid: string,
     email: string,
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_UPDATE_EMAIL_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
@@ -80,7 +80,7 @@ export class AccountManagementService {
   async updatePassword(
     targetUid: string,
     password: string,
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_UPDATE_PASSWORD_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
@@ -90,7 +90,7 @@ export class AccountManagementService {
   async unlinkProviders(
     targetUid: string,
     providersToUnlink: string[],
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<boolean, Error>> {
     const a = await this.authorize(IDENTITY_USER_UNLINK_PROVIDER_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
@@ -101,7 +101,7 @@ export class AccountManagementService {
   async generatePasswordResetLink(
     targetUid: string,
     email: string,
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<string, Error>> {
     const a = await this.authorize(IDENTITY_USER_GENERATE_PASSWORD_RESET_LINK_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
@@ -111,13 +111,9 @@ export class AccountManagementService {
   async generateEmailVerificationLink(
     targetUid: string,
     email: string,
-    ctx: AccountManagementContext
+    ctx: IdentityManagementContext
   ): Promise<Result<string, Error>> {
-    const a = await this.authorize(
-      IDENTITY_USER_GENERATE_EMAIL_VERIFICATION_LINK_ACTION,
-      targetUid,
-      ctx
-    );
+    const a = await this.authorize(IDENTITY_USER_GENERATE_EMAIL_VERIFICATION_LINK_ACTION, targetUid, ctx);
     if (isErr(a)) return err(a.error);
     return this.userAdmin.generateEmailVerificationLink(email);
   }

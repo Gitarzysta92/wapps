@@ -1,12 +1,12 @@
 /* eslint-disable */
 export default {
-  displayName: 'domains-identity-identification',
+  displayName: 'domains-identity-management',
   preset: '../../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../../coverage/libs/domains/identity/identification',
+  coverageDirectory: '../../../../coverage/libs/domains/identity/management',
 };
 

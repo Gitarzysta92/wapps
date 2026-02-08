@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@foundation/standard';
-import { IOAuthCodeExchanger, OAuthProvider, OAuthUserInfoDto } from '@domains/identity/identification';
+import { IOAuthCodeExchanger, OAuthProvider, OAuthUserInfoDto } from '@domains/identity/authentication';
 
 export type OAuthCodeExchangerConfig = {
   googleClientId?: string;

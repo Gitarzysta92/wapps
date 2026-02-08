@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import { err, ok, Result } from '@foundation/standard';
-import { IIdTokenVerifier, VerifiedIdTokenDto } from '@domains/identity/identification';
+import { IIdTokenVerifier, VerifiedIdTokenDto } from '@domains/identity/authentication';
 
 export class TokenValidationError extends Error {
   override name = 'TokenValidationError';
