@@ -61,9 +61,22 @@ export class OAuthCodeExchanger implements IOAuthCodeExchanger {
     });
 
     if (!tokenResponse.ok) {
-      const error = await tokenResponse.json().catch(() => undefined);
-      console.error('Google token exchange error:', error);
-      return err(new Error('Failed to exchange Google authorization code'));
+      const errorJson = (await tokenResponse.json().catch(() => undefined)) as any;
+      const errorCode = errorJson?.error?.error ?? errorJson?.error;
+      const errorDescription =
+        errorJson?.error?.message ??
+        errorJson?.error_description ??
+        errorJson?.error?.description;
+
+      console.error('Google token exchange error:', {
+        status: tokenResponse.status,
+        errorCode,
+        errorDescription,
+        raw: errorJson,
+      });
+
+      const details = [errorCode, errorDescription].filter(Boolean).join(': ');
+      return err(new Error(`Google token exchange failed${details ? ` (${details})` : ''}`));
     }
 
     const tokens = (await tokenResponse.json()) as any;
