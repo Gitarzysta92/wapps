@@ -14,8 +14,14 @@ import { AuthenticationStorage } from '../../../infrastructure/authentication.st
   selector: 'oauth-callback',
   template: `
     <div class="callback-container">
-      <div class="spinner"></div>
-      <p>Completing sign-in...</p>
+      @if (errorText) {
+        <h2>Sign-in failed</h2>
+        <p class="error">{{ errorText }}</p>
+        <button class="btn" type="button" (click)="goHome()">Go back</button>
+      } @else {
+        <div class="spinner"></div>
+        <p>Completing sign-in...</p>
+      }
     </div>
   `,
   styles: [`
@@ -26,6 +32,8 @@ import { AuthenticationStorage } from '../../../infrastructure/authentication.st
       justify-content: center;
       height: 100vh;
       font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      text-align: center;
     }
     
     .spinner {
@@ -36,6 +44,23 @@ import { AuthenticationStorage } from '../../../infrastructure/authentication.st
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 1rem;
+    }
+
+    .error {
+      max-width: 44rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #b00020;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
     }
     
     @keyframes spin {
@@ -51,6 +76,12 @@ export class OAuthCallbackComponent implements OnInit {
   private readonly _authBffUrl = inject(AUTH_BFF_URL, { optional: true });
   private readonly _tokenStorage = inject(AuthenticationStorage, { optional: true });
   private readonly _localStorage = inject(WA_LOCAL_STORAGE);
+
+  public errorText: string | null = null;
+
+  public goHome(): void {
+    this._window.location.href = '/';
+  }
 
   ngOnInit(): void {
     // Get query parameters
@@ -95,8 +126,7 @@ export class OAuthCallbackComponent implements OnInit {
   private async _completeInSameWindow(code: string | null, returnedState: string | null, error: string | null) {
     try {
       if (error) {
-        console.error('OAuth error:', error);
-        this._window.location.href = '/';
+        this._fail(`OAuth error: ${error}`);
         return;
       }
 
@@ -133,26 +163,22 @@ export class OAuthCallbackComponent implements OnInit {
       sessionStorage.removeItem('oauth_redirect_uri');
 
       if (!code || !provider) {
-        console.error('OAuth callback missing code/provider');
-        this._window.location.href = '/';
+        this._fail('OAuth callback missing code or provider');
         return;
       }
 
       if (savedState) {
         if (returnedState !== savedState) {
-          console.error('Invalid OAuth state');
-          this._window.location.href = '/';
+          this._fail('Invalid OAuth state');
           return;
         }
       } else if (!returnedState) {
-        console.error('Invalid OAuth state');
-        this._window.location.href = '/';
+        this._fail('Invalid OAuth state');
         return;
       }
 
       if (!this._authBffUrl || !this._tokenStorage) {
-        console.error('Auth BFF not configured in this app');
-        this._window.location.href = '/';
+        this._fail('Auth BFF not configured in this app');
         return;
       }
 
@@ -183,9 +209,22 @@ export class OAuthCallbackComponent implements OnInit {
         this._window.location.href = returnTo || '/';
       }
     } catch (e: any) {
-      console.error('OAuth redirect completion failed:', e?.message ?? e);
-      this._window.location.href = '/';
+      const backendMsg = e?.error?.error;
+      const msg =
+        (typeof backendMsg === 'string' && backendMsg) ||
+        (typeof e?.message === 'string' && e.message) ||
+        'OAuth sign-in failed';
+      this._fail(msg);
     }
+  }
+
+  private _fail(message: string) {
+    try {
+      this._localStorage.setItem('oauth_last_error', message);
+    } catch {
+      // ignore
+    }
+    this.errorText = message;
   }
 
   private _broadcastCallback(payload: { type: 'oauth_callback'; code: string | null; state: string | null; error: string | null }) {
