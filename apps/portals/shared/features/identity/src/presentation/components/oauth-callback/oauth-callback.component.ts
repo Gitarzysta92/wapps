@@ -106,8 +106,9 @@ export class OAuthCallbackComponent implements OnInit {
       let returnTo: string | undefined;
       let codeVerifier: string | undefined;
 
-      // Fallback for new-tab flows: read context from localStorage using `state`
-      if ((!provider || !savedState) && returnedState) {
+      // Always try to read context from localStorage keyed by `state`.
+      // Even in same-tab redirects, PKCE `codeVerifier` is stored there.
+      if (returnedState) {
         try {
           const raw = this._localStorage.getItem(`oauth_ctx_${returnedState}`);
           const ctx = raw ? JSON.parse(raw) : undefined;
@@ -115,10 +116,15 @@ export class OAuthCallbackComponent implements OnInit {
           redirectUri = ctx?.redirectUri || redirectUri;
           returnTo = ctx?.returnTo || returnTo;
           codeVerifier = ctx?.codeVerifier || codeVerifier;
-          // best-effort cleanup
-          this._localStorage.removeItem(`oauth_ctx_${returnedState}`);
         } catch {
           // ignore
+        } finally {
+          // best-effort cleanup
+          try {
+            this._localStorage.removeItem(`oauth_ctx_${returnedState}`);
+          } catch {
+            // ignore
+          }
         }
       }
 
