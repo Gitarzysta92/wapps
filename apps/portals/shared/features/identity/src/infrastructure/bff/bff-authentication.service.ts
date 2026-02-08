@@ -193,9 +193,50 @@ export class BffAuthenticationService implements IAuthenticationHandler {
       return new Observable<Result<string, Error>>(() => undefined);
     }
     
-    // Listen for OAuth callback via postMessage or popup close
+    // Listen for OAuth callback via postMessage/BroadcastChannel/localStorage and popup close
     return new Observable<Result<string, Error>>(observer => {
       let completed = false;
+
+      const finish = (result: Result<string, Error>) => {
+        if (completed) return;
+        completed = true;
+        cleanup();
+        observer.next(result);
+        observer.complete();
+      };
+
+      const handleOAuthCallback = (data: any) => {
+        if (completed) return;
+
+        const { code, state: returnedState, error } = data ?? {};
+
+        // Verify state (CSRF protection)
+        const savedState = sessionStorage.getItem('oauth_state');
+        sessionStorage.removeItem('oauth_state');
+        sessionStorage.removeItem('oauth_provider');
+        sessionStorage.removeItem('oauth_redirect_uri');
+
+        if (error) {
+          finish(err(new Error(String(error))));
+          return;
+        }
+
+        if (!code) {
+          finish(err(new Error('Missing OAuth code')));
+          return;
+        }
+
+        if (returnedState !== savedState) {
+          finish(err(new Error('Invalid OAuth state. Please try again.')));
+          return;
+        }
+
+        // Exchange code for token
+        this._exchangeOAuthCode(providerName, code, redirectUri).subscribe({
+          next: result => finish(result),
+          error: e => finish(err(e)),
+        });
+      };
       
       const handleMessage = (event: MessageEvent) => {
         // Verify origin
@@ -204,74 +245,75 @@ export class BffAuthenticationService implements IAuthenticationHandler {
         }
         
         if (event.data?.type === 'oauth_callback') {
-          completed = true;
-          cleanup();
-          
-          const { code, state: returnedState, error } = event.data;
-          
-          // Verify state
-          const savedState = sessionStorage.getItem('oauth_state');
-          sessionStorage.removeItem('oauth_state');
-          sessionStorage.removeItem('oauth_provider');
-          sessionStorage.removeItem('oauth_redirect_uri');
-          
-          if (error) {
-            observer.next(err(new Error(error)));
-            observer.complete();
-            return;
+          handleOAuthCallback(event.data);
+        }
+      };
+
+      // BroadcastChannel fallback (works even when COOP severs window.opener)
+      const bc = 'BroadcastChannel' in this._window ? new (this._window as any).BroadcastChannel('wapps_oauth') : null;
+      const handleBroadcast = (event: any) => {
+        const data = event?.data;
+        if (data?.type === 'oauth_callback') {
+          handleOAuthCallback(data);
+        }
+      };
+      if (bc) {
+        bc.addEventListener('message', handleBroadcast);
+      }
+
+      // localStorage "storage" event fallback (cross-tab communication)
+      const handleStorage = (event: StorageEvent) => {
+        if (event.key !== 'oauth_callback' || !event.newValue) return;
+        try {
+          const payload = JSON.parse(event.newValue);
+          if (payload?.type === 'oauth_callback') {
+            handleOAuthCallback(payload);
           }
-          
-          if (returnedState !== savedState) {
-            observer.next(err(new Error('Invalid OAuth state. Please try again.')));
-            observer.complete();
-            return;
-          }
-          
-          // Exchange code for token
-          this._exchangeOAuthCode(providerName, code, redirectUri).subscribe({
-            next: result => {
-              observer.next(result);
-              observer.complete();
-            },
-            error: e => {
-              observer.next(err(e));
-              observer.complete();
-            }
-          });
+        } catch {
+          // ignore
         }
       };
       
       // Check if popup is closed without completing
       const checkPopupClosed = setInterval(() => {
-        if (popup.closed && !completed) {
-          completed = true;
-          cleanup();
-          observer.next(err(new Error('Sign-in cancelled')));
-          observer.complete();
+        try {
+          // Under Cross-Origin-Opener-Policy, accessing popup.closed may throw — ignore and keep waiting.
+          if (popup.closed && !completed) {
+            finish(err(new Error('Sign-in cancelled')));
+          }
+        } catch {
+          // ignore
         }
       }, 500);
       
       // Timeout after 5 minutes
       const timeoutId = setTimeout(() => {
         if (!completed) {
-          completed = true;
-          cleanup();
-          popup.close();
-          observer.next(err(new Error('Sign-in timed out')));
-          observer.complete();
+          try {
+            popup.close();
+          } catch {
+            // ignore
+          }
+          finish(err(new Error('Sign-in timed out')));
         }
       }, 300000);
       
       const cleanup = () => {
         this._window.removeEventListener('message', handleMessage);
+        this._window.removeEventListener('storage', handleStorage);
         clearInterval(checkPopupClosed);
         clearTimeout(timeoutId);
         sessionStorage.removeItem('oauth_state');
         sessionStorage.removeItem('oauth_provider');
         sessionStorage.removeItem('oauth_redirect_uri');
+        if (bc) {
+          bc.removeEventListener('message', handleBroadcast);
+          bc.close();
+        }
       };
       
       this._window.addEventListener('message', handleMessage);
+      this._window.addEventListener('storage', handleStorage);
       
       return cleanup;
     });
