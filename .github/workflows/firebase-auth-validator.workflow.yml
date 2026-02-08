@@ -116,6 +116,8 @@ jobs:
             FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
           fi
           FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}"
+          GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
+          GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
           
           if [ -z "$FIREBASE_ID" ]; then
             echo "::error::Firebase Project ID not configured for ${ENV} environment"
@@ -131,6 +133,8 @@ jobs:
           kubectl create secret generic firebase-config \
             --from-literal=project-id="${FIREBASE_ID}" \
             --from-literal=web-api-key="${FIREBASE_WEB_API_KEY}" \
+            ${GOOGLE_CLIENT_ID:+--from-literal=google-client-id="${GOOGLE_CLIENT_ID}"} \
+            ${GOOGLE_CLIENT_SECRET:+--from-literal=google-client-secret="${GOOGLE_CLIENT_SECRET}"} \
             --namespace=default \
             --dry-run=client -o yaml | kubectl apply -f -
           

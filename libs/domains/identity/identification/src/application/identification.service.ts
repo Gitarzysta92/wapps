@@ -17,7 +17,9 @@ export type IdentificationServiceConfig = {
   enabledAnonymous: boolean;
 
   googleClientId?: string;
+  googleClientSecret?: string;
   githubClientId?: string;
+  githubClientSecret?: string;
   firebaseWebApiKey?: string;
 };
 
@@ -66,7 +68,7 @@ export class IdentificationService {
       });
     }
 
-    if (this.config.enabledGoogle && this.config.googleClientId) {
+    if (this.config.enabledGoogle && this.config.googleClientId && this.config.googleClientSecret) {
       methods.push({
         provider: AuthenticationProvider.GOOGLE,
         displayName: 'Google',
@@ -76,7 +78,7 @@ export class IdentificationService {
       });
     }
 
-    if (this.config.enabledGithub && this.config.githubClientId) {
+    if (this.config.enabledGithub && this.config.githubClientId && this.config.githubClientSecret) {
       methods.push({
         provider: AuthenticationProvider.GITHUB,
         displayName: 'GitHub',

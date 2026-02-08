@@ -104,6 +104,31 @@ This service provides two main functions:
 
 **Note:** The bundled Kubernetes deployment (`provisioning/k8s/deployment.yaml`) reads from the `firebase-config` secret. For email/password sign-in to work, ensure that secret contains the key `web-api-key` (Firebase Web API Key). Without it, `POST /auth/signin` returns 500 with "Email/password authentication not configured".
 
+**Google sign-in:** the same deployment optionally reads Google OAuth credentials from `firebase-config`:
+- `google-client-id`
+- `google-client-secret`
+
+When set (and `ENABLE_GOOGLE=true`), `GET /auth/methods` will include Google and the frontend can start the OAuth flow via `/auth/oauth/google/authorize`.
+
+### Google OAuth setup (for portal login)
+
+This project uses a **popup OAuth authorization code** flow:
+
+- The portal opens: `GET /auth/oauth/google/authorize?redirect_uri=<portal>/auth/callback&state=...`
+- Google redirects back to the portal: `<portal>/auth/callback?code=...&state=...`
+- The portal posts the `code` back to the opener and calls: `POST /auth/signin/oauth` to exchange it for a Firebase session.
+
+To enable it you need:
+
+- **Google OAuth Client** (Web application):
+  - **Authorized JavaScript origins**: the portal origins you use (e.g. `https://discussion-csr.development.wapps.ai`)
+  - **Authorized redirect URIs**: the portal callback(s), e.g. `https://discussion-csr.development.wapps.ai/auth/callback`
+- **Kubernetes secret** `firebase-config`:
+  - `google-client-id`: Google OAuth Client ID
+  - `google-client-secret`: Google OAuth Client Secret
+- **Environment**:
+  - `ENABLE_GOOGLE=true`
+
 ### Kubernetes ConfigMap & Secret
 
 ```yaml

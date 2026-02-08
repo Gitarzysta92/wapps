@@ -104,7 +104,9 @@ const identificationService = new IdentificationService(
     enabledGithub: ENABLE_GITHUB,
     enabledAnonymous: ENABLE_ANONYMOUS,
     googleClientId: GOOGLE_CLIENT_ID,
+    googleClientSecret: GOOGLE_CLIENT_SECRET,
     githubClientId: GITHUB_CLIENT_ID,
+    githubClientSecret: GITHUB_CLIENT_SECRET,
     firebaseWebApiKey: FIREBASE_WEB_API_KEY,
   },
   () => identityGraphProvisioner
@@ -546,20 +548,21 @@ app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
   
   switch (provider.toLowerCase()) {
     case 'google':
-      if (!GOOGLE_CLIENT_ID) {
+      if (!ENABLE_GOOGLE || !GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
         return res.status(400).json({ error: 'Google OAuth not configured' });
       }
       authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
         `client_id=${GOOGLE_CLIENT_ID}` +
         `&redirect_uri=${encodeURIComponent(redirect_uri as string)}` +
         `&response_type=code` +
-        `&scope=email%20profile` +
+        `&scope=openid%20email%20profile` +
         `&access_type=offline` +
+        `&prompt=consent` +
         (state ? `&state=${encodeURIComponent(state as string)}` : '');
       break;
       
     case 'github':
-      if (!GITHUB_CLIENT_ID) {
+      if (!ENABLE_GITHUB || !GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
         return res.status(400).json({ error: 'GitHub OAuth not configured' });
       }
       authUrl = `https://github.com/login/oauth/authorize?` +

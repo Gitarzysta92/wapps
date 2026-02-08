@@ -169,18 +169,28 @@ export class BffAuthenticationService implements IAuthenticationHandler {
     
     // Store state for verification
     sessionStorage.setItem('oauth_state', state);
+    // Store context for redirect-based fallback (no opener window)
+    sessionStorage.setItem('oauth_provider', providerName);
+    sessionStorage.setItem('oauth_redirect_uri', redirectUri);
     
     // Open OAuth popup
     const authUrl = `${this._authBffUrl}/auth/oauth/${providerName}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}`;
     
-    const popup = this._window.open(
+    let popup = this._window.open(
       authUrl,
       'oauth_popup',
       'width=500,height=600,left=100,top=100'
     );
     
+    // Fallback: open a new tab if popup is blocked
     if (!popup) {
-      return of(err(new Error('Popup blocked. Please allow popups and try again.')));
+      popup = this._window.open(authUrl, '_blank');
+    }
+
+    // Last resort: full-page redirect (handled by OAuthCallbackComponent without opener)
+    if (!popup) {
+      this._window.location.assign(authUrl);
+      return new Observable<Result<string, Error>>(() => undefined);
     }
     
     // Listen for OAuth callback via postMessage or popup close
@@ -202,6 +212,8 @@ export class BffAuthenticationService implements IAuthenticationHandler {
           // Verify state
           const savedState = sessionStorage.getItem('oauth_state');
           sessionStorage.removeItem('oauth_state');
+          sessionStorage.removeItem('oauth_provider');
+          sessionStorage.removeItem('oauth_redirect_uri');
           
           if (error) {
             observer.next(err(new Error(error)));
@@ -255,6 +267,8 @@ export class BffAuthenticationService implements IAuthenticationHandler {
         clearInterval(checkPopupClosed);
         clearTimeout(timeoutId);
         sessionStorage.removeItem('oauth_state');
+        sessionStorage.removeItem('oauth_provider');
+        sessionStorage.removeItem('oauth_redirect_uri');
       };
       
       this._window.addEventListener('message', handleMessage);
