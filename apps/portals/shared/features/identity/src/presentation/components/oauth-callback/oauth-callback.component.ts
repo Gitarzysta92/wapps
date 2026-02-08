@@ -60,6 +60,14 @@ export class OAuthCallbackComponent implements OnInit {
     const error = params.get('error');
     const errorDescription = params.get('error_description');
 
+    // Always broadcast the callback payload as a fallback for COOP (window.opener can be severed).
+    this._broadcastCallback({
+      type: 'oauth_callback',
+      code,
+      state,
+      error: error || errorDescription,
+    });
+
     // Post message back to opener
     if (this._window.opener) {
       this._window.opener.postMessage({
@@ -71,7 +79,11 @@ export class OAuthCallbackComponent implements OnInit {
       
       // Close this window after a short delay
       setTimeout(() => {
-        this._window.close();
+        try {
+          this._window.close();
+        } catch {
+          // ignore
+        }
       }, 100);
     } else {
       // No opener: complete sign-in in the current window (redirect-based fallback)
@@ -123,11 +135,35 @@ export class OAuthCallbackComponent implements OnInit {
       // Keep behavior consistent with BffAuthenticationService
       this._localStorage.setItem('auth_refresh_token', response.refreshToken);
       this._tokenStorage.setToken(response.token);
+      // Trigger cross-window listeners (storage event)
+      this._localStorage.setItem('oauth_completed_at', String(Date.now()));
 
       this._window.location.href = '/';
     } catch (e: any) {
       console.error('OAuth redirect completion failed:', e?.message ?? e);
       this._window.location.href = '/';
+    }
+  }
+
+  private _broadcastCallback(payload: { type: 'oauth_callback'; code: string | null; state: string | null; error: string | null }) {
+    try {
+      // BroadcastChannel
+      const BC = (this._window as any).BroadcastChannel;
+      if (BC) {
+        const ch = new BC('wapps_oauth');
+        ch.postMessage(payload);
+        ch.close();
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      // localStorage storage-event broadcast (include nonce so it always fires)
+      const nonce = Math.random().toString(16).slice(2);
+      this._localStorage.setItem('oauth_callback', JSON.stringify({ ...payload, nonce }));
+    } catch {
+      // ignore
     }
   }
 }
