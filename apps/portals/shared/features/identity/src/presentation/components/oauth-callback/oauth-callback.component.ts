@@ -85,6 +85,20 @@ export class OAuthCallbackComponent implements OnInit {
           // ignore
         }
       }, 100);
+      return;
+    }
+
+    // If this is the OAuth popup/tab (named window), prefer closing after broadcast
+    // so the user returns to the original tab.
+    if (this._window.name === 'oauth_popup') {
+      setTimeout(() => {
+        try {
+          this._window.close();
+        } catch {
+          // ignore
+        }
+      }, 150);
+      return;
     } else {
       // No opener: complete sign-in in the current window (redirect-based fallback)
       void this._completeInSameWindow(code, state, error || errorDescription);
@@ -100,8 +114,22 @@ export class OAuthCallbackComponent implements OnInit {
       }
 
       const savedState = sessionStorage.getItem('oauth_state');
-      const provider = sessionStorage.getItem('oauth_provider');
-      const redirectUri = sessionStorage.getItem('oauth_redirect_uri') ?? `${this._window.location.origin}/auth/callback`;
+      let provider = sessionStorage.getItem('oauth_provider');
+      let redirectUri = sessionStorage.getItem('oauth_redirect_uri') ?? `${this._window.location.origin}/auth/callback`;
+
+      // Fallback for new-tab flows: read context from localStorage using `state`
+      if ((!provider || !savedState) && returnedState) {
+        try {
+          const raw = this._localStorage.getItem(`oauth_ctx_${returnedState}`);
+          const ctx = raw ? JSON.parse(raw) : undefined;
+          provider = provider || ctx?.provider;
+          redirectUri = ctx?.redirectUri || redirectUri;
+          // best-effort cleanup
+          this._localStorage.removeItem(`oauth_ctx_${returnedState}`);
+        } catch {
+          // ignore
+        }
+      }
 
       sessionStorage.removeItem('oauth_state');
       sessionStorage.removeItem('oauth_provider');
@@ -113,7 +141,13 @@ export class OAuthCallbackComponent implements OnInit {
         return;
       }
 
-      if (!savedState || returnedState !== savedState) {
+      if (savedState) {
+        if (returnedState !== savedState) {
+          console.error('Invalid OAuth state');
+          this._window.location.href = '/';
+          return;
+        }
+      } else if (!returnedState) {
         console.error('Invalid OAuth state');
         this._window.location.href = '/';
         return;

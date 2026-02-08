@@ -172,6 +172,15 @@ export class BffAuthenticationService implements IAuthenticationHandler {
     // Store context for redirect-based fallback (no opener window)
     sessionStorage.setItem('oauth_provider', providerName);
     sessionStorage.setItem('oauth_redirect_uri', redirectUri);
+    // Also persist context cross-tab (sessionStorage is not shared across tabs)
+    try {
+      localStorage.setItem(
+        `oauth_ctx_${state}`,
+        JSON.stringify({ provider: providerName, redirectUri, createdAt: Date.now() })
+      );
+    } catch {
+      // ignore
+    }
     
     // Open OAuth popup
     const authUrl = `${this._authBffUrl}/auth/oauth/${providerName}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}`;
@@ -182,9 +191,9 @@ export class BffAuthenticationService implements IAuthenticationHandler {
       'width=500,height=600,left=100,top=100'
     );
     
-    // Fallback: open a new tab if popup is blocked
+    // Fallback: open a new tab/window if popup is blocked (keep the same name so callback can close itself)
     if (!popup) {
-      popup = this._window.open(authUrl, '_blank');
+      popup = this._window.open(authUrl, 'oauth_popup');
     }
 
     // Last resort: full-page redirect (handled by OAuthCallbackComponent without opener)
@@ -210,11 +219,28 @@ export class BffAuthenticationService implements IAuthenticationHandler {
 
         const { code, state: returnedState, error } = data ?? {};
 
-        // Verify state (CSRF protection)
+        // Verify state (CSRF protection). Use sessionStorage when available,
+        // but fall back to localStorage context (covers new-tab flows).
         const savedState = sessionStorage.getItem('oauth_state');
+        let ctx: { provider?: string; redirectUri?: string } | undefined;
+        if ((!savedState || !returnedState) && returnedState) {
+          try {
+            const raw = localStorage.getItem(`oauth_ctx_${returnedState}`);
+            ctx = raw ? JSON.parse(raw) : undefined;
+          } catch {
+            ctx = undefined;
+          }
+        }
         sessionStorage.removeItem('oauth_state');
         sessionStorage.removeItem('oauth_provider');
         sessionStorage.removeItem('oauth_redirect_uri');
+        if (returnedState) {
+          try {
+            localStorage.removeItem(`oauth_ctx_${returnedState}`);
+          } catch {
+            // ignore
+          }
+        }
 
         if (error) {
           finish(err(new Error(String(error))));
@@ -226,13 +252,19 @@ export class BffAuthenticationService implements IAuthenticationHandler {
           return;
         }
 
-        if (returnedState !== savedState) {
+        if (savedState) {
+          if (returnedState !== savedState) {
+            finish(err(new Error('Invalid OAuth state. Please try again.')));
+            return;
+          }
+        } else if (!ctx) {
           finish(err(new Error('Invalid OAuth state. Please try again.')));
           return;
         }
 
         // Exchange code for token
-        this._exchangeOAuthCode(providerName, code, redirectUri).subscribe({
+        const effectiveRedirectUri = ctx?.redirectUri || redirectUri;
+        this._exchangeOAuthCode(providerName, code, effectiveRedirectUri).subscribe({
           next: result => finish(result),
           error: e => finish(err(e)),
         });
@@ -310,6 +342,11 @@ export class BffAuthenticationService implements IAuthenticationHandler {
         sessionStorage.removeItem('oauth_state');
         sessionStorage.removeItem('oauth_provider');
         sessionStorage.removeItem('oauth_redirect_uri');
+        try {
+          localStorage.removeItem(`oauth_ctx_${state}`);
+        } catch {
+          // ignore
+        }
         if (bc) {
           bc.removeEventListener('message', handleBroadcast);
           bc.close();
