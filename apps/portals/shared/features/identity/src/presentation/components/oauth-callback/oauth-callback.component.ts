@@ -103,6 +103,8 @@ export class OAuthCallbackComponent implements OnInit {
       const savedState = sessionStorage.getItem('oauth_state');
       let provider = sessionStorage.getItem('oauth_provider');
       let redirectUri = sessionStorage.getItem('oauth_redirect_uri') ?? `${this._window.location.origin}/auth/callback`;
+      let returnTo: string | undefined;
+      let codeVerifier: string | undefined;
 
       // Fallback for new-tab flows: read context from localStorage using `state`
       if ((!provider || !savedState) && returnedState) {
@@ -111,6 +113,8 @@ export class OAuthCallbackComponent implements OnInit {
           const ctx = raw ? JSON.parse(raw) : undefined;
           provider = provider || ctx?.provider;
           redirectUri = ctx?.redirectUri || redirectUri;
+          returnTo = ctx?.returnTo || returnTo;
+          codeVerifier = ctx?.codeVerifier || codeVerifier;
           // best-effort cleanup
           this._localStorage.removeItem(`oauth_ctx_${returnedState}`);
         } catch {
@@ -149,7 +153,7 @@ export class OAuthCallbackComponent implements OnInit {
       const response = await firstValueFrom(
         this._http.post<{ token: string; refreshToken: string }>(
           `${this._authBffUrl}/auth/signin/oauth`,
-          { provider, code, redirectUri }
+          { provider, code, redirectUri, codeVerifier }
         )
       );
 
@@ -160,7 +164,7 @@ export class OAuthCallbackComponent implements OnInit {
       this._localStorage.setItem('oauth_completed_at', String(Date.now()));
 
       // If this is the named OAuth popup/tab, close it after success.
-      // Otherwise (redirect fallback), navigate back to home.
+      // Otherwise (redirect), navigate back to returnTo if present.
       if (this._window.name === 'oauth_popup') {
         setTimeout(() => {
           try {
@@ -170,7 +174,7 @@ export class OAuthCallbackComponent implements OnInit {
           }
         }, 150);
       } else {
-        this._window.location.href = '/';
+        this._window.location.href = returnTo || '/';
       }
     } catch (e: any) {
       console.error('OAuth redirect completion failed:', e?.message ?? e);

@@ -12,11 +12,16 @@ export type OAuthCodeExchangerConfig = {
 export class OAuthCodeExchanger implements IOAuthCodeExchanger {
   constructor(private readonly config: OAuthCodeExchangerConfig) {}
 
-  async exchangeCode(provider: OAuthProvider, code: string, redirectUri: string): Promise<Result<OAuthUserInfoDto, Error>> {
+  async exchangeCode(
+    provider: OAuthProvider,
+    code: string,
+    redirectUri: string,
+    codeVerifier?: string
+  ): Promise<Result<OAuthUserInfoDto, Error>> {
     try {
       switch (provider) {
         case 'google':
-          return await this.exchangeGoogleCode(code, redirectUri);
+          return await this.exchangeGoogleCode(code, redirectUri, codeVerifier);
         case 'github':
           return await this.exchangeGitHubCode(code, redirectUri);
         default:
@@ -28,22 +33,31 @@ export class OAuthCodeExchanger implements IOAuthCodeExchanger {
     }
   }
 
-  private async exchangeGoogleCode(code: string, redirectUri: string): Promise<Result<OAuthUserInfoDto, Error>> {
+  private async exchangeGoogleCode(
+    code: string,
+    redirectUri: string,
+    codeVerifier?: string
+  ): Promise<Result<OAuthUserInfoDto, Error>> {
     const { googleClientId, googleClientSecret } = this.config;
     if (!googleClientId || !googleClientSecret) {
       return err(new Error('Google OAuth not configured'));
     }
 
+    const params = new URLSearchParams({
+      code,
+      client_id: googleClientId,
+      client_secret: googleClientSecret,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    });
+    if (codeVerifier) {
+      params.set('code_verifier', codeVerifier);
+    }
+
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        code,
-        client_id: googleClientId,
-        client_secret: googleClientSecret,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
-      }).toString(),
+      body: params.toString(),
     });
 
     if (!tokenResponse.ok) {

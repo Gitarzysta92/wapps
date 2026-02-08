@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Observable, map, catchError, of, switchMap, fromEvent, take, timeout, race } from "rxjs";
+import { Observable, map, catchError, of } from "rxjs";
 import {
   IAuthenticationHandler,
   CredentialsDto,
@@ -166,198 +166,59 @@ export class BffAuthenticationService implements IAuthenticationHandler {
     const providerName = provider.toLowerCase();
     const redirectUri = `${this._window.location.origin}/auth/callback`;
     const state = this._generateState();
-    
-    // Store state for verification
-    sessionStorage.setItem('oauth_state', state);
-    // Store context for redirect-based fallback (no opener window)
-    sessionStorage.setItem('oauth_provider', providerName);
-    sessionStorage.setItem('oauth_redirect_uri', redirectUri);
-    // Also persist context cross-tab (sessionStorage is not shared across tabs)
+    const returnTo = `${this._window.location.pathname}${this._window.location.search}${this._window.location.hash}`;
+
+    // Redirect (industry standard): no popup/opener/COOP complexity.
+    void this._redirectOAuth(providerName, redirectUri, state, returnTo);
+    return new Observable<Result<string, Error>>(() => undefined);
+  }
+
+  private async _redirectOAuth(providerName: string, redirectUri: string, state: string, returnTo: string) {
+    // Persist context (works across redirects/tabs)
+    const ctx: any = { provider: providerName, redirectUri, returnTo, createdAt: Date.now() };
+
+    // PKCE only for Google (optional, but recommended for SPA-style redirect flows)
+    if (providerName === 'google') {
+      const pkce = await this._createPkce();
+      ctx.codeVerifier = pkce.codeVerifier;
+      ctx.codeChallenge = pkce.codeChallenge;
+      ctx.codeChallengeMethod = 'S256';
+    }
+
     try {
-      localStorage.setItem(
-        `oauth_ctx_${state}`,
-        JSON.stringify({ provider: providerName, redirectUri, createdAt: Date.now() })
-      );
+      localStorage.setItem(`oauth_ctx_${state}`, JSON.stringify(ctx));
     } catch {
       // ignore
     }
-    
-    // Open OAuth popup
-    const authUrl = `${this._authBffUrl}/auth/oauth/${providerName}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}`;
-    
-    let popup = this._window.open(
-      authUrl,
-      'oauth_popup',
-      'width=500,height=600,left=100,top=100'
-    );
-    
-    // Fallback: open a new tab/window if popup is blocked (keep the same name so callback can close itself)
-    if (!popup) {
-      popup = this._window.open(authUrl, 'oauth_popup');
-    }
 
-    // Last resort: full-page redirect (handled by OAuthCallbackComponent without opener)
-    if (!popup) {
-      this._window.location.assign(authUrl);
-      return new Observable<Result<string, Error>>(() => undefined);
-    }
-    
-    // Listen for OAuth callback via postMessage/BroadcastChannel/localStorage and popup close
-    return new Observable<Result<string, Error>>(observer => {
-      let completed = false;
-
-      const finish = (result: Result<string, Error>) => {
-        if (completed) return;
-        completed = true;
-        cleanup();
-        observer.next(result);
-        observer.complete();
-      };
-
-      const handleOAuthCallback = (data: any) => {
-        if (completed) return;
-
-        const { code, state: returnedState, error } = data ?? {};
-
-        // Verify state (CSRF protection). Use sessionStorage when available,
-        // but fall back to localStorage context (covers new-tab flows).
-        const savedState = sessionStorage.getItem('oauth_state');
-        let ctx: { provider?: string; redirectUri?: string } | undefined;
-        if ((!savedState || !returnedState) && returnedState) {
-          try {
-            const raw = localStorage.getItem(`oauth_ctx_${returnedState}`);
-            ctx = raw ? JSON.parse(raw) : undefined;
-          } catch {
-            ctx = undefined;
-          }
-        }
-        sessionStorage.removeItem('oauth_state');
-        sessionStorage.removeItem('oauth_provider');
-        sessionStorage.removeItem('oauth_redirect_uri');
-        if (returnedState) {
-          try {
-            localStorage.removeItem(`oauth_ctx_${returnedState}`);
-          } catch {
-            // ignore
-          }
-        }
-
-        if (error) {
-          finish(err(new Error(String(error))));
-          return;
-        }
-
-        if (!code) {
-          finish(err(new Error('Missing OAuth code')));
-          return;
-        }
-
-        if (savedState) {
-          if (returnedState !== savedState) {
-            finish(err(new Error('Invalid OAuth state. Please try again.')));
-            return;
-          }
-        } else if (!ctx) {
-          finish(err(new Error('Invalid OAuth state. Please try again.')));
-          return;
-        }
-
-        // Exchange code for token
-        const effectiveRedirectUri = ctx?.redirectUri || redirectUri;
-        this._exchangeOAuthCode(providerName, code, effectiveRedirectUri).subscribe({
-          next: result => finish(result),
-          error: e => finish(err(e)),
-        });
-      };
-      
-      const handleMessage = (event: MessageEvent) => {
-        // Verify origin
-        if (event.origin !== this._window.location.origin) {
-          return;
-        }
-        
-        if (event.data?.type === 'oauth_callback') {
-          handleOAuthCallback(event.data);
-        }
-      };
-
-      // BroadcastChannel fallback (works even when COOP severs window.opener)
-      const bc = 'BroadcastChannel' in this._window ? new (this._window as any).BroadcastChannel('wapps_oauth') : null;
-      const handleBroadcast = (event: any) => {
-        const data = event?.data;
-        if (data?.type === 'oauth_callback') {
-          handleOAuthCallback(data);
-        }
-      };
-      if (bc) {
-        bc.addEventListener('message', handleBroadcast);
-      }
-
-      // localStorage "storage" event fallback (cross-tab communication)
-      const handleStorage = (event: StorageEvent) => {
-        if (event.key !== 'oauth_callback' || !event.newValue) return;
-        try {
-          const payload = JSON.parse(event.newValue);
-          if (payload?.type === 'oauth_callback') {
-            handleOAuthCallback(payload);
-          }
-        } catch {
-          // ignore
-        }
-      };
-      
-      // Check if popup is closed without completing
-      let canReadPopupClosed = true;
-      const checkPopupClosed = setInterval(() => {
-        if (!canReadPopupClosed) return;
-        try {
-          // Under Cross-Origin-Opener-Policy, accessing popup.closed may throw.
-          if (popup.closed && !completed) {
-            finish(err(new Error('Sign-in cancelled')));
-          }
-        } catch {
-          // COOP blocked access. Stop polling to avoid console spam; rely on message/broadcast/storage + timeout.
-          canReadPopupClosed = false;
-          clearInterval(checkPopupClosed);
-        }
-      }, 500);
-      
-      // Timeout after 5 minutes
-      const timeoutId = setTimeout(() => {
-        if (!completed) {
-          try {
-            popup.close();
-          } catch {
-            // ignore
-          }
-          finish(err(new Error('Sign-in timed out')));
-        }
-      }, 300000);
-      
-      const cleanup = () => {
-        this._window.removeEventListener('message', handleMessage);
-        this._window.removeEventListener('storage', handleStorage);
-        clearInterval(checkPopupClosed);
-        clearTimeout(timeoutId);
-        sessionStorage.removeItem('oauth_state');
-        sessionStorage.removeItem('oauth_provider');
-        sessionStorage.removeItem('oauth_redirect_uri');
-        try {
-          localStorage.removeItem(`oauth_ctx_${state}`);
-        } catch {
-          // ignore
-        }
-        if (bc) {
-          bc.removeEventListener('message', handleBroadcast);
-          bc.close();
-        }
-      };
-      
-      this._window.addEventListener('message', handleMessage);
-      this._window.addEventListener('storage', handleStorage);
-      
-      return cleanup;
+    const qs = new URLSearchParams({
+      redirect_uri: redirectUri,
+      state,
     });
+
+    if (providerName === 'google' && ctx.codeChallenge) {
+      qs.set('code_challenge', ctx.codeChallenge);
+      qs.set('code_challenge_method', 'S256');
+    }
+
+    const authUrl = `${this._authBffUrl}/auth/oauth/${providerName}/authorize?${qs.toString()}`;
+    this._window.location.assign(authUrl);
+  }
+
+  private async _createPkce(): Promise<{ codeVerifier: string; codeChallenge: string }> {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    const codeVerifier = this._base64UrlEncode(bytes);
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(codeVerifier));
+    const codeChallenge = this._base64UrlEncode(new Uint8Array(digest));
+    return { codeVerifier, codeChallenge };
+  }
+
+  private _base64UrlEncode(bytes: Uint8Array): string {
+    let str = '';
+    for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+    const b64 = btoa(str);
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
 
   /**
