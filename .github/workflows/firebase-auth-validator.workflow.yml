@@ -118,6 +118,7 @@ jobs:
           FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}"
           GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
           GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
+          FIREBASE_SERVICE_ACCOUNT_JSON="${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}"
           
           if [ -z "$FIREBASE_ID" ]; then
             echo "::error::Firebase Project ID not configured for ${ENV} environment"
@@ -126,6 +127,11 @@ jobs:
           
           if [ -z "$FIREBASE_WEB_API_KEY" ]; then
             echo "::error::FIREBASE_WEB_API_KEY not configured (set FIREBASE_WEB_API_KEY secret)"
+            exit 1
+          fi
+
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT_JSON not configured (paste Firebase Admin SDK serviceAccount.json into this GitHub secret)"
             exit 1
           fi
           
@@ -139,6 +145,18 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
           
           echo "✅ Firebase config secret updated"
+
+          # Create or update Firebase Admin SDK credentials secret (service account JSON)
+          TMP_JSON="$(mktemp)"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$TMP_JSON"
+          
+          kubectl create secret generic firebase-admin-credentials \
+            --from-file=serviceAccount.json="$TMP_JSON" \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          rm -f "$TMP_JSON"
+          echo "✅ Firebase Admin credentials secret updated"
 
       - name: Install ArgoCD CLI
         run: |
