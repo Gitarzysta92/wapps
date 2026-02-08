@@ -1,6 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { WA_WINDOW } from '@ng-web-apis/common';
+import { HttpClient } from '@angular/common/http';
+import { WA_LOCAL_STORAGE, WA_WINDOW } from '@ng-web-apis/common';
+import { firstValueFrom } from 'rxjs';
+import { AUTH_BFF_URL } from '../../../infrastructure/bff/auth-bff-url.token';
+import { AuthenticationStorage } from '../../../infrastructure/authentication.storage';
 
 /**
  * OAuth callback component
@@ -43,8 +46,11 @@ import { WA_WINDOW } from '@ng-web-apis/common';
   standalone: true
 })
 export class OAuthCallbackComponent implements OnInit {
-  private readonly _route = inject(ActivatedRoute);
   private readonly _window = inject(WA_WINDOW);
+  private readonly _http = inject(HttpClient);
+  private readonly _authBffUrl = inject(AUTH_BFF_URL, { optional: true });
+  private readonly _tokenStorage = inject(AuthenticationStorage, { optional: true });
+  private readonly _localStorage = inject(WA_LOCAL_STORAGE);
 
   ngOnInit(): void {
     // Get query parameters
@@ -68,8 +74,59 @@ export class OAuthCallbackComponent implements OnInit {
         this._window.close();
       }, 100);
     } else {
-      // If no opener, redirect to home (fallback)
-      console.error('No opener window found');
+      // No opener: complete sign-in in the current window (redirect-based fallback)
+      void this._completeInSameWindow(code, state, error || errorDescription);
+    }
+  }
+
+  private async _completeInSameWindow(code: string | null, returnedState: string | null, error: string | null) {
+    try {
+      if (error) {
+        console.error('OAuth error:', error);
+        this._window.location.href = '/';
+        return;
+      }
+
+      const savedState = sessionStorage.getItem('oauth_state');
+      const provider = sessionStorage.getItem('oauth_provider');
+      const redirectUri = sessionStorage.getItem('oauth_redirect_uri') ?? `${this._window.location.origin}/auth/callback`;
+
+      sessionStorage.removeItem('oauth_state');
+      sessionStorage.removeItem('oauth_provider');
+      sessionStorage.removeItem('oauth_redirect_uri');
+
+      if (!code || !provider) {
+        console.error('OAuth callback missing code/provider');
+        this._window.location.href = '/';
+        return;
+      }
+
+      if (!savedState || returnedState !== savedState) {
+        console.error('Invalid OAuth state');
+        this._window.location.href = '/';
+        return;
+      }
+
+      if (!this._authBffUrl || !this._tokenStorage) {
+        console.error('Auth BFF not configured in this app');
+        this._window.location.href = '/';
+        return;
+      }
+
+      const response = await firstValueFrom(
+        this._http.post<{ token: string; refreshToken: string }>(
+          `${this._authBffUrl}/auth/signin/oauth`,
+          { provider, code, redirectUri }
+        )
+      );
+
+      // Keep behavior consistent with BffAuthenticationService
+      this._localStorage.setItem('auth_refresh_token', response.refreshToken);
+      this._tokenStorage.setToken(response.token);
+
+      this._window.location.href = '/';
+    } catch (e: any) {
+      console.error('OAuth redirect completion failed:', e?.message ?? e);
       this._window.location.href = '/';
     }
   }
