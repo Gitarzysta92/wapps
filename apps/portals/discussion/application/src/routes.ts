@@ -7,6 +7,11 @@ import { IAppShellRouteData } from "./shells/app-shell/app-shell.component";
 import { OAuthCallbackComponent } from "@portals/shared/features/identity";
 
 export const routes: Routes = [
+  // OAuth callback route for third-party authentication (must be before the shell route)
+  {
+    path: "auth/callback",
+    component: OAuthCallbackComponent,
+  },
   {
     path: "",
     component: AppShellComponent,
@@ -66,11 +71,6 @@ export const routes: Routes = [
         redirectTo: NAVIGATION.discussions.path,
       },
     ],
-  },
-  // OAuth callback route for third-party authentication
-  {
-    path: "auth/callback",
-    component: OAuthCallbackComponent,
   },
 ];
 
