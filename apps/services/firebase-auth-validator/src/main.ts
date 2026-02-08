@@ -229,7 +229,8 @@ const swaggerDocument = {
         properties: {
           provider: { type: 'string', enum: ['google', 'github'], example: 'google' },
           code: { type: 'string', description: 'OAuth authorization code' },
-          redirectUri: { type: 'string', description: 'Redirect URI used in OAuth flow' }
+          redirectUri: { type: 'string', description: 'Redirect URI used in OAuth flow' },
+          codeVerifier: { type: 'string', nullable: true, description: 'PKCE code_verifier (optional)' }
         }
       },
       RefreshTokenRequest: {
@@ -538,7 +539,7 @@ app.post('/auth/signin/anonymous', async (req: Request, res: Response) => {
  */
 app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
   const { provider } = req.params;
-  const { redirect_uri, state } = req.query;
+  const { redirect_uri, state, code_challenge, code_challenge_method } = req.query;
   
   if (!redirect_uri) {
     return res.status(400).json({ error: 'redirect_uri is required' });
@@ -558,6 +559,8 @@ app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
         `&scope=openid%20email%20profile` +
         `&access_type=offline` +
         `&prompt=consent` +
+        (code_challenge ? `&code_challenge=${encodeURIComponent(code_challenge as string)}` : '') +
+        (code_challenge_method ? `&code_challenge_method=${encodeURIComponent(code_challenge_method as string)}` : '') +
         (state ? `&state=${encodeURIComponent(state as string)}` : '');
       break;
       
@@ -583,7 +586,7 @@ app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
  * Exchange OAuth code for Firebase token
  */
 app.post('/auth/signin/oauth', async (req: Request, res: Response) => {
-  const { provider, code, redirectUri } = req.body ?? {};
+  const { provider, code, redirectUri, codeVerifier } = req.body ?? {};
 
   if (!provider || !code) {
     return res.status(400).json({ error: 'Provider and code are required' });
@@ -601,7 +604,8 @@ app.post('/auth/signin/oauth', async (req: Request, res: Response) => {
   const result = await identificationService.exchangeOAuthCodeForSession(
     normalizedProvider as 'google' | 'github',
     code,
-    redirectUri
+    redirectUri,
+    codeVerifier
   );
 
   if (!result.ok) {

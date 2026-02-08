@@ -179,13 +179,14 @@ export class IdentificationService {
   async exchangeOAuthCodeForSession(
     provider: OAuthProvider,
     code: string,
-    redirectUri: string
+    redirectUri: string,
+    codeVerifier?: string
   ): Promise<Result<AuthSessionDto, Error>> {
     if (!this.config.firebaseWebApiKey) {
       return err(new Error('Firebase configuration incomplete'));
     }
 
-    const userInfo = await this.oauthCodeExchanger.exchangeCode(provider, code, redirectUri);
+    const userInfo = await this.oauthCodeExchanger.exchangeCode(provider, code, redirectUri, codeVerifier);
     if (isErr(userInfo)) {
       return err(userInfo.error);
     }
