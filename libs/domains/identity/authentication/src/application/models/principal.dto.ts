@@ -10,7 +10,7 @@ export type PrincipalDto = {
   identityId?: string;
 
   /**
-   * Optional subject node id (e.g. `firebase:<uid>`).
+   * Optional stable subject identifier (e.g. `firebase:<uid>`).
    * Useful for downstream event emission and internal tracing.
    */
   subjectId?: string;

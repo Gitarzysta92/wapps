@@ -4,7 +4,7 @@ import {
   CreateUserDto,
   IUserProvisioner,
   ProvisionedUserDto,
-} from '@domains/identity/identification';
+} from '@domains/identity/authentication';
 
 class FirebaseAdminError extends Error {
   override name = 'FirebaseAdminError';

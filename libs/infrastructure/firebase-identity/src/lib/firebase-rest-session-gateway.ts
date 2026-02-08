@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@foundation/standard';
-import { AuthSessionDto, ISessionGateway } from '@domains/identity/identification';
+import { AuthSessionDto, ISessionGateway } from '@domains/identity/authentication';
 
 class FirebaseRestError extends Error {
   override name = 'FirebaseRestError';

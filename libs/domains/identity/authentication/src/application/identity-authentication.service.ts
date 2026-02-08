@@ -8,9 +8,10 @@ import { IIdentityGraphProvisioner } from './ports/identity-graph-provisioner.po
 import { IOAuthCodeExchanger } from './ports/oauth-code-exchanger.port';
 import { ISessionGateway } from './ports/session-gateway.port';
 import { IUserProvisioner } from './ports/user-provisioner.port';
-import { AuthenticationMethodDto, AuthenticationProvider } from '@domains/identity/authentication';
+import { AuthenticationMethodDto } from './models/authentication-method.dto';
+import { AuthenticationProvider } from './models/authentication-provider.enum';
 
-export type IdentificationServiceConfig = {
+export type IdentityAuthenticationServiceConfig = {
   enabledEmailPassword: boolean;
   enabledGoogle: boolean;
   enabledGithub: boolean;
@@ -46,13 +47,13 @@ function mapFirebaseError(errorCode: string | undefined): string {
   return (errorCode && errorMessages[errorCode]) || 'Authentication failed. Please try again';
 }
 
-export class IdentificationService {
+export class IdentityAuthenticationService {
   constructor(
     private readonly idTokenVerifier: IIdTokenVerifier,
     private readonly sessionGateway: ISessionGateway,
     private readonly userProvisioner: IUserProvisioner,
     private readonly oauthCodeExchanger: IOAuthCodeExchanger,
-    private readonly config: IdentificationServiceConfig,
+    private readonly config: IdentityAuthenticationServiceConfig,
     private readonly identityGraphProvisioner?: () => IIdentityGraphProvisioner | undefined
   ) {}
 
@@ -194,7 +195,6 @@ export class IdentificationService {
     // Get or create user in the external IdP (Firebase)
     const getUserResult = await this.userProvisioner.getUserByEmail(userInfo.value.email);
     let uid: string | undefined;
-    let createdInFirebase = false;
 
     if (isErr(getUserResult)) {
       const code = getErrorCode(getUserResult.error as ErrorWithCode);
@@ -212,7 +212,6 @@ export class IdentificationService {
         return err(created.error);
       }
       uid = created.value.uid;
-      createdInFirebase = true;
     } else {
       uid = getUserResult.value.uid;
     }
@@ -226,7 +225,7 @@ export class IdentificationService {
       return err(customToken.error);
     }
 
-    // Ensure internal identity graph node exists (best effort).
+    // Ensure internal identity exists (best effort).
     const prov = this.identityGraphProvisioner?.();
     if (prov) {
       await prov.ensureIdentityForFirebaseUid(uid);

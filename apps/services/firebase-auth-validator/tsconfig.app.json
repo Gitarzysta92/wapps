@@ -8,7 +8,7 @@
   "include": ["src/**/*.ts"],
   "references": [
     { "path": "../../../libs/foundation/standard/tsconfig.lib.json" },
-    { "path": "../../../libs/domains/identity/identification/tsconfig.lib.json" },
+    { "path": "../../../libs/domains/identity/authentication/tsconfig.lib.json" },
     { "path": "../../../libs/infrastructure/firebase-identity/tsconfig.lib.json" },
     { "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json" },
     { "path": "../../../libs/infrastructure/mongo/tsconfig.lib.json" },

@@ -3,10 +3,10 @@ import { Collection, Document } from 'mongodb';
 import { err, ok, Result } from '@foundation/standard';
 import {
   IDENTITY_KIND,
-  SUBJECT_KIND_FIREBASE,
-  SUBJECT_TO_IDENTITY_RELATION,
+  identitySubjectId,
   IIdentityNode,
-  IIdentityNodeRelation,
+  IIdentitySubject,
+  IIdentitySubjectRepository,
 } from '@foundation/identity-system';
 import { PlatformMongoClient } from '@infrastructure/mongo';
 
@@ -17,31 +17,29 @@ export type EnsureIdentityResult = {
 };
 
 type IdentityNodeDoc = Document & IIdentityNode;
-type IdentityRelationDoc = Document & IIdentityNodeRelation;
 
 export class IdentityProvisioner {
   private readonly nodes: Collection<IdentityNodeDoc>;
-  private readonly relations: Collection<IdentityRelationDoc>;
+  private readonly subjectsRepo: IIdentitySubjectRepository;
 
   constructor(
     mongo: PlatformMongoClient,
-    opts?: { nodesCollection?: string; relationsCollection?: string }
+    subjectsRepo: IIdentitySubjectRepository,
+    opts?: { nodesCollection?: string }
   ) {
     this.nodes = mongo.collection<IdentityNodeDoc>(opts?.nodesCollection ?? 'identity_nodes');
-    this.relations = mongo.collection<IdentityRelationDoc>(opts?.relationsCollection ?? 'identity_relations');
+    this.subjectsRepo = subjectsRepo;
   }
 
   async ensureForFirebaseUid(uid: string): Promise<Result<EnsureIdentityResult, Error>> {
-    const subjectId = `firebase:${uid}`;
+    const provider = 'firebase';
+    const subjectId = identitySubjectId(provider, uid);
 
     try {
-      const existingRel = await this.relations.findOne({
-        fromIdentityId: subjectId,
-        relationType: SUBJECT_TO_IDENTITY_RELATION,
-      } as any);
-
-      if (existingRel?.toIdentityId) {
-        return ok({ identityId: existingRel.toIdentityId, subjectId, created: false });
+      const existing = await this.subjectsRepo.getByProviderExternalId(provider, uid);
+      if (!existing.ok) return err(existing.error);
+      if (existing.value?.identityId) {
+        return ok({ identityId: existing.value.identityId, subjectId, created: false });
       }
 
       const now = Date.now();
@@ -55,25 +53,30 @@ export class IdentityProvisioner {
         deletedAt: 0,
       };
 
-      const subjectNode: IIdentityNode = {
+      const subject: IIdentitySubject = {
         id: subjectId,
-        kind: SUBJECT_KIND_FIREBASE,
+        provider,
+        externalId: uid,
+        identityId,
         createdAt: now,
         updatedAt: now,
         deletedAt: 0,
       };
 
-      const relation: IIdentityNodeRelation = {
-        id: uuidv7(),
-        fromIdentityId: subjectId,
-        toIdentityId: identityId,
-        relationType: SUBJECT_TO_IDENTITY_RELATION,
-        createdAt: now,
-      };
-
-      await this.nodes.updateOne({ id: subjectId } as any, { $setOnInsert: subjectNode }, { upsert: true });
+      // Identity is still a graph node.
       await this.nodes.updateOne({ id: identityId } as any, { $setOnInsert: identityNode }, { upsert: true });
-      await this.relations.insertOne(relation as any);
+
+      // Subject is stored in MySQL (separate from the graph).
+      const upserted = await this.subjectsRepo.upsert(subject);
+      if (!upserted.ok) {
+        // best-effort cleanup to avoid orphan identity nodes
+        try {
+          await this.nodes.deleteOne({ id: identityId } as any);
+        } catch {
+          // ignore
+        }
+        return err(upserted.error);
+      }
 
       return ok({ identityId, subjectId, created: true });
     } catch (e) {

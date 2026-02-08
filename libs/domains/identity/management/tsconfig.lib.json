@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../../dist/domains/identity/account-management",
+    "outDir": "../../../../dist/domains/identity/management",
     "types": [],
     "rootDir": "src",
     "composite": true

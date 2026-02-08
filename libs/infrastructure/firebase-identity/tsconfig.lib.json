@@ -12,8 +12,8 @@
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
     { "path": "../../foundation/standard/tsconfig.lib.json" },
-    { "path": "../../domains/identity/identification/tsconfig.lib.json" },
-    { "path": "../../domains/identity/account-management/tsconfig.lib.json" }
+    { "path": "../../domains/identity/authentication/tsconfig.lib.json" },
+    { "path": "../../domains/identity/management/tsconfig.lib.json" }
   ]
 }
 

@@ -86,11 +86,8 @@
       "@domains/identity/authentication": [
         "libs/domains/identity/authentication/src/index.ts"
       ],
-      "@domains/identity/identification": [
-        "libs/domains/identity/identification/src/index.ts"
-      ],
-      "@domains/identity/account-management": [
-        "libs/domains/identity/account-management/src/index.ts"
+      "@domains/identity/management": [
+        "libs/domains/identity/management/src/index.ts"
       ],
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
       "@domains/publication/article": [

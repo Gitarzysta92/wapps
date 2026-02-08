@@ -21,16 +21,22 @@
   ],
   "references": [
     {
-      "path": "../../../libs/domains/identity/account-management/tsconfig.lib.json"
+      "path": "../../../libs/domains/identity/management/tsconfig.lib.json"
     },
     {
       "path": "../../../libs/foundation/authority-system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/foundation/identity-system/tsconfig.lib.json"
     },
     {
       "path": "../../../libs/foundation/standard/tsconfig.lib.json"
     },
     {
       "path": "../../../libs/infrastructure/firebase-identity/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/infrastructure/mysql/tsconfig.lib.json"
     },
     {
       "path": "../../../libs/infrastructure/platform-queue/tsconfig.lib.json"

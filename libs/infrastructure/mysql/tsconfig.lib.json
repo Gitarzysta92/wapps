@@ -1,10 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/libs/infrastructure/mysql",
     "declaration": true,
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../../dist/libs/infrastructure/mysql/tsconfig.lib.tsbuildinfo",
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "references": [
+    { "path": "../../foundation/standard/tsconfig.lib.json" },
+    { "path": "../../foundation/identity-system/tsconfig.lib.json" }
+  ]
 }

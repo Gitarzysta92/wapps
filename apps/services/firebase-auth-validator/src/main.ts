@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import swaggerUi from 'swagger-ui-express';
-import { IdentificationService } from '@domains/identity/identification';
+import { IdentityAuthenticationService } from '@domains/identity/authentication';
 import {
   FirebaseAdminIdTokenVerifier,
   FirebaseAdminUserProvisioner,
@@ -9,6 +9,7 @@ import {
   OAuthCodeExchanger,
   TokenValidationError,
 } from '@infrastructure/firebase-identity';
+import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mysql';
 import { PlatformMongoClient } from '@infrastructure/mongo';
 import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
@@ -68,27 +69,54 @@ if (process.env.QUEUE_HOST && process.env.QUEUE_PORT && process.env.QUEUE_USERNA
 
 if (process.env.MONGO_HOST) {
   const mongo = new PlatformMongoClient();
-  void mongo
-    .connect({
-      host: process.env.MONGO_HOST,
-      port: process.env.MONGO_PORT,
-      username: process.env.MONGO_USERNAME,
-      password: process.env.MONGO_PASSWORD,
-      database: process.env.MONGO_DATABASE,
-    })
-    .then(() => {
-      const base = new MongoIdentityGraphProvisionerAdapter(new IdentityProvisioner(mongo));
-      identityGraphProvisioner =
-        identityEventsPublisher ? (new EmittingIdentityGraphProvisioner(base, identityEventsPublisher) as any) : base;
-      console.log('🧠 Identity graph provisioning enabled (Mongo)');
-    })
-    .catch((e) => {
-      console.warn('⚠️  Identity graph provisioning disabled (Mongo connect failed):', e?.message ?? e);
+  const hasMysql =
+    process.env.MYSQL_HOST &&
+    process.env.MYSQL_PORT &&
+    process.env.MYSQL_USERNAME &&
+    process.env.MYSQL_PASSWORD &&
+    process.env.MYSQL_DATABASE;
+
+  if (!hasMysql) {
+    console.warn(
+      '⚠️  Identity graph provisioning disabled: MySQL subject store not configured (set MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DATABASE)'
+    );
+  } else {
+    const mysql = new MysqlClient();
+    const pool = mysql.connect({
+      host: process.env.MYSQL_HOST as string,
+      port: parseInt(process.env.MYSQL_PORT as string, 10),
+      user: process.env.MYSQL_USERNAME as string,
+      password: process.env.MYSQL_PASSWORD as string,
+      database: process.env.MYSQL_DATABASE as string,
     });
+    const subjectsRepo = new MysqlIdentitySubjectRepository(pool);
+
+    void Promise.all([
+      mongo.connect({
+        host: process.env.MONGO_HOST,
+        port: process.env.MONGO_PORT,
+        username: process.env.MONGO_USERNAME,
+        password: process.env.MONGO_PASSWORD,
+        database: process.env.MONGO_DATABASE,
+      }),
+      subjectsRepo.ensureSchema().then((r) => {
+        if (!r.ok) throw r.error;
+      }),
+    ])
+      .then(() => {
+        const base = new MongoIdentityGraphProvisionerAdapter(new IdentityProvisioner(mongo, subjectsRepo));
+        identityGraphProvisioner =
+          identityEventsPublisher ? (new EmittingIdentityGraphProvisioner(base, identityEventsPublisher) as any) : base;
+        console.log('🧠 Identity provisioning enabled (Mongo graph + MySQL subjects)');
+      })
+      .catch((e) => {
+        console.warn('⚠️  Identity graph provisioning disabled (bootstrap failed):', e?.message ?? e);
+      });
+  }
 }
 
 // Domain wiring (identification-only; no authorization)
-const identificationService = new IdentificationService(
+const identificationService = new IdentityAuthenticationService(
   new FirebaseAdminIdTokenVerifier(),
   new FirebaseRestSessionGateway(FIREBASE_WEB_API_KEY),
   new FirebaseAdminUserProvisioner(),

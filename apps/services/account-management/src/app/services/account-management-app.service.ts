@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthorityValidationService } from '@foundation/authority-system';
-import { AccountManagementContext, AccountManagementService } from '@domains/identity/account-management';
+import { IdentityManagementContext, IdentityManagementService } from '@domains/identity/management';
 import { FirebaseAdminUserAdminPort } from '@infrastructure/firebase-identity';
 import { OpaPolicyEvaluator } from '../infrastructure/opa-policy-evaluator';
 import { AuthenticatedUser } from '../decorators/auth-user.decorator';
@@ -9,7 +9,7 @@ import { IdentityProvisioner } from '../infrastructure/identity/identity-provisi
 @Injectable()
 export class AccountManagementAppService {
   private readonly authorityValidationService: AuthorityValidationService;
-  private readonly domain: AccountManagementService;
+  private readonly domain: IdentityManagementService;
 
   constructor(
     @Inject('IDENTITY_EVENTS_PUBLISHER')
@@ -24,13 +24,13 @@ export class AccountManagementAppService {
       new OpaPolicyEvaluator()
     );
 
-    this.domain = new AccountManagementService(
+    this.domain = new IdentityManagementService(
       this.authorityValidationService,
       new FirebaseAdminUserAdminPort()
     );
   }
 
-  private ctxFrom(user: AuthenticatedUser): AccountManagementContext {
+  private ctxFrom(user: AuthenticatedUser): IdentityManagementContext {
     const roles = Array.isArray(user.userClaims?.roles) ? user.userClaims.roles : undefined;
     return {
       identityId: user.userId,

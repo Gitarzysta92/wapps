@@ -1,4 +1,4 @@
-import { IIdentityGraphProvisioner } from '@domains/identity/identification';
+import { IIdentityGraphProvisioner } from '@domains/identity/authentication';
 import { Result } from '@foundation/standard';
 import { RabbitMqIdentityEventsPublisher } from './rabbitmq-identity-events.publisher';
 
