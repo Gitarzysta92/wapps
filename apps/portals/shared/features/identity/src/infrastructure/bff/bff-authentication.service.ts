@@ -275,14 +275,18 @@ export class BffAuthenticationService implements IAuthenticationHandler {
       };
       
       // Check if popup is closed without completing
+      let canReadPopupClosed = true;
       const checkPopupClosed = setInterval(() => {
+        if (!canReadPopupClosed) return;
         try {
-          // Under Cross-Origin-Opener-Policy, accessing popup.closed may throw — ignore and keep waiting.
+          // Under Cross-Origin-Opener-Policy, accessing popup.closed may throw.
           if (popup.closed && !completed) {
             finish(err(new Error('Sign-in cancelled')));
           }
         } catch {
-          // ignore
+          // COOP blocked access. Stop polling to avoid console spam; rely on message/broadcast/storage + timeout.
+          canReadPopupClosed = false;
+          clearInterval(checkPopupClosed);
         }
       }, 500);
       

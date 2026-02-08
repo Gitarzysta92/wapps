@@ -7,6 +7,10 @@ on:
     paths:
       - 'apps/portals/discussion/entrypoints/csr/**'
       - 'apps/portals/discussion/application/**'
+      # allow shared/lib changes, but gate deploy with Nx affected
+      - 'apps/portals/shared/**'
+      - 'libs/**'
+      - 'package.json'
       - 'environments/dev/apps/discussion-csr-kustomization/**'
       - 'argocd/applications/frontend/discussion-csr.yaml'
       - '.github/workflows/discussion-csr.workflow.yml'
@@ -36,6 +40,7 @@ jobs:
       packages: write
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
+      should_deploy: ${{ steps.affected.outputs.should_deploy }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,17 +67,48 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check if discussion-csr is affected
+        id: affected
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            echo "workflow_dispatch → forcing build/deploy"
+            exit 0
+          fi
+
+          BASE="${{ github.event.before }}"
+          HEAD="${{ github.sha }}"
+          echo "Base: ${BASE}"
+          echo "Head: ${HEAD}"
+
+          AFFECTED="$(npx nx show projects --affected --base=${BASE} --head=${HEAD} 2>/dev/null || true)"
+          echo "Affected projects:"
+          echo "${AFFECTED}"
+
+          if [[ "${AFFECTED}" == *"discussion-csr"* ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ discussion-csr affected"
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ discussion-csr not affected; skipping build/deploy"
+          fi
+
       - name: Build application
+        if: steps.affected.outputs.should_deploy == 'true'
         run: npx nx build discussion-csr --configuration=production
 
       - name: Stage nginx.conf into dist output
+        if: steps.affected.outputs.should_deploy == 'true'
         run: |
           cp apps/portals/discussion/entrypoints/csr/nginx.conf dist/apps/portals/discussion/entrypoints/csr/nginx.conf
 
       - name: Set up Docker Buildx
+        if: steps.affected.outputs.should_deploy == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
+        if: steps.affected.outputs.should_deploy == 'true'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -80,6 +116,7 @@ jobs:
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
       - name: Build and push Docker image
+        if: steps.affected.outputs.should_deploy == 'true'
         uses: docker/build-push-action@v5
         with:
           context: dist/apps/portals/discussion/entrypoints/csr
@@ -90,11 +127,13 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Image pushed
+        if: steps.affected.outputs.should_deploy == 'true'
         run: |
           echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
   deploy:
     name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    if: needs.build.outputs.should_deploy == 'true'
     runs-on: self-hosted
     needs: build
     environment: ${{ needs.build.outputs.environment }}
