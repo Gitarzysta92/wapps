@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import swaggerUi from 'swagger-ui-express';
-import { IdentityAuthenticationService } from '@domains/identity/authentication';
+import { IIdentityGraphProvisioner, IdentityAuthenticationService, IdentityService } from '@domains/identity/authentication';
+import { v7 as uuidv7 } from 'uuid';
 import {
   FirebaseAdminIdTokenVerifier,
   FirebaseAdminUserProvisioner,
@@ -13,7 +14,7 @@ import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mys
 import { PlatformMongoClient } from '@infrastructure/mongo';
 import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
-import { IdentityProvisioner } from './infrastructure/identity/identity-provisioner';
+import { MongoIdentityNodeRepository } from './infrastructure/identity/identity-provisioner';
 import { MongoIdentityGraphProvisionerAdapter } from './infrastructure/identity/mongo-identity-graph-provisioner.adapter';
 import { EmittingIdentityGraphProvisioner } from './infrastructure/identity/emitting-identity-graph-provisioner';
 import { RabbitMqIdentityEventsPublisher } from './infrastructure/identity/rabbitmq-identity-events.publisher';
@@ -44,7 +45,7 @@ admin.initializeApp({
 });
 
 // Optional identity graph (Mongo) - enable by providing MONGO_* env vars
-let identityGraphProvisioner: any | undefined;
+let identityGraphProvisioner: IIdentityGraphProvisioner | undefined;
 let identityEventsPublisher: RabbitMqIdentityEventsPublisher | undefined;
 
 // Optional identity events publisher (RabbitMQ) - enable by providing QUEUE_* env vars
@@ -104,9 +105,12 @@ if (process.env.MONGO_HOST) {
       }),
     ])
       .then(() => {
-        const base = new MongoIdentityGraphProvisionerAdapter(new IdentityProvisioner(mongo, subjectsRepo));
+        const nodesRepo = new MongoIdentityNodeRepository(mongo);
+        const ids = { generate: () => uuidv7() };
+        const identityService = new IdentityService(nodesRepo, subjectsRepo, ids);
+        const base = new MongoIdentityGraphProvisionerAdapter(identityService);
         identityGraphProvisioner =
-          identityEventsPublisher ? (new EmittingIdentityGraphProvisioner(base, identityEventsPublisher) as any) : base;
+          identityEventsPublisher ? new EmittingIdentityGraphProvisioner(base, identityEventsPublisher) : base;
         console.log('🧠 Identity provisioning enabled (Mongo graph + MySQL subjects)');
       })
       .catch((e) => {
@@ -131,11 +135,11 @@ const identificationService = new IdentityAuthenticationService(
     enabledGoogle: ENABLE_GOOGLE,
     enabledGithub: ENABLE_GITHUB,
     enabledAnonymous: ENABLE_ANONYMOUS,
+    identityProvider: 'firebase',
     googleClientId: GOOGLE_CLIENT_ID,
     googleClientSecret: GOOGLE_CLIENT_SECRET,
     githubClientId: GITHUB_CLIENT_ID,
     githubClientSecret: GITHUB_CLIENT_SECRET,
-    firebaseWebApiKey: FIREBASE_WEB_API_KEY,
   },
   () => identityGraphProvisioner
 );
@@ -452,7 +456,7 @@ app.get('/validate', async (req: Request, res: Response) => {
     const code =
       result.error instanceof TokenValidationError
         ? result.error.code
-        : (result.error as any)?.code;
+        : (result.error as { code?: unknown } | undefined)?.code;
 
     if (code === 'auth/id-token-expired') {
       return res.status(401).json({ error: 'Token expired' });

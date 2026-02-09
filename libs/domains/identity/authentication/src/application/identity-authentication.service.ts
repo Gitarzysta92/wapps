@@ -17,11 +17,16 @@ export type IdentityAuthenticationServiceConfig = {
   enabledGithub: boolean;
   enabledAnonymous: boolean;
 
+  /**
+   * Logical provider name used when mapping an external subject (e.g. an IdP user id)
+   * into the internal identity graph (e.g. `firebase`, `cognito`, `auth0`).
+   */
+  identityProvider: string;
+
   googleClientId?: string;
   googleClientSecret?: string;
   githubClientId?: string;
   githubClientSecret?: string;
-  firebaseWebApiKey?: string;
 };
 
 type ErrorWithCode = Error & { code?: string };
@@ -30,21 +35,6 @@ function getErrorCode(e: unknown): string | undefined {
   if (!e || typeof e !== 'object') return undefined;
   const code = (e as { code?: unknown }).code;
   return typeof code === 'string' ? code : undefined;
-}
-
-function mapFirebaseError(errorCode: string | undefined): string {
-  const errorMessages: Record<string, string> = {
-    EMAIL_NOT_FOUND: 'No account found with this email',
-    INVALID_PASSWORD: 'Incorrect password',
-    INVALID_LOGIN_CREDENTIALS: 'Invalid email or password',
-    USER_DISABLED: 'This account has been disabled',
-    TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many failed attempts. Please try again later',
-    EMAIL_EXISTS: 'An account with this email already exists',
-    WEAK_PASSWORD: 'Password should be at least 6 characters',
-    INVALID_EMAIL: 'Invalid email address',
-  };
-
-  return (errorCode && errorMessages[errorCode]) || 'Authentication failed. Please try again';
 }
 
 export class IdentityAuthenticationService {
@@ -120,7 +110,7 @@ export class IdentityAuthenticationService {
     let subjectId: string | undefined;
     const prov = this.identityGraphProvisioner?.();
     if (prov) {
-      const ensured = await prov.ensureIdentityForFirebaseUid(verified.value.uid);
+      const ensured = await prov.ensureIdentity(this.config.identityProvider, verified.value.uid);
       if (ensured.ok) {
         identityId = ensured.value.identityId;
         subjectId = ensured.value.subjectId;
@@ -152,26 +142,12 @@ export class IdentityAuthenticationService {
   }
 
   async signInWithEmailPassword(email: string, password: string): Promise<Result<AuthSessionDto, Error>> {
-    if (!this.config.firebaseWebApiKey) {
-      return err(new Error('Email/password authentication not configured'));
-    }
-
-    const session = await this.sessionGateway.signInWithPassword(email, password);
-    if (isErr(session)) {
-      const code = getErrorCode(session.error) ?? session.error.message;
-      return err(new Error(mapFirebaseError(code)));
-    }
-
-    return session;
+    return await this.sessionGateway.signInWithPassword(email, password);
   }
 
   async signInAnonymously(): Promise<Result<AuthSessionDto, Error>> {
     if (!this.config.enabledAnonymous) {
       return err(new Error('Anonymous authentication not enabled'));
-    }
-
-    if (!this.config.firebaseWebApiKey) {
-      return err(new Error('Anonymous authentication not configured'));
     }
 
     return await this.sessionGateway.signUpAnonymous();
@@ -183,16 +159,12 @@ export class IdentityAuthenticationService {
     redirectUri: string,
     codeVerifier?: string
   ): Promise<Result<AuthSessionDto, Error>> {
-    if (!this.config.firebaseWebApiKey) {
-      return err(new Error('Firebase configuration incomplete'));
-    }
-
     const userInfo = await this.oauthCodeExchanger.exchangeCode(provider, code, redirectUri, codeVerifier);
     if (isErr(userInfo)) {
       return err(userInfo.error);
     }
 
-    // Get or create user in the external IdP (Firebase)
+    // Get or create user in the external IdP
     const getUserResult = await this.userProvisioner.getUserByEmail(userInfo.value.email);
     let uid: string | undefined;
 
@@ -228,17 +200,13 @@ export class IdentityAuthenticationService {
     // Ensure internal identity exists (best effort).
     const prov = this.identityGraphProvisioner?.();
     if (prov) {
-      await prov.ensureIdentityForFirebaseUid(uid);
+      await prov.ensureIdentity(this.config.identityProvider, uid);
     }
 
     return await this.sessionGateway.signInWithCustomToken(customToken.value);
   }
 
   async refresh(refreshToken: string): Promise<Result<AuthSessionDto, Error>> {
-    if (!this.config.firebaseWebApiKey) {
-      return err(new Error('Token refresh not configured'));
-    }
-
     return await this.sessionGateway.refresh(refreshToken);
   }
 }

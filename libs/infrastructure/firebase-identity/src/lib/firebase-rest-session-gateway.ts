@@ -2,6 +2,24 @@ import fetch from 'node-fetch';
 import { err, ok, Result } from '@foundation/standard';
 import { AuthSessionDto, ISessionGateway } from '@domains/identity/authentication';
 
+function mapFirebaseRestAuthError(code: string | undefined): string {
+  const errorMessages: Record<string, string> = {
+    EMAIL_NOT_FOUND: 'No account found with this email',
+    INVALID_PASSWORD: 'Incorrect password',
+    INVALID_LOGIN_CREDENTIALS: 'Invalid email or password',
+    USER_DISABLED: 'This account has been disabled',
+    TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many failed attempts. Please try again later',
+    EMAIL_EXISTS: 'An account with this email already exists',
+    WEAK_PASSWORD: 'Password should be at least 6 characters',
+    INVALID_EMAIL: 'Invalid email address',
+    // token refresh-related
+    INVALID_REFRESH_TOKEN: 'Invalid refresh token',
+    TOKEN_EXPIRED: 'Refresh token expired',
+  };
+
+  return (code && errorMessages[code]) || 'Authentication failed. Please try again';
+}
+
 class FirebaseRestError extends Error {
   override name = 'FirebaseRestError';
   constructor(
@@ -95,7 +113,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
 
       if (!res.ok) {
         const code = (data as FirebaseErrorResponse)?.error?.message;
-        return err(new FirebaseRestError('Invalid refresh token', code));
+        return err(new FirebaseRestError(mapFirebaseRestAuthError(code), code));
       }
 
       const okData = data as FirebaseRefreshResponse;
@@ -126,7 +144,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
 
       if (!res.ok) {
         const code = (data as FirebaseErrorResponse)?.error?.message;
-        return err(new FirebaseRestError('Firebase auth error', code));
+        return err(new FirebaseRestError(mapFirebaseRestAuthError(code), code));
       }
 
       const okData = data as T;

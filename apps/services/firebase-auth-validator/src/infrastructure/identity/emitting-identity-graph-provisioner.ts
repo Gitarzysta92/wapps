@@ -8,10 +8,11 @@ export class EmittingIdentityGraphProvisioner implements IIdentityGraphProvision
     private readonly publisher: RabbitMqIdentityEventsPublisher
   ) {}
 
-  async ensureIdentityForFirebaseUid(
-    uid: string
+  async ensureIdentity(
+    provider: string,
+    externalId: string
   ): Promise<Result<{ identityId: string; subjectId: string; created: boolean }, Error>> {
-    const r = await this.inner.ensureIdentityForFirebaseUid(uid);
+    const r = await this.inner.ensureIdentity(provider, externalId);
     if (r.ok && r.value.created) {
       this.publisher.publishCreated({
         identityId: r.value.identityId,
@@ -22,8 +23,8 @@ export class EmittingIdentityGraphProvisioner implements IIdentityGraphProvision
     return r;
   }
 
-  async deleteIdentityForFirebaseUid(uid: string): Promise<Result<boolean, Error>> {
-    return await this.inner.deleteIdentityForFirebaseUid(uid);
+  async deleteIdentity(provider: string, externalId: string): Promise<Result<boolean, Error>> {
+    return await this.inner.deleteIdentity(provider, externalId);
   }
 }
 

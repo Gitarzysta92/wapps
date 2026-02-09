@@ -18,6 +18,9 @@
   "references": [
     {
       "path": "../../../foundation/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../foundation/identity-system/tsconfig.lib.json"
     }
   ]
 }

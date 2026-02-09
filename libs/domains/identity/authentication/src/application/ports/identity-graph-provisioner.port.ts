@@ -1,9 +1,11 @@
 import { Result } from '@foundation/standard';
 
 export interface IIdentityGraphProvisioner {
-  ensureIdentityForFirebaseUid(
-    uid: string
+  ensureIdentity(
+    provider: string,
+    externalId: string
   ): Promise<Result<{ identityId: string; subjectId: string; created: boolean }, Error>>;
-  deleteIdentityForFirebaseUid(uid: string): Promise<Result<boolean, Error>>;
+
+  deleteIdentity(provider: string, externalId: string): Promise<Result<boolean, Error>>;
 }
 

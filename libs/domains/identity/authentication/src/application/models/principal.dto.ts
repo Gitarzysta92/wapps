@@ -1,6 +1,6 @@
 export type PrincipalDto = {
   /**
-   * External subject identifier (e.g. Firebase uid).
+   * External subject identifier as issued by the upstream IdP.
    */
   uid: string;
 
@@ -10,7 +10,7 @@ export type PrincipalDto = {
   identityId?: string;
 
   /**
-   * Optional stable subject identifier (e.g. `firebase:<uid>`).
+   * Optional stable subject identifier (e.g. `<provider>:<externalId>`).
    * Useful for downstream event emission and internal tracing.
    */
   subjectId?: string;

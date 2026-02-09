@@ -1,6 +1,6 @@
 import { Result } from '@foundation/standard';
-import { IdentityProvider } from './constants';
-import { IIdentitySubject } from '../models/identity-subject';
+import { IdentityProvider } from '../application/constants';
+import { IIdentitySubject } from '../entities/identity-subject';
 
 export interface IIdentitySubjectRepository {
   /**
