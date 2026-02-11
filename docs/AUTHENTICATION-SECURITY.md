@@ -40,10 +40,10 @@ ingress:
 ### Layer 2: Shared Secret Validation
 
 **Files:**
-- `apps/services/firebase-auth-validator/src/main.ts`
+- `apps/services/authenticator/src/main.ts`
 - `apps/services/catalog-bff/src/app/middleware/auth-validation.middleware.ts`
 
-A shared secret (`INGRESS_AUTH_SECRET`) is used to verify that authentication headers actually came from the firebase-auth-validator service via ingress-nginx.
+A shared secret (`INGRESS_AUTH_SECRET`) is used to verify that authentication headers actually came from the authenticator service via ingress-nginx.
 
 #### Flow:
 
@@ -51,13 +51,13 @@ A shared secret (`INGRESS_AUTH_SECRET`) is used to verify that authentication he
 1. Client → ingress-nginx
    Authorization: Bearer <firebase-token>
 
-2. ingress-nginx → firebase-auth-validator
+2. ingress-nginx → authenticator
    /validate endpoint
 
-3. firebase-auth-validator validates token
+3. authenticator validates token
    ✓ Token valid
 
-4. firebase-auth-validator → ingress-nginx
+4. authenticator → ingress-nginx
    X-User-Id: abc123
    X-User-Email: user@example.com
    X-Ingress-Auth: <shared-secret>
@@ -87,8 +87,8 @@ kubectl create secret generic ingress-auth-secret \
   --from-literal=secret=<your-generated-secret> \
   --namespace=default
 
-# Reference in firebase-auth-validator deployment
-kubectl patch deployment firebase-auth-validator -n default --type='json' -p='[
+# Reference in authenticator deployment
+kubectl patch deployment authenticator -n default --type='json' -p='[
   {
     "op": "add",
     "path": "/spec/template/spec/containers/0/env/-",
@@ -210,15 +210,15 @@ curl -H "X-User-Id: fake" http://catalog-bff.catalog/api/my-listings
 
 **Protection:** 
 - Shared secret cannot be guessed
-- Attacker would need to compromise both firebase-auth-validator and backend service configurations
+- Attacker would need to compromise both authenticator and backend service configurations
 
 ---
 
-### Scenario 4: Direct Call to firebase-auth-validator
+### Scenario 4: Direct Call to authenticator
 
-**Attack:** Call firebase-auth-validator directly with fake token
+**Attack:** Call authenticator directly with fake token
 ```bash
-curl http://firebase-auth-validator.default/validate
+curl http://authenticator.default/validate
 ```
 
 **Protection:** 
@@ -234,15 +234,15 @@ curl http://firebase-auth-validator.default/validate
 # Check catalog-bff logs for auth failures
 kubectl logs -n catalog -l app=catalog-bff | grep "Invalid authentication headers"
 
-# Check firebase-auth-validator logs for token validation failures
-kubectl logs -n default -l app=firebase-auth-validator | grep "validation failed"
+# Check authenticator logs for token validation failures
+kubectl logs -n default -l app=authenticator | grep "validation failed"
 ```
 
 ### Verify Secret is Set
 
 ```bash
-# Firebase auth validator
-kubectl exec -n default deployment/firebase-auth-validator -- env | grep INGRESS_AUTH_SECRET
+# Authenticator
+kubectl exec -n default deployment/authenticator -- env | grep INGRESS_AUTH_SECRET
 
 # Catalog BFF
 kubectl exec -n catalog deployment/catalog-bff -- env | grep INGRESS_AUTH_SECRET

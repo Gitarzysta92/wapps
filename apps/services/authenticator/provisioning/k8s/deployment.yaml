@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: firebase-auth-validator
+  name: authenticator
   namespace: default
   labels:
-    app: firebase-auth-validator
-    app.kubernetes.io/name: firebase-auth-validator
+    app: authenticator
+    app.kubernetes.io/name: authenticator
     app.kubernetes.io/component: auth
     app.kubernetes.io/part-of: platform
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: firebase-auth-validator
+      app: authenticator
   template:
     metadata:
       labels:
-        app: firebase-auth-validator
-        app.kubernetes.io/name: firebase-auth-validator
+        app: authenticator
+        app.kubernetes.io/name: authenticator
         app.kubernetes.io/component: auth
     spec:
       imagePullSecrets:
       - name: ghcr-secret
       containers:
-      - name: firebase-auth-validator
-        image: ghcr.io/gitarzysta92/wapps/firebase-auth-validator:latest
+      - name: authenticator
+        image: ghcr.io/gitarzysta92/wapps/authenticator:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

@@ -3,7 +3,7 @@ const { join } = require('path');
 
 module.exports = {
   output: {
-    path: join(__dirname, '../../../dist/apps/services/firebase-auth-validator'),
+    path: join(__dirname, '../../../dist/apps/services/authenticator'),
   },
   plugins: [
     new NxAppWebpackPlugin({

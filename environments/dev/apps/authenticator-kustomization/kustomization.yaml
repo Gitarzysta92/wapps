@@ -4,15 +4,15 @@ kind: Kustomization
 namespace: default
 
 resources:
-  - ../../../../apps/services/firebase-auth-validator/provisioning/k8s
+  - ../../../../apps/services/authenticator/provisioning/k8s
 
 patches:
   - path: deployment-patch.yaml
     target:
       kind: Deployment
-      name: firebase-auth-validator
+      name: authenticator
   - path: ingress-patch.yaml
     target:
       kind: Ingress
-      name: firebase-auth-validator-ingress
+      name: authenticator-ingress
 

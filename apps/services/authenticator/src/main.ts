@@ -1,14 +1,13 @@
 import express, { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import swaggerUi from 'swagger-ui-express';
-import { IIdentityGraphProvisioner, IdentityAuthenticationService, IdentityService } from '@domains/identity/authentication';
+import { IIdentityGraphProvisioner, IdentityAuthenticationServiceV2, IdentityService } from '@domains/identity/authentication';
 import { v7 as uuidv7 } from 'uuid';
 import {
   FirebaseAdminIdTokenVerifier,
   FirebaseAdminUserProvisioner,
   FirebaseRestSessionGateway,
   OAuthCodeExchanger,
-  TokenValidationError,
 } from '@infrastructure/firebase-identity';
 import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mysql';
 import { PlatformMongoClient } from '@infrastructure/mongo';
@@ -18,6 +17,8 @@ import { MongoIdentityNodeRepository } from './infrastructure/identity/identity-
 import { MongoIdentityGraphProvisionerAdapter } from './infrastructure/identity/mongo-identity-graph-provisioner.adapter';
 import { EmittingIdentityGraphProvisioner } from './infrastructure/identity/emitting-identity-graph-provisioner';
 import { RabbitMqIdentityEventsPublisher } from './infrastructure/identity/rabbitmq-identity-events.publisher';
+import { createAuthenticationRouter } from './authentication.controller';
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -39,10 +40,19 @@ const ENABLE_GOOGLE = process.env.ENABLE_GOOGLE === 'true';
 const ENABLE_GITHUB = process.env.ENABLE_GITHUB === 'true';
 const ENABLE_ANONYMOUS = process.env.ENABLE_ANONYMOUS === 'true';
 
+
+
+
+
+
+
+
+
+
 // Initialize Firebase Admin
-admin.initializeApp({
-  projectId: FIREBASE_PROJECT_ID,
-});
+// admin.initializeApp({
+//   projectId: FIREBASE_PROJECT_ID,
+// });
 
 // Optional identity graph (Mongo) - enable by providing MONGO_* env vars
 let identityGraphProvisioner: IIdentityGraphProvisioner | undefined;
@@ -120,7 +130,7 @@ if (process.env.MONGO_HOST) {
 }
 
 // Domain wiring (identification-only; no authorization)
-const identificationService = new IdentityAuthenticationService(
+const identificationService = new IdentityAuthenticationServiceV2(
   new FirebaseAdminIdTokenVerifier(),
   new FirebaseRestSessionGateway(FIREBASE_WEB_API_KEY),
   new FirebaseAdminUserProvisioner(),
@@ -409,273 +419,21 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   customCss: '.swagger-ui .topbar { display: none }',
 }));
 
-// ===========================================
-// HEALTH CHECK
-// ===========================================
-
-// Serve raw OpenAPI spec as JSON
-app.get('/api-docs.json', (req: Request, res: Response) => {
-  res.json(swaggerDocument);
+// Mount authentication controller (health, validation, auth endpoints)
+const authenticationRouter = createAuthenticationRouter({
+  identificationService,
+  ingressAuthSecret: INGRESS_AUTH_SECRET,
+  swaggerDocument,
+  oauthConfig: {
+    enableGoogle: ENABLE_GOOGLE,
+    googleClientId: GOOGLE_CLIENT_ID,
+    googleClientSecret: GOOGLE_CLIENT_SECRET,
+    enableGithub: ENABLE_GITHUB,
+    githubClientId: GITHUB_CLIENT_ID,
+    githubClientSecret: GITHUB_CLIENT_SECRET,
+  },
 });
-
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'healthy' });
-});
-
-// Platform manifest (used by platform-portal-bff for enrichment)
-app.get('/api/platform', (req: Request, res: Response) => {
-  res.status(200).json({
-    id: 'firebase-auth-validator',
-    name: 'Firebase Auth Validator',
-    type: 'service',
-    runtime: 'express',
-    environment: process.env.ENVIRONMENT || process.env.NODE_ENV || 'unknown',
-    version: process.env.APP_VERSION,
-    commitSha: process.env.COMMIT_SHA || process.env.GITHUB_SHA,
-    builtAt: process.env.BUILT_AT,
-    endpoints: {
-      health: '/health',
-      docs: '/api-docs',
-      openapiJson: '/api-docs.json',
-      platform: '/api/platform',
-    },
-    tags: ['scope:platform', 'layer:auth'],
-  });
-});
-
-// ===========================================
-// VALIDATION ENDPOINTS (for ingress-nginx)
-// ===========================================
-
-app.get('/validate', async (req: Request, res: Response) => {
-  const result = await identificationService.validateRequired(req.headers.authorization);
-  if (!result.ok) {
-    console.error('❌ Token validation failed:', result.error.message);
-
-    const code =
-      result.error instanceof TokenValidationError
-        ? result.error.code
-        : (result.error as { code?: unknown } | undefined)?.code;
-
-    if (code === 'auth/id-token-expired') {
-      return res.status(401).json({ error: 'Token expired' });
-    }
-
-    if (code === 'auth/argument-error') {
-      return res.status(401).json({ error: 'Invalid token format' });
-    }
-
-    return res.status(401).json({ error: 'Token validation failed' });
-  }
-
-  const principal = result.value;
-
-  res.setHeader('X-User-Id', principal.uid);
-  res.setHeader('X-User-Email', principal.email || '');
-  res.setHeader('X-Auth-Time', principal.authTime?.toString() || '');
-
-  if (INGRESS_AUTH_SECRET) {
-    res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-  }
-
-  if (principal.claims) {
-    res.setHeader('X-User-Claims', JSON.stringify(principal.claims));
-  }
-
-  console.log(`✅ Token validated for user: ${principal.uid}`);
-
-  return res.status(200).json({
-    authenticated: true,
-    uid: principal.uid,
-  });
-});
-
-app.get('/validate-optional', async (req: Request, res: Response) => {
-  const result = await identificationService.validateOptional(req.headers.authorization);
-
-  if (!result.ok || result.value.authenticated !== true) {
-    res.setHeader('X-Anonymous', 'true');
-    if (INGRESS_AUTH_SECRET) {
-      res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-    }
-    return res.status(200).json({ authenticated: false, anonymous: true });
-  }
-
-  const principal = result.value.principal;
-  res.setHeader('X-User-Id', principal.uid);
-  res.setHeader('X-User-Email', principal.email || '');
-
-  if (INGRESS_AUTH_SECRET) {
-    res.setHeader('X-Ingress-Auth', INGRESS_AUTH_SECRET);
-  }
-
-  return res.status(200).json({
-    authenticated: true,
-    uid: principal.uid,
-  });
-});
-
-// ===========================================
-// AUTHENTICATION ENDPOINTS (for frontend)
-// ===========================================
-
-/**
- * Get available authentication methods
- */
-app.get('/auth/methods', (req: Request, res: Response) => {
-  const methods = identificationService.getAvailableMethods();
-  return res.status(200).json({ methods });
-});
-
-/**
- * Sign in with email and password
- */
-app.post('/auth/signin', async (req: Request, res: Response) => {
-  const { email, password } = req.body ?? {};
-
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
-
-  const result = await identificationService.signInWithEmailPassword(email, password);
-  if (!result.ok) {
-    const status = result.error.message.includes('not configured') ? 500 : 401;
-    return res.status(status).json({ error: result.error.message });
-  }
-
-  console.log(`✅ User signed in: ${result.value.uid}`);
-  return res.status(200).json(result.value);
-});
-
-/**
- * Sign in anonymously
- */
-app.post('/auth/signin/anonymous', async (req: Request, res: Response) => {
-  const result = await identificationService.signInAnonymously();
-  if (!result.ok) {
-    if (result.error.message.includes('not enabled')) {
-      return res.status(400).json({ error: result.error.message });
-    }
-
-    const status = result.error.message.includes('not configured') ? 500 : 401;
-    return res.status(status).json({ error: result.error.message });
-  }
-
-  console.log(`✅ Anonymous user created: ${result.value.uid}`);
-  return res.status(200).json(result.value);
-});
-
-/**
- * OAuth authorization URL redirect
- */
-app.get('/auth/oauth/:provider/authorize', (req: Request, res: Response) => {
-  const { provider } = req.params;
-  const { redirect_uri, state, code_challenge, code_challenge_method } = req.query;
-  
-  if (!redirect_uri) {
-    return res.status(400).json({ error: 'redirect_uri is required' });
-  }
-  
-  let authUrl: string;
-  
-  switch (provider.toLowerCase()) {
-    case 'google':
-      if (!ENABLE_GOOGLE || !GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-        return res.status(400).json({ error: 'Google OAuth not configured' });
-      }
-      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `client_id=${GOOGLE_CLIENT_ID}` +
-        `&redirect_uri=${encodeURIComponent(redirect_uri as string)}` +
-        `&response_type=code` +
-        `&scope=openid%20email%20profile` +
-        `&access_type=offline` +
-        `&prompt=consent` +
-        (code_challenge ? `&code_challenge=${encodeURIComponent(code_challenge as string)}` : '') +
-        (code_challenge_method ? `&code_challenge_method=${encodeURIComponent(code_challenge_method as string)}` : '') +
-        (state ? `&state=${encodeURIComponent(state as string)}` : '');
-      break;
-      
-    case 'github':
-      if (!ENABLE_GITHUB || !GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-        return res.status(400).json({ error: 'GitHub OAuth not configured' });
-      }
-      authUrl = `https://github.com/login/oauth/authorize?` +
-        `client_id=${GITHUB_CLIENT_ID}` +
-        `&redirect_uri=${encodeURIComponent(redirect_uri as string)}` +
-        `&scope=user:email` +
-        (state ? `&state=${encodeURIComponent(state as string)}` : '');
-      break;
-      
-    default:
-      return res.status(400).json({ error: `Unknown provider: ${provider}` });
-  }
-  
-  return res.redirect(authUrl);
-});
-
-/**
- * Exchange OAuth code for Firebase token
- */
-app.post('/auth/signin/oauth', async (req: Request, res: Response) => {
-  const { provider, code, redirectUri, codeVerifier } = req.body ?? {};
-
-  if (!provider || !code) {
-    return res.status(400).json({ error: 'Provider and code are required' });
-  }
-
-  if (!redirectUri) {
-    return res.status(400).json({ error: 'redirectUri is required' });
-  }
-
-  const normalizedProvider = String(provider).toLowerCase();
-  if (normalizedProvider !== 'google' && normalizedProvider !== 'github') {
-    return res.status(400).json({ error: `Unknown provider: ${provider}` });
-  }
-
-  const result = await identificationService.exchangeOAuthCodeForSession(
-    normalizedProvider as 'google' | 'github',
-    code,
-    redirectUri,
-    codeVerifier
-  );
-
-  if (!result.ok) {
-    const status = result.error.message.includes('incomplete') ? 500 : 401;
-    return res.status(status).json({ error: result.error.message || 'OAuth authentication failed' });
-  }
-
-  console.log(`✅ OAuth sign in successful for: ${result.value.uid}`);
-  return res.status(200).json(result.value);
-});
-
-/**
- * Refresh token
- */
-app.post('/auth/refresh', async (req: Request, res: Response) => {
-  const { refreshToken } = req.body ?? {};
-
-  if (!refreshToken) {
-    return res.status(400).json({ error: 'Refresh token is required' });
-  }
-
-  const result = await identificationService.refresh(refreshToken);
-  if (!result.ok) {
-    const status = result.error.message.includes('not configured') ? 500 : 401;
-    return res.status(status).json({ error: status === 401 ? 'Invalid refresh token' : result.error.message });
-  }
-
-  return res.status(200).json(result.value);
-});
-
-/**
- * Sign out (for cleanup if needed)
- */
-app.post('/auth/signout', async (req: Request, res: Response) => {
-  // Optionally revoke refresh tokens server-side
-  // For now, just acknowledge the sign out
-  return res.status(200).json({ message: 'Signed out successfully' });
-});
+app.use(authenticationRouter);
 
 // ===========================================
 // START SERVER
@@ -691,3 +449,62 @@ app.listen(PORT, () => {
   console.log(`   - GitHub: ${ENABLE_GITHUB && GITHUB_CLIENT_ID ? '✓' : '✗'}`);
   console.log(`   - Anonymous: ${ENABLE_ANONYMOUS ? '✓' : '✗'}`);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// getAvailableMethods(): AuthenticationMethodDto[] {
+//   const methods: AuthenticationMethodDto[] = [];
+
+//   if (this.config.enabledEmailPassword) {
+//     methods.push({
+//       provider: AuthenticationProvider.EMAIL_PASSWORD,
+//       displayName: 'Email & Password',
+//       icon: 'mail',
+//       enabled: true,
+//     });
+//   }
+
+//   if (this.config.enabledGoogle && this.config.googleClientId && this.config.googleClientSecret) {
+//     methods.push({
+//       provider: AuthenticationProvider.GOOGLE,
+//       displayName: 'Google',
+//       icon: 'google',
+//       enabled: true,
+//       authUrl: '/auth/oauth/google/authorize',
+//     });
+//   }
+
+//   if (this.config.enabledGithub && this.config.githubClientId && this.config.githubClientSecret) {
+//     methods.push({
+//       provider: AuthenticationProvider.GITHUB,
+//       displayName: 'GitHub',
+//       icon: 'github',
+//       enabled: true,
+//       authUrl: '/auth/oauth/github/authorize',
+//     });
+//   }
+
+//   if (this.config.enabledAnonymous) {
+//     methods.push({
+//       provider: AuthenticationProvider.ANONYMOUS,
+//       displayName: 'Continue as Guest',
+//       icon: 'user',
+//       enabled: true,
+//     });
+//   }
+
+//   return methods;
+// }

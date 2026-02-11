@@ -1,11 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: firebase-auth-validator-ingress
+  name: authenticator-ingress
   namespace: default
   labels:
-    app: firebase-auth-validator
-    app.kubernetes.io/name: firebase-auth-validator
+    app: authenticator
+    app.kubernetes.io/name: authenticator
     app.kubernetes.io/component: auth
     app.kubernetes.io/part-of: platform
   annotations:
@@ -14,14 +14,14 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: firebase-auth-validator.host.placeholder  # Overridden by environment
+    - host: authenticator.host.placeholder  # Overridden by environment
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: firebase-auth-validator
+                name: authenticator
                 port:
                   number: 80
 

@@ -6,8 +6,8 @@ import { Request, Response, NextFunction } from 'express';
  * 
  * Security model:
  * 1. Client → ingress-nginx (with Authorization: Bearer <firebase-token>)
- * 2. ingress-nginx → firebase-auth-validator (validates token)
- * 3. firebase-auth-validator → ingress-nginx (returns X-User-Id, etc.)
+ * 2. ingress-nginx → authenticator (validates token)
+ * 3. authenticator → ingress-nginx (returns X-User-Id, etc.)
  * 4. ingress-nginx → backend service (forwards headers + X-Ingress-Auth secret)
  * 5. backend service validates X-Ingress-Auth to trust other headers
  * 

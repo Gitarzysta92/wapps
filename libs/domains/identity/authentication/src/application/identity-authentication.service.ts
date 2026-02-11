@@ -1,6 +1,5 @@
 import { err, isErr, ok, Result } from '@foundation/standard';
 import { AuthSessionDto } from './models/auth-session.dto';
-import { OAuthProvider } from './models/oauth-provider.type';
 import { PrincipalDto } from './models/principal.dto';
 import { TokenValidationResultDto } from './models/token-validation-result.dto';
 import { IIdTokenVerifier } from './ports/id-token-verifier.port';
@@ -8,8 +7,43 @@ import { IIdentityGraphProvisioner } from './ports/identity-graph-provisioner.po
 import { IOAuthCodeExchanger } from './ports/oauth-code-exchanger.port';
 import { ISessionGateway } from './ports/session-gateway.port';
 import { IUserProvisioner } from './ports/user-provisioner.port';
-import { AuthenticationMethodDto } from './models/authentication-method.dto';
-import { AuthenticationProvider } from './models/authentication-provider.enum';
+import { IAuthenticationStrategy } from './ports/authentication-strategy.port';
+
+
+export class IdentityAuthenticationServiceV1 {
+  constructor(
+    private readonly identityRepository: IIdentityRepository,
+  ) { }
+  
+  async authenticate(
+    strategy: IAuthenticationStrategy,
+  ): Promise<Result<AuthSessionDto, Error>> {
+
+    const result = await strategy.execute();
+    if (isErr(result)) {
+      return err(result.error);
+    }
+    const providerSecret = result.value;
+
+
+    
+
+    return await this.sessionGateway.signInWithPassword(email, password);
+  }
+
+
+  async validateRequired(authorizationHeader: string | undefined): Promise<Result<PrincipalDto, Error>> {
+    if (!authorizationHeader) {
+      return err(new Error('No authorization header'));
+    }
+
+    const token = authorizationHeader.replace(/^Bearer\\s+/i, '');
+    if (!token || token === authorizationHeader) {
+      return err(new Error('Invalid authorization header format'));
+    }
+  }
+}
+
 
 export type IdentityAuthenticationServiceConfig = {
   enabledEmailPassword: boolean;
@@ -37,7 +71,7 @@ function getErrorCode(e: unknown): string | undefined {
   return typeof code === 'string' ? code : undefined;
 }
 
-export class IdentityAuthenticationService {
+export class IdentityAuthenticationServiceV2 {
   constructor(
     private readonly idTokenVerifier: IIdTokenVerifier,
     private readonly sessionGateway: ISessionGateway,
@@ -47,49 +81,6 @@ export class IdentityAuthenticationService {
     private readonly identityGraphProvisioner?: () => IIdentityGraphProvisioner | undefined
   ) {}
 
-  getAvailableMethods(): AuthenticationMethodDto[] {
-    const methods: AuthenticationMethodDto[] = [];
-
-    if (this.config.enabledEmailPassword) {
-      methods.push({
-        provider: AuthenticationProvider.EMAIL_PASSWORD,
-        displayName: 'Email & Password',
-        icon: 'mail',
-        enabled: true,
-      });
-    }
-
-    if (this.config.enabledGoogle && this.config.googleClientId && this.config.googleClientSecret) {
-      methods.push({
-        provider: AuthenticationProvider.GOOGLE,
-        displayName: 'Google',
-        icon: 'google',
-        enabled: true,
-        authUrl: '/auth/oauth/google/authorize',
-      });
-    }
-
-    if (this.config.enabledGithub && this.config.githubClientId && this.config.githubClientSecret) {
-      methods.push({
-        provider: AuthenticationProvider.GITHUB,
-        displayName: 'GitHub',
-        icon: 'github',
-        enabled: true,
-        authUrl: '/auth/oauth/github/authorize',
-      });
-    }
-
-    if (this.config.enabledAnonymous) {
-      methods.push({
-        provider: AuthenticationProvider.ANONYMOUS,
-        displayName: 'Continue as Guest',
-        icon: 'user',
-        enabled: true,
-      });
-    }
-
-    return methods;
-  }
 
   async validateRequired(authorizationHeader: string | undefined): Promise<Result<PrincipalDto, Error>> {
     if (!authorizationHeader) {
@@ -154,7 +145,7 @@ export class IdentityAuthenticationService {
   }
 
   async exchangeOAuthCodeForSession(
-    provider: OAuthProvider,
+    provider: 'google' | 'github',
     code: string,
     redirectUri: string,
     codeVerifier?: string
@@ -209,5 +200,25 @@ export class IdentityAuthenticationService {
   async refresh(refreshToken: string): Promise<Result<AuthSessionDto, Error>> {
     return await this.sessionGateway.refresh(refreshToken);
   }
+
+  getAvailableMethods(): { provider: string; displayName: string; icon: string; enabled: boolean; authUrl?: string }[] {
+    const methods: { provider: string; displayName: string; icon: string; enabled: boolean; authUrl?: string }[] = [];
+    if (this.config.enabledEmailPassword) {
+      methods.push({ provider: 'EMAIL_PASSWORD', displayName: 'Email & Password', icon: 'mail', enabled: true });
+    }
+    if (this.config.enabledGoogle && this.config.googleClientId && this.config.googleClientSecret) {
+      methods.push({ provider: 'GOOGLE', displayName: 'Google', icon: 'google', enabled: true, authUrl: '/auth/oauth/google/authorize' });
+    }
+    if (this.config.enabledGithub && this.config.githubClientId && this.config.githubClientSecret) {
+      methods.push({ provider: 'GITHUB', displayName: 'GitHub', icon: 'github', enabled: true, authUrl: '/auth/oauth/github/authorize' });
+    }
+    if (this.config.enabledAnonymous) {
+      methods.push({ provider: 'ANONYMOUS', displayName: 'Continue as Guest', icon: 'user', enabled: true });
+    }
+    return methods;
+  }
 }
+
+/** Alias for the current implementation. */
+export type IdentityAuthenticationService = IdentityAuthenticationServiceV2;
 

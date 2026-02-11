@@ -1,12 +1,12 @@
-name: 'Firebase Auth Validator - Build & Deploy'
+name: 'Authenticator - Build & Deploy'
 
 on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/services/firebase-auth-validator/**'
-      - 'environments/dev/apps/firebase-auth-validator-kustomization/**'
-      - '.github/workflows/firebase-auth-validator.workflow.yml'
+      - 'apps/services/authenticator/**'
+      - 'environments/dev/apps/authenticator-kustomization/**'
+      - '.github/workflows/authenticator.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
   workflow_dispatch:
     inputs:
@@ -20,9 +20,9 @@ on:
           - production
 
 env:
-  SERVICE_NAME: firebase-auth-validator
+  SERVICE_NAME: authenticator
   REGISTRY: ghcr.io
-  IMAGE_NAME: gitarzysta92/wapps/firebase-auth-validator
+  IMAGE_NAME: gitarzysta92/wapps/authenticator
 
 jobs:
   build:
@@ -60,7 +60,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build apps.services.firebase-auth-validator --configuration=production
+        run: npx nx build apps.services.authenticator --configuration=production
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -75,8 +75,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: dist/apps/services/firebase-auth-validator
-          file: apps/services/firebase-auth-validator/Dockerfile
+          context: dist/apps/services/authenticator
+          file: apps/services/authenticator/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
@@ -178,21 +178,21 @@ jobs:
 
       - name: Trigger ArgoCD sync
         run: |
-          echo "Triggering ArgoCD sync for firebase-auth-validator..."
-          argocd app sync firebase-auth-validator --force --grpc-web
+          echo "Triggering ArgoCD sync for authenticator..."
+          argocd app sync authenticator --force --grpc-web
           
           echo "Waiting for sync to complete..."
-          argocd app wait firebase-auth-validator --timeout 300 --grpc-web
+          argocd app wait authenticator --timeout 300 --grpc-web
           
           echo "✅ ArgoCD sync completed"
 
       - name: Restart deployment to pull latest image
         run: |
           echo "Restarting deployment to pull :latest image..."
-          kubectl rollout restart deployment/firebase-auth-validator -n default
+          kubectl rollout restart deployment/authenticator -n default
           
           echo "Waiting for rollout to complete..."
-          kubectl rollout status deployment/firebase-auth-validator -n default --timeout=300s
+          kubectl rollout status deployment/authenticator -n default --timeout=300s
           
           echo "✅ Deployment restarted successfully"
 
@@ -200,9 +200,9 @@ jobs:
         run: |
           ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
           
-          # Apply firebase-auth-validator environment kustomization
-          if [ -d "environments/${ENV_SHORT}/apps/firebase-auth-validator-kustomization" ]; then
-            kubectl apply -k environments/${ENV_SHORT}/apps/firebase-auth-validator-kustomization/
+          # Apply authenticator environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/authenticator-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/authenticator-kustomization/
             echo "✅ Environment configuration applied"
           fi
 
@@ -224,7 +224,7 @@ jobs:
       - name: Print summary
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Firebase Auth Validator - Deployment Summary"
+          echo "Authenticator - Deployment Summary"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "Environment: ${{ needs.build.outputs.environment }}"
@@ -236,21 +236,20 @@ jobs:
           echo ""
           
           if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Firebase Auth Validator deployed successfully!"
+            echo "✅ Authenticator deployed successfully!"
             echo ""
             echo "Service endpoints:"
-            echo "  - Validate: http://firebase-auth-validator.default.svc.cluster.local/validate"
-            echo "  - Validate Optional: http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
-            echo "  - Health: http://firebase-auth-validator.default.svc.cluster.local/health"
-            echo "  - Swagger UI: http://api.firebase-auth-validator.development.wapps.ai/api-docs"
+            echo "  - Validate: http://authenticator.default.svc.cluster.local/validate"
+            echo "  - Validate Optional: http://authenticator.default.svc.cluster.local/validate-optional"
+            echo "  - Health: http://authenticator.default.svc.cluster.local/health"
+            echo "  - Swagger UI: http://api.authenticator.development.wapps.ai/api-docs"
             echo ""
             echo "Next steps:"
             echo "  1. Test with a Firebase token"
-            echo "  2. Check logs: kubectl logs -n default -l app=firebase-auth-validator --tail=50"
+            echo "  2. Check logs: kubectl logs -n default -l app=authenticator --tail=50"
             echo "  3. Verify ingress: kubectl get ingress -n default"
           else
             echo "⚠️ Deployment completed with issues. Check logs above."
           fi
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-

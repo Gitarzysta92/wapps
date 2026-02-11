@@ -11,7 +11,7 @@
     "environments/dev/apps/catalog-csr-kustomization/ingress-patch.yaml",
     "environments/dev/apps/discussion-kustomization/ingress-patch.yaml",
     "environments/dev/apps/editorial-kustomization/ingress-patch.yaml",
-    "environments/dev/apps/firebase-auth-validator-kustomization/ingress-patch.yaml",
+    "environments/dev/apps/authenticator-kustomization/ingress-patch.yaml",
     "environments/dev/apps/platform-portal-csr-kustomization/ingress-patch.yaml",
     "environments/dev/platform/argocd-kustomization/kustomization.yaml"
   ],
@@ -118,13 +118,13 @@
       ]
     },
     {
-      "id": "firebase-auth-validator",
-      "name": "Firebase Auth Validator",
+      "id": "authenticator",
+      "name": "Authenticator",
       "urls": [
         "https://auth.development.wapps.ai/"
       ],
       "sources": [
-        "environments/dev/apps/firebase-auth-validator-kustomization/ingress-patch.yaml"
+        "environments/dev/apps/authenticator-kustomization/ingress-patch.yaml"
       ]
     },
     {

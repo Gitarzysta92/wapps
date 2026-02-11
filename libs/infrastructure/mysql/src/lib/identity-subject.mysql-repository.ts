@@ -66,7 +66,7 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
            deletedAt = VALUES(deletedAt)`,
         [
           subject.id,
-          subject.provider,
+          subject.providerType,
           subject.externalId,
           subject.identityId,
           subject.createdAt,

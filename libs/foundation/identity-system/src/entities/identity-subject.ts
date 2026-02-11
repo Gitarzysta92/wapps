@@ -1,5 +1,8 @@
 import { Uuidv7 } from '@foundation/standard';
 
+export type IdentityProviderSecret = string;
+export type IdentityProviderType = string;
+
 /**
  * External identity subject (account) bound to an internal identity.
  *
@@ -12,12 +15,15 @@ import { Uuidv7 } from '@foundation/standard';
  *
  * `id` is intentionally stable/deterministic (e.g. `firebase:<uid>` or `google:<sub>`)
  * so it can be used as a natural key and makes idempotent provisioning easy.
+ * 
+ * ProviderSecret can be Token or Username:Password
  */
 export interface IIdentitySubject {
   id: string;
-  provider: string;
-  externalId: string;
   identityId: Uuidv7;
+
+  providerType: IdentityProviderType;
+  providerSecret: IdentityProviderSecret;
 
   createdAt: number;
   updatedAt: number;

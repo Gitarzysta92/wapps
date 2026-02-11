@@ -1,7 +1,7 @@
 {
-  "name": "apps.services.firebase-auth-validator",
+  "name": "apps.services.authenticator",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/services/firebase-auth-validator/src",
+  "sourceRoot": "apps/services/authenticator/src",
   "projectType": "application",
   "tags": ["type:app", "scope:platform", "layer:auth"],
   "targets": {
@@ -12,10 +12,10 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/services/firebase-auth-validator",
-        "main": "apps/services/firebase-auth-validator/src/main.ts",
-        "tsConfig": "apps/services/firebase-auth-validator/tsconfig.app.json",
-        "webpackConfig": "apps/services/firebase-auth-validator/webpack.config.js"
+        "outputPath": "dist/apps/services/authenticator",
+        "main": "apps/services/authenticator/src/main.ts",
+        "tsConfig": "apps/services/authenticator/tsconfig.app.json",
+        "webpackConfig": "apps/services/authenticator/webpack.config.js"
       },
       "configurations": {
         "development": {
@@ -32,14 +32,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "apps.services.firebase-auth-validator:build"
+        "buildTarget": "apps.services.authenticator:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "apps.services.firebase-auth-validator:build:development"
+          "buildTarget": "apps.services.authenticator:build:development"
         },
         "production": {
-          "buildTarget": "apps.services.firebase-auth-validator:build:production"
+          "buildTarget": "apps.services.authenticator:build:production"
         }
       }
     }

@@ -67,7 +67,7 @@ server {
     server_name *.api.{{ target_env }}.wapps.ai;
     
     # Route HTTP API traffic through ingress-nginx
-    # This enables firebase-auth-validator integration via ingress annotations
+    # This enables authenticator integration via ingress annotations
     location / {
         proxy_pass http://127.0.0.1:32080;  # Ingress-nginx NodePort (HTTP)
         

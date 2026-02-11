@@ -51,7 +51,7 @@ export class IdentityService {
 
       const subject: IIdentitySubject = {
         id: subjectId,
-        provider,
+        providerType: provider,
         externalId,
         identityId,
         createdAt: now,

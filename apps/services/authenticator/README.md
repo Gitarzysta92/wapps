@@ -1,4 +1,4 @@
-# Firebase Auth Validator
+# Authenticator
 
 Authentication BFF (Backend-for-Frontend) service that handles:
 1. Token validation for ingress-nginx external auth
@@ -17,7 +17,7 @@ This service provides two main functions:
 │                           Authentication Flow                            │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│  Frontend App                 firebase-auth-validator       Firebase    │
+│  Frontend App                 authenticator                 Firebase    │
 │  (no secrets)                     (has secrets)                         │
 │       │                              │                         │        │
 │       │  POST /auth/signin           │                         │        │
@@ -31,7 +31,7 @@ This service provides two main functions:
 │                            API Request Flow                             │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│  Frontend App          ingress-nginx    firebase-auth-validator         │
+│  Frontend App          ingress-nginx    authenticator                    │
 │       │                     │                    │                      │
 │       │  API request        │                    │                      │
 │       │  + Bearer token     │                    │                      │
@@ -138,7 +138,7 @@ To enable it you need:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: firebase-auth-validator-config
+  name: authenticator-config
 data:
   FIREBASE_PROJECT_ID: "your-project-id"
   GOOGLE_CLIENT_ID: "123456789.apps.googleusercontent.com"
@@ -152,7 +152,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: firebase-auth-validator-secrets
+  name: authenticator-secrets
 type: Opaque
 stringData:
   FIREBASE_WEB_API_KEY: "AIza..."
@@ -191,7 +191,7 @@ kind: Ingress
 metadata:
   name: my-protected-api
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: "http://firebase-auth-validator.default.svc.cluster.local/validate"
+    nginx.ingress.kubernetes.io/auth-url: "http://authenticator.default.svc.cluster.local/validate"
     nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-Ingress-Auth"
 spec:
   rules:
@@ -210,7 +210,7 @@ spec:
 # Optional auth route
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: "http://firebase-auth-validator.default.svc.cluster.local/validate-optional"
+    nginx.ingress.kubernetes.io/auth-url: "http://authenticator.default.svc.cluster.local/validate-optional"
     nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-Anonymous,X-Ingress-Auth"
 ```
 
@@ -221,24 +221,24 @@ metadata:
 npm install
 
 # Run locally with Nx
-npx nx serve apps.services.firebase-auth-validator
+npx nx serve apps.services.authenticator
 
 # Build
-npx nx build apps.services.firebase-auth-validator
+npx nx build apps.services.authenticator
 ```
 
 ## Docker
 
 ```bash
 # Build image
-docker build -t firebase-auth-validator -f apps/services/firebase-auth-validator/Dockerfile .
+docker build -t authenticator -f apps/services/authenticator/Dockerfile .
 
 # Run locally
 docker run -p 8080:8080 \
   -e FIREBASE_PROJECT_ID=your-project-id \
   -e FIREBASE_WEB_API_KEY=your-web-api-key \
   -e ENABLE_EMAIL_PASSWORD=true \
-  firebase-auth-validator
+  authenticator
 ```
 
 ## Testing

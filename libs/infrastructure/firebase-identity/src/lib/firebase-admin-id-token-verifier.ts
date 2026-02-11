@@ -21,7 +21,7 @@ export class FirebaseAdminIdTokenVerifier implements IIdTokenVerifier {
         uid: decodedToken.uid,
         email: decodedToken.email,
         authTime: decodedToken.auth_time,
-        // Preserve existing behavior from firebase-auth-validator: they read `custom_claims`
+        // Preserve existing behavior from authenticator: they read `custom_claims`
         claims: (decodedToken as any).custom_claims,
       });
     } catch (e: any) {

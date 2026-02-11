@@ -16,7 +16,7 @@ export class RabbitMqIdentityEventsPublisher {
         type: 'identity.created',
         version: 1,
         occurredAt: new Date().toISOString(),
-        producer: { service: 'firebase-auth-validator' },
+        producer: { service: 'authenticator' },
         correlation: { correlationId: args.correlationId ?? args.identityId },
         subject: { entityType: 'identity', entityId: args.identityId },
       },

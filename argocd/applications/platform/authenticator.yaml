@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: firebase-auth-validator
+  name: authenticator
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/Gitarzysta92/wapps.git
     targetRevision: HEAD
-    path: environments/dev/apps/firebase-auth-validator-kustomization
+    path: environments/dev/apps/authenticator-kustomization
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -26,4 +26,3 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-

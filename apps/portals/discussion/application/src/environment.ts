@@ -2,7 +2,7 @@
  * Discussion Portal environment helpers.
  *
  * We primarily need AUTH BFF URL for login feature.
- * - localhost → http://localhost:8080 (firebase-auth-validator running locally)
+ * - localhost → http://localhost:8080 (authenticator running locally)
  * - *.wapps.ai → https://auth.<env>.wapps.ai (env derived from host)
  */
 export function getAuthBffUrl(): string {
