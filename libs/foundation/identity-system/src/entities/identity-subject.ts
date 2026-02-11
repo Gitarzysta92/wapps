@@ -23,7 +23,17 @@ export interface IIdentitySubject {
   identityId: Uuidv7;
 
   providerType: IdentityProviderType;
-  providerSecret: IdentityProviderSecret;
+  /**
+   * Provider-specific stable identifier for the subject.
+   * Examples: Firebase UID, OIDC `sub`, normalized email.
+   */
+  externalId: string;
+
+  /**
+   * Backward/forward compatibility alias.
+   * Prefer `externalId` in new code.
+   */
+  providerSecret?: IdentityProviderSecret;
 
   createdAt: number;
   updatedAt: number;

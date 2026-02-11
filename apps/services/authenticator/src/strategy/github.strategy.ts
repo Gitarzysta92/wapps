@@ -1,19 +1,19 @@
-import { IIdentitySystemRepository } from '@foundation/identity-system';
-import { IAuthenticationStrategy, PrincipalDto } from '@domains/identity/authentication';
-import { ok, Result } from '@foundation/standard';
+import { AuthSessionDto, AuthenticationServiceShape, IAuthenticationStrategy } from '@domains/identity/authentication';
+import { Result } from '@foundation/standard';
 
 export class GitHubAuthenticationStrategy implements IAuthenticationStrategy {
   constructor(
     private readonly code: string,
     private readonly redirectUri: string,
-    private readonly identityRepository: IIdentitySystemRepository,
-  ) { }
+    private readonly codeVerifier?: string
+  ) {}
 
-  async execute(): Promise<Result<PrincipalDto, Error>> {
-    return ok(new PrincipalDto());
+  execute(service: AuthenticationServiceShape): Promise<Result<AuthSessionDto, Error>> {
+    return service.exchangeOAuthCodeForSession('github', this.code, this.redirectUri, this.codeVerifier);
   }
 
-  static appliesTo(provider: string): boolean { 
+  static appliesTo(provider: string): boolean {
     return provider.toLowerCase() === 'github';
   }
 }
+

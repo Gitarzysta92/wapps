@@ -7,43 +7,8 @@ import { IIdentityGraphProvisioner } from './ports/identity-graph-provisioner.po
 import { IOAuthCodeExchanger } from './ports/oauth-code-exchanger.port';
 import { ISessionGateway } from './ports/session-gateway.port';
 import { IUserProvisioner } from './ports/user-provisioner.port';
-import { IAuthenticationStrategy } from './ports/authentication-strategy.port';
-
-
-export class IdentityAuthenticationServiceV1 {
-  constructor(
-    private readonly identityRepository: IIdentityRepository,
-  ) { }
-  
-  async authenticate(
-    strategy: IAuthenticationStrategy,
-  ): Promise<Result<AuthSessionDto, Error>> {
-
-    const result = await strategy.execute();
-    if (isErr(result)) {
-      return err(result.error);
-    }
-    const providerSecret = result.value;
-
-
-    
-
-    return await this.sessionGateway.signInWithPassword(email, password);
-  }
-
-
-  async validateRequired(authorizationHeader: string | undefined): Promise<Result<PrincipalDto, Error>> {
-    if (!authorizationHeader) {
-      return err(new Error('No authorization header'));
-    }
-
-    const token = authorizationHeader.replace(/^Bearer\\s+/i, '');
-    if (!token || token === authorizationHeader) {
-      return err(new Error('Invalid authorization header format'));
-    }
-  }
-}
-
+import { AuthenticationServiceShape, IAuthenticationStrategy } from './ports/authentication-strategy.port';
+import type { IdentityCreatedEvent } from './ports/event-listener.port';
 
 export type IdentityAuthenticationServiceConfig = {
   enabledEmailPassword: boolean;
@@ -78,9 +43,23 @@ export class IdentityAuthenticationServiceV2 {
     private readonly userProvisioner: IUserProvisioner,
     private readonly oauthCodeExchanger: IOAuthCodeExchanger,
     private readonly config: IdentityAuthenticationServiceConfig,
-    private readonly identityGraphProvisioner?: () => IIdentityGraphProvisioner | undefined
+    private readonly identityGraphProvisioner?: () => IIdentityGraphProvisioner | undefined,
+    private readonly onIdentityCreated?: (event: IdentityCreatedEvent) => Promise<void> | void
   ) {}
 
+  /**
+   * Extracts the minimal contract for OAuth strategies so they never receive the full service.
+   */
+  private getAuthenticationServiceShape(): AuthenticationServiceShape {
+    return {
+      exchangeOAuthCodeForSession: (provider, code, redirectUri, codeVerifier) =>
+        this.exchangeOAuthCodeForSession(provider, code, redirectUri, codeVerifier),
+    };
+  }
+
+  async authenticate(strategy: IAuthenticationStrategy): Promise<Result<AuthSessionDto, Error>> {
+    return await strategy.execute(this.getAuthenticationServiceShape());
+  }
 
   async validateRequired(authorizationHeader: string | undefined): Promise<Result<PrincipalDto, Error>> {
     if (!authorizationHeader) {
@@ -105,6 +84,20 @@ export class IdentityAuthenticationServiceV2 {
       if (ensured.ok) {
         identityId = ensured.value.identityId;
         subjectId = ensured.value.subjectId;
+      }
+
+      if (ensured.ok && ensured.value.created && identityId && subjectId) {
+        try {
+          await this.onIdentityCreated?.({
+            provider: this.config.identityProvider,
+            externalId: verified.value.uid,
+            identityId,
+            subjectId,
+            correlationId: identityId,
+          });
+        } catch {
+          // best effort
+        }
       }
     }
 
@@ -191,7 +184,20 @@ export class IdentityAuthenticationServiceV2 {
     // Ensure internal identity exists (best effort).
     const prov = this.identityGraphProvisioner?.();
     if (prov) {
-      await prov.ensureIdentity(this.config.identityProvider, uid);
+      const ensured = await prov.ensureIdentity(this.config.identityProvider, uid);
+      if (ensured.ok && ensured.value.created) {
+        try {
+          await this.onIdentityCreated?.({
+            provider: this.config.identityProvider,
+            externalId: uid,
+            identityId: ensured.value.identityId,
+            subjectId: ensured.value.subjectId,
+            correlationId: ensured.value.identityId,
+          });
+        } catch {
+          // best effort
+        }
+      }
     }
 
     return await this.sessionGateway.signInWithCustomToken(customToken.value);
