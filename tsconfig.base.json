@@ -89,6 +89,9 @@
       "@domains/identity/management": [
         "libs/domains/identity/management/src/index.ts"
       ],
+      "@domains/identity/kernel": [
+        "libs/domains/identity/kernel/src/index.ts"
+      ],
       "@domains/monetization": ["libs/domains/monetization/src/index.ts"],
       "@domains/publication/article": [
         "libs/domains/publication/article/src/index.ts"
@@ -125,6 +128,7 @@
       "@identity": ["apps/portals/shared/features/identity/index.ts"],
       "@identity/*": ["apps/portals/shared/features/identity/*"],
       "@infrastructure/*": ["libs/infrastructure/*/src/index.ts"],
+      "@infrastructure/firebase-identity": ["libs/infrastructure/firebase-identity/src/index.ts"],
       "@infrastructure/mongo": ["libs/infrastructure/mongo/src/index.ts"],
       "@infrastructure/mysql": ["libs/infrastructure/mysql/src/index.ts"],
       "@infrastructure/platform-queue": [

@@ -1,22 +1,9 @@
 import * as admin from 'firebase-admin';
 import { err, ok, Result } from '@foundation/standard';
-import {
-  CreateUserDto,
-  IUserProvisioner,
-  ProvisionedUserDto,
-} from '@domains/identity/authentication';
 
-class FirebaseAdminError extends Error {
-  override name = 'FirebaseAdminError';
-  constructor(
-    message: string,
-    public readonly code?: string
-  ) {
-    super(message);
-  }
-}
 
-export class FirebaseAdminUserProvisioner implements IUserProvisioner {
+
+export class FirebaseUserProvisioner {
   async getUserByEmail(email: string): Promise<Result<ProvisionedUserDto, Error>> {
     try {
       const user = await admin.auth().getUserByEmail(email);

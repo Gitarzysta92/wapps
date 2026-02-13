@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/domains/identity/kernel",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../dist/domains/identity/kernel/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../foundation/standard/tsconfig.lib.json" },
+    { "path": "../../../foundation/identity-system/tsconfig.lib.json" },
+    { "path": "../../../cross-cutting/events/tsconfig.lib.json" }
+  ]
+}

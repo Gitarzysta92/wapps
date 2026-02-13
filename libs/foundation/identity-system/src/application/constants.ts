@@ -9,9 +9,9 @@ export type IdentityProvider = string;
 
 /**
  * Stable, deterministic subject id (works as PK for MySQL or `_id`/`id` in Mongo):
- * `${provider}:${externalId}` (e.g. `firebase:abc123`).
+ * `${provider}:${claim}` (e.g. `firebase:abc123`).
  */
-export function identitySubjectId(provider: IdentityProvider, externalId: string): string {
-  return `${provider}:${externalId}`;
+export function identitySubjectId(provider: IdentityProvider, claim: string): string {
+  return `${provider}:${claim}`;
 }
 

@@ -1,23 +1,19 @@
 import { Result } from '@foundation/standard';
-import { IdentityProvider } from '../application/constants';
 import { IIdentitySubject } from '../entities/identity-subject';
 
-export interface IIdentitySubjectRepository {
+export interface IIdentitySubjectRepository<T extends IIdentitySubject> {
+
   /**
    * Get an external subject by provider+external id.
    * Returns `null` when not found.
    */
-  getByProviderExternalId(
-    provider: IdentityProvider,
-    externalId: string
-  ): Promise<Result<IIdentitySubject | null, Error>>;
 
   /**
    * Create or update (idempotent) by `id`.
    * Implementations should treat this as an upsert.
    */
-  upsert(subject: IIdentitySubject): Promise<Result<boolean, Error>>;
-
+  upsert(subject: Omit<IIdentitySubject, 'id'>): Promise<Result<boolean, Error>>;
+  getByClaim(claim: string): Promise<Result<T, Error>>
   deleteById(id: string): Promise<Result<boolean, Error>>;
 }
 

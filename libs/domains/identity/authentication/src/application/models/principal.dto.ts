@@ -10,7 +10,7 @@ export type PrincipalDto = {
   identityId?: string;
 
   /**
-   * Optional stable subject identifier (e.g. `<provider>:<externalId>`).
+   * Optional stable subject identifier (e.g. `<provider>:<claim>`).
    * Useful for downstream event emission and internal tracing.
    */
   subjectId?: string;

@@ -1,7 +1,14 @@
 import { Module } from '@nestjs/common';
 import { IdentityAuthenticationServiceV2 } from '@domains/identity/authentication';
-import { FirebaseAdminIdTokenVerifier, FirebaseAdminUserProvisioner, FirebaseRestSessionGateway, OAuthCodeExchanger } from '@infrastructure/firebase-identity';
-import { APP_CONFIG, IDENTITY_AUTH_SERVICE, SWAGGER_DOCUMENT } from './tokens';
+import type { IOAuthCodeExchanger } from '@domains/identity/authentication';
+import {
+  FirebaseAdminIdTokenVerifier,
+  FirebaseUserProvisioner,
+  FirebaseRestSessionGateway,
+  FirebaseGoogleCodeExchanger,
+  FirebaseGithubCodeExchanger,
+} from '@infrastructure/firebase-identity';
+import { APP_CONFIG, IDENTITY_AUTH_SERVICE, OAUTH_CODE_EXCHANGER, SWAGGER_DOCUMENT } from './tokens';
 import { readConfigFromEnv } from './app-config';
 import { swaggerDocument } from './swagger.document';
 import { DocsController } from './controllers/docs.controller';
@@ -28,22 +35,56 @@ import { IdentityBootstrappersService } from './identity/identity-bootstrappers.
       useValue: swaggerDocument,
     },
     {
+      provide: OAUTH_CODE_EXCHANGER,
+      useFactory: (config: ReturnType<typeof readConfigFromEnv>): IOAuthCodeExchanger => {
+        const google =
+          config.oauth.googleClientId && config.oauth.googleClientSecret
+            ? new FirebaseGoogleCodeExchanger({
+                clientId: config.oauth.googleClientId,
+                clientSecret: config.oauth.googleClientSecret,
+              })
+            : null;
+        const github =
+          config.oauth.githubClientId && config.oauth.githubClientSecret
+            ? new FirebaseGithubCodeExchanger({
+                clientId: config.oauth.githubClientId,
+                clientSecret: config.oauth.githubClientSecret,
+              })
+            : null;
+        return {
+          async exchangeCode(provider, code, redirectUri, codeVerifier) {
+            try {
+              if (provider === 'google') {
+                if (!google) return { ok: false, error: new Error('Google OAuth not configured') };
+                return await google.exchangeCode(code, redirectUri, codeVerifier);
+              }
+              if (provider === 'github') {
+                if (!github) return { ok: false, error: new Error('GitHub OAuth not configured') };
+                return await github.exchangeCode(code, redirectUri);
+              }
+              return { ok: false, error: new Error(`Unknown provider: ${provider}`) };
+            } catch (e: unknown) {
+              const message = e instanceof Error ? e.message : 'OAuth exchange failed';
+              return { ok: false, error: new Error(message) };
+            }
+          },
+        };
+      },
+      inject: [APP_CONFIG],
+    },
+    {
       provide: IDENTITY_AUTH_SERVICE,
       useFactory: (
         config: ReturnType<typeof readConfigFromEnv>,
+        oauthCodeExchanger: IOAuthCodeExchanger,
         graphHolder: IdentityGraphProvisionerHolder,
         eventsHolder: IdentityEventsPublisherHolder
       ) => {
         return new IdentityAuthenticationServiceV2(
           new FirebaseAdminIdTokenVerifier(),
           new FirebaseRestSessionGateway(config.firebaseWebApiKey),
-          new FirebaseAdminUserProvisioner(),
-          new OAuthCodeExchanger({
-            googleClientId: config.oauth.googleClientId,
-            googleClientSecret: config.oauth.googleClientSecret,
-            githubClientId: config.oauth.githubClientId,
-            githubClientSecret: config.oauth.githubClientSecret,
-          }),
+          new FirebaseUserProvisioner(),
+          oauthCodeExchanger,
           {
             enabledEmailPassword: config.providers.enableEmailPassword,
             enabledGoogle: config.providers.enableGoogle,
@@ -62,7 +103,7 @@ import { IdentityBootstrappersService } from './identity/identity-bootstrappers.
           }
         );
       },
-      inject: [APP_CONFIG, IdentityGraphProvisionerHolder, IdentityEventsPublisherHolder],
+      inject: [APP_CONFIG, OAUTH_CODE_EXCHANGER, IdentityGraphProvisionerHolder, IdentityEventsPublisherHolder],
     },
   ],
 })

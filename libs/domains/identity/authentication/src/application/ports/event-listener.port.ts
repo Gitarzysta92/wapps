@@ -1,6 +1,6 @@
 export type IdentityCreatedEvent = {
   provider: string;
-  externalId: string;
+  claim: string;
   identityId: string;
   subjectId: string;
   correlationId?: string;

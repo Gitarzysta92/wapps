@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { IAuthenticationStrategy, IdentityAuthenticationServiceV2 } from '@domains/identity/authentication';
-import { APP_CONFIG, IDENTITY_AUTH_SERVICE } from '../tokens';
+import { APP_CONFIG, IDENTITY_AUTH_SERVICE, OAUTH_CODE_EXCHANGER } from '../tokens';
 import { AuthenticatorAppConfig } from '../app-config';
 import { GoogleAuthenticationStrategy } from '../strategy/google.strategy';
 import { GitHubAuthenticationStrategy } from '../strategy/github.strategy';
@@ -12,7 +12,8 @@ import { buildGoogleAuthorizeUrl, buildGithubAuthorizeUrl } from '../oauth/autho
 export class AuthController {
   constructor(
     @Inject(IDENTITY_AUTH_SERVICE) private readonly identificationService: IdentityAuthenticationServiceV2,
-    @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig
+    @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig,
+    @Inject(OAUTH_CODE_EXCHANGER) private readonly oauthCodeExchanger: IOAuthCodeExchanger
   ) {}
 
   @Post('/auth/signin')
@@ -107,9 +108,9 @@ export class AuthController {
 
     let strategy: IAuthenticationStrategy;
     if (GoogleAuthenticationStrategy.appliesTo(provider)) {
-      strategy = new GoogleAuthenticationStrategy(code, redirectUri, codeVerifier);
+      strategy = new GoogleAuthenticationStrategy(this.oauthCodeExchanger, code, redirectUri, codeVerifier);
     } else {
-      strategy = new GitHubAuthenticationStrategy(code, redirectUri, codeVerifier);
+      strategy = new GitHubAuthenticationStrategy(this.oauthCodeExchanger, code, redirectUri, codeVerifier);
     }
 
     const result = await this.identificationService.authenticate(strategy);

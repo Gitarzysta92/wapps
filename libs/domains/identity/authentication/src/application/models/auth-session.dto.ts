@@ -4,4 +4,3 @@ export type AuthSessionDto = {
   expiresIn: string;
   uid: string;
 };
-

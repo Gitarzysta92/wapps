@@ -32,9 +32,9 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
     }
   }
 
-  async getByProviderExternalId(
+  async getByProviderClaim(
     provider: string,
-    externalId: string
+    claim: string
   ): Promise<Result<IIdentitySubject | null, Error>> {
     try {
       const [rows] = await this.pool.query(
@@ -42,10 +42,11 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
          FROM identity_subjects
          WHERE provider = ? AND externalId = ? AND deletedAt = 0
          LIMIT 1`,
-        [provider, externalId]
+        [provider, claim]
       );
-      const r = (rows as any[])[0];
-      return ok((r as IIdentitySubject) ?? null);
+      const row = (rows as any[])[0];
+      const subject = row ? { ...row, claim: row.externalId } : null;
+      return ok(subject as IIdentitySubject | null);
     } catch (e) {
       return err(e instanceof Error ? e : new Error(String(e)));
     }
@@ -67,7 +68,7 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
         [
           subject.id,
           subject.providerType,
-          subject.externalId,
+          subject.claim,
           subject.identityId,
           subject.createdAt,
           subject.updatedAt,

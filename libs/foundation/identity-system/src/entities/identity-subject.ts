@@ -10,8 +10,8 @@ export type IdentityProviderType = string;
  * an authentication subject and an internal `identityId`.
  *
  * A "subject" can be:
- * - a third-party provider account (e.g. `provider="google"`, `externalId=<oidc sub>`)
- * - a first-party login identifier (e.g. `provider="email"`, `externalId=<normalized email>`)
+ * - a third-party provider account (e.g. `provider="google"`, `claim=<oidc sub>`)
+ * - a first-party login identifier (e.g. `provider="email"`, `claim=<normalized email>`)
  *
  * `id` is intentionally stable/deterministic (e.g. `firebase:<uid>` or `google:<sub>`)
  * so it can be used as a natural key and makes idempotent provisioning easy.
@@ -24,14 +24,14 @@ export interface IIdentitySubject {
 
   providerType: IdentityProviderType;
   /**
-   * Provider-specific stable identifier for the subject.
+   * Provider-specific stable identifier for the subject (e.g. OIDC subject claim).
    * Examples: Firebase UID, OIDC `sub`, normalized email.
    */
-  externalId: string;
+  claim: string;
 
   /**
    * Backward/forward compatibility alias.
-   * Prefer `externalId` in new code.
+   * Prefer `claim` in new code.
    */
   providerSecret?: IdentityProviderSecret;
 

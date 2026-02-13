@@ -17,6 +17,9 @@
   ],
   "references": [
     {
+      "path": "../../../cross-cutting/events/tsconfig.lib.json"
+    },
+    {
       "path": "../../../foundation/standard/tsconfig.lib.json"
     },
     {

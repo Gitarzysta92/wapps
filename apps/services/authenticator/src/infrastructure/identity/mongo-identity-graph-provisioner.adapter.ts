@@ -7,16 +7,16 @@ export class MongoIdentityGraphProvisionerAdapter implements IIdentityGraphProvi
 
   async ensureIdentity(
     provider: string,
-    externalId: string
+    claim: string
   ): Promise<Result<{ identityId: string; subjectId: string; created: boolean }, Error>> {
-    const r = await this.linking.addIdentityNode(provider, externalId);
+    const r = await this.linking.createIdentity(provider, claim);
     if (!r.ok) return err(r.error);
     return ok({ identityId: r.value.identityId, subjectId: r.value.subjectId, created: r.value.created });
   }
 
-  async deleteIdentity(provider: string, externalId: string): Promise<Result<boolean, Error>> {
+  async deleteIdentity(provider: string, claim: string): Promise<Result<boolean, Error>> {
     void provider;
-    void externalId;
+    void claim;
     return ok(true);
   }
 }
