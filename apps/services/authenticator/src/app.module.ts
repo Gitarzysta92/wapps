@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { IdentityAuthenticationServiceV2 } from '@domains/identity/authentication';
-import type { IOAuthCodeExchanger } from '@domains/identity/authentication';
+
 import {
   FirebaseAdminIdTokenVerifier,
   FirebaseUserProvisioner,
@@ -8,7 +7,13 @@ import {
   FirebaseGoogleCodeExchanger,
   FirebaseGithubCodeExchanger,
 } from '@infrastructure/firebase-identity';
-import { APP_CONFIG, IDENTITY_AUTH_SERVICE, OAUTH_CODE_EXCHANGER, SWAGGER_DOCUMENT } from './tokens';
+import {
+  ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
+  APP_CONFIG,
+  IDENTITY_AUTH_SERVICE,
+  OAUTH_CODE_EXCHANGER,
+  SWAGGER_DOCUMENT,
+} from './tokens';
 import { readConfigFromEnv } from './app-config';
 import { swaggerDocument } from './swagger.document';
 import { DocsController } from './controllers/docs.controller';
@@ -19,6 +24,7 @@ import { AuthController } from './controllers/auth.controller';
 import { IdentityGraphProvisionerHolder } from './identity/identity-graph-provisioner.holder';
 import { IdentityEventsPublisherHolder } from './identity/identity-events-publisher.holder';
 import { IdentityBootstrappersService } from './identity/identity-bootstrappers.service';
+import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-strategy.factory';
 
 @Module({
   controllers: [DocsController, HealthController, PlatformController, ValidationController, AuthController],
@@ -104,6 +110,14 @@ import { IdentityBootstrappersService } from './identity/identity-bootstrappers.
         );
       },
       inject: [APP_CONFIG, OAUTH_CODE_EXCHANGER, IdentityGraphProvisionerHolder, IdentityEventsPublisherHolder],
+    },
+    {
+      provide: ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
+      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+        new AnonymousAuthenticationStrategyFactory(
+          new FirebaseRestSessionGateway(config.firebaseWebApiKey)
+        ),
+      inject: [APP_CONFIG],
     },
   ],
 })

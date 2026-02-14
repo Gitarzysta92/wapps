@@ -1,22 +1,30 @@
 import {
+  AuthSessionDto,
   IAuthenticationStrategy,
-  AuthenticationStrategyResult,
+  IdentityCreationDto,
 } from '@domains/identity/authentication';
 import { err, isErr, ok, Result } from '@foundation/standard';
 import { FirebaseUserProvisioner, FirebaseGoogleCodeExchanger, FirebaseTokenGenerator, FirebaseRestSessionGateway } from '@infrastructure/firebase-identity';
 
 export class GoogleAuthenticationStrategy implements IAuthenticationStrategy {
+
+
+  static readonly provider = 'google';
+  static appliesTo(provider: string): boolean {
+    return provider.toLowerCase() === this.provider;
+  }
+
   constructor(
+    private readonly code: string,
+    private readonly redirectUri: string,
+    private readonly codeVerifier: string,
     private readonly codeExchanger: FirebaseGoogleCodeExchanger,
     private readonly firebaseUserProvisioner: FirebaseUserProvisioner,
     private readonly firebaseTokenGenerator: FirebaseTokenGenerator,
     private readonly firebaseRestSessionGateway: FirebaseRestSessionGateway,
-    private readonly code: string,
-    private readonly redirectUri: string,
-    private readonly codeVerifier?: string
   ) {}
 
-  async execute(): Promise<Result<AuthenticationStrategyResult, Error>> {
+  async execute(): Promise<Result<IdentityCreationDto & AuthSessionDto, Error>> {
     const userInfoResult = await this.codeExchanger.exchangeCode(
       this.code,
       this.redirectUri,
@@ -48,6 +56,13 @@ export class GoogleAuthenticationStrategy implements IAuthenticationStrategy {
       token: sessionResult.value.token,
       uid: createdUserResult.value.uid,
       email: googleUser.email,
+      provider: GoogleAuthenticationStrategy.provider,
+      claim: googleUser.email,
+      identityType: 'email',
+      identityId: createdUserResult.value.uid,
+      kind: 'user',
+      expiresIn: sessionResult.value.expiresIn,
+      refreshToken: sessionResult.value.refreshToken,
     });
   }
 }

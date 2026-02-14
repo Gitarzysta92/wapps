@@ -1,8 +1,8 @@
 import { ok, Result } from '@foundation/standard';
 import { IdentityCreationDto } from "./models/identity-creation.dto";
-import { IIdentityFactory } from "./ports/identity-factory.port";
+import { IIdentityFactory } from "@domains/identity/kernel";
 import { Identity } from '../core/identity';
-import { IIdentityIdGenerator } from './ports/identity-id-generator.port';
+import { IIdentityIdGenerator } from '@domains/identity/kernel';
 
 export class IdentityFactory implements IIdentityFactory {
 

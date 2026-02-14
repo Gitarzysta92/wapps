@@ -1,21 +1,20 @@
 import { err, isErr, ok, Result } from '@foundation/standard';
 import { IdentityCreationDto } from './models/identity-creation.dto';
-import { IIdentityEventEmitter } from './ports/identity-event-emitter.port';
-import { IIdentityRepository } from './ports/identity-repository.port';
-import { IIdentityFactory } from './ports/identity-factory.port';
 import { Identity } from '../core/identity';
+import { IIdentityEventEmitter, IIdentityRepository } from '@domains/identity/kernel';
+import { IIdentityFactory } from '@domains/identity/kernel';
 
 
 export class IdentityService {
 
   constructor(
-    private readonly identityEventsEmmiter: IIdentityEventEmitter,
-    private readonly identityRepository: IIdentityRepository,
-    private readonly identityFactory: IIdentityFactory,
+    private readonly eventsEmmiter: IIdentityEventEmitter,
+    private readonly repository: IIdentityRepository,
+    private readonly factory: IIdentityFactory,
   ) { }
   
   async obtainIdentity(claim: string): Promise<Result<Identity, Error>> {
-    const result = await this.identityRepository.getByClaim(claim);
+    const result = await this.repository.getByClaim(claim);
     if (!result.ok) {
       return err(result.error);
     }
@@ -37,7 +36,7 @@ export class IdentityService {
     extras: { activate?: boolean } = { activate: false }
   ): Promise<Result<Identity, Error>> {
 
-    const identityCreationResult = await this.identityFactory.create(identityCreationDto);
+    const identityCreationResult = await this.factory.create(identityCreationDto);
 
     if (isErr(identityCreationResult)) {
       return err(identityCreationResult.error);
@@ -53,12 +52,12 @@ export class IdentityService {
       return err(new Error('Invalid identity'));
     }
 
-    const result = await this.identityRepository.upsert(identity);
+    const result = await this.repository.upsert(identity);
     if (!result.ok) {
       return err(result.error);
     }
 
-    await this.identityEventsEmmiter.publishCreated({
+    await this.eventsEmmiter.publishCreated({
       identityId: identity.identityId,
       provider: identityCreationDto.provider,
       claim: identityCreationDto.claim,
@@ -66,5 +65,5 @@ export class IdentityService {
 
     return ok(identity);
   }
-  
+
 }

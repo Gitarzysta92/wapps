@@ -1,10 +1,17 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@foundation/standard';
-import { OAuthUserInfoDto } from '@domains/identity/authentication';
+
 
 export type FirebaseGoogleCodeExchangerConfig = {
   clientId: string;
   clientSecret: string;
+};
+
+export type OAuthUserInfoDto = {
+  email: string;
+  name: string;
+  picture: string;
+  emailVerified: boolean;
 };
 
 export class FirebaseGoogleCodeExchanger {
@@ -13,7 +20,7 @@ export class FirebaseGoogleCodeExchanger {
   async exchangeCode(
     code: string,
     redirectUri: string,
-    codeVerifier?: string
+    codeVerifier: string
   ): Promise<Result<OAuthUserInfoDto, Error>> {
     const { clientId, clientSecret } = this.config;
 

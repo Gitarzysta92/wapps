@@ -24,6 +24,9 @@
     },
     {
       "path": "../../../foundation/identity-system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../domains/identity/kernel/tsconfig.lib.json"
     }
   ]
 }
