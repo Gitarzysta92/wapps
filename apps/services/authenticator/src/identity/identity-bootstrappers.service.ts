@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { v7 as uuidv7 } from 'uuid';
-import { IIdentityGraphProvisioner, IdentityService } from '@domains/identity/authentication';
+import {IdentityProviderService } from '@domains/identity/authentication';
 import { PlatformMongoClient } from '@infrastructure/mongo';
 import { QueueChannel, QueueClient } from '@infrastructure/platform-queue';
 import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mysql';
@@ -95,7 +95,7 @@ export class IdentityBootstrappersService implements OnModuleInit {
 
       const nodesRepo = new MongoIdentityNodeRepository(mongo);
       const ids = { generate: () => uuidv7() };
-      const identityService = new IdentityService(nodesRepo, subjectsRepo, ids);
+      const identityService = new IdentityProviderService(nodesRepo, subjectsRepo, ids);
       const base: IIdentityGraphProvisioner = new MongoIdentityGraphProvisionerAdapter(identityService);
       this.graphProvisionerHolder.set(base);
       this.logger.log('🧠 Identity provisioning enabled (Mongo graph + MySQL subjects)');

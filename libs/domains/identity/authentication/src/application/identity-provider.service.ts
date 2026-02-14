@@ -3,9 +3,9 @@ import { IdentityCreationDto } from './models/identity-creation.dto';
 import { Identity } from '../core/identity';
 import { IIdentityEventEmitter, IIdentityRepository } from '@domains/identity/kernel';
 import { IIdentityFactory } from '@domains/identity/kernel';
+import { IIdentityProvider } from './ports/identity-provider.port';
 
-
-export class IdentityService {
+export class IdentityProviderService implements IIdentityProvider {
 
   constructor(
     private readonly eventsEmmiter: IIdentityEventEmitter,

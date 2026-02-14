@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@foundation/standard';
-import { AuthSessionDto, ISessionGateway } from '@domains/identity/authentication';
+
 
 function mapFirebaseRestAuthError(code: string | undefined): string {
   const errorMessages: Record<string, string> = {
@@ -50,7 +50,14 @@ type FirebaseRefreshResponse = {
   user_id: string;
 };
 
-export class FirebaseRestSessionGateway implements ISessionGateway {
+export type FirebaseAuthSessionDto = {
+  token: string;
+  refreshToken: string;
+  expiresIn: string;
+  uid: string;
+};
+
+export class FirebaseRestSessionGateway {
   constructor(private readonly apiKey: string | undefined) {}
 
   private ensureApiKey(): Result<string, Error> {
@@ -60,7 +67,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     return ok(this.apiKey);
   }
 
-  async signInWithPassword(email: string, password: string): Promise<Result<AuthSessionDto, Error>> {
+  async signInWithPassword(email: string, password: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
@@ -72,7 +79,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     });
   }
 
-  async signUpAnonymous(): Promise<Result<AuthSessionDto, Error>> {
+  async signUpAnonymous(): Promise<Result<FirebaseAuthSessionDto, Error>> {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
@@ -82,7 +89,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     });
   }
 
-  async signInWithCustomToken(customToken: string): Promise<Result<AuthSessionDto, Error>> {
+  async signInWithCustomToken(customToken: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
@@ -93,7 +100,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     });
   }
 
-  async refresh(refreshToken: string): Promise<Result<AuthSessionDto, Error>> {
+  async refresh(refreshToken: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
@@ -132,7 +139,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
   private async postJson<T extends FirebaseSignInResponse>(
     url: string,
     body: Record<string, unknown>
-  ): Promise<Result<AuthSessionDto, Error>> {
+  ): Promise<Result<FirebaseAuthSessionDto, Error>> {
     try {
       const res = await fetch(url, {
         method: 'POST',

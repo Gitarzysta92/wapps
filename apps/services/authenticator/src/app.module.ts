@@ -31,18 +31,23 @@ import { ValidationController } from './controllers/validation.controller';
 import { AuthController } from './controllers/auth.controller';
 import { IdentityGraphProvisionerHolder } from './identity/identity-graph-provisioner.holder';
 import { IdentityEventsPublisherHolder } from './identity/identity-events-publisher.holder';
+import { IdentityProviderServiceHolder } from './identity/identity-provider.holder';
 import { IdentityBootstrappersService } from './identity/identity-bootstrappers.service';
+import { LazyIdentityProviderServiceAdapter } from './infrastructure/identity/lazy-identity-provider.adapter';
+import { AuthEventEmitterAdapter } from './infrastructure/identity/auth-event-emitter.adapter';
+import { FirebaseRefreshTokenAdapter } from './infrastructure/identity/firebase-refresh-token.adapter';
 import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-strategy.factory';
 import { EmailAuthenticationStrategyFactory } from './strategy/email-strategy.factory';
 import { GithubAuthenticationStrategyFactory } from './strategy/github-strategy.factory';
 import { GoogleAuthenticationStrategyFactory } from './strategy/google-strategy.factory';
-import { AuthenticatorAuthService } from './identity/authenticator-auth.service';
+import { IdentityAuthenticationService } from '@domains/identity/authentication';
 
 @Module({
   controllers: [DocsController, HealthController, PlatformController, ValidationController, AuthController],
   providers: [
     IdentityGraphProvisionerHolder,
     IdentityEventsPublisherHolder,
+    IdentityProviderServiceHolder,
     IdentityBootstrappersService,
     {
       provide: APP_CONFIG,
@@ -63,9 +68,15 @@ import { AuthenticatorAuthService } from './identity/authenticator-auth.service'
       provide: IDENTITY_AUTH_SERVICE,
       useFactory: (
         sessionGateway: FirebaseRestSessionGateway,
-        tokenVerifier: FirebaseAdminIdTokenVerifier
-      ) => new AuthenticatorAuthService(sessionGateway, tokenVerifier),
-      inject: [REST_SESSION_GATEWAY, FirebaseAdminIdTokenVerifier],
+        identityProviderHolder: IdentityProviderServiceHolder,
+        eventsPublisherHolder: IdentityEventsPublisherHolder
+      ) => {
+        const identityProvider = new LazyIdentityProviderServiceAdapter(identityProviderHolder);
+        const eventsEmitter = new AuthEventEmitterAdapter(eventsPublisherHolder);
+        const authenticationRefreshToken = new FirebaseRefreshTokenAdapter(sessionGateway);
+        return new IdentityAuthenticationService(identityProvider, eventsEmitter, authenticationRefreshToken);
+      },
+      inject: [REST_SESSION_GATEWAY, IdentityProviderServiceHolder, IdentityEventsPublisherHolder],
     },
     {
       provide: USER_PROVISIONER,

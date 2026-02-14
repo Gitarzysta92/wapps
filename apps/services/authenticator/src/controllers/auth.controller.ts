@@ -1,7 +1,14 @@
 import { Body, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { IAuthenticationStrategy } from '@domains/identity/authentication';
-import { ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY, APP_CONFIG, EMAIL_AUTHENTICATION_STRATEGY_FACTORY, GITHUB_AUTHENTICATION_STRATEGY_FACTORY, GOOGLE_AUTHENTICATION_STRATEGY_FACTORY, IDENTITY_AUTH_SERVICE } from '../tokens';
+import { IAuthenticationStrategy, IdentityAuthenticationService } from '@domains/identity/authentication';
+import {
+  ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
+  APP_CONFIG,
+  EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
+  GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
+  GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
+  IDENTITY_AUTH_SERVICE
+} from '../tokens';
 import { AuthenticatorAppConfig } from '../app-config';
 import { GoogleAuthenticationStrategy } from '../strategy/google.strategy';
 import { SignInOAuthDto } from './models/sign-in-oauth.dto';
@@ -12,12 +19,12 @@ import { GithubAuthenticationStrategyFactory } from '../strategy/github-strategy
 import { GithubAuthenticationStrategy } from '../strategy/github.strategy';
 import { AnonymousAuthenticationStrategyFactory } from '../strategy/anonymous-strategy.factory';
 import { SignInCredentialsDto } from './models/sign-in-credentials.dto';
-import { AuthenticatorAuthService } from '../identity/authenticator-auth.service';
+import { TokenRefreshDto } from './models/token-refresh.dto';
 
 @Controller()
 export class AuthController {
   constructor(
-    @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: AuthenticatorAuthService,
+    @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: IdentityAuthenticationService,
     @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig,
     @Inject(GOOGLE_AUTHENTICATION_STRATEGY_FACTORY) private readonly googleAuthenticationStrategyFactory: GoogleAuthenticationStrategyFactory,
     @Inject(GITHUB_AUTHENTICATION_STRATEGY_FACTORY) private readonly githubAuthenticationStrategyFactory: GithubAuthenticationStrategyFactory,
@@ -82,7 +89,7 @@ export class AuthController {
 
 
   @Post('/auth/refresh')
-  async refresh(@Body() body: any, @Res() res: Response) {
+  async refresh(@Body() body: TokenRefreshDto, @Res() res: Response) {
     const { refreshToken } = body ?? {};
 
     if (!refreshToken) {

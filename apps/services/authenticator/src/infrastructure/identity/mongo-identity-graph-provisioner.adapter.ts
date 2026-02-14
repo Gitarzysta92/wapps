@@ -1,9 +1,9 @@
 import { err, ok, Result } from '@foundation/standard';
 import { IIdentityGraphProvisioner } from '@domains/identity/authentication';
-import { IdentityService } from '@domains/identity/authentication';
+import { IdentityProviderService } from '@domains/identity/authentication';
 
 export class MongoIdentityGraphProvisionerAdapter implements IIdentityGraphProvisioner {
-  constructor(private readonly linking: IdentityService) {}
+  constructor(private readonly linking: IdentityProviderService) {}
 
   async ensureIdentity(
     provider: string,
