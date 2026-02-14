@@ -4,15 +4,23 @@ import {
   FirebaseAdminIdTokenVerifier,
   FirebaseUserProvisioner,
   FirebaseRestSessionGateway,
+  FirebaseTokenGenerator,
   FirebaseGoogleCodeExchanger,
   FirebaseGithubCodeExchanger,
 } from '@infrastructure/firebase-identity';
 import {
   ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
   APP_CONFIG,
+  EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
+  GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
+  GITHUB_CODE_EXCHANGER,
+  GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
+  GOOGLE_CODE_EXCHANGER,
   IDENTITY_AUTH_SERVICE,
-  OAUTH_CODE_EXCHANGER,
+  REST_SESSION_GATEWAY,
   SWAGGER_DOCUMENT,
+  TOKEN_GENERATOR,
+  USER_PROVISIONER,
 } from './tokens';
 import { readConfigFromEnv } from './app-config';
 import { swaggerDocument } from './swagger.document';
@@ -25,6 +33,10 @@ import { IdentityGraphProvisionerHolder } from './identity/identity-graph-provis
 import { IdentityEventsPublisherHolder } from './identity/identity-events-publisher.holder';
 import { IdentityBootstrappersService } from './identity/identity-bootstrappers.service';
 import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-strategy.factory';
+import { EmailAuthenticationStrategyFactory } from './strategy/email-strategy.factory';
+import { GithubAuthenticationStrategyFactory } from './strategy/github-strategy.factory';
+import { GoogleAuthenticationStrategyFactory } from './strategy/google-strategy.factory';
+import { AuthenticatorAuthService } from './identity/authenticator-auth.service';
 
 @Module({
   controllers: [DocsController, HealthController, PlatformController, ValidationController, AuthController],
@@ -40,84 +52,90 @@ import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-str
       provide: SWAGGER_DOCUMENT,
       useValue: swaggerDocument,
     },
+    FirebaseAdminIdTokenVerifier,
     {
-      provide: OAUTH_CODE_EXCHANGER,
-      useFactory: (config: ReturnType<typeof readConfigFromEnv>): IOAuthCodeExchanger => {
-        const google =
-          config.oauth.googleClientId && config.oauth.googleClientSecret
-            ? new FirebaseGoogleCodeExchanger({
-                clientId: config.oauth.googleClientId,
-                clientSecret: config.oauth.googleClientSecret,
-              })
-            : null;
-        const github =
-          config.oauth.githubClientId && config.oauth.githubClientSecret
-            ? new FirebaseGithubCodeExchanger({
-                clientId: config.oauth.githubClientId,
-                clientSecret: config.oauth.githubClientSecret,
-              })
-            : null;
-        return {
-          async exchangeCode(provider, code, redirectUri, codeVerifier) {
-            try {
-              if (provider === 'google') {
-                if (!google) return { ok: false, error: new Error('Google OAuth not configured') };
-                return await google.exchangeCode(code, redirectUri, codeVerifier);
-              }
-              if (provider === 'github') {
-                if (!github) return { ok: false, error: new Error('GitHub OAuth not configured') };
-                return await github.exchangeCode(code, redirectUri);
-              }
-              return { ok: false, error: new Error(`Unknown provider: ${provider}`) };
-            } catch (e: unknown) {
-              const message = e instanceof Error ? e.message : 'OAuth exchange failed';
-              return { ok: false, error: new Error(message) };
-            }
-          },
-        };
-      },
+      provide: REST_SESSION_GATEWAY,
+      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+        new FirebaseRestSessionGateway(config.firebaseWebApiKey),
       inject: [APP_CONFIG],
     },
     {
       provide: IDENTITY_AUTH_SERVICE,
       useFactory: (
-        config: ReturnType<typeof readConfigFromEnv>,
-        oauthCodeExchanger: IOAuthCodeExchanger,
-        graphHolder: IdentityGraphProvisionerHolder,
-        eventsHolder: IdentityEventsPublisherHolder
-      ) => {
-        return new IdentityAuthenticationServiceV2(
-          new FirebaseAdminIdTokenVerifier(),
-          new FirebaseRestSessionGateway(config.firebaseWebApiKey),
-          new FirebaseUserProvisioner(),
-          oauthCodeExchanger,
-          {
-            enabledEmailPassword: config.providers.enableEmailPassword,
-            enabledGoogle: config.providers.enableGoogle,
-            enabledGithub: config.providers.enableGithub,
-            enabledAnonymous: config.providers.enableAnonymous,
-            identityProvider: 'firebase',
-            googleClientId: config.oauth.googleClientId,
-            googleClientSecret: config.oauth.googleClientSecret,
-            githubClientId: config.oauth.githubClientId,
-            githubClientSecret: config.oauth.githubClientSecret,
-          },
-          () => graphHolder.get(),
-          ({ identityId, subjectId }) => {
-            // best-effort cross-cutting: identity.created event
-            eventsHolder.get()?.publishCreated({ identityId, subjectId, correlationId: identityId });
-          }
-        );
-      },
-      inject: [APP_CONFIG, OAUTH_CODE_EXCHANGER, IdentityGraphProvisionerHolder, IdentityEventsPublisherHolder],
+        sessionGateway: FirebaseRestSessionGateway,
+        tokenVerifier: FirebaseAdminIdTokenVerifier
+      ) => new AuthenticatorAuthService(sessionGateway, tokenVerifier),
+      inject: [REST_SESSION_GATEWAY, FirebaseAdminIdTokenVerifier],
+    },
+    {
+      provide: USER_PROVISIONER,
+      useClass: FirebaseUserProvisioner,
+    },
+    {
+      provide: TOKEN_GENERATOR,
+      useClass: FirebaseTokenGenerator,
+    },
+    {
+      provide: GOOGLE_CODE_EXCHANGER,
+      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+        new FirebaseGoogleCodeExchanger({
+          clientId: config.oauth.googleClientId ?? '',
+          clientSecret: config.oauth.googleClientSecret ?? '',
+        }),
+      inject: [APP_CONFIG],
+    },
+    {
+      provide: GITHUB_CODE_EXCHANGER,
+      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+        new FirebaseGithubCodeExchanger({
+          clientId: config.oauth.githubClientId ?? '',
+          clientSecret: config.oauth.githubClientSecret ?? '',
+        }),
+      inject: [APP_CONFIG],
+    },
+    {
+      provide: GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
+      useFactory: (
+        googleExchanger: FirebaseGoogleCodeExchanger,
+        userProvisioner: FirebaseUserProvisioner,
+        tokenGenerator: FirebaseTokenGenerator,
+        restGateway: FirebaseRestSessionGateway
+      ) =>
+        new GoogleAuthenticationStrategyFactory(
+          googleExchanger,
+          userProvisioner,
+          tokenGenerator,
+          restGateway
+        ),
+      inject: [GOOGLE_CODE_EXCHANGER, USER_PROVISIONER, TOKEN_GENERATOR, REST_SESSION_GATEWAY],
+    },
+    {
+      provide: GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
+      useFactory: (
+        githubExchanger: FirebaseGithubCodeExchanger,
+        userProvisioner: FirebaseUserProvisioner,
+        tokenGenerator: FirebaseTokenGenerator,
+        restGateway: FirebaseRestSessionGateway
+      ) =>
+        new GithubAuthenticationStrategyFactory(
+          githubExchanger,
+          userProvisioner,
+          tokenGenerator,
+          restGateway
+        ),
+      inject: [GITHUB_CODE_EXCHANGER, USER_PROVISIONER, TOKEN_GENERATOR, REST_SESSION_GATEWAY],
+    },
+    {
+      provide: EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
+      useFactory: (restGateway: FirebaseRestSessionGateway) =>
+        new EmailAuthenticationStrategyFactory(restGateway),
+      inject: [REST_SESSION_GATEWAY],
     },
     {
       provide: ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
-      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
-        new AnonymousAuthenticationStrategyFactory(
-          new FirebaseRestSessionGateway(config.firebaseWebApiKey)
-        ),
-      inject: [APP_CONFIG],
+      useFactory: (restGateway: FirebaseRestSessionGateway) =>
+        new AnonymousAuthenticationStrategyFactory(restGateway),
+      inject: [REST_SESSION_GATEWAY],
     },
   ],
 })

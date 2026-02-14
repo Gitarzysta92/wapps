@@ -1,25 +1,24 @@
 import { Body, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { IAuthenticationStrategy, IdentityAuthenticationService } from '@domains/identity/authentication';
-import { ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY, APP_CONFIG, EMAIL_AUTHENTICATION_STRATEGY_FACTORY, GITHUB_AUTHENTICATION_STRATEGY_FACTORY, GOOGLE_AUTHENTICATION_STRATEGY_FACTORY, IDENTITY_AUTH_SERVICE, OAUTH_CODE_EXCHANGER } from '../tokens';
+import { IAuthenticationStrategy } from '@domains/identity/authentication';
+import { ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY, APP_CONFIG, EMAIL_AUTHENTICATION_STRATEGY_FACTORY, GITHUB_AUTHENTICATION_STRATEGY_FACTORY, GOOGLE_AUTHENTICATION_STRATEGY_FACTORY, IDENTITY_AUTH_SERVICE } from '../tokens';
 import { AuthenticatorAppConfig } from '../app-config';
 import { GoogleAuthenticationStrategy } from '../strategy/google.strategy';
 import { SignInOAuthDto } from './models/sign-in-oauth.dto';
 import { buildGoogleAuthorizeUrl, buildGithubAuthorizeUrl } from '../oauth/authorize-url';
-import { FirebaseGoogleCodeExchanger } from '@infrastructure/firebase-identity';
 import { EmailAuthenticationStrategyFactory } from '../strategy/email-strategy.factory';
 import { GoogleAuthenticationStrategyFactory } from '../strategy/google-strategy.factory';
 import { GithubAuthenticationStrategyFactory } from '../strategy/github-strategy.factory';
 import { GithubAuthenticationStrategy } from '../strategy/github.strategy';
 import { AnonymousAuthenticationStrategyFactory } from '../strategy/anonymous-strategy.factory';
 import { SignInCredentialsDto } from './models/sign-in-credentials.dto';
+import { AuthenticatorAuthService } from '../identity/authenticator-auth.service';
 
 @Controller()
 export class AuthController {
   constructor(
-    @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: IdentityAuthenticationService,
+    @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: AuthenticatorAuthService,
     @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig,
-    @Inject(OAUTH_CODE_EXCHANGER) private readonly oauthCodeExchanger: FirebaseGoogleCodeExchanger,
     @Inject(GOOGLE_AUTHENTICATION_STRATEGY_FACTORY) private readonly googleAuthenticationStrategyFactory: GoogleAuthenticationStrategyFactory,
     @Inject(GITHUB_AUTHENTICATION_STRATEGY_FACTORY) private readonly githubAuthenticationStrategyFactory: GithubAuthenticationStrategyFactory,
     @Inject(EMAIL_AUTHENTICATION_STRATEGY_FACTORY) private readonly emailAuthenticationStrategyFactory: EmailAuthenticationStrategyFactory,

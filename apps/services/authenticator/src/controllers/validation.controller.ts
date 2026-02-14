@@ -1,13 +1,13 @@
 import { Controller, Get, Headers, Inject, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { IdentityAuthenticationServiceV2 } from '@domains/identity/authentication';
 import { APP_CONFIG, IDENTITY_AUTH_SERVICE } from '../tokens';
 import { AuthenticatorAppConfig } from '../app-config';
+import { AuthenticatorAuthService } from '../identity/authenticator-auth.service';
 
 @Controller()
 export class ValidationController {
   constructor(
-    @Inject(IDENTITY_AUTH_SERVICE) private readonly identificationService: IdentityAuthenticationServiceV2,
+    @Inject(IDENTITY_AUTH_SERVICE) private readonly identificationService: AuthenticatorAuthService,
     @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig
   ) {}
 
