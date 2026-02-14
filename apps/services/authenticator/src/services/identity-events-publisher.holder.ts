@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RabbitMqIdentityEventsPublisher } from '../infrastructure/identity/rabbitmq-identity-events.publisher';
+import { RabbitMqIdentityEventsPublisher } from '../infrastructure/rabbitmq-identity-events.publisher';
 
 @Injectable()
 export class IdentityEventsPublisherHolder {

@@ -5,11 +5,11 @@ import { PlatformMongoClient } from '@infrastructure/mongo';
 import { QueueChannel, QueueClient } from '@infrastructure/platform-queue';
 import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mysql';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
-import { MongoIdentityNodeRepository } from '../infrastructure/identity/identity-provisioner';
-import { MongoIdentityGraphProvisionerAdapter } from '../infrastructure/identity/mongo-identity-graph-provisioner.adapter';
-import { RabbitMqIdentityEventsPublisher } from '../infrastructure/identity/rabbitmq-identity-events.publisher';
-import { IdentityEventsPublisherHolder } from './identity-events-publisher.holder';
-import { IdentityGraphProvisionerHolder } from './identity-graph-provisioner.holder';
+import { MongoIdentityNodeRepository } from '../infrastructure/identity-provisioner';
+import { MongoIdentityGraphProvisionerAdapter } from '../infrastructure/mongo-identity-graph-provisioner.adapter';
+import { RabbitMqIdentityEventsPublisher } from '../infrastructure/rabbitmq-identity-events.publisher';
+import { IdentityEventsPublisherHolder } from '../identity/identity-events-publisher.holder';
+import { IdentityGraphProvisionerHolder } from '../identity/identity-graph-provisioner.holder';
 
 @Injectable()
 export class IdentityBootstrappersService implements OnModuleInit {

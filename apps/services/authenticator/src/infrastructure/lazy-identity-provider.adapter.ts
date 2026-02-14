@@ -1,6 +1,6 @@
 import { err } from '@foundation/standard';
 import { IIdentityProvider, IdentityCreationDto } from '@domains/identity/authentication';
-import { IdentityProviderServiceHolder } from '../../identity/identity-provider.holder';
+import { IdentityProviderServiceHolder } from '../services/identity-provider.holder';
 
 export class LazyIdentityProviderServiceAdapter implements IIdentityProvider {
   constructor(private readonly holder: IdentityProviderServiceHolder) {}

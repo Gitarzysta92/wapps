@@ -1,5 +1,5 @@
 import { IAuthenticationEventEmitter, AuthenticationAuthenticatedPayload } from '@domains/identity/authentication';
-import { IdentityEventsPublisherHolder } from '../../identity/identity-events-publisher.holder';
+import { IdentityEventsPublisherHolder } from '../services/identity-events-publisher.holder';
 
 export class AuthEventEmitterAdapter implements IAuthenticationEventEmitter {
   constructor(private readonly publisherHolder: IdentityEventsPublisherHolder) {}
