@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
   FirebaseAdminIdTokenVerifier,
@@ -10,7 +12,6 @@ import {
 } from '@infrastructure/firebase-identity';
 import {
   ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
-  APP_CONFIG,
   EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
   GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
   GITHUB_CODE_EXCHANGER,
@@ -22,37 +23,55 @@ import {
   TOKEN_GENERATOR,
   USER_PROVISIONER,
 } from './tokens';
-import { readConfigFromEnv } from './app-config';
+import { validateAuthenticatorEnv } from './config/env.validation';
 import { swaggerDocument } from './swagger.document';
 import { DocsController } from './controllers/docs.controller';
 import { HealthController } from './controllers/health.controller';
 import { PlatformController } from './controllers/platform.controller';
 import { ValidationController } from './controllers/validation.controller';
 import { AuthController } from './controllers/auth.controller';
-import { IdentityGraphProvisionerHolder } from './services/identity-graph-provisioner.holder';
 import { IdentityEventsPublisherHolder } from './services/identity-events-publisher.holder';
-import { IdentityProviderServiceHolder } from './services/identity-provider.holder';
-import { IdentityBootstrappersService } from './services/identity-bootstrappers.service';
-import { LazyIdentityProviderServiceAdapter } from './infrastructure/lazy-identity-provider.adapter';
 import { AuthEventEmitterAdapter } from './infrastructure/auth-event-emitter.adapter';
 import { FirebaseRefreshTokenAdapter } from './infrastructure/firebase-refresh-token.adapter';
+import { IdentityEntity } from './entities/identity.entity';
 import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-strategy.factory';
 import { EmailAuthenticationStrategyFactory } from './strategy/email-strategy.factory';
 import { GithubAuthenticationStrategyFactory } from './strategy/github-strategy.factory';
 import { GoogleAuthenticationStrategyFactory } from './strategy/google-strategy.factory';
 import { IdentityAuthenticationService } from '@domains/identity/authentication';
+import { MysqlIdentityProvider } from './services/mysql-identity-provider';
 
 @Module({
-  controllers: [DocsController, HealthController, PlatformController, ValidationController, AuthController],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: validateAuthenticatorEnv,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'mysql',
+        host: config.get<string>('MYSQL_HOST'),
+        port: parseInt(config.get<string>('MYSQL_PORT') ?? '3306', 10),
+        username: config.get<string>('MYSQL_USERNAME'),
+        password: config.get<string>('MYSQL_PASSWORD'),
+        database: config.get<string>('MYSQL_DATABASE'),
+        entities: [IdentityEntity],
+        synchronize: false,
+        logging: false,
+      }),
+    }),
+    TypeOrmModule.forFeature([IdentityEntity]),
+  ],
+  controllers: [
+    DocsController,
+    HealthController,
+    PlatformController,
+    ValidationController,
+    AuthController
+  ],
   providers: [
-    IdentityGraphProvisionerHolder,
     IdentityEventsPublisherHolder,
-    IdentityProviderServiceHolder,
-    IdentityBootstrappersService,
-    {
-      provide: APP_CONFIG,
-      useFactory: () => readConfigFromEnv(),
-    },
     {
       provide: SWAGGER_DOCUMENT,
       useValue: swaggerDocument,
@@ -60,24 +79,24 @@ import { IdentityAuthenticationService } from '@domains/identity/authentication'
     FirebaseAdminIdTokenVerifier,
     {
       provide: REST_SESSION_GATEWAY,
-      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
-        new FirebaseRestSessionGateway(config.firebaseWebApiKey),
-      inject: [APP_CONFIG],
+      useFactory: (config: ConfigService) =>
+        new FirebaseRestSessionGateway(config.get<string>('FIREBASE_WEB_API_KEY')),
+      inject: [ConfigService],
     },
     {
       provide: IDENTITY_AUTH_SERVICE,
       useFactory: (
         sessionGateway: FirebaseRestSessionGateway,
-        identityProviderHolder: IdentityProviderServiceHolder,
+        identityProvider: MysqlIdentityProvider,
         eventsPublisherHolder: IdentityEventsPublisherHolder
       ) => {
-        const identityProvider = new LazyIdentityProviderServiceAdapter(identityProviderHolder);
         const eventsEmitter = new AuthEventEmitterAdapter(eventsPublisherHolder);
         const authenticationRefreshToken = new FirebaseRefreshTokenAdapter(sessionGateway);
         return new IdentityAuthenticationService(identityProvider, eventsEmitter, authenticationRefreshToken);
       },
-      inject: [REST_SESSION_GATEWAY, IdentityProviderServiceHolder, IdentityEventsPublisherHolder],
+      inject: [REST_SESSION_GATEWAY, MysqlIdentityProvider, IdentityEventsPublisherHolder],
     },
+    MysqlIdentityProvider,
     {
       provide: USER_PROVISIONER,
       useClass: FirebaseUserProvisioner,
@@ -88,21 +107,21 @@ import { IdentityAuthenticationService } from '@domains/identity/authentication'
     },
     {
       provide: GOOGLE_CODE_EXCHANGER,
-      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+      useFactory: (config: ConfigService) =>
         new FirebaseGoogleCodeExchanger({
-          clientId: config.oauth.googleClientId ?? '',
-          clientSecret: config.oauth.googleClientSecret ?? '',
+          clientId: config.get<string>('GOOGLE_CLIENT_ID') ?? '',
+          clientSecret: config.get<string>('GOOGLE_CLIENT_SECRET') ?? '',
         }),
-      inject: [APP_CONFIG],
+      inject: [ConfigService],
     },
     {
       provide: GITHUB_CODE_EXCHANGER,
-      useFactory: (config: ReturnType<typeof readConfigFromEnv>) =>
+      useFactory: (config: ConfigService) =>
         new FirebaseGithubCodeExchanger({
-          clientId: config.oauth.githubClientId ?? '',
-          clientSecret: config.oauth.githubClientSecret ?? '',
+          clientId: config.get<string>('GITHUB_CLIENT_ID') ?? '',
+          clientSecret: config.get<string>('GITHUB_CLIENT_SECRET') ?? '',
         }),
-      inject: [APP_CONFIG],
+      inject: [ConfigService],
     },
     {
       provide: GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,

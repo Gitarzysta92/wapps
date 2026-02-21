@@ -1,15 +1,14 @@
 import { Body, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { IAuthenticationStrategy, IdentityAuthenticationService } from '@domains/identity/authentication';
+import { ConfigService } from '@nestjs/config';
 import {
   ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
-  APP_CONFIG,
   EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
   GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
   GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
   IDENTITY_AUTH_SERVICE
 } from '../tokens';
-import { AuthenticatorAppConfig } from '../app-config';
 import { GoogleAuthenticationStrategy } from '../strategy/google.strategy';
 import { SignInOAuthDto } from './models/sign-in-oauth.dto';
 import { buildGoogleAuthorizeUrl, buildGithubAuthorizeUrl } from '../oauth/authorize-url';
@@ -25,7 +24,7 @@ import { TokenRefreshDto } from './models/token-refresh.dto';
 export class AuthController {
   constructor(
     @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: IdentityAuthenticationService,
-    @Inject(APP_CONFIG) private readonly config: AuthenticatorAppConfig,
+    private readonly config: ConfigService,
     @Inject(GOOGLE_AUTHENTICATION_STRATEGY_FACTORY) private readonly googleAuthenticationStrategyFactory: GoogleAuthenticationStrategyFactory,
     @Inject(GITHUB_AUTHENTICATION_STRATEGY_FACTORY) private readonly githubAuthenticationStrategyFactory: GithubAuthenticationStrategyFactory,
     @Inject(EMAIL_AUTHENTICATION_STRATEGY_FACTORY) private readonly emailAuthenticationStrategyFactory: EmailAuthenticationStrategyFactory,
@@ -123,15 +122,16 @@ export class AuthController {
     if (!redirectUri) {
       return res.status(400).json({ error: 'redirect_uri is required' });
     }
-    const { oauth } = this.config;
-    if (!oauth.enableGoogle) {
+    const enableGoogle = this.config.get<string>('ENABLE_GOOGLE') === 'true';
+    const googleClientId = this.config.get<string>('GOOGLE_CLIENT_ID');
+    if (!enableGoogle) {
       return res.status(400).json({ error: 'Google OAuth not enabled' });
     }
-    if (!oauth.googleClientId) {
+    if (!googleClientId) {
       return res.status(500).json({ error: 'Google OAuth misconfigured' });
     }
     const authUrl = buildGoogleAuthorizeUrl({
-      clientId: oauth.googleClientId,
+      clientId: googleClientId,
       redirectUri,
       state,
       codeChallenge,
@@ -149,15 +149,16 @@ export class AuthController {
     if (!redirectUri) {
       return res.status(400).json({ error: 'redirect_uri is required' });
     }
-    const { oauth } = this.config;
-    if (!oauth.enableGithub) {
+    const enableGithub = this.config.get<string>('ENABLE_GITHUB') === 'true';
+    const githubClientId = this.config.get<string>('GITHUB_CLIENT_ID');
+    if (!enableGithub) {
       return res.status(400).json({ error: 'GitHub OAuth not enabled' });
     }
-    if (!oauth.githubClientId) {
+    if (!githubClientId) {
       return res.status(500).json({ error: 'GitHub OAuth misconfigured' });
     }
     const authUrl = buildGithubAuthorizeUrl({
-      clientId: oauth.githubClientId,
+      clientId: githubClientId,
       redirectUri,
       state,
     });

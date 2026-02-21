@@ -5,7 +5,6 @@ import { IIdentityProvider } from './ports/identity-provider.port';
 import { Identity } from '../core/identity';
 import { IAuthenticationEventEmitter } from './ports/authentication-event-emitter.port';
 import { IAuthenticationRefreshToken } from './ports/authentication-refresh-token.port';
-import { IdentityCreationDto } from './models/identity-creation.dto';
 
 export class IdentityAuthenticationService {
 
@@ -30,9 +29,8 @@ export class IdentityAuthenticationService {
     if (result.value) {
       return ok(this._toAuthSessionDto(result.value, session));
     }
-    
-    const creationDto = this._sessionToIdentityCreationDto(session);
-    result = await this.identityProvider.createIdentity(creationDto);
+
+    result = await this.identityProvider.createIdentity(session);
     if (isErr(result)) {
       return err(result.error);
     }
@@ -59,16 +57,6 @@ export class IdentityAuthenticationService {
       refreshToken: session.refreshToken,
       expiresIn: session.expiresIn,
       uid: session.uid,
-    };
-  }
-
-  private _sessionToIdentityCreationDto(session: AuthSessionDto): IdentityCreationDto {
-    return {
-      provider: 'firebase',
-      claim: session.uid,
-      identityType: 'user',
-      identityId: '',
-      kind: 'primary',
     };
   }
 

@@ -1,4 +1,3 @@
-export const APP_CONFIG = Symbol('APP_CONFIG');
 export const IDENTITY_AUTH_SERVICE = Symbol('IDENTITY_AUTH_SERVICE');
 export const OAUTH_CODE_EXCHANGER = Symbol('OAUTH_CODE_EXCHANGER');
 export const SWAGGER_DOCUMENT = Symbol('SWAGGER_DOCUMENT');
