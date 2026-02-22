@@ -1,4 +1,4 @@
-import { err, ok, Result } from "@foundation/standard";
+import { err, ok, Result } from "@sdk/kernel/standard";
 import * as admin from 'firebase-admin';
 
 export class FirebaseTokenGenerator {

@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-import { err, ok, Result } from '@foundation/standard';
-import { OAuthUserInfoDto } from '@domains/identity/authentication';
+import { err, ok, Result } from '@sdk/kernel/standard';
+import { OAuthUserInfoDto } from '@sdk/features/identity/libs/authentication';
 
 export type FirebaseGithubCodeExchangerConfig = {
   clientId: string;

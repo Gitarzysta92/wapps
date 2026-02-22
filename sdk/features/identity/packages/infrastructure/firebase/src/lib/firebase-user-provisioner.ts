@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import { err, ok, Result } from '@foundation/standard';
+import { err, ok, Result } from '@sdk/kernel/standard';
 
 
 

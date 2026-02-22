@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
-import { err, ok, Result } from '@foundation/standard';
-import { IUserAdminPort, UserUpdateDto } from '@domains/identity/management';
+import { err, ok, Result } from '@sdk/kernel/standard';
+import { IUserAdminPort, UserUpdateDto } from '@sdk/features/identity/libs/management';
 
 class FirebaseAdminUserAdminError extends Error {
   override name = 'FirebaseAdminUserAdminError';

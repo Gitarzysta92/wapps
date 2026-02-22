@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { err, ok, Result } from '@foundation/standard';
+import { err, ok, Result } from '@sdk/kernel/standard';
 
 
 function mapFirebaseRestAuthError(code: string | undefined): string {
