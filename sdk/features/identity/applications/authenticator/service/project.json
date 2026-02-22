@@ -1,0 +1,47 @@
+{
+  "name": "sdk-features-identity-applications-authenticator",
+  "$schema": "../../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "sdk/features/identity/applications/authenticator/service/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:platform", "layer:auth"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/sdk/features/identity/applications/authenticator",
+        "main": "sdk/features/identity/applications/authenticator/service/src/main.ts",
+        "tsConfig": "sdk/features/identity/applications/authenticator/service/tsconfig.app.json",
+        "webpackConfig": "sdk/features/identity/applications/authenticator/service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "sdk-features-identity-applications-authenticator:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "sdk-features-identity-applications-authenticator:build:development"
+        },
+        "production": {
+          "buildTarget": "sdk-features-identity-applications-authenticator:build:production"
+        }
+      }
+    }
+  }
+}

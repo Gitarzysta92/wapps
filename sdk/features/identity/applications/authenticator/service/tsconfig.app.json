@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/identity/applications/authenticator",
+    "module": "commonjs",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../../../../kernel/standard/tsconfig.lib.json" },
+    { "path": "../../../libs/authentication/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/firebase-identity/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/platform-queue/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/mongo/tsconfig.lib.json" },
+    { "path": "../../../../../../apps/shared/tsconfig.lib.json" }
+  ]
+}

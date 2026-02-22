@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/identity/libs/authentication",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/libs/authentication/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../../../../libs/cross-cutting/events/tsconfig.lib.json" },
+    { "path": "../../../../kernel/standard/tsconfig.lib.json" },
+    { "path": "../../../../kernel/ontology/identity/tsconfig.lib.json" },
+    { "path": "../../kernel/tsconfig.lib.json" }
+  ]
+}

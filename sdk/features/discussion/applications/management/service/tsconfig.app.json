@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../dist/sdk/features/discussion/applications/management",
+    "declaration": true,
+    "types": ["node"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmitOnError": false,
+    "composite": true,
+    "module": "commonjs",
+    "target": "es2020",
+    "strictPropertyInitialization": false
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", ".keystone", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../../../../libs/domains/discussion/tsconfig.lib.json" },
+    { "path": "../../../../../../apps/shared/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/cross-cutting/events/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/platform-queue/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/minio/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/infrastructure/mongo/tsconfig.lib.json" }
+  ]
+}

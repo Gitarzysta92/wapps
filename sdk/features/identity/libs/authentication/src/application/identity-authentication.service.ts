@@ -1,0 +1,63 @@
+import { err, isErr, ok, Result } from '@sdk/kernel/standard';
+import { AuthSessionDto } from './models/auth-session.dto';
+import { IAuthenticationStrategy } from './ports/authentication-strategy.port';
+import { IIdentityProvider } from './ports/identity-provider.port';
+import { Identity } from '../core/identity';
+import { IAuthenticationEventEmitter } from './ports/authentication-event-emitter.port';
+import { IAuthenticationRefreshToken } from './ports/authentication-refresh-token.port';
+
+export class IdentityAuthenticationService {
+
+  constructor(
+    private readonly identityProvider: IIdentityProvider,
+    private readonly eventsEmmiter: IAuthenticationEventEmitter,
+    private readonly authenticationRefreshToken: IAuthenticationRefreshToken,
+  ) {}
+
+  async authenticate(strategy: IAuthenticationStrategy): Promise<Result<AuthSessionDto, Error>> {
+    const strategyResult = await strategy.execute();
+    if (isErr(strategyResult)) {
+      return err(strategyResult.error);
+    }
+    const session = strategyResult.value;
+
+    let result = await this.identityProvider.obtainIdentity(session.uid);
+    if (isErr(result)) {
+      return err(result.error);
+    }
+
+    if (result.value) {
+      return ok(this._toAuthSessionDto(result.value, session));
+    }
+
+    result = await this.identityProvider.createIdentity(session);
+    if (isErr(result)) {
+      return err(result.error);
+    }
+
+    this.eventsEmmiter.publishAuthenticated({
+      identityId: result.value.identityId,
+      provider: result.value.providerType,
+    });
+
+    return ok(this._toAuthSessionDto(result.value, session));
+  }
+
+  async refresh(refreshToken: string): Promise<Result<AuthSessionDto, Error>> {
+    return this.authenticationRefreshToken.refresh(refreshToken);
+  }
+
+
+  private _toAuthSessionDto(
+    identity: Identity,
+    session: AuthSessionDto
+  ): AuthSessionDto { 
+    return {
+      token: session.token,
+      refreshToken: session.refreshToken,
+      expiresIn: session.expiresIn,
+      uid: session.uid,
+    };
+  }
+
+}

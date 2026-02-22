@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/identity/libs/management",
+    "types": [],
+    "rootDir": "src",
+    "composite": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../../kernel/standard/tsconfig.lib.json" },
+    { "path": "../../../../kernel/ontology/authority/tsconfig.lib.json" }
+  ]
+}

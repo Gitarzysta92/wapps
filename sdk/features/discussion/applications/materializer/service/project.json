@@ -1,0 +1,57 @@
+{
+  "name": "sdk-features-discussion-applications-materializer",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "sdk/features/discussion/applications/materializer/service/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:discussion", "layer:service"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/sdk/features/discussion/applications/materializer",
+        "main": "sdk/features/discussion/applications/materializer/service/src/main.ts",
+        "tsConfig": "sdk/features/discussion/applications/materializer/service/tsconfig.app.json",
+        "webpackConfig": "sdk/features/discussion/applications/materializer/service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "sdk-features-discussion-applications-materializer:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "sdk-features-discussion-applications-materializer:build:development"
+        },
+        "production": {
+          "buildTarget": "sdk-features-discussion-applications-materializer:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "sdk/features/discussion/applications/materializer/service/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

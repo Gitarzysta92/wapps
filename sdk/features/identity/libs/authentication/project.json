@@ -1,0 +1,44 @@
+{
+  "name": "domains-identity-authentication",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "sdk/features/identity/libs/authentication/src",
+  "tags": [
+    "type:domain",
+    "scope:identity"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/sdk/features/identity/libs/authentication"
+      ],
+      "options": {
+        "command": "tsc --build sdk/features/identity/libs/authentication/tsconfig.lib.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "sdk/features/identity/libs/authentication/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  }
+}

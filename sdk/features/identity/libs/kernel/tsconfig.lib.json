@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/identity/libs/kernel",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/libs/kernel/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    { "path": "../../../../kernel/standard/tsconfig.lib.json" },
+    { "path": "../../../../kernel/ontology/identity/tsconfig.lib.json" },
+    { "path": "../../../../../../libs/cross-cutting/events/tsconfig.lib.json" }
+  ]
+}
