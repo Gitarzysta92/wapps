@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/libs/infrastructure/mongo",
+    "declaration": true,
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../../dist/libs/infrastructure/mongo/tsconfig.lib.tsbuildinfo",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+}
