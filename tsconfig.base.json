@@ -267,9 +267,6 @@
       "@sdk/features/identity/libs/authentication": [
         "sdk/features/identity/libs/authentication/src/index.ts"
       ],
-      "@sdk/features/identity/libs/kernel": [
-        "sdk/features/identity/libs/kernel/src/index.ts"
-      ],
       "@sdk/features/identity/libs/management": [
         "sdk/features/identity/libs/management/src/index.ts"
       ],

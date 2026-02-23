@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IdentityCreationDto, IIdentityProvider } from '@sdk/features/identity/libs/authentication';
-import { Identity } from '@sdk/features/identity/libs/kernel';
+import { Identity } from '@sdk/features/identity/core';
 import { Result, err, ok } from '@sdk/kernel/standard';
 import { Repository } from 'typeorm';
 import { IdentityEntity } from '../entities/identity.entity';

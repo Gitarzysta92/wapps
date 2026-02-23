@@ -1,5 +1,5 @@
 import { Result } from '@sdk/kernel/standard';
-import { Identity } from '../../domain/identity';
+import { Identity } from '@sdk/features/identity/core';
 
 export interface IIdentityRepository {
   deleteById(identityId: string): Promise<Result<boolean, Error>>;

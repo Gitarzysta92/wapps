@@ -1,8 +1,9 @@
 import { err, isErr, ok, Result } from '@sdk/kernel/standard';
+import { Identity } from '@sdk/features/identity/core';
 import { IdentityCreationDto } from './models/identity-creation.dto';
-import { Identity } from '../core/identity';
-import { IIdentityEventEmitter, IIdentityRepository } from '@sdk/features/identity/libs/kernel';
-import { IIdentityFactory } from '@sdk/features/identity/libs/kernel';
+import { IIdentityEventEmitter } from './ports/identity-event-emitter.port';
+import { IIdentityFactory } from './ports/identity-factory.port';
+import { IIdentityRepository } from './ports/identity-repository.port';
 import { IIdentityProvider } from './ports/identity-provider.port';
 
 export class IdentityProviderService implements IIdentityProvider {

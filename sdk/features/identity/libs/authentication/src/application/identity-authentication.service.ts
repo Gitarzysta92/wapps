@@ -2,7 +2,7 @@ import { err, isErr, ok, Result } from '@sdk/kernel/standard';
 import { AuthSessionDto } from './models/auth-session.dto';
 import { IAuthenticationStrategy } from './ports/authentication-strategy.port';
 import { IIdentityProvider } from './ports/identity-provider.port';
-import { Identity } from '../core/identity';
+import { Identity } from '@sdk/features/identity/core';
 import { IAuthenticationEventEmitter } from './ports/authentication-event-emitter.port';
 import { IAuthenticationRefreshToken } from './ports/authentication-refresh-token.port';
 

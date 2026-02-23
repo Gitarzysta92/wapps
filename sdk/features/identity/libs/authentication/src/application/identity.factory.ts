@@ -1,8 +1,8 @@
 import { ok, Result } from '@sdk/kernel/standard';
-import { IdentityCreationDto } from "./models/identity-creation.dto";
-import { IIdentityFactory } from "@sdk/features/identity/libs/kernel";
-import { Identity } from '../core/identity';
-import { IIdentityIdGenerator } from '@sdk/features/identity/libs/kernel';
+import { Identity } from '@sdk/features/identity/core';
+import { IdentityCreationDto } from './models/identity-creation.dto';
+import { IIdentityFactory } from './ports/identity-factory.port';
+import { IIdentityIdGenerator } from './ports/identity-id-generator.port';
 
 export class IdentityFactory implements IIdentityFactory {
 

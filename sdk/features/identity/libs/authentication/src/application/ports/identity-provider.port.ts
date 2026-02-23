@@ -1,5 +1,5 @@
 import { Result } from '@sdk/kernel/standard';
-import { Identity } from '../../core/identity';
+import { Identity } from '@sdk/features/identity/core';
 import { IdentityCreationDto } from '../models/identity-creation.dto';
 
 export interface IIdentityProvider {

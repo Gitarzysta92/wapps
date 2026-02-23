@@ -12,7 +12,6 @@
   "references": [
     { "path": "../../../../../../libs/cross-cutting/events/tsconfig.lib.json" },
     { "path": "../../../kernel/standard/tsconfig.lib.json" },
-    { "path": "../../../kernel/ontology/identity/tsconfig.lib.json" },
-    { "path": "../libs/kernel/tsconfig.lib.json" }
+    { "path": "../../../kernel/ontology/identity/tsconfig.lib.json" }
   ]
 }
