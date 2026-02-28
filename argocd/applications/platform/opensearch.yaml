@@ -16,12 +16,12 @@ spec:
       helm:
         releaseName: opensearch
         valueFiles:
-          - $values/platform/cluster/opensearch/values.yaml
+          - $values/cluster/opensearch/values.yaml
         parameters:
           - name: adminPassword
             value: "changeme"
-    - repoURL: https://github.com/Gitarzysta92/wapps.git
-      targetRevision: HEAD
+    - repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc

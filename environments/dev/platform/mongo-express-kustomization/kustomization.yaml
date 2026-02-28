@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: mongodb
 
 resources:
-  - ../../../../platform/cluster/mongo-express
+  - github.com/Gitarzysta92/platform-development-kit//cluster/mongo-express?ref=main
 
 patches:
   - patch: |-

@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: opensearch
 
 resources:
-  - ../../../../platform/cluster/opensearch
+  - github.com/Gitarzysta92/platform-development-kit//cluster/opensearch?ref=main
 
 patches:
   - patch: |-

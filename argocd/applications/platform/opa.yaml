@@ -10,9 +10,9 @@ metadata:
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/Gitarzysta92/wapps.git
-    targetRevision: HEAD
-    path: platform/cluster/opa
+    repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+    targetRevision: main
+    path: cluster/opa
   destination:
     server: https://kubernetes.default.svc
     namespace: opa

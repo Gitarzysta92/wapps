@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: rabbitmq
 
 resources:
-  - ../../../../platform/cluster/rabbitmq
+  - github.com/Gitarzysta92/platform-development-kit//cluster/rabbitmq?ref=main
 
 patches:
   - patch: |-

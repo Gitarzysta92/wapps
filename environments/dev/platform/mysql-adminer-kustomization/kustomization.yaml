@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: mysql
 
 resources:
-  - ../../../../platform/cluster/mysql-adminer
+  - github.com/Gitarzysta92/platform-development-kit//cluster/mysql-adminer?ref=main
 
 patches:
   - patch: |-

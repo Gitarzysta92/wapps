@@ -149,7 +149,7 @@ jobs:
           kubectl create namespace editorial --dry-run=client -o yaml | kubectl apply -f -
 
       # NOTE: Database credentials (editorial-db-credentials) are created by Ansible
-      # during host provisioning. See: platform/host/mysql/install.yml
+      # during host provisioning. See: platform-development-kit `host/mysql/install.yml`
 
       - name: Fail fast if MySQL secrets missing (editorial)
         run: |

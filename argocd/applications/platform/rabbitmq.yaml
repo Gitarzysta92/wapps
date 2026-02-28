@@ -16,7 +16,7 @@ spec:
       helm:
         releaseName: rabbitmq
         valueFiles:
-          - $values/platform/cluster/rabbitmq/values.yaml
+          - $values/cluster/rabbitmq/values.yaml
         parameters:
           - name: auth.username
             value: "admin"
@@ -24,8 +24,8 @@ spec:
             value: "changeme"
           - name: auth.erlangCookie
             value: "secretcookie"
-    - repoURL: https://github.com/Gitarzysta92/wapps.git
-      targetRevision: HEAD
+    - repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc

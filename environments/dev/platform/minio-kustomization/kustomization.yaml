@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: minio
 
 resources:
-  - ../../../../platform/cluster/minio
+  - github.com/Gitarzysta92/platform-development-kit//cluster/minio?ref=main
 
 patches:
   - patch: |-
