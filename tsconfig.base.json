@@ -270,6 +270,8 @@
       "@sdk/features/identity/libs/management": [
         "sdk/features/identity/libs/management/src/index.ts"
       ],
+      "@sdk/platform/queue": ["sdk/platform/queue/src/index.ts"],
+      "@sdk/extras/queue": ["sdk/extras/queue/src/index.ts"],
       "@ui/article-author-info": ["libs/ui/article-author-info/src/index.ts"],
       "@ui/breadcrumbs": ["libs/ui/breadcrumbs/src/index.ts"],
       "@ui/chat": ["libs/ui/chat/src/index.ts"],

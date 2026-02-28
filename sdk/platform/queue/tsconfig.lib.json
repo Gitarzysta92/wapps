@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/sdk/platform/queue",
+    "rootDir": "src",
+    "declaration": true,
+    "composite": true,
+    "types": ["node"],
+    "tsBuildInfoFile": "../../../dist/sdk/platform/queue/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+}
