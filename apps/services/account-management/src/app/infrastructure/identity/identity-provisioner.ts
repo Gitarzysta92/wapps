@@ -85,6 +85,22 @@ export class IdentityProvisioner {
     }
   }
 
+  /**
+   * Lookup-only helper (does NOT create identity).
+   */
+  async getByFirebaseUid(uid: string): Promise<Result<{ identityId: string; subjectId: string } | null, Error>> {
+    const provider = 'firebase';
+    const subjectId = identitySubjectId(provider, uid);
+    try {
+      const existing = await this.subjectsRepo.getByProviderExternalId(provider, uid);
+      if (!existing.ok) return err(existing.error);
+      if (!existing.value?.identityId) return ok(null);
+      return ok({ identityId: existing.value.identityId, subjectId });
+    } catch (e) {
+      return err(e instanceof Error ? e : new Error(String(e)));
+    }
+  }
+
   async deleteByFirebaseUid(uid: string): Promise<Result<boolean, Error>> {
     const provider = 'firebase';
     const subjectId = identitySubjectId(provider, uid);
