@@ -8,6 +8,8 @@ metadata:
   labels:
     app.kubernetes.io/name: discord-notifier
     app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: backend
 spec:
   project: wapps-platform
   source:
@@ -16,7 +18,7 @@ spec:
     path: environments/dev/apps/discord-notifier-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: agents
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

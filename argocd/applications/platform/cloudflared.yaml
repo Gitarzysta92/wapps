@@ -7,15 +7,19 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "Cloudflare Tunnel (cloudflared) – in-cluster connector for private ingress"
+  labels:
+    app.kubernetes.io/name: cloudflared
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/Gitarzysta92/wapps.git
-    targetRevision: HEAD
-    path: platform/cluster/cloudflared
+    repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+    targetRevision: main
+    path: cluster/cloudflared
   destination:
     server: https://kubernetes.default.svc
-    namespace: cloudflared
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

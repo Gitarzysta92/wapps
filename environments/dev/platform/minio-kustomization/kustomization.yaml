@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: minio
+namespace: wapps
 
 resources:
-  - ../../../../platform/cluster/minio
+  - github.com/Gitarzysta92/platform-development-kit//cluster/minio?ref=main
 
 patches:
   - patch: |-

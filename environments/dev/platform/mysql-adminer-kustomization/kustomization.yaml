@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: mysql
+namespace: wapps
 
 resources:
-  - ../../../../platform/cluster/mysql-adminer
+  - github.com/Gitarzysta92/platform-development-kit//cluster/mysql-adminer?ref=main
 
 patches:
   - patch: |-

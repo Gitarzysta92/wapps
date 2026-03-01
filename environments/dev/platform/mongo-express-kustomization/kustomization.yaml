@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: mongodb
+namespace: wapps
 
 resources:
-  - ../../../../platform/cluster/mongo-express
+  - github.com/Gitarzysta92/platform-development-kit//cluster/mongo-express?ref=main
 
 patches:
   - patch: |-

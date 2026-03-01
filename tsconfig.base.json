@@ -139,9 +139,6 @@
       "@portals/catalog/application": [
         "apps/portals/catalog/application/src/index.ts"
       ],
-      "@portals/platform-portal/application": [
-        "apps/portals/platform-portal/application/src/index.ts"
-      ],
       "@portals/discussion/application": [
         "apps/portals/discussion/application/src/index.ts"
       ],

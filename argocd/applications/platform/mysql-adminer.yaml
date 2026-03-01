@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "Adminer web UI for host-provisioned MySQL (dev)"
+  labels:
+    app.kubernetes.io/name: mysql-adminer
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
@@ -15,7 +19,7 @@ spec:
     path: environments/dev/platform/mysql-adminer-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: mysql
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

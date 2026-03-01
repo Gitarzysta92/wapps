@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/name: catalog-bff
     app.kubernetes.io/component: bff
     app.kubernetes.io/part-of: catalog
+    wapps.ai/tag: backend
 spec:
   project: wapps-platform
   source:
@@ -17,7 +18,7 @@ spec:
     path: environments/dev/apps/catalog-bff-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: catalog
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

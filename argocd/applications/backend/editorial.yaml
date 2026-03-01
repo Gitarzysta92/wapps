@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: editorial
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: backend
 spec:
   project: wapps-platform
   source:
@@ -15,7 +19,7 @@ spec:
     path: environments/dev/apps/editorial-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: editorial
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

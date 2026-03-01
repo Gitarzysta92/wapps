@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "RabbitMQ message broker (GitOps-managed Helm deployment)"
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   sources:
@@ -16,7 +20,7 @@ spec:
       helm:
         releaseName: rabbitmq
         valueFiles:
-          - $values/platform/cluster/rabbitmq/values.yaml
+          - $values/cluster/rabbitmq/values.yaml
         parameters:
           - name: auth.username
             value: "admin"
@@ -24,12 +28,12 @@ spec:
             value: "changeme"
           - name: auth.erlangCookie
             value: "secretcookie"
-    - repoURL: https://github.com/Gitarzysta92/wapps.git
-      targetRevision: HEAD
+    - repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: rabbitmq
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

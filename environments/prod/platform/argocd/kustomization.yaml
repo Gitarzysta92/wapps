@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - ../../../../platform/cluster/argocd
+  - github.com/Gitarzysta92/platform-development-kit//cluster/argocd?ref=main
 
 patches:
   - patch: |-

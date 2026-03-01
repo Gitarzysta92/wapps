@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: backend-services
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: backend
 spec:
   project: wapps-platform
   source:

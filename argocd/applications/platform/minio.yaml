@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "MinIO object storage (GitOps-managed Helm deployment)"
+  labels:
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   sources:
@@ -16,18 +20,18 @@ spec:
       helm:
         releaseName: minio
         valueFiles:
-          - $values/platform/cluster/minio/values.yaml
+          - $values/cluster/minio/values.yaml
         parameters:
           - name: rootUser
             value: "admin"
           - name: rootPassword
             value: "changeme"
-    - repoURL: https://github.com/Gitarzysta92/wapps.git
-      targetRevision: HEAD
+    - repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: minio
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

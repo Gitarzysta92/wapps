@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "OpenSearch search engine (GitOps-managed Helm deployment)"
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   sources:
@@ -16,16 +20,16 @@ spec:
       helm:
         releaseName: opensearch
         valueFiles:
-          - $values/platform/cluster/opensearch/values.yaml
+          - $values/cluster/opensearch/values.yaml
         parameters:
           - name: adminPassword
             value: "changeme"
-    - repoURL: https://github.com/Gitarzysta92/wapps.git
-      targetRevision: HEAD
+    - repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: opensearch
+    namespace: wapps
   ignoreDifferences:
     # With ServerSideApply enabled, Kubernetes may persist defaulted/extraneous
     # fields on the StatefulSet's PVC templates (e.g. apiVersion/kind/status),

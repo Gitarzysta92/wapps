@@ -4,7 +4,11 @@ import { HealthController } from './health/health.controller';
 import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 import { AccountManagementController } from './controllers/account-management.controller';
 import { PlatformController } from './controllers/platform.controller';
+import { MeController } from './controllers/me.controller';
+import { RegistrationController } from './controllers/registration.controller';
+import { PasswordRecoveryController } from './controllers/password-recovery.controller';
 import { AccountManagementAppService } from './services/account-management-app.service';
+import { PublicAccountAppService } from './services/public-account-app.service';
 import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
 import { ConfigService } from '@nestjs/config';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
@@ -20,9 +24,17 @@ import { IIdentitySubjectRepository } from '@foundation/identity-system';
       isGlobal: true,
     }),
   ],
-  controllers: [HealthController, AccountManagementController, PlatformController],
+  controllers: [
+    HealthController,
+    AccountManagementController,
+    PlatformController,
+    MeController,
+    RegistrationController,
+    PasswordRecoveryController,
+  ],
   providers: [
     AccountManagementAppService,
+    PublicAccountAppService,
     {
       provide: QueueClient,
       useFactory: () => new QueueClient(),

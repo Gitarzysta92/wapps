@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "Mongo Express web UI for host-provisioned MongoDB (dev)"
+  labels:
+    app.kubernetes.io/name: mongo-express
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
@@ -15,7 +19,7 @@ spec:
     path: environments/dev/platform/mongo-express-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: mongodb
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

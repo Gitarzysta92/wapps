@@ -7,15 +7,19 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "Open Policy Agent (OPA) – centralized policy decision point"
+  labels:
+    app.kubernetes.io/name: opa
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
-    repoURL: https://github.com/Gitarzysta92/wapps.git
-    targetRevision: HEAD
-    path: platform/cluster/opa
+    repoURL: https://github.com/Gitarzysta92/platform-development-kit.git
+    targetRevision: main
+    path: cluster/opa
   destination:
     server: https://kubernetes.default.svc
-    namespace: opa
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

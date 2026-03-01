@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: discussion-materializer
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: backend
 spec:
   project: wapps-platform
   source:
@@ -13,7 +17,7 @@ spec:
     path: environments/dev/apps/discussion-materializer-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: discussion
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true
