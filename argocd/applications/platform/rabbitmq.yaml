@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "RabbitMQ message broker (GitOps-managed Helm deployment)"
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   sources:
@@ -29,7 +33,7 @@ spec:
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: rabbitmq
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

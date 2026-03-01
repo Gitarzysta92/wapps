@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: firebase-auth-validator
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
@@ -13,7 +17,7 @@ spec:
     path: environments/dev/apps/firebase-auth-validator-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

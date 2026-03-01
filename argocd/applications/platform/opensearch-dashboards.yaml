@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "OpenSearch Dashboards (GitOps-managed Helm deployment)"
+  labels:
+    app.kubernetes.io/name: opensearch-dashboards
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   sources:
@@ -27,7 +31,7 @@ spec:
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: opensearch
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true

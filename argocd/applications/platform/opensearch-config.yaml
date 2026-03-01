@@ -7,6 +7,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     description: "OpenSearch configuration overlay (ingress)"
+  labels:
+    app.kubernetes.io/name: opensearch-config
+    app.kubernetes.io/part-of: wapps
+    wapps.ai/tag: platform
 spec:
   project: wapps-platform
   source:
@@ -15,7 +19,7 @@ spec:
     path: environments/dev/platform/opensearch-kustomization
   destination:
     server: https://kubernetes.default.svc
-    namespace: opensearch
+    namespace: wapps
   syncPolicy:
     automated:
       prune: true
