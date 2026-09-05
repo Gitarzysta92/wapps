@@ -277,7 +277,7 @@ export function provideIdentityLoginFeature(c: IdentityLoginFeatureConfig): Appl
 
 ### Step 5: Update App Configuration
 
-Update your app root configuration (e.g., `apps/portals/aggregator-demo/application/src/root.ts`):
+Update your app root configuration (e.g., `apps/portals/aggregator/application/src/root.ts`):
 
 ```typescript
 import { mergeApplicationConfig } from '@angular/core';
@@ -304,7 +304,7 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
 
 For better configuration management, use environment files:
 
-**Create `apps/portals/aggregator-demo/application/src/environments/environment.ts`:**
+**Create `apps/portals/aggregator/application/src/environments/environment.ts`:**
 
 ```typescript
 export const environment = {
@@ -320,7 +320,7 @@ export const environment = {
 };
 ```
 
-**Create `apps/portals/aggregator-demo/application/src/environments/environment.prod.ts`:**
+**Create `apps/portals/aggregator/application/src/environments/environment.prod.ts`:**
 
 ```typescript
 export const environment = {

@@ -64,7 +64,7 @@ const ICON =
     TuiTitle,
 ],
 })
-export class HomePageComponent {
+export class SettingsPageComponent {
   protected expanded = signal(false);
     protected open = false;
     protected switch = false;

@@ -4,7 +4,7 @@ A simple web portal for displaying application catalogs from the catalog-bff ser
 
 ## Structure
 
-This portal follows the aggregator-demo architecture pattern:
+This portal follows the aggregator architecture pattern:
 
 ```
 apps/portals/catalog/

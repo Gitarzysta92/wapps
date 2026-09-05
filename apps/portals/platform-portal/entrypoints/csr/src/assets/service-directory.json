@@ -4,9 +4,6 @@
   "sources": [
     "environments/dev/apps/account-management-kustomization/ingress-patch.yaml",
     "environments/dev/apps/aggregator-csr-kustomization/ingress-patch.yaml",
-    "environments/dev/apps/aggregator-demo-csr-kustomization/ingress-patch.yaml",
-    "environments/dev/apps/aggregator-ssg-kustomization/ingress-patch.yaml",
-    "environments/dev/apps/aggregator-ssr-kustomization/ingress-patch.yaml",
     "environments/dev/apps/catalog-bff-kustomization/ingress-patch.yaml",
     "environments/dev/apps/catalog-csr-kustomization/ingress-patch.yaml",
     "environments/dev/apps/discussion-kustomization/ingress-patch.yaml",
@@ -34,36 +31,6 @@
       ],
       "sources": [
         "environments/dev/apps/aggregator-csr-kustomization/ingress-patch.yaml"
-      ]
-    },
-    {
-      "id": "aggregator-demo-csr",
-      "name": "Aggregator Demo Csr",
-      "urls": [
-        "https://aggregator-demo-csr.development.wapps.ai/"
-      ],
-      "sources": [
-        "environments/dev/apps/aggregator-demo-csr-kustomization/ingress-patch.yaml"
-      ]
-    },
-    {
-      "id": "aggregator-ssg",
-      "name": "Aggregator Ssg",
-      "urls": [
-        "https://aggregator-ssg.development.wapps.ai/"
-      ],
-      "sources": [
-        "environments/dev/apps/aggregator-ssg-kustomization/ingress-patch.yaml"
-      ]
-    },
-    {
-      "id": "aggregator-ssr",
-      "name": "Aggregator Ssr",
-      "urls": [
-        "https://aggregator-ssr.development.wapps.ai/"
-      ],
-      "sources": [
-        "environments/dev/apps/aggregator-ssr-kustomization/ingress-patch.yaml"
       ]
     },
     {

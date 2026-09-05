@@ -11,6 +11,7 @@ export class HomePageStateService implements IMultiSearchState {
   private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
 
+  // TODO: this has to be simplified
   public queryParamMap$ = this._route.queryParamMap.pipe(
     map(p => {
       const entries: [string, string][] = [];
@@ -24,13 +25,13 @@ export class HomePageStateService implements IMultiSearchState {
     })
   );
   
-  public setQueryParams(p: { [key: string]: string | null }): void {
-    const value = p[FILTERS.search];
-    if (typeof value === 'string') {
-      if (!value || value.length <= 0) {
-        this._router.navigate([], { queryParams: {} })
+  public setQueryParams(p: { [key: symbol]: string; }): void {
+    console.log(p);
+    if (FILTERS.search in p && typeof p.search === 'string') {
+      if (!p.search || p.search.length <= 0) {
+        this._router.navigate([], { queryParams: {}})
       } else {
-        this._router.navigate([], { queryParams: { [FILTERS.search]: value } })
+        this._router.navigate([], { queryParams: { [FILTERS.search]: p.search }})
       }
     }
   }

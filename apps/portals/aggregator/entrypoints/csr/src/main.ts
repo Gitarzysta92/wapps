@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { createAppConfig, routes, AppRootComponent, APPLICATION_ROOT } from '@portals/aggregator-demo/application';
+import { createAppConfig, routes, AppRootComponent, APPLICATION_ROOT } from '@portals/aggregator/application';
 import { mergeApplicationConfig } from '@angular/core';
 
 bootstrapApplication(AppRootComponent,
