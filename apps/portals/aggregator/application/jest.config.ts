@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'aggregator-angular',
   preset: '../../../../../jest.preset.js',

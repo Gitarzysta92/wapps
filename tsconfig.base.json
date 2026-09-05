@@ -130,9 +130,6 @@
       "@infrastructure/platform-queue": [
         "libs/infrastructure/platform-queue/src/index.ts"
       ],
-      "@portals/aggregator-demo/application": [
-        "apps/portals/aggregator-demo/application/src/index.ts"
-      ],
       "@portals/aggregator/application": [
         "apps/portals/aggregator/application/src/index.ts"
       ],

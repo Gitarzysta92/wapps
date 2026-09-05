@@ -1,6 +1,6 @@
 {
-  "id": "aggregator-demo-csr",
-  "name": "Aggregator Demo",
+  "id": "aggregator-csr",
+  "name": "Aggregator",
   "type": "portal",
   "runtime": "angular-csr",
   "endpoints": {

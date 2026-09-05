@@ -5,7 +5,7 @@ metadata:
   annotations:
     # Allow CORS for frontend apps
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://aggregator-demo.development.wapps.ai,https://aggregator.development.wapps.ai,https://discussion-csr.development.wapps.ai"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://aggregator.development.wapps.ai,https://aggregator-csr.development.wapps.ai,https://discussion-csr.development.wapps.ai"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
 spec:

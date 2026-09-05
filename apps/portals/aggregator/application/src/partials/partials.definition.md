@@ -1,4 +1,4 @@
-# Portals/Aggregator/Application/Components/Partials - Generic Architecture
+# Portals/Aggregator-Demo/Application/Components/Partials - Generic Architecture
 
 ## Structure
 - **Location**: `apps/portals/aggregator/application/src/components/partials/{partial-name}/`

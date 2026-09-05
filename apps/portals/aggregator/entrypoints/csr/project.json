@@ -3,26 +3,31 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/portals/aggregator/application/src",
+  "sourceRoot": "apps/portals/aggregator/entrypoints/csr/src",
   "tags": ["type:app"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
+      "dependsOn": [],
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/portals/aggregator/entrypoints/csr",
-        "index": "apps/portals/aggregator/application/src/index.html",
-        "main": "apps/portals/aggregator/application/src/main.ts",
+        "index": "apps/portals/aggregator/entrypoints/csr/src/index.html",
+        "main": "apps/portals/aggregator/entrypoints/csr/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/portals/aggregator/application/tsconfig.app.json",
+        "tsConfig": "apps/portals/aggregator/entrypoints/csr/tsconfig.app.json",
         "stylePreprocessorOptions": {
-          "includePaths": ["libs", "libs/ui/design-system/src"]
+          "includePaths": [
+            "libs",
+            "libs/ui/design-system/src"
+          ]
         },
         "assets": [
+          "apps/portals/aggregator/entrypoints/csr/src/assets",
           {
             "glob": "**/*",
-            "input": "apps/portals/aggregator/application/src/static/assets",
-            "output": "assets"
+            "input": "apps/portals/aggregator/entrypoints/csr/src/.well-known",
+            "output": ".well-known"
           },
           {
             "glob": "**/*",
@@ -44,13 +49,13 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "2mb"
+              "maximumWarning": "1mb",
+              "maximumError": "1.5mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "10kb",
-              "maximumError": "20kb"
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
             }
           ],
           "outputHashing": "all"
