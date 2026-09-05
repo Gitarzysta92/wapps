@@ -33,7 +33,16 @@ type FirebaseRefreshResponse = {
 };
 
 export class FirebaseRestSessionGateway implements ISessionGateway {
-  constructor(private readonly apiKey: string | undefined) {}
+  constructor(
+    private readonly apiKey: string | undefined,
+    private readonly emulatorHost = process.env['FIREBASE_AUTH_EMULATOR_HOST']
+  ) {}
+
+  private endpoint(host: string, path: string): string {
+    return this.emulatorHost
+      ? `http://${this.emulatorHost}/${host}${path}`
+      : `https://${host}${path}`;
+  }
 
   private ensureApiKey(): Result<string, Error> {
     if (!this.apiKey) {
@@ -46,7 +55,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey.value}`;
+    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signInWithPassword?key=${apiKey.value}`);
     return await this.postJson<FirebaseSignInResponse>(url, {
       email,
       password,
@@ -58,7 +67,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey.value}`;
+    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signUp?key=${apiKey.value}`);
     return await this.postJson<FirebaseSignInResponse>(url, {
       returnSecureToken: true,
     });
@@ -68,7 +77,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey.value}`;
+    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signInWithCustomToken?key=${apiKey.value}`);
     return await this.postJson<FirebaseSignInResponse>(url, {
       token: customToken,
       returnSecureToken: true,
@@ -79,7 +88,7 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     const apiKey = this.ensureApiKey();
     if (!apiKey.ok) return apiKey;
 
-    const url = `https://securetoken.googleapis.com/v1/token?key=${apiKey.value}`;
+    const url = this.endpoint('securetoken.googleapis.com', `/v1/token?key=${apiKey.value}`);
 
     try {
       const res = await fetch(url, {
@@ -142,4 +151,3 @@ export class FirebaseRestSessionGateway implements ISessionGateway {
     }
   }
 }
-

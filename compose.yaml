@@ -1,0 +1,613 @@
+# Full local Wapps stack. See deploy/local/README.md.
+name: wapps-local
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MYSQL_DATABASE: editorial
+      MYSQL_USER: wapps
+      MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./deploy/local/mysql/init.sql:/docker-entrypoint-initdb.d/10-wapps.sql:ro
+    ports:
+      - 127.0.0.1:3306:3306
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - MYSQL_PWD="$$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u wapps -D discussion -e "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  mongodb:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: wapps
+      MONGO_INITDB_ROOT_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - 127.0.0.1:27017:27017
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mongosh --quiet --host 127.0.0.1 -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval "db.adminCommand({ping:1})"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:4-management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: wapps
+      RABBITMQ_DEFAULT_PASS: ${LOCAL_PASSWORD:-wapps-local-password}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:15672:15672
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9001
+    environment:
+      MINIO_ROOT_USER: wapps
+      MINIO_ROOT_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+    volumes:
+      - minio-data:/data
+    ports:
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -f http://127.0.0.1:9000/minio/health/live
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  opa:
+    build:
+      context: .
+      dockerfile: deploy/local/opa/Dockerfile
+    ports:
+      - 127.0.0.1:8181:8181
+    restart: unless-stopped
+  firebase-auth:
+    build:
+      context: ./deploy/local/firebase
+    volumes:
+      - firebase-data:/data
+    ports:
+      - 127.0.0.1:9099:9099
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:9099/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    stop_grace_period: 30s
+    restart: unless-stopped
+  editorial:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.editorial
+        OUTPUT_PATH: dist/apps/services/editorial
+    environment:
+      NODE_ENV: development
+      EDITORIAL_DATABASE_HOST: mysql
+      EDITORIAL_DATABASE_PORT: "3306"
+      EDITORIAL_DATABASE_USERNAME: wapps
+      EDITORIAL_DATABASE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      EDITORIAL_DATABASE_NAME: editorial
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:1337/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  discussion:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.discussion
+        OUTPUT_PATH: dist/apps/services/discussion
+    environment:
+      NODE_ENV: development
+      DISCUSSION_DATABASE_HOST: mysql
+      DISCUSSION_DATABASE_PORT: "3306"
+      DISCUSSION_DATABASE_USERNAME: wapps
+      DISCUSSION_DATABASE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      DISCUSSION_DATABASE_NAME: discussion
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_HOST: mongodb
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: wapps
+      MONGO_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_DATABASE: discussion
+      DISCUSSION_STORAGE_HOST: http://minio:9000
+      DISCUSSION_STORAGE_ACCESSKEY: wapps
+      DISCUSSION_STORAGE_SECRETKEY: ${LOCAL_PASSWORD:-wapps-local-password}
+      INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
+      FIREBASE_PROJECT_ID: demo-wapps
+      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
+      OPA_URL: http://opa:8181
+      DISCUSSION_SEED_DEMO_DATA: "true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      minio:
+        condition: service_healthy
+        restart: true
+      opa:
+        condition: service_started
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:1338/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  catalog-bff:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.catalog-bff
+        OUTPUT_PATH: dist/apps/services/catalog-bff
+    environment:
+      NODE_ENV: development
+      INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
+      FIREBASE_PROJECT_ID: demo-wapps
+      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
+      EDITORIAL_URL: http://editorial:1337
+      PORT: "3000"
+    depends_on:
+      editorial:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  account-management:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.account-management
+        OUTPUT_PATH: dist/apps/services/account-management
+    environment:
+      NODE_ENV: development
+      INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
+      FIREBASE_PROJECT_ID: demo-wapps
+      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
+      ACCOUNT_MANAGEMENT_PORT: "1340"
+      OPA_URL: http://opa:8181
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_HOST: mongodb
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: wapps
+      MONGO_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_DATABASE: identity
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USERNAME: wapps
+      MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MYSQL_DATABASE: identity
+    depends_on:
+      firebase-auth:
+        condition: service_healthy
+        restart: true
+      opa:
+        condition: service_started
+        restart: true
+      mysql:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:1340/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  firebase-auth-validator:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.firebase-auth-validator
+        OUTPUT_PATH: dist/apps/services/firebase-auth-validator
+    environment:
+      NODE_ENV: development
+      INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
+      FIREBASE_PROJECT_ID: demo-wapps
+      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
+      FIREBASE_WEB_API_KEY: local-emulator-key
+      ENABLE_GOOGLE: "false"
+      ENABLE_GITHUB: "false"
+      ENABLE_ANONYMOUS: "true"
+      PORT: "8080"
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_HOST: mongodb
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: wapps
+      MONGO_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_DATABASE: identity
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USERNAME: wapps
+      MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MYSQL_DATABASE: identity
+    depends_on:
+      firebase-auth:
+        condition: service_healthy
+        restart: true
+      mysql:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    ports:
+      - 127.0.0.1:8080:8080
+    restart: unless-stopped
+  content-node-registry:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.content-node-registry
+        OUTPUT_PATH: dist/apps/services/content-node-registry
+    environment:
+      NODE_ENV: development
+      CONTENT_NODE_REGISTRY_DATABASE_HOST: mysql
+      CONTENT_NODE_REGISTRY_DATABASE_PORT: "3306"
+      CONTENT_NODE_REGISTRY_DATABASE_USERNAME: wapps
+      CONTENT_NODE_REGISTRY_DATABASE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      CONTENT_NODE_REGISTRY_DATABASE_NAME: content_node_registry
+      PORT: "3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  discussion-materializer:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: apps.services.discussion-materializer
+        OUTPUT_PATH: dist/apps/services/discussion-materializer
+    environment:
+      NODE_ENV: development
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_HOST: mongodb
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: wapps
+      MONGO_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MONGO_DATABASE: discussion
+      DISCUSSION_STORAGE_HOST: http://minio:9000
+      DISCUSSION_STORAGE_ACCESSKEY: wapps
+      DISCUSSION_STORAGE_SECRETKEY: ${LOCAL_PASSWORD:-wapps-local-password}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USERNAME: wapps
+      MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MYSQL_DATABASE: discussion
+    depends_on:
+      discussion:
+        condition: service_healthy
+        restart: true
+    init: true
+    restart: unless-stopped
+  media-ingestion:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: media-ingestion
+        OUTPUT_PATH: dist/apps/services/media-ingestion
+    environment:
+      NODE_ENV: development
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      MEDIA_STORAGE_HOST: http://minio:9000
+      MEDIA_STORAGE_ACCESSKEY: wapps
+      MEDIA_STORAGE_SECRETKEY: ${LOCAL_PASSWORD:-wapps-local-password}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      minio:
+        condition: service_healthy
+        restart: true
+    init: true
+    restart: unless-stopped
+  aggregator-demo-csr:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: frontend
+      args:
+        NX_PROJECT: aggregator-demo-csr
+        OUTPUT_PATH: dist/apps/portals/aggregator-demo/entrypoints/csr
+    restart: unless-stopped
+  discussion-csr:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: frontend
+      args:
+        NX_PROJECT: discussion-csr
+        OUTPUT_PATH: dist/apps/portals/discussion/entrypoints/csr
+    restart: unless-stopped
+  catalog-csr:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: frontend
+      args:
+        NX_PROJECT: catalog-csr
+        OUTPUT_PATH: dist/apps/portals/catalog/entrypoints/csr
+    restart: unless-stopped
+  aggregator-csr:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: frontend
+      args:
+        NX_PROJECT: aggregator-csr
+        OUTPUT_PATH: dist/apps/portals/aggregator/entrypoints/csr
+    restart: unless-stopped
+  gateway:
+    image: nginx:1.28-alpine
+    ports:
+      - 127.0.0.1:4200:4200
+      - 127.0.0.1:4201:4201
+      - 127.0.0.1:4202:4202
+      - 127.0.0.1:4203:4203
+      - 127.0.0.1:3001:3000
+      - 127.0.0.1:1337:1337
+      - 127.0.0.1:1338:1338
+      - 127.0.0.1:1340:1340
+      - 127.0.0.1:1341:1341
+    volumes:
+      - ./deploy/local/nginx/gateway.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/local/nginx:/etc/nginx/local:ro
+    depends_on:
+      aggregator-demo-csr:
+        condition: service_healthy
+        restart: true
+      discussion-csr:
+        condition: service_healthy
+        restart: true
+      catalog-csr:
+        condition: service_healthy
+        restart: true
+      aggregator-csr:
+        condition: service_healthy
+        restart: true
+      editorial:
+        condition: service_healthy
+        restart: true
+      discussion:
+        condition: service_healthy
+        restart: true
+      catalog-bff:
+        condition: service_healthy
+        restart: true
+      account-management:
+        condition: service_healthy
+        restart: true
+      firebase-auth-validator:
+        condition: service_healthy
+        restart: true
+      content-node-registry:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:4200/health
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  editor-agent:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: editor-agent
+        OUTPUT_PATH: dist/apps/agents/editor
+    environment:
+      NODE_ENV: development
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EDITORIAL_SERVICE_HOST: http://editorial:1337
+      EDITORIAL_SERVICE_API_TOKEN: ${EDITORIAL_SERVICE_API_TOKEN:-}
+    depends_on:
+      editorial:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    profiles:
+      - ai
+    restart: unless-stopped
+  store-app-scrapper:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: scraper
+      args:
+        NX_PROJECT: store-app
+        OUTPUT_PATH: dist/apps/scrappers/store-app
+    environment:
+      NODE_ENV: development
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      HEADLESS: "true"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    profiles:
+      - scraper
+    shm_size: 1gb
+    restart: unless-stopped
+  discord-notifier:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: discord-notifier
+        OUTPUT_PATH: dist/apps/agents/discord-notifier
+    environment:
+      NODE_ENV: development
+      QUEUE_HOST: rabbitmq
+      QUEUE_PORT: "5672"
+      QUEUE_USERNAME: wapps
+      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
+      DISCORD_CHANNEL_ID: ${DISCORD_CHANNEL_ID:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_REPO: ${GITHUB_REPO:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ARGOCD_SERVER: ${ARGOCD_SERVER:-}
+      ARGOCD_TOKEN: ${ARGOCD_TOKEN:-}
+      CHANNEL_REGISTRY_PATH: /data/channels.json
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    profiles:
+      - discord
+    command:
+      - node
+      - src/index.js
+    volumes:
+      - discord-data:/data
+    user: root
+    restart: unless-stopped
+volumes:
+  mysql-data: {}
+  mongodb-data: {}
+  rabbitmq-data: {}
+  minio-data: {}
+  firebase-data: {}
+  discord-data: {}

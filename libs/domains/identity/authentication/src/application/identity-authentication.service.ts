@@ -106,7 +106,7 @@ export class IdentityAuthenticationService {
       return err(new Error('No authorization header'));
     }
 
-    const token = authorizationHeader.replace(/^Bearer\\s+/i, '');
+    const token = authorizationHeader.replace(/^Bearer\s+/i, '');
     if (!token || token === authorizationHeader) {
       return err(new Error('Invalid authorization header format'));
     }
@@ -242,4 +242,3 @@ export class IdentityAuthenticationService {
     return await this.sessionGateway.refresh(refreshToken);
   }
 }
-

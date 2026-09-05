@@ -1,0 +1,17 @@
+node_modules
+**/node_modules
+dist
+**/dist
+.git
+.nx
+.angular
+**/.angular
+coverage
+tmp
+**/coverage
+**/.nx
+**/.env
+**/.env.*
+**/*.log
+**/*.tsbuildinfo
+**/.DS_Store

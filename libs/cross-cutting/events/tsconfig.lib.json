@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../../dist/cross-cutting/events",
+    "outDir": "../../../dist/cross-cutting/events",
     "declaration": true,
     "types": [
       "node"

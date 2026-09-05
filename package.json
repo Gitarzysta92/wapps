@@ -7,7 +7,12 @@
     "agents:editor:dev": "npx nx serve editor-agent",
     "scrappers:storeapp:dev": "npx nx serve store-app",
     "opa:generate": "node libs/utils/opa/scripts/generate.cjs",
-    "service-directory:generate": "node scripts/service-directory/generate.mjs"
+    "service-directory:generate": "node scripts/service-directory/generate.mjs",
+    "local:build": "COMPOSE_BAKE=false docker compose --parallel 2 build",
+    "local:up": "docker compose up -d --wait --wait-timeout 300",
+    "local:down": "docker compose down",
+    "local:logs": "docker compose logs -f",
+    "local:check": "docker compose config --quiet && node deploy/local/smoke-test.mjs"
   },
   "author": "",
   "license": "ISC",

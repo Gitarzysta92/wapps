@@ -11,6 +11,9 @@ export function getCatalogApiBaseUrl(): string {
   if (typeof window === "undefined") {
     return "http://localhost:3000/api";
   }
+  // Deployment-specific API routing can be supplied without changing host rules.
+  const apiOverride = window.document.querySelector<HTMLMetaElement>('meta[name="wapps-catalog-api"]')?.content;
+  if (apiOverride) return apiOverride;
   const h = window.location.hostname;
   if (h === "localhost" || h === "127.0.0.1") {
     return "http://localhost:3000/api";
