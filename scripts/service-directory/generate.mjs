@@ -140,7 +140,7 @@ function main() {
     workspaceRoot,
     String(
       args.get('out') ||
-        'apps/portals/aggregator-demo/entrypoints/csr/src/assets/service-directory.json'
+        'apps/portals/aggregator/entrypoints/csr/src/assets/service-directory.json'
     )
   );
 

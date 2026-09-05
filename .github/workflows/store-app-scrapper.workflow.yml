@@ -6,7 +6,7 @@ on:
     paths:
       - 'apps/scrappers/store-app/**'
       - 'environments/dev/apps/store-app-kustomization/**'
-      - 'environments/dev/apps/aggregator-demo-csr-kustomization/**'
+      - 'environments/dev/apps/aggregator-csr-kustomization/**'
       - '.github/workflows/store-app-scrapper.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
       - '.github/actions/sync-argocd-app/**' 

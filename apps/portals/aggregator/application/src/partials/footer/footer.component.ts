@@ -1,8 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiLink } from "@taiga-ui/core";
-import type { NavigationDeclaration } from "@ui/navigation";
-
+import { NavigationDeclarationDto } from "@portals/shared/boundary/navigation";
 
 
 @Component({
@@ -16,9 +15,8 @@ import type { NavigationDeclaration } from "@ui/navigation";
   ]
 })
 export class FooterPartialComponent {
-  // WIP: Aggregator navigation wiring is outdated; keep footer minimal until re-aligned to aggregator-demo.
-  public readonly navFirst: NavigationDeclaration[] = [];
-  public readonly navSecond: NavigationDeclaration[] = [];
-  public readonly navThird: NavigationDeclaration[] = [];
-  public readonly navFourth: NavigationDeclaration[] = [];
+  @Input('primaryNavigation') navFirst: NavigationDeclarationDto[] = []
+  @Input('secondaryNavigation') navSecond: NavigationDeclarationDto[] = []
+  @Input('tertiaryNavigation') navThird: NavigationDeclarationDto[] = []
+  @Input('quaternaryNavigation') navFourth: NavigationDeclarationDto[] = []
 }

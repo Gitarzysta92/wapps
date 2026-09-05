@@ -11,7 +11,6 @@ import { NAVIGATION } from './navigation';
 @Component({
   selector: "body",
   templateUrl: "app-root.component.html",
-  styleUrl: "styles.scss",
   standalone: true,
   hostDirectives: [
     TuiPlatform,

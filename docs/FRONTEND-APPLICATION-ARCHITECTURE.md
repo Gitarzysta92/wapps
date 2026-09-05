@@ -2,14 +2,14 @@
 
 ## Purpose
 
-This document describes the frontend application architecture used by the `aggregator-demo` portal and turns it into a reusable blueprint for future Angular applications in this workspace.
+This document describes the frontend application architecture used by the `aggregator` portal and turns it into a reusable blueprint for future Angular applications in this workspace.
 
 The goal is not to freeze the current implementation forever. The goal is to name the important building blocks, explain why they exist, and give developers a shared language for adding new applications, pages, features, and UI without mixing concerns.
 
 The reference implementation is primarily:
 
-- `apps/portals/aggregator-demo/entrypoints/csr`
-- `apps/portals/aggregator-demo/application`
+- `apps/portals/aggregator/entrypoints/csr`
+- `apps/portals/aggregator/application`
 - `apps/portals/shared/features`
 - `apps/portals/shared/boundary`
 - `libs/domains`
@@ -132,7 +132,7 @@ Angular provider tokens are an application/feature integration mechanism. They s
 
 Example:
 
-`apps/portals/aggregator-demo/entrypoints/csr`
+`apps/portals/aggregator/entrypoints/csr`
 
 Entrypoints are runtime wrappers. They know how to bootstrap and package an application for a specific environment or rendering mode.
 
@@ -162,7 +162,7 @@ bootstrapApplication(AppRootComponent, mergeApplicationConfig(...))
 
 Example:
 
-`apps/portals/aggregator-demo/application`
+`apps/portals/aggregator/application`
 
 The application library is the real frontend application. It owns application-level composition.
 
@@ -640,7 +640,7 @@ Treat these as architecture smells:
 - Entrypoints importing feature internals.
 - Pages injecting concrete BFF/API adapters directly.
 - Shared feature infrastructure importing app-specific routes/components.
-- Generic features importing `aggregator-demo` implementation details.
+- Generic features importing `aggregator` implementation details.
 - Components deep-importing internal files instead of public barrels.
 
 Some exceptions may be practical during migration, but they should be explicit and temporary.

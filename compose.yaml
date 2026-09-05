@@ -425,15 +425,6 @@ services:
         restart: true
     init: true
     restart: unless-stopped
-  aggregator-demo-csr:
-    build:
-      context: .
-      dockerfile: deploy/local/Dockerfile
-      target: frontend
-      args:
-        NX_PROJECT: aggregator-demo-csr
-        OUTPUT_PATH: dist/apps/portals/aggregator-demo/entrypoints/csr
-    restart: unless-stopped
   discussion-csr:
     build:
       context: .
@@ -477,9 +468,6 @@ services:
       - ./deploy/local/nginx/gateway.conf:/etc/nginx/conf.d/default.conf:ro
       - ./deploy/local/nginx:/etc/nginx/local:ro
     depends_on:
-      aggregator-demo-csr:
-        condition: service_healthy
-        restart: true
       discussion-csr:
         condition: service_healthy
         restart: true
