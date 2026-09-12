@@ -20,13 +20,12 @@ export class NavigationItemComponent {
   public readonly appearance = input<string>();
   public readonly activeClass = 'active';
   
-  public getActiveOptions(path: string): IsActiveMatchOptions {
+  public getActiveOptions(_path: string): IsActiveMatchOptions {
     return { 
-      paths: path === '' || path === '/' ? 'exact' : 'subset',
+      paths: 'exact',
       queryParams: 'ignored',
       fragment: 'ignored',
       matrixParams: 'ignored'
      };
   }
 }
-

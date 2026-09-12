@@ -3,7 +3,8 @@ import { Observable } from 'rxjs';
 export interface IThemingProvider {
   theme$: Observable<string>;
   isToggled$: Observable<boolean>;
-  toggle(): void;
+  error$?: Observable<string | null>;
+  toggle(): void | Promise<void>;
 }
 
 export interface IThemingCfg {

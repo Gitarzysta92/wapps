@@ -1,3 +1,10 @@
+<section class="section__search">
+  <search-bar [initialValue]="initialSearch" (onSearch)="changeSearch($event)"
+    (keydown.enter)="submitSearch($event)" (submit)="submitSearch($event)">
+    <button type="button" tuiButton size="s" appearance="flat" (click)="submitSearch($event)">Search</button>
+  </search-bar>
+</section>
+
  <section class="section__breadcrumbs">
   @let breadcrumbs = breadcrumbs$ | async;
   <ui-breadcrumbs [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
@@ -9,6 +16,13 @@
 
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
+  <p role="status">{{ resultsData.itemsNumber }} results@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
+  @if (resultsData.query['type']) {
+    <a tuiLink routerLink="/search" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
+  }
+  @if (!resultsData.groups.length) {
+    <section commonSection><p>No results found. Try another search or remove a filter.</p></section>
+  }
   @for (group of resultsData.groups; track group.type) {
     @let label = getGroupLabel(group.type);
     <ui-titled-separator
@@ -20,7 +34,7 @@
       class="section__results"
       [id]="group.type"
       (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
-      @for (entry of group.entries; track entry.name) {
+      @for (entry of group.entries; track entry.slug) {
         @switch (group.type) {
           @case (DiscoverySearchResultType.Article) {
             <ng-container *ngTemplateOutlet="articleEntry; context: { entry }"></ng-container>
@@ -33,15 +47,7 @@
           }
         }
       }
-      <button
-        class="show-all-results-button"
-        slot="footer"
-        tuiButton
-        appearance="primary"
-        size="s">
-          Show all results ({{ group.entries.length }})
-          <tui-icon icon="@tui.chevron-right"></tui-icon>
-      </button>
+
     </section>
   }
 }
@@ -77,7 +83,7 @@
     <ui-cover-image [image]="vm.coverImageUrl" slot="backdrop"/>
     <ui-medium-card>
       <ui-card-header slot="header">
-        <h3 uiMediumTitle>{{ vm.title }}</h3>
+        <h3 uiMediumTitle><a class="result-link" [routerLink]="vm.articleLink">{{ vm.title }}</a></h3>
         <article-rating [readonly]="true" slot="right-side" [rating]="vm.rating"/>
       </ui-card-header>
       <ui-tags [tags]="vm.tags" slot="tags"></ui-tags>
@@ -110,11 +116,11 @@
     <ui-card-header slot="header">
       <app-avatar slot="left-side" [size]="'xl'" [avatar]="vm.avatarUrl"/>
       <h3 uiMediumTitle>
-        {{ vm.title }}
+        <a class="result-link" [routerLink]="vm.applicationLink">{{ vm.title }}</a>
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
       <ui-tags [tags]="vm.tags"></ui-tags>
-      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
+      <favorite-toggle-button type="applications" [slug]="entry.slug" slot="right-side"/>
     </ui-card-header>
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
@@ -143,10 +149,10 @@
   <ui-medium-card class="item-card">
     <ui-card-header slot="header">
       <h3 uiMediumTitle>
-        {{ vm.title }}
+        <a class="result-link" [routerLink]="vm.suiteLink">{{ vm.title }}</a>
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
-      <my-favorite-toggle [readonly]="true" slot="right-side" [item]="vm"/>
+      <favorite-toggle-button type="suites" [slug]="entry.slug" slot="right-side"/>
     </ui-card-header>
     <ui-tags [tags]="vm.tags"></ui-tags>
     <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>

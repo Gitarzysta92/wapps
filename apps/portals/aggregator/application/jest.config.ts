@@ -1,6 +1,7 @@
 export default {
   displayName: 'aggregator-angular',
-  preset: '../../../../../jest.preset.js',
+  testEnvironment: 'jsdom',
+  preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory: '../../../../../coverage/apps/portals/aggregator/angular',
   transform: {

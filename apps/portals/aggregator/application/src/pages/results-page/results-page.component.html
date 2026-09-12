@@ -1,51 +1,262 @@
-<section class="container">
-  <h1>{{ config.title }}</h1>
-  
-  <div *ngIf="selectedCategory" class="info-badge">
-    <p><strong>Category:</strong> {{ selectedCategory }}</p>
-  </div>
-  
-  <div *ngIf="selectedTag" class="info-badge">
-    <p><strong>Tag:</strong> {{ selectedTag }}</p>
-  </div>
-  
-  <div *ngIf="currentPage > 1" class="info-badge">
-    <p><strong>Page:</strong> {{ currentPage }} of {{ totalPages }}</p>
-  </div>
-  
-  <div *ngIf="config.showFilters" class="filters-section">
-    <h2>Active filters</h2>
-    <button tuiButton type="button" (click)="openDialog()">Open Filters</button>
-    <!-- <filters-bar (onUpdate)="filterParams.next($event)"></filters-bar> -->
-  </div>
-</section>
+<ui-page-header class="page-header">
+  @if (result.isLoading()) {
+  <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  } @if (result.isLoading()) {
+  <ui-page-title-skeleton slot="title" />
+  } @else {
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  } @if (result.isLoading()) {
+  <ui-page-meta-skeleton slot="meta" />
+  } @else {
+  <ui-page-meta slot="meta"
+    >Explore applications, read articles, and find collections of
+    tools.</ui-page-meta
+  >
+  }
+</ui-page-header>
 
-<section class="container">
-  <div class="results-header">
-    <h2>Results ({{ items.length }} items)</h2>
-    <div *ngIf="config.showSorting" class="sorting-controls">
-      <!-- <sorting-select (onUpdate)="sortingParam.next($event)"></sorting-select> -->
-      <p>Sort options would go here</p>
-    </div>
+@if (directory().length) {
+<nav
+  class="facet-directory"
+  [attr.aria-label]="browse() === 'category' ? 'Categories' : 'Tags'"
+>
+  @for (facet of directory(); track facet.slug) {
+  <a
+    tuiButton
+    appearance="secondary"
+    size="s"
+    [routerLink]="facetPath(browse()!, facet.slug)"
+    >{{ facet.name }}</a
+  >
+  }
+</nav>
+}
+
+<section class="catalog" aria-label="Catalog results">
+  <form
+    class="catalog-filters"
+    (submit)="
+      $event.preventDefault();
+      update({ search: searchInput.value || null, q: null })
+    "
+  >
+    <label class="catalog-search"
+      >Search this listing
+      <input
+        #searchInput
+        type="search"
+        [value]="query().search"
+        placeholder="Name, topic, or author"
+        (change)="filter('search', $event)"
+      />
+    </label>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="update({ search: searchInput.value || null, q: null })"
+    >
+      Search
+    </button>
+    @if (kind() === 'all') {
+    <label
+      >Content type
+      <select [value]="query().kind ?? ''" (change)="filter('type', $event)">
+        <option value="">All content</option>
+        <option value="applications">Applications</option>
+        <option value="articles">Articles</option>
+        <option value="suites">Suites</option>
+      </select>
+    </label>
+    }
+    <label
+      >Category
+      <select
+        [value]="selectedCategory()"
+        [disabled]="!!pathCategory()"
+        (change)="filter('category', $event)"
+      >
+        <option value="" [selected]="!selectedCategory()">All categories</option>
+        @for (category of categories(); track category.slug) {
+        <option [value]="category.slug" [selected]="category.slug === selectedCategory()">{{ category.name }}</option>
+        }
+      </select>
+    </label>
+    <label
+      >Tag
+      <select
+        [value]="selectedTag()"
+        [disabled]="!!pathTag()"
+        (change)="filter('tag', $event)"
+      >
+        <option value="" [selected]="!selectedTag()">All tags</option>
+        @for (tag of tags(); track tag.slug) {
+        <option [value]="tag.slug" [selected]="tag.slug === selectedTag()">{{ tag.name }}</option>
+        }
+      </select>
+    </label>
+    @if (!query().kind || query().kind === 'applications') {
+      @for (control of applicationFilters(); track control.key) {
+        <label>{{ control.label }}
+          <select [value]="selectedApplicationFilter(control.key)" (change)="filter(control.key, $event)">
+            <option value="" [selected]="!selectedApplicationFilter(control.key)">All options</option>
+            @for (option of control.options; track option.slug) {
+              <option [value]="option.slug" [selected]="option.slug === selectedApplicationFilter(control.key)">{{ option.name }}</option>
+            }
+          </select>
+        </label>
+      }
+    }
+    <label
+      >Sort by
+      <select [value]="query().sort" (change)="filter('sort', $event)">
+        <option value="name">Name: A–Z</option>
+        <option value="name-desc">Name: Z–A</option>
+        @if (hasDatedEntries()) {
+        <option value="newest" [selected]="query().sort === 'newest'">Newest first</option>
+        }
+      </select>
+    </label>
+    <label
+      >Per page
+      <select [value]="query().pageSize" (change)="filter('pageSize', $event)">
+        @for (size of pageSizeOptions; track size) {
+          <option [value]="size" [selected]="size === query().pageSize">{{ size }}</option>
+        }
+      </select>
+    </label>
+    <label>View
+      <select [value]="view()" (change)="filter('view', $event)">
+        <option value="grid">Grid</option>
+        <option value="list">List</option>
+      </select>
+    </label>
+  </form>
+  @if (activeFilters()) {
+  <div class="active-filters">
+    @if (query().search) { <span>Search: {{ query().search }}</span> } @if
+    (query().category) { <span>Category: {{ query().category }}</span> } @for
+    (tag of query().tags; track tag) { <span>Tag: {{ tag }}</span> }
+    @for (control of applicationFilters(); track control.key) {
+      @if (query()[control.key]) { <span>{{ control.label }}: {{ query()[control.key] }}</span> }
+    }
+    <button
+      tuiButton
+      appearance="flat"
+      size="s"
+      type="button"
+      (click)="clearFilters()"
+    >
+      Clear filters
+    </button>
   </div>
-  
-  <div *ngIf="config.showListing" class="listing-section">
-    <!-- <app-listing (onUpdate)="listingParams.next($event)"></app-listing> -->
-    <div class="items-grid">
-      <a *ngFor="let item of items" [routerLink]="['/', item.id]" class="item-card">
-        <h3>{{ item.name }}</h3>
-        <p class="description">{{ item.description }}</p>
+  } @if (result.isLoading()) {
+  <div class="items-grid" [class.items-grid--list]="view() === 'list'" aria-label="Loading catalog">
+    @for (item of [1, 2, 3]; track item) { <ui-medium-card-skeleton /> }
+  </div>
+  } @else if (result.error()) {
+  <div class="catalog-empty" role="alert">
+    <h2>Could not load the catalog</h2>
+    <p>Please try again.</p>
+    <button
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="result.reload()"
+    >
+      Retry
+    </button>
+  </div>
+  } @else { @if (result.value(); as listing) {
+  <p class="result-count" role="status">
+    {{ listing.total }} {{ listing.total === 1 ? 'result' : 'results' }}
+  </p>
+  @if (!listing.total) {
+  <div class="catalog-empty">
+    <tui-icon icon="@tui.search" />
+    <h2>No results found</h2>
+    <p>Try a different search, category, or tag.</p>
+    <button
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="clearFilters()"
+    >
+      Browse all content
+    </button>
+  </div>
+  } @else {
+  <div class="items-grid" [class.items-grid--list]="view() === 'list'">
+    @for (item of cards(); track item.kind + item.slug) {
+    <article class="item-card">
+      <a class="item-main" [routerLink]="item.path">
+        <span class="item-kind">{{
+          item.kind === 'applications'
+            ? 'Application'
+            : item.kind === 'articles'
+            ? 'Article'
+            : 'Suite'
+        }}</span>
+        @if (item.image) {
+        <img
+          class="item-image"
+          [class.item-image--logo]="item.kind === 'applications'"
+          [src]="item.image"
+          alt=""
+          loading="lazy"
+        />
+        }
+        <h2>{{ item.name }}</h2>
+        <p class="item-description">{{ item.description }}</p>
         <div class="item-meta">
-          <span class="category">{{ item.category }}</span>
-          <span class="rating">★ {{ item.rating }}</span>
+          @if (item.rating !== undefined) {
+          <span>★ {{ item.rating }} rating</span> } @if (item.author) {
+          <span>By {{ item.author }}</span> } @if (item.date) {
+          <time [attr.datetime]="item.date.toISOString()">{{
+            item.date | preferredDate
+          }}</time>
+          } @if (item.applications) {
+          <span>{{ item.applications.length }} applications</span> }
         </div>
       </a>
-    </div>
-    
-    <div class="pagination">
-      <button tuiButton appearance="secondary" [disabled]="currentPage === 1">Previous</button>
-      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button tuiButton appearance="secondary" [disabled]="currentPage === totalPages">Next</button>
-    </div>
+      <div class="item-facets">
+        @if (item.categories[0]; as category) {
+        <a [routerLink]="facetPath('category', category.slug)">{{
+          category.name
+        }}</a>
+        } @for (tag of item.tags; track tag.slug) {
+        <a [routerLink]="facetPath('tag', tag.slug)">#{{ tag.name }}</a> }
+      </div>
+    </article>
+    }
   </div>
+  <nav class="pagination" aria-label="Pagination">
+    <button
+      tuiButton
+      appearance="secondary"
+      size="m"
+      type="button"
+      [disabled]="listing.page === 1"
+      (click)="update({ page: listing.page - 1 })"
+    >
+      Previous
+    </button>
+    <span aria-live="polite"
+      >Page {{ listing.page }} of {{ listing.totalPages }}</span
+    >
+    <button
+      tuiButton
+      appearance="secondary"
+      size="m"
+      type="button"
+      [disabled]="listing.page === listing.totalPages"
+      (click)="update({ page: listing.page + 1 })"
+    >
+      Next
+    </button>
+  </nav>
+  } } }
 </section>

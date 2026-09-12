@@ -10,7 +10,7 @@
             <span class="breadcrumbs__label">{{ crumb.label }}</span>
           </span>
         } @else {
-          <a [routerLink]="crumb.path" class="breadcrumbs__link">
+          <a [routerLink]="crumb.path.startsWith('/') ? crumb.path : '/' + crumb.path" class="breadcrumbs__link">
             @if (crumb.icon) {
               <tui-icon class="breadcrumbs__icon" [icon]="crumb.icon"></tui-icon>
             }

@@ -10,7 +10,7 @@ export function provideMyFavoritesFeature(c: {
 }): ApplicationConfig {
   return {
     providers: [
-      { provide: MY_FAVORITES_STATE_PROVIDER, useClass: MyFavoritesService },
+      { provide: MY_FAVORITES_STATE_PROVIDER, useExisting: MyFavoritesService },
       { provide: MY_FAVORITES_PROVIDER, useClass: MyFavoritesApiService },
       { provide: MY_FAVORITES_API_BASE_URL_PROVIDER, useValue: c.apiBaseUrl },
       MyFavoritesService

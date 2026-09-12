@@ -106,7 +106,7 @@ export const NAVIGATION = {
     icon: '@tui.briefcase-business',
   },
   mySuites: {
-    path: `my/suites/${ROUTE_PARAMS.suiteSlug}`,
+    path: 'my/suites',
     label: 'My suites',
     icon: '@tui.book-copy',
   },
@@ -187,7 +187,7 @@ export const NAVIGATION = {
   },
   myApplications: {
     path: `my/apps`,
-    label: 'Favourite applications',
+    label: 'My applications',
     icon: '@tui.folder-heart',
   },
   registerApplication: {
@@ -246,19 +246,19 @@ export const DESKTOP_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
   NAVIGATION.digest,
+  NAVIGATION.suites,
 ]
 
 export const MOBILE_MAIN_NAVIGATION = [
   NAVIGATION.explore,
   NAVIGATION.discover,
   NAVIGATION.digest,
+  NAVIGATION.suites,
 ]
 
 export const DESKTOP_USER_MAIN_NAVIGATION = [
   NAVIGATION.home,
   NAVIGATION.overview,
-  NAVIGATION.performance,
-  NAVIGATION.settings,
 ]
 
 export const APPLICATION_VIEW_MAIN_NAVIGATION = [
@@ -277,7 +277,7 @@ export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
 
 export const AUTHENTICATED_USER_SECONDARY_NAVIGATION = [
   NAVIGATION.myApplications,
-  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.registerApplication,
   NAVIGATION.settings,
   NAVIGATION.categories,
   NAVIGATION.tags,
@@ -302,7 +302,7 @@ export const FOOTER_MAIN_NAVIGATION = [
 
 export const FOOTER_SECONDARY_NAVIGATION = [
   NAVIGATION.myApplications,
-  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.registerApplication,
   NAVIGATION.settings,
   NAVIGATION.categories,
   NAVIGATION.tags,
@@ -316,7 +316,7 @@ export const FOOTER_TERTIARY_NAVIGATION = [
   NAVIGATION.myFavorite,
   NAVIGATION.mySuites,
   NAVIGATION.myApplications,
-  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.registerApplication,
   NAVIGATION.settings,
 ]
 
@@ -328,7 +328,7 @@ export const FOOTER_QUATERNARY_NAVIGATION = [
   NAVIGATION.myFavorite,
   NAVIGATION.mySuites,
   NAVIGATION.myApplications,
-  NAVIGATION.claimApplicationOwnership,
+  NAVIGATION.registerApplication,
   NAVIGATION.settings,
 ]
 

@@ -21,6 +21,7 @@ import { TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 export class SearchBarComponent implements OnInit, OnDestroy
 {
   
+  public readonly ariaLabel = input<string>('Search');
   public readonly initialValue = input<string | null>(null);
   public readonly onSearch = output<string | null>();
   public readonly onFocus = output<boolean>();

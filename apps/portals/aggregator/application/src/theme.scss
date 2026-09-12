@@ -100,7 +100,6 @@ body.dark {
   --elevated-background-border: #{$color-surface-subtle};
 
   --feed-background: radial-gradient(ellipse at top, #a800ff 0%, #4b49b6 50%, #6d169d);
-  --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
 
   --skeleton-background: #{$color-surface-subtle};
   --skeleton-background-content: #334458;;
@@ -192,21 +191,19 @@ body.dark {
 
 
 
-//TODO: move this to shared extension
-
-// Custom action-soft appearance
-[tuiAppearance][data-appearance='action-soft'] {
+// Shared soft visuals. Motion is opt-in via appearance="action-soft-scale".
+[tuiAppearance][data-appearance='action-soft'],
+[tuiAppearance][data-appearance='action-soft-scale'] {
   color: var(--tui-text-action-soft);
   background: var(--tui-background-action-soft);
   backdrop-filter: blur(10px);
   border-radius: $radius-md; // 12px
-  @include transition((transform, opacity), $duration-200, $ease-in-out);
+  @include transition((color, background-color, opacity), $duration-200, $ease-in-out);
   //border: 1px solid var(--tui-border-action-soft);
   --tui-border-focus: var(--tui-border-action-soft-focus);
   cursor: pointer;
 
   &:hover {
-    transform: scale(1.05);
     color: var(--tui-text-action-soft-hover);
     background: var(--tui-background-action-soft-hover);
   }
@@ -214,6 +211,17 @@ body.dark {
   &:active {
     color: var(--tui-text-action-soft-active);
     background: var(--tui-background-action-soft-active);
+  }
+}
+
+// Reserve scaling for controls that explicitly request it, on hover-capable devices.
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [tuiAppearance][data-appearance='action-soft-scale'] {
+    @include transition((transform, color, background-color, opacity), $duration-200, $ease-in-out);
+
+    &:hover:not(:disabled):not([aria-disabled='true']):not([data-state='disabled']) {
+      transform: scale(1.05);
+    }
   }
 }
 
@@ -288,8 +296,24 @@ body.dark {
 }
 
 
+// Navigation theme and appearances
+:root,
+body.light,
+[tuiTheme='light'] {
+  --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
+  --main-menu-item-active-text: #{$color-white};
+  --main-menu-item-hover-background: linear-gradient(to right, #{rgba($color-purple-600, 0.18)}, #{rgba($color-indigo-400, 0.08)} 50%, transparent);
+}
+
+body.dark,
+[tuiTheme='dark'] {
+  --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
+  --main-menu-item-active-text: #{$color-white};
+  --main-menu-item-hover-background: linear-gradient(to right, #{rgba($color-purple-600, 0.32)}, #{rgba($color-indigo-400, 0.14)} 50%, transparent);
+}
+
 [tuiAppearance][data-appearance='navigation-primary'] {
-  padding: $space-4 $space-6;
+  padding: $space-4;
   width: $size-content-xxs;
   text-decoration: none;
   color: var(--tui-text-primary);
@@ -297,15 +321,19 @@ body.dark {
   transform: translate(0px);
   border-radius: $radius-md;
   cursor: pointer;
+  white-space: nowrap;
+
+  tui-icon { flex-shrink: 0; }
 
   & > * {
     transition: transform 0.1s;
     transform: translate(0px);
   }
 
-  &:hover {
+  &:hover:not(.active),
+  &:focus-visible:not(.active) {
     transform: translate(10px);
-    background: var(--main-menu-item-background);
+    background: var(--main-menu-item-hover-background);
     & > * {
       transform: translate(5px);
     }
@@ -313,7 +341,7 @@ body.dark {
 
   &.active {
     background: var(--main-menu-item-background);
-    color: var(--tui-text-on-primary);
+    color: var(--main-menu-item-active-text);
     font-weight: $font-weight-bold;
   }
 
@@ -336,6 +364,7 @@ body.dark {
     // animation: tuiSkeleton ease-in-out calc(var(--tui-duration) * 4) infinite alternate;
   }
 }
+
 
 // ============================================================================
 // Card Appearances

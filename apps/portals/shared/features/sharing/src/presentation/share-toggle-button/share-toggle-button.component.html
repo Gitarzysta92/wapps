@@ -1,3 +1,10 @@
-<tui-icon 
-  [icon]="shareSuccess ? '@tui.check' : isSharing ? '@tui.loader' : '@tui.share'">
-</tui-icon>
+<button tuiButton type="button" [size]="size" [appearance]="appearance" [disabled]="isSharing()" [attr.aria-label]="'Share ' + title" [attr.aria-busy]="isSharing()" (click)="share()">
+  <tui-icon icon="@tui.share" aria-hidden="true" />
+  {{ isSharing() ? 'Preparing link…' : 'Share' }}
+</button>
+@if (message()) { <span class="feedback" role="status">{{ message() }}</span> }
+@if (fallbackUrl()) {
+  <label class="fallback">Link to {{ title }}
+    <input #link readonly [value]="fallbackUrl()" (focus)="link.select()" (click)="link.select()" />
+  </label>
+}

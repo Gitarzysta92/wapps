@@ -38,3 +38,9 @@
 .item-card-skeleton, .item-card {
   width: 100%;
 }
+
+.section__search { margin-top: $space-4; }
+.result-link { color: inherit; text-decoration: none; }
+.result-link:hover { text-decoration: underline; }
+
+.result-link:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: 4px; }

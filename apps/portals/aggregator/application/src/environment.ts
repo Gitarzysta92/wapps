@@ -32,3 +32,5 @@ export function buildServiceUrl(resource: string): string {
 export const AVATAR_BASE_URL = buildServiceUrl("avatar");
 export const API_BASE_URL = buildServiceUrl("api");
 export const AUTH_BFF_URL = buildServiceUrl("auth");
+/** Local development uses the bundled catalog; deployed environments use the BFF. */
+export const USE_CATALOG_BFF = Boolean(ENVIRONMENT_NAME);

@@ -6,7 +6,7 @@ import { FILTERS } from '../../filters';
 
 export function applicationsMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   // Require base path
-  if (segments.length === 0 || segments[0].path !== NAVIGATION.applications.path) return null;
+  if (segments.length === 0 || ![NAVIGATION.applications.path, NAVIGATION.discover.path].includes(segments[0].path)) return null;
 
   // /applications
   if (segments.length === 1) {

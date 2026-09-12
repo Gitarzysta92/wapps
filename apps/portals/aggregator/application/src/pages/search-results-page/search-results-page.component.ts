@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, DestroyRef } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
 import { TuiBadgedContent } from '@taiga-ui/kit';
@@ -11,11 +11,15 @@ import {
   DiscoverySearchResultGroupDto,
   DiscoverySearchResultType
 } from '@domains/discovery';
-import { delay, map, of, startWith } from 'rxjs';
-import { DISCOVERY_SEARCH_RESULTS_DATA } from '@portals/shared/data';
+import { map, shareReplay, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SearchBarComponent } from '@ui/search-bar';
+import { DiscoverySearchService } from '@portals/shared/features/search';
+import { NAVIGATION } from '../../navigation';
+import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiButton, TuiLink } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 import {
@@ -37,7 +41,7 @@ import {
 import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '@ui/article-author-info';
 import { CoverImageComponent } from '@ui/cover-image';
 import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals/shared/features/articles';
-import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
 import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '@portals/shared/features/application-overview';
@@ -48,10 +52,12 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
+    SearchBarComponent,
     FiltersBarComponent,
     IntersectDirective,
     TuiButton,
-    TuiIcon,
+    TuiLink,
     TuiBadgedContent,
     BreadcrumbsComponent,
     AsyncPipe,
@@ -71,7 +77,7 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     ArticleAuthorInfoComponent,
     ArticleAuthorInfoSkeletonComponent,
     ArticleRatingComponent,
-    MyFavoriteToggleComponent,
+    FavoriteToggleButtonComponent,
     ProfileBadgesComponent,
     DiscussionChipComponent,
     AppAvatarComponent,
@@ -90,29 +96,51 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     'class': 'fluid-container'
   },
 })
-export class SearchResultsPageComponent {
+export class SearchResultsPageComponent implements AfterViewInit {
+  @ViewChild(SearchBarComponent) private searchBar!: SearchBarComponent;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(DiscoverySearchService);
+
+  ngAfterViewInit(): void {
+    this._route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      this.searchBar.form.controls.search.setValue(params.get('search') ?? '', { emitEvent: false });
+    });
+  }
+
+  protected submitSearch(event?: Event): void {
+    event?.preventDefault();
+    this.changeSearch(this.searchBar.form.controls.search.value);
+  }
+
+  protected changeSearch(phrase: string | null): void {
+    void this.router.navigate(['/' + NAVIGATION.search.path], {
+      queryParams: { search: phrase?.trim() || null, page: null }, queryParamsHandling: 'merge',
+    });
+  }
+
+  protected readonly initialSearch = inject(ActivatedRoute).snapshot.queryParamMap.get('search') ?? '';
+
 
   private readonly _globalState = inject(GlobalStateService);
   private readonly _route = inject(ActivatedRoute);
 
-  protected readonly resultsData$ = of(DISCOVERY_SEARCH_RESULTS_DATA)
-    .pipe(
-      delay(1000),
-      map(d => Object.assign({}, d, { isLoading: false })),
-      startWith({ itemsNumber: 0, groups: [], link: "", query: {}, isLoading: true }));
+  protected readonly resultsData$ = this._route.queryParamMap.pipe(
+    map(params => Object.fromEntries(params.keys.map(key => [key, params.getAll(key).join(',')]))),
+    map(params => ({ ...this.searchService.search(params), isLoading: false })),
+    tap(data => {
+      this.searchService.remember(data.query['search']);
+      this._globalState.activeSection$.next(null);
+      this._globalState.setSearchResultsData(data);
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
   protected readonly breadcrumbs$ = this._route.data.pipe(
     map((data) => (data as IBreadcrumbRouteData)?.breadcrumb || [])
   );
 
 
-
-  constructor() {
-    // Subscribe to resultsData$ and push it to the global state service
-    this.resultsData$.subscribe(data => {
-      this._globalState.setSearchResultsData(data);
-    });
-  }
 
   public onVisibilityChange(
     isVisible: boolean,
@@ -133,7 +161,7 @@ export class SearchResultsPageComponent {
       tags: articleEntry.tags.map((tag: any) => ({
         slug: tag.slug,
         name: tag.name,
-        link: `/search?tag=${tag.slug}`
+        link: '/' + buildRoutePath(NAVIGATION.tag.path, { tagSlug: tag.slug })
       })),
       coverImageUrl: articleEntry.coverImageUrl,
       rating: articleEntry.rating || 0,
@@ -145,7 +173,8 @@ export class SearchResultsPageComponent {
         { id: 'verified', name: 'verified', icon: '@tui.badge-check', color: 'primary' },
         { id: 'premium', name: 'premium', icon: '@tui.rocket', color: 'premium-soft' }
       ],
-      articleLink: `/articles/${articleEntry.slug}`,
+      title: articleEntry.title || articleEntry.name,
+      articleLink: '/' + buildRoutePath(NAVIGATION.article.path, { articleSlug: articleEntry.slug }),
       commentsLink: `/articles/${articleEntry.slug}#comments`,
       excerpt: articleEntry.excerpt
     };
@@ -161,20 +190,20 @@ export class SearchResultsPageComponent {
       rating: appEntry.rating || 0,
       category: {
         ...appEntry.category,
-        link: `/search?category=${appEntry.category.slug}`
+        link: '/' + buildRoutePath(NAVIGATION.category.path, { categorySlug: appEntry.category.slug })
       },
       tags: appEntry.tags.map((tag: any) => ({
         slug: tag.slug,
         name: tag.name,
-        link: `/search?tag=${tag.slug}`
+        link: '/' + buildRoutePath(NAVIGATION.tag.path, { tagSlug: tag.slug })
       })),
       voting: {
         upvotesCount: appEntry.upvotesCount || 0,
         downvotesCount: appEntry.downvotesCount || 0
       },
       commentsNumber: appEntry.commentsNumber || 0,
-      applicationLink: `/app/${appEntry.slug}/overview`,
-      reviewsLink: `/app/${appEntry.slug}/reviews`,
+      applicationLink: '/' + buildRoutePath(NAVIGATION.applicationOverview.path, { appSlug: appEntry.slug }),
+      reviewsLink: '/' + buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: appEntry.slug }),
       topReview: appEntry.topReview ? {
         ...appEntry.topReview,
         rating: appEntry.topReview.rate || 0,
@@ -197,7 +226,7 @@ export class SearchResultsPageComponent {
       tags: suiteEntry.tags.map((tag: any) => ({
         slug: tag.slug,
         name: tag.name,
-        link: `/search?tag=${tag.slug}`
+        link: '/' + buildRoutePath(NAVIGATION.tag.path, { tagSlug: tag.slug })
       })),
       voting: {
         upvotesCount: suiteEntry.upvotesCount || 0,
@@ -205,7 +234,7 @@ export class SearchResultsPageComponent {
       },
       commentsNumber: suiteEntry.commentsNumber || 0,
       applications: suiteEntry.applications || [],
-      suiteLink: `/suites/${suiteEntry.slug}`,
+      suiteLink: '/' + buildRoutePath(NAVIGATION.suite.path, { suiteSlug: suiteEntry.slug }),
       commentsLink: `/suites/${suiteEntry.slug}#comments`,
       topReview: suiteEntry.topComment ? {
         authorName: suiteEntry.topComment.authorName,
@@ -219,21 +248,6 @@ export class SearchResultsPageComponent {
         ]
       } : undefined
     };
-  }
-
-  protected onSaveSuite(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
-    // TODO: Implement save suite functionality
-    console.log('Save suite:', entry);
-  }
-
-  protected onSaveApplication(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
-    // TODO: Implement save application functionality
-    console.log('Save application:', entry);
-  }
-
-  protected onSaveArticle(entry: DiscoverySearchResultArticleItemDto | DiscoverySearchResultApplicationItemDto | DiscoverySearchResultSuiteItemDto): void {
-    // TODO: Implement save article functionality
-    console.log('Save article:', entry);
   }
 
   getGroupLabel(arg0: DiscoverySearchResultType) {

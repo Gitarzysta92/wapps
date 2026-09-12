@@ -1,28 +1,38 @@
 <ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
   <ui-breadcrumbs
     slot="top-bar"
     [breadcrumbs]="breadcrumb()">
   </ui-breadcrumbs>
+  }
 
-  <h1 uiPageTitle slot="title">Profile Settings</h1>
+  <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Profile Settings</h1>
 
-  <p slot="meta" class="page-description">
+  <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
     Manage your public profile information
   </p>
 </ui-page-header>
 
-@if (isError()) {
+@if (isLoading()) {
+  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
+    @for (item of [1, 2, 3]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+    }
+  </section>
+} @else if (isError()) {
   <section class="error-section">
-    <p>Error loading profile. Please try again.</p>
+    <p>Could not read the profile from this browser. Check storage access and reload to try again.</p>
   </section>
 } @else {
   <section class="settings-content">
+    <p class="page-description">Changes are saved only on this browser and update the profile shown in this app.</p>
+    @if (feedback()) {
+      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
+    }
     <!-- Avatar Section -->
-    <div
-      tuiAppearance="floating"
-      tuiCardLarge
-      class="settings-card"
-    >
+    <div tuiAppearance="floating" tuiCardLarge class="settings-card avatar-card">
       <header tuiHeader>
         <h2 class="section-title">
           <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
@@ -30,28 +40,24 @@
         </h2>
       </header>
       <div class="avatar-section">
-        <tui-avatar
-          [src]="profile()?.avatar?.uri || ''"
-          size="xl"
-        >
-          {{ (profile()?.name || 'User').substring(0, 2).toUpperCase() }}
+        <tui-avatar [src]="avatarUri()" size="l" aria-label="Profile photo preview">
+          {{ (formData().name || 'User').substring(0, 2).toUpperCase() }}
         </tui-avatar>
-        <div class="avatar-actions">
-          <button
-            tuiButton
-            appearance="secondary"
-            iconStart="@tui.upload"
-            type="button"
-          >
-            Upload new photo
-          </button>
-          <button
-            tuiButton
-            appearance="flat"
-            type="button"
-          >
-            Remove
-          </button>
+        <div class="avatar-controls">
+          <div class="avatar-actions">
+            <input #avatarInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onAvatarSelected($event)" />
+            <button tuiButton appearance="secondary" size="s" iconStart="@tui.upload"
+              (click)="avatarInput.click()" type="button" aria-describedby="avatar-guidance">
+              Change photo
+            </button>
+            <button tuiButton appearance="flat" size="s" type="button"
+              [disabled]="!avatarUri() && !isReadingAvatar()" (click)="onRemoveAvatar()">
+              Remove
+            </button>
+          </div>
+          <p id="avatar-guidance" class="page-description avatar-guidance">
+            JPEG, PNG or WebP · Up to 1 MB.<br />Save Changes to apply your photo.
+          </p>
         </div>
       </div>
     </div>
@@ -74,9 +80,12 @@
         <label tuiLabel>Display Name</label>
         <input
           tuiTextfield
-          [placeholder]="profile()?.name || 'Your name'"
-          [(ngModel)]="formData().name"
+          placeholder="Your name"
+          [ngModel]="formData().name"
+          (ngModelChange)="onFieldChange('name', $event)"
           name="name"
+          required
+          maxlength="100"
         />
       </tui-textfield>
 
@@ -85,8 +94,10 @@
         <textarea
           tuiTextfield
           placeholder="Tell others about yourself..."
-          [(ngModel)]="formData().bio"
+          [ngModel]="formData().bio"
+          (ngModelChange)="onFieldChange('bio', $event)"
           name="bio"
+          maxlength="500"
           rows="3"
         ></textarea>
         <span tuiHint>Maximum 500 characters</span>
@@ -97,7 +108,8 @@
         <input
           tuiTextfield
           placeholder="City, Country"
-          [(ngModel)]="formData().location"
+          [ngModel]="formData().location"
+          (ngModelChange)="onFieldChange('location', $event)"
           name="location"
         />
       </tui-textfield>
@@ -122,7 +134,8 @@
         <input
           tuiTextfield
           placeholder="https://yourwebsite.com"
-          [(ngModel)]="formData().website"
+          [ngModel]="formData().website"
+          (ngModelChange)="onFieldChange('website', $event)"
           name="website"
         />
       </tui-textfield>
@@ -132,7 +145,8 @@
         <input
           tuiTextfield
           placeholder="@username"
-          [(ngModel)]="formData().twitter"
+          [ngModel]="formData().twitter"
+          (ngModelChange)="onFieldChange('twitter', $event)"
           name="twitter"
         />
       </tui-textfield>
@@ -142,7 +156,8 @@
         <input
           tuiTextfield
           placeholder="https://linkedin.com/in/username"
-          [(ngModel)]="formData().linkedin"
+          [ngModel]="formData().linkedin"
+          (ngModelChange)="onFieldChange('linkedin', $event)"
           name="linkedin"
         />
       </tui-textfield>
@@ -152,7 +167,8 @@
         <input
           tuiTextfield
           placeholder="@username"
-          [(ngModel)]="formData().github"
+          [ngModel]="formData().github"
+          (ngModelChange)="onFieldChange('github', $event)"
           name="github"
         />
       </tui-textfield>
@@ -172,7 +188,7 @@
         tuiButton
         appearance="primary"
         type="button"
-        [disabled]="isSaving()"
+        [disabled]="isSaving() || isLoading() || isReadingAvatar()"
         (click)="onSave()"
       >
         @if (isSaving()) {

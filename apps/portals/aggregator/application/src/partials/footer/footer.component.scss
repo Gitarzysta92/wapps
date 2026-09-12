@@ -1,17 +1,13 @@
 @use 'ui/design-system/src/styles' as *;
 
+:host { display: block; border-top: 1px solid var(--tui-border-normal); }
 .nav-container {
   display: flex;
-  flex-direction: row; 
+  flex-wrap: wrap;
   justify-content: space-around;
-  padding: $space-12 0;
+  gap: $space-8;
+  padding: $space-8 $space-4;
 }
-
-ul {
-  padding: 0;
-  list-style: none;
-}
-
-.bottom-bar {
-  text-align: center;
-}
+h2 { font-size: $font-size-md; margin-bottom: $space-4; }
+ul { padding: 0; list-style: none; display: grid; gap: $space-3; }
+.bottom-bar { text-align: center; color: var(--tui-text-secondary); font-size: $font-size-sm; padding: $space-4; }

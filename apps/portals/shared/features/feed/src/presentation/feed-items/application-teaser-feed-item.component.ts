@@ -1,3 +1,5 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent, CardFooterComponent } from '@ui/layout';
@@ -15,9 +17,9 @@ import {
   AppCategoryChipComponent,
   AppReviewsChipComponent 
 } from '@portals/shared/features/application-overview';
-import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
-import { ContextMenuChipComponent, ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
+import { ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 
@@ -49,9 +51,9 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     AppRatingComponent,
     AppCategoryChipComponent,
     AppReviewsChipComponent,
-    MyFavoriteToggleComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
+    FavoriteToggleButtonComponent,
+    FeedActionsMenuComponent,
+    FeedAttributionComponent,
   ],
   styles: [
     `
@@ -88,12 +90,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         slot="backdrop">
       </ui-cover-image>
       <!-- TODO: this should be moved to the card header -->
-      <my-favorite-toggle
-        slot="actions"
-        appearance="action-soft"
-        [item]="item.appSlug"
-        size="s"
-      />
+      <favorite-toggle-button slot="actions" type="applications" [slug]="item.appSlug" />
       <ui-medium-card class="medium-card">
         <app-category-chip 
           slot="top-edge"
@@ -123,16 +120,16 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
       </ui-medium-card>
 
       <ui-card-footer slot="footer" class="card-footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
         <app-reviews-chip slot="right-side"
           [reviewsCount]="item.reviewsCount"
           [reviewsLink]="item.reviewsLink"
           size="xs"
           appearance="action-soft-flat"
         />
-        <context-menu-chip
+        <feed-actions-menu
           slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />

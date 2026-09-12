@@ -1,67 +1,49 @@
-import { inject, Injectable } from "@angular/core";
-import { Result } from "@foundation/standard";
-import { Observable, of } from "rxjs";
-import { ISharingProvider } from "../application/sharing-provider.port";
-import { SHARING_BASE_URL_PROVIDER } from "../application/infrastructure-providers.port";
+import { DOCUMENT } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
+import { Result } from '@foundation/standard';
+import { Observable } from 'rxjs';
+import { ISharingProvider } from '../application/sharing-provider.port';
+import { SHARING_BASE_URL_PROVIDER } from '../application/infrastructure-providers.port';
 
 @Injectable()
 export class SharingApiService implements ISharingProvider {
-  private readonly _baseUrl = inject(SHARING_BASE_URL_PROVIDER);
+  private readonly baseUrl = inject(SHARING_BASE_URL_PROVIDER);
+  private readonly document = inject(DOCUMENT);
 
-  public shareContent(
-    type: 'applications' | 'suites' | 'articles' | 'discussions',
-    slug: string,
-    title: string
-  ): Observable<Result<boolean, Error>> {
-    // Check if Web Share API is available
-    if (this.canShare() && navigator.share) {
-      const url = `${this._baseUrl}/${type}/${slug}`;
-      
-      return new Observable(observer => {
-        navigator.share({
-          title: title,
-          text: `Check out this ${type.slice(0, -1)}: ${title}`,
-          url: url
-        })
-        .then(() => {
-          observer.next({ ok: true, value: true });
-          observer.complete();
-        })
-        .catch((error) => {
-          // User cancelled or error occurred
-          if (error.name === 'AbortError') {
-            // User cancelled, treat as success
-            observer.next({ ok: true, value: false });
-          } else {
-            observer.next({ ok: false, error: error as Error });
-          }
-          observer.complete();
-        });
-      });
-    } else {
-      // Fallback: Copy to clipboard
-      const url = `${this._baseUrl}/${type}/${slug}`;
-      return new Observable(observer => {
-        navigator.clipboard.writeText(url)
-          .then(() => {
-            console.log(`Copied link to clipboard: ${url}`);
-            observer.next({ ok: true, value: true });
-            observer.complete();
-          })
-          .catch((error) => {
-            observer.next({ ok: false, error: error as Error });
-            observer.complete();
-          });
-      });
+  contentUrl(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, path?: string): string {
+    const origin = this.document.defaultView?.location.origin;
+    const base = new URL(origin && origin !== 'null' ? origin : this.baseUrl || this.document.baseURI, this.document.baseURI);
+    const route = path || `/${type === 'applications' ? 'apps' : type}/${encodeURIComponent(slug)}`;
+    const url = new URL(route, base);
+    if (!['http:', 'https:'].includes(url.protocol) || url.origin !== base.origin) {
+      throw new Error('Only links within this portal can be shared.');
     }
+    return url.href;
   }
 
-  public canShare(): boolean {
-    return typeof navigator !== 'undefined' && 
-           (!!navigator.share || !!navigator.clipboard);
+  shareContent(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, title: string, path?: string): Observable<Result<boolean, Error>> {
+    return new Observable(observer => {
+      const finish = (result: Result<boolean, Error>) => { observer.next(result); observer.complete(); };
+      try {
+        const url = this.contentUrl(type, slug, path);
+        const navigator = this.document.defaultView?.navigator;
+        const operation = navigator?.share
+          ? navigator.share({ title, url })
+          : navigator?.clipboard?.writeText
+            ? navigator.clipboard.writeText(url)
+            : Promise.reject(new Error('Automatic sharing is unavailable. Copy the link below.'));
+        operation.then(() => finish({ ok: true, value: true })).catch((error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') finish({ ok: true, value: false });
+          else finish({ ok: false, error: new Error('Could not share automatically. Copy the link below.') });
+        });
+      } catch (error) {
+        finish({ ok: false, error: error instanceof Error ? error : new Error('Could not prepare this link.') });
+      }
+    });
+  }
+
+  canShare(): boolean {
+    const navigator = this.document.defaultView?.navigator;
+    return !!(navigator?.share || navigator?.clipboard?.writeText);
   }
 }
-
-
-
-

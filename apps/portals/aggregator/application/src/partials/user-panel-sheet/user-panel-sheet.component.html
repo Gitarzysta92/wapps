@@ -1,62 +1,23 @@
+@let authenticated = service.isAuthenticated$ | async;
+@let profile = profile$ | async;
 <section class="user-profile_section">
-  <div my-profile-avatar></div>
-  <div my-profile-name></div>
+  <div my-profile-avatar [avatarPath]="profile?.data?.avatar?.uri"></div>
+  <div my-profile-name [name]="authenticated ? profile?.data?.name : 'Welcome to Wapps'"></div>
 </section>
-<hr>
-<nav class="navigation_section">
-  <ul>
-    @for (item of context.data.navigationPrimary; track item.path) {
-      <li>
-        <a
-          [routerLink]="item.path"
-          appearance="action-grayscale"
-          tuiButton
-          type="button">
-          <tui-icon
-            [icon]="item.icon"
-            [style.height.rem]="1"/>
-          {{ item.label }}
-        </a>
-      </li>
-    }
-  </ul>
-</nav>
-<hr>
-<nav class="navigation_section">
-  <ul>
-    @for (item of context.data.navigationSecondary; track item.path) {
-      <li>
-        <a
-          [routerLink]="item.path"
-          appearance="action-grayscale"
-          tuiButton
-          type="button">
-          <tui-icon
-            [icon]="item.icon"
-            [style.height.rem]="1"/>
-          {{ item.label }}
-        </a>
-      </li>
-    }
-  </ul>
-</nav>
-<hr>
-<div class="theme_section">
-  <theme-toggle></theme-toggle> 
-  <span>
-    <strong>{{ (theme.isToggled$ | async) ? "Light" : "Dark" }} Theme</strong>
-  </span>
-</div>
-<hr>
-<button
-  class="logout-button"
-  appearance="action-grayscale"
-  tuiButton
-  type="button"
-  (click)="service.unauthenticate()">
-  <tui-icon
-    icon="@tui.log-out"
-    [style.height.rem]="1"/>
-  Log out
-</button>
-
+@if (authenticated) {
+  <a tuiButton appearance="flat" routerLink="/me/profile" (click)="close()">My profile</a>
+  <nav class="navigation_section" aria-label="Your account">
+    <ul>
+      @for (item of primary; track item.path) {
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" (click)="close()">{{ item.label }}</a></li>
+      }
+      @for (item of secondary; track item.path) {
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" (click)="close()">{{ item.label }}</a></li>
+      }
+    </ul>
+  </nav>
+  <button tuiButton type="button" appearance="secondary" (click)="logout()">Log out</button>
+} @else {
+  <p>Sign in or continue as a guest to save favorites and build your collections.</p>
+  <button tuiButton type="button" (click)="login()">Log in</button>
+}

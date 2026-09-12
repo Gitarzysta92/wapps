@@ -1,9 +1,9 @@
 <div class="portal-logo-wrapper">
-  <a [routerLink]="navigationAvatar()?.path">
+  <a [routerLink]="avatarLink()" [attr.aria-label]="navigationAvatar()?.label || 'Home'">
     @if (avatarPath(); as path) {
-      <tui-avatar [src]="path" size="xl" [routerLink]="navigationAvatar()?.path"/>
+      <tui-avatar [src]="path" size="xl"/>
     } @else {
-      <tui-avatar [src]="'@tui.mastercard' | tuiIcon" size="xl" [routerLink]="navigationAvatar()?.path"/>
+      <tui-avatar [src]="'@tui.mastercard' | tuiIcon" size="xl"/>
     } 
   </a>
 </div>
@@ -11,11 +11,13 @@
 
 <nav navigationList [alignment]="alignment()">
   @for (item of navigation(); track item.path) {
-    <a #navigationItem
+    <a #navigationItem #activeLink="routerLinkActive"
       navigationItem
       appearance="navigation-primary"
-      [routerLink]="item.path"
-      [routerLinkActive]="navigationItem.activeClass"
+      [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
+      routerLinkActive=""
+      [class.active]="activeLink.isActive && primaryActiveClass(item.path) === 'active'"
+      [attr.aria-current]="activeLink.isActive && primaryActiveClass(item.path) === 'active' ? 'page' : null"
       [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">
       <span slot="center" class="nav-label">{{ item.label }}</span>
       @if (item.icon) {
@@ -33,8 +35,9 @@
       <a #navigationItem
         navigationItem
         appearance="navigation-primary"
-        [routerLink]="item.path"
+        [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
         [routerLinkActive]="navigationItem.activeClass"
+        ariaCurrentWhenActive="page"
         [routerLinkActiveOptions]="navigationItem.getActiveOptions(item.path)">
         <span slot="center" class="nav-label">{{ item.label }}</span>
         @if (item.icon) {

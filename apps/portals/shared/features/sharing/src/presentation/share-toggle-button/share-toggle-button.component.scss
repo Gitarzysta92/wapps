@@ -1,62 +1,6 @@
 @use 'ui/design-system/src/styles' as *;
-
-:host {
-  display: inline-flex;
-  align-items: center;
-  padding: $space-2; // 12px
-  tui-icon {
-    font-size: $size-icon-sm; // default/medium size (1.25rem)
-    line-height: 1;
-  }
-
-  // Correlate icon size with button size
-  &[data-size='xs'] tui-icon {
-    font-size: 0.75rem; // Custom size smaller than standard scale
-  }
-
-  &[data-size='s'] tui-icon {
-    font-size: $size-icon-xs; // 1rem
-  }
-
-  &[data-size='m'] tui-icon {
-    font-size: $size-icon-sm; // 1.25rem
-  }
-
-  &[data-size='l'] tui-icon {
-    font-size: $size-icon-md; // 1.5rem
-  }
-
-  &[data-size='xl'] tui-icon {
-    font-size: $size-icon-lg; // 2rem
-  }
-
-  &.is-sharing {
-    tui-icon {
-      animation: rotate 1s linear infinite;
-    }
-  }
-
-  &.share-success {
-    tui-icon {
-      color: var(--tui-status-positive);
-    }
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-
-
+:host { display: inline-flex; flex-direction: column; align-items: flex-start; gap: $space-2; max-width: 100%; }
+.feedback, .fallback { @include text($font-size-sm); color: var(--tui-text-secondary); max-width: 28rem; overflow-wrap: anywhere; }
+.fallback { display: flex; flex-direction: column; gap: $space-1; width: 100%; }
+input { box-sizing: border-box; width: 100%; padding: $space-2; font: inherit; color: var(--tui-text-primary); background: var(--tui-background-base); border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-sm; }
+input:focus-visible { @include focus-ring($color-primary-600); }

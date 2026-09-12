@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -7,7 +8,7 @@ import {
 @Component({
   selector: 'ui-discussion-post-header',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './discussion-post-header.component.html',
   styleUrls: ['./discussion-post-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

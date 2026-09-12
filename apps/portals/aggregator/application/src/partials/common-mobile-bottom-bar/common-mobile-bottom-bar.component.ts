@@ -5,6 +5,7 @@ import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { TuiSheetDialogService } from '@taiga-ui/addon-mobile';
+import { UserPanelSheetComponent } from '../user-panel-sheet/user-panel-sheet.component';
 
 
 // TODO: inputs should be typed
@@ -51,13 +52,10 @@ export class CommonMobileBottomBarPartialComponent {
   }
 
   public openDialog(): void {
-    if (!this.sheetDialog) {
-      return;
-    }
     this._dialogService.open(
-      new PolymorpheusComponent(this.sheetDialog.component, this._injector),
+      new PolymorpheusComponent(this.sheetDialog?.component ?? UserPanelSheetComponent, this._injector),
       {
-        data: this.sheetDialog.inputs,
+        data: this.sheetDialog?.inputs ?? {},
         closeable: true,
         fullscreen: false }
     ).subscribe();

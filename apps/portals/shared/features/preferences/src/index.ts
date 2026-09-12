@@ -14,3 +14,4 @@ export * from './infrastructure/preferences-api.service';
 export * from './preferences.providers';
 
 
+export * from './presentation/preferred-date.pipe';

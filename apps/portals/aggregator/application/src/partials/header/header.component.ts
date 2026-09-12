@@ -1,40 +1,39 @@
-import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { GlobalStateService } from '../../state/global-state.service';
-import { SmartSearchInputContainerComponent } from '@portals/shared/features/smart-search';
-import { StickyElementDirective, OutOfViewportChange } from '@ui/misc';
-import { TuiIcon } from '@taiga-ui/core';
-
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TuiButton, TuiTextfield } from '@taiga-ui/core';
+import { DiscoverySearchService, normalizeSearch } from '@portals/shared/features/search';
+import { NAVIGATION } from '../../navigation';
 
 @Component({
   selector: 'header',
-  templateUrl: "header.component.html",
+  templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss',
   standalone: true,
-  imports: [
-    CommonModule,
-    SmartSearchInputContainerComponent,
-    StickyElementDirective,
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, TuiTextfield, TuiButton],
 })
 export class HeaderPartialComponent {
-  public readonly state = inject(GlobalStateService);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(DiscoverySearchService);
+  protected readonly search = new FormControl('', { nonNullable: true });
 
-  public isChatBannerCollapsed = true;
-
+  // Retain the layout inputs/outputs while the parent owns header placement.
   @Input() showCollapseButton = false;
-
   @Output() expandedStateChange = new EventEmitter<boolean>();
 
-  public toggleChatBanner(): void {
-    this.isChatBannerCollapsed = !this.isChatBannerCollapsed;
-    if (this.isChatBannerCollapsed) {
-      this.showCollapseButton = true;
-    }
-    this.expandedStateChange.emit(!this.isChatBannerCollapsed);
+  constructor() {
+    inject(ActivatedRoute).queryParamMap.pipe(takeUntilDestroyed()).subscribe(params => {
+      this.search.setValue(params.get('search') ?? '', { emitEvent: false });
+    });
   }
 
-  public onOutOfViewportChange(event: OutOfViewportChange): void {
-    this.showCollapseButton = event.isOutOfViewport;
+  protected submitSearch(event: Event): void {
+    event.preventDefault();
+    const phrase = normalizeSearch(this.search.value);
+    if (!phrase) return;
+    this.searchService.remember(phrase);
+    void this.router.navigate(['/' + NAVIGATION.search.path], { queryParams: { search: phrase } });
   }
 }

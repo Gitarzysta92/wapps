@@ -11,9 +11,14 @@ export class SharingService {
   public shareContent(
     type: 'applications' | 'suites' | 'articles' | 'discussions',
     slug: string,
-    title: string
+    title: string,
+    path?: string
   ): Observable<Result<boolean, Error>> {
-    return this._sharingProvider.shareContent(type, slug, title);
+    return this._sharingProvider.shareContent(type, slug, title, path);
+  }
+
+  public contentUrl(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, path?: string): string {
+    return this._sharingProvider.contentUrl(type, slug, path);
   }
 
   public canShare(): boolean {

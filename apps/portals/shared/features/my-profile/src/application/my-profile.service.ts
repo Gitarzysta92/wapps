@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { map, Observable, Subject, switchMap, tap } from "rxjs";
+import { map, Observable, Subject, switchMap, tap, startWith, shareReplay } from "rxjs";
 import { CustomerProfileDto, MY_PROFILE_PROVIDER, MY_PROFILE_UPDATER } from "@domains/customer/profiles";
 import { Result } from "@foundation/standard";
 import { IMyProfileStateProvider } from "./my-profile-state-provider.port";
@@ -13,23 +13,22 @@ export class MyProfileService implements IMyProfileStateProvider {
   private readonly _profileUpdated$ = new Subject<void>();
   private _myProfile: CustomerProfileDto | null = null;
 
-  public myProfile$: Observable<MyProfileState> = this._myProfileProvider.getMyProfile().pipe(
-    map(p => p.ok ? p.value : {} as CustomerProfileDto),
-    switchMap(p => this._myProfileProvider.getMyProfile().pipe(map(p => p.ok ? p.value : {} as CustomerProfileDto))),
-    map(p => ({
+  public myProfile$: Observable<MyProfileState> = this._profileUpdated$.pipe(
+    startWith(undefined),
+    switchMap(() => this._myProfileProvider.getMyProfile()),
+    map(result => ({
       isLoading: false,
-      isError: false,
-      data: p
+      isError: !result.ok,
+      data: result.ok ? result.value : this._myProfile ?? { id: '', name: '' }
     })),
-    tap(state => {
-      this._myProfile = state.data;
-    })
+    tap(state => { if (!state.isError) this._myProfile = state.data; }),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   public updateProfile(p: CustomerProfileDto): Observable<Result<boolean, Error>> {
     return this._myProfileUpdater.update(p)
-      .pipe(tap(() => {
-        this._profileUpdated$.next();
+      .pipe(tap(result => {
+        if (result.ok && result.value) this._profileUpdated$.next();
       }))
   }
 

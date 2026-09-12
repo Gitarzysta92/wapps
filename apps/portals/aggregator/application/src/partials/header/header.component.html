@@ -1,15 +1,8 @@
-<!-- <div
-  outOfViewport
-  (outOfViewportChange)="onOutOfViewportChange($event)"
-  class="chat-banner-container">
-  <chat-banner>
-  </chat-banner>
-</div> -->
-
-
-<smart-search-input-container stickyElement></smart-search-input-container>
-
-<!-- <div class="chat-banner-toggle"
-  (click)="toggleChatBanner()">
-  <tui-icon [icon]="isChatBannerCollapsed ? 'chevron-down' : 'chevron-up'"></tui-icon>
-</div> -->
+<form class="global-search" role="search" aria-label="Global catalog search" (submit)="submitSearch($event)">
+  <tui-textfield iconStart="@tui.search" tuiTextfieldSize="m">
+    <input tuiTextfield type="search" [formControl]="search"
+      aria-label="Search applications, articles and suites"
+      placeholder="Search applications, articles and suites" />
+  </tui-textfield>
+  <button tuiButton type="submit" size="m" appearance="primary">Search</button>
+</form>

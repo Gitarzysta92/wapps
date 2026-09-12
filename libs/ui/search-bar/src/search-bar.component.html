@@ -5,6 +5,7 @@
         iconStart="@tui.search"
         tuiTextfieldSize="l">
         <input
+          [attr.aria-label]="ariaLabel()"
           (focusin)="onFocus.emit(true)"
           (focusout)="onFocus.emit(false)"
           formControlName="search" 

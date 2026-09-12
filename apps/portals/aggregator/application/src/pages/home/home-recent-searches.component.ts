@@ -1,7 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { RecentSearchesList } from '@ui/search-results';
+import { RouterLink } from '@angular/router';
+import { TuiLink, TuiIcon } from '@taiga-ui/core';
 import { MultiSearchRecentSearchesVM } from '@portals/shared/features/multi-search';
 
 @Component({
@@ -10,9 +11,15 @@ import { MultiSearchRecentSearchesVM } from '@portals/shared/features/multi-sear
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RecentSearchesList,
+    RouterLink, TuiLink, TuiIcon,
   ],
   styles: [`
+    ul { list-style: none; padding: 0; margin: 0; }
+    .recent-heading, .recent-search-item {
+      display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem;
+      border-radius: var(--tui-radius-m); font-size: 0.875rem;
+    }
+
     .recent-searches-container {
       display: flex;
       flex-direction: column;
@@ -60,14 +67,13 @@ import { MultiSearchRecentSearchesVM } from '@portals/shared/features/multi-sear
     @if (recentSearches$ | async; as recentSearches) {
       @if (recentSearches.searches && recentSearches.searches.length > 0) {
         <div class="recent-searches-container">
-          <ul [recent-searches-list]="recentSearches.searches">
-            <ng-template #customContent let-search>
-              <div class="custom-search-content">
-                <div class="search-info">
-                  <span class="search-name">{{ search.name }}</span>
-                </div>
-              </div>
-            </ng-template>
+          <div class="recent-heading"><tui-icon icon="@tui.history"/> Recent</div>
+          <ul>
+            @for (search of recentSearches.searches; track search.name) {
+              <li><a tuiLink appearance="action-soft" class="recent-search-item"
+                [routerLink]="search.link" [queryParams]="search.query"
+                iconStart="@tui.search" iconEnd="@tui.chevron-right">{{ search.name }}</a></li>
+            }
           </ul>
         </div>
       } @else {

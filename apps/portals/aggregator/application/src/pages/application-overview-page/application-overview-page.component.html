@@ -1,3 +1,8 @@
+@if (notFound()) {
+  <section tuiAppearance="card-elevated" class="metadata-section" role="status"><h1>Application not found</h1><p>This application is not in the catalog.</p><a tuiLink routerLink="/">Browse applications</a></section>
+} @else if (app.error()) {
+  <section tuiAppearance="card-elevated" class="metadata-section" role="alert"><h1>Unable to load application</h1><p>Please try again.</p><button tuiButton type="button" (click)="app.reload()">Retry</button></section>
+} @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
@@ -21,9 +26,7 @@
     <ui-page-meta-skeleton slot="meta" />
   } @else {
     <ui-page-meta slot="meta">
-      <a tuiLink href="#" target="_blank" rel="noopener noreferrer" class="developer-link">
-        Developer name
-      </a>
+      <span class="developer-link">{{ app.value()?.owner?.name }}</span>
     </ui-page-meta>
   }
 </ui-page-header>
@@ -63,8 +66,9 @@
       }
       
       <div class="app-labels">
-        <tui-badge appearance="info" size="s">PWA Ready</tui-badge>
-        <tui-badge appearance="neutral" size="s">Free</tui-badge>
+        @if (app.value(); as record) { <favorite-toggle-button type="applications" [slug]="record.slug" /> }
+        @if (app.value()?.isPwa) { <tui-badge appearance="info" size="s">PWA Ready</tui-badge> }
+        @for (plan of app.value()?.monetizations; track plan.id) { <tui-badge appearance="neutral" size="s">{{ plan.name }}</tui-badge> }
       </div>
     </div>
   </div>
@@ -134,67 +138,5 @@
   }
 </section>
 
-<!-- Health Status Preview -->
-<section class="preview-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-indigo"></span>
-    System Status
-  </h2>
 
-  <div class="preview-grid">
-    @if (overviewData.isLoading()) {
-      <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-    } @else {
-      <ui-medium-card class="preview-card" tuiAppearance="card-elevated">
-        <div class="preview-card-header">
-          <h3 class="preview-card-title">
-            <tui-icon icon="@tui.heart-pulse"></tui-icon>
-            Health Status
-          </h3>
-          <a 
-            [routerLink]="HEALTH_PATH | routePath:{ appSlug: appSlug() }:'string'"
-            tuiLink 
-            size="s">
-            View Details
-          </a>
-        </div>
-        <health-check-badge [status]="healthStatus()" size="l" />
-      </ui-medium-card>
-    }
-  </div>
-</section>
-
-<!-- Latest Reviews Preview -->
-<section class="preview-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-warm"></span>
-    Latest Reviews
-  </h2>
-
-  <div class="preview-grid">
-    @if (overviewData.isLoading()) {
-      @for (i of [1, 2]; track i) {
-        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-      }
-    }
-    @if (latestReviews(); as reviews) {
-      @for (review of reviews; track review.authorName) {
-        <ui-medium-card class="preview-card" tuiAppearance="card-elevated">
-          <div class="preview-card-header">
-            <h3 class="preview-card-title">
-              <tui-icon icon="@tui.star"></tui-icon>
-              User Review
-            </h3>
-            <a 
-              [routerLink]="REVIEWS_PATH | routePath:{ appSlug: appSlug() }:'string'"
-              tuiLink 
-              size="s">
-              View All Reviews
-            </a>
-          </div>
-          <top-review-card [review]="review" />
-        </ui-medium-card>
-      }
-    }
-  </div>
-</section>
+}

@@ -1,3 +1,6 @@
+import { RouterLink } from '@angular/router';
+import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ContentFeedItemComponent } from '@ui/content-feed';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
@@ -16,6 +19,7 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink, ShareToggleButtonComponent, FavoriteToggleButtonComponent,
     ContentFeedItemComponent,
     TuiChip,
     TuiButton,
@@ -62,34 +66,13 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
             </div>
           </div>
 
-          <button
-            class="suite-cta" 
-            tuiButton 
-            size="s" 
-            appearance="primary">
-              <tui-icon icon="@tui.grid"/>
-              Explore Suite
-          </button>
+          <a tuiButton size="s" [routerLink]="item.suiteLink">Explore Suite</a>
         </div>
       </div>
 
       <div class="item-actions" footer>
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.bookmark" />
-            Save Suite
-        </button>
-         <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.share" />
-            Share
-        </button>
+        <favorite-toggle-button type="suites" [slug]="suiteSlug" />
+         <share-toggle-button size="s" type="suites" [slug]="suiteSlug" [title]="item.suiteTitle" [path]="item.suiteLink" />
       </div>
     </content-feed-item>
   `,
@@ -171,4 +154,5 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
 })
 export class SuiteTeaserFeedItemComponent {
   @Input() item!: SuiteTeaserFeedItemVM;
+  get suiteSlug(): string { return this.item.suiteLink.split('/').filter(Boolean).pop() || this.item.id; }
 }

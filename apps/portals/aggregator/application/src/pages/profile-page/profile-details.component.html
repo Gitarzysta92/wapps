@@ -1,0 +1,55 @@
+@let member = profile();
+    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-label="Profile overview">
+      <div class="profile-summary">
+        <tui-avatar [src]="member.avatar?.uri || ''" size="xl">{{ member.name.slice(0, 2).toUpperCase() }}</tui-avatar>
+        <div class="profile-summary__details">
+          <h2>{{ member.name }}</h2>
+          <p class="profile-meta">Member ID: {{ member.id }}</p>
+          @if (member.badges?.length) {
+            <profile-badges [badges]="member.badges || []" />
+          }
+        </div>
+        @if (isLocalProfile()) {
+          <a tuiButton appearance="secondary" size="m" [routerLink]="editPath">Edit local profile</a>
+        }
+      </div>
+      @if (isLocalProfile()) {
+        <p class="profile-meta">This preview includes your saved profile changes from this browser.</p>
+      }
+    </section>
+
+    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-labelledby="about-title">
+      <header tuiHeader><h2 id="about-title">About</h2></header>
+      <p class="profile-bio">{{ member.bio || 'No bio has been added to this profile.' }}</p>
+      @if (member.location) {
+        <p><tui-icon icon="@tui.map-pin" /> {{ member.location }}</p>
+      }
+      @if (member.joinedAt) {
+        <p class="profile-meta">Joined {{ member.joinedAt | preferredDate }}</p>
+      }
+      @if (member.lastActiveAt) {
+        <p class="profile-meta">Last active {{ member.lastActiveAt | preferredDate }}</p>
+      }
+      @if (links().length) {
+        <nav aria-label="Profile links" class="profile-links">
+          @for (link of links(); track link.label) {
+            <a tuiButton appearance="secondary" size="s" [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+          }
+        </nav>
+      } @else {
+        <p class="profile-meta">No public links have been added.</p>
+      }
+    </section>
+
+    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-labelledby="activity-title">
+      <header tuiHeader><h2 id="activity-title">Activity</h2></header>
+      @if (stats().length) {
+        <dl class="profile-stats">
+          @for (stat of stats(); track stat.label) {
+            <div><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div>
+          }
+        </dl>
+      } @else {
+        <p class="profile-meta">Activity totals are not available in this local profile record.</p>
+      }
+    </section>

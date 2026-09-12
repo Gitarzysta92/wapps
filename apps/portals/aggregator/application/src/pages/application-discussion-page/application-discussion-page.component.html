@@ -1,3 +1,6 @@
+@if ((!app.isLoading() && !app.value()) || (!discussion.isLoading() && !discussion.value())) {
+  <section tuiAppearance="card-elevated" role="status"><h1>Discussion not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+} @else {
 <ui-page-header class="page-header">
   @if (discussion.isLoading() || app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
@@ -20,9 +23,7 @@
   } @else {
     <ui-page-meta slot="meta">
     <!-- TODO: it should be mapped outside template -->
-    <discussion-stats-badge
-        class="discussion-stats-badge"
-        [stats]="{ participants: discussion.value()?.repliesCount ?? 1, views: discussion.value()?.viewsCount ?? 1 }" />
+    <span>{{ discussion.value()?.replies?.length ?? 0 }} replies</span>
     </ui-page-meta>
   }
 </ui-page-header>
@@ -53,8 +54,8 @@
             <div slot="user-badges"></div>
           </ui-discussion-post-header>
           <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
-          <ui-discussion-voting-button slot="bottom-bar" />
-          <ui-discussion-reply-button slot="bottom-bar" />
+
+          <button slot="bottom-bar" tuiButton size="s" appearance="secondary" [disabled]="!localMode" (click)="composing.set(true)">Reply locally</button>
         </ui-discussion-post>
 
         <!-- Replies -->
@@ -70,8 +71,8 @@
             <div slot="user-badges"></div>
           </ui-discussion-post-header>
           <ui-discussion-expandable-post-content slot="content" [content]="$any(reply).content" />
-          <ui-discussion-voting-button slot="bottom-bar" />
-          <ui-discussion-reply-button slot="bottom-bar" />
+
+          <button slot="bottom-bar" tuiButton size="s" appearance="secondary" [disabled]="!localMode" (click)="composing.set(true)">Reply locally</button>
         </ui-discussion-post>
       </ui-discussion-thread>
     }
@@ -79,7 +80,17 @@
 </section>
 
 
-<!-- TODO: refactor this section -->
+@if (composing()) {
+  <form class="local-composer" (ngSubmit)="saveReply()">
+    <p>Replies are saved only in this browser and are not published.</p>
+    <label>Reply <textarea name="reply" [(ngModel)]="replyContent" required maxlength="5000" rows="5"></textarea></label>
+    @if (saveError) { <p role="alert">{{ saveError }}</p> }
+    <button tuiButton type="submit" [disabled]="!replyContent.trim()">Save Local Reply</button>
+    <button tuiButton type="button" appearance="secondary" (click)="composing.set(false)">Cancel</button>
+  </form>
+}
+@if (!localMode) { <p>Posting replies is unavailable here.</p> }
+<!-- Related discussions -->
 <section class="related-discussions">
   <h2 class="related-discussions__title">
     <span tuiAppearance="accent-bar-indigo"></span>
@@ -97,7 +108,7 @@
           <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
           
           <ui-card-header slot="header">
-            <h4 class="related-discussions__card-title">{{ discussion.title }}</h4>
+            <h4 class="related-discussions__card-title"><a [routerLink]="['/apps', appSlug(), 'discussions', discussion.slug]">{{ discussion.title }}</a></h4>
           </ui-card-header>
 
           <p class="related-discussions__card-excerpt">{{ discussion.content | slice:0:120 }}...</p>
@@ -126,67 +137,45 @@
 
 
 <!-- TODO: refactor this section -->
-<section class="top-authors">
-  <h2 class="top-authors__title">
-    <span tuiAppearance="accent-bar-warm"></span>
+<section class="top-authors" aria-labelledby="top-authors-title">
+  <h2 id="top-authors-title" class="top-authors__title">
+    <span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>
     Top Authors
   </h2>
 
-  <div class="top-authors__grid">
-    @if (relatedDiscussions.isLoading()) {
-      @for (i of [1, 2, 3]; track i) {
-        <div class="top-authors__card top-authors__card--skeleton" tuiAppearance="card-author">
-          <div class="top-authors__avatar-skeleton"></div>
-          <div class="top-authors__info-skeleton">
-            <div class="top-authors__name-skeleton"></div>
-            <div class="top-authors__stats-skeleton"></div>
-          </div>
-        </div>
-      }
-    } @else {
-      @for (author of topAuthors(); track author.id; let i = $index) {
-        <div 
-          class="top-authors__card" 
-          [tuiAppearance]="i === 0 ? 'card-author-featured' : 'card-author'">
-          <div [tuiAppearance]="i === 0 ? 'rank-badge-gold' : 'rank-badge'">
-            @if (i === 0) {
-              <tui-icon icon="@tui.crown" class="top-authors__crown crown-animated" />
-            } @else {
-              {{ i + 1 }}
-            }
-          </div>
-          
-          <tui-avatar 
-            [src]="author.avatar.url" 
-            [size]="i === 0 ? 'l' : 'm'"
-            class="top-authors__avatar"
-          />
-          
-          <div class="top-authors__info">
-            <h4 class="top-authors__name">{{ author.name }}</h4>
-            <div class="top-authors__stats">
-              <span class="top-authors__stat">
-                <tui-icon icon="@tui.message-square" class="top-authors__stat-icon" />
-                {{ author.postsCount }} posts
-              </span>
-              <span class="top-authors__stat">
-                <tui-icon icon="@tui.thumbs-up" class="top-authors__stat-icon" />
-                {{ author.likesCount }} likes
-              </span>
+  <ui-medium-card tuiAppearance="card-elevated" class="top-authors__panel" [attr.aria-busy]="relatedDiscussions.isLoading()">
+    <div slot="top-edge" tuiAppearance="accent-strip-indigo" aria-hidden="true"></div>
+    <ul class="top-authors__list">
+      @if (relatedDiscussions.isLoading()) {
+        @for (i of [1, 2, 3]; track i; let last = $last) {
+          <li>
+            <div class="top-authors__row" aria-hidden="true">
+              <tui-avatar size="m" [tuiSkeleton]="true" />
+              <div class="top-authors__info" [tuiSkeleton]="true">Loading author<br />Loading statistics</div>
             </div>
-          </div>
-
-          <div class="top-authors__badge">
-            @if (i === 0) {
-              <span tuiAppearance="badge-gold">Expert</span>
-            } @else if (i === 1) {
-              <span tuiAppearance="badge-silver">Pro</span>
-            } @else {
-              <span tuiAppearance="badge-bronze">Active</span>
-            }
-          </div>
-        </div>
+            @if (!last) { <ui-divider spacing="compact" /> }
+          </li>
+        }
+      } @else {
+        @for (author of topAuthors(); track author.id; let last = $last) {
+          <li>
+            <div class="top-authors__row">
+              <tui-avatar [src]="author.avatar.url" size="m" aria-hidden="true" />
+              <div class="top-authors__info">
+                <h3 class="top-authors__name">{{ author.name }}</h3>
+                <div class="top-authors__stats">
+                  <span><tui-icon icon="@tui.message-square" aria-hidden="true" />{{ author.postsCount }} {{ author.postsCount === 1 ? 'post' : 'posts' }}</span>
+                  <span><tui-icon icon="@tui.thumbs-up" aria-hidden="true" />{{ author.likesCount }} {{ author.likesCount === 1 ? 'like' : 'likes' }}</span>
+                </div>
+              </div>
+            </div>
+            @if (!last) { <ui-divider spacing="compact" /> }
+          </li>
+        } @empty {
+          <li class="top-authors__empty">No authors yet.</li>
+        }
       }
-    }
-  </div>
+    </ul>
+  </ui-medium-card>
 </section>
+}

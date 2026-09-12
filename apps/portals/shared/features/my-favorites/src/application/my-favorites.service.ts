@@ -26,15 +26,15 @@ export class MyFavoritesService implements IMyFavoritesStateProvider {
 
   public addToFavorites(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string): Observable<Result<boolean, Error>> {
     return this._myFavoritesProvider.addToFavorites(type, slug)
-      .pipe(tap(() => {
-        this._favoritesUpdated$.next();
+      .pipe(tap(result => {
+        if (result.ok) this._favoritesUpdated$.next();
       }));
   }
 
   public removeFromFavorites(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string): Observable<Result<boolean, Error>> {
     return this._myFavoritesProvider.removeFromFavorites(type, slug)
-      .pipe(tap(() => {
-        this._favoritesUpdated$.next();
+      .pipe(tap(result => {
+        if (result.ok) this._favoritesUpdated$.next();
       }));
   }
 

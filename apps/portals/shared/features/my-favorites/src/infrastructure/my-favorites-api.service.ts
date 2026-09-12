@@ -1,68 +1,70 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { Result } from "@foundation/standard";
-import { Observable, of } from "rxjs";
-import { CustomerFavoritesDto } from "@domains/customer/favorites";
-import { APPLICATIONS } from "@portals/shared/data";
-import { MY_FAVORITES_API_BASE_URL_PROVIDER } from "../application/infrastructure-providers.port";
-import { IMyFavoritesProvider } from "../application/my-favorites-provider.port";
+import { DOCUMENT } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
+import { Result } from '@foundation/standard';
+import { Observable, of } from 'rxjs';
+import { CustomerFavoritesDto } from '@domains/customer/favorites';
+import { APPLICATIONS } from '@portals/shared/data';
+import { IMyFavoritesProvider } from '../application/my-favorites-provider.port';
 
+type FavoriteType = keyof CustomerFavoritesDto;
+const STORAGE_KEY = 'wapps.favorites.v1';
+const FAVORITE_TYPES: FavoriteType[] = ['applications', 'suites', 'articles', 'discussions'];
+
+/** Local favorites adapter. Mutations survive reloads and never claim a remote save. */
 @Injectable()
 export class MyFavoritesApiService implements IMyFavoritesProvider {
+  private readonly document = inject(DOCUMENT);
+  private favorites = this.read();
 
-  private readonly _httpClient = inject(HttpClient);
-  private readonly _apiBaseUrl = inject(MY_FAVORITES_API_BASE_URL_PROVIDER);
-  
-  public getMyFavorites(): Observable<Result<CustomerFavoritesDto>> {
-    // TODO: Replace with actual API call
-    // Mock data using real application slugs
-    const favoriteAppSlugs = [
-      APPLICATIONS[0].slug, // photo-snap
-      APPLICATIONS[2].slug, // speedy-vpn
-      APPLICATIONS[4].slug, // mindful
-      APPLICATIONS[5].slug, // fit-track
-      APPLICATIONS[6].slug, // shop-ease
-    ];
-    
-    return of({
-      ok: true,
-      value: {
-        applications: favoriteAppSlugs,
-        suites: ["suite-1"],
-        articles: ["article-1", "article-2", "article-3"],
-        discussions: ["discussion-1"]
-      },
-    });
-    
-    // Real implementation:
-    // return this._httpClient.get<CustomerFavoritesDto>(`${this._apiBaseUrl}/favorites`).pipe(
-    //   map(data => ({ ok: true, value: data } as Result<CustomerFavoritesDto>)),
-    //   catchError(error => of({ ok: false, error } as Result<CustomerFavoritesDto>))
-    // );
+  getMyFavorites(): Observable<Result<CustomerFavoritesDto>> {
+    return of({ ok: true, value: this.copy(this.favorites) });
   }
 
-  public addToFavorites(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string): Observable<Result<boolean, Error>> {
-    // TODO: Replace with actual API call
-    console.log(`Adding ${slug} to ${type} favorites`);
-    return of({ ok: true, value: true });
-    
-    // Real implementation:
-    // return this._httpClient.post<void>(`${this._apiBaseUrl}/favorites/${type}/${slug}`, {}).pipe(
-    //   map(() => ({ ok: true, value: true } as Result<boolean, Error>)),
-    //   catchError(error => of({ ok: false, error } as Result<boolean, Error>))
-    // );
+  addToFavorites(type: FavoriteType, slug: string): Observable<Result<boolean, Error>> {
+    return this.update(type, slug, true);
   }
 
-  public removeFromFavorites(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string): Observable<Result<boolean, Error>> {
-    // TODO: Replace with actual API call
-    console.log(`Removing ${slug} from ${type} favorites`);
-    return of({ ok: true, value: true });
-    
-    // Real implementation:
-    // return this._httpClient.delete<void>(`${this._apiBaseUrl}/favorites/${type}/${slug}`).pipe(
-    //   map(() => ({ ok: true, value: true } as Result<boolean, Error>)),
-    //   catchError(error => of({ ok: false, error } as Result<boolean, Error>))
-    // );
+  removeFromFavorites(type: FavoriteType, slug: string): Observable<Result<boolean, Error>> {
+    return this.update(type, slug, false);
+  }
+
+  private update(type: FavoriteType, slug: string, add: boolean): Observable<Result<boolean, Error>> {
+    if (!FAVORITE_TYPES.includes(type) || !slug.trim()) {
+      return of({ ok: false, error: new Error('Choose an item to save.') });
+    }
+    const next = this.copy(this.favorites);
+    next[type] = add ? [...new Set([...next[type], slug])] : next[type].filter(item => item !== slug);
+    try {
+      const storage = this.document.defaultView?.localStorage;
+      if (!storage) throw new Error('Favorites storage is unavailable in this browser.');
+      storage.setItem(STORAGE_KEY, JSON.stringify(next));
+      this.favorites = next;
+      return of({ ok: true, value: true });
+    } catch {
+      return of({ ok: false, error: new Error('Could not save favorites. Check your browser storage settings and try again.') });
+    }
+  }
+
+  private read(): CustomerFavoritesDto {
+    const defaults: CustomerFavoritesDto = {
+      applications: APPLICATIONS.slice(0, 2).map(app => app.slug),
+      suites: [], articles: [], discussions: [],
+    };
+    try {
+      const saved = this.document.defaultView?.localStorage.getItem(STORAGE_KEY);
+      if (!saved) return defaults;
+      const value: unknown = JSON.parse(saved);
+      if (!value || typeof value !== 'object') return defaults;
+      const result = { applications: [], suites: [], articles: [], discussions: [] } as CustomerFavoritesDto;
+      for (const type of FAVORITE_TYPES) {
+        const items = (value as Record<string, unknown>)[type];
+        result[type] = Array.isArray(items) ? [...new Set(items.filter((item): item is string => typeof item === 'string' && item.length > 0))] : [];
+      }
+      return result;
+    } catch { return defaults; }
+  }
+
+  private copy(value: CustomerFavoritesDto): CustomerFavoritesDto {
+    return { applications: [...value.applications], suites: [...value.suites], articles: [...value.articles], discussions: [...value.discussions] };
   }
 }
-

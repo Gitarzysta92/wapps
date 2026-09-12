@@ -15,8 +15,9 @@ import { NavigationDeclarationDto } from "@portals/shared/boundary/navigation";
   ]
 })
 export class FooterPartialComponent {
-  @Input('primaryNavigation') navFirst: NavigationDeclarationDto[] = []
-  @Input('secondaryNavigation') navSecond: NavigationDeclarationDto[] = []
-  @Input('tertiaryNavigation') navThird: NavigationDeclarationDto[] = []
-  @Input('quaternaryNavigation') navFourth: NavigationDeclarationDto[] = []
+  readonly year = new Date().getFullYear();
+  @Input() primaryNavigation: NavigationDeclarationDto[] = []
+  @Input() secondaryNavigation: NavigationDeclarationDto[] = []
+  @Input() tertiaryNavigation: NavigationDeclarationDto[] = []
+  @Input() quaternaryNavigation: NavigationDeclarationDto[] = []
 }

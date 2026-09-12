@@ -40,7 +40,7 @@
 .related-discussions {
   margin-top: $space-12;
   padding: $space-8 0;
-  border-top: 1px solid var(--tui-base-03, #{$color-border});
+  border-top: 1px solid var(--tui-border-normal);
 
   &__title {
     display: flex;
@@ -54,7 +54,7 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: $space-6;
   }
 
@@ -116,7 +116,7 @@
 .top-authors {
   margin-top: $space-8;
   padding: $space-8 0;
-  border-top: 1px solid var(--tui-base-03, #{$color-border});
+  border-top: 1px solid var(--tui-border-normal);
 
   &__title {
     display: flex;
@@ -128,103 +128,42 @@
     margin-bottom: $space-6;
   }
 
-  &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space-4;
-  }
-
-  &__card {
+  &__list { list-style: none; padding: 0; margin: 0; }
+  &__row {
     display: flex;
     align-items: center;
     gap: $space-4;
-    padding: $space-4 $space-5;
-    min-width: 280px;
-    flex: 1;
-    position: relative;
-
-    &--skeleton {
-      min-height: 72px;
-    }
+    padding-block: $space-2;
+    tui-avatar { flex-shrink: 0; }
   }
-
-  &__crown {
-    font-size: $size-icon-sm;
-    color: #f59e0b;
-  }
-
-  &__avatar {
-    flex-shrink: 0;
-    border: 2px solid var(--tui-background-elevation-1);
-    box-shadow: $shadow-sm;
-  }
-
-  &__info {
-    flex: 1;
-    min-width: 0;
-  }
-
+  &__info { min-width: 0; flex: 1; }
   &__name {
     font-size: $font-size-md;
     font-weight: $font-weight-bold;
     color: var(--tui-text-primary);
     margin: 0 0 $space-1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
   }
-
   &__stats {
     display: flex;
-    gap: $space-3;
-  }
-
-  &__stat {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-1;
-    font-size: $font-size-xs;
+    flex-wrap: wrap;
+    gap: $space-2 $space-4;
+    font-size: $font-size-sm;
     color: var(--tui-text-secondary);
+    span { display: inline-flex; align-items: center; gap: $space-1; }
+    tui-icon { font-size: $size-icon-xs; }
   }
-
-  &__stat-icon {
-    font-size: $size-icon-xs;
-    color: var(--tui-accent);
-  }
-
-  &__badge {
-    flex-shrink: 0;
-  }
-
-  // Skeleton styles
-  &__avatar-skeleton {
-    width: $size-avatar-md;
-    height: $size-avatar-md;
-    background: var(--skeleton-background, #{$color-skeleton-bg});
-    border-radius: $radius-full;
-    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
-  }
-
-  &__info-skeleton {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: $space-2;
-  }
-
-  &__name-skeleton {
-    width: 120px;
-    height: 16px;
-    background: var(--skeleton-background, #{$color-skeleton-bg});
-    border-radius: $radius-sm;
-    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
-  }
-
-  &__stats-skeleton {
-    width: 80px;
-    height: 12px;
-    background: var(--skeleton-background, #{$color-skeleton-bg});
-    border-radius: $radius-sm;
-    @include skeleton-shimmer(var(--skeleton-shimmer-color, $color-white));
-  }
+  &__empty { color: var(--tui-text-secondary); }
 }
+
+.local-composer { display: grid; gap: 1rem; margin-block: 2rem; padding: 1.5rem; border-radius: 1rem; background: var(--tui-background-elevation-1); }
+.local-composer label { display: grid; gap: .5rem; }
+.local-composer input, .local-composer textarea { box-sizing: border-box; width: 100%; padding: .75rem; border: 1px solid var(--tui-border-normal); border-radius: .5rem; background: var(--tui-background-base); color: var(--tui-text-primary); font: inherit; }
+
+@media #{$layout-breakpoint-sm} {
+  .related-discussions__card-meta, .top-authors__stats { flex-wrap: wrap; }
+}
+
+.local-composer { min-width: 0; }
+.local-composer textarea { resize: vertical; }
+.local-composer input:focus-visible, .local-composer textarea:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }

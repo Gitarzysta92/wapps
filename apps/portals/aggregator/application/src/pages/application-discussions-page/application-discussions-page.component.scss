@@ -46,9 +46,17 @@
 }
 
 
-@media (max-width: 768px) {
+@media #{$layout-breakpoint-sm} {
   .discussions-intro {
     flex-direction: column;
     align-items: flex-start;
   }
 }
+
+.local-composer { display: grid; gap: 1rem; margin-block: 2rem; padding: 1.5rem; border-radius: 1rem; background: var(--tui-background-elevation-1); }
+.local-composer label { display: grid; gap: .5rem; }
+.local-composer input, .local-composer textarea { box-sizing: border-box; width: 100%; padding: .75rem; border: 1px solid var(--tui-border-normal); border-radius: .5rem; background: var(--tui-background-base); color: var(--tui-text-primary); font: inherit; }
+
+.local-composer { min-width: 0; }
+.local-composer textarea { resize: vertical; }
+.local-composer input:focus-visible, .local-composer textarea:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }

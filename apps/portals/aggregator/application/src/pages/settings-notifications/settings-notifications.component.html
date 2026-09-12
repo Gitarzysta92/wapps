@@ -1,22 +1,36 @@
 <ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
   <ui-breadcrumbs
     slot="top-bar"
     [breadcrumbs]="breadcrumb()">
   </ui-breadcrumbs>
+  }
 
-  <h1 uiPageTitle slot="title">Notification Settings</h1>
+  <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Notification Settings</h1>
 
-  <p slot="meta" class="page-description">
+  <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
     Control how and when you receive notifications
   </p>
 </ui-page-header>
 
-@if (isError()) {
+@if (isLoading()) {
+  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
+    @for (item of [1, 2, 3]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+    }
+  </section>
+} @else if (isError()) {
   <section class="error-section">
-    <p>Error loading preferences. Please try again.</p>
+    <p>Could not read preferences from this browser. Check storage access and reload to try again.</p>
   </section>
 } @else {
   <section class="settings-content">
+    <p class="page-description">These choices are saved only on this browser. They do not configure email or push delivery.</p>
+    @if (feedback()) {
+      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
+    }
     <!-- Email Notifications -->
     <div
       tuiAppearance="floating"
@@ -41,6 +55,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Enable Email Notifications"
               tuiSwitch
               [ngModel]="emailPreferences().enabled"
               (ngModelChange)="onEmailEnabledToggle($event)"
@@ -61,6 +76,7 @@
                   tuiButton
                   size="s"
                   [appearance]="emailPreferences().frequency === option.value ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="emailPreferences().frequency === option.value"
                   (click)="onEmailFrequencyChange(option.value)"
                 >
                   {{ option.label }}
@@ -78,6 +94,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="New Discussions"
                 tuiSwitch
                 [ngModel]="emailPreferences().newDiscussions"
                 (ngModelChange)="onEmailPreferenceToggle('newDiscussions', $event)"
@@ -93,6 +110,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Discussion Replies"
                 tuiSwitch
                 [ngModel]="emailPreferences().discussionReplies"
                 (ngModelChange)="onEmailPreferenceToggle('discussionReplies', $event)"
@@ -108,6 +126,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="New Articles"
                 tuiSwitch
                 [ngModel]="emailPreferences().newArticles"
                 (ngModelChange)="onEmailPreferenceToggle('newArticles', $event)"
@@ -123,6 +142,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Favorite Updates"
                 tuiSwitch
                 [ngModel]="emailPreferences().favoriteUpdates"
                 (ngModelChange)="onEmailPreferenceToggle('favoriteUpdates', $event)"
@@ -138,6 +158,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Weekly Digest"
                 tuiSwitch
                 [ngModel]="emailPreferences().weeklyDigest"
                 (ngModelChange)="onEmailPreferenceToggle('weeklyDigest', $event)"
@@ -153,6 +174,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="System Announcements"
                 tuiSwitch
                 [ngModel]="emailPreferences().systemAnnouncements"
                 (ngModelChange)="onEmailPreferenceToggle('systemAnnouncements', $event)"
@@ -186,6 +208,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Enable In-App Notifications"
               tuiSwitch
               [ngModel]="inAppPreferences().enabled"
               (ngModelChange)="onInAppEnabledToggle($event)"
@@ -202,6 +225,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Mentions"
                 tuiSwitch
                 [ngModel]="inAppPreferences().discussionMentions"
                 (ngModelChange)="onInAppPreferenceToggle('discussionMentions', $event)"
@@ -217,6 +241,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Replies"
                 tuiSwitch
                 [ngModel]="inAppPreferences().discussionReplies"
                 (ngModelChange)="onInAppPreferenceToggle('discussionReplies', $event)"
@@ -232,6 +257,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="Favorite Updates"
                 tuiSwitch
                 [ngModel]="inAppPreferences().favoriteUpdates"
                 (ngModelChange)="onInAppPreferenceToggle('favoriteUpdates', $event)"
@@ -247,6 +273,7 @@
             <div class="setting-control">
               <input
                 type="checkbox"
+              aria-label="System Alerts"
                 tuiSwitch
                 [ngModel]="inAppPreferences().systemAlerts"
                 (ngModelChange)="onInAppPreferenceToggle('systemAlerts', $event)"
@@ -281,6 +308,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Enable Push Notifications"
               tuiSwitch
               [ngModel]="pushPreferences().enabled"
               (ngModelChange)="onPushEnabledToggle($event)"
@@ -299,13 +327,13 @@
         type="button"
         (click)="onCancel()"
       >
-        Reset to Defaults
+        Reset to Saved
       </button>
       <button
         tuiButton
         appearance="primary"
         type="button"
-        [disabled]="isSaving()"
+        [disabled]="isSaving() || isLoading()"
         (click)="onSave()"
       >
         @if (isSaving()) {

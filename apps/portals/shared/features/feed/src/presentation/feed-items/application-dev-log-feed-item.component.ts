@@ -1,3 +1,8 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { FeedDatePipe } from '../actions/feed-date.pipe';
+import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
+import { RouterLink } from '@angular/router';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
@@ -6,12 +11,10 @@ import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { AppChangelogInfoComponent, AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
-import { DiscussionChipComponent } from '@portals/shared/features/discussion';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
-import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { AppChangelogDetailsComponent } from '@portals/shared/features/changelog';
+import { type ContextMenuItem } from '@ui/context-menu-chip';
+import { type VotingData } from '@portals/shared/features/voting';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 //TODO: this has to be changed to application-changelog-feed-item
 
@@ -22,7 +25,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   appLink: string;
   commentsNumber: number;
   contextMenu: ContextMenuItem[];
-  voting: VotingData;
+  voting?: VotingData;
   attribution?: AttributionInfoVM;
 }
 
@@ -31,6 +34,9 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FeedDatePipe,
+    FeedLocalVoteComponent,
+    RouterLink,
     TuiButton,
     TuiChip,
     TuiIcon,
@@ -41,14 +47,9 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     CardFooterComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
-    AppChangelogInfoComponent,
     AppChangelogDetailsComponent,
-    UpvoteChipComponent,
-    DownvoteChipComponent,
-    DiscussionChipComponent,
-    ContextMenuChipComponent,
-    VotingContainerDirective,
-    AttributionInfoBadgeComponent
+    FeedActionsMenuComponent,
+    FeedAttributionComponent
   ],
   styles: [`
     .changelog-details {
@@ -98,22 +99,12 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           slot="right-side"
           size="s"
           type="applications"
-          slug="item.appSlug"
-          title="item.appName"
+          [slug]="item.appSlug" [path]="item.appLink"
+          [title]="item.appName"
         />
-        <button
-          tuiButton
-          appearance="action-soft"
-          size="s"
-          slot="right-side"
-        >
-          <tui-icon icon="@tui.circle-arrow-right" />
-        </button>
+        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.appLink" [attr.aria-label]="'View application: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a>
       </ui-card-header>
-      <app-changelog-info
-        class="changelog-info"
-        [data]="{ version: item.version, releaseDate: item.releaseDate, description: item.description }"
-      />
+      <section class="changelog-info"><p>Version {{ item.version }} · {{ item.releaseDate | feedDate }}</p><p>{{ item.description }}</p></section>
       <ui-medium-card class="changelog-details">
         <tui-chip size="s" appearance="action-soft" slot="top-edge">
           <tui-icon icon="@tui.package-plus" /> What's New
@@ -122,33 +113,12 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       </ui-medium-card>
 
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <div
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+        <a tuiButton size="xs" appearance="flat" slot="right-side" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open discussions for ' + item.title">Discussions ({{ item.commentsNumber || 0 }})</a>
+        <feed-actions-menu
           slot="right-side"
-          #votingContainer="votingContainer"
-          [votingContainer]="item.voting">
-          <upvote-chip
-            [count]="votingContainer.upvotesCount()"
-            size="xs"
-            appearance="action-soft-flat"
-            (click)="votingContainer.upvote()"
-          />
-          <downvote-chip
-            [count]="votingContainer.downvotesCount()"
-            size="xs"
-            appearance="action-soft-flat"
-            (click)="votingContainer.downvote()"
-          />
-        </div>
-        <discussion-chip
-          slot="right-side"
-          [commentsCount]="item.commentsNumber"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-        <context-menu-chip
-          slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />

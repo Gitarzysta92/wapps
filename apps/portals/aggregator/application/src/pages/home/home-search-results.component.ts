@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { TuiLink } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import {
   FullSearchRedirectComponent,
-  SearchResultPreviewList,
   SearchResultListSkeleton,
   SearchResultVM
 } from '@ui/search-results';
@@ -20,12 +20,21 @@ import {
     FormsModule,
     RouterLink,
     FullSearchRedirectComponent,
-    SearchResultPreviewList,
+    TuiLink,
     SearchResultListSkeleton,
     TuiBadge,
     TuiAvatar,
   ],
   styles: [`
+    ul { list-style: none; padding: 0; margin: 0; }
+    .group-header, .result-entry {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 1.25rem; border-radius: var(--tui-radius-m);
+    }
+    .group-name { flex: 1; padding-left: 0.5rem; }
+    .result-entry { font-size: 0.875rem; }
+    .result-entries { padding-bottom: 0.5rem; }
+
     .custom-content {
       display: flex;  
       align-items: center;
@@ -59,17 +68,28 @@ import {
           [queryParams]="searchResult.query">
         </a>
         <ul class="preview-list" 
-          [search-result-preview-list]="searchResult.groups">
-          <ng-template #customContent let-entry>
+          >
+          @for (group of searchResult.groups; track group.id) {
+            <li>
+              <a class="group-header" tuiLink appearance="action-soft"
+                [iconStart]="group.icon" iconEnd="@tui.chevron-right"
+                [routerLink]="searchResult.link"
+                [queryParams]="groupQuery(searchResult.query, group.type)">
+                <span class="group-name">{{ group.name }}</span><span>View all</span>
+              </a>
+              <ul class="result-entries">
+              @for (entry of group.entries; track entry.link) {
+                <li><a class="result-entry" tuiLink appearance="link-soft"
+                  [routerLink]="entry.link" iconEnd="@tui.chevron-right">
             <div class="custom-content">
-              <tui-avatar size="s" [src]="entry.coverImageUrl" />
+              <tui-avatar size="s" [src]="entry.coverImageUrl.url" />
               <div class="entry-info">
                 <div class="entry-name">
                   {{ entry.name }}
                 </div>
                 @if (entry.tags && entry.tags.length > 0) {
                   <div class="tags">
-                    @for (tag of entry.tags.slice(0, 3); track tag.id) {
+                    @for (tag of entry.tags.slice(0, 3); track tag.name) {
                       <tui-badge 
                         size="s"
                         appearance="secondary">
@@ -80,7 +100,11 @@ import {
                 }
               </div>
             </div>
-          </ng-template>
+                </a></li>
+              }
+              </ul>
+            </li>
+          }
         </ul>
       }
       @else {
@@ -90,6 +114,10 @@ import {
   `
 })
 export class HomeSearchResultsComponent {
+  protected groupQuery(query: Record<string, string>, type: string): Record<string, string> {
+    return { ...query, type: type.toLowerCase() };
+  }
+
   @Input({ required: true }) searchResults$!: Observable<SearchResultVM>;
   @Input({ required: true }) loadingResults!: boolean;
 }
