@@ -1,3 +1,6 @@
+@if (!app.isLoading() && !app.value()) {
+  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+} @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
@@ -63,9 +66,9 @@
         slot="footer"
         tuiButton 
         size="s" 
-        appearance="primary">
+        appearance="primary" disabled title="Review publishing is not connected">
         <tui-icon icon="@tui.pen"/>
-        Write a Review
+        Write a Review (unavailable)
       </button>
     </ui-medium-card>
   }
@@ -73,6 +76,8 @@
 
 <!-- Reviews List Section -->
 <section class="reviews-section">
+  <p>Sample reviews. Helpful marks are saved only in this browser.</p>
+  @if (actionError()) { <p role="alert">{{ actionError() }}</p> }
   <h2 class="section-title">
     <span tuiAppearance="accent-bar-indigo"></span>
     All Reviews
@@ -120,11 +125,11 @@
           <p class="review-content">"{{ review.content }}"</p>
 
           <div slot="footer" class="review-footer">
-            <button tuiButton appearance="secondary" size="xs">
+            <button tuiButton type="button" [appearance]="helpfulIds().includes(review.id) ? 'primary' : 'secondary'" size="xs" [disabled]="!localMode || !helpfulLoaded()" [attr.aria-pressed]="helpfulIds().includes(review.id)" (click)="toggleHelpful(review.id)">
               <tui-icon icon="@tui.thumbs-up" />
-              Helpful ({{ review.helpfulCount }})
+              Helpful ({{ review.helpfulCount + (helpfulIds().includes(review.id) ? 1 : 0) }})
             </button>
-            <button tuiButton appearance="flat" size="xs">
+            <button tuiButton appearance="flat" size="xs" disabled title="Reporting is unavailable for sample reviews">
               <tui-icon icon="@tui.flag" />
               Report
             </button>
@@ -134,10 +139,14 @@
     }
   </div>
 
+  @if (hasMoreReviews()) {
   <div class="load-more">
-    <button tuiButton appearance="secondary">
+    <button tuiButton appearance="secondary" (click)="loadMore()">
       <tui-icon icon="@tui.chevron-down"></tui-icon>
       Load More Reviews
     </button>
   </div>
+  } @else if (!reviewsData.isLoading()) { <p role="status">All available reviews are shown.</p> }
 </section>
+
+}

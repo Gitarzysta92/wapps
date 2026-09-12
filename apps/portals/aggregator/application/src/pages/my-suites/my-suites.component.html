@@ -1,4 +1,19 @@
-<div class="my-suites-page">
-  <h1>My Suites</h1>
-  <p>Manage your application suites</p>
-</div>
+<main class="my-suites-page">
+  <header><div><h1>My suites</h1><p>Your own collections of applications.</p></div><a tuiButton size="m" routerLink="/suites/create">Create a suite</a></header>
+  <p class="notice">Local drafts are stored in this browser only. They are not published or synced to your account, and clearing browser data removes them.</p>
+  <div class="suite-grid">
+    @for (suite of suites; track suite.slug) {
+      <article class="suite-card">
+        <tui-badge>Local draft</tui-badge>
+        <h2><a tuiLink [routerLink]="['/suites', suite.slug]">{{ suite.title }}</a></h2>
+        @if (suite.description) { <p class="description">{{ suite.description }}</p> }
+        <div class="avatars">@for (app of suite.apps.slice(0, 5); track app.slug) { <tui-avatar [src]="app.logo" [attr.aria-label]="app.name" size="m" /> }</div>
+        <p>{{ suite.apps.length }} {{ suite.apps.length === 1 ? 'application' : 'applications' }}</p>
+        <a tuiLink [routerLink]="['/suites', suite.slug]">Open suite →</a>
+      </article>
+    } @empty {
+      <section class="empty-state"><h2>No suites yet</h2><p>Choose a few applications and save your first collection.</p><a tuiLink routerLink="/suites/create">Create your first suite →</a></section>
+    }
+  </div>
+  <a tuiLink routerLink="/suites" class="browse-link">Browse all suites</a>
+</main>

@@ -1,3 +1,6 @@
+@if (!app.isLoading() && !app.value()) {
+  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+} @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
@@ -19,9 +22,7 @@
   }
 
   <ui-page-meta slot="meta">
-    <discussions-stats-badge
-      class="discussion-stats-badge"
-      [appSlug]="appSlug()" />
+    <span>{{ totalStats().topics }} discussions · {{ totalStats().totalReplies }} replies</span>
   </ui-page-meta> 
 </ui-page-header>
 
@@ -29,9 +30,9 @@
 <section commonSection class="discussions-intro">
   <ui-notice-card slot="content">
     <p slot="left">Join the community discussion about {{ app.value()?.name ?? 'this application' }}.</p>
-    <button slot="right" tuiButton appearance="primary">
+    <button slot="right" tuiButton appearance="primary" [disabled]="!localMode" (click)="composing.set(!composing())">
       <tui-icon icon="@tui.plus"></tui-icon>
-      Start New Discussion
+      Start Local Discussion
     </button>
   </ui-notice-card>
 </section>
@@ -66,12 +67,23 @@
           class="pinned-discussion-card"
           appearance="card-elevated"
           [data]="discussion"
-          (click)="navigateToDiscussion(discussion)" />
+          role="link" tabindex="0" (keydown.enter)="navigateToDiscussion(discussion)" (click)="navigateToDiscussion(discussion)" />
       }
     </div>
   </section>
 }
 
+@if (!localMode) { <p>Creating discussions is unavailable here.</p> }
+@if (composing()) {
+  <form class="local-composer" (ngSubmit)="saveDiscussion()">
+    <p>Saved only in this browser. This discussion will not be published.</p>
+    <label>Title <input name="title" [(ngModel)]="title" required maxlength="120" /></label>
+    <label>Discussion <textarea name="content" [(ngModel)]="content" required maxlength="5000" rows="5"></textarea></label>
+    @if (error) { <p role="alert">{{ error }}</p> }
+    <button tuiButton type="submit" [disabled]="!title.trim() || !content.trim()">Save Local Discussion</button>
+    <button tuiButton type="button" appearance="secondary" (click)="composing.set(false)">Cancel</button>
+  </form>
+}
 <ui-divider />
 
 <section commonSection class="recent-discussions-section">
@@ -88,13 +100,15 @@
           class="unpinned-discussion-card" />
       }
     } @else {
+      @if (!unpinnedDiscussions().length) { <p>No recent discussions yet.</p> }
       @for (discussion of unpinnedDiscussions(); track discussion.id) {
         <discussion-medium-card
           class="unpinned-discussion-card"
           appearance="card-elevated"
           [data]="discussion"
-          (click)="navigateToDiscussion(discussion)" />
+          role="link" tabindex="0" (keydown.enter)="navigateToDiscussion(discussion)" (click)="navigateToDiscussion(discussion)" />
       }
     }
   </div>
 </section>
+}

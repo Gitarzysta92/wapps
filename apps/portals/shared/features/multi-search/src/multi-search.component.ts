@@ -1,7 +1,8 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, HostListener } from "@angular/core";
-import { TuiLoader } from "@taiga-ui/core";
-import { first, map, Observable, of, startWith, switchMap, tap } from "rxjs";
+import { ChangeDetectionStrategy, Component, inject, HostListener, ViewChild, AfterViewInit, DestroyRef, ChangeDetectorRef, ElementRef } from "@angular/core";
+import { TuiButton, TuiLoader } from "@taiga-ui/core";
+import { catchError, distinctUntilChanged, map, Observable, of, shareReplay, startWith, switchMap, tap } from "rxjs";
 import { SearchResultVM } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
 import { SearchBarComponent } from "@ui/search-bar";
@@ -18,9 +19,31 @@ import { DiscoverySearchResultType } from "@domains/discovery";
     CommonModule,
     SearchBarComponent,
     TuiLoader,
+    TuiButton,
   ],
 })
-export class MultiSearchComponent {
+export class MultiSearchComponent implements AfterViewInit {
+  @ViewChild(SearchBarComponent) private searchBar!: SearchBarComponent;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly element = inject(ElementRef<HTMLElement>);
+
+  ngAfterViewInit(): void {
+    this.initialValue$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(value => {
+      if (this.searchBar.form.controls.search.value !== value) {
+        this.searchBar.form.controls.search.setValue(value, { emitEvent: false });
+      }
+    });
+  }
+
+  public submitSearch(event: Event): void {
+    event.preventDefault();
+    const phrase = this.searchBar.form.controls.search.value?.trim() ?? '';
+    if (!phrase) return;
+    this.closeDropdown();
+    this.state.submitSearch?.(phrase);
+  }
+
 
   public readonly state = inject(MULTISEARCH_STATE_PROVIDER);
   private readonly _searchResultsProvider = inject(MULTISEARCH_RESULTS_PROVIER);
@@ -29,21 +52,29 @@ export class MultiSearchComponent {
   public isFocused = false;
   public loadingResults = false;
   
-  public readonly searchResults$: Observable<SearchResultVM> = this.state.queryParamMap$.pipe(
-    tap(p => this.loadingResults = !!p[this._acceptedQueryParam]),
-    map(p => ({ [this._acceptedQueryParam]: p[this._acceptedQueryParam] })),
-    switchMap(p => p ? this._searchResultsProvider.search(p) : of({ ok: true as const, value: { itemsNumber: 0, groups: [], link: "", query: {} } })),
-    map(r => r.ok ? this._mapToSearchResultVM(r.value) : { itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
-    startWith({ itemsNumber: 0, groups: [], link: "", query: {} } as SearchResultVM),
-    tap(() => this.loadingResults = false)
-  )
+  private readonly searchPhrase$ = this.state.queryParamMap$.pipe(
+    map(p => (p[this._acceptedQueryParam] ?? '').trim()),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
-  private readonly _searchPharse = this.state.queryParamMap$.pipe(
-    map(p => this._mapToSearchString(p)))
+  public readonly searchResults$: Observable<SearchResultVM> = this.searchPhrase$.pipe(
+    switchMap(phrase => {
+      const empty: SearchResultVM = { itemsNumber: 0, groups: [], link: '', query: {} };
+      this.loadingResults = !!phrase;
+      this.changeDetector.markForCheck();
+      return phrase ? this._searchResultsProvider.search({ [this._acceptedQueryParam]: phrase }).pipe(
+        map(result => result.ok ? this._mapToSearchResultVM(result.value) : empty),
+        catchError(() => of(empty)),
+        tap(() => { this.loadingResults = false; this.changeDetector.markForCheck(); }),
+        startWith(empty),
+      ) : of(empty);
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
-  public readonly searchPhraseProvided$ = this._searchPharse.pipe(map(p => !!p));
-
-  public readonly initialValue$ = this._searchPharse.pipe(first());
+  public readonly searchPhraseProvided$ = this.searchPhrase$.pipe(map(phrase => !!phrase));
+  public readonly initialValue$ = this.searchPhrase$;
 
   public readonly recentSearches$: Observable<MultiSearchRecentSearchesVM | null> = this._searchResultsProvider.getRecentSearches().pipe(
     map(r => r.ok ? r.value : null),
@@ -62,20 +93,23 @@ export class MultiSearchComponent {
     this.state.setQueryParams({ [this._acceptedQueryParam]: search });
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    const searchContainer = target.closest('.search-container');
-    
-    if (!searchContainer && this.isFocused) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.closeDropdown();
-    }
+  @HostListener('keydown.escape')
+  onEscape(): void {
+    this.closeDropdown();
   }
 
-  private _mapToSearchString(p: { [key: string]: string; }): string {
-    return p[this._acceptedQueryParam] ?? '';
+  @HostListener('focusout', ['$event'])
+  onFocusOut(event: FocusEvent): void {
+    if (!this.element.nativeElement.contains(event.relatedTarget as Node)) this.closeDropdown();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const searchContainer = this.element.nativeElement.contains(event.target as Node);
+    
+    if (!searchContainer && this.isFocused) {
+      this.closeDropdown();
+    }
   }
 
   //TODO: code smell

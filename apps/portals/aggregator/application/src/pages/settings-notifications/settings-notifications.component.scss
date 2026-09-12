@@ -1,5 +1,11 @@
 @use 'ui/design-system/src/styles' as *;
 
+// The app shell owns page width; settings fill its content column.
+:host {
+  display: block;
+  min-width: 0;
+}
+
 .page-header {
   margin-top: $space-20;
 }
@@ -24,7 +30,6 @@
   flex-direction: column;
   gap: $space-6;
   margin-top: $space-8;
-  max-width: 800px;
 }
 
 .settings-card {
@@ -143,3 +148,8 @@
 }
 
 
+
+.settings-feedback {
+  color: var(--tui-text-positive);
+  &--error { color: var(--tui-text-negative); }
+}

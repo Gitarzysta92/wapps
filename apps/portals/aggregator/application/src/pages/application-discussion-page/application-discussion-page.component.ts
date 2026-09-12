@@ -1,15 +1,18 @@
-import { Component, computed, input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { TuiButton } from '@taiga-ui/core';
+import { LOCAL_APPLICATION_DATA, LocalDiscussionsService } from '@portals/shared/features/application-overview';
+import { Component, computed, input, inject, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { of, delay } from 'rxjs';
-import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
+import { of } from 'rxjs';
+import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
+import { DividerComponent } from '@ui/layout';
 import { 
   DiscussionPostComponent, 
   DiscussionThreadComponent,
   DiscussionPostHeaderComponent,
   DiscussionExpandablePostContentComponent,
-  DiscussionVotingButtonComponent,
-  DiscussionReplyButtonComponent,
   DiscussionThreadSkeletonComponent,
 } from '@ui/discussion';
 import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
@@ -36,20 +39,16 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
   selector: 'app-discussion-page',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, FormsModule, RouterLink, TuiButton,
     SlicePipe,
     TuiAppearance,
-    TuiAvatar,
-    TuiBadge,
+    TuiAvatar, TuiSkeleton, DividerComponent,
     TuiIcon,
     DiscussionThreadComponent,
     DiscussionPostComponent,
     DiscussionPostHeaderComponent,
     DiscussionExpandablePostContentComponent,
-    DiscussionVotingButtonComponent,
-    DiscussionReplyButtonComponent,
     DiscussionThreadSkeletonComponent,
-    DiscussionStatsBadgeComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,
@@ -77,25 +76,33 @@ export class ApplicationDiscussionPageComponent implements
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
       const app = APPLICATIONS.find(a => a.slug === appSlug) ?? null;
-      return of(app).pipe(delay(1500));
+      return of(app);
     }
   });
 
-  public readonly discussion = rxResource({
-    request: () => this.discussionSlug(),
-    loader: ({ request: discussionSlug }) => {
-      const discussion = DISCUSSIONS.find(d => d.slug === discussionSlug) ?? null;
-      return of(discussion).pipe(delay(1000));
-    }
-  });
-
-  public readonly relatedDiscussions = rxResource({
-    request: () => this.discussionSlug(),
-    loader: ({ request: discussionSlug }) => {
-      const discussion = DISCUSSIONS.filter(d => d.slug !== discussionSlug) ?? null;
-      return of(discussion).pipe(delay(1000));
-    }
-  });
+  readonly localMode = inject(LOCAL_APPLICATION_DATA);
+  readonly localData = inject(LocalDiscussionsService);
+  readonly composing = signal(false);
+  replyContent = '';
+  saveError = '';
+  constructor() { effect(() => { this.appSlug(); this.discussionSlug(); this.composing.set(false); this.replyContent = ''; this.saveError = ''; }); }
+  readonly discussion = {
+    isLoading: () => this.app.isLoading(),
+    value: computed(() => this.localData.threads(this.appSlug()).find(d => d.slug === this.discussionSlug()) ?? null)
+  };
+  readonly relatedDiscussions = {
+    isLoading: () => this.app.isLoading(),
+    value: computed(() => this.localData.threads(this.appSlug()).filter(d => d.slug !== this.discussionSlug()))
+  };
+  saveReply() {
+    if (!this.localMode || !this.appSlug() || !this.discussionSlug()) return;
+    try {
+      this.localData.reply(this.appSlug()!, this.discussionSlug()!, this.replyContent);
+      this.replyContent = '';
+      this.composing.set(false);
+      this.saveError = '';
+    } catch { this.saveError = 'Could not save on this device. Check your text and browser storage, then try again.'; }
+  }
 
   // Derive top authors from discussions
   public readonly topAuthors = computed(() => {
@@ -138,7 +145,7 @@ export class ApplicationDiscussionPageComponent implements
   });
 
   public readonly breadcrumbData = computed(() => {
-    const breadcrumb = this.breadcrumb();
+    const breadcrumb = this.breadcrumb().map(item => ({ ...item, path: '/' + item.path.replace(/^\/+/, '').replace(':appSlug', encodeURIComponent(this.appSlug() ?? '')).replace(':discussionSlug', encodeURIComponent(this.discussionSlug() ?? '')) }));
     const discussion = this.discussion.value();
     const app = this.app.value();
     

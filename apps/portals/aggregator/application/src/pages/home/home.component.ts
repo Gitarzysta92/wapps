@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { HomeSearchProviderService } from './home-search-provider.service';
+import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
@@ -6,9 +7,7 @@ import {
   MultiSearchComponent,
   MULTISEARCH_RESULTS_PROVIER,
   MULTISEARCH_STATE_PROVIDER,
-  MULTISEARCH_ACCEPTED_QUERY_PARAM,
-  MultiSearchResultVM,
-  MultiSearchRecentSearchesVM
+  MULTISEARCH_ACCEPTED_QUERY_PARAM
 } from '@portals/shared/features/multi-search';
 import { HomeSearchResultsComponent } from './home-search-results.component';
 import { HomeRecentSearchesComponent } from './home-recent-searches.component';
@@ -44,10 +43,13 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { NAVIGATION } from "../../navigation";
-import { DISCOVERY_RECENT_SEARCHES_DATA, DISCOVERY_SEARCH_PREVIEW_DATA, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
+import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 
-import { DiscoverySearchResultType } from '@domains/discovery';
-import { delay, map, of, tap } from "rxjs";
+import { combineLatest, map, take } from "rxjs";
+import { PreferencesService } from '@portals/shared/features/preferences';
+import { MyFavoritesService } from '@portals/shared/features/my-favorites';
+import { CATALOG_ENTRIES } from '@portals/shared/features/listing';
+import { sortHomeFeed } from './home-feed-sort';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { FILTERS } from "../../filters";
 
@@ -90,11 +92,16 @@ type RegisteredFeedItem = Array<
     { provide: MULTISEARCH_STATE_PROVIDER, useClass: HomePageStateService },
     { provide: MULTISEARCH_ACCEPTED_QUERY_PARAM, useValue: FILTERS.search },
     {
-      provide: FEED_PROVIDER_TOKEN, useValue: {
-      getFeedPage: () => of({
+      provide: FEED_PROVIDER_TOKEN, useFactory: () => {
+        const preferences = inject(PreferencesService);
+        const favorites = inject(MyFavoritesService);
+        return {
+      getFeedPage: () => combineLatest([preferences.preferences$, favorites.myFavorites$]).pipe(
+        take(1),
+        map(([savedPreferences, savedFavorites]) => ({
         ok: true,
         value: {
-          items: (FEED_ITEM_EXAMPLES as RegisteredFeedItem).map(i => {
+          items: sortHomeFeed((structuredClone(FEED_ITEM_EXAMPLES) as RegisteredFeedItem).map(i => {
             switch (i.type) {
               case APPLICATION_HEALTH_FEED_ITEM_SELECTOR:
                 i.appLink = buildRoutePath(NAVIGATION.applicationHealth.path, { appSlug: i.appSlug });
@@ -132,92 +139,15 @@ type RegisteredFeedItem = Array<
                 //throw new Error(`Unknown feed item type: ${i.type}`);
             }
             return i;
-          }),
-          hasMore: true,
-          nextPage: 1
+          }), savedPreferences.data.content.feedSortOrder, savedFavorites.data, CATALOG_ENTRIES),
+          hasMore: false,
+          nextPage: undefined
         }
-      })
+      })))
+        };
       }
     },
-    {
-      provide: MULTISEARCH_RESULTS_PROVIER,
-      useValue: ({
-        getRecentSearches: () => of({ ok: true, value: DISCOVERY_RECENT_SEARCHES_DATA })
-          .pipe(
-            map(result => {
-              if (result.ok) {
-                const searchParam = FILTERS.search;
-                return {
-                  ok: true as const,
-                  value: {
-                    searches: result.value.searches.map((search) => {
-                      const searchQuery = search.query[searchParam] || '';
-                      return {
-                        ...search,
-                        name: searchQuery,
-                        link: NAVIGATION.search.path
-                      };
-                    })
-                  } as MultiSearchRecentSearchesVM
-                };
-              }
-              return result;
-            }),
-            delay(100),
-            tap(console.log)
-          ),
-        search: () => of({ ok: true, value: DISCOVERY_SEARCH_PREVIEW_DATA as unknown as MultiSearchResultVM })
-          .pipe(
-            map(result => {
-              if (result.ok) {
-                result.value.link = NAVIGATION.search.path;
-                const groups = result.value.groups.map((group, groupIndex) => {
-                  let groupName = 'Unknown';
-                  switch (group.type) {
-                    case DiscoverySearchResultType.Application:
-                      groupName = 'Applications';
-                      break;
-                    case DiscoverySearchResultType.Article:
-                      groupName = 'Articles';
-                      break;
-                    case DiscoverySearchResultType.Suite:
-                      groupName = 'Suites';
-                      break;
-                  }
-                  return {
-                    ...group,
-                    id: groupIndex,
-                    name: groupName,
-                    link: buildRoutePath(NAVIGATION.search.path, { search: group.type }),
-                    entries: group.entries.map((entry, entryIndex) => {
-                      let entryLink = '';
-                      switch (group.type) {
-                        case DiscoverySearchResultType.Application:
-                          entryLink = buildRoutePath(NAVIGATION.application.path, { appSlug: entry.slug });
-                          break;
-                        case DiscoverySearchResultType.Article:
-                          entryLink = buildRoutePath(NAVIGATION.article.path, { articleSlug: entry.slug });
-                          break;
-                        case DiscoverySearchResultType.Suite:
-                          entryLink = buildRoutePath(NAVIGATION.suite.path, { suiteSlug: entry.slug });
-                          break;
-                      }
-                      return {
-                        ...entry,
-                        id: entryIndex,
-                        link: entryLink
-                      };
-                    })
-                  };
-                });
-                return { ok: true as const, value: { ...result.value, groups } };
-              }
-              return result;
-            }),
-            delay(1000),
-          )
-      })
-    }
+    { provide: MULTISEARCH_RESULTS_PROVIER, useClass: HomeSearchProviderService }
   ]
 })
 export class HomePageComponent {

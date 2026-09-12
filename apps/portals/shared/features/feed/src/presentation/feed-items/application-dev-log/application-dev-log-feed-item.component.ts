@@ -1,3 +1,5 @@
+import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
+import { FeedDatePipe } from '../../actions/feed-date.pipe';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ContentFeedItemComponent } from '@ui/content-feed';
@@ -18,6 +20,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ShareToggleButtonComponent,
+    FeedDatePipe,
     ContentFeedItemComponent,
     TuiChip,
     TuiButton,
@@ -49,7 +53,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
               </div>
               <div class="release-date">
                 <tui-icon icon="@tui.calendar" class="date-icon" />
-                <span>{{ item.releaseDate }}</span>
+                <span>{{ item.releaseDate | feedDate }}</span>
               </div>
               <p class="version-description">{{ item.description }}</p>
             </div>
@@ -82,22 +86,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       </div>
 
       <div class="item-actions" footer>
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.download" />
-            Update Now
-        </button>
-         <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.share" />
-            Share
-        </button>
+        <a tuiButton appearance="flat" size="s" [routerLink]="item.appLink">View application</a>
+         <share-toggle-button size="s" type="applications" [slug]="item.appSlug" [title]="item.appName" />
       </div>
     </content-feed-item>
   `,

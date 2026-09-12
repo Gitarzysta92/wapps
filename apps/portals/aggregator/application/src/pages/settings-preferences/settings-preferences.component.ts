@@ -1,12 +1,13 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton, TuiIcon, TuiTextfield } from '@taiga-ui/core';
-import { TuiChip, TuiRadioList, TuiSwitch } from '@taiga-ui/kit';
-import { TuiCardLarge, TuiForm, TuiHeader } from '@taiga-ui/layout';
-import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
-import { PREFERENCES_STATE_PROVIDER } from '@portals/shared/features/preferences';
+import { TuiSkeleton, TuiSwitch } from '@taiga-ui/kit';
+import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
+import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
+import { PREFERENCES_STATE_PROVIDER, PreferencesService } from '@portals/shared/features/preferences';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
-import { BreadcrumbsComponent } from '@ui/breadcrumbs';
+import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import {
   ThemePreference,
   DateFormatPreference,
@@ -26,19 +27,18 @@ import {
     TuiAppearance,
     TuiButton,
     TuiCardLarge,
-    TuiChip,
-    TuiForm,
+    TuiSkeleton,
     TuiHeader,
     TuiIcon,
-    TuiRadioList,
     TuiSwitch,
     TuiTextfield,
     PageHeaderComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
+    BreadcrumbsSkeletonComponent,
   ]
 })
-export class SettingsPreferencesPageComponent {
+export class SettingsPreferencesPageComponent implements routingDataConsumerFrom<IBreadcrumbRouteData> {
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
 
   private readonly preferencesStateProvider = inject(PREFERENCES_STATE_PROVIDER);
@@ -81,45 +81,73 @@ export class SettingsPreferencesPageComponent {
   protected readonly displayPreferences = signal({ ...DEFAULT_DISPLAY_PREFERENCES });
   protected readonly contentPreferences = signal({ ...DEFAULT_CONTENT_PREFERENCES });
 
+  private readonly preferencesService = inject(PreferencesService);
+  protected readonly feedback = signal('');
+  protected readonly saveError = signal(false);
+
+  constructor() {
+    effect(() => {
+      const saved = this.preferences();
+      this.displayPreferences.set(structuredClone(saved.display));
+      this.contentPreferences.set(structuredClone(saved.content));
+    });
+  }
+
   // Saving state
   protected readonly isSaving = signal(false);
 
   protected onThemeChange(theme: ThemePreference): void {
+    this.feedback.set('');
     this.displayPreferences.update(prefs => ({ ...prefs, theme }));
   }
 
   protected onDateFormatChange(dateFormat: DateFormatPreference): void {
+    this.feedback.set('');
     this.displayPreferences.update(prefs => ({ ...prefs, dateFormat }));
   }
 
   protected onViewModeChange(defaultView: ViewModePreference): void {
+    this.feedback.set('');
     this.displayPreferences.update(prefs => ({ ...prefs, defaultView }));
   }
 
   protected onFeedSortChange(feedSortOrder: FeedSortPreference): void {
+    this.feedback.set('');
     this.contentPreferences.update(prefs => ({ ...prefs, feedSortOrder }));
   }
 
   protected onItemsPerPageChange(itemsPerPage: number): void {
+    this.feedback.set('');
     this.displayPreferences.update(prefs => ({ ...prefs, itemsPerPage }));
   }
 
   protected onMatureContentToggle(showMatureContent: boolean): void {
+    this.feedback.set('');
     this.contentPreferences.update(prefs => ({ ...prefs, showMatureContent }));
   }
 
-  protected onSave(): void {
+  protected async onSave(): Promise<void> {
+    if (this.isSaving() || this.isLoading()) return;
     this.isSaving.set(true);
-    // TODO: Implement save logic
-    setTimeout(() => {
+    this.feedback.set('');
+    this.saveError.set(false);
+    try {
+      const result = await firstValueFrom(this.preferencesService.updatePreferences({ display: this.displayPreferences(), content: this.contentPreferences() }));
+      if (!result.ok || !result.value) throw new Error('Save failed');
+      this.feedback.set('Saved on this browser.');
+    } catch {
+      this.saveError.set(true);
+      this.feedback.set('Could not save. Browser storage may be unavailable or full. Your changes are still in the form.');
+    } finally {
       this.isSaving.set(false);
-    }, 1000);
+    }
   }
 
   protected onCancel(): void {
-    // Reset form to original values
-    this.displayPreferences.set({ ...DEFAULT_DISPLAY_PREFERENCES });
-    this.contentPreferences.set({ ...DEFAULT_CONTENT_PREFERENCES });
+    const saved = this.preferences();
+    this.displayPreferences.set(structuredClone(saved.display));
+    this.contentPreferences.set(structuredClone(saved.content));
+    this.saveError.set(false);
+    this.feedback.set('Restored saved settings.');
   }
 }
-

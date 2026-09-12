@@ -88,15 +88,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
           </div>
           <span class="score-value">{{ item.aggregatedScore.toFixed(1) }}/5</span>
         </div>
-        <button 
-          class="action-btn"
-          tuiButton
-          size="s"
-          appearance="flat">
-            <tui-icon icon="@tui.message-circle" />
-            See Reviews
-            <span class="reviews-count">({{ item.reviewsCount }} reviews)</span>
-        </button>
+        <a tuiButton appearance="flat" size="s" [routerLink]="['/apps', item.appSlug, 'reviews']">See reviews ({{ item.reviewsCount }})</a>
       </div>
     </ui-elevated-card>
   `,

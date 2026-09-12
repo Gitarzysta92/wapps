@@ -5,6 +5,7 @@
   appearance="secondary"
   size="s"
   [class.is-favorite]="isFav"
+  [attr.aria-pressed]="isFav"
   (click)="toggleFavorite(isFav ?? false)">
   @if (isFav) {
     <span class="icon">★</span> Remove from Favorites
@@ -13,3 +14,5 @@
   }
 </button>
 
+
+@if (error()) { <p role="alert">{{ error() }}</p> }

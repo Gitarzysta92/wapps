@@ -1,13 +1,15 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { TuiButton, TuiDialogContext, TuiIcon } from "@taiga-ui/core";
+import { Component, inject } from "@angular/core";
+import { RouterLink, Router } from "@angular/router";
+import { TuiButton, TuiDialogContext } from "@taiga-ui/core";
 import { injectContext } from "@taiga-ui/polymorpheus";
-import { ThemeToggleComponent, THEME_PROVIDER_TOKEN } from "@portals/cross-cutting/theming";
+import { THEME_PROVIDER_TOKEN } from "@portals/cross-cutting/theming";
 import { MyProfileNameComponent } from "@ui/my-profile";
 import { MyProfileAvatarComponent } from "@ui/my-profile";
 import { AuthenticationService } from "@portals/shared/features/identity";
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { AUTHENTICATED_USER_MAIN_NAVIGATION, AUTHENTICATED_USER_SECONDARY_NAVIGATION } from '../../navigation';
+import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
 
 interface UserPanelSheetContext {
   navigationPrimary: NavigationDeclarationDto[];
@@ -23,21 +25,31 @@ interface UserPanelSheetContext {
   standalone: true,
   imports: [
     AsyncPipe,
-    ThemeToggleComponent,
     TuiButton,
     RouterLink,
-    TuiIcon,
     MyProfileAvatarComponent,
     MyProfileNameComponent
   ],
 })
-export class UserPanelSheetComponent implements OnInit {
+export class UserPanelSheetComponent  {
   public readonly context = injectContext<TuiDialogContext<unknown, UserPanelSheetContext>>();
   public readonly service = inject(AuthenticationService);
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
 
-  ngOnInit(): void {
-    console.log(this.context?.data);
+  readonly profile$ = inject(MY_PROFILE_STATE_PROVIDER).myProfile$;
+  readonly primary = this.context.data?.navigationPrimary ?? AUTHENTICATED_USER_MAIN_NAVIGATION;
+  readonly secondary = this.context.data?.navigationSecondary ?? AUTHENTICATED_USER_SECONDARY_NAVIGATION;
+  private readonly router = inject(Router);
+
+  close(): void { this.context.completeWith(undefined); }
+  login(): void {
+    this.close();
+    void this.router.navigate([{ outlets: { dialog: 'identity' } }]);
+  }
+  logout(): void {
+    this.service.unauthenticate();
+    this.close();
+    void this.router.navigateByUrl('/');
   }
 }
 

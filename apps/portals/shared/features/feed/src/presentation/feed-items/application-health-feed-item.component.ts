@@ -1,3 +1,6 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { RouterLink } from '@angular/router';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { HealthCheckBadgeComponent, StatusHistoryComponent } from '@apps/portals/shared/features/health-status';
 import { NgIf, DatePipe } from '@angular/common';
@@ -8,9 +11,8 @@ import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
-import { DiscussionChipComponent } from '@portals/shared/features/discussion';
+import { type ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const APPLICATION_HEALTH_FEED_ITEM_SELECTOR = 'application-health-feed-item';
 
@@ -26,15 +28,15 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     MediumCardComponent,
     CardHeaderComponent,
     CardFooterComponent,
     MediumTitleComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
-    DiscussionChipComponent,
+    FeedActionsMenuComponent,
+    FeedAttributionComponent,
     TuiChip,
     NgIf,
     DatePipe,
@@ -104,17 +106,10 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           slot="right-side"
           size="s"
           type="applications"
-          [slug]="item.appSlug"
+          [slug]="item.appSlug" [path]="item.appLink"
           [title]="item.title"
         />
-        <button
-          tuiButton
-          appearance="action-soft"
-          size="s"
-          slot="right-side"
-        >
-          <tui-icon icon="@tui.circle-arrow-right" />
-        </button>
+        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.appLink" [attr.aria-label]="'View application: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a>
       </ui-card-header>
       
       <status-history
@@ -136,16 +131,11 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
       </ui-medium-card>
 
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <discussion-chip
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <a tuiButton size="xs" appearance="flat" slot="right-side" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open discussions for ' + item.title">Discussions ({{ item.commentsNumber || 0 }})</a>
+        <feed-actions-menu
           slot="right-side"
-          [commentsCount]="item.commentsNumber"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-        <context-menu-chip
-          slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />

@@ -1,11 +1,11 @@
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { Component, inject, computed, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { of, delay } from 'rxjs';
-import { TuiIcon, TuiLink, TuiAppearance } from '@taiga-ui/core';
+import { of, map } from 'rxjs';
+import { TuiIcon, TuiLink, TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
-import { AppRecordDto } from '@domains/catalog/record';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import { 
   PageHeaderComponent, 
@@ -13,13 +13,12 @@ import {
   PageTitleSkeletonComponent,
   PageMetaComponent,
   PageMetaSkeletonComponent,
-  MediumCardComponent,
   MediumCardSkeletonComponent
 } from '@ui/layout';
 import { TagsComponent } from '@ui/tags';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
-import { APPLICATIONS } from '@portals/shared/data';
+import { CATEGORIES, TAGS } from '@portals/shared/data';
 import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';
 import { 
@@ -28,18 +27,15 @@ import {
   AppCategoryChipComponent,
   APPLICATION_OVERVIEW_PROVIDER 
 } from '@portals/shared/features/application-overview';
-import { HealthCheckBadgeComponent } from '@apps/portals/shared/features/health-status';
-import { TopReviewCardComponent, type TopReview } from '@portals/shared/features/review';
-import { ApplicationHealthStatusCode } from '@domains/feed';
 
 @Component({
   selector: 'app-application-overview-page',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, FavoriteToggleButtonComponent,
     RouterLink,
     RoutePathPipe,
-    TuiIcon,
+    TuiIcon, TuiButton,
     TuiLink,
     TuiBadge,
     TuiAppearance,
@@ -50,15 +46,12 @@ import { ApplicationHealthStatusCode } from '@domains/feed';
     PageTitleSkeletonComponent,
     PageMetaComponent,
     PageMetaSkeletonComponent,
-    MediumCardComponent,
     MediumCardSkeletonComponent,
     TagsComponent,
     CoverImageComponent,
     AppAvatarComponent,
     AppRatingComponent,
     AppCategoryChipComponent,
-    HealthCheckBadgeComponent,
-    TopReviewCardComponent
   ],
   templateUrl: './application-overview-page.component.html',
   styleUrl: './application-overview-page.component.scss'
@@ -74,15 +67,22 @@ export class ApplicationOverviewPageComponent implements
   public readonly app = rxResource({
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
-      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
-      return of(app).pipe(delay(1000));
+      if (!appSlug) return of(null);
+      return this._overviewProvider.getOverview(appSlug).pipe(map(result => {
+        if (!result.ok) throw result.error;
+        return result.value;
+      }));
     }
   });
 
-  public readonly overviewData = rxResource({
-    request: () => this.appSlug(),
-    loader: () => of(this._generateMockOverviewData()).pipe(delay(1200))
+  public readonly notFound = computed(() => {
+    const error = this.app.error() as { status?: number } | undefined;
+    return error?.status === 404 || (!this.app.isLoading() && !error && !this.app.value());
   });
+  public readonly overviewData = {
+    isLoading: () => this.app.isLoading(),
+    value: () => this.app.value() ? this._buildOverviewData() : null
+  };
 
   // Navigation paths
   readonly HEALTH_PATH = '/' + NAVIGATION.applicationHealth.path;
@@ -92,7 +92,7 @@ export class ApplicationOverviewPageComponent implements
   readonly DEVLOG_PATH = '/' + NAVIGATION.applicationDevLog.path;
 
   public readonly breadcrumbData = computed(() => {
-    const breadcrumb = this.breadcrumb();
+    const breadcrumb = this.breadcrumb().map(item => ({ ...item, path: '/' + item.path.replace(/^\/+/, '').replace(':appSlug', encodeURIComponent(this.appSlug() ?? '')) }));
     
     if (this.app.value()) { 
       return breadcrumb.map((b) => {
@@ -108,79 +108,26 @@ export class ApplicationOverviewPageComponent implements
     return breadcrumb;
   });
 
-  public readonly healthStatus = computed(() => {
-    const data = this.overviewData.value();
-    if (!data) return { code: ApplicationHealthStatusCode.Operational, message: 'Loading...' };
-    return { code: data.healthStatus.code, message: data.healthStatus.message };
-  });
-
   public readonly shortcuts = computed(() => {
     return this.overviewData.value()?.shortcuts ?? [];
   });
 
-  public readonly latestReviews = computed(() => {
-    return this.overviewData.value()?.latestReviews ?? [];
-  });
-
   getCoverImage(): CoverImageDto {
     return {
-      url: 'https://picsum.photos/seed/app-cover/800/400',
+      url: this.app.value()?.logo ?? '',
       alt: this.app.value()?.name ?? 'Application cover'
     };
   }
 
-  private _buildMockFromSlug(slug: string): AppRecordDto {
-    const name = slug
-      .split('-')
-      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-      .join(' ');
+  private _buildOverviewData() {
     return {
-      id: slug,
-      slug,
-      name,
-      description: `${name} is a powerful application designed to streamline your workflow and boost productivity. With intuitive features and seamless integration, it helps teams collaborate more effectively.`,
-      logo: 'https://picsum.photos/128',
-      isPwa: true,
-      rating: 4.7,
-      tagIds: [],
-      categoryId: '0',
-      platformIds: [],
-      reviewNumber: 1234,
-      updateDate: new Date(),
-      listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
-    };
-  }
-
-  private _generateMockOverviewData() {
-    return {
-      category: { name: 'Productivity', slug: 'productivity', link: '/categories/productivity' },
-      tags: [
-        { name: 'workflow', slug: 'workflow', link: '/tags/workflow' },
-        { name: 'collaboration', slug: 'collaboration', link: '/tags/collaboration' },
-        { name: 'cloud', slug: 'cloud', link: '/tags/cloud' }
-      ],
-      aggregatedScore: 4.7,
-      reviewsCount: 1234,
-      healthStatus: {
-        code: ApplicationHealthStatusCode.Operational,
-        message: 'All Systems Operational'
-      },
-      latestReviews: [
-        {
-          authorName: 'Sarah Johnson',
-          authorAvatarUrl: 'https://i.pravatar.cc/40?img=1',
-          rating: 4.8,
-          content: 'Excellent application with great features! Really transformed how our team works together.',
-          date: 'Dec 24'
-        },
-        {
-          authorName: 'Mike Thompson',
-          authorAvatarUrl: 'https://i.pravatar.cc/40?img=2',
-          rating: 4.5,
-          content: 'Very useful for project management. The interface is intuitive and easy to navigate.',
-          date: 'Dec 22'
-        }
-      ] as TopReview[],
+      category: (() => {
+        const category = CATEGORIES.find(c => String(c.id) === String(this.app.value()?.categoryId));
+        return { name: category?.name ?? 'Uncategorized', slug: category?.slug ?? '', link: category ? '/categories/' + category.slug : '/categories' };
+      })(),
+      tags: TAGS.filter(t => this.app.value()?.tagIds.includes(String(t.id))).map(t => ({ ...t, link: '/tags/' + t.slug })),
+      aggregatedScore: this.app.value()?.rating ?? 0,
+      reviewsCount: this.app.value()?.reviewNumber ?? 0,
       shortcuts: [
         { icon: '@tui.heart-pulse', title: 'Health Status', description: 'View system status and uptime', path: this.HEALTH_PATH, colorClass: 'health-icon' },
         { icon: '@tui.star', title: 'Reviews', description: 'Read user testimonials', path: this.REVIEWS_PATH, colorClass: 'reviews-icon' },

@@ -26,7 +26,7 @@ import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites
 import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
 import { provideSharingFeature } from '@portals/shared/features/sharing';
 import { providePreferencesFeature } from '@portals/shared/features/preferences';
-import { AUTH_BFF_URL } from './environment';
+import { AUTH_BFF_URL, API_BASE_URL, USE_CATALOG_BFF } from './environment';
 
 
 
@@ -35,7 +35,8 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
       validationMessages: LOGIN_VALIDATION_MESSAGES,
       // AUTH_BFF_URL is built dynamically from ENVIRONMENT_NAME
       // Empty in local dev (uses mock), set to https://auth.<env>.wapps.ai in CI
-      authBffUrl: AUTH_BFF_URL || undefined
+      authBffUrl: AUTH_BFF_URL || undefined,
+      authenticatedOrigins: API_BASE_URL ? [API_BASE_URL] : []
     }),
     provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
@@ -60,23 +61,23 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
     }),
     provideCategoryFeature({
       path: NAVIGATION.categories.path,
-      useBff: true
+      useBff: USE_CATALOG_BFF
     }),
     // provideTrendingTagsFeature({
     //   path: NAVIGATION.tags.path
     // }),
     provideFilterFeature(),
     // appConfigCSR,
-    provideListingFeature({ useBff: true }),
+    provideListingFeature({ useBff: USE_CATALOG_BFF }),
     provideListingPlatformFeature(),
     provideCompatibilityFeature(),
     provideListingMonetizationFeature(),
     provideSocialsFeature(),
     provideUserStatisticPlatformFeature(),
-    provideTagsFeature({ useBff: true }),
+    provideTagsFeature({ useBff: USE_CATALOG_BFF }),
     provideMultiSearchFeature(),
     provideSmartSearchFeature(),
-  provideApplicationOverviewFeature({ useBff: true }),
+  provideApplicationOverviewFeature({ useBff: USE_CATALOG_BFF }),
     provideSharingFeature({
       baseUrl: 'https://api.sharing.com'
     }),

@@ -1,3 +1,4 @@
+import { FeedDatePipe } from '../../actions/feed-date.pipe';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ContentFeedItemComponent } from '@ui/content-feed';
@@ -18,6 +19,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FeedDatePipe,
     ContentFeedItemComponent,
     TuiAvatar,
     TuiButton,
@@ -36,7 +38,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           <div class="reviewer-name">{{ item.reviewerName }}</div>
           <div class="reviewer-meta">
             <span class="reviewer-role">{{ item.reviewerRole }}</span>
-            <span class="review-date">{{ item.reviewDate }}</span>
+            <span class="review-date">{{ item.reviewDate | feedDate }}</span>
           </div>
         </div>
 

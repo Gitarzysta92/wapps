@@ -1,34 +1,30 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { TuiTitle } from '@taiga-ui/core';
-import { TuiHeader } from '@taiga-ui/layout';
+import { RouterLink } from '@angular/router';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
+import { TuiSkeleton } from '@taiga-ui/kit';
+import { TuiCardLarge } from '@taiga-ui/layout';
 import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
-import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
-import { PageHeaderComponent, PageTitleComponent, PageTitleSkeletonComponent } from '@ui/layout';
-import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
-import { BreadcrumbsComponent } from '@ui/breadcrumbs';
+import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
+import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
+import { ProfileDetailsComponent } from '../profile-page/profile-details.component';
+import { NAVIGATION } from '../../navigation';
 
 @Component({
   selector: 'my-profile-page',
-  templateUrl: 'my-profile-page.component.html',
-  styleUrl: 'my-profile-page.component.scss',
   standalone: true,
-  imports: [
-    ProfileBadgesComponent,
-    PageHeaderComponent,
-    BreadcrumbsComponent,
-    PageTitleSkeletonComponent,
-    PageTitleComponent,
-  ]
+  templateUrl: './my-profile-page.component.html',
+  styleUrl: './my-profile-page.component.scss',
+  imports: [RouterLink, TuiAppearance, TuiButton, TuiCardLarge, TuiSkeleton, ProfileDetailsComponent,
+    PageHeaderComponent, PageTitleComponent, BreadcrumbsComponent, BreadcrumbsSkeletonComponent]
 })
-export class MyProfilePageComponent {
-
+export class MyProfilePageComponent implements routingDataConsumerFrom<IBreadcrumbRouteData> {
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
-
   private readonly myProfileStateProvider = inject(MY_PROFILE_VIEW_STATE_PROVIDER);
-
   public readonly profile = computed(() => this.myProfileStateProvider.state().data);
   public readonly isLoading = this.myProfileStateProvider.isLoading;
   public readonly isError = this.myProfileStateProvider.isError;
+  public readonly publicPath = computed(() => buildRoutePath(NAVIGATION.userProfile.path, { profileId: this.profile()?.id ?? '' }, { absolute: true }));
+  public readonly quickLinks = [NAVIGATION.settingsPreferences, NAVIGATION.settingsNotifications, NAVIGATION.settingsPrivacy]
+    .map(link => ({ ...link, path: buildRoutePath(link.path, {}, { absolute: true }) }));
 }
-

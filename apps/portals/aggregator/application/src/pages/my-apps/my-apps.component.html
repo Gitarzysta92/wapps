@@ -1,4 +1,159 @@
-<div class="my-apps-page">
-  <h1>My Apps</h1>
-  <p>Manage your applications</p>
+<ui-page-header>
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">My Apps</h1>
+  <p slot="meta">
+    {{ drafts().length }} local application drafts ·
+    {{ ownership().length }} unverified ownership drafts
+  </p>
+</ui-page-header>
+<section class="draft-panel">
+  <h2>Local drafts</h2>
+  <p>Drafts are saved in this browser. They are not published.</p>
+  <div class="draft-actions">
+    <button tuiButton type="button" iconStart="@tui.plus" (click)="editDraft()">
+      New application draft
+    </button>
+  </div>
+</section>
+@if (store.error(); as error) {
+<div class="draft-panel">
+  <p class="draft-error" role="alert">{{ error }}</p>
+  <button
+    tuiButton
+    type="button"
+    appearance="secondary"
+    iconStart="@tui.refresh-cw"
+    (click)="store.refresh()"
+  >
+    Retry loading drafts
+  </button>
 </div>
+} @if (message()) {
+<p role="status">{{ message() }}</p>
+}
+<section class="draft-list" aria-label="Application drafts">
+  @for (draft of drafts(); track draft.id) {
+  <article class="draft-panel">
+    <span class="draft-status">Local draft · Not submitted</span>
+    <h2>{{ draft.name }}</h2>
+    <p class="draft-help">
+      {{ draft.slug }} · Updated {{ draft.updatedAt | date : 'medium' }}
+    </p>
+    <p class="draft-description">{{ draft.description }}</p>
+    <a [href]="draft.website" target="_blank" rel="noopener noreferrer"
+      >Visit application website (new tab)</a
+    >
+    <div class="draft-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        iconStart="@tui.pencil"
+        (click)="editDraft(draft.id)"
+      >
+        Edit draft
+      </button>
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        iconStart="@tui.file-text"
+        (click)="prepareOwnership(draft.slug)"
+      >
+        Prepare ownership notes
+      </button>
+      <button
+        tuiButton
+        type="button"
+        appearance="action-soft"
+        iconStart="@tui.trash-2"
+        (click)="pendingDelete.set(draft.id)"
+      >
+        Delete draft
+      </button>
+    </div>
+    @if (pendingDelete() === draft.id) {
+    <div class="draft-confirm">
+      <p>Delete “{{ draft.name }}” from this browser? This cannot be undone.</p>
+      <div class="draft-actions">
+        <button
+          tuiButton
+          type="button"
+          appearance="error"
+          iconStart="@tui.trash-2"
+          (click)="deleteDraft(draft.id)"
+        >
+          Delete local draft</button
+        ><button
+          tuiButton
+          type="button"
+          appearance="secondary"
+          iconStart="@tui.x"
+          (click)="pendingDelete.set(null)"
+        >
+          Keep draft
+        </button>
+      </div>
+    </div>
+    }
+  </article>
+  } @empty { @if (!store.error()) {
+  <p>
+    No application drafts yet. Start a draft to save application details here.
+  </p>
+  } }
+</section>
+<section class="draft-list" aria-label="Ownership drafts">
+  <h2>Ownership preparation</h2>
+  <p>Ownership notes are saved locally. They are not submitted or verified.</p>
+  @for (draft of ownership(); track draft.appSlug) {
+  <article class="draft-panel">
+    <span class="draft-status">Local notes · Unverified · Not submitted</span>
+    <h3>{{ draft.appSlug }}</h3>
+    <p class="draft-help">Saved {{ draft.updatedAt | date : 'medium' }}</p>
+    <div class="draft-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        iconStart="@tui.pencil"
+        (click)="prepareOwnership(draft.appSlug)"
+      >
+        Edit ownership notes</button
+      ><button
+        tuiButton
+        type="button"
+        appearance="action-soft"
+        iconStart="@tui.trash-2"
+        (click)="pendingDelete.set('ownership:' + draft.appSlug)"
+      >
+        Delete notes
+      </button>
+    </div>
+    @if (pendingDelete() === 'ownership:' + draft.appSlug) {
+    <p>Delete these local ownership notes? This cannot be undone.</p>
+    <div class="draft-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="error"
+        iconStart="@tui.trash-2"
+        (click)="deleteOwnership(draft.appSlug)"
+      >
+        Delete local notes</button
+      ><button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        iconStart="@tui.x"
+        (click)="pendingDelete.set(null)"
+      >
+        Keep notes
+      </button>
+    </div>
+    }
+  </article>
+  } @empty { @if (!store.error()) {
+  <p>No local ownership notes saved.</p>
+  } }
+</section>

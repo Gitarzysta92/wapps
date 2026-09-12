@@ -1,3 +1,6 @@
+@if (!app.isLoading() && !app.value()) {
+  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+} @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
@@ -26,6 +29,7 @@
     </ui-page-meta>
   }
 </ui-page-header>
+<p>Sample catalog data; this is not a live service report.</p>
 
 <!-- Overall Status Banner -->
 <section class="health-section">
@@ -120,3 +124,5 @@
     </health-notices-section>
   }
 </section>
+
+}

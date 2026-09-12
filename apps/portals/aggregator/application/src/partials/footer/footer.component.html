@@ -1,49 +1,19 @@
-<div class="nav-container">
+<nav class="nav-container" aria-label="Footer navigation">
   <div>
-    <nav>
-      <ul>
-        @for (item of navFirst; track item.path;) {
-          <li>
-            <a tuiLink routerLink="">{{ item.label }}</a>
-          </li>
-        }
-      </ul>
-    </nav>
+    <h2>Explore</h2>
+    <ul>
+      @for (item of primaryNavigation; track item.path) {
+        <li><a tuiLink [routerLink]="'/' + item.path">{{ item.label }}</a></li>
+      }
+    </ul>
   </div>
   <div>
-    <nav>
-      <ul>
-        @for (item of navFirst; track item.path;) {
-          <li>
-            <a tuiLink routerLink="">{{ item.label }}</a>
-          </li>
-        }
-      </ul>
-    </nav>
+    <h2>Your workspace</h2>
+    <ul>
+      @for (item of secondaryNavigation; track item.path) {
+        <li><a tuiLink [routerLink]="'/' + item.path">{{ item.label }}</a></li>
+      }
+    </ul>
   </div>
-  <div>
-    <nav>
-      <ul>
-        @for (item of navFirst; track item.path;) {
-          <li>
-            <a tuiLink routerLink="">{{ item.label }}</a>
-          </li>
-        }
-      </ul>
-    </nav>
-  </div>
-  <div>
-    <nav>
-      <ul>
-        @for (item of navFirst; track item.path;) {
-          <li>
-            <a tuiLink routerLink="">{{ item.label }}</a>
-          </li>
-        }
-      </ul>
-    </nav>
-  </div>
-</div>
-<div class="bottom-bar">
-  Lorem ipsum 2025
-</div>
+</nav>
+<div class="bottom-bar">Wapps · Explore. Discover. Digest. · {{ year }}</div>

@@ -1,7 +1,7 @@
-import { Component, inject, computed, input } from '@angular/core';
+import { Component, inject, computed, input, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { of, delay } from 'rxjs';
+import { of } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
@@ -18,7 +18,7 @@ import {
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
-import { AppRatingComponent } from '@portals/shared/features/application-overview';
+import { AppRatingComponent, LOCAL_APPLICATION_DATA } from '@portals/shared/features/application-overview';
 
 interface ReviewData {
   id: string;
@@ -63,21 +63,54 @@ export class ApplicationReviewsPageComponent implements
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
   public readonly appSlug = input<string | null>(null);
 
+  readonly localMode = inject(LOCAL_APPLICATION_DATA);
+  readonly visibleCount = signal(3);
+  readonly helpfulIds = signal<string[]>([]);
+  readonly actionError = signal('');
+  readonly helpfulLoaded = signal(false);
+  constructor() {
+    effect(() => {
+      const slug = this.appSlug();
+      this.visibleCount.set(3);
+      this.actionError.set('');
+      this.helpfulLoaded.set(false);
+      this.helpfulIds.set([]);
+      if (!this.localMode || !slug) return;
+      try {
+        const saved: unknown = JSON.parse(localStorage.getItem('wapps.review-helpful.' + slug) ?? '[]');
+        if (!Array.isArray(saved) || saved.some(id => typeof id !== 'string')) throw new Error('Invalid saved marks');
+        this.helpfulIds.set([...new Set(saved)]);
+        this.helpfulLoaded.set(true);
+      } catch { this.actionError.set('Could not load your helpful marks from this browser. Reload the page to retry.'); }
+    });
+  }
+  toggleHelpful(id: string) {
+    if (!this.localMode || !this.helpfulLoaded() || !this.app.value() || !this.reviewsData.value()?.reviews.some(review => review.id === id)) return;
+    const next = this.helpfulIds().includes(id) ? this.helpfulIds().filter(value => value !== id) : [...this.helpfulIds(), id];
+    try {
+      localStorage.setItem('wapps.review-helpful.' + this.appSlug(), JSON.stringify(next));
+      this.helpfulIds.set(next);
+      this.actionError.set('');
+    } catch { this.actionError.set('Could not save your helpful mark in this browser.'); }
+  }
+  loadMore() { this.visibleCount.update(count => count + 3); }
+  readonly hasMoreReviews = computed(() => this.visibleCount() < (this.reviewsData.value()?.reviews.length ?? 0));
+
   public readonly app = rxResource({
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
-      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
-      return of(app).pipe(delay(1000));
+      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? null;
+      return of(app);
     }
   });
 
   public readonly reviewsData = rxResource({
     request: () => this.appSlug(),
-    loader: () => of(this._generateMockReviewsData()).pipe(delay(1200))
+    loader: () => of(this._generateMockReviewsData())
   });
 
   public readonly breadcrumbData = computed(() => {
-    const breadcrumb = this.breadcrumb();
+    const breadcrumb = this.breadcrumb().map(item => ({ ...item, path: '/' + item.path.replace(/^\/+/, '').replace(':appSlug', encodeURIComponent(this.appSlug() ?? '')) }));
     
     if (this.app.value()) { 
       return breadcrumb.map((b) => {
@@ -118,33 +151,11 @@ export class ApplicationReviewsPageComponent implements
   });
 
   public readonly reviews = computed(() => {
-    return this.reviewsData.value()?.reviews ?? [];
+    return (this.reviewsData.value()?.reviews ?? []).slice(0, this.visibleCount());
   });
 
   getRatingStars(rating: number): number[] {
     return Array.from({ length: 5 }, (_, i) => i + 1);
-  }
-
-  private _buildMockFromSlug(slug: string): AppRecordDto {
-    const name = slug
-      .split('-')
-      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-      .join(' ');
-    return {
-      id: slug,
-      slug,
-      name,
-      description: `${name} description`,
-      logo: 'https://picsum.photos/128',
-      isPwa: true,
-      rating: 4.7,
-      tagIds: [],
-      categoryId: '0',
-      platformIds: [],
-      reviewNumber: 1234,
-      updateDate: new Date(),
-      listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
-    };
   }
 
   private _generateMockReviewsData() {

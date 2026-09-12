@@ -9,7 +9,7 @@
       appearance="flat"
       tuiButton
       type="button"
-      [routerLink]="myProfilePath">
+      [routerLink]="'/' + myProfilePath">
       
       <div my-profile-avatar [avatarPath]="myProfileState?.data?.avatar?.uri"></div>
       <div my-profile-name [name]="myProfileState?.data?.name"></div>
@@ -79,7 +79,7 @@
     @for (item of primaryNav; track item.path) {
       <li>
         <a
-          [routerLink]="item.path"
+          [routerLink]="'/' + item.path"
           appearance="flat"
           tuiButton
           type="button"
@@ -97,6 +97,17 @@
 <hr>
 
 
+
+@if (isAuthenticated) {
+  <nav class="navigation_section" aria-label="Account">
+    <ul>
+      @for (item of navigationSecondary; track item.path) {
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path"><tui-icon [icon]="item.icon" [style.height.rem]="1"/><span class="nav-label">{{ item.label }}</span></a></li>
+      }
+      <li><button tuiButton appearance="flat" type="button" (click)="authService?.unauthenticate()"><tui-icon icon="@tui.log-out" [style.height.rem]="1"/><span class="nav-label">Log out</span></button></li>
+    </ul>
+  </nav>
+}
 
 <!-- Favorite Apps Section -->
 @if (isAuthenticated) {

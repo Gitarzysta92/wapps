@@ -25,8 +25,12 @@ export class SafeComponentOutletDirective implements OnChanges {
   private validInputs: string[] = [];
 
   ngOnChanges(changes: SimpleChanges) {
-    // 1. If component type changed → recreate
-    if (changes['component']) {
+    // Recreate when route inputs disappear so the component's defaults are restored.
+    // Patching only supplied inputs would retain the previous route's submenu.
+    const inputChange = changes['inputs'];
+    const removedInput = inputChange && Object.keys(inputChange.previousValue ?? {})
+      .some(key => !(key in (inputChange.currentValue ?? {})));
+    if (changes['component'] || removedInput) {
       this.createOrReplaceComponent();
     }
 

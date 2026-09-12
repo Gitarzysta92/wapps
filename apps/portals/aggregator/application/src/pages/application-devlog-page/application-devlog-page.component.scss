@@ -25,7 +25,7 @@
 .changelog-section {
   margin-top: $space-12;
   padding: $space-8 0;
-  border-top: 1px solid var(--tui-base-03, #{$color-border});
+  border-top: 1px solid var(--tui-border-normal);
 }
 
 .section-title {
@@ -40,7 +40,7 @@
 
 .changelog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: $space-6;
 }
 
@@ -167,7 +167,7 @@
 // Responsive
 // ============================================================================
 
-@media (max-width: 768px) {
+@media #{$layout-breakpoint-sm} {
   .changelog-grid {
     grid-template-columns: 1fr;
   }

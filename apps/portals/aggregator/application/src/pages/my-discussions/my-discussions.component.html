@@ -2,20 +2,8 @@
   <div class="my-discussions-page__container">
     <div class="my-discussions-page__header">
       <h1 class="my-discussions-page__title">My Discussions</h1>
-      <p class="my-discussions-page__subtitle">Your conversations and topics</p>
+      <p class="my-discussions-page__subtitle">Your local conversations, saved in this browser</p>
     </div>
-
-    @if (isLoading) {
-      <div class="my-discussions-page__loading">
-        <p>Loading discussions...</p>
-      </div>
-    }
-
-    @if (isError) {
-      <div class="my-discussions-page__error">
-        <p>Error loading discussions. Please try again.</p>
-      </div>
-    }
 
     <div class="my-discussions-page__content">
       <div 
@@ -27,10 +15,13 @@
           <h2 tuiTitle>Recent Discussions</h2>
         </header>
 
-        @if (discussions.length > 0) {
+        @if (discussions().length > 0) {
           <div class="my-discussions-page__list">
-            @for (discussion of discussions; track discussion) {
-              <discussion [data]="discussion" />
+            @for (discussion of discussions(); track discussion.id) {
+              <article>
+                <h3><a [routerLink]="['/apps', discussion.appSlug, 'discussions', discussion.slug]">{{ discussion.title }}</a></h3>
+                <p>{{ discussion.appName }} · {{ discussion.replies.length }} replies</p>
+              </article>
             }
           </div>
         } @else {

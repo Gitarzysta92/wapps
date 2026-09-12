@@ -1,8 +1,10 @@
-import { Component, inject, computed, input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { LOCAL_APPLICATION_DATA, LocalDiscussionsService } from '@portals/shared/features/application-overview';
+import { Component, inject, computed, input, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { of, delay } from 'rxjs';
+import { of } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
@@ -25,7 +27,6 @@ import {
   DiscussionMediumCardComponent, 
   DiscussionSmallCardSkeletonComponent,
   DiscussionMediumCardSkeletonComponent,
-  DiscussionsStatsBadgeComponent 
 } from '@portals/shared/features/discussion';
 import type { DiscussionPreviewDto } from '@domains/discussion';
 import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
@@ -35,10 +36,9 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
   selector: 'app-application-discussions-page',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, FormsModule,
     TuiButton,
     TuiIcon,
-    TuiBadge,
     TuiAppearance,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
@@ -46,7 +46,6 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
     PageTitleComponent,
     PageTitleSkeletonComponent,
     PageMetaComponent,
-    DiscussionsStatsBadgeComponent,
     DiscussionSmallCardComponent,
     DiscussionMediumCardComponent,
     DiscussionSmallCardSkeletonComponent,
@@ -63,6 +62,20 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
 export class ApplicationDiscussionsPageComponent implements 
   routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }> {
 
+  readonly localMode = inject(LOCAL_APPLICATION_DATA);
+  readonly localData = inject(LocalDiscussionsService);
+  readonly composing = signal(false);
+  title = '';
+  content = '';
+  error = '';
+  constructor() { effect(() => { this.appSlug(); this.composing.set(false); this.title = ''; this.content = ''; this.error = ''; }); }
+  saveDiscussion() {
+    if (!this.localMode || !this.appSlug()) return;
+    try {
+      const thread = this.localData.create(this.appSlug()!, this.title, this.content);
+      this._router.navigateByUrl(buildRoutePath('/' + NAVIGATION.applicationDiscussion.path, { appSlug: this.appSlug(), discussionSlug: thread.slug }));
+    } catch { this.error = 'Could not save on this device. Check your text and browser storage, then try again.'; }
+  }
   private readonly _router = inject(Router);
 
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
@@ -72,17 +85,14 @@ export class ApplicationDiscussionsPageComponent implements
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
       const app = APPLICATIONS.find(a => a.slug === appSlug);
-      return of(app).pipe(delay(1000));
+      return of(app);
     }
   });
 
-  public readonly discussions = rxResource({
-    request: () => this.app.value(),
-    loader: ({ request: app }) => {
-      const discussions = DISCUSSION_PREVIEW_DATA.filter(d => d.associationId === app?.id);
-      return of(discussions).pipe(delay(1200))
-    }
-  });
+  public readonly discussions = {
+    isLoading: () => this.app.isLoading(),
+    value: computed(() => this.localData.previews(this.appSlug()))
+  };
 
   public readonly totalStats = computed(() => {
     const discussionList = this.discussions.value() ?? [];
@@ -102,7 +112,7 @@ export class ApplicationDiscussionsPageComponent implements
   });
 
   public readonly breadcrumbData = computed(() => {
-    const breadcrumb = this.breadcrumb();
+    const breadcrumb = this.breadcrumb().map(item => ({ ...item, path: '/' + item.path.replace(/^\/+/, '').replace(':appSlug', encodeURIComponent(this.appSlug() ?? '')) }));
     const app = this.app.value();
     
     const replacements: Record<string, string> = {};
@@ -117,7 +127,7 @@ export class ApplicationDiscussionsPageComponent implements
 
   public navigateToDiscussion(discussion: DiscussionPreviewDto): void {
     const appSlug = this.appSlug();
-    this._router.navigate([buildRoutePath(NAVIGATION.applicationDiscussion.path, { appSlug, discussionSlug: discussion.slug })]);
+    this._router.navigate([buildRoutePath('/' + NAVIGATION.applicationDiscussion.path, { appSlug, discussionSlug: discussion.slug })]);
   }
 
 }

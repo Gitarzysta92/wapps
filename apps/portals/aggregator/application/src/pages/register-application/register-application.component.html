@@ -1,0 +1,123 @@
+<ui-page-header>
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <p slot="meta">Prepare a local draft. Nothing is submitted or published.</p>
+</ui-page-header>
+<section class="draft-panel" aria-label="Local draft information">
+  <p>Drafts are saved in this browser. They are not published.</p>
+</section>
+@if (store.error(); as error) {
+<p class="draft-error" role="alert">{{ error }}</p>
+} @if (missing()) {
+<p role="alert">
+  This draft was not found. Return to My Apps to choose an existing draft or
+  start a new one.
+</p>
+} @else {
+<form class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
+  <h2>Application details</h2>
+  <div class="draft-field">
+    <tui-textfield
+      ><label tuiLabel for="draft-name">Application name</label
+      ><input
+        tuiTextfield
+        id="draft-name"
+        formControlName="name"
+        type="text"
+        maxlength="100"
+        required
+        aria-describedby="name-help"
+    /></tui-textfield>
+    <p id="name-help" class="draft-help">2–100 characters.</p>
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+    <p class="draft-error" role="alert">
+      Enter a name between 2 and 100 characters.
+    </p>
+    }
+  </div>
+  <div class="draft-field">
+    <tui-textfield
+      ><label tuiLabel for="draft-slug">Draft slug</label
+      ><input
+        tuiTextfield
+        id="draft-slug"
+        formControlName="slug"
+        type="text"
+        maxlength="80"
+        required
+        aria-describedby="slug-help"
+    /></tui-textfield>
+    <p id="slug-help" class="draft-help">
+      Lowercase letters, numbers, and single hyphens between words. This does
+      not reserve a public address.
+    </p>
+    @if (form.controls.slug.touched && form.controls.slug.invalid) {
+    <p class="draft-error" role="alert">
+      Enter a valid slug, such as my-application (up to 80 characters).
+    </p>
+    }
+  </div>
+  <div class="draft-field">
+    <tui-textfield
+      ><label tuiLabel for="draft-website">Application website</label
+      ><input
+        tuiTextfield
+        id="draft-website"
+        formControlName="website"
+        type="url"
+        maxlength="2048"
+        required
+        aria-describedby="website-help"
+    /></tui-textfield>
+    <p id="website-help" class="draft-help">
+      Full HTTP or HTTPS URL, such as https://example.com.
+    </p>
+    @if (form.controls.website.touched && form.controls.website.invalid) {
+    <p class="draft-error" role="alert">
+      Enter a full HTTP or HTTPS URL without embedded credentials.
+    </p>
+    }
+  </div>
+  <div class="draft-field">
+    <label for="draft-description">Description</label
+    ><textarea
+      id="draft-description"
+      formControlName="description"
+      rows="6"
+      maxlength="2000"
+      required
+      aria-describedby="description-help"
+    ></textarea>
+    <p id="description-help" class="draft-help">
+      Explain what your application does in 20–2,000 characters.
+    </p>
+    @if (form.controls.description.touched && form.controls.description.invalid)
+    {
+    <p class="draft-error" role="alert">
+      Enter a description between 20 and 2,000 characters.
+    </p>
+    }
+  </div>
+  <div class="draft-actions">
+    <button tuiButton type="submit" iconStart="@tui.save">
+      Save local draft
+    </button>
+  </div>
+  @if (saved() && form.pristine) {
+  <p role="status">
+    Draft saved in this browser. Not published.
+  </p>
+  }
+</form>
+}
+<div class="draft-actions">
+  <button
+    tuiButton
+    type="button"
+    appearance="secondary"
+    iconStart="@tui.arrow-left"
+    (click)="navigateToMyApps()"
+  >
+    Back to My Apps
+  </button>
+</div>

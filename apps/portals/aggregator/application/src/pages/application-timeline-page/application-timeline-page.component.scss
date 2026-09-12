@@ -19,7 +19,7 @@
 
 .section-title {
   @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: $color-text-strong;
+  color: var(--tui-text-primary);
   margin: 0;
   display: flex;
   align-items: center;
@@ -28,12 +28,12 @@
 
 .title-icon {
   font-size: $font-size-3xl;
-  color: $color-primary-600;
+  color: var(--tui-primary);
 }
 
 .timeline-intro {
   @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: $color-text;
+  color: var(--tui-text-secondary);
   margin: 0;
 }
 

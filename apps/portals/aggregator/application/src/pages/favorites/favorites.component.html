@@ -1,47 +1,23 @@
-<div class="favorites-page">
-  <div class="favorites-page__container">
-    <div class="favorites-page__header">
-      <h1 class="favorites-page__title">My Favorites</h1>
-      <p class="favorites-page__subtitle">Your saved applications and content</p>
-    </div>
-
-    @if (isLoading$ | async) {
-      <div class="favorites-page__loading">
-        <p>Loading favorites...</p>
-      </div>
+<section class="favorites-page">
+  <header class="favorites-page__header">
+    <h1>My favorites</h1>
+    <p>Your saved applications, collections, articles, and discussions.</p>
+    <a tuiButton appearance="secondary" size="s" routerLink="/discover">Discover more apps</a>
+  </header>
+  @if (groups$ | async; as state) {
+    @if (state.isError) { <p role="alert">Favorites could not be loaded. Please reload and try again.</p> }
+    @for (group of state.groups; track group.type) {
+      <section class="favorites-page__card">
+        <h2>{{ group.title }} <span>({{ group.items.length }})</span></h2>
+        @for (item of group.items; track item.slug) {
+          <div class="favorites-page__item">
+            <a [routerLink]="item.path">{{ item.name }}</a>
+            <favorite-toggle-button [type]="group.type" [slug]="item.slug" />
+          </div>
+        } @empty {
+          <p class="favorites-page__empty">No saved {{ group.type }} yet.</p>
+        }
+      </section>
     }
-
-    @if (isError$ | async) {
-      <div class="favorites-page__error">
-        <p>Error loading favorites. Please try again.</p>
-      </div>
-    }
-
-    @if (favoritesViewModel$ | async; as favorites) {
-      <div class="favorites-page__content">
-        <div 
-          tuiCardLarge
-          tuiAppearance="floating"
-          class="favorites-page__card"
-        >
-          <header tuiHeader class="favorites-page__card-header">
-            <h2 tuiTitle>Favorite Applications</h2>
-          </header>
-
-          @if (favorites.hasItems) {
-            <my-favorites-grid 
-              [vm]="favorites"
-              class="favorites-page__grid"
-            />
-          } @else {
-            <div class="favorites-page__empty">
-              <p>No favorites yet. Start exploring and save your favorite applications!</p>
-            </div>
-          }
-        </div>
-      </div>
-    }
-  </div>
-</div>
-
-
+  }
+</section>

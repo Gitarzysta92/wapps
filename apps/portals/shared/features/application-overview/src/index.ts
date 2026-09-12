@@ -13,3 +13,6 @@ export * from './presentation/app-voting-chip/app-voting-chip.component';
 export * from './presentation/app-category-chip/app-category-chip.component';
 export * from './presentation/app-reviews-chip/app-reviews-chip.component';
 
+
+export * from './infrastructure/overview-local.service';
+export * from './infrastructure/local-discussions.service';

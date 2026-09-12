@@ -1,5 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, inject, Input, OnInit } from "@angular/core";
+import { Component, inject, Input, OnChanges, signal } from "@angular/core";
 import { TuiButton } from "@taiga-ui/core";
 import { Observable, of } from "rxjs";
 import { MyFavoritesService } from "../../application/my-favorites.service";
@@ -13,7 +13,7 @@ import { MyFavoritesService } from "../../application/my-favorites.service";
     TuiButton
   ]
 })
-export class FavoriteToggleButtonComponent implements OnInit {
+export class FavoriteToggleButtonComponent implements OnChanges {
 
   @Input({ required: true }) type!: 'applications' | 'suites' | 'articles' | 'discussions';
   @Input({ required: true }) slug!: string;
@@ -21,8 +21,9 @@ export class FavoriteToggleButtonComponent implements OnInit {
   private readonly _favoritesService = inject(MyFavoritesService);
 
   public isFavorite$: Observable<boolean> = of(false);
+  public readonly error = signal('');
 
-  ngOnInit() {
+  ngOnChanges() {
     if (!this.type || !this.slug) {
       throw new Error('FavoriteToggleButtonComponent requires type and slug inputs');
     }
@@ -30,11 +31,13 @@ export class FavoriteToggleButtonComponent implements OnInit {
   }
 
   public toggleFavorite(isFavorite: boolean): void {
-    if (isFavorite) {
-      this._favoritesService.removeFromFavorites(this.type, this.slug).subscribe();
-    } else {
-      this._favoritesService.addToFavorites(this.type, this.slug).subscribe();
-    }
+    this.error.set('');
+    const operation = isFavorite
+      ? this._favoritesService.removeFromFavorites(this.type, this.slug)
+      : this._favoritesService.addToFavorites(this.type, this.slug);
+    operation.subscribe(result => {
+      if (!result.ok) this.error.set(result.error.message);
+    });
   }
 }
 

@@ -16,9 +16,11 @@ export function provideMyProfileFeature(c: {
 }): ApplicationConfig {
   return {
     providers: [
-      { provide: MY_PROFILE_STATE_PROVIDER, useClass: MyProfileService },
-      { provide: MY_PROFILE_PROVIDER, useClass: MyProfileApiService },
-      { provide: MY_PROFILE_UPDATER, useClass: MyProfileApiService },
+      MyProfileService,
+      MyProfileApiService,
+      { provide: MY_PROFILE_STATE_PROVIDER, useExisting: MyProfileService },
+      { provide: MY_PROFILE_PROVIDER, useExisting: MyProfileApiService },
+      { provide: MY_PROFILE_UPDATER, useExisting: MyProfileApiService },
       { provide: MY_PROFILE_API_BASE_URL_PROVIDER, useValue: c.apiBaseUrl },
       { provide: MY_PROFILE_AVATAR_BASE_URL_PROVIDER, useValue: c.apiBaseUrl },
       { provide: MY_PROFILE_VIEW_STATE_PROVIDER, useClass: MyProfileViewStateService },

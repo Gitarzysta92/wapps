@@ -5,8 +5,8 @@
         <a
           class="mobile-bottom-nav__item"
           tuiButton
-          size="m"
-          [routerLink]="[item.path]"
+          size="s"
+          [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
           routerLinkActive="active"
           [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
           [title]="item.label"
@@ -16,15 +16,17 @@
           </span>
         </a>
       }
-      <a
+      <button
         class="mobile-bottom-nav__item"
         tuiButton
-        size="m"
+        type="button"
+        aria-label="Account menu"
+        size="s"
         (click)="openDialog()">
         <span class="mobile-bottom-nav__icon">
           <tui-icon icon="@tui.circle-ellipsis"></tui-icon>
         </span>
-      </a>
+      </button>
     </div>
   }
 </nav>

@@ -1,7 +1,7 @@
 import { Component, inject, computed, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { of, delay } from 'rxjs';
+import { of } from 'rxjs';
 import { TuiIcon, TuiAppearance } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
@@ -62,18 +62,18 @@ export class ApplicationHealthPageComponent implements
   public readonly app = rxResource({
     request: () => this.appSlug(),
     loader: ({ request: appSlug }) => {
-      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? this._buildMockFromSlug(appSlug ?? 'unknown');
-      return of(app).pipe(delay(1000));
+      const app = APPLICATIONS.find(a => a.slug === appSlug) ?? null;
+      return of(app);
     }
   });
 
   public readonly healthData = rxResource({
     request: () => this.appSlug(),
-    loader: () => of(this._generateMockHealthData()).pipe(delay(1200))
+    loader: () => of(this._generateMockHealthData())
   });
 
   public readonly breadcrumbData = computed(() => {
-    const breadcrumb = this.breadcrumb();
+    const breadcrumb = this.breadcrumb().map(item => ({ ...item, path: '/' + item.path.replace(/^\/+/, '').replace(':appSlug', encodeURIComponent(this.appSlug() ?? '')) }));
     
     if (this.app.value()) { 
       return breadcrumb.map((b) => {
@@ -106,28 +106,6 @@ export class ApplicationHealthPageComponent implements
   public readonly notices = computed(() => {
     return this.healthData.value()?.notices ?? [];
   });
-
-  private _buildMockFromSlug(slug: string): AppRecordDto {
-    const name = slug
-      .split('-')
-      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-      .join(' ');
-    return {
-      id: slug,
-      slug,
-      name,
-      description: `${name} description`,
-      logo: 'https://picsum.photos/128',
-      isPwa: true,
-      rating: 4.7,
-      tagIds: [],
-      categoryId: '0',
-      platformIds: [],
-      reviewNumber: 1234,
-      updateDate: new Date(),
-      listingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
-    };
-  }
 
   private _generateMockHealthData() {
     return {

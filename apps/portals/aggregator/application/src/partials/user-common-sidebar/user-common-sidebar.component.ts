@@ -2,12 +2,14 @@ import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core
 import { CommonSidebarComponent } from '../common-sidebar/common-sidebar.component';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
+import { NAVIGATION, SETTINGS_NAVIGATION } from '../../navigation';
 
 @Component({
   selector: 'user-common-sidebar',
   template: `
     <common-sidebar
       [avatarPath]="avatarPath()"
+      [navigationAvatar]="profileNavigation"
       [isExpanded]="isExpanded()"
       [navigation]="navigation()"
       [navigationSecondary]="navigationSecondary()"
@@ -18,9 +20,10 @@ import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-prof
   imports: [CommonSidebarComponent]
 })
 export class UserCommonSidebarComponent {
+  protected readonly profileNavigation = NAVIGATION.myProfile;
   public readonly isExpanded = input<boolean>(false);
   public readonly navigation = input<NavigationDeclarationDto[]>([]);
-  public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);
+  public readonly navigationSecondary = input<NavigationDeclarationDto[]>(SETTINGS_NAVIGATION);
   public readonly alignment = input<'start' | 'end'>('end');
 
   private readonly myProfileViewState = inject(MY_PROFILE_VIEW_STATE_PROVIDER);

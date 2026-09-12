@@ -1,0 +1,93 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+  padding: $space-6;
+  color: var(--tui-text-primary);
+}
+ui-page-header {
+  margin-bottom: $space-8;
+}
+.draft-panel {
+  min-width: 0;
+  margin-bottom: $space-6;
+  padding: $space-6;
+  border: $border-width-thin solid var(--tui-border-normal);
+  border-radius: $radius-md;
+  background: var(--tui-background-elevation-1);
+  overflow-wrap: anywhere;
+}
+.draft-list {
+  margin-top: $space-8;
+}
+.draft-form,
+.draft-field {
+  display: grid;
+  gap: $space-3;
+}
+.draft-form {
+  gap: $space-6;
+}
+.draft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  margin-top: $space-4;
+}
+.draft-actions button {
+  max-width: 100%;
+  white-space: normal;
+  height: auto;
+  min-height: $space-12;
+}
+.draft-help {
+  margin: 0;
+  color: var(--tui-text-secondary);
+  font-size: $font-size-sm;
+}
+.draft-status {
+  color: var(--tui-text-secondary);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+}
+.draft-error {
+  color: var(--tui-text-negative, var(--tui-negative));
+}
+.draft-description {
+  white-space: pre-wrap;
+}
+.draft-confirm {
+  margin-top: $space-4;
+  border-top: $border-width-thin solid
+    var(--tui-border-normal);
+}
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  padding: $space-3;
+  font: inherit;
+  color: var(--tui-text-primary);
+  background: var(--tui-background-base);
+  border: $border-width-thin solid var(--tui-border-normal);
+  border-radius: $radius-md;
+}
+textarea:focus-visible,
+a:focus-visible {
+  outline: $space-0_5 solid var(--tui-primary);
+  outline-offset: $space-1;
+}
+a {
+  color: var(--tui-text-action);
+  overflow-wrap: anywhere;
+}
+@media #{$layout-breakpoint-sm} {
+  :host {
+    padding: $space-3;
+  }
+  .draft-panel {
+    padding: $space-4;
+  }
+}

@@ -1,209 +1,51 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
-import { TuiIcon } from '@taiga-ui/core';
+import { RouterLink } from '@angular/router';
+import { TuiButton } from '@taiga-ui/core';
 import type { DiscussionTopicFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
-import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
-import { 
-  DiscussionPostComponent, 
-  DiscussionThreadComponent,
-  DiscussionPostHeaderComponent,
-  DiscussionExpandablePostContentComponent,
-  DiscussionVotingButtonComponent,
-  DiscussionReplyButtonComponent,
-  type DiscussionPostVM
-} from '@ui/discussion';
-import { RouterLink } from '@angular/router';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
+import type { ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
+import { FeedDatePipe } from '../actions/feed-date.pipe';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
-
-export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
+export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
   topicLink: string;
   contextMenu: ContextMenuItem[];
   attribution?: AttributionInfoVM;
-}
+};
 
 @Component({
   selector: DISCUSSION_TOPIC_FEED_ITEM_SELECTOR,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    MediumCardComponent,
-    CardHeaderComponent,
-    CardFooterComponent,
-    MediumTitleComponent,
-    AppAvatarComponent,
-    ShareToggleButtonComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
-    DiscussionStatsBadgeComponent,
-    TuiIcon,
-    DiscussionThreadComponent,
-    DiscussionPostComponent,
-    DiscussionPostHeaderComponent,
-    DiscussionExpandablePostContentComponent,
-    DiscussionVotingButtonComponent,
-    DiscussionReplyButtonComponent
-  ],
-  styles: [`
-    .discussion-chip {
-      background-color: var(--tui-status-info);
-      color: white;
-    }
-    .discussion-label {
-      display: inline-flex;
-      align-items: center;
-      opacity: 0.5;
-      margin-left: 0.5rem;
-    }
-    .discussion-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1rem 0;
-    }
-    .discussion-stats {
-      display: flex;
-      gap: 1.5rem;
-      color: var(--tui-text-secondary);
-      font-size: 0.875rem;
-    }
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .discussion-stats-badge {
-      opacity: 0.5;
-    }
-  `],
+  imports: [RouterLink, TuiButton, MediumCardComponent, CardHeaderComponent, CardFooterComponent, MediumTitleComponent, ShareToggleButtonComponent, FavoriteToggleButtonComponent, FeedAttributionComponent, FeedActionsMenuComponent, FeedDatePipe],
+  styleUrl: './discussion-preview.scss',
   template: `
-    <ui-medium-card class="medium-card">
+    <ui-medium-card>
       <ui-card-header slot="header">
-        <app-avatar
-          slot="left-side"
-          [size]="'m'"
-          [avatar]="{ url: 'https://picsum.photos/200', alt: item.title }"/>
-        <h3 uiMediumTitle>
-          {{ item.title }}
-          <span class="discussion-label">
-            discussion <tui-icon [style.height]="'16px'" icon="@tui.message-square-text" />
-          </span>
-        </h3>
-        <discussion-stats-badge
-          class="discussion-stats-badge"
-          [stats]="{ participants: item.participantsCount, views: item.viewsCount }" />
-
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="discussions"
-          [slug]="item.discussionSlug"
-          [title]="item.discussionData.topic"
-        />
+        <h3 uiMediumTitle>{{ item.discussionData.topic || item.title }}</h3>
+        <p>{{ item.participantsCount }} participants · {{ item.viewsCount }} views</p>
+        <small>{{ item.timestamp | feedDate }}</small>
+        <favorite-toggle-button slot="right-side" type="discussions" [slug]="item.discussionSlug" />
+        <share-toggle-button slot="right-side" size="s" type="discussions" [slug]="item.discussionSlug" [title]="item.discussionData.topic || item.title" [path]="topicLink" />
       </ui-card-header>
-      
-      <div class="discussion-content">
-        <ui-discussion-thread>
-
-          <ui-discussion-post slot="opening-post" [post]="getOpeningPost()">
-            <ui-discussion-post-header 
-              slot="header"
-              [authorName]="getOpeningPost().author.name"
-              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
-              [publishedTime]="getOpeningPost().publishedTime">
-              <div slot="user-badges"></div>
-            </ui-discussion-post-header>
-            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-            <ui-discussion-voting-button slot="bottom-bar" />
-            <ui-discussion-reply-button slot="bottom-bar" />
-          </ui-discussion-post>
-
-          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
-            <ui-discussion-post-header 
-              slot="header"
-              [authorName]="getOpeningPost().author.name"
-              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
-              [publishedTime]="getOpeningPost().publishedTime">
-              <div slot="user-badges"></div>
-            </ui-discussion-post-header>
-            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-            <ui-discussion-voting-button slot="bottom-bar" />
-            <ui-discussion-reply-button slot="bottom-bar" />
-          </ui-discussion-post>
-
-          <ui-discussion-thread slot="reply">
-
-            <ui-discussion-post [post]="getOpeningPost()" slot="opening-post">
-              <ui-discussion-post-header slot="header" [authorName]="getOpeningPost().author.name" [authorAvatarUrl]="getOpeningPost().author.avatar.url" [publishedTime]="getOpeningPost().publishedTime">
-                <div slot="user-badges"></div>
-              </ui-discussion-post-header>
-              <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-            </ui-discussion-post>
-
-            <ui-discussion-post [post]="getOpeningPost()" slot="reply">
-              <ui-discussion-post-header slot="header" [authorName]="getOpeningPost().author.name" [authorAvatarUrl]="getOpeningPost().author.avatar.url" [publishedTime]="getOpeningPost().publishedTime">
-                <div slot="user-badges"></div>
-              </ui-discussion-post-header>
-              <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-              <ui-discussion-voting-button slot="bottom-bar" />
-              <ui-discussion-reply-button slot="bottom-bar" />
-            </ui-discussion-post>
-
-          </ui-discussion-thread>
-
-          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
-            <ui-discussion-post-header 
-              slot="header"
-              [authorName]="getOpeningPost().author.name"
-              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
-              [publishedTime]="getOpeningPost().publishedTime">
-              <div slot="user-badges"></div>
-            </ui-discussion-post-header>
-            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-            <ui-discussion-voting-button slot="bottom-bar" />
-            <ui-discussion-reply-button slot="bottom-bar" />
-          </ui-discussion-post>
-
-          <ui-discussion-post slot="reply" [post]="getOpeningPost()">
-            <ui-discussion-post-header 
-              slot="header"
-              [authorName]="getOpeningPost().author.name"
-              [authorAvatarUrl]="getOpeningPost().author.avatar.url"
-              [publishedTime]="getOpeningPost().publishedTime">
-              <div slot="user-badges"></div>
-            </ui-discussion-post-header>
-            <ui-discussion-expandable-post-content slot="content" [content]="getOpeningPost().content" />
-            <ui-discussion-voting-button slot="bottom-bar" />
-            <ui-discussion-reply-button slot="bottom-bar" />
-          </ui-discussion-post>
-
-        </ui-discussion-thread>
+      <div class="discussion-preview">
+        @for (message of messages; track $index) {
+          <article>
+            <header><strong>{{ message.author }}</strong> <small>{{ message.timestamp | feedDate }}</small></header>
+            <p>{{ message.content }}</p>
+          </article>
+        } @empty { <p>No messages are available in this preview.</p> }
       </div>
-
-      <a
-        tuiButton 
-        size="s" 
-        appearance="primary"
-        [routerLink]="item.topicLink">
-        <tui-icon icon="@tui.grid"/>
-        Discover Application
-      </a>
-
+      <a tuiButton size="s" appearance="primary" [routerLink]="topicLink" [attr.aria-label]="'Open discussion: ' + item.discussionData.topic">Open discussion</a>
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <context-menu-chip
-          slot="right-side"
-          [contextMenu]="item.contextMenu"
-          size="xs"
-          appearance="action-soft-flat"
-        />
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <feed-actions-menu slot="right-side" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
       </ui-card-footer>
     </ui-medium-card>
   `,
@@ -211,25 +53,17 @@ export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, never> & {
 export class DiscussionTopicFeedItemComponent {
   @Input() item!: DiscussionTopicFeedItemVM;
   @Input() ctaPath = '';
-
-  getOpeningPost(): DiscussionPostVM {
-    return {
-      id: '1',
-      content: this.item.discussionData?.topic || '',
-      author: {
-        id: 'test-author',
-        slug: 'test-author',
-        name: 'Test Author',
-        avatar: {
-          url: 'https://picsum.photos/200'
-        }
-      },
-      publishedTime: new Date(),
-      upvotesCount: 0,
-      downvotesCount: 0,
-      isEdited: false
-    };
+  get topicLink(): string {
+    return this.item.topicLink || `/apps/${encodeURIComponent(this.item.appSlug)}/discussions/${encodeURIComponent(this.item.discussionSlug)}`;
   }
-
-
+  get messages(): { author: string; content: string; timestamp: unknown }[] {
+    return (this.item.discussionData.messages ?? []).flatMap(value => {
+      if (!value || typeof value !== 'object' || !('content' in value) || typeof value.content !== 'string') return [];
+      return [{
+        content: value.content,
+        author: 'author' in value && typeof value.author === 'string' ? value.author : 'Community member',
+        timestamp: 'timestamp' in value ? value.timestamp : undefined,
+      }];
+    }).slice(0, 3);
+  }
 }

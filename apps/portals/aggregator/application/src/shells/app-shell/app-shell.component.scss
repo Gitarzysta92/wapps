@@ -175,7 +175,30 @@
 
   &.expanded .sidebar-inner {
     @media #{$layout-breakpoint-md} {
-      background-color: white
+      background-color: var(--tui-background-elevation-1)
     }
   }
+}
+
+// Let content shrink below the desktop sidebar widths on small screens.
+:host {
+  display: block;
+  .main { box-sizing: border-box; grid-template-columns: $sidebar-base-width minmax(0, 1fr) $sidebar-base-width; }
+  ::ng-deep .main > * { min-width: 0; max-width: 100%; }
+  .sidebar-inner { overflow-y: auto; overscroll-behavior: contain; }
+  @media #{$layout-breakpoint-md} {
+    .sidebar { display: none; }
+    .footer { padding-bottom: calc($space-24 + env(safe-area-inset-bottom, 0px)); }
+    .main, &:not(:has(.sidebar.right)) .main, &:not(:has(.sidebar.left)) .main,
+    .main:not(:has(.sidebar.right)), .main:not(:has(.sidebar.left)) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "main";
+    }
+  }
+  @media #{$layout-breakpoint-sm} {
+    .sidebar { display: none; }
+    .main { padding: 0 $space-3; }
+    .footer { padding-bottom: calc($space-24 + env(safe-area-inset-bottom, 0px)); }
+  }
+  .bottom-bar { z-index: $z-sticky; box-sizing: border-box; }
 }

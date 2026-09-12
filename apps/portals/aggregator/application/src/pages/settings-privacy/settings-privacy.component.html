@@ -1,22 +1,36 @@
 <ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
   <ui-breadcrumbs
     slot="top-bar"
     [breadcrumbs]="breadcrumb()">
   </ui-breadcrumbs>
+  }
 
-  <h1 uiPageTitle slot="title">Privacy Settings</h1>
+  <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Privacy Settings</h1>
 
-  <p slot="meta" class="page-description">
+  <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
     Control your profile visibility and data preferences
   </p>
 </ui-page-header>
 
-@if (isError()) {
+@if (isLoading()) {
+  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
+    @for (item of [1, 2, 3]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+    }
+  </section>
+} @else if (isError()) {
   <section class="error-section">
-    <p>Error loading preferences. Please try again.</p>
+    <p>Could not read preferences from this browser. Check storage access and reload to try again.</p>
   </section>
 } @else {
   <section class="settings-content">
+    <p class="page-description">These choices are saved only on this browser. They do not change server visibility, data collection or account permissions.</p>
+    @if (feedback()) {
+      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
+    }
     <!-- Profile Visibility -->
     <div
       tuiAppearance="floating"
@@ -42,6 +56,7 @@
               <button
                 class="visibility-option"
                 [class.visibility-option--selected]="privacyPreferences().profileVisibility === option.value"
+                [attr.aria-pressed]="privacyPreferences().profileVisibility === option.value"
                 (click)="onVisibilityChange(option.value)"
               >
                 <tui-icon 
@@ -81,6 +96,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Email Address"
               tuiSwitch
               [ngModel]="privacyPreferences().showEmail"
               (ngModelChange)="onPrivacyToggle('showEmail', $event)"
@@ -96,6 +112,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Badges"
               tuiSwitch
               [ngModel]="privacyPreferences().showBadges"
               (ngModelChange)="onPrivacyToggle('showBadges', $event)"
@@ -111,6 +128,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Activity History"
               tuiSwitch
               [ngModel]="privacyPreferences().showActivityHistory"
               (ngModelChange)="onPrivacyToggle('showActivityHistory', $event)"
@@ -126,6 +144,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Favorites"
               tuiSwitch
               [ngModel]="privacyPreferences().showFavorites"
               (ngModelChange)="onPrivacyToggle('showFavorites', $event)"
@@ -141,6 +160,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Discussions"
               tuiSwitch
               [ngModel]="privacyPreferences().showDiscussions"
               (ngModelChange)="onPrivacyToggle('showDiscussions', $event)"
@@ -156,6 +176,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Show Suites"
               tuiSwitch
               [ngModel]="privacyPreferences().showSuites"
               (ngModelChange)="onPrivacyToggle('showSuites', $event)"
@@ -189,6 +210,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Usage Analytics"
               tuiSwitch
               [ngModel]="privacyPreferences().allowAnalytics"
               (ngModelChange)="onPrivacyToggle('allowAnalytics', $event)"
@@ -204,6 +226,7 @@
           <div class="setting-control">
             <input
               type="checkbox"
+              aria-label="Personalization"
               tuiSwitch
               [ngModel]="privacyPreferences().allowPersonalization"
               (ngModelChange)="onPrivacyToggle('allowPersonalization', $event)"
@@ -231,30 +254,33 @@
           <div class="danger-action">
             <div class="danger-action__info">
               <h3 class="danger-action__title">Export Your Data</h3>
-              <p class="danger-action__description">Download a copy of all your data</p>
+              <p class="danger-action__description">Download saved local profile and preferences as JSON. Includes demo defaults when no local record exists; excludes remote data and unsaved edits.</p>
             </div>
             <button
               tuiButton
               appearance="secondary"
               iconStart="@tui.download"
+              (click)="onExport()"
+              [disabled]="isExporting()"
               type="button"
             >
-              Request Export
+              {{ isExporting() ? 'Exporting...' : 'Export Local Settings' }}
             </button>
           </div>
 
           <div class="danger-action">
             <div class="danger-action__info">
               <h3 class="danger-action__title">Delete Account</h3>
-              <p class="danger-action__description">Permanently delete your account and all associated data</p>
+              <p class="danger-action__description">Remote account deletion is unavailable in this app. No account or server data will be deleted.</p>
             </div>
             <button
               tuiButton
               appearance="error"
               iconStart="@tui.trash-2"
+              disabled
               type="button"
             >
-              Delete Account
+              Deletion Unavailable
             </button>
           </div>
         </div>
@@ -269,13 +295,13 @@
         type="button"
         (click)="onCancel()"
       >
-        Reset to Defaults
+        Reset to Saved
       </button>
       <button
         tuiButton
         appearance="primary"
         type="button"
-        [disabled]="isSaving()"
+        [disabled]="isSaving() || isLoading()"
         (click)="onSave()"
       >
         @if (isSaving()) {
