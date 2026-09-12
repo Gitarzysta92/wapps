@@ -9,6 +9,7 @@ Reuse the layout mixins in
 - Use 16px between a card header and its content. Stack optional descriptions below the heading with an 8px gap.
 - Settings pages share `_settings-page.scss`; avoid recreating card header spacing in each settings page.
 - Empty optional page-header slots must not reserve space.
+- The app shell owns the 32px gap before the footer, using the existing spacing token. Do not add page-level bottom padding or margin just to separate content from the footer.
 
 Use design-system spacing tokens. Keep layout in stylesheets and theme appearances in `theme.scss`.
 Check desktop, tablet, and mobile when changing shared spacing. Preserve deliberate hero and reading layouts.

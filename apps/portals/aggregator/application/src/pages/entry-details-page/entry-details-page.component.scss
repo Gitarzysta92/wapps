@@ -2,7 +2,7 @@
 
 :host { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
 *, *::before, *::after { box-sizing: border-box; }
-.detail-page { min-width: 0; max-width: 100%; @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; padding-bottom: $space-8; color: var(--tui-text-primary); }
+.detail-page { min-width: 0; max-width: 100%; @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; color: var(--tui-text-primary); }
 .detail-header { padding: $space-6 0; }
 h1 { @include text($font-size-3xl, $font-weight-bold, $line-height-tight); color: var(--tui-text-primary); margin: $space-3 0; overflow-wrap: anywhere; }
 h2 { @include text($font-size-xl, $font-weight-bold); color: var(--tui-text-primary); margin: 0 0 $space-4; }

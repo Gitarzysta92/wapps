@@ -53,7 +53,7 @@
 }
 
 .footer {
-  margin: 0 auto;
+  margin: $space-8 auto 0;
   @include main-width();
 }
 

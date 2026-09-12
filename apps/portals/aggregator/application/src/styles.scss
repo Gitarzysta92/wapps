@@ -10,6 +10,10 @@
   margin: 0;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   position: relative;
   display: block;
