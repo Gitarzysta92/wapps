@@ -1,3 +1,5 @@
+import { BubblePhysics, createLiquidBubbleMotion, liquidBubbleContours, sampleLiquidBubbles } from './liquid-bubbles';
+
 type EdgePoint = { x: number; y: number; nx: number; ny: number };
 
 // Seeded value noise, with quintic interpolation for continuous acceleration.
@@ -79,19 +81,28 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   let frame: number | undefined;
   let geometryDirty = true, visible = false, ready = false;
   let amplitude = 0, duration = 16_000, radius = 0, color = '';
+  let topAmplitude = 0, topWavelength = 220;
   let gradientDuration = 24_000, gradientColors: string[] = [];
+  let bubbleRadius = 0, bubbleRise = 0, bubbleDuration = 9000, hostWidth = 0;
+  let bubbleCount = 0;
+  let bubblePhysics: BubblePhysics;
+  let bubbleMotion = createLiquidBubbleMotion();
+  const bubbleSeed = Math.floor(Math.random() * 0x7fffffff);
   let width = 0, height = 0, start = 0, bleed = 0, ratio = 1;
   let edges: EdgePoint[][] = [];
 
   const updateGeometry = () => {
     const bounds = host.getBoundingClientRect();
-    visible = bounds.bottom > 0 && bounds.top < view.innerHeight && bounds.width > 0 && bounds.height > 0;
+    const topBleed = topAmplitude + (motion.matches ? amplitude + 2 : Math.max(amplitude + 2, bubbleRise + bubbleRadius * 2 + amplitude + 2));
+    visible = bounds.bottom > 0 && bounds.top - topBleed < view.innerHeight && bounds.width > 0 && bounds.height > 0;
     canvas.style.display = visible ? '' : 'none';
     if (!visible) return;
     bleed = Math.ceil(amplitude + 2);
-    start = Math.max(0, -bounds.top) - bleed;
+    start = Math.max(-topBleed, -bounds.top - bleed);
+    if (hostWidth !== bounds.width) bubbleMotion = createLiquidBubbleMotion();
+    hostWidth = bounds.width;
     width = bounds.width + bleed * 2;
-    height = Math.min(bounds.height, view.innerHeight - bounds.top) - start + bleed;
+    height = Math.min(bounds.height + bleed, view.innerHeight - bounds.top + bleed) - start;
     ratio = Math.min(view.devicePixelRatio || 1, 2);
     canvas.style.left = `${-bleed}px`;
     canvas.style.top = `${start}px`;
@@ -122,12 +133,21 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     }
     paint.beginPath();
     const timeX = Math.cos(phase) * 0.9, timeY = Math.sin(phase) * 0.9;
+    const topLift = (x: number, at = phase) => {
+      const k = x / topWavelength * Math.PI * 2;
+      const wave = Math.sin(k + at) * 0.65 + Math.sin(k * 0.55 - at * 2) * 0.35;
+      // Broad rolling crests taper smoothly into the unchanged side edges.
+      const taper = Math.sin(Math.min(1, Math.max(0, Math.min(x, hostWidth - x)) / 64) * Math.PI / 2) ** 2;
+      return topAmplitude * (0.5 + wave * 0.5) * taper;
+    };
+    const surface = (x: number, at = phase) =>
+      -amplitude * displacement(x, 0, Math.cos(at) * 0.9, Math.sin(at) * 0.9) - topLift(x, at);
     let first = true;
     for (const edge of edges) {
       const points = edge.map(({ x, y, nx, ny }) => {
         const wave = amplitude * displacement(x, y, timeX, timeY);
         // Local canvas coordinates retain precision even far down a long feed.
-        return { x: x + bleed + nx * wave, y: y - start + ny * wave };
+        return { x: x + bleed + nx * wave, y: y - start + ny * wave - (ny < 0 ? topLift(x) * ny * ny : 0) };
       });
       if (first) paint.moveTo(points[0].x, points[0].y);
       else paint.lineTo(points[0].x, points[0].y);
@@ -140,6 +160,28 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     }
     paint.closePath();
     paint.fill();
+    if (!motion.matches && bubbleRadius > 0 && start < bubbleRadius * 2) {
+      // Only small patches along the top edge are sampled, regardless of feed length.
+      const candidates = sampleLiquidBubbles(stamp, hostWidth, bubbleRadius, bubbleRise, bubbleDuration, bubbleCount, bubbleSeed);
+      bubbleMotion(stamp, candidates, (x, time) => {
+        const at = time / duration * Math.PI * 2;
+        const step = 0.01 / duration * 1000 * Math.PI * 2;
+        return {
+          height: topAmplitude > 0 ? topLift(x, at) / topAmplitude : 0,
+          base: surface(x, at),
+          velocity: (surface(x, at + step) - surface(x, at - step)) / 0.02,
+        };
+      }, bubblePhysics).forEach(bubble => {
+        const paths = liquidBubbleContours(bubble, surface);
+        paint.beginPath();
+        for (const points of paths) {
+          paint.moveTo(points[0].x + bleed, points[0].y - start);
+          for (const point of points.slice(1)) paint.lineTo(point.x + bleed, point.y - start);
+          paint.closePath();
+        }
+        paint.fill();
+      });
+    }
     if (!ready) {
       host.classList.add('ui-wobble-ready');
       ready = true;
@@ -153,6 +195,8 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   const refresh = () => {
     const style = view.getComputedStyle(host);
     amplitude = Math.max(0, Number(style.getPropertyValue('--wobble-outline-amplitude')) || 0);
+    topAmplitude = Math.max(0, parseFloat(style.getPropertyValue('--wobble-top-amplitude')) || 0);
+    topWavelength = Math.max(48, parseFloat(style.getPropertyValue('--wobble-top-wavelength')) || 220);
     color = style.getPropertyValue('--wobble-outline-color').trim();
     const accents = [2, 3].map(i => style.getPropertyValue(`--wobble-outline-color-${i}`).trim());
     gradientColors = accents.every(Boolean) ? [color, ...accents] : [];
@@ -162,6 +206,18 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     };
     duration = readDuration('--wobble-outline-duration', 16);
     gradientDuration = readDuration('--wobble-outline-gradient-duration', 24);
+    bubbleRadius = Math.max(0, parseFloat(style.getPropertyValue('--wobble-bubble-radius')) || 0);
+    bubbleRise = Math.max(0, parseFloat(style.getPropertyValue('--wobble-bubble-rise')) || 0);
+    bubbleDuration = readDuration('--wobble-bubble-duration', 9);
+    bubbleCount = Math.max(0, Math.min(16, Math.floor(parseFloat(style.getPropertyValue('--wobble-bubble-count')) || 0)));
+    const readNumber = (token: string, fallback: number) => parseFloat(style.getPropertyValue(token)) || fallback;
+    bubblePhysics = {
+      buoyancy: Math.max(1, readNumber('--wobble-bubble-buoyancy', 100)),
+      tension: Math.max(1, readNumber('--wobble-bubble-tension', 32)),
+      damping: Math.max(1, readNumber('--wobble-bubble-damping', 10)),
+      releaseHeight: Math.max(0, Math.min(0.99, readNumber('--wobble-bubble-release-height', 0.75))),
+      growthStart: Math.max(0, Math.min(0.99, readNumber('--wobble-bubble-growth-start', 0.35))),
+    };
     radius = Math.max(0, parseFloat(style.borderTopLeftRadius) || 0);
     onScroll();
   };

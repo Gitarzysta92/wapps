@@ -73,6 +73,45 @@ describe('canvas feed backing', () => {
     host.style.setProperty('--wobble-outline-gradient-duration', '24s');
   }
 
+  function enableBubbles() {
+    host.style.setProperty('--wobble-bubble-radius', '18');
+    host.style.setProperty('--wobble-bubble-rise', '40');
+    host.style.setProperty('--wobble-bubble-duration', '9s');
+    host.style.setProperty('--wobble-bubble-count', '10');
+  }
+
+  it('draws bubbles within the same canvas and gradient without changing content layout', () => {
+    enableGradient(); enableBubbles();
+    start();
+    const canvas = host.querySelector('canvas')!;
+    expect(host.querySelectorAll('canvas')).toHaveLength(1);
+    expect(parseFloat(canvas.style.top)).toBeLessThan(-60);
+    expect(paint.fill).toHaveBeenCalledTimes(11); // Backing plus ten liquid patches.
+    expect(paint.fillStyle).toBe(paint.createLinearGradient.mock.results[0].value);
+    const outline = [...paint.lineTo.mock.calls];
+    paint.lineTo.mockClear(); advance(4500);
+    expect(paint.lineTo.mock.calls).not.toEqual(outline);
+    expect(paint.lineTo.mock.calls.flat().every(Number.isFinite)).toBe(true);
+    expect(host.style.padding).toBe('');
+    expect(host.querySelector('button')!.textContent).toBe('Feed action');
+  });
+
+  it('limits bubbles on narrow screens and skips them below the top or with reduced motion', () => {
+    enableBubbles(); width = 320;
+    start();
+    expect(paint.fill).toHaveBeenCalledTimes(5);
+    paint.fill.mockClear();
+    top = -5_000_000; height = 10_000_000;
+    window.dispatchEvent(new Event('scroll')); advance(1000);
+    expect(paint.fill).toHaveBeenCalledTimes(1);
+    expect(host.querySelector('canvas')!.height).toBeLessThanOrEqual((window.innerHeight + 20) * 2);
+    paint.fill.mockClear();
+    top = 200; reduced = true; motionChange(); advance(2000);
+    expect(paint.fill).toHaveBeenCalledTimes(1);
+    expect(frames.size).toBe(0);
+    expect(host.querySelector('canvas')!.style.top).toBe('-10px');
+  });
+
   it('animates an opaque themed gradient in a continuous loop', () => {
     enableGradient();
     start();
@@ -139,6 +178,23 @@ describe('canvas feed backing', () => {
     // The straight top edge cannot escape its 8px deformation envelope (10px bleed).
     const topEdge = paint.bezierCurveTo.mock.calls.slice(0, Math.ceil((width - 32) / 12));
     expect(topEdge.every(call => call[5] >= 2 && call[5] <= 18)).toBe(true);
+  });
+
+  it('adds broad top crests without widening the sides and stays continuous at the loop seam', () => {
+    host.style.setProperty('--wobble-top-amplitude', '24');
+    host.style.setProperty('--wobble-top-wavelength', '220');
+    start();
+    const canvas = host.querySelector('canvas')!;
+    const firstEdge = paint.bezierCurveTo.mock.calls.slice(0, Math.ceil((width - 32) / 12));
+    const surface = firstEdge.map(call => call[5] + parseFloat(canvas.style.top));
+    expect(Math.min(...surface)).toBeLessThan(-18);
+    expect(Math.max(...surface) - Math.min(...surface)).toBeGreaterThan(16);
+    expect(canvas.width).toBe((width + 20) * 2);
+    expect(paint.bezierCurveTo.mock.calls.flat().every(Number.isFinite)).toBe(true);
+    paint.bezierCurveTo.mockClear(); advance(15_999);
+    const before = paint.bezierCurveTo.mock.calls.flat();
+    paint.bezierCurveTo.mockClear(); advance(16_001);
+    expect(paint.bezierCurveTo.mock.calls.flat().every((value, i) => Math.abs(value - before[i]) < 0.1)).toBe(true);
   });
 
   it('joins every side and corner when the whole feed fits in the viewport', () => {
