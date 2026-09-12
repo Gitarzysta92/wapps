@@ -1,3 +1,7 @@
+import { signal } from '@angular/core';
+import { TUI_DARK_MODE } from '@taiga-ui/core';
+import { By } from '@angular/platform-browser';
+import { TuiDropdowns, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, Router } from '@angular/router';
@@ -11,15 +15,39 @@ async function settle(harness: RouterTestingHarness) {
   await harness.fixture.whenStable(); harness.detectChanges();
 }
 
+
+async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> {
+  const trigger = harness.routeDebugElement!
+    .queryAll(By.directive(TuiDropdownDirective))
+    .find(element => element.nativeElement.textContent.trim() === 'Manage filters')!;
+  const dropdown = trigger.injector.get(TuiDropdownDirective);
+  if (!dropdown.ref()) {
+    TestBed.createComponent(TuiDropdowns).detectChanges();
+    document.body.appendChild(harness.fixture.nativeElement);
+    // Supply layout and hit-testing absent from jsdom for Taiga's real portal.
+    Object.defineProperty(document, 'elementFromPoint', { configurable: true, value: () => trigger.nativeElement });
+    jest.spyOn(trigger.nativeElement, 'getBoundingClientRect').mockReturnValue({
+      x: 0, y: 0, top: 0, left: 0, right: 160, bottom: 32, width: 160, height: 32,
+      toJSON: () => ({}),
+    });
+    jest.spyOn(dropdown, 'position', 'get').mockReturnValue('absolute');
+    dropdown.toggle(true);
+    await settle(harness);
+  }
+  dropdown.ref()!.changeDetectorRef.detectChanges();
+  return document.querySelector<HTMLElement>('.catalog-filters')!;
+}
+
 describe('listing display preferences', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({ providers: [
+        { provide: TUI_DARK_MODE, useValue: signal(false) },
       provideNoopAnimations(), provideRouter([{ path: 'catalog', component: ResultsPageComponent }]),
       ...providePreferencesFeature({ apiBaseUrl: '' }).providers
     ] });
   });
-  afterEach(() => TestBed.resetTestingModule());
+  afterEach(() => { TestBed.resetTestingModule(); Reflect.deleteProperty(document, 'elementFromPoint'); });
 
   it('uses saved defaults, honors explicit URL values, and falls back for invalid values', async () => {
     await firstValueFrom(TestBed.inject(PreferencesService).updateDisplayPreferences({ defaultView: 'list', itemsPerPage: 10 }));
@@ -42,7 +70,8 @@ describe('listing display preferences', () => {
       await settle(harness);
       expect(page.query().pageSize).toBe(size);
       expect(page.result.value()?.pageSize).toBe(size);
-      const perPage = Array.from(harness.routeNativeElement?.querySelectorAll('select') ?? []).find(select => Array.from(select.options).some(option => option.value === '100'));
+      const filterPanel = await openFilters(harness);
+      const perPage = Array.from(filterPanel.querySelectorAll('select')).find(select => Array.from(select.options).some(option => option.value === '100'));
       expect(perPage?.value).toBe(String(size));
     }
   });
@@ -56,7 +85,8 @@ describe('listing display preferences', () => {
     await firstValueFrom(preferences.updateDisplayPreferences({ dateFormat: 'MM/DD/YYYY' }));
     harness.detectChanges();
     expect(time?.textContent?.trim()).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
-    const view = Array.from(harness.routeNativeElement?.querySelectorAll('select') ?? []).find(select => Array.from(select.options).some(option => option.value === 'list'));
+    const filterPanel = await openFilters(harness);
+    const view = Array.from(filterPanel.querySelectorAll('select')).find(select => Array.from(select.options).some(option => option.value === 'list'));
     if (!view) throw new Error('View control missing');
     view.value = 'list'; view.dispatchEvent(new Event('change')); await settle(harness);
     expect(TestBed.inject(Router).url).toContain('view=list');

@@ -570,9 +570,7 @@ export const routes: Routes = [
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
           },
-          header: {
-            component: HeaderPartialComponent,
-          },
+          header: undefined,
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
@@ -657,9 +655,7 @@ export const routes: Routes = [
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
           },
-          header: {
-            component: HeaderPartialComponent,
-          },
+          header: undefined,
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
@@ -696,9 +692,7 @@ export const routes: Routes = [
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
           },
-          header: {
-            component: HeaderPartialComponent,
-          },
+          header: undefined,
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
@@ -1260,7 +1254,7 @@ portalRoutes.unshift(
     ...articleListingRoute,
     path: NAVIGATION.digest.path,
     loadComponent: () => import('./pages/digest/digest-page.component').then(m => m.DigestPageComponent),
-    data: { ...articleListingRoute.data, breadcrumb: [NAVIGATION.home, NAVIGATION.digest] },
+    data: { ...articleListingRoute.data, header: { component: HeaderPartialComponent }, breadcrumb: [NAVIGATION.home, NAVIGATION.digest] },
   },
 );
 

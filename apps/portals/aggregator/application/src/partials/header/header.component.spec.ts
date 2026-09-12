@@ -5,6 +5,41 @@ import { DiscoverySearchService } from '@portals/shared/features/search';
 import { HeaderPartialComponent } from './header.component';
 
 describe('global header search', () => {
+  it('keeps listing searches in their route, preserves filters, and clears/restores URL queries', fakeAsync(() => {
+    const params = new BehaviorSubject(convertToParamMap({ q: 'architecture', category: 'design', page: '2' }));
+    const route = { queryParamMap: params };
+    const navigate = jest.fn();
+    TestBed.configureTestingModule({ imports: [HeaderPartialComponent], providers: [
+      { provide: ActivatedRoute, useValue: route },
+      { provide: Router, useValue: { navigate } },
+      { provide: DiscoverySearchService, useValue: { remember: jest.fn() } },
+    ] });
+    const fixture = TestBed.createComponent(HeaderPartialComponent);
+    fixture.componentRef.setInput('searchWithinPage', true);
+    fixture.componentRef.setInput('searchLabel', 'Search articles');
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    expect(input.getAttribute('aria-label')).toBe('Search articles');
+    expect(input.value).toBe('architecture');
+    input.value = '  design  ';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    tick(300);
+    expect(navigate).toHaveBeenLastCalledWith([], {
+      relativeTo: route, queryParamsHandling: 'merge', queryParams: { search: 'design', q: null, page: 1 },
+    });
+    params.next(convertToParamMap({ search: 'design', category: 'design', page: '1' }));
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    tick(300);
+    expect(navigate).toHaveBeenLastCalledWith([], {
+      relativeTo: route, queryParamsHandling: 'merge', queryParams: { search: null, q: null, page: 1 },
+    });
+    params.next(convertToParamMap({ q: 'architecture', category: 'design', page: '2' }));
+    fixture.detectChanges();
+    expect(input.value).toBe('architecture');
+    fixture.destroy();
+  }));
+
   it('submits a labeled search form without a native reload and restores route queries', () => {
     const params = new BehaviorSubject(convertToParamMap({ search: 'Quick Task' }));
     const navigate = jest.fn();

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
 import {
   BreadcrumbsComponent,
   BreadcrumbsSkeletonComponent,
@@ -13,8 +13,6 @@ import {
   PageHeaderComponent,
   PageTitleComponent,
   PageTitleSkeletonComponent,
-  PageMetaComponent,
-  PageMetaSkeletonComponent,
   MediumCardSkeletonComponent,
 } from '@ui/layout';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
@@ -28,6 +26,10 @@ import {
   CatalogSort,
   normalizeCatalogFacet,
 } from '@portals/shared/features/listing';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
+import { CoverImageComponent } from '@ui/cover-image';
+import { HeaderPartialComponent } from '../../partials/header/header.component';
 import { NAVIGATION } from '../../navigation';
 import { EntryDetailsDataService } from '../entry-details-page/entry-details-data.service';
 
@@ -42,18 +44,26 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
     PreferredDatePipe,
     RouterLink,
     TuiButton,
+    TuiAppearance,
+    TuiLink,
+    TuiAvatar,
+    CoverImageComponent,
+    HeaderPartialComponent,
+    TuiDropdownOpen,
+    TuiDropdownDirective,
+    TuiDropdownOptionsDirective,
     TuiIcon,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,
     PageTitleComponent,
     PageTitleSkeletonComponent,
-    PageMetaComponent,
-    PageMetaSkeletonComponent,
     MediumCardSkeletonComponent,
   ],
 })
 export class ResultsPageComponent {
+  filtersOpen = false;
+  readonly searchLabel = computed(() => this.kind() === 'all' ? 'Search this catalog' : 'Search ' + this.kind());
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly preferences = inject(PreferencesService, { optional: true });

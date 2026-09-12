@@ -1,3 +1,6 @@
+import { signal } from '@angular/core';
+import { TUI_DARK_MODE } from '@taiga-ui/core';
+import { TuiDropdowns, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -19,10 +22,35 @@ async function settle(harness: RouterTestingHarness): Promise<void> {
   harness.detectChanges();
 }
 
+
+async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> {
+  const trigger = harness.routeDebugElement!
+    .queryAll(By.directive(TuiDropdownDirective))
+    .find(element => element.nativeElement.textContent.trim() === 'Manage filters')!;
+  const dropdown = trigger.injector.get(TuiDropdownDirective);
+  if (!dropdown.ref()) {
+    TestBed.createComponent(TuiDropdowns).detectChanges();
+    document.body.appendChild(harness.fixture.nativeElement);
+    // Supply layout and hit-testing absent from jsdom for Taiga's real portal.
+    Object.defineProperty(document, 'elementFromPoint', { configurable: true, value: () => trigger.nativeElement });
+    jest.spyOn(trigger.nativeElement, 'getBoundingClientRect').mockReturnValue({
+      x: 0, y: 0, top: 0, left: 0, right: 160, bottom: 32, width: 160, height: 32,
+      toJSON: () => ({}),
+    });
+    jest.spyOn(dropdown, 'position', 'get').mockReturnValue('absolute');
+    dropdown.toggle(true);
+    await settle(harness);
+  }
+  dropdown.ref()!.changeDetectorRef.detectChanges();
+  return document.querySelector<HTMLElement>('.catalog-filters')!;
+}
+
 describe('catalog page URL state', () => {
+  afterEach(() => Reflect.deleteProperty(document, 'elementFromPoint'));
   beforeEach(() =>
     TestBed.configureTestingModule({
       providers: [
+        { provide: TUI_DARK_MODE, useValue: signal(false) },
         provideNoopAnimations(),
         provideRouter([
           { path: 'categories', component: CategoryResultsPageComponent },
@@ -146,7 +174,8 @@ describe('catalog page URL state', () => {
       page: '2',
     });
     expect(names().every((name) => !first.includes(name))).toBe(true);
-    const sort = [...root().querySelectorAll('select')].find((select) =>
+    const filterPanel = await openFilters(harness);
+    const sort = [...filterPanel.querySelectorAll('select')].find((select) =>
       [...select.options].some((option) => option.value === 'name-desc')
     )!;
     sort.value = 'name-desc';
@@ -195,8 +224,9 @@ describe('catalog page URL state', () => {
       '/categories?type=applications&page=2&platform=web&device=mobile'
     );
     await settle(harness);
+    const filterPanel = await openFilters(harness);
     const controls = [
-      ...harness.routeNativeElement!.querySelectorAll('select'),
+      ...filterPanel.querySelectorAll('select'),
     ];
     const monetization = controls.find((select) =>
       select.parentElement?.textContent?.includes('Monetization')
@@ -225,7 +255,8 @@ describe('catalog page URL state', () => {
   it('shows URL-selected category, tag, and application facets in native controls on first render', async () => {
     const harness = await RouterTestingHarness.create('/categories?type=applications&category=photo-editing&tag=web-development&platform=0&device=1&monetization=1&sort=newest');
     await settle(harness);
-    const selected = (label: string) => [...harness.routeNativeElement!.querySelectorAll('label')]
+    await openFilters(harness);
+    const selected = (label: string) => [...document.querySelectorAll('.catalog-filters label')]
       .find(element => element.firstChild?.textContent?.trim() === label)?.querySelector('select')?.value;
     expect(selected('Category')).toBe('photo-editing');
     expect(selected('Tag')).toBe('Web Development');
@@ -235,13 +266,15 @@ describe('catalog page URL state', () => {
     expect(selected('Sort by')).toBe('newest');
     await harness.navigateByUrl('/categories?type=applications');
     await settle(harness);
+    await openFilters(harness);
     for (const label of ['Category', 'Tag', 'Platform', 'Device', 'Monetization']) expect(selected(label)).toBe('');
   });
 
   it('shows the route tag in the disabled native selector immediately', async () => {
     const harness = await RouterTestingHarness.create('/tags/web-development');
     await settle(harness);
-    const tag = [...harness.routeNativeElement!.querySelectorAll('label')]
+    const filterPanel = await openFilters(harness);
+    const tag = [...filterPanel.querySelectorAll('label')]
       .find(element => element.firstChild?.textContent?.trim() === 'Tag')!.querySelector('select')!;
     expect(tag.value).toBe('Web Development');
     expect(tag.disabled).toBe(true);
@@ -251,7 +284,8 @@ describe('catalog page URL state', () => {
     'initializes the native page-size selector for %s', async (url, expected) => {
       const harness = await RouterTestingHarness.create(url);
       await settle(harness);
-      const select = [...harness.routeNativeElement!.querySelectorAll('label')]
+      const filterPanel = await openFilters(harness);
+      const select = [...filterPanel.querySelectorAll('label')]
         .find(element => element.firstChild?.textContent?.trim() === 'Per page')!.querySelector('select')!;
       expect(select.value).toBe(expected);
     }
