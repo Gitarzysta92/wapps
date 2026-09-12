@@ -26,7 +26,7 @@ import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites
 import { provideUserProfileFeature } from '@portals/shared/features/user-profile';
 import { provideSharingFeature } from '@portals/shared/features/sharing';
 import { providePreferencesFeature } from '@portals/shared/features/preferences';
-import { AUTH_BFF_URL, API_BASE_URL, USE_CATALOG_BFF } from './environment';
+import { AUTH_BFF_URL, USE_CATALOG_BFF } from './environment';
 
 
 
@@ -35,8 +35,7 @@ export const APPLICATION_ROOT = mergeApplicationConfig(
       validationMessages: LOGIN_VALIDATION_MESSAGES,
       // AUTH_BFF_URL is built dynamically from ENVIRONMENT_NAME
       // Empty in local dev (uses mock), set to https://auth.<env>.wapps.ai in CI
-      authBffUrl: AUTH_BFF_URL || undefined,
-      authenticatedOrigins: API_BASE_URL ? [API_BASE_URL] : []
+      authBffUrl: AUTH_BFF_URL || undefined
     }),
     provideIdentityManagementFeature(),
     provideIdentityRegistrationFeature({
