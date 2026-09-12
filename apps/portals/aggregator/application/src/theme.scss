@@ -6,6 +6,19 @@ tui-dropdowns {
   z-index: $z-popover;
 }
 
+// Paint the document gutter with the same background as the page.
+html {
+  background: var(--body-background);
+}
+
+html:has(body.light) {
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
+}
+
+html:has(body.dark) {
+  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
+}
+
 // Light theme gradients using design system variables
 body.light {
   --chat-fade-gradient: linear-gradient(to bottom,
@@ -13,7 +26,6 @@ body.light {
     rgba(249, 250, 251, 0.8) 50%,
     rgba(249, 250, 251, 0) 100%);
 
-  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
   --elevated-background: #{$color-white};
   --elevated-background-border: #{$color-border};
   --feed-background: radial-gradient(ellipse at top, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
@@ -100,7 +112,6 @@ body.dark {
     rgba(31, 41, 55, 0.8) 50%,
     rgba(31, 41, 55, 0) 100%);
 
-  --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
 
   --elevated-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface-soft}, #{$color-surface-soft});
   --elevated-background-border: #{$color-surface-subtle};

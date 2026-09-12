@@ -8,7 +8,7 @@
 @include page.page(page.$content-gap);
 :host { container: catalog / inline-size; }
 .catalog {
-  margin-block: page.$content-gap page.$section-gap;
+  margin-top: page.$content-gap;
 }
 .facet-directory,
 .active-filters,

@@ -1,7 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 :host { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
 *, *::before, *::after { box-sizing: border-box; }
-.my-suites-page { @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; padding-bottom: $space-8; color: var(--tui-text-primary); }
+.my-suites-page { @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; color: var(--tui-text-primary); }
 header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: $space-4; margin-bottom: $space-6; }
 h1 { @include text($font-size-3xl, $font-weight-bold); color: var(--tui-text-primary); margin: 0 0 $space-2; }
 h2 { @include text($font-size-xl, $font-weight-bold); overflow-wrap: anywhere; margin: $space-3 0; }
