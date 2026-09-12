@@ -1,8 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
-.page-header {
-  margin-top: $space-20;
-}
+@include page.page;
 
 .discussion-stats-badge {
   opacity: 0.5;
@@ -19,28 +18,15 @@
 }
 
 .discussion-content-section {
-  padding: $space-6 0;
+  @include page.content;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // ============================================================================
 // Related Discussions - Layout Only
 // ============================================================================
 
 .related-discussions {
-  margin-top: $space-12;
-  padding: $space-8 0;
-  border-top: 1px solid var(--tui-border-normal);
+  @include page.section;
 
   &__title {
     display: flex;
@@ -49,7 +35,7 @@
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     color: var(--tui-text-primary);
-    margin-bottom: $space-6;
+    @include page.title;
   }
 
   &__grid {
@@ -114,9 +100,7 @@
 // ============================================================================
 
 .top-authors {
-  margin-top: $space-8;
-  padding: $space-8 0;
-  border-top: 1px solid var(--tui-border-normal);
+  @include page.section;
 
   &__title {
     display: flex;
@@ -125,7 +109,7 @@
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     color: var(--tui-text-primary);
-    margin-bottom: $space-6;
+    @include page.title;
   }
 
   &__list { list-style: none; padding: 0; margin: 0; }

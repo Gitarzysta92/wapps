@@ -6,12 +6,14 @@
 
 .card-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: $space-2;
 }
 
 .card-footer-left {
-  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .card-footer-content {
@@ -22,9 +24,10 @@
 }
 
 .card-footer-right {
-  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: $space-2;
 }
-

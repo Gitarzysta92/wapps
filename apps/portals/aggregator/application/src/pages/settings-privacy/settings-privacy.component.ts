@@ -6,7 +6,7 @@ import { PreferencesApiService } from '@portals/shared/features/preferences';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiSkeleton, TuiSwitch } from '@taiga-ui/kit';
-import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
+import { TuiCardLarge } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { PREFERENCES_STATE_PROVIDER, PreferencesService } from '@portals/shared/features/preferences';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
@@ -27,7 +27,6 @@ import {
     TuiButton,
     TuiCardLarge,
     TuiSkeleton,
-    TuiHeader,
     TuiIcon,
     TuiSwitch,
     PageHeaderComponent,

@@ -1,8 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
-.page-header {
-  margin-top: $space-20;
-}
+@include page.page;
 
 .breadcrumbs-skeleton, .breadcrumbs {
   height: $space-3;
@@ -19,13 +18,13 @@
 }
 
 .discussions-intro {
-  margin-bottom: $space-6;
+  @include page.content;
   background: var(--feed-background);
 }
 
 .pinned-discussions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: $space-6;
 }
 
@@ -34,12 +33,12 @@
 }
 
 .pinned-discussions-section, .recent-discussions-section {
-  margin-top: $space-6;
+  @include page.section;
 }
+ui-section-header { @include page.title; }
+.unpinned-discussions { display: grid; gap: $space-4; width: 100%; }
 
-.unpinned-discussion-card {
-  margin-top: $space-3;
-}
+.unpinned-discussion-card { margin: 0; }
 
 .pinned-discussion-card, .unpinned-discussion-card {
   cursor: pointer;

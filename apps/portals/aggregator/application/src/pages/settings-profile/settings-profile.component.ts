@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton, TuiTextfield } from '@taiga-ui/core';
 import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
-import { TuiCardLarge, TuiForm, TuiHeader } from '@taiga-ui/layout';
+import { TuiCardLarge, TuiForm } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { MY_PROFILE_VIEW_STATE_PROVIDER, MyProfileService } from '@portals/shared/features/my-profile';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
@@ -22,7 +22,6 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
     TuiCardLarge,
     TuiSkeleton,
     TuiForm,
-    TuiHeader,
     TuiTextfield,
     PageHeaderComponent,
     PageTitleComponent,

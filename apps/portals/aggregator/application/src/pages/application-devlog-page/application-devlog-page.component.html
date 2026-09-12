@@ -8,7 +8,7 @@
     <ui-breadcrumbs
       class="breadcrumbs"
       slot="top-bar"
-      [breadcrumbs]="breadcrumbData()">
+      [breadcrumbs]="pageBreadcrumbs()">
     </ui-breadcrumbs>
   }
 
@@ -17,7 +17,7 @@
   } @else {
     <h1 uiPageTitle class="page-title" slot="title">
       <tui-icon icon="@tui.git-commit" />
-      Development Log
+      {{ version() ? 'Release v' + version() : 'Development Log' }}
     </h1>
   }
 
@@ -25,115 +25,74 @@
     <ui-page-meta-skeleton slot="meta" />
   } @else {
     <ui-page-meta slot="meta">
-      <span class="meta-app-name">{{ app.value()?.name }}</span>
+      <span class="meta-app-name">{{ app.value()?.name }} · Sample catalog releases</span>
     </ui-page-meta>
   }
 </ui-page-header>
-<p>Sample catalog data; this is not a live service report.</p>
 
-<!-- Latest Release Section -->
-<section class="changelog-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-indigo"></span>
-    Latest Release
-  </h2>
-
-  @if (changelog.isLoading()) {
-    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-  }
-  @if (latestEntry(); as entry) {
-    <ui-medium-card class="changelog-card" tuiAppearance="card-elevated">
-      <tui-chip 
-        slot="top-edge"
-        size="s" 
-        [appearance]="getChangeTypeAppearance(entry.type)">
-        {{ getChangeTypeLabel(entry.type) }}
-      </tui-chip>
-
-      <div class="changelog-header">
+@if (version()) {
+  @if (selectedEntry(); as entry) {
+    <section class="release-details" aria-label="Release notes">
+      <ui-medium-card tuiAppearance="card-elevated">
+        <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
         <div class="version-info">
-          <tui-badge class="version-badge" size="l">
-            <tui-icon icon="@tui.tag" />
-            v{{ entry.version }}
-          </tui-badge>
-          <span class="release-date">
-            <tui-icon icon="@tui.calendar" />
-            {{ entry.releaseDate | date:'mediumDate' }}
-          </span>
+          <tui-chip size="s" appearance="action-soft">{{ entry.channel === 'stable' ? 'Stable' : 'Prerelease' }}</tui-chip>
+          <span class="release-date">{{ entry.releaseDate | date:'mediumDate' }}</span>
         </div>
-        <p class="changelog-description">{{ entry.description }}</p>
-      </div>
-
-      <ui-medium-card class="changes-card">
-        <tui-chip size="s" appearance="action-soft" slot="top-edge">
-          <tui-icon icon="@tui.package-plus" /> What's New
-        </tui-chip>
+        <h2 class="section-title">{{ entry.description }}</h2>
         <ul class="changes-list">
           @for (change of entry.changes; track change.description) {
-            <li class="change-item">
-              <tui-icon icon="@tui.check" class="change-icon" />
-              <span>{{ change.description }}</span>
-            </li>
+            <li class="change-item"><tui-icon icon="@tui.check" /><span>{{ change.description }}</span></li>
           }
         </ul>
       </ui-medium-card>
-
-      <button
-        slot="footer"
-        tuiButton 
-        size="s" 
-        appearance="primary">
-        <tui-icon icon="@tui.external-link"/>
-        View Full Changelog
-      </button>
-    </ui-medium-card>
+    </section>
+    <section class="activity-section" aria-labelledby="previous-title">
+      <h2 class="section-title" id="previous-title"><span tuiAppearance="accent-bar-indigo"></span>Previous releases</h2>
+      <div class="changelog-grid">
+        @for (previous of previousEntries(); track previous.version) {
+          <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: previous}" />
+        } @empty { <p>No previous releases.</p> }
+      </div>
+    </section>
+  } @else if (!changelog.isLoading()) {
+    <section class="release-details" role="status"><h2>Release not found</h2><p>This version is not in the catalog.</p></section>
   }
-</section>
-
-<!-- Previous Releases Section -->
-<section class="changelog-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-warm"></span>
-    Previous Releases
-  </h2>
-
-  <div class="changelog-grid">
-    @if (changelog.isLoading()) {
-      @for (i of [1, 2]; track i) {
-        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-      }
-    } @else {
-      @for (entry of previousEntries(); track entry.version) {
-        <ui-medium-card class="changelog-card changelog-card--compact" tuiAppearance="card-elevated">
-          <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
-          
-          <div class="changelog-header">
-            <div class="version-info">
-              <tui-badge size="m">v{{ entry.version }}</tui-badge>
-              <tui-chip 
-                size="xs" 
-                [appearance]="getChangeTypeAppearance(entry.type)">
-                {{ getChangeTypeLabel(entry.type) }}
-              </tui-chip>
-            </div>
-            <span class="release-date release-date--small">
-              <tui-icon icon="@tui.calendar" />
-              {{ entry.releaseDate | date:'mediumDate' }}
-            </span>
-          </div>
-
-          <p class="changelog-description changelog-description--compact">{{ entry.description }}</p>
-
-          <div slot="footer" class="changelog-footer">
-            <span class="changes-count">
-              <tui-icon icon="@tui.list" />
-              {{ entry.changes.length }} changes
-            </span>
-          </div>
-        </ui-medium-card>
-      }
+  <a tuiButton size="s" appearance="action-soft" [routerLink]="'/apps/' + appSlug() + '/devlog'">All releases</a>
+} @else {
+  <section class="activity-section release-list" aria-labelledby="stable-title">
+    <h2 class="section-title" id="stable-title"><span tuiAppearance="accent-bar-indigo"></span>Stable releases</h2>
+    <div class="changelog-grid">
+      @for (entry of visibleStableEntries(); track entry.version) {
+        <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: entry}" />
+      } @empty { <p role="status">No stable releases available.</p> }
+    </div>
+    @if (stableLimit() < stableEntries().length) {
+      <button class="load-more" tuiButton type="button" size="s" appearance="action-soft" (click)="loadMore()">Load more</button>
     }
-  </div>
-</section>
+  </section>
+  <section class="activity-section" aria-labelledby="releases-title">
+    <h2 class="section-title" id="releases-title"><span tuiAppearance="accent-bar-indigo"></span>Releases</h2>
+    <div class="changelog-grid">
+      @for (entry of otherEntries(); track entry.version) {
+        <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: entry}" />
+      } @empty { <p role="status">No other releases available.</p> }
+    </div>
+  </section>
+}
 
+<ng-template #releaseCard let-entry>
+  <ui-medium-card class="changelog-card" tuiAppearance="card-elevated">
+    <div slot="top-edge" tuiAppearance="accent-strip-indigo"></div>
+    <div class="changelog-header">
+      <div class="version-info">
+        <h3 class="release-version"><a [routerLink]="releasePath(entry.version)">v{{ entry.version }}</a></h3>
+        <tui-chip size="xs" appearance="action-soft">{{ entry.channel === 'stable' ? 'Stable' : 'Prerelease' }}</tui-chip>
+      </div>
+      <span class="release-date">{{ entry.releaseDate | date:'mediumDate' }}</span>
+    </div>
+    <p class="changelog-description">{{ entry.description }}</p>
+    <a slot="footer" tuiButton size="s" appearance="action-soft" [routerLink]="releasePath(entry.version)" [attr.aria-label]="'View release v' + entry.version">View release</a>
+  </ui-medium-card>
+</ng-template>
 }

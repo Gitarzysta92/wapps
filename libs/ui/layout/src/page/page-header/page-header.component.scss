@@ -26,3 +26,8 @@
   align-items: center;
   gap: $space-3;
 }
+
+.page-header-top-bar:empty,
+.page-header-meta:empty {
+  display: none;
+}

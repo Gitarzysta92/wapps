@@ -1,11 +1,12 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
-.page-header { margin-top: $space-20; }
+@include page.page;
 .profile-content {
   display: flex;
   flex-direction: column;
   gap: $space-6;
-  margin-top: $space-8;
+  @include page.content;
   max-width: $size-content-4xl;
 }
 .profile-card { display: flex; flex-direction: column; gap: $space-4; }

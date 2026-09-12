@@ -76,12 +76,12 @@
 
 <!-- Reviews List Section -->
 <section class="reviews-section">
-  <p>Sample reviews. Helpful marks are saved only in this browser.</p>
   @if (actionError()) { <p role="alert">{{ actionError() }}</p> }
   <h2 class="section-title">
     <span tuiAppearance="accent-bar-indigo"></span>
     All Reviews
   </h2>
+  <p class="section-description">Sample reviews. Helpful marks are saved only in this browser.</p>
 
   <div class="reviews-list">
     @if (reviewsData.isLoading()) {

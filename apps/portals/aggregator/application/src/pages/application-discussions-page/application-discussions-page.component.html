@@ -41,10 +41,10 @@
 @if (discussions.isLoading()) {
   <section commonSection class="pinned-discussions-section">
     <ui-section-header slot="header">
-      <h3 uiSectionTitle slot="title">
+      <h2 uiSectionTitle slot="title">
         <tui-icon icon="@tui.pin" />
         Pinned Discussions
-      </h3>
+      </h2>
     </ui-section-header>
     <div class="pinned-discussions" slot="content">
       @for (item of [1, 2]; track item) {
@@ -56,10 +56,10 @@
 } @else if (pinnedDiscussions().length > 0) {
   <section commonSection class="pinned-discussions-section">
     <ui-section-header slot="header">
-      <h3 uiSectionTitle slot="title">
+      <h2 uiSectionTitle slot="title">
         <tui-icon icon="@tui.pin" />
         Pinned Discussions
-      </h3>
+      </h2>
     </ui-section-header>
     <div class="pinned-discussions" slot="content">
       @for (discussion of pinnedDiscussions(); track discussion.id) {
@@ -84,14 +84,13 @@
     <button tuiButton type="button" appearance="secondary" (click)="composing.set(false)">Cancel</button>
   </form>
 }
-<ui-divider />
 
 <section commonSection class="recent-discussions-section">
   <ui-section-header slot="header">
-    <h3 uiSectionTitle slot="title">
+    <h2 uiSectionTitle slot="title">
       <tui-icon icon="@tui.pin" />
       Recent Discussions
-    </h3>
+    </h2>
   </ui-section-header>
   <div class="unpinned-discussions" slot="content">
     @if (discussions.isLoading()) {

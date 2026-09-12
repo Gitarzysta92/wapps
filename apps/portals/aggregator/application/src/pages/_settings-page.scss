@@ -1,0 +1,38 @@
+@use 'ui/design-system/src/styles' as *;
+@use 'page-layout' as page;
+
+@include page.page;
+
+// The settings navigation is above the page on smaller screens.
+@media #{$layout-breakpoint-md} {
+  .page-header { margin-top: page.$content-gap; }
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: page.$content-gap;
+  @include page.content;
+}
+.settings-card[tuiCardLarge][data-space] {
+  padding: $space-6;
+  gap: page.$card-gap;
+}
+.settings-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-2;
+  margin: 0;
+  > p { margin: 0; }
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0;
+  > tui-icon, > .accent-bar { flex-shrink: 0; }
+}

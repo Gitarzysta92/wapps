@@ -1,8 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
-.page-header {
-  margin-top: $space-20;
-}
+@include page.page;
 
 .breadcrumbs-skeleton, .breadcrumbs {
   height: $space-3;
@@ -19,14 +18,8 @@
 // ============================================================================
 
 .health-section {
-  margin-top: $space-12;
-  padding: $space-8 0;
-  border-top: 1px solid var(--tui-border-normal);
-
-  &:first-of-type {
-    border-top: none;
-    margin-top: $space-6;
-  }
+  @include page.section;
+  &:first-of-type { @include page.content; padding-top: 0; border-top: 0; }
 }
 
 .section-title {
@@ -36,7 +29,7 @@
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: var(--tui-text-primary);
-  margin-bottom: $space-6;
+  @include page.title;
 }
 
 // ============================================================================

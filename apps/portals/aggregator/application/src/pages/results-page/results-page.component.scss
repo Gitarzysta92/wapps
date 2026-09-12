@@ -1,14 +1,14 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
 :host {
   display: block;
   min-width: 0;
 }
-.page-header {
-  margin-top: $space-12;
-}
+// Catalog routes already have the shell's search header above them.
+@include page.page(page.$content-gap);
 .catalog {
-  margin-block: $space-8 $space-12;
+  margin-block: page.$content-gap page.$section-gap;
 }
 .facet-directory,
 .active-filters,
