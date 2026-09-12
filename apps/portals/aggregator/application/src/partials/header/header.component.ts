@@ -16,12 +16,15 @@ import { NAVIGATION } from '../../navigation';
 })
 export class HeaderPartialComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly searchService = inject(DiscoverySearchService);
   @ViewChild(SearchBarComponent) private searchBar?: SearchBarComponent;
   protected initialSearch = '';
 
   // Retain the layout inputs/outputs while the parent owns header placement.
   @Input() showCollapseButton = false;
+  @Input() searchWithinPage = false;
+  @Input() searchLabel = 'Search applications, articles and suites';
   @Output() expandedStateChange = new EventEmitter<boolean>();
 
   constructor() {
@@ -34,8 +37,24 @@ export class HeaderPartialComponent {
   protected submitSearch(event: Event): void {
     event.preventDefault();
     const phrase = normalizeSearch(this.searchBar?.form.controls.search.value ?? '');
+    if (this.searchWithinPage) {
+      this.searchListing(phrase);
+      if (phrase) this.searchService.remember(phrase);
+      return;
+    }
     if (!phrase) return;
     this.searchService.remember(phrase);
     void this.router.navigate(['/' + NAVIGATION.discover.path], { queryParams: { search: phrase } });
+  }
+
+  protected searchListing(value: string | null): void {
+    if (!this.searchWithinPage) return;
+    const search = normalizeSearch(value ?? '');
+    if (search === this.initialSearch) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { search: search || null, q: null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
   }
 }

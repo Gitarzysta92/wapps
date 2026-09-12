@@ -1,3 +1,5 @@
+<header [searchWithinPage]="true" [searchLabel]="searchLabel()"></header>
+
 <ui-page-header class="page-header">
   @if (result.isLoading()) {
   <ui-breadcrumbs-skeleton slot="top-bar" />
@@ -7,14 +9,11 @@
   <ui-page-title-skeleton slot="title" />
   } @else {
   <h1 uiPageTitle slot="title">{{ title() }}</h1>
-  } @if (result.isLoading()) {
-  <ui-page-meta-skeleton slot="meta" />
-  } @else {
-  <ui-page-meta slot="meta"
-    >Explore applications, read articles, and find collections of
-    tools.</ui-page-meta
-  >
   }
+  <button slot="actions" tuiButton type="button" size="s" appearance="primary" iconStart="@tui.funnel-plus"
+    [tuiDropdown]="filterControls" tuiDropdownAlign="right" [(tuiDropdownOpen)]="filtersOpen">
+    Manage filters
+  </button>
 </ui-page-header>
 
 @if (directory().length) {
@@ -34,33 +33,8 @@
 </nav>
 }
 
-<section class="catalog" aria-label="Catalog results">
-  <form
-    class="catalog-filters"
-    (submit)="
-      $event.preventDefault();
-      update({ search: searchInput.value || null, q: null })
-    "
-  >
-    <label class="catalog-search"
-      >Search this listing
-      <input
-        #searchInput
-        type="search"
-        [value]="query().search"
-        placeholder="Name, topic, or author"
-        (change)="filter('search', $event)"
-      />
-    </label>
-    <button
-      tuiButton
-      type="button"
-      appearance="secondary"
-      size="m"
-      (click)="update({ search: searchInput.value || null, q: null })"
-    >
-      Search
-    </button>
+<ng-template #filterControls>
+  <form class="catalog-filters" (submit)="$event.preventDefault()">
     @if (kind() === 'all') {
     <label
       >Content type
@@ -135,6 +109,9 @@
       </select>
     </label>
   </form>
+</ng-template>
+
+<section class="catalog" aria-label="Catalog results">
   @if (activeFilters()) {
   <div class="active-filters">
     @if (query().search) { <span>Search: {{ query().search }}</span> } @if
@@ -191,25 +168,18 @@
   } @else {
   <div class="items-grid" [class.items-grid--list]="view() === 'list'">
     @for (item of cards(); track item.kind + item.slug) {
-    <article class="item-card">
-      <a class="item-main" [routerLink]="item.path">
-        <span class="item-kind">{{
-          item.kind === 'applications'
-            ? 'Application'
-            : item.kind === 'articles'
-            ? 'Article'
-            : 'Suite'
-        }}</span>
-        @if (item.image) {
-        <img
-          class="item-image"
-          [class.item-image--logo]="item.kind === 'applications'"
-          [src]="item.image"
-          alt=""
-          loading="lazy"
-        />
+    <article class="item-card" tuiAppearance="card-elevated">
+      <a class="item-main" [routerLink]="item.path" [attr.aria-labelledby]="'catalog-' + item.kind + '-' + item.slug">
+        @if (item.kind === 'applications') {
+          <tui-avatar [src]="item.image || '@tui.box'" size="l" aria-hidden="true" />
+        } @else if (item.image) {
+          <ui-cover-image class="item-image" [image]="{url: item.image, alt: item.name}" />
         }
-        <h2>{{ item.name }}</h2>
+        <div class="item-body">
+        @if (kind() === 'all') {
+          <span class="item-kind">{{ item.kind === 'applications' ? 'Application' : item.kind === 'articles' ? 'Article' : 'Suite' }}</span>
+        }
+        <h2 [id]="'catalog-' + item.kind + '-' + item.slug">{{ item.name }}</h2>
         <p class="item-description">{{ item.description }}</p>
         <div class="item-meta">
           @if (item.rating !== undefined) {
@@ -221,14 +191,15 @@
           } @if (item.applications) {
           <span>{{ item.applications.length }} applications</span> }
         </div>
+        </div>
       </a>
       <div class="item-facets">
         @if (item.categories[0]; as category) {
-        <a [routerLink]="facetPath('category', category.slug)">{{
+        <a tuiLink [routerLink]="facetPath('category', category.slug)">{{
           category.name
         }}</a>
         } @for (tag of item.tags; track tag.slug) {
-        <a [routerLink]="facetPath('tag', tag.slug)">#{{ tag.name }}</a> }
+        <a tuiLink [routerLink]="facetPath('tag', tag.slug)">#{{ tag.name }}</a> }
       </div>
     </article>
     }

@@ -1,4 +1,4 @@
-<search-bar [initialValue]="initialSearch" ariaLabel="Search applications, articles and suites"
+<search-bar [initialValue]="initialSearch" [ariaLabel]="searchLabel" (onSearch)="searchListing($event)"
   (keydown.enter)="submitSearch($event)" (submit)="submitSearch($event)">
   <button type="button" tuiButton size="s" appearance="flat" (click)="submitSearch($event)">Search</button>
 </search-bar>
