@@ -360,7 +360,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           name: 'Complete Productivity Suite',
           slug: 'complete-productivity-suite',
           coverImageUrl: { url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800', alt: 'Complete Productivity Suite' },
-          numberOfApps: 8,
+          numberOfApps: 7,
           commentsNumber: 156,
           authorName: 'Productivity Team',
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
@@ -375,8 +375,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
             { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
             { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
-            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo }
           ],
           topComment: {
             content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',
@@ -421,7 +420,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
           name: 'Business Essentials Pack',
           slug: 'business-essentials-pack',
           coverImageUrl: { url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800', alt: 'Business Essentials Pack' },
-          numberOfApps: 12,
+          numberOfApps: 7,
           commentsNumber: 234,
           authorName: 'Business Solutions Inc',
           authorAvatarUrl: 'https://cdn.prod.website-files.com/600b6ab92506fd10a1ca3f8a/600f57b7dbe235c7d536e9c3_Drawer%20Avatar%20Library%20example%201.png',
@@ -436,12 +435,7 @@ export const DISCOVERY_SEARCH_RESULTS_DATA: DiscoverySearchResultDto = {
             { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
             { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo },
             { name: MINDFUL.name, slug: MINDFUL.slug, avatarUrl: MINDFUL.logo },
-            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo },
-            { name: QUICK_TASK.name, slug: QUICK_TASK.slug, avatarUrl: QUICK_TASK.logo },
-            { name: BUDGET_BUDDY.name, slug: BUDGET_BUDDY.slug, avatarUrl: BUDGET_BUDDY.logo },
-            { name: SHOP_EASE.name, slug: SHOP_EASE.slug, avatarUrl: SHOP_EASE.logo },
-            { name: SPEEDY_VPN.name, slug: SPEEDY_VPN.slug, avatarUrl: SPEEDY_VPN.logo },
-            { name: PHOTO_SNAP.name, slug: PHOTO_SNAP.slug, avatarUrl: PHOTO_SNAP.logo }
+            { name: FIT_TRACK.name, slug: FIT_TRACK.slug, avatarUrl: FIT_TRACK.logo }
           ],
           topComment: {
             content: 'This suite has completely transformed my workflow! The integration between all these tools is seamless and saves me hours every week.',

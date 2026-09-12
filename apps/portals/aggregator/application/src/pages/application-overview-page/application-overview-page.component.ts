@@ -11,18 +11,23 @@ import {
   PageHeaderComponent, 
   PageTitleComponent, 
   PageTitleSkeletonComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  MediumCardComponent
 } from '@ui/layout';
 import { TagsComponent } from '@ui/tags';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
-import { CATEGORIES, TAGS } from '@portals/shared/data';
+import { CATEGORIES, PLATFORMS, TAGS } from '@portals/shared/data';
+import { PreferredDatePipe } from '@portals/shared/features/preferences';
+import { CATALOG_ENTRIES } from '@portals/shared/features/listing';
+import { DiscussionSmallCardComponent } from '@portals/shared/features/discussion';
 import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';
 import { 
   AppAvatarComponent, 
   AppRatingComponent,
   AppCategoryChipComponent,
+  LocalDiscussionsService,
   APPLICATION_OVERVIEW_PROVIDER 
 } from '@portals/shared/features/application-overview';
 
@@ -43,6 +48,9 @@ import {
     PageTitleComponent,
     PageTitleSkeletonComponent,
     MediumCardSkeletonComponent,
+    MediumCardComponent,
+    PreferredDatePipe,
+    DiscussionSmallCardComponent,
     TagsComponent,
     CoverImageComponent,
     AppAvatarComponent,
@@ -56,6 +64,7 @@ export class ApplicationOverviewPageComponent implements
   routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }> {
 
   private readonly _overviewProvider = inject(APPLICATION_OVERVIEW_PROVIDER);
+  private readonly _discussions = inject(LocalDiscussionsService);
 
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
   public readonly appSlug = input<string | null>(null);
@@ -108,6 +117,19 @@ export class ApplicationOverviewPageComponent implements
     return this.overviewData.value()?.shortcuts ?? [];
   });
 
+  public readonly recentDiscussions = computed(() =>
+    this._discussions.previews(this.app.value()?.slug ?? null)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() || a.slug.localeCompare(b.slug))
+      .slice(0, 2)
+  );
+
+  public readonly includedSuites = computed(() => {
+    const slug = this.app.value()?.slug;
+    if (!slug) return [];
+    return CATALOG_ENTRIES.filter(entry => entry.kind === 'suites' && entry.applications?.some(app => app.slug === slug))
+      .map(suite => ({ ...suite, members: [...new Map((suite.applications ?? []).map(app => [app.slug || app.name, app])).values()] }));
+  });
+
   getCoverImage(): CoverImageDto {
     return {
       url: this.app.value()?.logo ?? '',
@@ -116,7 +138,11 @@ export class ApplicationOverviewPageComponent implements
   }
 
   private _buildOverviewData() {
+    const app = this.app.value();
     return {
+      platforms: PLATFORMS.filter(platform => app?.platformIds?.includes(platform.id)).map(platform => platform.name),
+      pricingModels: (app?.monetizations ?? []).map(plan => plan.name).filter(Boolean),
+      estimatedUsers: app && Number.isFinite(app.number) && app.number >= 0 ? app.number : null,
       category: (() => {
         const category = CATEGORIES.find(c => String(c.id) === String(this.app.value()?.categoryId));
         return { name: category?.name ?? 'Uncategorized', slug: category?.slug ?? '', link: category ? '/categories/' + category.slug : '/categories' };
