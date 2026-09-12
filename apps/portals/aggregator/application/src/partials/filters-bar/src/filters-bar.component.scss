@@ -11,7 +11,7 @@
 
 .dropdown-panel {
   padding: 1rem;
-  min-width: 300px;
+  min-width: min(300px, calc(100vw - 4rem));
   max-width: 400px;
 }
 

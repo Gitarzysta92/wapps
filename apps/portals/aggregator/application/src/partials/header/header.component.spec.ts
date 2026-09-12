@@ -25,7 +25,7 @@ describe('global header search', () => {
     const submit = new Event('submit', { bubbles: true, cancelable: true });
     form.dispatchEvent(submit);
     expect(submit.defaultPrevented).toBe(true);
-    expect(navigate).toHaveBeenCalledWith(['/search'], { queryParams: { search: 'Photo Snap' } });
+    expect(navigate).toHaveBeenCalledWith(['/discover'], { queryParams: { search: 'Photo Snap' } });
     expect(remember).toHaveBeenCalledWith('Photo Snap');
     params.next(convertToParamMap({ search: 'restored' }));
     fixture.detectChanges();

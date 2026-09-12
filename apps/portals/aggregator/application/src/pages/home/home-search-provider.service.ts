@@ -14,7 +14,7 @@ export class HomeSearchProviderService implements IMultiSearchResultsProvider {
     return this.searchService.recentSearches$.pipe(map(searches => ({
       ok: true as const,
       value: { searches: searches.map(search => ({
-        name: search, link: '/' + NAVIGATION.search.path, query: { search },
+        name: search, link: '/' + NAVIGATION.discover.path, query: { search },
       })) },
     })));
   }
@@ -23,10 +23,10 @@ export class HomeSearchProviderService implements IMultiSearchResultsProvider {
     const result = this.searchService.search(params);
     return of({ ok: true as const, value: {
       ...result,
-      link: '/' + NAVIGATION.search.path,
+      link: '/' + NAVIGATION.discover.path,
       groups: result.groups.map(group => ({
         ...group,
-        link: '/' + NAVIGATION.search.path,
+        link: '/' + NAVIGATION.discover.path,
         entries: group.entries.slice(0, 3).map(entry => ({
           ...entry,
           link: '/' + (group.type === DiscoverySearchResultType.Application

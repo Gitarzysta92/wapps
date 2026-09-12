@@ -34,6 +34,6 @@ export class HeaderPartialComponent {
     const phrase = normalizeSearch(this.search.value);
     if (!phrase) return;
     this.searchService.remember(phrase);
-    void this.router.navigate(['/' + NAVIGATION.search.path], { queryParams: { search: phrase } });
+    void this.router.navigate(['/' + NAVIGATION.discover.path], { queryParams: { search: phrase } });
   }
 }

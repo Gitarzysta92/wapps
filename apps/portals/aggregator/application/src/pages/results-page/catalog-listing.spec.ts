@@ -3,8 +3,6 @@ import {
   CATALOG_ENTRIES,
   CatalogQuery,
 } from '@portals/shared/features/listing';
-import { applicationsMatcher } from '../applications/applications.matcher';
-import { UrlSegment } from '@angular/router';
 
 const query = (patch: Partial<CatalogQuery> = {}): CatalogQuery => ({
   search: '',
@@ -83,14 +81,6 @@ describe('catalog browsing', () => {
     expect(
       browseCatalog(query({ search: 'no-such-record', page: 9999 })).items
     ).toEqual([]);
-  });
-  it('accepts Discover with legacy category/page segments', () => {
-    const segments = ['discover', 'productivity', 'page', '2'].map(
-      (path) => new UrlSegment(path, {})
-    );
-    const match = applicationsMatcher(segments);
-    expect(match?.posParams?.['category'].path).toBe('productivity');
-    expect(match?.posParams?.['page'].path).toBe('2');
   });
   it('combines platform, device, and monetization filters using names or fixture IDs', () => {
     const named = browseCatalog(

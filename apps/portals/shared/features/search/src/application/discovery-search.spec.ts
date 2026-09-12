@@ -21,6 +21,24 @@ describe('discovery search', () => {
     expect(search({}).itemsNumber).toBe(CATALOG_ENTRIES.length);
   });
 
+  it('applies application filters instead of only rendering their chips', () => {
+    const names = (params: Record<string, string>) => search({type: 'application', ...params}).groups.flatMap(group => group.entries.map(entry => entry.name));
+    expect(names({platform: 'desktop'})).toEqual(['Speedy VPN']);
+    expect(names({monetization: 'freemium'})).toEqual(['Photo Snap']);
+    expect(names({monetization: 'subscription'})).toEqual(['Photo Snap', 'Quick Task']);
+    expect(names({search: 'photo', platform: 'desktop'})).toEqual([]);
+    expect(names({device: 'unknown'})).toEqual([]);
+    expect(names({'estimated-users': '1000000'})).toContain('Photo Snap');
+    expect(names({social: 'discord'})).toEqual([]);
+  });
+
+  it('supports multiple categories and tag URL aliases', () => {
+    const names = (params: Record<string, string>) => search({type: 'application', ...params}).groups.flatMap(group => group.entries.map(entry => entry.name));
+    expect(names({category: 'photo-editing,vpn-client'})).toEqual(['Photo Snap', 'Speedy VPN']);
+    expect(names({tags: 'networking'})).toEqual(names({tag: 'networking'}));
+    expect(names({q: 'photo'})).toEqual(['Photo Snap']);
+  });
+
   it('counts actual matches and excludes empty groups', () => {
     for (const phrase of ['', 'photo', 'productivity', 'nothing-matches-this-query']) {
       const result = search({ search: phrase });

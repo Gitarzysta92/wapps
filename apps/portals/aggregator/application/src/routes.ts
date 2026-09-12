@@ -15,9 +15,7 @@ import { HeaderPartialComponent } from "./partials/header/header.component";
 import { CommonSidebarComponent } from "./partials/common-sidebar/common-sidebar.component";
 import { CommonMobileBottomBarPartialComponent } from "./partials/common-mobile-bottom-bar/common-mobile-bottom-bar.component";
 
-import { SearchResultsSidebarComponent } from "./partials/search-results-sidebar/search-results-sidebar.component";
-import { applicationsMatcher } from "./pages/applications/applications.matcher";
-import { searchResultsMatcher } from "./pages/search-results-page/search-results.matcher";
+import { DISCOVER_REDIRECT_ROUTES } from "./pages/discover/discover-redirect.routes";
 import { FooterPartialComponent } from "./partials/footer/footer.component";
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 import { UserPanelSheetComponent } from "./partials/user-panel-sheet";
@@ -527,20 +525,15 @@ export const routes: Routes = [
         ]
       },
       {
-        // INFO: custom matcher is used to mitigate
-        // unnecessary component instantiation
-        // for related dynamic routes
-        matcher: applicationsMatcher,
-        loadComponent: () => import('./pages/applications/applications.component').then(m => m.ApplicationsPageComponent),
+        path: NAVIGATION.discover.path,
+        loadComponent: () => import('./pages/discover/discover-page.component').then(m => m.DiscoverPageComponent),
         data: {
-          breadcrumb: [NAVIGATION.applications],
+          breadcrumb: [NAVIGATION.home, NAVIGATION.discover],
           bottomBar: {
             component: CommonMobileBottomBarPartialComponent,
             inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
           },
-          header: {
-            component: HeaderPartialComponent,
-          },
+          header: undefined,
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
@@ -804,42 +797,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/ownership/ownership.component').then(m => m.OwnershipPageComponent),
         data: { breadcrumb: [ NAVIGATION.claimApplicationOwnership ] },
       },
-      {
-        // INFO: custom matcher is used to mitigate
-        // unnecessary component instantiation
-        // for related dynamic routes
-        matcher: searchResultsMatcher,
-        loadComponent: () => import('./pages/search-results-page/search-results-page.component').then(m => m.SearchResultsPageComponent),
-        data: {
-          breadcrumb: [ NAVIGATION.home,NAVIGATION.search ],
-          bottomBar: {
-            component: CommonMobileBottomBarPartialComponent,
-            inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
-          },
-          leftSidebar: {
-            component: SearchResultsSidebarComponent,
-            inputs: {}
-          },
-          rightSidebar: {
-            component: UserAuxiliarySidebarComponent,
-            inputs: {
-              navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
-              navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
-              unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
-              unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
-            },
-          },
-          footer: {
-            component: FooterPartialComponent,
-            inputs: {
-              primaryNavigation: FOOTER_MAIN_NAVIGATION,
-              secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
-              tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
-              quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
-            }
-          }
-        } as IAppShellRouteData & IBreadcrumbRouteData,
-      },
+      ...DISCOVER_REDIRECT_ROUTES,
       {
         path: NAVIGATION.tags.path,
         loadComponent: () => import('./pages/tag-results-page/tag-results-page.component').then(m => m.TagResultsPageComponent),
@@ -1296,11 +1254,8 @@ export const routes: Routes = [
 
 // Keep the primary navigation and legacy catalog URLs on the same configured pages.
 const portalRoutes = routes[0].children!;
-const appListingRoute = portalRoutes.find(route => route.matcher === applicationsMatcher)!;
 const articleListingRoute = portalRoutes.find(route => route.path === NAVIGATION.articles.path)!;
 portalRoutes.unshift(
-  { ...appListingRoute, matcher: undefined, path: NAVIGATION.discover.path, pathMatch: 'full' },
-  { ...appListingRoute, matcher: undefined, path: 'apps', pathMatch: 'full' },
   { ...articleListingRoute, path: NAVIGATION.digest.path },
 );
 

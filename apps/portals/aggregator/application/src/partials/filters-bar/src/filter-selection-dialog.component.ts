@@ -45,7 +45,6 @@ export class FilterSelectionDialogComponent {
   public readonly placeholder = this._data.placeholder;
 
   public onSelectionChange(selected: SearchableOption[]): void {
-    console.log('onSelectionChange', selected);
     // Store the selection for when Apply is clicked
     this._selectedOptions = selected;
   }

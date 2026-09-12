@@ -44,6 +44,6 @@ export class HomePageStateService implements IMultiSearchState {
     const phrase = search.trim();
     if (!phrase) return;
     this.searchService.remember(phrase);
-    void this._router.navigate(['/' + NAVIGATION.search.path], { queryParams: { search: phrase } });
+    void this._router.navigate(['/' + NAVIGATION.discover.path], { queryParams: { search: phrase } });
   }
 }
