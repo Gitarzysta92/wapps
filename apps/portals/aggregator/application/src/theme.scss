@@ -232,10 +232,12 @@ body.dark {
 // Fade only decoration layers, never their sibling cards or text.
 .ui-decoration-faded {
   --decoration-min-opacity: 0.5;
-  --decoration-fade-distance: 400; // Page scroll distance in CSS pixels.
+  --decoration-fade-distance: 400px;
+  --decoration-scroll-smoothing: 80ms;
 
   > canvas {
     opacity: calc(1 - (1 - var(--decoration-min-opacity)) * var(--decoration-fade-progress, 0));
+    transition: opacity var(--decoration-scroll-smoothing) linear;
   }
 }
 
@@ -245,13 +247,52 @@ body.dark {
   --feed-tile-start-scale: 0.96;
 
   .feed-item {
-    scale: calc(var(--feed-tile-start-scale) + (1 - var(--feed-tile-start-scale)) * var(--decoration-fade-progress, 0));
+    --feed-tile-scale: calc(var(--feed-tile-start-scale) + (1 - var(--feed-tile-start-scale)) * var(--decoration-fade-progress, 0));
+    transform: scale3d(var(--feed-tile-scale), var(--feed-tile-scale), 1);
     transform-origin: center;
+    transition: transform var(--decoration-scroll-smoothing) linear;
+  }
+}
 
-    @media (prefers-reduced-motion: reduce) {
-      scale: 1;
+// The browser synchronizes these composited properties with touch scrolling, independently of canvas work.
+@supports (animation-timeline: scroll(root)) and (animation-range: 0px 400px) {
+  .ui-decoration-faded {
+    --decoration-native-scroll: 1;
+
+    > canvas {
+      animation: decoration-scroll-fade 1s cubic-bezier(0.333333, 0, 0.666667, 1) both;
+      animation-timeline: scroll(root);
+      animation-range: 0px var(--decoration-fade-distance);
+      transition: none;
     }
   }
+
+  .section__feed.ui-decoration-faded .feed-item {
+    animation: feed-scroll-zoom 1s cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: scroll(root);
+    animation-range: 0px var(--decoration-fade-distance);
+    transition: none;
+  }
+}
+
+@keyframes decoration-scroll-fade {
+  from { opacity: 1; }
+  to { opacity: var(--decoration-min-opacity); }
+}
+
+@keyframes feed-scroll-zoom {
+  from { transform: scale3d(var(--feed-tile-start-scale), var(--feed-tile-start-scale), 1); }
+  to { transform: scale3d(1, 1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section__feed.ui-decoration-faded .feed-item {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+
+  .ui-decoration-faded > canvas { transition: none; }
 }
 
 // Opaque organic backing. The canvas takes over after its first completed frame.

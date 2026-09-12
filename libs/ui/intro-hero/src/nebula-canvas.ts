@@ -171,9 +171,15 @@ export function createNebulaCanvas(canvas: HTMLCanvasElement, host: HTMLElement)
     draw();
   };
   const onScroll = () => { if (!motion.matches) requestDraw(); };
-  const themeObserver = new view.MutationObserver(() => { readTheme(); requestDraw(); });
+  const themeStyle = (value: string | null) => (value || '').split(';').map(part => part.trim())
+    .filter(part => part && !part.startsWith('--decoration-fade-progress:')).join(';');
+  const themeObserver = new view.MutationObserver((records = []) => {
+    if (records.length && records.every(record => record.attributeName === 'style' &&
+      themeStyle(record.oldValue) === themeStyle((record.target as Element).getAttribute('style')))) return;
+    readTheme(); requestDraw();
+  });
   for (let parent: HTMLElement | null = host; parent; parent = parent.parentElement) {
-    themeObserver.observe(parent, { attributes: true, attributeFilter: ['class', 'tuiTheme', 'style'] });
+    themeObserver.observe(parent, { attributes: true, attributeOldValue: true, attributeFilter: ['class', 'tuiTheme', 'style'] });
   }
   const resizeObserver = new view.ResizeObserver(resize);
   resizeObserver.observe(host);
