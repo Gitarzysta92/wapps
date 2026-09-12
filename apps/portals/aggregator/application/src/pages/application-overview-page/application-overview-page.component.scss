@@ -13,18 +13,13 @@
   padding: $space-2 0;
 }
 
-.developer-link {
-  color: var(--tui-primary);
-  font-size: $font-size-sm;
-}
-
 // ============================================================================
 // Hero Section
 // ============================================================================
 
 .hero-section {
   position: relative;
-  margin-top: $space-6;
+  margin-top: $space-4;
   border-radius: $radius-lg;
   overflow: hidden;
 }
@@ -52,18 +47,17 @@
   gap: $space-6;
 }
 
-.app-avatar {
+.app-avatar,
+.avatar-skeleton {
+  display: none;
   flex-shrink: 0;
-  border: 4px solid var(--tui-background-elevation-1);
-  border-radius: $radius-lg;
-  box-shadow: var(--tui-shadow-medium);
 }
 
 .avatar-skeleton {
-  width: 96px;
-  height: 96px;
+  width: $space-20;
+  height: $space-20;
   background: var(--skeleton-background);
-  border-radius: $radius-lg;
+  border-radius: $radius-full;
   @include skeleton-shimmer(var(--skeleton-shimmer-color));
 }
 
@@ -297,6 +291,14 @@
 // ============================================================================
 // Responsive
 // ============================================================================
+
+// The hero supplies the logo when the shell hides its navigation sidebar.
+@media #{$layout-breakpoint-md} {
+  .app-avatar,
+  .avatar-skeleton {
+    display: block;
+  }
+}
 
 @media #{$layout-breakpoint-sm} {
   .hero-content {
