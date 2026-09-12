@@ -206,6 +206,22 @@ describe('canvas feed backing', () => {
     expect(paint.fill).toHaveBeenCalledTimes(1);
   });
 
+  it.each([320, 848])('keeps side edges fixed while horizontal edges animate at %ipx', viewportWidth => {
+    width = viewportWidth; height = 160;
+    host.style.setProperty('--wobble-outline-side-amplitude', '0');
+    host.style.setProperty('--wobble-top-amplitude', '24');
+    start();
+    const before = [...paint.bezierCurveTo.mock.calls];
+    paint.bezierCurveTo.mockClear(); advance(4000);
+    const after = paint.bezierCurveTo.mock.calls;
+    expect(after.map(c => [c[0], c[2], c[4]])).toEqual(before.map(c => [c[0], c[2], c[4]]));
+    const sides = (calls: typeof before) => calls.filter(c =>
+      c[0] === c[2] && c[2] === c[4] && (c[4] === 10 || c[4] === width + 10));
+    expect(sides(before).length).toBeGreaterThan(2);
+    expect(sides(after)).toEqual(sides(before));
+    expect(after).not.toEqual(before);
+  });
+
   it('bounds both pixels and sampled edges for a long feed, including deep scrolling', () => {
     height = 10_000_000; top = -5_000_000;
     start();

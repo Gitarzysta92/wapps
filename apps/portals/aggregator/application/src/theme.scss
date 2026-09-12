@@ -257,6 +257,7 @@ body.dark {
 // Opaque organic backing. The canvas takes over after its first completed frame.
 [uiWobbleOutline] {
   --wobble-outline-amplitude: 8;
+  --wobble-outline-side-amplitude: 0;
   --wobble-top-amplitude: 24;
   --wobble-top-wavelength: 220;
   --wobble-outline-duration: 16s;

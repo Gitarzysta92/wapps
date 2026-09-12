@@ -81,6 +81,7 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   let frame: number | undefined;
   let geometryDirty = true, visible = false, ready = false;
   let amplitude = 0, duration = 16_000, radius = 0, color = '';
+  let sideAmplitude = 0;
   let topAmplitude = 0, topWavelength = 220;
   let gradientDuration = 24_000, gradientColors: string[] = [];
   let bubbleRadius = 0, bubbleRise = 0, bubbleDuration = 9000, hostWidth = 0;
@@ -145,9 +146,11 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     let first = true;
     for (const edge of edges) {
       const points = edge.map(({ x, y, nx, ny }) => {
-        const wave = amplitude * displacement(x, y, timeX, timeY);
+        const wave = displacement(x, y, timeX, timeY);
+        // Blend the corner motion into the configured side motion without shifting the straight sides.
+        const verticalAmplitude = sideAmplitude + (amplitude - sideAmplitude) * ny * ny;
         // Local canvas coordinates retain precision even far down a long feed.
-        return { x: x + bleed + nx * wave, y: y - start + ny * wave - (ny < 0 ? topLift(x) * ny * ny : 0) };
+        return { x: x + bleed + nx * sideAmplitude * wave, y: y - start + ny * verticalAmplitude * wave - (ny < 0 ? topLift(x) * ny * ny : 0) };
       });
       if (first) paint.moveTo(points[0].x, points[0].y);
       else paint.lineTo(points[0].x, points[0].y);
@@ -195,6 +198,8 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   const refresh = () => {
     const style = view.getComputedStyle(host);
     amplitude = Math.max(0, Number(style.getPropertyValue('--wobble-outline-amplitude')) || 0);
+    const side = parseFloat(style.getPropertyValue('--wobble-outline-side-amplitude'));
+    sideAmplitude = Number.isFinite(side) ? Math.max(0, side) : amplitude;
     topAmplitude = Math.max(0, parseFloat(style.getPropertyValue('--wobble-top-amplitude')) || 0);
     topWavelength = Math.max(48, parseFloat(style.getPropertyValue('--wobble-top-wavelength')) || 220);
     color = style.getPropertyValue('--wobble-outline-color').trim();
