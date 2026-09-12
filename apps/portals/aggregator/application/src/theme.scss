@@ -24,6 +24,12 @@ html:has(body.dark) {
 
 // Light theme gradients using design system variables
 body.light {
+  --nebula-color-1: #{$color-purple-600};
+  --nebula-color-2: #{$color-indigo-400};
+  --nebula-color-3: #{$color-accent-500};
+  --nebula-opacity: 0.22;
+  --nebula-star-color: #{rgba($color-primary-600, 0.18)};
+
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-bg-muted} 0%,
     rgba(249, 250, 251, 0.8) 50%,
@@ -110,6 +116,12 @@ body.light {
 
 // Dark theme gradients using design system variables
 body.dark {
+  --nebula-color-1: #{$color-purple-600};
+  --nebula-color-2: #{$color-indigo-400};
+  --nebula-color-3: #{$color-accent-500};
+  --nebula-opacity: 0.4;
+  --nebula-star-color: #{rgba($color-white, 0.35)};
+
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-surface} 0%,
     rgba(31, 41, 55, 0.8) 50%,
