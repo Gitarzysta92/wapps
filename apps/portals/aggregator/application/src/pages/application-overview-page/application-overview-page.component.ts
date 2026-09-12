@@ -11,8 +11,6 @@ import {
   PageHeaderComponent, 
   PageTitleComponent, 
   PageTitleSkeletonComponent,
-  PageMetaComponent,
-  PageMetaSkeletonComponent,
   MediumCardSkeletonComponent
 } from '@ui/layout';
 import { TagsComponent } from '@ui/tags';
@@ -44,8 +42,6 @@ import {
     PageHeaderComponent,
     PageTitleComponent,
     PageTitleSkeletonComponent,
-    PageMetaComponent,
-    PageMetaSkeletonComponent,
     MediumCardSkeletonComponent,
     TagsComponent,
     CoverImageComponent,

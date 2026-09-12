@@ -22,13 +22,6 @@
     </h1>
   }
 
-  @if (app.isLoading()) {
-    <ui-page-meta-skeleton slot="meta" />
-  } @else {
-    <ui-page-meta slot="meta">
-      <span class="developer-link">{{ app.value()?.owner?.name }}</span>
-    </ui-page-meta>
-  }
 </ui-page-header>
 
 <!-- Hero Section with Cover Image -->
