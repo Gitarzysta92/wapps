@@ -209,7 +209,7 @@ export function browseCatalog(query: CatalogQuery, entries = CATALOG_ENTRIES) {
         .toLowerCase();
       return (
         (!query.kind || entry.kind === query.kind) &&
-        (!query.category || matches(entry.categories, query.category)) &&
+        matchesSelection(entry.categories, query.category) &&
         query.tags.every((tag) => matches(entry.tags, tag)) &&
         matchesSelection(entry.platforms, query.platform) &&
         matchesSelection(entry.devices, query.device) &&

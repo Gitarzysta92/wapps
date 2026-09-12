@@ -230,11 +230,6 @@ export const NAVIGATION = {
     label: 'Search by tag',
     icon: '@tui.tag',
   },
-  search: {
-    path: `search`,
-    label: 'Search',
-    icon: '@tui.search',
-  },
   userProfile: {
     path: `profiles/${ROUTE_PARAMS.profileId}`,
     label: 'User profile',

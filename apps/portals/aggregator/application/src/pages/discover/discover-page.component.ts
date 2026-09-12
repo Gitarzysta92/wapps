@@ -11,7 +11,7 @@ import {
   DiscoverySearchResultGroupDto,
   DiscoverySearchResultType
 } from '@domains/discovery';
-import { map, shareReplay, tap } from 'rxjs';
+import { combineLatest, map, shareReplay, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchBarComponent } from '@ui/search-bar';
 import { DiscoverySearchService } from '@portals/shared/features/search';
@@ -48,7 +48,7 @@ import { AppAvatarComponent, AppRatingComponent, AppVotingChipComponent } from '
 import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';
 import { TopReviewCardComponent } from '@portals/shared/features/review';
 @Component({
-  selector: 'search-results-page',
+  selector: 'discover-page',
   standalone: true,
   imports: [
     CommonModule,
@@ -87,8 +87,8 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     TopReviewCardComponent,
     MediumCardSkeletonComponent
   ],
-  templateUrl: './search-results-page.component.html',
-  styleUrl: './search-results-page.component.scss',
+  templateUrl: './discover-page.component.html',
+  styleUrl: './discover-page.component.scss',
   hostDirectives: [
     RouteDrivenContainerDirective
   ],
@@ -96,7 +96,7 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     'class': 'fluid-container'
   },
 })
-export class SearchResultsPageComponent implements AfterViewInit {
+export class DiscoverPageComponent implements AfterViewInit {
   @ViewChild(SearchBarComponent) private searchBar!: SearchBarComponent;
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -104,7 +104,7 @@ export class SearchResultsPageComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this._route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
-      this.searchBar.form.controls.search.setValue(params.get('search') ?? '', { emitEvent: false });
+      this.searchBar.form.controls.search.setValue(params.get('search') ?? params.get('q') ?? '', { emitEvent: false });
     });
   }
 
@@ -114,19 +114,23 @@ export class SearchResultsPageComponent implements AfterViewInit {
   }
 
   protected changeSearch(phrase: string | null): void {
-    void this.router.navigate(['/' + NAVIGATION.search.path], {
-      queryParams: { search: phrase?.trim() || null, page: null }, queryParamsHandling: 'merge',
+    void this.router.navigate([], {
+      relativeTo: this._route,
+      queryParams: { search: phrase?.trim() || null, q: null, page: null }, queryParamsHandling: 'merge',
     });
   }
 
-  protected readonly initialSearch = inject(ActivatedRoute).snapshot.queryParamMap.get('search') ?? '';
+  protected readonly initialSearch = inject(ActivatedRoute).snapshot.queryParamMap.get('search') ?? inject(ActivatedRoute).snapshot.queryParamMap.get('q') ?? '';
 
 
   private readonly _globalState = inject(GlobalStateService);
   private readonly _route = inject(ActivatedRoute);
 
-  protected readonly resultsData$ = this._route.queryParamMap.pipe(
-    map(params => Object.fromEntries(params.keys.map(key => [key, params.getAll(key).join(',')]))),
+  protected readonly resultsData$ = combineLatest([this._route.queryParamMap, this._route.paramMap]).pipe(
+    map(([query, path]) => ({
+      ...Object.fromEntries(query.keys.map(key => [key, query.getAll(key).join(',')])),
+      ...(path.get('category') ? { category: path.get('category')! } : {}),
+    })),
     map(params => ({ ...this.searchService.search(params), isLoading: false })),
     tap(data => {
       this.searchService.remember(data.query['search']);

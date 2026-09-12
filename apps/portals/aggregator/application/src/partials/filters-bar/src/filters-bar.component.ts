@@ -123,12 +123,21 @@ export class FiltersBarComponent {
   };
 
   public readonly filters$ = this._filtersProvider.params$.pipe(
+    map(params => ({
+      ...params,
+      ...(!params['search'] && params['q'] ? { search: params['q'] } : {}),
+      ...(params['tags'] ? { tag: new Set([...(params['tag'] ?? []), ...params['tags']]) } : {}),
+    })),
     map(ps => this._paramMapToFilterVmListMapper.map(ps)),
-    map(fs => fs.filter(f => f.options.some(o => o.isSelected))),
+    map(fs => fs.filter(f => this._findFilterDefinition(f.key) && f.options.some(o => o.isSelected))),
     map(fs => fs.map(f => ({
       key: f.key,
-      name: f.name,
-      options: f.options.filter(o => o.isSelected),
+      name: this._findFilterDefinition(f.key)?.name ?? f.name,
+      options: f.options.filter(o => o.isSelected).flatMap(option =>
+        (f.key === this.FILTERS.search ? [option.value] : option.value.split(',')).map(value => ({
+          ...option, value,
+          name: this.FILTERS_OPTIONS_DICTIONARY[f.key]?.find(item => item.value === value)?.name ?? value,
+        }))),
     }))),
   ); 
 
@@ -208,13 +217,18 @@ export class FiltersBarComponent {
     )
 
   public addFilterDropdownOpen = false;
-  public openFilterDropdowns: { [filterId: string]: boolean } = {};
+  public openFilterDropdowns: Record<string, boolean> = Object.fromEntries(
+    Object.values(this.FILTERS).map(key => [key, false]),
+  );
 
   public getPlaceholder(filterId: string): string {
     return this._getPlaceholderForFilter(filterId);
   }
 
   public getSelectedOptionsWithFlag(filterId: string, selectedOptions: SearchableOption[]): (SearchableOption & { isSelected: boolean })[] {
+    if (filterId === this.FILTERS.search) {
+      return selectedOptions.map(option => ({ ...option, isSelected: true }));
+    }
     const allItems = this.FILTERS_OPTIONS_DICTIONARY[filterId] ?? [];
     const selectedValues = new Set(selectedOptions.map(o => o.value));
     return allItems.map(item => ({
@@ -285,7 +299,11 @@ export class FiltersBarComponent {
 
     this._router.navigate([], {
       relativeTo: this._route,
-      queryParams,
+      queryParams: {
+        ...queryParams, page: null,
+        ...(filterId === this.FILTERS.search ? { q: null } : {}),
+        ...(filterId === this.FILTERS.tag ? { tags: null } : {}),
+      },
       queryParamsHandling: 'merge',
     });
   }
@@ -308,24 +326,11 @@ export class FiltersBarComponent {
   }
 
   private _applyFilterSelection(result: FilterSelectionDialogResult): void{
-    const values = result.selected.map(o => o.value);
-    const queryParams = values.length > 0
-      ? { [result.filterId]: values }
-      : { [result.filterId]: null };
-
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams,
-      queryParamsHandling: 'merge',
-    });
+    this.onFilterSelectionChange(result.filterId, result.selected);
   }
 
   private _clearFilterSelection(filterId: string): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: { [filterId]: null },
-      queryParamsHandling: 'merge',
-    });
+    this.onFilterSelectionChange(filterId, []);
   }
 
   private _getPlaceholderForFilter(filterId: string): string {
@@ -351,4 +356,3 @@ function mapToSearchableOption(options: { id: number; name: string; slug: string
     value: c.slug,
   }));
 }
-

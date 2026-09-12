@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { ApplicationsPageComponent } from '../applications/applications.component';
 import { ArticlesPageComponent } from '../articles/articles.component';
 import { TagResultsPageComponent } from '../tag-results-page/tag-results-page.component';
 import { CategoryResultsPageComponent } from '../category-results-page/category-results-page.component';
@@ -10,7 +9,6 @@ import { SuitesPageComponent } from '../suites/suites.component';
 import { EntryDetailsDataService } from '../entry-details-page/entry-details-data.service';
 import { ResultsPageComponent } from './results-page.component';
 import { By } from '@angular/platform-browser';
-import { applicationsMatcher } from '../applications/applications.matcher';
 
 async function settle(harness: RouterTestingHarness): Promise<void> {
   // Navigation activates the wrapper first; its signal inputs then start the resource.
@@ -27,10 +25,7 @@ describe('catalog page URL state', () => {
       providers: [
         provideNoopAnimations(),
         provideRouter([
-          {
-            matcher: applicationsMatcher,
-            component: ApplicationsPageComponent,
-          },
+          { path: 'categories', component: CategoryResultsPageComponent },
           { path: 'digest', component: ArticlesPageComponent },
           { path: 'suites', component: SuitesPageComponent },
           { path: 'tags/:tagSlug', component: TagResultsPageComponent },
@@ -45,7 +40,7 @@ describe('catalog page URL state', () => {
 
   it('renders application filtering from the URL and responds to query navigation', async () => {
     const harness = await RouterTestingHarness.create(
-      '/discover?search=Photo%20Snap'
+      '/categories?type=applications&search=Photo%20Snap'
     );
     await settle(harness);
     expect(
@@ -56,7 +51,7 @@ describe('catalog page URL state', () => {
         ?.querySelector('.item-main')
         ?.getAttribute('href')
     ).toBe('/apps/photo-snap');
-    await harness.navigateByUrl('/discover?search=does-not-exist');
+    await harness.navigateByUrl('/categories?type=applications&search=does-not-exist');
     await settle(harness);
     expect(harness.routeNativeElement?.textContent).toContain(
       'No results found'
@@ -97,7 +92,7 @@ describe('catalog page URL state', () => {
   });
   it('encodes category segments once and uses semantic tag slugs', async () => {
     const harness = await RouterTestingHarness.create(
-      '/discover?search=Photo%20Snap'
+      '/categories?type=applications&search=Photo%20Snap'
     );
     await settle(harness);
     const links = [
@@ -129,7 +124,7 @@ describe('catalog page URL state', () => {
 
   it('sorts and paginates through controls while preserving search in the URL', async () => {
     const harness = await RouterTestingHarness.create(
-      '/discover?search=a&pageSize=3'
+      '/categories?type=applications&search=a&pageSize=3'
     );
     await settle(harness);
     const root = () => harness.routeNativeElement!;
@@ -195,9 +190,9 @@ describe('catalog page URL state', () => {
       else localStorage.setItem(storageKey, previous);
     }
   });
-  it('applies the three application filter controls and resets legacy path pagination', async () => {
+  it('applies the three application filter controls and resets pagination', async () => {
     const harness = await RouterTestingHarness.create(
-      '/discover/page/2?platform=web&device=mobile'
+      '/categories?type=applications&page=2&platform=web&device=mobile'
     );
     await settle(harness);
     const controls = [
@@ -228,7 +223,7 @@ describe('catalog page URL state', () => {
     ).toBe('/apps/photo-snap');
   });
   it('shows URL-selected category, tag, and application facets in native controls on first render', async () => {
-    const harness = await RouterTestingHarness.create('/discover?category=photo-editing&tag=web-development&platform=0&device=1&monetization=1&sort=newest');
+    const harness = await RouterTestingHarness.create('/categories?type=applications&category=photo-editing&tag=web-development&platform=0&device=1&monetization=1&sort=newest');
     await settle(harness);
     const selected = (label: string) => [...harness.routeNativeElement!.querySelectorAll('label')]
       .find(element => element.firstChild?.textContent?.trim() === label)?.querySelector('select')?.value;
@@ -238,7 +233,7 @@ describe('catalog page URL state', () => {
     expect(selected('Device')).toBe('mobile');
     expect(selected('Monetization')).toBe('freemium');
     expect(selected('Sort by')).toBe('newest');
-    await harness.navigateByUrl('/discover');
+    await harness.navigateByUrl('/categories?type=applications');
     await settle(harness);
     for (const label of ['Category', 'Tag', 'Platform', 'Device', 'Monetization']) expect(selected(label)).toBe('');
   });
@@ -252,7 +247,7 @@ describe('catalog page URL state', () => {
     expect(tag.disabled).toBe(true);
   });
 
-  it.each([['/discover', '20'], ['/discover?pageSize=3', '3'], ['/discover?pageSize=50', '50']])(
+  it.each([['/categories?type=applications', '20'], ['/categories?type=applications&pageSize=3', '3'], ['/categories?type=applications&pageSize=50', '50']])(
     'initializes the native page-size selector for %s', async (url, expected) => {
       const harness = await RouterTestingHarness.create(url);
       await settle(harness);

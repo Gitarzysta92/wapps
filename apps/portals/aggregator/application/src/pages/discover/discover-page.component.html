@@ -16,9 +16,9 @@
 
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
-  <p role="status">{{ resultsData.itemsNumber }} results@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
+  <p role="status">{{ resultsData.itemsNumber }} {{ resultsData.itemsNumber === 1 ? 'result' : 'results' }}@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
   @if (resultsData.query['type']) {
-    <a tuiLink routerLink="/search" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
+    <a tuiLink routerLink="/discover" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
   }
   @if (!resultsData.groups.length) {
     <section commonSection><p>No results found. Try another search or remove a filter.</p></section>
