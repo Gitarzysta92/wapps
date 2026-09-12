@@ -1,0 +1,29 @@
+@use 'ui/design-system/src/styles' as *;
+
+// Shared structural spacing; portal appearances remain in theme.scss.
+$content-gap: $space-6;
+$section-gap: $space-8;
+$title-gap: $space-6;
+$card-gap: $space-4;
+
+@mixin page($offset: $space-20) {
+  :host { display: block; min-width: 0; }
+  .page-header { margin-top: $offset; }
+}
+
+@mixin content {
+  margin-top: $content-gap;
+}
+
+@mixin section($divided: true) {
+  margin-top: $section-gap;
+  padding: 0;
+  @if $divided {
+    padding-top: $content-gap;
+    border-top: 1px solid var(--tui-border-normal);
+  }
+}
+
+@mixin title {
+  margin: 0 0 $title-gap;
+}

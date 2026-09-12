@@ -1,8 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
 
-.page-header {
-  margin-top: $space-20;
-}
+@include page.page;
 
 .breadcrumbs-skeleton, .breadcrumbs {
   height: $space-3;
@@ -150,9 +149,7 @@
 .quick-access-section,
 .overview-section,
 .preview-section {
-  margin-top: $space-12;
-  padding: $space-8 0;
-  border-top: 1px solid var(--tui-border-normal);
+  @include page.section;
 }
 
 .section-title {
@@ -162,7 +159,7 @@
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: var(--tui-text-primary);
-  margin-bottom: $space-6;
+  @include page.title;
 }
 
 // ============================================================================

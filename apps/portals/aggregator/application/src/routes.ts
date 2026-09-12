@@ -258,6 +258,43 @@ export const routes: Routes = [
             } as IAppShellRouteData & IBreadcrumbRouteData,
           },
           {
+            path: NAVIGATION.applicationDevLog.path + '/:version',
+            loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
+            resolve: {
+              leftSidebar: sidebarResolver(ApplicationCommonSidebarComponent, {
+                appSlug: (route: ActivatedRouteSnapshot) => route.paramMap.get('appSlug'),
+                navigation: navigationResolver(APPLICATION_VIEW_MAIN_NAVIGATION),
+                navigationSecondary: navigationResolver(DESKTOP_MAIN_NAVIGATION),
+                navigationAvatar: navigationResolver(NAVIGATION.applicationOverview)
+              })
+            },
+            data: {
+              breadcrumb: [ NAVIGATION.application, NAVIGATION.applicationDevLog ],
+              bottomBar: {
+                component: CommonMobileBottomBarPartialComponent,
+                inputs: { navigationPrimary: MOBILE_MAIN_NAVIGATION }
+              },
+              rightSidebar: {
+                component: UserAuxiliarySidebarComponent,
+                inputs: {
+                  navigationPrimary: AUTHENTICATED_USER_MAIN_NAVIGATION,
+                  navigationSecondary: AUTHENTICATED_USER_SECONDARY_NAVIGATION,
+                  unauthenticatedNavigationPrimary: UNAUTHENTICATED_USER_MAIN_NAVIGATION,
+                  unauthenticatedNavigationSecondary: UNAUTHENTICATED_USER_SECONDARY_NAVIGATION
+                },
+              },
+              footer: {
+                component: FooterPartialComponent,
+                inputs: {
+                  primaryNavigation: FOOTER_MAIN_NAVIGATION,
+                  secondaryNavigation: FOOTER_SECONDARY_NAVIGATION,
+                  tertiaryNavigation: FOOTER_TERTIARY_NAVIGATION,
+                  quaternaryNavigation: FOOTER_QUATERNARY_NAVIGATION
+                }
+              }
+            } as IAppShellRouteData & IBreadcrumbRouteData,
+          },
+          {
             path: NAVIGATION.applicationDevLog.path,
             loadComponent: () => import('./pages/application-devlog-page/application-devlog-page.component').then(m => m.ApplicationDevlogPageComponent),
             resolve: {

@@ -1,42 +1,11 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+@use '../application-activity-page';
 
-// Page Layout
-.page-layout {
-  @include grid-container($container-lg);
-  padding: 0;
-}
-
-// Section Styling
-.timeline-section {
-  padding: $space-6 0;
-}
-
-.section-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.section-title {
-  @include text($font-size-3xl, $font-weight-bold, $line-height-tight);
-  color: var(--tui-text-primary);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-}
-
-.title-icon {
-  font-size: $font-size-3xl;
-  color: var(--tui-primary);
-}
-
-.timeline-intro {
-  @include text($font-size-md, $font-weight-regular, $line-height-loose);
-  color: var(--tui-text-secondary);
-  margin: 0;
-}
+.timeline-content { @include page.content; }
 
 .timeline-feed {
+  display: block;
   width: 100%;
+  min-width: 0;
 }

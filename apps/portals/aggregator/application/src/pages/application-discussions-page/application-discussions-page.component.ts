@@ -16,7 +16,6 @@ import {
   CommonSectionComponent,
   SectionHeaderComponent,
   SectionTitleComponent,
-  DividerComponent,
   NoticeCardComponent
 } from '@ui/layout';
 import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
@@ -53,7 +52,6 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
     CommonSectionComponent,
     SectionHeaderComponent,
     SectionTitleComponent,
-    DividerComponent,
     NoticeCardComponent
   ],
   templateUrl: './application-discussions-page.component.html',

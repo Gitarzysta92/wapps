@@ -1,14 +1,12 @@
 @if (!app()) { <section role="status"><h1>Application not found</h1><a href="/">Browse applications</a></section> } @else {
-<main class="page-layout">
-  <section class="timeline-section">
-    <div class="section-content">
-      <h1 class="section-title">
-        <tui-icon icon="@tui.timeline" class="title-icon"></tui-icon>
-        Timeline
-      </h1>
-      <p class="timeline-intro">Recent activity and updates for {{ app()?.name }}</p>
-      
-      <p>Sample activity from the local catalog.</p>
+<ui-page-header class="page-header">
+  <ui-breadcrumbs class="breadcrumbs" slot="top-bar" [breadcrumbs]="breadcrumbData()" />
+  <h1 uiPageTitle class="page-title" slot="title" id="timeline-title">
+    <tui-icon icon="@tui.list-ordered" />
+    Timeline
+  </h1>
+</ui-page-header>
+<section class="timeline-content" aria-labelledby="timeline-title">
       @if ((feed.feedItems$ | async)?.length === 0) { <p role="status">No activity is available for this application.</p> }
       <feed-container class="timeline-feed">
         <ng-template #itemTemplate let-item>
@@ -67,8 +65,6 @@
         </ng-template>
       </feed-container>
       @if ((feed.hasMore$ | async) === false && (feed.feedItems$ | async)?.length) { <p role="status">All available activity is shown.</p> }
-    </div>
-  </section>
-</main>
+</section>
 
 }

@@ -1,10 +1,11 @@
-import { Component, inject, computed, input } from '@angular/core';
+import { Component, computed, input, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
-import { TuiChip, TuiBadge } from '@taiga-ui/kit';
-import { AppRecordDto } from '@domains/catalog/record';
+import { TuiChip } from '@taiga-ui/kit';
+import { RouterLink } from '@angular/router';
+import { RELEASES } from './releases';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import { 
   PageHeaderComponent, 
@@ -12,30 +13,21 @@ import {
   PageTitleSkeletonComponent,
   PageMetaComponent,
   PageMetaSkeletonComponent,
-  MediumCardComponent,
-  MediumCardSkeletonComponent
+  MediumCardComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
-
-interface ChangelogEntry {
-  version: string;
-  releaseDate: Date;
-  description: string;
-  type: 'major' | 'minor' | 'patch';
-  changes: { type: string; description: string }[];
-}
 
 @Component({
   selector: 'app-application-devlog-page',
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     TuiButton,
     TuiIcon,
     TuiChip,
-    TuiBadge,
     TuiAppearance,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
@@ -44,8 +36,7 @@ interface ChangelogEntry {
     PageTitleSkeletonComponent,
     PageMetaComponent,
     PageMetaSkeletonComponent,
-    MediumCardComponent,
-    MediumCardSkeletonComponent
+    MediumCardComponent
   ],
   templateUrl: './application-devlog-page.component.html',
   styleUrl: './application-devlog-page.component.scss'
@@ -66,7 +57,7 @@ export class ApplicationDevlogPageComponent implements
 
   public readonly changelog = rxResource({
     request: () => this.appSlug(),
-    loader: () => of(this._generateMockChangelog())
+    loader: () => of(RELEASES)
   });
 
   public readonly breadcrumbData = computed(() => {
@@ -86,61 +77,26 @@ export class ApplicationDevlogPageComponent implements
     return breadcrumb;
   });
 
-  public readonly latestEntry = computed(() => this.changelog.value()?.[0] ?? null);
-  public readonly previousEntries = computed(() => this.changelog.value()?.slice(1) ?? []);
+  readonly version = input<string | null>(null);
+  readonly stableLimit = signal(2);
+  readonly stableEntries = computed(() => (this.changelog.value() ?? []).filter(entry => entry.channel === 'stable'));
+  readonly visibleStableEntries = computed(() => this.stableEntries().slice(0, this.stableLimit()));
+  readonly otherEntries = computed(() => (this.changelog.value() ?? []).filter(entry => entry.channel !== 'stable'));
+  readonly selectedEntry = computed(() => (this.changelog.value() ?? []).find(entry => entry.version === this.version()));
+  readonly previousEntries = computed(() => {
+    const selected = this.selectedEntry();
+    return selected ? (this.changelog.value() ?? []).filter(entry => entry.releaseDate < selected.releaseDate) : [];
+  });
+  readonly pageBreadcrumbs = computed(() => this.version()
+    ? [...this.breadcrumbData(), {label: 'v' + this.version(), icon: '@tui.tag', path: this.releasePath(this.version()!)}]
+    : this.breadcrumbData());
 
-  getChangeTypeLabel(type: 'major' | 'minor' | 'patch'): string {
-    switch (type) {
-      case 'major': return 'Major Update';
-      case 'minor': return 'Minor Update';
-      case 'patch': return 'Patch';
-    }
+  constructor() {
+    effect(() => { this.appSlug(); this.stableLimit.set(2); });
   }
 
-  getChangeTypeAppearance(type: 'major' | 'minor' | 'patch'): string {
-    switch (type) {
-      case 'major': return 'error';
-      case 'minor': return 'primary';
-      case 'patch': return 'neutral';
-    }
-  }
+  loadMore() { this.stableLimit.update(limit => limit + 2); }
+  releasePath(version: string) { return `/apps/${this.appSlug()}/devlog/${version}`; }
 
-  private _generateMockChangelog(): ChangelogEntry[] {
-    return [
-      {
-        version: '2.1.0',
-        releaseDate: new Date(),
-        description: 'Major update with new features and improvements',
-        type: 'major',
-        changes: [
-          { type: 'feature', description: 'New user interface improvements' },
-          { type: 'feature', description: 'Performance optimizations' },
-          { type: 'fix', description: 'Bug fixes and stability improvements' },
-          { type: 'feature', description: 'Added dark mode support' },
-          { type: 'security', description: 'Enhanced security features' }
-        ]
-      },
-      {
-        version: '2.0.3',
-        releaseDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-        description: 'Minor bug fixes and improvements',
-        type: 'patch',
-        changes: [
-          { type: 'fix', description: 'Fixed login issue on mobile devices' },
-          { type: 'fix', description: 'Resolved performance regression' }
-        ]
-      },
-      {
-        version: '2.0.0',
-        releaseDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-        description: 'Complete redesign with new features',
-        type: 'major',
-        changes: [
-          { type: 'feature', description: 'Complete UI redesign' },
-          { type: 'feature', description: 'New dashboard experience' },
-          { type: 'feature', description: 'Integration with external services' }
-        ]
-      }
-    ];
-  }
+
 }

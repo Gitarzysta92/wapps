@@ -1,14 +1,5 @@
 @use 'ui/design-system/src/styles' as *;
-
-// The app shell owns page width; settings fill its content column.
-:host {
-  display: block;
-  min-width: 0;
-}
-
-.page-header {
-  margin-top: $space-20;
-}
+@use '../settings-page';
 
 .page-description {
   font-size: $font-size-md;
@@ -25,35 +16,12 @@
   margin-top: $space-8;
 }
 
-.settings-content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-  margin-top: $space-8;
+.settings-card--danger {
+  border: 1px solid var(--tui-negative);
+  background: rgba(239, 68, 68, 0.02);
 }
 
-.settings-card {
-  padding: $space-6;
-
-  &--danger {
-    border: 1px solid var(--tui-negative);
-    background: rgba(239, 68, 68, 0.02);
-  }
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  color: var(--tui-text-primary);
-  margin: 0;
-
-  &--danger {
-    color: var(--tui-negative);
-  }
-}
+.section-title--danger { color: var(--tui-negative); }
 
 .section-subtitle {
   font-size: $font-size-sm;
@@ -247,8 +215,6 @@
   padding-top: $space-6;
   border-top: 1px solid var(--tui-base-03);
 }
-
-
 
 .settings-feedback {
   color: var(--tui-text-positive);
