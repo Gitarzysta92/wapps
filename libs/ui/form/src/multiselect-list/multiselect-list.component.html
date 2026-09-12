@@ -1,10 +1,30 @@
 <div class="multiselect-list">
-  
-  @if (groupLabel) {
-    <div class="group-label">{{ groupLabel }}</div>
+  @if (showSelectionSummary) {
+    <div class="selection-summary">
+      <div class="group-label" aria-live="polite">
+        @if (selectedOptions.length) { Selected ({{ selectedOptions.length }}) }
+        @else { No options selected }
+      </div>
+      @if (selectedOptions.length) {
+        <div class="selected-options" role="group" aria-label="Selected options">
+          @for (option of selectedOptions; track option.value) {
+            <button tuiChip type="button" appearance="action-soft" size="s" iconEnd="@tui.x"
+              class="selected-option" [attr.aria-label]="'Remove ' + option.name" [title]="option.name"
+              (click)="toggleItem(option, false)">
+              <span class="selected-option-label">{{ option.name }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
   }
   
-  <div class="items-list">
+  <tui-textfield class="search-input" iconStart="@tui.search" tuiTextfieldSize="s">
+    <input tuiTextfield type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchChange($event)"
+      [placeholder]="searchPlaceholder" [attr.aria-label]="searchPlaceholder" />
+  </tui-textfield>
+
+  <div #optionsList class="items-list" role="group" [attr.aria-label]="groupLabel || 'Options'" tabindex="0">
     @for (item of filteredItems; track item.value) {
       <label tuiCheckbox class="item">
         <input
@@ -15,6 +35,11 @@
         />
         <span class="item-name">{{ item.name }}</span>
       </label>
+    } @empty {
+      <p class="empty-state" role="status">
+        @if (searchQuery.trim()) { No options match “{{ searchQuery.trim() }}”. }
+        @else { No options available. }
+      </p>
     }
   </div>
 </div>
