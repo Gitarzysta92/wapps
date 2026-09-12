@@ -257,8 +257,20 @@ body.dark {
 // Opaque organic backing. The canvas takes over after its first completed frame.
 [uiWobbleOutline] {
   --wobble-outline-amplitude: 8;
+  --wobble-top-amplitude: 24;
+  --wobble-top-wavelength: 220;
   --wobble-outline-duration: 16s;
   --wobble-outline-gradient-duration: 24s;
+  --wobble-bubble-radius: 18;
+  --wobble-bubble-rise: 40;
+  --wobble-bubble-duration: 7s;
+  --wobble-bubble-count: 10;
+  --wobble-bubble-release-height: 0.75;
+  --wobble-bubble-growth-start: 0.35;
+  // Buoyancy, tether stiffness, and damping govern continuous motion and pinch-off.
+  --wobble-bubble-buoyancy: 100;
+  --wobble-bubble-tension: 32;
+  --wobble-bubble-damping: 10;
   background: var(--wobble-outline-color);
 
   &.ui-wobble-ready {
