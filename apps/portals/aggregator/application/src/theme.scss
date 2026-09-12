@@ -224,14 +224,20 @@ body.dark {
 
 
 // Alpha masking reveals the actual page background, including images and animation.
+.ui-sticky-header {
+  --ui-sticky-header-fade: #{$space-12};
+  --ui-sticky-header-fade-offset: #{$space-8};
+}
+
 .ui-sticky-content-masked {
+  --ui-sticky-mask-start: calc(var(--ui-sticky-mask-top) - var(--ui-sticky-header-fade-offset));
   mask-image: linear-gradient(to bottom,
-    transparent var(--ui-sticky-mask-top),
-    #000 calc(var(--ui-sticky-mask-top) + var(--ui-sticky-header-fade)));
+    transparent var(--ui-sticky-mask-start),
+    #000 calc(var(--ui-sticky-mask-start) + var(--ui-sticky-header-fade)));
   mask-mode: alpha;
   mask-repeat: no-repeat;
   // Fully hidden content above the fade must not intercept pointer events.
-  clip-path: inset(var(--ui-sticky-mask-top) 0 0);
+  clip-path: inset(max(0px, var(--ui-sticky-mask-start)) 0 0);
 }
 
 // Shared soft visuals. Motion is opt-in via appearance="action-soft-scale".
