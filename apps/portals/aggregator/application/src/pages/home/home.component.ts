@@ -42,6 +42,7 @@ import { SuiteTeaserFeedItemComponent } from '@portals/shared/features/feed';
 import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed';
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { IntroHeroComponent } from '@ui/intro-hero';
+import { WobbleOutlineDirective } from '@ui/layout';
 import { NAVIGATION } from "../../navigation";
 import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 
@@ -84,6 +85,7 @@ type RegisteredFeedItem = Array<
     TuiDropdown,
     TuiBadgedContent,
     FeedContainerComponent,
+    WobbleOutlineDirective,
   ],
   providers: [
     SearchMockDataService,

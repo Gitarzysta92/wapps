@@ -29,6 +29,9 @@ body.light {
   --nebula-color-3: #{$color-accent-500};
   --nebula-opacity: 0.22;
   --nebula-star-color: #{rgba($color-primary-600, 0.18)};
+  --wobble-outline-color: #{$color-purple-600};
+  --wobble-outline-color-2: #{$color-indigo-400};
+  --wobble-outline-color-3: #{$color-primary-600};
 
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-bg-muted} 0%,
@@ -121,6 +124,9 @@ body.dark {
   --nebula-color-3: #{$color-accent-500};
   --nebula-opacity: 0.4;
   --nebula-star-color: #{rgba($color-white, 0.35)};
+  --wobble-outline-color: #{$color-indigo-400};
+  --wobble-outline-color-2: #{$color-purple-600};
+  --wobble-outline-color-3: #{$color-primary-600};
 
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-surface} 0%,
@@ -222,6 +228,18 @@ body.dark {
 
 
 
+
+// Opaque organic backing. The canvas takes over after its first completed frame.
+[uiWobbleOutline] {
+  --wobble-outline-amplitude: 8;
+  --wobble-outline-duration: 16s;
+  --wobble-outline-gradient-duration: 24s;
+  background: var(--wobble-outline-color);
+
+  &.ui-wobble-ready {
+    background: transparent;
+  }
+}
 
 // Alpha masking reveals the actual page background, including images and animation.
 .ui-sticky-header {

@@ -1,0 +1,12 @@
+[uiWobbleOutline] {
+  position: relative;
+  isolation: isolate;
+}
+
+.ui-wobble-outline {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
