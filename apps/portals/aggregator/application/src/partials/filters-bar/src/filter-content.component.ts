@@ -13,6 +13,7 @@ type SearchableOptionWithSelection = SearchableOption & { isSelected: boolean };
     TextSearchInputComponent,
   ],
   templateUrl: './filter-content.component.html',
+  styleUrl: './filter-content.component.scss',
 })
 export class FilterContentComponent {
   @Input() filterId!: string;
@@ -20,6 +21,7 @@ export class FilterContentComponent {
   @Input() items: SearchableOption[] = [];
   @Input() selectedOptions: SearchableOptionWithSelection[] = [];
   @Input() placeholder: string = '';
+  @Input() showSelectionSummary = false;
 
   @Output() selectionChange = new EventEmitter<SearchableOption[]>();
 
@@ -27,4 +29,3 @@ export class FilterContentComponent {
     this.selectionChange.emit(selected);
   }
 }
-

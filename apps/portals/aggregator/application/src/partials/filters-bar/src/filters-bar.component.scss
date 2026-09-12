@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 .filters-section {
   display: flex;
   gap: 0.5rem;
@@ -6,7 +8,12 @@
 }
 
 .dropdown-panel {
-  padding: 1rem;
+  --multiselect-list-max-height: min(14rem, 30dvh);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: min(24rem, 50dvh);
+  padding: $space-4;
   min-width: min(300px, calc(100vw - 4rem));
-  max-width: 400px;
+  max-width: min(400px, calc(100vw - #{$space-8}));
 }

@@ -1,26 +1,36 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host { display: block; min-width: 0; }
+
 .dialog {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: $space-6;
   min-width: 0;
   width: 100%;
-  max-width: 36rem;
+  max-height: calc(100dvh - #{$space-32});
 }
+
+.dialog__header, .dialog__actions { flex-shrink: 0; }
 
 .dialog__header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: $font-size-xl;
 }
 
 .dialog__body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  min-height: 0;
+  gap: $space-4;
 }
 
 .dialog__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: $space-3;
 }
 
+@media (max-height: 600px) {
+  .dialog { gap: $space-3; }
+}

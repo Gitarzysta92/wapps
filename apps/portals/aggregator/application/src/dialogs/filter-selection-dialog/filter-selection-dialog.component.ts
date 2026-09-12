@@ -23,7 +23,7 @@ export interface FilterSelectionDialogResult {
   selector: 'filter-selection-dialog',
   standalone: true,
   templateUrl: './filter-selection-dialog.component.html',
-  styleUrl: './filter-selection-dialog.component.scss',
+  styleUrl: '../../partials/filters-bar/src/filter-selection-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -39,17 +39,14 @@ export class FilterSelectionDialogComponent {
   public readonly filterName = this._data.filterName;
   public readonly filterId = this._data.filterId;
   public readonly items = this._data.items;
-  public readonly selectedOptions = this._data.items.filter((o): o is SearchableOption & { isSelected: boolean } => 
+  public selectedOptions = this._data.items.filter((o): o is SearchableOption & { isSelected: boolean } =>
     'isSelected' in o && o.isSelected === true
   );
   public readonly placeholder = this._data.placeholder;
 
   public onSelectionChange(selected: SearchableOption[]): void {
-    // Store the selection for when Apply is clicked
-    this._selectedOptions = selected;
+    this.selectedOptions = selected.map(option => ({ ...option, isSelected: true }));
   }
-
-  private _selectedOptions: SearchableOption[] = this.selectedOptions;
 
   public onCancel(): void {
     this._context.completeWith(undefined);
@@ -58,7 +55,7 @@ export class FilterSelectionDialogComponent {
   public onApply(): void {
     this._context.completeWith({
       filterId: this._data.filterId,
-      selected: this._selectedOptions,
+      selected: this.selectedOptions,
     });
   }
 
@@ -75,4 +72,3 @@ export class FilterSelectionDialogComponent {
     };
   }
 }
-
