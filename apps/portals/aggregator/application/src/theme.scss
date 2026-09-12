@@ -29,6 +29,9 @@ body.light {
   --nebula-color-3: #{$color-accent-500};
   --nebula-opacity: 0.22;
   --nebula-star-color: #{rgba($color-primary-600, 0.18)};
+  --wobble-outline-color: #{$color-purple-600};
+  --wobble-outline-color-2: #{$color-indigo-400};
+  --wobble-outline-color-3: #{$color-primary-600};
 
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-bg-muted} 0%,
@@ -121,6 +124,9 @@ body.dark {
   --nebula-color-3: #{$color-accent-500};
   --nebula-opacity: 0.4;
   --nebula-star-color: #{rgba($color-white, 0.35)};
+  --wobble-outline-color: #{$color-indigo-400};
+  --wobble-outline-color-2: #{$color-purple-600};
+  --wobble-outline-color-3: #{$color-primary-600};
 
   --chat-fade-gradient: linear-gradient(to bottom,
     #{$color-surface} 0%,
@@ -222,6 +228,97 @@ body.dark {
 
 
 
+
+// Fade only decoration layers, never their sibling cards or text.
+.ui-decoration-faded {
+  --decoration-min-opacity: 0.5;
+  --decoration-fade-distance: 400px;
+  --decoration-scroll-smoothing: 80ms;
+
+  > canvas {
+    opacity: calc(1 - (1 - var(--decoration-min-opacity)) * var(--decoration-fade-progress, 0));
+    transition: opacity var(--decoration-scroll-smoothing) linear;
+  }
+}
+
+// Tiles grow to their natural size using the same progress as the decoration fade.
+.section__feed.ui-decoration-faded {
+  --decoration-min-opacity: 0;
+  --feed-tile-start-scale: 0.96;
+
+  .feed-item {
+    --feed-tile-scale: calc(var(--feed-tile-start-scale) + (1 - var(--feed-tile-start-scale)) * var(--decoration-fade-progress, 0));
+    transform: scale3d(var(--feed-tile-scale), var(--feed-tile-scale), 1);
+    transform-origin: center;
+    transition: transform var(--decoration-scroll-smoothing) linear;
+  }
+}
+
+// The browser synchronizes these composited properties with touch scrolling, independently of canvas work.
+@supports (animation-timeline: scroll(root)) and (animation-range: 0px 400px) {
+  .ui-decoration-faded {
+    --decoration-native-scroll: 1;
+
+    > canvas {
+      animation: decoration-scroll-fade 1s cubic-bezier(0.333333, 0, 0.666667, 1) both;
+      animation-timeline: scroll(root);
+      animation-range: 0px var(--decoration-fade-distance);
+      transition: none;
+    }
+  }
+
+  .section__feed.ui-decoration-faded .feed-item {
+    animation: feed-scroll-zoom 1s cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: scroll(root);
+    animation-range: 0px var(--decoration-fade-distance);
+    transition: none;
+  }
+}
+
+@keyframes decoration-scroll-fade {
+  from { opacity: 1; }
+  to { opacity: var(--decoration-min-opacity); }
+}
+
+@keyframes feed-scroll-zoom {
+  from { transform: scale3d(var(--feed-tile-start-scale), var(--feed-tile-start-scale), 1); }
+  to { transform: scale3d(1, 1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section__feed.ui-decoration-faded .feed-item {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+
+  .ui-decoration-faded > canvas { transition: none; }
+}
+
+// Opaque organic backing. The canvas takes over after its first completed frame.
+[uiWobbleOutline] {
+  --wobble-outline-amplitude: 8;
+  --wobble-outline-side-amplitude: 0;
+  --wobble-top-amplitude: 24;
+  --wobble-top-wavelength: 220;
+  --wobble-outline-duration: 16s;
+  --wobble-outline-gradient-duration: 24s;
+  --wobble-bubble-radius: 18;
+  --wobble-bubble-rise: 40;
+  --wobble-bubble-duration: 7s;
+  --wobble-bubble-count: 10;
+  --wobble-bubble-release-height: 0.75;
+  --wobble-bubble-growth-start: 0.35;
+  // Buoyancy, tether stiffness, and damping govern continuous motion and pinch-off.
+  --wobble-bubble-buoyancy: 100;
+  --wobble-bubble-tension: 32;
+  --wobble-bubble-damping: 10;
+  background: var(--wobble-outline-color);
+
+  &.ui-wobble-ready {
+    background: transparent;
+  }
+}
 
 // Alpha masking reveals the actual page background, including images and animation.
 .ui-sticky-header {

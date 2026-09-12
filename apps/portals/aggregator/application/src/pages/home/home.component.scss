@@ -45,9 +45,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: $space-5 $space-4;
+  padding: $space-4 0;
   border-radius: $radius-sm;
-  background: var(--feed-background);
 
   &-container {
     display: block;
@@ -62,6 +61,10 @@
   border-radius: $radius-sm;
   box-shadow: $shadow-md;
   margin-bottom: $space-5;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 
