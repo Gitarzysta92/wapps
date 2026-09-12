@@ -6,16 +6,19 @@ tui-dropdowns {
   z-index: $z-popover;
 }
 
-// Paint the document gutter with the same background as the page.
+// The reserved scrollbar gutter needs a solid base beneath background images.
 html {
   background: var(--body-background);
+  background-color: var(--body-background-color);
 }
 
 html:has(body.light) {
+  --body-background-color: #{$color-blue-50};
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
 }
 
 html:has(body.dark) {
+  --body-background-color: #{$color-surface};
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-surface}, #{$color-surface});
 }
 
@@ -207,6 +210,17 @@ body.dark {
 
 
 
+
+// Alpha masking reveals the actual page background, including images and animation.
+.ui-sticky-content-masked {
+  mask-image: linear-gradient(to bottom,
+    transparent var(--ui-sticky-mask-top),
+    #000 calc(var(--ui-sticky-mask-top) + var(--ui-sticky-header-fade)));
+  mask-mode: alpha;
+  mask-repeat: no-repeat;
+  // Fully hidden content above the fade must not intercept pointer events.
+  clip-path: inset(var(--ui-sticky-mask-top) 0 0);
+}
 
 // Shared soft visuals. Motion is opt-in via appearance="action-soft-scale".
 [tuiAppearance][data-appearance='action-soft'],

@@ -3,7 +3,7 @@
 } @else if (app.error()) {
   <section tuiAppearance="card-elevated" class="metadata-section" role="alert"><h1>Unable to load application</h1><p>Please try again.</p><button tuiButton type="button" (click)="app.reload()">Retry</button></section>
 } @else {
-<ui-page-header class="page-header">
+<ui-page-header [uiStickyHeader]="pageContent" class="page-header">
   @if (app.isLoading()) {
     <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
   } @else {
@@ -24,6 +24,7 @@
 
 </ui-page-header>
 
+<div #pageContent class="page-content">
 <!-- Hero Section with Cover Image -->
 <section class="hero-section">
   @if (app.isLoading()) {
@@ -237,4 +238,5 @@
     </section>
   }
 }
+</div>
 }

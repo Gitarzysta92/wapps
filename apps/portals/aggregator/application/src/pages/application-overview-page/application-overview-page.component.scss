@@ -3,6 +3,20 @@
 
 @include page.page;
 
+// Keep the original content spacing and allow room for card shadows inside the mask.
+.page-content {
+  display: flow-root;
+  margin-inline: -$space-4;
+  padding-inline: $space-4;
+  padding-bottom: $space-4;
+  margin-bottom: -$space-4;
+
+  @media #{$layout-breakpoint-sm} {
+    margin-inline: -$space-3;
+    padding-inline: $space-3;
+  }
+}
+
 .breadcrumbs-skeleton, .breadcrumbs {
   height: $space-3;
 }

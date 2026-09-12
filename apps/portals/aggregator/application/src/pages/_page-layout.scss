@@ -8,7 +8,10 @@ $card-gap: $space-4;
 
 @mixin page($offset: $space-20) {
   :host { display: block; min-width: 0; }
-  .page-header { margin-top: $offset; }
+  .page-header {
+    --ui-page-header-offset: #{$offset};
+    margin-top: var(--ui-page-header-offset);
+  }
 }
 
 @mixin content {
