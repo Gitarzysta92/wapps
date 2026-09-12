@@ -7,4 +7,9 @@
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
   gap: $space-2;
+  @media #{$layout-breakpoint-md} {
+    font-size: $font-size-2xl;
+    line-height: $line-height-tight;
+    overflow-wrap: anywhere;
+  }
 }

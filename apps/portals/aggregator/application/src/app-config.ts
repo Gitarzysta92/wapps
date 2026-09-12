@@ -1,6 +1,7 @@
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { ApplicationConfig } from "@angular/core";
-import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withRouterConfig, withComponentInputBinding, Routes } from "@angular/router";
+import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withRouterConfig, withComponentInputBinding, withPreloading, Routes } from "@angular/router";
+import { NavigationPreloadingStrategy } from './navigation-preloading.strategy';
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
 import { TUI_ASSETS_PATH, tuiAssetsPathProvider } from '@taiga-ui/core'; 
@@ -12,6 +13,7 @@ export function createAppConfig(c: {
     providers: [
       provideRouter(
         c.routes,
+        withPreloading(NavigationPreloadingStrategy),
         withEnabledBlockingInitialNavigation(),
         withInMemoryScrolling({
           scrollPositionRestoration: 'top',

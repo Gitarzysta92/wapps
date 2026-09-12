@@ -7,6 +7,7 @@ import { TuiCardLarge, TuiForm } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { MY_PROFILE_VIEW_STATE_PROVIDER, MyProfileService } from '@portals/shared/features/my-profile';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { SettingsNavigationComponent } from '../settings/settings-navigation.component';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 
 @Component({
@@ -24,6 +25,7 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
     TuiForm,
     TuiTextfield,
     PageHeaderComponent,
+    SettingsNavigationComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,

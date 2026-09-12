@@ -97,8 +97,7 @@
   }
 }
 
-<ng-template #articleEntry let-entry="entry">
-  @let vm = toArticleVM(entry);
+<ng-template #articleEntry let-vm="entry">
   <ui-medium-card class="item-card" tuiAppearance="card-elevated">
     <ui-card-header slot="header">
       <h3 uiMediumTitle><a class="result-link" [routerLink]="vm.articleLink">{{ vm.title }}</a></h3>
@@ -133,8 +132,7 @@
 
 
 
-<ng-template #applicationEntry let-entry="entry">
-  @let vm = toApplicationVM(entry);
+<ng-template #applicationEntry let-vm="entry">
   <ui-medium-card class="item-card" tuiAppearance="card-elevated">
     <ui-card-header slot="header">
       <app-avatar slot="left-side" [size]="'m'" [avatar]="vm.avatarUrl"/>
@@ -143,7 +141,7 @@
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
       <ui-tags [tags]="vm.tags"></ui-tags>
-      <favorite-toggle-button type="applications" [slug]="entry.slug" slot="right-side"/>
+      <favorite-toggle-button type="applications" [slug]="vm.slug" slot="right-side"/>
     </ui-card-header>
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
@@ -167,15 +165,14 @@
 
 
 
-<ng-template #suiteEntry let-entry="entry">
-  @let vm = toSuiteVM(entry);
+<ng-template #suiteEntry let-vm="entry">
   <ui-medium-card class="item-card" tuiAppearance="card-elevated">
     <ui-card-header slot="header">
       <h3 uiMediumTitle>
         <a class="result-link" [routerLink]="vm.suiteLink">{{ vm.title }}</a>
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
-      <favorite-toggle-button type="suites" [slug]="entry.slug" slot="right-side"/>
+      <favorite-toggle-button type="suites" [slug]="vm.slug" slot="right-side"/>
     </ui-card-header>
     <ui-tags [tags]="vm.tags"></ui-tags>
     <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>

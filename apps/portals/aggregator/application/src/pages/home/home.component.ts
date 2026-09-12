@@ -1,5 +1,5 @@
 import { HomeSearchProviderService } from './home-search-provider.service';
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
@@ -67,6 +67,7 @@ type RegisteredFeedItem = Array<
 
 @Component({
   selector: 'home-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: "home.component.html",
   styleUrl: 'home.component.scss',
   imports: [
