@@ -1,12 +1,11 @@
 <div class="author-info">
   <span class="author-label">Author:</span>
   <tui-avatar
-    [src]="author().avatarUrl"
+    [src]="author().avatarUrl || '@tui.user'"
     size="xs"
     class="author-avatar">
   </tui-avatar>
   <span class="author-name">{{ author().name }}</span>
   <ng-content></ng-content>
 </div>
-
 

@@ -1,1 +1,3 @@
-<img [src]="imageUrl" [alt]="alt" />
+@if (hasImage()) {
+  <img [src]="imageUrl" [alt]="alt" loading="lazy" (error)="failedUrl = imageUrl" />
+}

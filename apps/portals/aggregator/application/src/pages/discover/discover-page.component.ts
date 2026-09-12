@@ -19,7 +19,7 @@ import { NAVIGATION } from '../../navigation';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
-import { TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
 import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
 import { FiltersMultiselectComponent } from '@ui/filters';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
@@ -28,11 +28,9 @@ import {
   PageHeaderComponent,
   PageTitleComponent,
   CommonSectionComponent,
-  ElevatedCardComponent,
   ElevatedCardSkeletonComponent,
   MediumCardComponent,
   CardHeaderComponent,
-  TitledSeparatorComponent,
   MediumCardSkeletonComponent
 } from '@ui/layout';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
@@ -44,7 +42,6 @@ import {
 } from '@ui/content';
 import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '@ui/article-author-info';
 import { CoverImageComponent } from '@ui/cover-image';
-import { ArticleRatingComponent, ArticleRatingSkeletonComponent } from '@portals/shared/features/articles';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 import { DiscussionChipComponent } from '@portals/shared/features/discussion';
@@ -64,6 +61,7 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     TuiDropdownDirective,
     TuiDropdownOptionsDirective,
     IntersectDirective,
+    TuiAppearance,
     TuiButton,
     TuiLink,
     TuiBadgedContent,
@@ -71,12 +69,10 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     PageHeaderComponent,
     PageTitleComponent,
     AsyncPipe,
-    TitledSeparatorComponent,
     CommonSectionComponent,
     MediumCardComponent,
     MediumTitleSkeletonComponent,
     MediumTitleComponent,
-    ElevatedCardComponent,
     ElevatedCardSkeletonComponent,
     CardHeaderComponent,
     CoverImageComponent,
@@ -86,7 +82,6 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     ExcerptSkeletonComponent,
     ArticleAuthorInfoComponent,
     ArticleAuthorInfoSkeletonComponent,
-    ArticleRatingComponent,
     FavoriteToggleButtonComponent,
     ProfileBadgesComponent,
     DiscussionChipComponent,

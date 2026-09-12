@@ -19,7 +19,7 @@
 
 .card-bottom-bar {
   margin-top: $space-2;
-  border-top: 1px solid white;
+  border-top: 1px solid var(--tui-border-normal);
   padding: $space-2;
 }
 
@@ -56,4 +56,3 @@
 .card-top-edge:empty {
   display: none;
 }
- 

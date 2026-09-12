@@ -6,9 +6,11 @@ import type { CoverImageDto } from './cover-image.dto';
   templateUrl: './cover-image.component.html',
   styleUrl: './cover-image.component.scss',
   standalone: true,
+  host: { '[class.no-image]': '!hasImage()' },
 })
 export class CoverImageComponent {
   @Input() image?: CoverImageDto;
+  protected failedUrl?: string;
 
   get imageUrl(): string | undefined {
     return this.image?.url;
@@ -19,6 +21,6 @@ export class CoverImageComponent {
   }
 
   hasImage(): boolean {
-    return !!this.imageUrl;
+    return !!this.imageUrl && this.imageUrl !== this.failedUrl;
   }
 }
