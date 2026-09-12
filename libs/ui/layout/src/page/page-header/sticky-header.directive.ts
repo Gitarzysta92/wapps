@@ -30,18 +30,14 @@ export class StickyHeaderDirective {
           const style = view.getComputedStyle(this.element);
           const top = style.top && style.top !== 'auto' ? style.top : '0px';
           const fade = style.getPropertyValue('--ui-sticky-header-fade').trim() || '0px';
-          rootStyle.setProperty(clearanceProperty, `calc(${top} + ${this.element.offsetHeight}px + ${fade})`);
+          const offset = style.getPropertyValue('--ui-sticky-header-fade-offset').trim() || '0px';
+          rootStyle.setProperty(clearanceProperty, `calc(${top} + ${this.element.offsetHeight}px + ${fade} - ${offset})`);
           content.style.setProperty('--ui-sticky-header-fade', fade);
+          content.style.setProperty('--ui-sticky-header-fade-offset', offset);
         };
-        let scrolled = false;
         const updateMask = () => {
-          const boundary = Math.max(0, this.element.getBoundingClientRect().bottom - content.getBoundingClientRect().top);
+          const boundary = this.element.getBoundingClientRect().bottom - content.getBoundingClientRect().top;
           content.style.setProperty('--ui-sticky-mask-top', `${boundary}px`);
-          const next = view.scrollY > 0;
-          if (next === scrolled) return;
-          scrolled = next;
-          if (scrolled) this.renderer.addClass(content, 'ui-sticky-content-masked');
-          else this.renderer.removeClass(content, 'ui-sticky-content-masked');
         };
         let frame: number | undefined;
         const scheduleMask = () => {
@@ -53,6 +49,7 @@ export class StickyHeaderDirective {
           updateMask();
         };
         refresh();
+        this.renderer.addClass(content, 'ui-sticky-content-masked');
         const observer = typeof view.ResizeObserver === 'function' ? new view.ResizeObserver(refresh) : null;
         observer?.observe(this.element);
         observer?.observe(content);
@@ -66,6 +63,7 @@ export class StickyHeaderDirective {
           this.renderer.removeClass(content, 'ui-sticky-content-masked');
           content.style.removeProperty('--ui-sticky-mask-top');
           content.style.removeProperty('--ui-sticky-header-fade');
+          content.style.removeProperty('--ui-sticky-header-fade-offset');
           if (previousClearance) rootStyle.setProperty(clearanceProperty, previousClearance, previousPriority);
           else rootStyle.removeProperty(clearanceProperty);
         });

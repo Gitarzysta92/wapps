@@ -6,7 +6,6 @@
 }
 
 :host(.ui-sticky-header) {
-  --ui-sticky-header-fade: #{$space-12};
   position: sticky;
   top: var(--ui-page-header-offset, 0px);
   z-index: $z-sticky;

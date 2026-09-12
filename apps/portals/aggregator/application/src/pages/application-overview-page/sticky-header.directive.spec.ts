@@ -44,18 +44,18 @@ describe('sticky page header', () => {
     callback?.(0);
   }
 
-  it('masks only the scrolling content and clears the mask at the top', async () => {
+  it('keeps only the content masked, including before scrolling and after returning to the top', async () => {
     const fixture = await page();
     const [sticky, ordinary] = fixture.nativeElement.querySelectorAll('ui-page-header');
     const content = fixture.nativeElement.querySelector('#page-content');
     expect(sticky.classList.contains('ui-sticky-header')).toBe(true);
-    expect(content.classList.contains('ui-sticky-content-masked')).toBe(false);
+    expect(content.classList.contains('ui-sticky-content-masked')).toBe(true);
     scrollTo(300);
     expect(content.classList.contains('ui-sticky-content-masked')).toBe(true);
     expect(sticky.classList.contains('ui-sticky-content-masked')).toBe(false);
     expect(ordinary.classList.contains('ui-sticky-header')).toBe(false);
     scrollTo(0);
-    expect(content.classList.contains('ui-sticky-content-masked')).toBe(false);
+    expect(content.classList.contains('ui-sticky-content-masked')).toBe(true);
   });
 
   it('initializes correctly when navigation restores a scrolled position', async () => {
@@ -71,6 +71,8 @@ describe('sticky page header', () => {
     let headerBottom = 180;
     jest.spyOn(header, 'getBoundingClientRect').mockImplementation(() => ({ bottom: headerBottom }));
     jest.spyOn(content, 'getBoundingClientRect').mockImplementation(() => ({ top: 200 - scrollY }));
+    scrollTo(0);
+    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe('-20px');
     scrollTo(500);
     expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe('480px');
     headerBottom = 220;
@@ -99,9 +101,14 @@ describe('sticky page header', () => {
     Object.defineProperty(header, 'offsetHeight', { value: 120 });
     header.style.top = '80px';
     header.style.setProperty('--ui-sticky-header-fade', '48px');
+    header.style.setProperty('--ui-sticky-header-fade-offset', '16px');
     window.dispatchEvent(new Event('resize'));
-    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe('calc(80px + 120px + 48px)');
+    const content = fixture.nativeElement.querySelector('#page-content');
+    expect(content.style.getPropertyValue('--ui-sticky-header-fade-offset')).toBe('16px');
+    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe('calc(80px + 120px + 48px - 16px)');
     fixture.destroy();
+    expect(content.classList.contains('ui-sticky-content-masked')).toBe(false);
+    expect(content.style.getPropertyValue('--ui-sticky-header-fade-offset')).toBe('');
     expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe('12px');
     rootStyle.removeProperty('--ui-sticky-header-clearance');
   });
