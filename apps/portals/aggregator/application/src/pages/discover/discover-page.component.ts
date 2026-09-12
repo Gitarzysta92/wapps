@@ -20,9 +20,13 @@ import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { IntersectDirective } from '@ui/misc';
 import { GlobalStateService } from '../../state/global-state.service';
 import { TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
+import { FiltersMultiselectComponent } from '@ui/filters';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { IBreadcrumbRouteData } from '@portals/shared/boundary/navigation';
 import {
+  PageHeaderComponent,
+  PageTitleComponent,
   CommonSectionComponent,
   ElevatedCardComponent,
   ElevatedCardSkeletonComponent,
@@ -55,11 +59,17 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
     RouterLink,
     SearchBarComponent,
     FiltersBarComponent,
+    FiltersMultiselectComponent,
+    TuiDropdownOpen,
+    TuiDropdownDirective,
+    TuiDropdownOptionsDirective,
     IntersectDirective,
     TuiButton,
     TuiLink,
     TuiBadgedContent,
     BreadcrumbsComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
     AsyncPipe,
     TitledSeparatorComponent,
     CommonSectionComponent,

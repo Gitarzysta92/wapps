@@ -1,22 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 
 :host {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  display: block;
   min-width: 0;
+  padding-top: $space-4;
 }
-
-.global-search {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  width: 100%;
-  max-width: $container-lg;
-  min-width: 0;
-  padding: $space-2 0;
-}
-
-tui-textfield { flex: 1; min-width: 0; }
-button { flex-shrink: 0; }

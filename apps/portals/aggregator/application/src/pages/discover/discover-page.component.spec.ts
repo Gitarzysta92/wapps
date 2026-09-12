@@ -5,6 +5,10 @@ import { By } from '@angular/platform-browser';
 import { Router, RouterLink, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { SearchBarComponent } from '@ui/search-bar';
+import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { FiltersMultiselectComponent } from '@ui/filters';
+import { TuiButton } from '@taiga-ui/core';
+import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
 import { ParamMapToFilterVmListMapper } from '@portals/shared/features/filtering';
 import { DiscoverPageComponent } from './discover-page.component';
 import { DISCOVER_REDIRECT_ROUTES } from './discover-redirect.routes';
@@ -22,7 +26,9 @@ describe('Discover search', () => {
     ] });
     // Exercise real search/filter controls and routing without unrelated card internals.
     TestBed.overrideComponent(DiscoverPageComponent, { set: {
-      imports: [CommonModule, RouterLink, SearchBarComponent, FiltersBarComponent],
+      imports: [CommonModule, RouterLink, SearchBarComponent, FiltersBarComponent,
+        PageHeaderComponent, PageTitleComponent, FiltersMultiselectComponent,
+        TuiButton, TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective],
       schemas: [NO_ERRORS_SCHEMA],
     } });
   });

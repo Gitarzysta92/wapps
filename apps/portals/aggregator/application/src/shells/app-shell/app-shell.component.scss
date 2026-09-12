@@ -44,7 +44,12 @@
   position: sticky;
   top: 0;
   margin: 0 auto;
+  box-sizing: border-box;
+  padding-inline: $space-4;
   @include main-width();
+  @media #{$layout-breakpoint-sm} {
+    padding-inline: $space-3;
+  }
 }
 
 .footer {

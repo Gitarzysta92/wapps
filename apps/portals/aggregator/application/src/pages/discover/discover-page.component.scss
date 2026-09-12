@@ -1,19 +1,23 @@
 @use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page(page.$content-gap);
 
 .section__filters {
   position: sticky;
   top: 0;
   display: flex;
-  padding: $space-4 0;
   z-index: 1;
 
-  .sorting-controls {
-    min-width: 250px;
-  }
+  &:has(selected-filter-chip) { @include page.content; }
 }
 
-.section__breadcrumbs {
-  margin-top: $space-4;
+.results-summary { @include page.content; }
+
+.filter-management-panel {
+  padding: $space-4;
+  min-width: min(300px, calc(100vw - #{$space-16}));
+  max-width: 400px;
 }
 
 .section__results {

@@ -1,26 +1,4 @@
 <section class="filters-section">  
-  <button
-    class="add-filter-button"
-    tuiButton
-    type="button"
-    size="s"
-    appearance="primary"
-    iconStart="@tui.funnel-plus"
-    [tuiDropdown]="addFilterDropdown"
-    [(tuiDropdownOpen)]="addFilterDropdownOpen">
-    Manage filters
-  </button>
-  <ng-template #addFilterDropdown>
-    <div class="dropdown-panel">
-      <filters-multiselect 
-        [availableFilters]="availableFiltersOptions$ | async"
-        [activeFilters]="activeFiltersOptions$ | async"
-        (activated)="onActivateFilter($event)"
-        (deactivated)="onDeactivateFilter($event)">
-      </filters-multiselect>
-    </div>
-  </ng-template>
-
   @let filters = filters$ | async;
   @for (f of filters; track f.key) {
     <selected-filter-chip 
@@ -47,4 +25,3 @@
     </selected-filter-chip>
   }
 </section>
-
