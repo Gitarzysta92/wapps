@@ -1,0 +1,13 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+.profile-meta { color: var(--tui-text-secondary); }
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  max-width: $size-content-4xl;
+  @include page.content;
+}
+.profile-actions { display: flex; flex-wrap: wrap; gap: $space-3; }

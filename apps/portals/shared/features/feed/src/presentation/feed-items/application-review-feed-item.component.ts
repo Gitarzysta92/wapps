@@ -1,3 +1,6 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiChip } from '@taiga-ui/kit';
@@ -8,10 +11,9 @@ import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@
 import { AppAvatarComponent, AppRatingComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
-import { UpvoteChipComponent, DownvoteChipComponent } from '@ui/voting';
-import { VotingContainerDirective, type VotingData } from '@portals/shared/features/voting';
+import { type ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { type VotingData } from '@portals/shared/features/voting';
 import { ReviewAuthorBadgeComponent, ReviewQuoteShortComponent } from '@portals/shared/features/review';
 import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 
@@ -20,7 +22,7 @@ export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-it
 export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never> & {
   appLink: string;
   contextMenu: ContextMenuItem[];
-  voting: VotingData;
+  voting?: VotingData;
   attribution?: AttributionInfoVM;
 }
 
@@ -29,6 +31,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FeedLocalVoteComponent,
     MediumCardComponent,
     CardHeaderComponent,
     CardFooterComponent,
@@ -36,11 +39,8 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
     AppAvatarComponent,
     AppRatingComponent,
     ShareToggleButtonComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
-    UpvoteChipComponent,
-    DownvoteChipComponent,
-    VotingContainerDirective,
+    FeedActionsMenuComponent,
+    FeedAttributionComponent,
     ReviewAuthorBadgeComponent,
     ReviewQuoteShortComponent,
     ProfileBadgesComponent,
@@ -84,7 +84,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           slot="right-side"
           size="s"
           type="applications"
-          [slug]="item.appSlug"
+          [slug]="item.appSlug" [path]="item.appLink"
           [title]="item.appName"
         />
       </ui-card-header>
@@ -97,33 +97,17 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         tuiButton 
         size="s" 
         appearance="primary"
-        [routerLink]="ctaPath | routePath:{ appSlug: item.appSlug }">
+        [routerLink]="(ctaPath || '/apps/:appSlug/reviews') | routePath:{ appSlug: item.appSlug }">
           <tui-icon icon="@tui.external-link"/>
-          Read review
+          View reviews
       </a>
 
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <div
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+        <feed-actions-menu
           slot="right-side"
-          #votingContainer="votingContainer"
-          [votingContainer]="item.voting">
-          <upvote-chip
-            [count]="votingContainer.upvotesCount()"
-            size="xs"
-            appearance="action-soft-flat"
-            (click)="votingContainer.upvote()"
-          />
-          <downvote-chip
-            [count]="votingContainer.downvotesCount()"
-            size="xs"
-            appearance="action-soft-flat"
-            (click)="votingContainer.downvote()"
-          />
-        </div>
-        <context-menu-chip
-          slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />

@@ -1,0 +1,32 @@
+@use 'ui/design-system/src/styles' as *;
+@use 'page-layout' as page;
+
+
+
+@include page.page;
+
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
+}
+
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+.meta-app-name {
+  opacity: 0.5;
+}
+
+.activity-section { @include page.section; }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  @include page.title;
+}

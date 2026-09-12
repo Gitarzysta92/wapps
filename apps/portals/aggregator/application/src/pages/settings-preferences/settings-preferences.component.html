@@ -1,0 +1,211 @@
+<ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
+  <ui-breadcrumbs
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+  }
+
+  <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Display & Content Preferences</h1>
+
+  <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
+    Customize how content is displayed and organized
+  </p>
+</ui-page-header>
+
+@if (isLoading()) {
+  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
+    @for (item of [1, 2, 3]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+    }
+  </section>
+} @else if (isError()) {
+  <section class="error-section">
+    <p>Could not read preferences from this browser. Check storage access and reload to try again.</p>
+  </section>
+} @else {
+  <section class="settings-content">
+    <p class="page-description">Saved on this browser. Theme applies throughout the app; date format, view and page size apply to catalog listings. Profile pages also use your date format and view.</p>
+    @if (feedback()) {
+      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
+    }
+    <!-- Display Settings -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header class="settings-card-header">
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          <tui-icon icon="@tui.palette" class="section-icon" />
+          Display Settings
+        </h2>
+      </header>
+
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-label">Theme</h3>
+            <p class="setting-description">Choose your preferred color scheme</p>
+          </div>
+          <div class="setting-control theme-control">
+            @for (option of themeOptions; track option.value) {
+              <button
+                tuiButton
+                size="s"
+                [appearance]="displayPreferences().theme === option.value ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="displayPreferences().theme === option.value"
+                (click)="onThemeChange(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-label">Date Format</h3>
+            <p class="setting-description">How dates should be displayed</p>
+          </div>
+          <div class="setting-control">
+            @for (option of dateFormatOptions; track option.value) {
+              <button
+                tuiButton
+                size="s"
+                [appearance]="displayPreferences().dateFormat === option.value ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="displayPreferences().dateFormat === option.value"
+                (click)="onDateFormatChange(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-label">Default View</h3>
+            <p class="setting-description">Preferred layout for listings</p>
+          </div>
+          <div class="setting-control">
+            @for (option of viewModeOptions; track option.value) {
+              <button
+                tuiButton
+                size="s"
+                [appearance]="displayPreferences().defaultView === option.value ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="displayPreferences().defaultView === option.value"
+                [iconStart]="option.value === 'grid' ? '@tui.layout-grid' : '@tui.list'"
+                (click)="onViewModeChange(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-label">Items Per Page</h3>
+            <p class="setting-description">Number of items shown in listings</p>
+          </div>
+          <div class="setting-control">
+            @for (option of itemsPerPageOptions; track option) {
+              <button
+                tuiButton
+                size="s"
+                [appearance]="displayPreferences().itemsPerPage === option ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="displayPreferences().itemsPerPage === option"
+                (click)="onItemsPerPageChange(option)"
+              >
+                {{ option }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Settings -->
+    <div
+      tuiAppearance="floating"
+      tuiCardLarge
+      class="settings-card"
+    >
+      <header class="settings-card-header">
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
+          <tui-icon icon="@tui.file-text" class="section-icon" />
+          Content Settings
+        </h2>
+        <p class="page-description">These choices are stored locally. Feed recommendations and mature-content filtering are not yet supported.</p>
+      </header>
+
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-label">Default Feed Sort</h3>
+            <p class="setting-description">How content should be sorted by default</p>
+          </div>
+          <div class="setting-control">
+            @for (option of feedSortOptions; track option.value) {
+              <button
+                tuiButton
+                size="s"
+                [appearance]="contentPreferences().feedSortOrder === option.value ? 'primary' : 'secondary'"
+                [attr.aria-pressed]="contentPreferences().feedSortOrder === option.value"
+                (click)="onFeedSortChange(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="setting-item setting-item--toggle">
+          <div class="setting-info">
+            <h3 class="setting-label">Show Mature Content</h3>
+            <p class="setting-description">Display content marked as mature or adult-oriented</p>
+          </div>
+          <div class="setting-control">
+            <input
+              type="checkbox"
+              aria-label="Show Mature Content"
+              tuiSwitch
+              [ngModel]="contentPreferences().showMatureContent"
+              (ngModelChange)="onMatureContentToggle($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onCancel()"
+      >
+        Reset to Saved
+      </button>
+      <button
+        tuiButton
+        appearance="primary"
+        type="button"
+        [disabled]="isSaving() || isLoading()"
+        (click)="onSave()"
+      >
+        @if (isSaving()) {
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+    </div>
+  </section>
+}

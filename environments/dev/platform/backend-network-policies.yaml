@@ -86,6 +86,6 @@ spec:
         port: 1337
 
 ---
-# Note: Frontend applications (aggregator-csr, aggregator-ssr, etc.) 
+# Note: Frontend applications (aggregator-csr, catalog-csr, etc.)
 # should remain publicly accessible via ingress-nginx
 # They don't need restrictive network policies

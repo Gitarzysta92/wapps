@@ -1,137 +1,106 @@
-<div class="single-column">
-  <section>
-    <header class="app-header">
-      <div class="icon-title">
-        <tui-avatar
-          [src]="(app$ | async)?.logo"
-          size="l"
-        />
-        <div class="titles">
-          <h1 class="app-title">{{ (app$ | async)?.name }}</h1>
-          <a tuiLink href="#" target="_blank" rel="noopener noreferrer">Developer name</a>
-        </div>
-      </div>
-      <div class="labels">
-        <tui-badge
-          status="info"
-          class="label"
-        >Contains ads</tui-badge>
-        <tui-badge
-          status="info"
-          class="label"
-        >In-app purchases</tui-badge>
-        <tui-badge
-          status="neutral"
-          class="label"
-        >Content rating</tui-badge>
-      </div>
-      <div class="actions">
-        <button tuiButton size="m" appearance="flat" iconLeft="@tui.share-2">Share</button>
-        <button tuiButton size="m" appearance="flat" iconLeft="@tui.heart">Add to wishlist</button>
-        <button tuiButton size="m" appearance="flat" iconLeft="@tui.video">Trailer</button>
-      </div>
-    </header>
-  </section>
-
-  <section class="media-gallery">
-    <div class="media">
-      <a tuiLink href="#">Trailer / Video preview</a>
-    </div>
-    <div class="media">
-      <img alt="Feature graphic" src="https://picsum.photos/seed/feature/800/320" />
-    </div>
-    <div class="screenshots">
-      <img alt="Screenshot 1" src="https://picsum.photos/seed/s1/320/640" />
-      <img alt="Screenshot 2" src="https://picsum.photos/seed/s2/320/640" />
-      <img alt="Screenshot 3" src="https://picsum.photos/seed/s3/320/640" />
-    </div>
-  </section>
-
-  <section class="description">
-    <h2>About</h2>
-    <p class="short">Short description (up to ~80 chars)</p>
-    <div class="long">
-      <p>Long description paragraph with features and details.</p>
-      <ul>
-        <li>Feature A</li>
-        <li>Feature B</li>
-        <li>Feature C</li>
-      </ul>
-    </div>
-    <div class="links">
-      <a tuiLink href="#">Terms of Service</a>
-      <a tuiLink href="#">Privacy Notice</a>
-      <a tuiLink href="#">Support</a>
-    </div>
-    <div class="meta">
-      <span>Updated on {{ (app$ | async)?.updateDate | date }}</span>
-      <span>Category</span>
-      <span>Developer contact info</span>
-    </div>
-  </section>
-
-  <section class="app-details">
-    <h2>App details</h2>
-    <ul>
-      <li>Version</li>
-      <li>Requires Android</li>
-      <li>Size</li>
-      <li>Installs</li>
-      <li>Current version / Latest version</li>
-      <li>Offered by</li>
-      <li>Developer address</li>
-      <li>Developer email</li>
-      <li>Permissions</li>
-      <li>Languages</li>
-      <li>Content rating</li>
-      <li>In-app products</li>
-      <li>Interactive elements</li>
-      <li>Shares info / Collects info</li>
-      <li><a tuiLink href="#">Privacy policy</a></li>
-    </ul>
-  </section>
-
-  <section class="data-safety">
-    <h2>Data safety</h2>
-    <p>Introduction / warning</p>
-    <ul>
-      <li>Data types collected</li>
-      <li>Data shared</li>
-      <li>Data encrypted in transit</li>
-      <li>User can request deletion</li>
-    </ul>
-    <a tuiLink href="#">See details</a>
-  </section>
-
-  <section class="whats-new">
-    <h2>What’s new</h2>
-    <p>Changelog text – news / fixes</p>
-    <button tuiButton appearance="flat">Flag as inappropriate</button>
-  </section>
-
-  <section class="support">
-    <h2>App support</h2>
-    <div class="links">
-      <a tuiLink href="#">Website</a>
-      <a tuiLink href="#">Support email</a>
-      <a tuiLink href="#">Privacy policy</a>
-    </div>
-  </section>
-
-  <section class="developer-info">
-    <h2>About the developer</h2>
-    <ul>
-      <li>Company name</li>
-      <li>Contact email</li>
-      <li>Address</li>
-      <li>Phone</li>
-    </ul>
-  </section>
-
-  <section class="recommendations">
-    <h2>More by Developer</h2>
-    <div class="carousel">...</div>
-    <h2>Similar apps</h2>
-    <div class="carousel">...</div>
-  </section>
-</div>
+<main class="detail-page">
+  @if (state$ | async; as state) {
+    @switch (state.kind) {
+      @case ('article') {
+        <a tuiLink routerLink="/articles">← All articles</a>
+        <article>
+          <header class="detail-header">
+            <tui-badge>{{ state.article.category }}</tui-badge>
+            <h1>{{ state.article.title }}</h1>
+            <favorite-toggle-button type="articles" [slug]="state.article.slug" />
+            <p class="intro">{{ state.article.excerpt }}</p>
+            <div class="metadata">
+              <span>By {{ state.article.author }}</span>
+              @if (state.article.publishedDate; as published) {
+                <span>Published {{ published | date:'longDate' }}</span>
+              }
+              @if (state.article.updatedDate; as updated) {
+                <span>Updated {{ updated | date:'longDate' }}</span>
+              }
+            </div>
+          </header>
+          @if (state.article.cover; as cover) {
+            <img class="cover" [src]="cover.url" [alt]="cover.alt" />
+          }
+          <div class="article-body">
+            @for (section of state.article.sections; track section.heading) {
+              <section>
+                <h2>{{ section.heading }}</h2>
+                @for (paragraph of section.paragraphs; track $index) {
+                  <p>{{ paragraph }}</p>
+                }
+              </section>
+            } @empty {
+              <section class="empty-state"><h2>Full article unavailable</h2><p>Only the summary is available for this article.</p></section>
+            }
+          </div>
+        </article>
+      }
+      @case ('suite') {
+        <a tuiLink [routerLink]="state.suite.local ? '/my/suites' : '/suites'">← {{ state.suite.local ? 'My suites' : 'All suites' }}</a>
+        <header class="detail-header">
+          <tui-badge>{{ state.suite.category }}</tui-badge>
+          <h1>{{ state.suite.title }}</h1>
+          <favorite-toggle-button type="suites" [slug]="state.suite.slug" />
+          @if (state.suite.description) { <p class="intro">{{ state.suite.description }}</p> }
+          <div class="metadata">
+            <span>{{ state.suite.apps.length }} {{ state.suite.apps.length === 1 ? 'application' : 'applications' }}</span>
+            @if (state.suite.author) { <span>Curated by {{ state.suite.author }}</span> }
+          </div>
+          @if (state.suite.local) { <p class="notice">Local draft · Saved in this browser only. This suite has not been published.</p> }
+        </header>
+        <section aria-labelledby="suite-apps-heading">
+          <h2 id="suite-apps-heading">Applications in this suite</h2>
+          <div class="app-list">
+            @for (app of state.suite.apps; track $index) {
+              <div class="app-card">
+                <tui-avatar [src]="app.logo" size="l" />
+                <div class="app-copy"><h3>{{ app.name }}</h3><p>{{ app.description }}</p></div>
+                @if (app.slug) {
+                  <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', app.slug]" [attr.aria-label]="'View ' + app.name">View app</a>
+                } @else {
+                  <a tuiLink routerLink="/" [queryParams]="{search: app.name}" [attr.aria-label]="'Search for ' + app.name">Find app</a>
+                }
+              </div>
+            } @empty {
+              <div class="empty-state"><h3>No applications yet</h3><p>This collection does not contain any applications.</p><a tuiLink routerLink="/">Explore applications</a></div>
+            }
+          </div>
+        </section>
+        <div class="actions"><a tuiButton appearance="secondary" size="m" routerLink="/suites/create">Create your own suite</a></div>
+      }
+      @case ('create') {
+        <a tuiLink routerLink="/my/suites">← My suites</a>
+        <header class="detail-header"><tui-badge>Personal collection</tui-badge><h1>Create a suite</h1><p class="intro">Bring the applications you use together into one collection.</p><p class="notice">Your suite is saved only in this browser. It is not published or synced to your account.</p></header>
+        <form [formGroup]="form" (ngSubmit)="saveSuite()" class="suite-form">
+          <label for="suite-title">Suite name <span class="muted">(required)</span></label>
+          <input id="suite-title" formControlName="title" maxlength="100" placeholder="e.g. My creative workspace" [attr.aria-invalid]="form.controls.title.touched && form.controls.title.invalid" aria-describedby="title-hint" />
+          <small id="title-hint">Choose a name with 1–100 characters.</small>
+          <label for="suite-description">Description <span class="muted">(optional)</span></label>
+          <textarea id="suite-description" formControlName="description" maxlength="1000" rows="4" placeholder="What will you use this suite for?"></textarea>
+          <fieldset>
+            <legend>Choose applications ({{ selectedApps().length }} selected)</legend>
+            <p class="muted">Select at least one application.</p>
+            <div class="app-list">
+              @for (app of data.applications; track app.slug) {
+                <label class="app-card selectable">
+                  <input type="checkbox" [checked]="selectedApps().includes(app.slug)" (change)="toggleApp(app.slug, $event)" [attr.aria-label]="'Include ' + app.name" />
+                  <tui-avatar [src]="app.logo" size="m" />
+                  <span class="app-copy"><strong>{{ app.name }}</strong><span class="muted">{{ app.description }}</span></span>
+                </label>
+              } @empty { <p>No applications are available to add yet.</p> }
+            </div>
+          </fieldset>
+          @if (error()) { <p role="alert">{{ error() }}</p> }
+          @if (savedSuite(); as saved) {
+            <p role="status">Saved locally. <a tuiLink [routerLink]="['/suites', saved.slug]">Open {{ saved.title }}</a></p>
+          }
+          <div class="actions"><button tuiButton type="submit" size="m" [disabled]="!!savedSuite()">Save suite locally</button><a tuiLink routerLink="/my/suites">Cancel</a></div>
+        </form>
+      }
+      @case ('missing') {
+        <section class="empty-state"><h1>{{ state.label }} not found</h1><p>This content is unavailable or the link is no longer valid.</p><a tuiButton appearance="secondary" size="m" [routerLink]="state.back">Browse {{ state.label === 'Content' ? 'home' : state.label.toLowerCase() + 's' }}</a></section>
+      }
+    }
+  }
+</main>

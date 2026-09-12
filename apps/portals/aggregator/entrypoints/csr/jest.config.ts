@@ -23,4 +23,3 @@ export default {
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
   ],
 };
-

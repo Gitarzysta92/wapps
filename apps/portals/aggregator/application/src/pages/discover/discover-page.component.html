@@ -1,0 +1,200 @@
+<section class="section__search">
+  <search-bar [initialValue]="initialSearch" (onSearch)="changeSearch($event)"
+    (keydown.enter)="submitSearch($event)" (submit)="submitSearch($event)">
+    <button type="button" tuiButton size="s" appearance="flat" (click)="submitSearch($event)">Search</button>
+  </search-bar>
+</section>
+
+<ui-page-header class="page-header">
+  @let breadcrumbs = breadcrumbs$ | async;
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
+  <h1 uiPageTitle slot="title">Discover</h1>
+  <button slot="actions" tuiButton type="button" size="s" appearance="primary" iconStart="@tui.funnel-plus"
+    [tuiDropdown]="filterManagement" tuiDropdownAlign="right" [(tuiDropdownOpen)]="filtersBar.addFilterDropdownOpen">
+    Manage filters
+  </button>
+</ui-page-header>
+
+<ng-template #filterManagement>
+  <div class="filter-management-panel">
+    <filters-multiselect
+      [availableFilters]="filtersBar.availableFiltersOptions$ | async"
+      [activeFilters]="filtersBar.activeFiltersOptions$ | async"
+      (activated)="filtersBar.onActivateFilter($event)"
+      (deactivated)="filtersBar.onDeactivateFilter($event)" />
+  </div>
+</ng-template>
+
+<section class="section__filters">
+  <filters-bar #filtersBar></filters-bar>
+</section>
+
+@let resultsData = resultsData$ | async;
+@if (resultsData && !resultsData.isLoading) {
+  <p class="results-summary" role="status">{{ resultsData.itemsNumber }} {{ resultsData.itemsNumber === 1 ? 'result' : 'results' }}@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
+  @if (resultsData.query['type']) {
+    <a tuiLink routerLink="/discover" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
+  }
+  @if (!resultsData.groups.length) {
+    <section commonSection><p>No results found. Try another search or remove a filter.</p></section>
+  }
+  @for (group of resultsData.groups; track group.type) {
+    @let label = getGroupLabel(group.type);
+    <section
+      commonSection
+      class="section__results"
+      [class.section__results--first]="$first"
+      [id]="group.type"
+      [attr.aria-labelledby]="group.type + '-title'"
+      (appIntersect)="onVisibilityChange($event.isVisible, $event.element, group)">
+      <h2 slot="header" class="section-title" [id]="group.type + '-title'">
+        <span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>{{ label.value }}
+      </h2>
+      <div class="results-list">
+        @for (entry of group.entries; track entry.slug) {
+          @switch (group.type) {
+            @case (DiscoverySearchResultType.Article) {
+              <ng-container *ngTemplateOutlet="articleEntry; context: { entry }"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Application) {
+              <ng-container *ngTemplateOutlet="applicationEntry; context: { entry }"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Suite) {
+              <ng-container *ngTemplateOutlet="suiteEntry; context: { entry }"></ng-container>
+            }
+          }
+        }
+      </div>
+    </section>
+  }
+}
+@else {
+  @for (groupType of [
+    DiscoverySearchResultType.Article,
+    DiscoverySearchResultType.Suite,
+  ]; track groupType) {
+    <section
+      class="section__results"
+      [class.section__results--first]="$first"
+      commonSection>
+      <h2 slot="header" class="section-title">Loading</h2>
+      <div class="results-list">
+        @for (entry of [1, 2, 3]; track entry) {
+          @switch (groupType) {
+            @case (DiscoverySearchResultType.Article) {
+              <ng-container *ngTemplateOutlet="articleEntrySkeleton;"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Application) {
+              <ng-container *ngTemplateOutlet="applicationEntrySkeleton;"></ng-container>
+            }
+            @case (DiscoverySearchResultType.Suite) {
+              <ng-container *ngTemplateOutlet="suiteEntrySkeleton;"></ng-container>
+            }
+          }
+        }
+      </div>
+    </section>
+  }
+}
+
+<ng-template #articleEntry let-entry="entry">
+  @let vm = toArticleVM(entry);
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated">
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle><a class="result-link" [routerLink]="vm.articleLink">{{ vm.title }}</a></h3>
+    </ui-card-header>
+    <div class="article-preview">
+      @if (vm.coverImageUrl?.url) {
+        <ui-cover-image class="article-cover" [image]="vm.coverImageUrl" />
+      }
+      <div class="article-summary">
+        @if (vm.tags.length) { <ui-tags [tags]="vm.tags" /> }
+        <ui-excerpt [excerpt]="vm.excerpt" />
+        <article-author-info [author]="vm.author">
+          <profile-badges [badges]="vm.authorBadges" />
+        </article-author-info>
+      </div>
+    </div>
+  </ui-medium-card>
+</ng-template>
+
+
+<ng-template #articleEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-card-skeleton>
+      <ui-medium-title-skeleton slot="header"/>
+      <ui-tags-skeleton slot="tags"/>
+      <ui-excerpt-skeleton slot="excerpt"/>
+      <article-author-info-skeleton slot="author"/>
+    </ui-medium-card-skeleton>
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+
+
+
+<ng-template #applicationEntry let-entry="entry">
+  @let vm = toApplicationVM(entry);
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated">
+    <ui-card-header slot="header">
+      <app-avatar slot="left-side" [size]="'m'" [avatar]="vm.avatarUrl"/>
+      <h3 uiMediumTitle>
+        <a class="result-link" [routerLink]="vm.applicationLink">{{ vm.title }}</a>
+        <app-rating [readonly]="true" [rating]="vm.rating"/>
+      </h3>
+      <ui-tags [tags]="vm.tags"></ui-tags>
+      <favorite-toggle-button type="applications" [slug]="entry.slug" slot="right-side"/>
+    </ui-card-header>
+    <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
+    <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
+    @if (vm.topReview) {
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
+      </top-review-card>
+    }
+  </ui-medium-card>
+</ng-template>
+
+
+<ng-template #applicationEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-title-skeleton slot="header"/>
+    <ui-tags-skeleton/>
+    <ui-excerpt-skeleton/>
+    <article-author-info-skeleton/>
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+
+
+<ng-template #suiteEntry let-entry="entry">
+  @let vm = toSuiteVM(entry);
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated">
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle>
+        <a class="result-link" [routerLink]="vm.suiteLink">{{ vm.title }}</a>
+        <app-rating [readonly]="true" [rating]="vm.rating"/>
+      </h3>
+      <favorite-toggle-button type="suites" [slug]="entry.slug" slot="right-side"/>
+    </ui-card-header>
+    <ui-tags [tags]="vm.tags"></ui-tags>
+    <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>
+    <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
+    <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
+    @if (vm.topReview) {
+      <top-review-card slot="footer" [review]="vm.topReview">
+        <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
+      </top-review-card>
+    }
+  </ui-medium-card>
+</ng-template>
+
+
+<ng-template #suiteEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-title-skeleton slot="header"/>
+    <ui-tags-skeleton/>
+    <ui-excerpt-skeleton/>
+    <article-author-info-skeleton/>
+  </ui-elevated-card-skeleton>
+</ng-template>

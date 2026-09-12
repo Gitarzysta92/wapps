@@ -1,12 +1,2 @@
-/* eslint-disable */
-export default {
-  displayName: 'portals-shared-features-application-overview',
-  preset: '../../../../../jest.preset.js',
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }]
-  },
-  moduleFileExtensions: ['ts', 'js', 'html'], 
-  coverageDirectory: '../../../../../coverage/apps/portals/shared/features/application-overview'
-};
-
+// Run the detail feature and its timeline integration regressions together.
+export default require('./jest.detail.config.cjs');

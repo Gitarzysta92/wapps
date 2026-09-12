@@ -1,0 +1,203 @@
+<ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
+  <ui-breadcrumbs
+    slot="top-bar"
+    [breadcrumbs]="breadcrumb()">
+  </ui-breadcrumbs>
+  }
+
+  <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Profile Settings</h1>
+
+  <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
+    Manage your public profile information
+  </p>
+</ui-page-header>
+
+@if (isLoading()) {
+  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
+    @for (item of [1, 2, 3]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+    }
+  </section>
+} @else if (isError()) {
+  <section class="error-section">
+    <p>Could not read the profile from this browser. Check storage access and reload to try again.</p>
+  </section>
+} @else {
+  <section class="settings-content">
+    <p class="page-description">Changes are saved only on this browser and update the profile shown in this app.</p>
+    @if (feedback()) {
+      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
+    }
+    <!-- Avatar Section -->
+    <div tuiAppearance="floating" tuiCardLarge class="settings-card avatar-card">
+      <header class="settings-card-header">
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          Profile Picture
+        </h2>
+      </header>
+      <div class="avatar-section">
+        <tui-avatar [src]="avatarUri()" size="l" aria-label="Profile photo preview">
+          {{ (formData().name || 'User').substring(0, 2).toUpperCase() }}
+        </tui-avatar>
+        <div class="avatar-controls">
+          <div class="avatar-actions">
+            <input #avatarInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onAvatarSelected($event)" />
+            <button tuiButton appearance="secondary" size="s" iconStart="@tui.upload"
+              (click)="avatarInput.click()" type="button" aria-describedby="avatar-guidance">
+              Change photo
+            </button>
+            <button tuiButton appearance="flat" size="s" type="button"
+              [disabled]="!avatarUri() && !isReadingAvatar()" (click)="onRemoveAvatar()">
+              Remove
+            </button>
+          </div>
+          <p id="avatar-guidance" class="page-description avatar-guidance">
+            JPEG, PNG or WebP · Up to 1 MB.<br />Save Changes to apply your photo.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Info Section -->
+    <form
+      tuiAppearance="floating"
+      tuiCardLarge
+      tuiForm="m"
+      class="settings-card"
+    >
+      <header class="settings-card-header">
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+          Basic Information
+        </h2>
+      </header>
+
+      <tui-textfield>
+        <label tuiLabel>Display Name</label>
+        <input
+          tuiTextfield
+          placeholder="Your name"
+          [ngModel]="formData().name"
+          (ngModelChange)="onFieldChange('name', $event)"
+          name="name"
+          required
+          maxlength="100"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Bio</label>
+        <textarea
+          tuiTextfield
+          placeholder="Tell others about yourself..."
+          [ngModel]="formData().bio"
+          (ngModelChange)="onFieldChange('bio', $event)"
+          name="bio"
+          maxlength="500"
+          rows="3"
+        ></textarea>
+        <span tuiHint>Maximum 500 characters</span>
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Location</label>
+        <input
+          tuiTextfield
+          placeholder="City, Country"
+          [ngModel]="formData().location"
+          (ngModelChange)="onFieldChange('location', $event)"
+          name="location"
+        />
+      </tui-textfield>
+    </form>
+
+    <!-- Social Links Section -->
+    <form
+      tuiAppearance="floating"
+      tuiCardLarge
+      tuiForm="m"
+      class="settings-card"
+    >
+      <header class="settings-card-header">
+        <h2 class="section-title">
+          <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
+          Social Links
+        </h2>
+      </header>
+
+      <tui-textfield>
+        <label tuiLabel>Website</label>
+        <input
+          tuiTextfield
+          placeholder="https://yourwebsite.com"
+          [ngModel]="formData().website"
+          (ngModelChange)="onFieldChange('website', $event)"
+          name="website"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>Twitter / X</label>
+        <input
+          tuiTextfield
+          placeholder="@username"
+          [ngModel]="formData().twitter"
+          (ngModelChange)="onFieldChange('twitter', $event)"
+          name="twitter"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>LinkedIn</label>
+        <input
+          tuiTextfield
+          placeholder="https://linkedin.com/in/username"
+          [ngModel]="formData().linkedin"
+          (ngModelChange)="onFieldChange('linkedin', $event)"
+          name="linkedin"
+        />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel>GitHub</label>
+        <input
+          tuiTextfield
+          placeholder="@username"
+          [ngModel]="formData().github"
+          (ngModelChange)="onFieldChange('github', $event)"
+          name="github"
+        />
+      </tui-textfield>
+    </form>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        tuiButton
+        appearance="primary"
+        type="button"
+        [disabled]="isSaving() || isLoading() || isReadingAvatar()"
+        (click)="onSave()"
+      >
+        @if (isSaving()) {
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+    </div>
+  </section>
+}
+

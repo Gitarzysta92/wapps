@@ -1,5 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { IAppShellState } from '../shells/app-shell/app-shell.component';
+import { DiscoverySearchResultType, DiscoverySearchResultDto } from '@domains/discovery';
 
 export interface GlobalState {
   isLoading: boolean;
@@ -8,10 +10,12 @@ export interface GlobalState {
   userPanelOpen: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class GlobalStateService {
+export interface SearchResultsData extends DiscoverySearchResultDto {
+  isLoading: boolean;
+}
+
+@Injectable()
+export class GlobalStateService implements IAppShellState {
   private readonly _state = signal<GlobalState>({
     isLoading: false,
     currentTheme: 'light',
@@ -19,10 +23,26 @@ export class GlobalStateService {
     userPanelOpen: false
   });
 
+  public isSidebarExpanded = false;
+  public isRightSidebarExpanded = false;
+
   private readonly _userPanelOpen$ = new BehaviorSubject<boolean>(false);
 
   public readonly state = this._state.asReadonly();
   public readonly userPanelOpen$ = this._userPanelOpen$.asObservable();
+
+  public readonly activeSection$ = new BehaviorSubject<DiscoverySearchResultType | null>(null);
+
+  public readonly searchResultsData$ = new BehaviorSubject<SearchResultsData>({
+    itemsNumber: 0,
+    groups: [],
+    query: {},
+    isLoading: true
+  });
+
+  public setSearchResultsData(data: SearchResultsData): void {
+    this.searchResultsData$.next(data);
+  }
 
   public setLoading(loading: boolean): void {
     this._state.update(current => ({ ...current, isLoading: loading }));
@@ -53,4 +73,15 @@ export class GlobalStateService {
     this._userPanelOpen$.next(false);
     this._state.update(current => ({ ...current, userPanelOpen: false }));
   }
+
+  public isLeftSidebarExpanded$ = new BehaviorSubject(false);
+  public toggleLeftSidebar(): void {
+    this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
+  }
+
+  public isRightSidebarExpanded$ = new BehaviorSubject(false);
+  public toggleRightSidebar(): void {
+    this.isRightSidebarExpanded$.next(!this.isRightSidebarExpanded$.value);
+  }
+
 }

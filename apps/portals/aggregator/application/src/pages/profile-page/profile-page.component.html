@@ -1,0 +1,29 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <p slot="meta" class="profile-meta">Profiles from the local demo directory. No remote profile lookup is performed.</p>
+</ui-page-header>
+
+<div class="profile-content">
+  @if (profile(); as member) {
+    <profile-details [profile]="member" [isLocalProfile]="isLocalProfile()" />
+  } @else {
+    <section tuiCardLarge tuiAppearance="floating" class="profile-card" role="status">
+      <h2>This profile is not in the local directory</h2>
+      <p>Check the profile link or choose an available member below.</p>
+    </section>
+  }
+
+  <section aria-labelledby="members-title">
+    <h2 id="members-title">{{ profile() ? 'Other community members' : 'Available community members' }}</h2>
+    <div class="profile-directory" [class.profile-directory--list]="preferences.defaultView() === 'list'">
+      @for (member of otherProfiles(); track member.id) {
+        <a class="profile-member" [routerLink]="profilePath(member.id)">
+          <tui-avatar [src]="member.avatar?.uri || ''" size="m">{{ member.name.slice(0, 2).toUpperCase() }}</tui-avatar>
+          <span>{{ member.name }}</span>
+          <tui-icon icon="@tui.chevron-right" />
+        </a>
+      }
+    </div>
+  </section>
+</div>

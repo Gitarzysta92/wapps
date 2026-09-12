@@ -1,0 +1,23 @@
+@let authenticated = service.isAuthenticated$ | async;
+@let profile = profile$ | async;
+<section class="user-profile_section">
+  <div my-profile-avatar [avatarPath]="profile?.data?.avatar?.uri"></div>
+  <div my-profile-name [name]="authenticated ? profile?.data?.name : 'Welcome to Wapps'"></div>
+</section>
+@if (authenticated) {
+  <a tuiButton appearance="flat" routerLink="/me/profile" (click)="close()">My profile</a>
+  <nav class="navigation_section" aria-label="Your account">
+    <ul>
+      @for (item of primary; track item.path) {
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" (click)="close()">{{ item.label }}</a></li>
+      }
+      @for (item of secondary; track item.path) {
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" (click)="close()">{{ item.label }}</a></li>
+      }
+    </ul>
+  </nav>
+  <button tuiButton type="button" appearance="secondary" (click)="logout()">Log out</button>
+} @else {
+  <p>Sign in or continue as a guest to save favorites and build your collections.</p>
+  <button tuiButton type="button" (click)="login()">Log in</button>
+}

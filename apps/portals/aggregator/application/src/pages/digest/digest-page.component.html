@@ -1,0 +1,87 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs" />
+  <h1 uiPageTitle slot="title">Digest</h1>
+  <p slot="meta" class="page-description">Articles, updates, and conversations worth a look.</p>
+</ui-page-header>
+
+<section class="digest-section digest-section--first" aria-labelledby="latest-title">
+  <div class="section-heading">
+    <h2 id="latest-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Latest</h2>
+    <a tuiLink routerLink="/" iconEnd="@tui.arrow-right">Open Explore</a>
+  </div>
+  <div class="latest-grid">
+    @for (item of content.latest; track item.id) {
+      <a tuiAppearance="card-elevated" class="digest-card activity-card" [routerLink]="item.link" [attr.aria-labelledby]="'digest-activity-' + item.id">
+        <div class="card-meta"><span><tui-icon [icon]="item.icon" aria-hidden="true" />{{ item.kind }}</span></div>
+        <h3 [id]="'digest-activity-' + item.id">{{ item.title }}</h3>
+        <p class="card-summary">{{ item.summary }}</p>
+        <time class="card-date" [attr.datetime]="item.timestamp.toISOString()">{{ item.timestamp | preferredDate }}</time>
+      </a>
+    } @empty {
+      <p class="empty-message">No recent activity yet. Explore the articles and applications below.</p>
+    }
+  </div>
+</section>
+
+<section class="digest-section" aria-labelledby="articles-title">
+  <div class="section-heading">
+    <h2 id="articles-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Articles</h2>
+    <a tuiLink routerLink="/articles" iconEnd="@tui.arrow-right">All articles</a>
+  </div>
+  <div class="articles-grid">
+    @for (article of content.articles; track article.slug) {
+      <a tuiAppearance="card-elevated" class="digest-card article-card" [routerLink]="['/articles', article.slug]" [attr.aria-labelledby]="'digest-article-' + article.slug">
+        @if (article.image && !failedImages().has(article.slug)) {
+          <img class="article-cover" [src]="article.image" alt="" loading="lazy" (error)="imageFailed(article.slug)" />
+        } @else {
+          <div class="article-cover article-cover--fallback" aria-hidden="true"><tui-icon icon="@tui.newspaper" /></div>
+        }
+        <div class="article-body">
+          <span class="card-meta">{{ article.categories.length ? article.categories[0].name : '' }}</span>
+          <h3 [id]="'digest-article-' + article.slug">{{ article.name }}</h3>
+          <p class="card-summary">{{ article.description }}</p>
+          <div class="card-meta card-byline">
+            <span>{{ article.author }}</span>
+            @if (article.date) { <time [attr.datetime]="article.date.toISOString()">{{ article.date | preferredDate }}</time> }
+          </div>
+        </div>
+      </a>
+    } @empty { <p class="empty-message">No articles yet.</p> }
+  </div>
+</section>
+
+<div class="portal-grid">
+  <section class="digest-section" aria-labelledby="applications-title">
+    <div class="section-heading">
+      <h2 id="applications-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Applications</h2>
+      <a tuiLink routerLink="/discover" [queryParams]="{type: 'application'}" aria-label="Browse all applications" iconEnd="@tui.arrow-right">Browse</a>
+    </div>
+    <div class="compact-grid">
+      @for (app of content.applications; track app.slug) {
+        <a tuiAppearance="card-elevated" class="digest-card app-card" [routerLink]="['/apps', app.slug]" [attr.aria-labelledby]="'digest-app-' + app.slug">
+          <tui-avatar [src]="app.image || '@tui.box'" size="m" aria-hidden="true" />
+          <div class="app-body">
+            <h3 [id]="'digest-app-' + app.slug">{{ app.name }}</h3>
+            <p class="card-summary">{{ app.description }}</p>
+          </div>
+          <tui-icon icon="@tui.chevron-right" aria-hidden="true" />
+        </a>
+      } @empty { <p class="empty-message">No featured applications yet.</p> }
+    </div>
+  </section>
+  <section class="digest-section" aria-labelledby="discussions-title">
+    <div class="section-heading">
+      <h2 id="discussions-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Discussions</h2>
+    </div>
+    <div class="compact-grid">
+      @for (item of content.discussions; track item.id) {
+        <a tuiAppearance="card-elevated" class="digest-card discussion-card" [routerLink]="item.link" [attr.aria-labelledby]="'digest-discussion-' + item.id">
+          <div class="card-meta"><span><tui-icon [icon]="item.icon" aria-hidden="true" />{{ item.context }}</span></div>
+          <h3 [id]="'digest-discussion-' + item.id">{{ item.title }}</h3>
+          <p class="card-summary">{{ item.summary }}</p>
+          <span class="discussion-cta">Join the conversation <tui-icon icon="@tui.arrow-right" aria-hidden="true" /></span>
+        </a>
+      } @empty { <p class="empty-message">No discussions yet.</p> }
+    </div>
+  </section>
+</div>

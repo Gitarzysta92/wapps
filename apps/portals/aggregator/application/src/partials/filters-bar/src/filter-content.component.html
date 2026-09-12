@@ -1,0 +1,82 @@
+@switch (filterId) {
+  @case ('category') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)">
+    </multiselect-list>
+  }
+  @case ('platform') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)">
+    </multiselect-list>
+  }
+  @case ('device') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)"
+    />
+  }
+  @case ('monetization') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)"
+    />
+  }
+  @case ('social') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)"
+    />
+  }
+  @case ('estimated-users') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)"
+    />
+  }
+  @case ('tag') {
+    <multiselect-list
+      [items]="items"
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      [groupLabel]="filterName"
+      [showSelectionSummary]="showSelectionSummary"
+      (selectionChange)="onSelectionChange($event)"
+    />
+  }
+  @case ('search') {
+    <text-search-input
+      [selectedOptions]="selectedOptions"
+      [placeholder]="placeholder"
+      (textChange)="onSelectionChange($event)"
+    />
+  }
+  @default {
+    <p>Unknown filter: {{ filterId }}</p>
+  }
+}
+

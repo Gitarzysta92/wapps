@@ -1,6 +1,12 @@
 <input
   tuiSwitch
   type="checkbox"
-  [ngModel]="themeProvider.isToggled$ | async"
-  (click)="themeProvider.toggle()"
+  aria-label="Dark theme"
+  [formControl]="control"
+  (change)="onToggle()"
 />
+@if (themeProvider.error$; as errorStream) {
+  @if (errorStream | async; as error) {
+    <span role="alert">{{ error }}</span>
+  }
+}

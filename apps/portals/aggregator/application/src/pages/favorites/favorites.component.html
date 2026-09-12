@@ -1,0 +1,23 @@
+<section class="favorites-page">
+  <header class="favorites-page__header">
+    <h1>My favorites</h1>
+    <p>Your saved applications, collections, articles, and discussions.</p>
+    <a tuiButton appearance="secondary" size="s" routerLink="/discover">Discover more apps</a>
+  </header>
+  @if (groups$ | async; as state) {
+    @if (state.isError) { <p role="alert">Favorites could not be loaded. Please reload and try again.</p> }
+    @for (group of state.groups; track group.type) {
+      <section class="favorites-page__card">
+        <h2>{{ group.title }} <span>({{ group.items.length }})</span></h2>
+        @for (item of group.items; track item.slug) {
+          <div class="favorites-page__item">
+            <a [routerLink]="item.path">{{ item.name }}</a>
+            <favorite-toggle-button [type]="group.type" [slug]="item.slug" />
+          </div>
+        } @empty {
+          <p class="favorites-page__empty">No saved {{ group.type }} yet.</p>
+        }
+      </section>
+    }
+  }
+</section>

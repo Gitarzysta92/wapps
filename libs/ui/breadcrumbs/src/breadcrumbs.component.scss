@@ -30,8 +30,9 @@
   text-decoration: none;
   transition: color $duration-200 $ease-in-out;
 
-  &:hover {
-    color: $color-text-strong;
+  &:hover,
+  &:focus-visible {
+    color: var(--tui-text-primary);
     text-decoration: underline;
   }
 }

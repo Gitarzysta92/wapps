@@ -1,0 +1,70 @@
+@if (!app()) { <section role="status"><h1>Application not found</h1><a href="/">Browse applications</a></section> } @else {
+<ui-page-header class="page-header">
+  <ui-breadcrumbs class="breadcrumbs" slot="top-bar" [breadcrumbs]="breadcrumbData()" />
+  <h1 uiPageTitle class="page-title" slot="title" id="timeline-title">
+    <tui-icon icon="@tui.list-ordered" />
+    Timeline
+  </h1>
+</ui-page-header>
+<section class="timeline-content" aria-labelledby="timeline-title">
+      @if ((feed.feedItems$ | async)?.length === 0) { <p role="status">No activity is available for this application.</p> }
+      <feed-container class="timeline-feed">
+        <ng-template #itemTemplate let-item>
+          @switch (item.type) {
+            @case (feedItemType.ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR) {
+              <article-highlight-feed-item
+                class="feed-item"
+                [item]="item">
+              </article-highlight-feed-item>
+            }
+            @case (feedItemType.APPLICATION_HEALTH_FEED_ITEM_SELECTOR) {
+              <application-health-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-health-feed-item>
+            }
+            @case (feedItemType.APPLICATION_REVIEW_FEED_ITEM_SELECTOR) {
+              <application-review-feed-item 
+                class="feed-item"
+                [item]="item"
+                ctaPath="../reviews">
+              </application-review-feed-item>
+            }
+            @case (feedItemType.APPLICATION_TEASER_FEED_ITEM_SELECTOR) {
+              <application-teaser-feed-item 
+                class="feed-item"
+                [item]="item">
+              </application-teaser-feed-item>
+            }
+            @case (feedItemType.APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR) {
+              <application-dev-log-feed-item 
+                class="feed-item"
+                [item]="item"
+                [ctaPath]="item.appLink">
+              </application-dev-log-feed-item>
+            }
+            @case (feedItemType.SUITE_TEASER_FEED_ITEM_SELECTOR) {
+              <suite-teaser-feed-item 
+                class="feed-item"
+                [item]="item">
+              </suite-teaser-feed-item>
+            }
+            @case (feedItemType.DISCUSSION_TOPIC_FEED_ITEM_SELECTOR) {
+              <discussion-topic-feed-item 
+                class="feed-item"
+                [item]="item"
+                [ctaPath]="item.topicLink">
+              </discussion-topic-feed-item>
+            }
+            @default {
+              <div class="unknown-feed-item">
+                <p>Unknown feed item type: {{ item.type }}</p>
+              </div>
+            }
+          }
+        </ng-template>
+      </feed-container>
+      @if ((feed.hasMore$ | async) === false && (feed.feedItems$ | async)?.length) { <p role="status">All available activity is shown.</p> }
+</section>
+
+}

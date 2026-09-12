@@ -1,15 +1,47 @@
 @use 'ui/design-system/src/styles' as *;
 
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
 .multiselect-list {
   display: flex;
   flex-direction: column;
   gap: $space-3;
+  min-height: 0;
+
+  .selection-summary {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+
+  .selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+    min-height: 0;
+    max-height: min(8rem, 22dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: $space-1;
+  }
+
+  .selected-option { max-width: 100%; flex-shrink: 0; }
+  .selected-option-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .search-input {
     width: 100%;
+    flex-shrink: 0;
   }
 
   .group-label {
+    flex-shrink: 0;
     font-weight: $font-weight-bold;
     font-size: $font-size-sm;
     color: var(--tui-text-secondary);
@@ -22,6 +54,12 @@
     display: flex;
     flex-direction: column;
     gap: $space-2;
+    min-height: 0;
+    max-height: var(--multiselect-list-max-height, min(20rem, 40dvh));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    padding: $space-1;
 
     &::-webkit-scrollbar {
       width: $space-2;
@@ -48,7 +86,21 @@
       cursor: pointer;
       user-select: none;
       width: 100%;
+      min-height: $space-8;
+      flex-shrink: 0;
+      .item-name { min-width: 0; overflow-wrap: anywhere; }
     }
   }
+
+  .empty-state { margin: 0; padding: $space-3; }
 }
 
+@media (max-height: 600px) {
+  .multiselect-list .selection-summary { flex-direction: row; align-items: center; }
+  .multiselect-list .selected-options {
+    flex-wrap: nowrap;
+    min-width: 0;
+    max-height: none;
+    overflow-x: auto;
+  }
+}

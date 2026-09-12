@@ -1,0 +1,42 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  @include page.content;
+  max-width: $size-content-4xl;
+}
+.profile-card { display: flex; flex-direction: column; gap: $space-4; }
+h2 { margin: 0; font-size: $font-size-xl; line-height: $line-height-tight; }
+p { margin: 0; line-height: $line-height-normal; }
+.profile-meta { color: var(--tui-text-secondary); font-size: $font-size-sm; }
+.profile-bio { white-space: pre-wrap; overflow-wrap: anywhere; }
+.profile-summary { display: flex; align-items: center; flex-wrap: wrap; gap: $space-4; }
+.profile-summary__details { flex: 1; min-width: 0; display: grid; gap: $space-2; overflow-wrap: anywhere; }
+.profile-links { display: flex; flex-wrap: wrap; gap: $space-3; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: $space-8; margin: 0; }
+.profile-stats dt { color: var(--tui-text-secondary); }
+.profile-stats dd { font-size: $font-size-xl; font-weight: $font-weight-bold; margin: $space-2 0 0; }
+.profile-directory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-4; margin-top: $space-4; }
+.profile-directory--list { grid-template-columns: 1fr; }
+.profile-member {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  border-radius: $radius-md;
+  background: var(--tui-background-elevation-1);
+  color: var(--tui-text-primary);
+  text-decoration: none;
+  span { flex: 1; overflow-wrap: anywhere; }
+  &:hover { background: var(--tui-background-neutral-1-hover); }
+  &:focus-visible { outline: $space-1 solid var(--tui-border-focus); outline-offset: $space-1; }
+}
+@media #{$layout-breakpoint-sm} {
+  .profile-directory { grid-template-columns: 1fr; }
+}
+
+:host(.profile-details) { display: flex; flex-direction: column; gap: $space-6; }

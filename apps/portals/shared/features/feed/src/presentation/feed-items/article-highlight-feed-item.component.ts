@@ -1,3 +1,7 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
+import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CoverImageComponent } from '@ui/cover-image';
@@ -7,10 +11,8 @@ import type { ArticleHighlightFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, ElevatedCardComponent, MediumCardComponent } from '@ui/layout';
 import { ExcerptComponent, FadeOutExcerptComponent, MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
-import { UpvoteChipComponent } from '@ui/voting';
-import { DiscussionChipComponent } from '@portals/shared/features/discussion';
+import { type ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { TagsComponent } from '@ui/tags';
 import { ArticleDetailsBadgeComponent } from '@portals/shared/features/articles';
@@ -31,6 +33,8 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FavoriteToggleButtonComponent,
+    FeedLocalVoteComponent,
     AppAvatarComponent,
     ArticleDetailsBadgeComponent,
     ExcerptComponent,
@@ -40,10 +44,8 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
     MediumTitleComponent,
     CoverImageComponent,
     ShareToggleButtonComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
-    UpvoteChipComponent,
-    DiscussionChipComponent,
+    FeedActionsMenuComponent,
+    FeedAttributionComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
@@ -100,22 +102,16 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
           </span>
         </h3>
         <article-details-badge class="article-details-badge" [article]="item" />
+        <favorite-toggle-button slot="right-side" type="articles" [slug]="articleSlug" />
         <share-toggle-button
           appearance="action-soft"
           slot="right-side"
           size="s"
-          type="applications"
-          [slug]="item.id"
+          type="articles"
+          [slug]="articleSlug" [path]="item.articleLink"
           [title]="item.title"
         />
-        <button
-          tuiButton
-          appearance="action-soft"
-          size="s"
-          slot="right-side"
-        >
-          <tui-icon icon="@tui.circle-arrow-right" />
-        </button>
+        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.articleLink" [attr.aria-label]="'Read article: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />Read article</a>
       </ui-card-header>
 
       <ui-cover-image
@@ -139,43 +135,20 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
           Read Article
       </a>
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <upvote-chip
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
+        <span slot="right-side">{{ item.commentsCount || 0 }} comments</span>
+        <feed-actions-menu
           slot="right-side"
-          [count]="item.upvotesCount"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-        <discussion-chip
-          slot="right-side"
-          [commentsCount]="item.commentsCount"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-        <context-menu-chip
-          slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
       </ui-card-footer>
     </ui-medium-card>
-
-    <!-- <ui-elevated-card>
-
-      <share-toggle-button
-        slot="actions"
-        appearance="action-soft"
-        size="s"
-        type="articles"
-        [slug]="item.id"
-        [title]="item.title"
-      />
-    
-      
-    </ui-elevated-card> -->
   `,
 })
 export class ArticleHighlightFeedItemComponent {
   @Input() item!: ArticleHighlightFeedItemVM;
+  get articleSlug(): string { return this.item.articleLink?.split(/[?#]/)[0].split('/').filter(Boolean).pop() || this.item.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''); }
 }

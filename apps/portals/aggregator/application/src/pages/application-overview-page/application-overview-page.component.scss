@@ -1,0 +1,394 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+
+// Keep the original content spacing and allow room for card shadows inside the mask.
+.page-content {
+  display: flow-root;
+  margin-inline: -$space-4;
+  padding-inline: $space-4;
+  padding-bottom: $space-4;
+  margin-bottom: -$space-4;
+
+  @media #{$layout-breakpoint-sm} {
+    margin-inline: -$space-3;
+    padding-inline: $space-3;
+  }
+}
+
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
+}
+
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+// ============================================================================
+// Hero Section
+// ============================================================================
+
+.hero-section {
+  position: relative;
+  margin-top: $space-4;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.cover-image {
+  display: block;
+  height: 250px;
+  mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+}
+
+.cover-skeleton {
+  height: 250px;
+  background: var(--skeleton-background);
+  border-radius: $radius-lg;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+.hero-content {
+  position: relative;
+  margin-top: -$space-16;
+  padding: 0 $space-6;
+  display: flex;
+  align-items: flex-end;
+  gap: $space-6;
+}
+
+.app-avatar,
+.avatar-skeleton {
+  display: none;
+  flex-shrink: 0;
+}
+
+.avatar-skeleton {
+  width: $space-20;
+  height: $space-20;
+  background: var(--skeleton-background);
+  border-radius: $radius-full;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding-bottom: $space-2;
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.rating-text {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+}
+
+.reviews-count {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+}
+
+.rating-skeleton {
+  width: 200px;
+  height: 24px;
+  background: var(--skeleton-background);
+  border-radius: $radius-sm;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+.app-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+// ============================================================================
+// Metadata Section
+// ============================================================================
+
+.metadata-section {
+  margin-top: $space-8;
+  padding: $space-6;
+  background: var(--elevated-background);
+  border: 1px solid var(--elevated-background-border);
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.category-row,
+.tags-row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-secondary);
+  min-width: 80px;
+}
+
+.metadata-skeleton {
+  height: 80px;
+  background: var(--skeleton-background);
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
+.quick-access-section,
+.overview-section,
+.preview-section {
+  @include page.section;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  @include page.title;
+}
+
+// ============================================================================
+// Shortcuts Grid
+// ============================================================================
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: $space-4;
+}
+
+.shortcut-card {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
+  
+  &:hover {
+    transform: translateY(-2px);
+    
+    .shortcut-arrow {
+      transform: translateX(4px);
+    }
+  }
+}
+
+.shortcut-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xl;
+  
+  &.health-icon {
+    background: color-mix(in srgb, var(--tui-status-negative) 10%, transparent);
+    color: var(--tui-status-negative);
+  }
+  
+  &.reviews-icon {
+    background: color-mix(in srgb, var(--tui-status-positive) 10%, transparent);
+    color: var(--tui-accent);
+  }
+  
+  &.timeline-icon {
+    background: color-mix(in srgb, var(--tui-primary) 10%, transparent);
+    color: var(--tui-primary);
+  }
+  
+  &.discussions-icon {
+    background: color-mix(in srgb, var(--tui-status-positive) 10%, transparent);
+    color: var(--tui-status-positive);
+  }
+}
+
+.shortcut-content {
+  flex: 1;
+}
+
+.shortcut-title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0 0 $space-0_5 0;
+}
+
+.shortcut-description {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+  margin: 0;
+}
+
+.shortcut-arrow {
+  flex-shrink: 0;
+  color: var(--tui-primary);
+  @include transition(transform, $duration-200, $ease-in-out);
+}
+
+// ============================================================================
+// Overview Section
+// ============================================================================
+
+.app-description {
+  font-size: $font-size-md;
+  line-height: $line-height-loose;
+  color: var(--tui-text-primary);
+  margin: 0;
+}
+
+.description-skeleton {
+  height: 80px;
+  background: var(--skeleton-background);
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+// ============================================================================
+// Preview Section
+// ============================================================================
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: $space-4;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-3;
+  @include page.title;
+
+  .section-title { margin: 0; }
+  a { font-size: $font-size-sm; }
+}
+
+.preview-link {
+  display: block;
+  min-width: 0;
+}
+
+.suite-card { overflow: hidden; }
+.suite-cover { display: block; height: $space-32; }
+.preview-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.suite-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-4;
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+}
+
+.preview-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+}
+
+.preview-card-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.detail-list {
+  display: grid;
+  gap: $space-4;
+  margin: 0;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  align-items: baseline;
+  gap: $space-4;
+
+  dd {
+    margin: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+
+// The hero supplies the logo when the shell hides its navigation sidebar.
+@media #{$layout-breakpoint-md} {
+  .app-avatar,
+  .avatar-skeleton {
+    display: block;
+  }
+}
+
+@media #{$layout-breakpoint-sm} {
+  .hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -$space-12;
+    padding: 0 $space-4;
+  }
+  
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metadata-section {
+    padding: $space-4;
+  }
+  
+  .category-row,
+  .tags-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .label {
+    min-width: auto;
+  }
+}

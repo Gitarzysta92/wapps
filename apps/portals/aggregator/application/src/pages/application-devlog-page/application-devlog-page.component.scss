@@ -1,0 +1,32 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+@use '../application-activity-page';
+
+.changelog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: $space-6;
+}
+
+.changelog-header, .changes-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.changelog-header { margin-bottom: $space-4; }
+.version-info, .change-item {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+.version-info { flex-wrap: wrap; }
+.release-date { color: var(--tui-text-secondary); font-size: $font-size-sm; }
+.changelog-description { margin: 0; }
+.changes-list { list-style: none; padding: 0; }
+.change-item { align-items: flex-start; }
+.change-item tui-icon { flex-shrink: 0; }
+.release-list { @include page.content; padding-top: 0; border-top: 0; }
+.release-details { @include page.content; }
+.release-version { margin: 0; font-size: $font-size-lg; overflow-wrap: anywhere; }
+.load-more { margin-top: $space-6; }

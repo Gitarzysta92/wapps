@@ -1,0 +1,157 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+
+.breadcrumbs-skeleton, .breadcrumbs {
+  height: $space-3;
+}
+
+.page-title-skeleton {
+  width: 100%;
+  max-width: $size-content-4xl;
+  padding: $space-2 0;
+}
+
+// ============================================================================
+// Section Layout
+// ============================================================================
+
+.health-section {
+  @include page.section;
+  &:first-of-type { @include page.content; padding-top: 0; border-top: 0; }
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+  @include page.title;
+}
+
+// ============================================================================
+// History Skeleton
+// ============================================================================
+
+.history-skeleton {
+  height: 80px;
+  background: var(--skeleton-background);
+  border-radius: $radius-md;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}
+
+// ============================================================================
+// Services Grid
+// ============================================================================
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: $space-4;
+}
+
+.service-card {
+  padding: $space-4;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-3;
+}
+
+.service-name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+}
+
+.service-status {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+
+  tui-icon {
+    font-size: $font-size-sm;
+  }
+
+  &.operational {
+    color: var(--tui-status-positive);
+    background: color-mix(in srgb, var(--tui-status-positive) 10%, transparent);
+  }
+
+  &.degraded {
+    color: var(--tui-status-warning);
+    background: color-mix(in srgb, var(--tui-status-warning) 10%, transparent);
+  }
+
+  &.outage {
+    color: var(--tui-status-negative);
+    background: color-mix(in srgb, var(--tui-status-negative) 10%, transparent);
+  }
+}
+
+.service-uptime {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.uptime-bar {
+  height: 6px;
+  background: var(--tui-border-normal);
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.uptime-fill {
+  height: 100%;
+  background: var(--tui-status-positive);
+  border-radius: $radius-full;
+  transition: width $duration-300 $ease-out;
+}
+
+.uptime-value {
+  font-size: $font-size-xs;
+  color: var(--tui-text-secondary);
+  text-align: right;
+}
+
+.service-info {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid var(--tui-border-normal);
+  font-size: $font-size-xs;
+  color: var(--tui-primary);
+  cursor: pointer;
+  @include transition(color, $duration-150, $ease-in-out);
+
+  tui-icon {
+    font-size: $font-size-xs;
+  }
+
+  &:hover {
+    color: var(--tui-primary-hover);
+  }
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+
+@media #{$layout-breakpoint-sm} {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}

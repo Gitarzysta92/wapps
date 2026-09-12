@@ -1,3 +1,5 @@
+import { FeedAttributionComponent } from '../actions/feed-attribution.component';
+import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
@@ -7,9 +9,9 @@ import type { SuiteTeaserFeedItem } from '@domains/feed';
 import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
-import { MyFavoriteToggleComponent } from '@portals/shared/features/my-favorites';
-import { ContextMenuChipComponent, type ContextMenuItem } from '@ui/context-menu-chip';
-import { AttributionInfoBadgeComponent, type AttributionInfoVM } from '@portals/shared/features/attribution';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
+import { type ContextMenuItem } from '@ui/context-menu-chip';
+import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const SUITE_TEASER_FEED_ITEM_SELECTOR = 'suite-teaser-feed-item';
 
@@ -29,9 +31,9 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
     CardFooterComponent,
     MediumTitleComponent,
     ShareToggleButtonComponent,
-    MyFavoriteToggleComponent,
-    ContextMenuChipComponent,
-    AttributionInfoBadgeComponent,
+    FavoriteToggleButtonComponent,
+    FeedActionsMenuComponent,
+    FeedAttributionComponent,
     TuiChip,
     TuiButton,
     TuiIcon,
@@ -99,18 +101,13 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
           <tui-icon icon="@tui.box" />
           <span>{{ item.apps.length }} Applications</span>
         </div>
-        <my-favorite-toggle
-          appearance="action-soft"
-          slot="right-side"
-          [item]="item.id"
-          size="s"
-        />
+        <favorite-toggle-button slot="right-side" type="suites" [slug]="suiteSlug" />
         <share-toggle-button
           appearance="action-soft"
           slot="right-side"
           size="s"
           type="suites"
-          [slug]="item.id"
+          [slug]="suiteSlug" [path]="item.suiteLink"
           [title]="item.suiteTitle"
         />
       </ui-card-header>
@@ -139,10 +136,10 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
       </a>
 
       <ui-card-footer slot="footer">
-        <attribution-info-badge slot="left-side" [attribution]="item.attribution" />
-        <context-menu-chip
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+        <feed-actions-menu
           slot="right-side"
-          [contextMenu]="item.contextMenu"
+          [contextMenu]="item.contextMenu" [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
@@ -152,4 +149,5 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
 })
 export class SuiteTeaserFeedItemComponent {
   @Input() item!: SuiteTeaserFeedItemVM;
+  get suiteSlug(): string { return this.item.suiteLink?.split(/[?#]/)[0].split('/').filter(Boolean).pop() || this.item.suiteTitle.toLowerCase().replace(/\s+/g, '-'); }
 }

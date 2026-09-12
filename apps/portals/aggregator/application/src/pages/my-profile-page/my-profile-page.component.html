@@ -1,0 +1,30 @@
+<ui-page-header class="page-header">
+  @if (isLoading()) {
+    <ui-breadcrumbs-skeleton slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  }
+  <h1 uiPageTitle slot="title" [tuiSkeleton]="isLoading()">My Profile</h1>
+  <p slot="meta" class="profile-meta">Your saved profile on this browser.</p>
+</ui-page-header>
+
+<div class="profile-content">
+  @if (isLoading()) {
+    @for (item of [1, 2]; track item) {
+      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
+    }
+  } @else if (isError()) {
+    <section tuiCardLarge tuiAppearance="floating" role="alert">
+      <h2>Could not read your local profile</h2>
+      <p>Check browser storage access and reload to try again.</p>
+    </section>
+  } @else if (profile()) {
+    <nav class="profile-actions" aria-label="Profile and account settings">
+      <a tuiButton appearance="secondary" size="m" [routerLink]="publicPath()">View public profile preview</a>
+      @for (link of quickLinks; track link.path) {
+        <a tuiButton appearance="secondary" size="m" [routerLink]="link.path">{{ link.label }}</a>
+      }
+    </nav>
+    <profile-details [profile]="profile()" [isLocalProfile]="true" />
+  }
+</div>

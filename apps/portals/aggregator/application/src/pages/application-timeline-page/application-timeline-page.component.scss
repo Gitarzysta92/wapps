@@ -1,0 +1,11 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+@use '../application-activity-page';
+
+.timeline-content { @include page.content; }
+
+.timeline-feed {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}

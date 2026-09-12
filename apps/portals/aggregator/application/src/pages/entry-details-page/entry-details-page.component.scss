@@ -1,50 +1,45 @@
-.app-header {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 1rem;
-  align-items: center;
+@use 'ui/design-system/src/styles' as *;
+
+:host { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+.detail-page { min-width: 0; max-width: 100%; @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; color: var(--tui-text-primary); }
+.detail-header { padding: $space-6 0; }
+h1 { @include text($font-size-3xl, $font-weight-bold, $line-height-tight); color: var(--tui-text-primary); margin: $space-3 0; overflow-wrap: anywhere; }
+h2 { @include text($font-size-xl, $font-weight-bold); color: var(--tui-text-primary); margin: 0 0 $space-4; }
+h3 { @include text($font-size-md, $font-weight-bold); margin: 0 0 $space-1; }
+p { margin: 0 0 $space-3; line-height: 1.7; }
+.intro { @include text($font-size-lg); max-width: 70ch; white-space: pre-line; }
+.metadata, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: $space-4; }
+.metadata, .muted, small { color: var(--tui-text-secondary); }
+.notice { margin-top: $space-4; padding: $space-3 $space-4; background: var(--tui-background-neutral-1); border-radius: $radius-md; }
+.cover { width: 100%; max-height: 24rem; object-fit: cover; border-radius: $radius-lg; }
+.article-body { max-width: 70ch; margin: $space-8 auto; }
+.article-body section + section { margin-top: $space-8; }
+.app-list { min-width: 0; grid-template-columns: minmax(0, 1fr); display: grid; gap: $space-3; }
+.app-card { min-width: 0; max-width: 100%; display: flex; align-items: center; gap: $space-4; padding: $space-4; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-md; background: var(--tui-background-base); }
+.app-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.app-copy p { margin: 0; }
+.app-copy span { display: block; }
+.actions { margin-top: $space-6; }
+.empty-state { padding: $space-8; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-lg; background: var(--tui-background-neutral-1); }
+.suite-form { width: 100%; min-width: 0; grid-template-columns: minmax(0, 1fr); max-width: 48rem; display: grid; gap: $space-3; }
+.suite-form > label { font-weight: $font-weight-medium; margin-top: $space-3; }
+.suite-form > input, textarea { box-sizing: border-box; width: 100%; font: inherit; padding: $space-3; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-md; color: var(--tui-text-primary); background: var(--tui-background-base); }
+textarea { resize: vertical; }
+fieldset { border: 0; padding: 0; margin: $space-4 0 0; min-width: 0; }
+legend { font-weight: $font-weight-bold; margin-bottom: $space-2; }
+.selectable { cursor: pointer; }
+.selectable:has(input:checked) { border-color: $color-primary-600; }
+input:focus-visible, textarea:focus-visible, a:focus-visible { @include focus-ring($color-primary-600); }
+@media #{$layout-breakpoint-sm} {
+  .app-card { min-width: 0; max-width: 100%; flex-wrap: wrap; }
+  .app-copy { flex-basis: 60%; }
+  .empty-state { padding: $space-4; }
 }
 
-.icon-title {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
+.selectable input[type='checkbox'] { width: $space-4; height: $space-4; flex-shrink: 0; accent-color: $color-primary-600; cursor: pointer; }
 
-.titles {
-  display: flex;
-  flex-direction: column;
-}
-
-.labels {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.media-gallery {
-  display: grid;
-  gap: 1rem;
-}
-
-.screenshots {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.description .links {
-  display: flex;
-  gap: 1rem;
-}
-
-.recommendations .carousel {
-  min-height: 80px;
-  background: rgba(0, 0, 0, 0.03);
-}
-
-
+.detail-header, .intro, .notice, .metadata, .actions, .suite-form > *, fieldset, legend { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.actions > * { max-width: 100%; }
+.selectable { display: grid; grid-template-columns: auto auto minmax(0, 1fr); }
+input::placeholder, textarea::placeholder { color: var(--tui-text-secondary); opacity: 1; }

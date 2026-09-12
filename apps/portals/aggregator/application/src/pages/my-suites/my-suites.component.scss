@@ -1,0 +1,16 @@
+@use 'ui/design-system/src/styles' as *;
+:host { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+.my-suites-page { @include grid-container($container-lg); box-sizing: border-box; padding-top: $space-6; color: var(--tui-text-primary); }
+header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: $space-4; margin-bottom: $space-6; }
+h1 { @include text($font-size-3xl, $font-weight-bold); color: var(--tui-text-primary); margin: 0 0 $space-2; }
+h2 { @include text($font-size-xl, $font-weight-bold); overflow-wrap: anywhere; margin: $space-3 0; }
+p { line-height: 1.6; }
+.notice, .empty-state { background: var(--tui-background-neutral-1); border-radius: $radius-md; padding: $space-4; }
+.suite-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: $space-4; margin: $space-6 0; }
+.suite-card { padding: $space-5; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-lg; background: var(--tui-background-base); }
+.description { white-space: pre-line; overflow-wrap: anywhere; }
+.avatars { display: flex; flex-wrap: wrap; gap: $space-2; }
+.browse-link { display: inline-block; margin-top: $space-3; }
+
+.suite-card, .notice, header, header > div { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }

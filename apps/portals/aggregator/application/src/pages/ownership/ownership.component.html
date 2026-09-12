@@ -1,0 +1,85 @@
+<ui-page-header>
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">Ownership preparation</h1>
+  <p slot="meta">Local notes only · Unverified · Not submitted</p>
+</ui-page-header>
+<section class="draft-panel">
+  <h2>Prepare information for {{ appSlug() || 'an application' }}</h2>
+  <p>Ownership notes are saved in this browser. They are not submitted or verified.</p>
+</section>
+@if (store.error(); as error) {
+<p class="draft-error" role="alert">{{ error }}</p>
+} @if (!validSlug()) {
+<p role="alert">
+  A valid application slug is required. Open ownership preparation from a draft
+  in My Apps.
+</p>
+} @else {
+<form class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
+  <h2>Unverified ownership notes</h2>
+  <div class="draft-field">
+    <tui-textfield
+      ><label tuiLabel for="draft-evidenceUrl">Public evidence URL</label
+      ><input
+        tuiTextfield
+        id="draft-evidenceUrl"
+        formControlName="evidenceUrl"
+        type="url"
+        maxlength="2048"
+        required
+        aria-describedby="evidenceUrl-help"
+    /></tui-textfield>
+    <p id="evidenceUrl-help" class="draft-help">
+      For example, a public company page explaining your relationship to the
+      application.
+    </p>
+    @if (form.controls.evidenceUrl.touched && form.controls.evidenceUrl.invalid)
+    {
+    <p class="draft-error" role="alert">
+      Enter an HTTP or HTTPS URL without embedded credentials.
+    </p>
+    }
+  </div>
+  <div class="draft-field">
+    <label for="draft-notes">Your relationship to the application</label
+    ><textarea
+      id="draft-notes"
+      formControlName="notes"
+      rows="6"
+      maxlength="2000"
+      required
+      aria-describedby="notes-help"
+    ></textarea>
+    <p id="notes-help" class="draft-help">
+      Describe your relationship and what the linked page demonstrates (20–2,000
+      characters).
+    </p>
+    @if (form.controls.notes.touched && form.controls.notes.invalid) {
+    <p class="draft-error" role="alert">
+      Enter notes between 20 and 2,000 characters.
+    </p>
+    }
+  </div>
+  <div class="draft-actions">
+    <button tuiButton type="submit" iconStart="@tui.save">
+      Save local ownership notes
+    </button>
+  </div>
+  @if (saved() && form.pristine) {
+  <p role="status">
+    Ownership notes saved locally. Not submitted or verified.
+  </p>
+  }
+</form>
+}
+<div class="draft-actions">
+  <button
+    tuiButton
+    type="button"
+    appearance="secondary"
+    iconStart="@tui.arrow-left"
+    (click)="navigateToMyApps()"
+  >
+    Back to My Apps
+  </button>
+</div>

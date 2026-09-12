@@ -1,0 +1,37 @@
+<div class="my-discussions-page">
+  <div class="my-discussions-page__container">
+    <div class="my-discussions-page__header">
+      <h1 class="my-discussions-page__title">My Discussions</h1>
+      <p class="my-discussions-page__subtitle">Your local conversations, saved in this browser</p>
+    </div>
+
+    <div class="my-discussions-page__content">
+      <div 
+        tuiCardLarge
+        tuiAppearance="floating"
+        class="my-discussions-page__card"
+      >
+        <header tuiHeader class="my-discussions-page__card-header">
+          <h2 tuiTitle>Recent Discussions</h2>
+        </header>
+
+        @if (discussions().length > 0) {
+          <div class="my-discussions-page__list">
+            @for (discussion of discussions(); track discussion.id) {
+              <article>
+                <h3><a [routerLink]="['/apps', discussion.appSlug, 'discussions', discussion.slug]">{{ discussion.title }}</a></h3>
+                <p>{{ discussion.appName }} · {{ discussion.replies.length }} replies</p>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="my-discussions-page__empty">
+            <p>No discussions yet. Start participating in conversations!</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+

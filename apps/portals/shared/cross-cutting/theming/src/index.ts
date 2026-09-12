@@ -4,3 +4,4 @@ export * from './theming.interface';
 export * from './theming.service';
 export * from './theming-descriptor.directive';
 export * from './components/theme-toggle.component';
+export * from './theme-preferences.port';
