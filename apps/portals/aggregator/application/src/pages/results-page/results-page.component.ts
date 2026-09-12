@@ -182,7 +182,7 @@ export class ResultsPageComponent {
       return this.facetName('tags', this.pathTag()) || 'Browse tags';
     return {
       applications: 'Discover applications',
-      articles: 'Digest — articles',
+      articles: 'Articles',
       suites: 'Application suites',
       all: 'Browse the catalog',
     }[this.kind()];

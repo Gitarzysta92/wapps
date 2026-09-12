@@ -1,0 +1,53 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page(page.$content-gap);
+:host { container: digest / inline-size; }
+.page-description { margin: 0; color: var(--tui-text-secondary); }
+.digest-section { @include page.section; }
+.digest-section--first { @include page.content; padding-top: 0; border-top: 0; }
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  @include page.title;
+  h2 { display: flex; align-items: center; gap: $space-3; margin: 0; font-size: $font-size-xl; }
+  a { font-size: $font-size-sm; }
+}
+.latest-grid, .articles-grid, .portal-grid, .compact-grid { display: grid; gap: $space-4; min-width: 0; }
+.latest-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.articles-grid, .portal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: $space-6; }
+.portal-grid { padding-bottom: $space-8; }
+.digest-card { display: flex; flex-direction: column; gap: $space-2; min-width: 0; padding: $space-4; }
+.digest-card h3 { margin: 0; font-size: $font-size-md; line-height: $line-height-tight; overflow-wrap: anywhere; }
+.card-meta, .card-date { font-size: $font-size-xs; color: var(--tui-text-secondary); }
+.card-meta span { display: inline-flex; align-items: center; gap: $space-1; }
+.card-meta tui-icon { font-size: $size-icon-xs; }
+.card-summary { margin: 0; color: var(--tui-text-secondary); font-size: $font-size-sm; line-height: $line-height-normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.card-date { margin-top: auto; padding-top: $space-2; }
+.article-card { padding: 0; gap: 0; overflow: hidden; }
+.article-cover { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+.article-cover--fallback { display: grid; place-items: center; background: var(--tui-background-neutral-1); }
+.article-body { display: flex; flex: 1; flex-direction: column; gap: $space-2; padding: $space-4; }
+.article-body h3 { font-size: $font-size-lg; }
+.card-byline { display: flex; flex-wrap: wrap; gap: $space-2 $space-3; margin-top: auto; padding-top: $space-2; }
+.app-card { flex-direction: row; align-items: center; gap: $space-3; }
+.app-card > tui-avatar, .app-card > tui-icon { flex-shrink: 0; }
+.app-body { min-width: 0; flex: 1; }
+.app-body .card-summary { margin-top: $space-1; -webkit-line-clamp: 1; }
+.discussion-card { height: 100%; box-sizing: border-box; }
+.discussion-cta { margin-top: auto; padding-top: $space-4; display: flex; align-items: center; gap: $space-2; font-size: $font-size-sm; }
+.empty-message { margin: 0; color: var(--tui-text-secondary); }
+@container digest (max-width: 40rem) {
+  .portal-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+@container digest (max-width: 30rem) {
+  .latest-grid { grid-template-columns: minmax(0, 1fr); }
+  .activity-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: $space-4; }
+  .activity-card .card-meta, .activity-card h3 { grid-column: 1; }
+  .activity-card .card-summary { grid-column: 1 / -1; }
+  .activity-card .card-date { grid-column: 2; grid-row: 1; padding: 0; }
+  .articles-grid { grid-template-columns: minmax(0, 1fr); }
+}

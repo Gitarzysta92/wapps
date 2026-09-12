@@ -19,6 +19,25 @@
 .page-header-title {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.page-header-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+}
+
+.page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-2;
+  margin-inline-start: auto;
+  max-width: 100%;
 }
 
 .page-header-meta {
@@ -28,6 +47,7 @@
 }
 
 .page-header-top-bar:empty,
+.page-header-actions:empty,
 .page-header-meta:empty {
   display: none;
 }

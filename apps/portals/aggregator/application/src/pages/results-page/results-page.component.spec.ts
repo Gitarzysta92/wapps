@@ -26,7 +26,7 @@ describe('catalog page URL state', () => {
         provideNoopAnimations(),
         provideRouter([
           { path: 'categories', component: CategoryResultsPageComponent },
-          { path: 'digest', component: ArticlesPageComponent },
+          { path: 'articles', component: ArticlesPageComponent },
           { path: 'suites', component: SuitesPageComponent },
           { path: 'tags/:tagSlug', component: TagResultsPageComponent },
           {
@@ -61,8 +61,8 @@ describe('catalog page URL state', () => {
     ).toBe(0);
   });
 
-  it('renders articles under the Digest alias with article detail links', async () => {
-    const harness = await RouterTestingHarness.create('/digest');
+  it('renders the full article catalog with article detail links', async () => {
+    const harness = await RouterTestingHarness.create('/articles');
     await settle(harness);
     const links = [
       ...harness.routeNativeElement!.querySelectorAll('.item-main'),
@@ -73,7 +73,7 @@ describe('catalog page URL state', () => {
     ).toBe(true);
     expect(
       harness.routeNativeElement?.querySelector('h1')?.textContent
-    ).toContain('Digest');
+    ).toContain('Articles');
   });
 
   it('combines a route tag with URL type and search filters', async () => {

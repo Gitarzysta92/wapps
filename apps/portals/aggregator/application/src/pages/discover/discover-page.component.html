@@ -5,18 +5,33 @@
   </search-bar>
 </section>
 
- <section class="section__breadcrumbs">
+<ui-page-header class="page-header">
   @let breadcrumbs = breadcrumbs$ | async;
-  <ui-breadcrumbs [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
-</section>
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs || []"></ui-breadcrumbs>
+  <h1 uiPageTitle slot="title">Discover</h1>
+  <button slot="actions" tuiButton type="button" size="s" appearance="primary" iconStart="@tui.funnel-plus"
+    [tuiDropdown]="filterManagement" tuiDropdownAlign="right" [(tuiDropdownOpen)]="filtersBar.addFilterDropdownOpen">
+    Manage filters
+  </button>
+</ui-page-header>
+
+<ng-template #filterManagement>
+  <div class="filter-management-panel">
+    <filters-multiselect
+      [availableFilters]="filtersBar.availableFiltersOptions$ | async"
+      [activeFilters]="filtersBar.activeFiltersOptions$ | async"
+      (activated)="filtersBar.onActivateFilter($event)"
+      (deactivated)="filtersBar.onDeactivateFilter($event)" />
+  </div>
+</ng-template>
 
 <section class="section__filters">
-  <filters-bar></filters-bar>
+  <filters-bar #filtersBar></filters-bar>
 </section>
 
 @let resultsData = resultsData$ | async;
 @if (resultsData && !resultsData.isLoading) {
-  <p role="status">{{ resultsData.itemsNumber }} {{ resultsData.itemsNumber === 1 ? 'result' : 'results' }}@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
+  <p class="results-summary" role="status">{{ resultsData.itemsNumber }} {{ resultsData.itemsNumber === 1 ? 'result' : 'results' }}@if (resultsData.query['search']) { for “{{ resultsData.query['search'] }}”}</p>
   @if (resultsData.query['type']) {
     <a tuiLink routerLink="/discover" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
   }

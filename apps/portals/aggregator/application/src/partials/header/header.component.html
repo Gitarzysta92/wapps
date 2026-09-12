@@ -1,8 +1,4 @@
-<form class="global-search" role="search" aria-label="Global catalog search" (submit)="submitSearch($event)">
-  <tui-textfield iconStart="@tui.search" tuiTextfieldSize="m">
-    <input tuiTextfield type="search" [formControl]="search"
-      aria-label="Search applications, articles and suites"
-      placeholder="Search applications, articles and suites" />
-  </tui-textfield>
-  <button tuiButton type="submit" size="m" appearance="primary">Search</button>
-</form>
+<search-bar [initialValue]="initialSearch" ariaLabel="Search applications, articles and suites"
+  (keydown.enter)="submitSearch($event)" (submit)="submitSearch($event)">
+  <button type="button" tuiButton size="s" appearance="flat" (click)="submitSearch($event)">Search</button>
+</search-bar>

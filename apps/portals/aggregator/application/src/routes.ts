@@ -1252,11 +1252,16 @@ export const routes: Routes = [
 
 ];
 
-// Keep the primary navigation and legacy catalog URLs on the same configured pages.
+// Digest shares the catalog shell, with its own portal overview content.
 const portalRoutes = routes[0].children!;
 const articleListingRoute = portalRoutes.find(route => route.path === NAVIGATION.articles.path)!;
 portalRoutes.unshift(
-  { ...articleListingRoute, path: NAVIGATION.digest.path },
+  {
+    ...articleListingRoute,
+    path: NAVIGATION.digest.path,
+    loadComponent: () => import('./pages/digest/digest-page.component').then(m => m.DigestPageComponent),
+    data: { ...articleListingRoute.data, breadcrumb: [NAVIGATION.home, NAVIGATION.digest] },
+  },
 );
 
 // Every portal page keeps a way back to discovery and an accessible mobile account menu.

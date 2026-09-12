@@ -1,7 +1,7 @@
-import { Component, inject, Injector, Input } from '@angular/core';
+import { Component, inject, Injector } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SelectedFilterChipComponent, FiltersMultiselectComponent } from '@ui/filters';
+import { SelectedFilterChipComponent } from '@ui/filters';
 import { map } from 'rxjs/operators';
 import { RouteDrivenContainerDirective } from '@ui/routing';
 import { SearchableOption } from '@ui/form';
@@ -25,7 +25,7 @@ import {
   ESTIMATED_USER_SPAN_OPTIONS,
   TAG_OPTIONS
 } from '@portals/shared/data';
-import { TuiButton, TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogService } from '@taiga-ui/core';
 import { TuiDropdownOpen, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
 import { FilterSelectionDialogComponent, FilterSelectionDialogResult, FilterSelectionDialogData } from './filter-selection-dialog.component';
 import { FilterContentComponent } from './filter-content.component';
@@ -48,9 +48,7 @@ type FilterDefinition = {
   imports: [
     CommonModule,
     AsyncPipe,
-    TuiButton,
     SelectedFilterChipComponent,
-    FiltersMultiselectComponent,
     TuiDropdownOpen,
     TuiDropdownDirective,
     FilterContentComponent,

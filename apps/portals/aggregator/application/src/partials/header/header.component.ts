@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TuiButton, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton } from '@taiga-ui/core';
+import { SearchBarComponent } from '@ui/search-bar';
 import { DiscoverySearchService, normalizeSearch } from '@portals/shared/features/search';
 import { NAVIGATION } from '../../navigation';
 
@@ -12,12 +12,13 @@ import { NAVIGATION } from '../../navigation';
   styleUrl: 'header.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TuiTextfield, TuiButton],
+  imports: [SearchBarComponent, TuiButton],
 })
 export class HeaderPartialComponent {
   private readonly router = inject(Router);
   private readonly searchService = inject(DiscoverySearchService);
-  protected readonly search = new FormControl('', { nonNullable: true });
+  @ViewChild(SearchBarComponent) private searchBar?: SearchBarComponent;
+  protected initialSearch = '';
 
   // Retain the layout inputs/outputs while the parent owns header placement.
   @Input() showCollapseButton = false;
@@ -25,13 +26,14 @@ export class HeaderPartialComponent {
 
   constructor() {
     inject(ActivatedRoute).queryParamMap.pipe(takeUntilDestroyed()).subscribe(params => {
-      this.search.setValue(params.get('search') ?? '', { emitEvent: false });
+      this.initialSearch = params.get('search') ?? params.get('q') ?? '';
+      this.searchBar?.form.controls.search.setValue(this.initialSearch, { emitEvent: false });
     });
   }
 
   protected submitSearch(event: Event): void {
     event.preventDefault();
-    const phrase = normalizeSearch(this.search.value);
+    const phrase = normalizeSearch(this.searchBar?.form.controls.search.value ?? '');
     if (!phrase) return;
     this.searchService.remember(phrase);
     void this.router.navigate(['/' + NAVIGATION.discover.path], { queryParams: { search: phrase } });

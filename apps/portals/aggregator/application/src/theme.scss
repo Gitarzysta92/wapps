@@ -1,6 +1,10 @@
 // Import design system variables
 @use 'ui/design-system/src/styles' as *;
 
+// Portal menus must remain interactive above sticky content and inside dialogs.
+tui-dropdowns {
+  z-index: $z-popover;
+}
 
 // Light theme gradients using design system variables
 body.light {
@@ -10,6 +14,8 @@ body.light {
     rgba(249, 250, 251, 0) 100%);
 
   --body-background: radial-gradient(ellipse 600px 400px at top, #{$color-blue-50}, #{$color-blue-50});
+  --elevated-background: #{$color-white};
+  --elevated-background-border: #{$color-border};
   --feed-background: radial-gradient(ellipse at top, #{$color-blue-50} 0%, #{$color-purple-50} 50%, #{$color-white} 100%);
   --skeleton-background: #{$color-bg-muted};
   --skeleton-shimmer-color: rgb(138, 149, 174);
@@ -381,6 +387,17 @@ body.dark,
     transform: translateY(-4px);
     box-shadow: $shadow-lg;
     border-color: var(--tui-primary);
+  }
+}
+
+// Whole-card links use the same surface and readable text in both themes.
+a[tuiAppearance][data-appearance='card-elevated'] {
+  color: var(--tui-text-primary);
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-border-focus);
+    outline-offset: $space-1;
   }
 }
 

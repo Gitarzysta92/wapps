@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { DiscoverySearchService } from '@portals/shared/features/search';
@@ -35,4 +35,33 @@ describe('global header search', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     expect(navigate).toHaveBeenCalledTimes(1);
   });
+
+  it('waits for an explicit search, then submits the current value through the embedded button or Enter', fakeAsync(() => {
+    const navigate = jest.fn();
+    TestBed.configureTestingModule({ imports: [HeaderPartialComponent], providers: [
+      { provide: ActivatedRoute, useValue: { queryParamMap: new BehaviorSubject(convertToParamMap({})) } },
+      { provide: Router, useValue: { navigate } },
+      { provide: DiscoverySearchService, useValue: { remember: jest.fn() } },
+    ] });
+    const fixture = TestBed.createComponent(HeaderPartialComponent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const button = fixture.nativeElement.querySelector('tui-textfield button') as HTMLButtonElement;
+    expect(button.textContent?.trim()).toBe('Search');
+    input.value = 'photo';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    tick(300);
+    expect(navigate).not.toHaveBeenCalled();
+    button.click();
+    expect(navigate).toHaveBeenLastCalledWith(['/discover'], { queryParams: { search: 'photo' } });
+
+    input.value = 'quick task';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    input.dispatchEvent(enter);
+    expect(enter.defaultPrevented).toBe(true);
+    expect(navigate).toHaveBeenLastCalledWith(['/discover'], { queryParams: { search: 'quick task' } });
+    expect(navigate).toHaveBeenCalledTimes(2);
+    fixture.destroy();
+  }));
 });
