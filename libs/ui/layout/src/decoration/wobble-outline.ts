@@ -91,6 +91,8 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   const bubbleSeed = Math.floor(Math.random() * 0x7fffffff);
   let width = 0, height = 0, start = 0, bleed = 0, ratio = 1;
   let edges: EdgePoint[][] = [];
+  let edgeKey = '';
+  let fadeEnd = Infinity;
 
   const updateGeometry = () => {
     const bounds = host.getBoundingClientRect();
@@ -99,11 +101,14 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     canvas.style.display = visible ? '' : 'none';
     if (!visible) return;
     bleed = Math.ceil(amplitude + 2);
-    start = Math.max(-topBleed, -bounds.top - bleed);
+    // Reuse an overscanned buffer. Touch scrolling must not allocate a new bitmap for every pixel.
+    const overscan = 128;
+    height = Math.min(bounds.height + topBleed + bleed, view.innerHeight + topBleed + bleed * 2 + overscan * 2);
+    start = Math.max(-topBleed, Math.min(bounds.height + bleed - height,
+      Math.floor((-bounds.top - bleed) / overscan) * overscan - overscan));
     if (hostWidth !== bounds.width) bubbleMotion = createLiquidBubbleMotion();
     hostWidth = bounds.width;
     width = bounds.width + bleed * 2;
-    height = Math.min(bounds.height + bleed, view.innerHeight - bounds.top + bleed) - start;
     ratio = Math.min(view.devicePixelRatio || 1, 2);
     canvas.style.left = `${-bleed}px`;
     canvas.style.top = `${start}px`;
@@ -112,12 +117,21 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     const pixelsWide = Math.ceil(width * ratio), pixelsHigh = Math.ceil(height * ratio);
     if (canvas.width !== pixelsWide) canvas.width = pixelsWide;
     if (canvas.height !== pixelsHigh) canvas.height = pixelsHigh;
-    edges = visibleEdges(bounds.width, bounds.height, Math.max(radius, amplitude * 2), start - bleed * 2, start + height + bleed * 2);
+    const nextKey = [bounds.width, bounds.height, radius, amplitude, start, height, bleed].join(':');
+    if (nextKey !== edgeKey) {
+      edgeKey = nextKey;
+      edges = visibleEdges(bounds.width, bounds.height, Math.max(radius, amplitude * 2), start - bleed * 2, start + height + bleed * 2);
+    }
   };
 
   const draw = (stamp: number) => {
     frame = undefined;
     if (document.hidden) return;
+    if (view.scrollY >= fadeEnd) {
+      // The theme has made the backing transparent; no physics, paths, or painting are needed.
+      if (!ready) { host.classList.add('ui-wobble-ready'); ready = true; }
+      return;
+    }
     if (geometryDirty) { updateGeometry(); geometryDirty = false; }
     if (!visible) return;
     const phase = motion.matches ? 0 : (stamp % duration) / duration * Math.PI * 2;
@@ -194,9 +208,17 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   const requestDraw = () => {
     if (frame === undefined && !document.hidden) frame = view.requestAnimationFrame(draw);
   };
-  const onScroll = () => { geometryDirty = true; requestDraw(); };
+  const onScroll = () => {
+    geometryDirty = true;
+    if (ready && view.scrollY >= fadeEnd) {
+      if (frame !== undefined) view.cancelAnimationFrame(frame);
+      frame = undefined;
+    } else requestDraw();
+  };
   const refresh = () => {
     const style = view.getComputedStyle(host);
+    fadeEnd = host.classList.contains('ui-decoration-faded') && style.getPropertyValue('--decoration-min-opacity').trim() === '0'
+      ? Math.max(1, parseFloat(style.getPropertyValue('--decoration-fade-distance')) || 400) : Infinity;
     amplitude = Math.max(0, Number(style.getPropertyValue('--wobble-outline-amplitude')) || 0);
     const side = parseFloat(style.getPropertyValue('--wobble-outline-side-amplitude'));
     sideAmplitude = Number.isFinite(side) ? Math.max(0, side) : amplitude;
@@ -233,9 +255,16 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   };
   const resizeObserver = new view.ResizeObserver(refresh);
   resizeObserver.observe(host);
-  const themeObserver = new view.MutationObserver(refresh);
+  const themeStyle = (value: string | null) => (value || '').split(';').map(part => part.trim())
+    .filter(part => part && !part.startsWith('--decoration-fade-progress:')).join(';');
+  const themeObserver = new view.MutationObserver((records = []) => {
+    // Fallback scroll progress is runtime state, not a change to the palette or geometry.
+    if (records.length && records.every(record => record.attributeName === 'style' &&
+      themeStyle(record.oldValue) === themeStyle((record.target as Element).getAttribute('style')))) return;
+    refresh();
+  });
   for (let parent: HTMLElement | null = host; parent; parent = parent.parentElement) {
-    themeObserver.observe(parent, { attributes: true, attributeFilter: ['class', 'style', 'tuiTheme'] });
+    themeObserver.observe(parent, { attributes: true, attributeOldValue: true, attributeFilter: ['class', 'style', 'tuiTheme'] });
   }
   view.addEventListener('resize', refresh);
   view.addEventListener('scroll', onScroll, { passive: true });

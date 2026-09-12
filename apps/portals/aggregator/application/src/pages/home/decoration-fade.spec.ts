@@ -66,6 +66,24 @@ describe('scroll-driven decoration fade', () => {
     expect(progress()).toBe(0.5);
   });
 
+  it('leaves native scroll animations to the browser without JS scroll work', () => {
+    host.style.setProperty('--decoration-native-scroll', '1');
+    const listen = jest.spyOn(window, 'addEventListener');
+    cleanup = createDecorationFade(host);
+    scrollTo(200);
+    expect(listen).not.toHaveBeenCalled();
+    expect(frames.size).toBe(0);
+    expect(host.style.getPropertyValue('--decoration-fade-progress')).toBe('');
+  });
+
+  it('does not force computed-style reads during fallback scrolling', () => {
+    cleanup = createDecorationFade(host);
+    const readStyle = jest.spyOn(window, 'getComputedStyle');
+    scrollTo(100); scrollTo(200); scrollTo(300);
+    expect(readStyle).not.toHaveBeenCalled();
+    expect(progress()).toBeCloseTo(0.84375);
+  });
+
   it('batches scroll events, avoids redundant style writes and cleans up', () => {
     scroll = 800;
     cleanup = createDecorationFade(host);

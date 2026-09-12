@@ -54,7 +54,7 @@ describe('nebula canvas', () => {
   let reduced: boolean;
   let hidden: boolean;
   let motionChange: () => void;
-  let themeChange: () => void;
+  let themeChange: (records?: MutationRecord[]) => void;
   let resize: () => void;
   let disconnectResize: jest.Mock;
   let disconnectTheme: jest.Mock;
@@ -159,6 +159,21 @@ describe('nebula canvas', () => {
     resize();
     expect([canvas.width, canvas.height]).toEqual([585, 1266]);
     expect(contexts.slice(1, 4).map(paint => paint.putImageData.mock.calls.length)).toEqual(maskCalls);
+  });
+
+  it('ignores fallback fade progress while observing actual theme changes', () => {
+    start();
+    const oldValue = host.getAttribute('style');
+    const readStyle = jest.spyOn(window, 'getComputedStyle');
+    host.style.setProperty('--decoration-fade-progress', '0.5');
+    const record = { target: host, attributeName: 'style', oldValue } as MutationRecord;
+    themeChange([record]);
+    expect(readStyle).not.toHaveBeenCalled();
+    expect(frames.size).toBe(0);
+    host.style.setProperty('--nebula-opacity', '0.2');
+    themeChange([record]); advance(16);
+    expect(readStyle).toHaveBeenCalledTimes(1);
+    expect(context.globalAlpha).toBe(0.2);
   });
 
   it('keeps a static background with reduced motion and responds when the preference changes', () => {

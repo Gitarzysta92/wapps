@@ -2,8 +2,8 @@ import { createWobbleOutline } from '../../../../../../../libs/ui/layout/src/dec
 
 describe('canvas feed backing', () => {
   let host: HTMLElement;
-  let top: number, width: number, height: number;
-  let resize: () => void, themeChange: () => void, motionChange: () => void;
+  let top: number, width: number, height: number, scroll: number;
+  let resize: () => void, themeChange: (records?: MutationRecord[]) => void, motionChange: () => void;
   let reduced: boolean, hidden: boolean;
   let frames: Map<number, FrameRequestCallback>;
   let cleanup: (() => void) | undefined;
@@ -25,20 +25,21 @@ describe('canvas feed backing', () => {
     scheduled.forEach(callback => callback(stamp));
   }
   beforeEach(() => {
-    top = 200; width = 848; height = 3000; reduced = hidden = false;
+    scroll = 0; top = 200; width = 848; height = 3000; reduced = hidden = false;
     frames = new Map();
     host = document.createElement('section');
     host.innerHTML = '<button>Feed action</button>';
     host.style.cssText = '--wobble-outline-amplitude: 8; --wobble-outline-duration: 16s; --wobble-outline-color: #667eea; border-radius: 8px;';
     document.body.appendChild(host);
     jest.spyOn(host, 'getBoundingClientRect').mockImplementation(() => ({ top, bottom: top + height, width, height } as DOMRect));
-    for (const key of ['ResizeObserver', 'MutationObserver', 'matchMedia', 'devicePixelRatio']) originals.set(key, Object.getOwnPropertyDescriptor(window, key));
+    for (const key of ['ResizeObserver', 'MutationObserver', 'matchMedia', 'devicePixelRatio', 'scrollY']) originals.set(key, Object.getOwnPropertyDescriptor(window, key));
+    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scroll });
     Object.defineProperty(window, 'ResizeObserver', { configurable: true, value: class {
       constructor(callback: () => void) { resize = callback; }
       observe() {} disconnect = disconnect;
     }});
     Object.defineProperty(window, 'MutationObserver', { configurable: true, value: class {
-      constructor(callback: () => void) { themeChange = callback; }
+      constructor(callback: (records?: MutationRecord[]) => void) { themeChange = callback; }
       observe() {} disconnect = disconnect;
     }});
     Object.defineProperty(window, 'matchMedia', { configurable: true, value: () => ({
@@ -104,7 +105,7 @@ describe('canvas feed backing', () => {
     top = -5_000_000; height = 10_000_000;
     window.dispatchEvent(new Event('scroll')); advance(1000);
     expect(paint.fill).toHaveBeenCalledTimes(1);
-    expect(host.querySelector('canvas')!.height).toBeLessThanOrEqual((window.innerHeight + 20) * 2);
+    expect(host.querySelector('canvas')!.height).toBeLessThanOrEqual((window.innerHeight + 400) * 2);
     paint.fill.mockClear();
     top = 200; reduced = true; motionChange(); advance(2000);
     expect(paint.fill).toHaveBeenCalledTimes(1);
@@ -227,7 +228,7 @@ describe('canvas feed backing', () => {
     start();
     const canvas = host.querySelector('canvas')!;
     expect(canvas.width).toBe((width + 20) * 2);
-    expect(canvas.height).toBeLessThanOrEqual((window.innerHeight + 20) * 2);
+    expect(canvas.height).toBeLessThanOrEqual((window.innerHeight + 400) * 2);
     expect(paint.moveTo).toHaveBeenCalledTimes(1);
     expect(paint.lineTo).toHaveBeenCalledTimes(1); // Join the two visible sides below the crop.
     expect(paint.moveTo.mock.calls[0][1]).toBeLessThan(0);
@@ -271,6 +272,52 @@ describe('canvas feed backing', () => {
     expect(frames.size).toBe(0);
     hidden = false;
     document.dispatchEvent(new Event('visibilitychange')); advance(300);
+    expect(frames.size).toBe(1);
+  });
+
+  it('reuses its bitmap through small scroll movements', () => {
+    enableBubbles(); width = 390;
+    start();
+    const canvas = host.querySelector('canvas')!;
+    const setHeight = jest.spyOn(canvas, 'height', 'set');
+    const setWidth = jest.spyOn(canvas, 'width', 'set');
+    for (let i = 1; i <= 40; i++) {
+      top = 200 - i * 10;
+      window.dispatchEvent(new Event('scroll')); advance(i * 16);
+    }
+    expect(setHeight).not.toHaveBeenCalled();
+    expect(setWidth).not.toHaveBeenCalled();
+    expect(canvas.height).toBeLessThanOrEqual((window.innerHeight + 400) * 2);
+  });
+
+  it('does not treat fallback fade progress as a theme change', () => {
+    start();
+    const readStyle = jest.spyOn(window, 'getComputedStyle');
+    const oldValue = host.getAttribute('style');
+    host.style.setProperty('--decoration-fade-progress', '0.5');
+    const record = { target: host, attributeName: 'style', oldValue } as MutationRecord;
+    themeChange([record]);
+    expect(readStyle).not.toHaveBeenCalled();
+    host.style.setProperty('--wobble-outline-color', '#123456');
+    themeChange([record]); advance(16);
+    expect(readStyle).toHaveBeenCalledTimes(1);
+    expect(paint.fillStyle).toBe('#123456');
+  });
+
+  it('stops drawing a fully faded backdrop and resumes on reverse scrolling', () => {
+    scroll = 0;
+    host.classList.add('ui-decoration-faded');
+    host.style.setProperty('--decoration-min-opacity', '0');
+    host.style.setProperty('--decoration-fade-distance', '400px');
+    start();
+    paint.clearRect.mockClear();
+    scroll = 500;
+    window.dispatchEvent(new Event('scroll')); advance(1000);
+    expect(frames.size).toBe(0);
+    expect(paint.clearRect).not.toHaveBeenCalled();
+    scroll = 200;
+    window.dispatchEvent(new Event('scroll')); advance(2000);
+    expect(paint.clearRect).toHaveBeenCalledTimes(1);
     expect(frames.size).toBe(1);
   });
 
