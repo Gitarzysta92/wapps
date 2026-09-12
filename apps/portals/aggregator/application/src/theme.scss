@@ -229,6 +229,31 @@ body.dark {
 
 
 
+// Fade only decoration layers, never their sibling cards or text.
+.ui-decoration-faded {
+  --decoration-min-opacity: 0.5;
+  --decoration-fade-distance: 400; // Page scroll distance in CSS pixels.
+
+  > canvas {
+    opacity: calc(1 - (1 - var(--decoration-min-opacity)) * var(--decoration-fade-progress, 0));
+  }
+}
+
+// Tiles grow to their natural size using the same progress as the decoration fade.
+.section__feed.ui-decoration-faded {
+  --decoration-min-opacity: 0;
+  --feed-tile-start-scale: 0.96;
+
+  .feed-item {
+    scale: calc(var(--feed-tile-start-scale) + (1 - var(--feed-tile-start-scale)) * var(--decoration-fade-progress, 0));
+    transform-origin: center;
+
+    @media (prefers-reduced-motion: reduce) {
+      scale: 1;
+    }
+  }
+}
+
 // Opaque organic backing. The canvas takes over after its first completed frame.
 [uiWobbleOutline] {
   --wobble-outline-amplitude: 8;

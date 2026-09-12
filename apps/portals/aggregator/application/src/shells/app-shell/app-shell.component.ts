@@ -5,6 +5,7 @@ import { AsyncPipe } from '@angular/common';
 import { ThemingDescriptorDirective } from '@portals/cross-cutting/theming';
 import { filter, startWith, map, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
+import { DecorationFadeDirective } from '@ui/layout';
 import { SafeComponentOutletDirective } from '@ui/misc';
 import { TuiIcon } from '@taiga-ui/core';
 
@@ -65,6 +66,7 @@ export const APP_SHELL_STATE_PROVIDER = new InjectionToken<IAppShellState>('APP_
     AsyncPipe,
     SafeComponentOutletDirective,
     AnimatedBackgroundComponent,
+    DecorationFadeDirective,
     TuiIcon
   ],
   hostDirectives: [
