@@ -14,6 +14,10 @@ html {
   scrollbar-gutter: stable;
 }
 
+html:has(ui-page-header.ui-sticky-header) {
+  scroll-padding-block-start: var(--ui-sticky-header-clearance, 0px);
+}
+
 body {
   position: relative;
   display: block;

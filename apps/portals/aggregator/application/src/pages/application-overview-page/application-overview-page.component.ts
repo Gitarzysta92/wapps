@@ -8,7 +8,8 @@ import { TuiIcon, TuiLink, TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import { 
-  PageHeaderComponent, 
+  PageHeaderComponent,
+  StickyHeaderDirective,
   PageTitleComponent, 
   PageTitleSkeletonComponent,
   MediumCardSkeletonComponent,
@@ -45,6 +46,7 @@ import {
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,
+    StickyHeaderDirective,
     PageTitleComponent,
     PageTitleSkeletonComponent,
     MediumCardSkeletonComponent,

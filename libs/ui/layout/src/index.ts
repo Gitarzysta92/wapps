@@ -10,6 +10,7 @@ export { CommonSectionComponent } from './section/common-section.component';
 export { SectionHeaderComponent } from './section/section-header/section-header.component';
 export { SectionTitleComponent } from './section/section-title/section-title.component';
 export { PageHeaderComponent } from './page/page-header/page-header.component';
+export { StickyHeaderDirective } from './page/page-header/sticky-header.directive';
 export { PageHeaderSkeletonComponent } from './page/page-header-skeleton/page-header-skeleton.component';
 export { PageTitleComponent } from './page/page-title/page-title.component';
 export { PageTitleSkeletonComponent } from './page/page-title-skeleton/page-title-skeleton.component';
