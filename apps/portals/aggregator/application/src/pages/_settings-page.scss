@@ -3,11 +3,6 @@
 
 @include page.page;
 
-// The settings navigation is above the page on smaller screens.
-@media #{$layout-breakpoint-md} {
-  .page-header { margin-top: page.$content-gap; }
-}
-
 .settings-content {
   display: flex;
   flex-direction: column;

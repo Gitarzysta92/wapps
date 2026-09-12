@@ -1,14 +1,14 @@
 <nav class="mobile-bottom-nav" aria-label="Primary mobile navigation">
   @if (navigationPrimary.length) {
     <div class="mobile-bottom-nav__items">
-      @for (item of navigationPrimary; track item) {
+      @for (item of navigationPrimary; track item.path) {
         <a
           class="mobile-bottom-nav__item"
           tuiButton
           size="s"
           [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="getRouterLinkActiveOptions(item.path)"
+          [class.active]="isActive(item)"
+          [attr.aria-current]="isActive(item) ? 'page' : null"
           [title]="item.label"
           [attr.aria-label]="item.label">
           <span class="mobile-bottom-nav__icon">

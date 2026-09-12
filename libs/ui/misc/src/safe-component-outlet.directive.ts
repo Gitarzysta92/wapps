@@ -7,8 +7,7 @@ import {
   SimpleChanges,
   ComponentRef,
   inject,
-  DestroyRef,
-  effect
+  reflectComponentType
 } from '@angular/core';
 
 @Directive({
@@ -28,8 +27,8 @@ export class SafeComponentOutletDirective implements OnChanges {
     // Recreate when route inputs disappear so the component's defaults are restored.
     // Patching only supplied inputs would retain the previous route's submenu.
     const inputChange = changes['inputs'];
-    const removedInput = inputChange && Object.keys(inputChange.previousValue ?? {})
-      .some(key => !(key in (inputChange.currentValue ?? {})));
+    const removedInput = inputChange && this.validInputs.some(key =>
+      key in (inputChange.previousValue ?? {}) && !(key in (inputChange.currentValue ?? {})));
     if (changes['component'] || removedInput) {
       this.createOrReplaceComponent();
     }
@@ -37,7 +36,6 @@ export class SafeComponentOutletDirective implements OnChanges {
     // 2. Always patch inputs into the current instance
     if (this.cmpRef) {
       this.applyInputs();
-      this.cmpRef.changeDetectorRef.detectChanges();
     }
   }
 
@@ -56,32 +54,20 @@ export class SafeComponentOutletDirective implements OnChanges {
 
 
 
-    // cache valid input names once per component class
-    // NOTE: in Angular 17+, you can read inputs off the component def:
-    // (cmpRef.componentType as any).ɵcmp.inputs
-    this.validInputs = this.getDeclaredInputs(this.cmpRef);
+    // Use public input names, including aliases and signal inputs.
+    this.validInputs = reflectComponentType(this.component)?.inputs.map(input => input.templateName) ?? [];
 
     // first-time input push happens in ngOnChanges afterwards
   }
 
   private applyInputs() {
     for (const input of this.validInputs) {
-      if (input[0] in this.inputs) {
+      if (input in this.inputs) {
 
-        this.cmpRef?.setInput(input[0], this.inputs[input[0]]);
+        this.cmpRef?.setInput(input, this.inputs[input]);
       }
     }
 
   }
 
-  private getDeclaredInputs(cmpRef: ComponentRef<any>): string[] {
-    // Works in modern Angular (v15+ view engine removed):
-    const def = (cmpRef.componentType as any)?.ɵcmp;
-    if (!def) {
-      return [];
-    }
-    // def.inputs is an object: { publicInputName: internalPropName, ... }
-    // We want the instance prop names:
-    return Object.values(def.inputs ?? {}) as string[];
-  }
 }

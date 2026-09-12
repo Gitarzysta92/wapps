@@ -1,6 +1,1 @@
-<nav aria-label="Settings sections" class="settings-navigation">
-  @for (item of navigation; track item.path) {
-    <a tuiButton size="s" appearance="secondary" [routerLink]="'/' + item.path" routerLinkActive="active" ariaCurrentWhenActive="page">{{ item.label }}</a>
-  }
-</nav>
 <router-outlet />

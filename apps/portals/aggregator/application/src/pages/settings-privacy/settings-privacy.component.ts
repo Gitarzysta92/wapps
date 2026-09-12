@@ -10,6 +10,7 @@ import { TuiCardLarge } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { PREFERENCES_STATE_PROVIDER, PreferencesService } from '@portals/shared/features/preferences';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { SettingsNavigationComponent } from '../settings/settings-navigation.component';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import {
   ProfileVisibility,
@@ -30,6 +31,7 @@ import {
     TuiIcon,
     TuiSwitch,
     PageHeaderComponent,
+    SettingsNavigationComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,

@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -46,6 +46,25 @@ describe('Discover search', () => {
     const result = TestBed.inject(GlobalStateService).searchResultsData$.value;
     expect(result.query.search).toBe('photo');
     expect(result.groups.find(group => group.type === 'application')!.entries.map(entry => entry.name)).toEqual(['Photo Snap']);
+  });
+
+  it('builds each card model once per result update, not per change-detection pass', async () => {
+    const mappers = ['toArticleVM', 'toApplicationVM', 'toSuiteVM'].map(method =>
+      jest.spyOn(DiscoverPageComponent.prototype as any, method));
+    try {
+      const harness = await RouterTestingHarness.create('/discover');
+      const calls = mappers.map(mapper => mapper.mock.calls.length);
+      expect(calls.every(count => count > 0)).toBe(true);
+      expect(calls.reduce((sum, count) => sum + count, 0)).toBe(TestBed.inject(GlobalStateService).searchResultsData$.value.itemsNumber);
+      const detector = harness.routeDebugElement!.injector.get(ChangeDetectorRef);
+      for (let pass = 0; pass < 5; pass++) detector.detectChanges();
+      expect(mappers.map(mapper => mapper.mock.calls.length)).toEqual(calls);
+      await harness.navigateByUrl('/discover?search=photo');
+      expect(mappers.some((mapper, index) => mapper.mock.calls.length > calls[index])).toBe(true);
+      expect(harness.routeNativeElement!.textContent).toContain('Photo Snap');
+    } finally {
+      mappers.forEach(mapper => mapper.mockRestore());
+    }
   });
 
   it('applies, restores and removes filters on Discover', async () => {

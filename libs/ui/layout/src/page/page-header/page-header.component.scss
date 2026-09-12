@@ -57,3 +57,21 @@
 .page-header-meta:empty {
   display: none;
 }
+
+@media #{$layout-breakpoint-md} {
+  .page-header-top-bar {
+    min-height: $space-6;
+    align-items: flex-start;
+  }
+  .page-header-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    align-items: start;
+  }
+  .page-header-meta {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Injector, Input, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, IsActiveMatchOptions } from '@angular/router';
+import { RouterModule, Router, IsActiveMatchOptions } from '@angular/router';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -33,11 +33,19 @@ export class CommonMobileBottomBarPartialComponent {
 
   @Input() navigationPrimary: NavigationDeclarationDto[] = [];
   @Input() navigationSecondary: NavigationDeclarationDto[] = [];
+  @Input() navigationActive: NavigationDeclarationDto | null = null;
   @Input() sheetDialog: CommonMobileBottomBarPanel | null = null;
 
   private readonly _dialogService = inject(TuiSheetDialogService);
   private readonly _injector = inject(Injector);
-  
+  private readonly router = inject(Router);
+
+  public isActive(item: NavigationDeclarationDto): boolean {
+    return this.navigationActive
+      ? this.navigationActive.path === item.path
+      : this.router.isActive(item.path.startsWith('/') ? item.path : '/' + item.path, this.getRouterLinkActiveOptions(item.path));
+  }
+
   public trackByNavigationPath(_: number, item: NavigationDeclarationDto): string {
     return item.path;
   }
@@ -61,6 +69,3 @@ export class CommonMobileBottomBarPartialComponent {
     ).subscribe();
   }
 }
-
-
-
