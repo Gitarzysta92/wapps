@@ -79,7 +79,8 @@ function toSearchEntry(item: CatalogEntry, type: DiscoverySearchResultType): Dis
     case DiscoverySearchResultType.Suite:
       return { ...common, numberOfApps: item.applications?.length ?? 0, authorName: item.author ?? '',
         authorAvatarUrl: details && 'authorAvatarUrl' in details ? details.authorAvatarUrl : '',
-        applications: (item.applications ?? []).map(app => ({ ...app, avatarUrl: '' })),
+        applications: (item.applications ?? []).map(app => ({ ...app,
+          avatarUrl: APPLICATIONS.find(record => record.slug === app.slug)?.logo ?? '' })),
         topComment: details && 'topComment' in details ? details.topComment : null };
   }
 }
