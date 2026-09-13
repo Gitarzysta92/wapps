@@ -4,6 +4,12 @@ tui-dialogs {
   z-index: $z-modal;
 }
 
+// Taiga cards clip their contents but must still pass scroll gestures to the page.
+app-shell [tuiCardLarge],
+app-shell [tuiCardMedium] {
+  overscroll-behavior: auto;
+}
+
 // Required by some Taiga UI components
 @keyframes tuiPresent {
   to {

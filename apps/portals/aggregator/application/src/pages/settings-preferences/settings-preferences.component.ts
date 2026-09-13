@@ -24,6 +24,7 @@ import {
   styleUrl: 'settings-preferences.component.scss',
   standalone: true,
   imports: [
+    SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
     TuiButton,
@@ -33,7 +34,6 @@ import {
     TuiSwitch,
     TuiTextfield,
     PageHeaderComponent,
-    SettingsNavigationComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,

@@ -23,6 +23,7 @@ import {
   styleUrl: 'settings-privacy.component.scss',
   standalone: true,
   imports: [
+    SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
     TuiButton,
@@ -31,7 +32,6 @@ import {
     TuiIcon,
     TuiSwitch,
     PageHeaderComponent,
-    SettingsNavigationComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
