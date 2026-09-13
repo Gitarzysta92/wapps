@@ -40,21 +40,11 @@
   gap: $space-1;
   touch-action: manipulation;
   text-decoration: none;
-  color: var(--tui-text-01);
   border-radius: $space-2;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  background: none;
 
   tui-icon {
     font-size: 1.5rem;
-  }
-
-  &:hover:not(.active) {
-    background: var(--main-menu-item-background);
-  }
-
-  &.active {
-    background: var(--main-menu-item-background);
   }
 }
 
@@ -62,4 +52,3 @@
   font-size: 0.75rem;
   font-weight: 600;
 }
-

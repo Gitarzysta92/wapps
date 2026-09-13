@@ -466,6 +466,22 @@ body.dark,
   --main-menu-item-hover-background: linear-gradient(to right, #{rgba($color-purple-600, 0.32)}, #{rgba($color-indigo-400, 0.14)} 50%, transparent);
 }
 
+common-mobile-bottom-bar {
+  backdrop-filter: blur(48px);
+}
+
+common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
+  color: var(--tui-text-primary);
+  background: none;
+
+  &.active,
+  &:hover,
+  &:focus-visible {
+    color: var(--main-menu-item-active-text);
+    background: var(--main-menu-item-background);
+  }
+}
+
 [tuiAppearance][data-appearance='navigation-primary'] {
   padding: $space-4;
   width: $size-content-xxs;
