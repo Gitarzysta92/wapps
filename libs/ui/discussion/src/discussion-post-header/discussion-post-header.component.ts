@@ -17,4 +17,5 @@ export class DiscussionPostHeaderComponent {
   public readonly authorName = input<string>('');
   public readonly authorAvatarUrl = input<string>('');
   public readonly publishedTime = input<Date | string | null>(null);
+  public readonly replyToName = input<string | null>(null);
 }

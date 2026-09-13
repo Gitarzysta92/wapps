@@ -1,4 +1,3 @@
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
 import { LOCAL_APPLICATION_DATA, LocalDiscussionsService } from '@portals/shared/features/application-overview';
@@ -15,7 +14,7 @@ import {
   DiscussionExpandablePostContentComponent,
   DiscussionThreadSkeletonComponent,
 } from '@ui/discussion';
-import { DiscussionStatsBadgeComponent } from '@portals/shared/features/discussion';
+import { LocalDiscussionReplyComponent } from '@portals/shared/features/discussion';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from "@ui/breadcrumbs";
 import { 
   PageHeaderComponent, 
@@ -40,7 +39,7 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
   standalone: true,
   imports: [
     ContentStateComponent,
-    CommonModule, FormsModule, RouterLink, TuiButton,
+    CommonModule, RouterLink, TuiButton, LocalDiscussionReplyComponent,
     SlicePipe,
     TuiAppearance,
     TuiAvatar, TuiSkeleton, DividerComponent,
@@ -83,10 +82,8 @@ export class ApplicationDiscussionPageComponent implements
 
   readonly localMode = inject(LOCAL_APPLICATION_DATA);
   readonly localData = inject(LocalDiscussionsService);
-  readonly composing = signal(false);
-  replyContent = '';
-  saveError = '';
-  constructor() { effect(() => { this.appSlug(); this.discussionSlug(); this.composing.set(false); this.replyContent = ''; this.saveError = ''; }); }
+  readonly activeReplyId = signal<string | null>(null);
+  constructor() { effect(() => { this.appSlug(); this.discussionSlug(); this.activeReplyId.set(null); }); }
   readonly discussion = {
     isLoading: () => this.app.isLoading(),
     value: computed(() => this.localData.threads(this.appSlug()).find(d => d.slug === this.discussionSlug()) ?? null)
@@ -95,15 +92,6 @@ export class ApplicationDiscussionPageComponent implements
     isLoading: () => this.app.isLoading(),
     value: computed(() => this.localData.threads(this.appSlug()).filter(d => d.slug !== this.discussionSlug()))
   };
-  saveReply() {
-    if (!this.localMode || !this.appSlug() || !this.discussionSlug()) return;
-    try {
-      this.localData.reply(this.appSlug()!, this.discussionSlug()!, this.replyContent);
-      this.replyContent = '';
-      this.composing.set(false);
-      this.saveError = '';
-    } catch { this.saveError = 'Could not save on this device. Check your text and browser storage, then try again.'; }
-  }
 
   // Derive top authors from discussions
   public readonly topAuthors = computed(() => {

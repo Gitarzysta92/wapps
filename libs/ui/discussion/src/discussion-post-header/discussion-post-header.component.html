@@ -13,6 +13,9 @@
       @if (publishedTime()) {
         <span class="published-time">{{ publishedTime() | date:'medium' }}</span>
       }
+      @if (replyToName()) {
+        <span class="published-time reply-context">In reply to {{ replyToName() }}</span>
+      }
     </div>
   </div>
 </div>
