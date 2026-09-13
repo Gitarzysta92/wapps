@@ -4,14 +4,12 @@
   type="button"
   appearance="secondary"
   size="s"
+  iconStart="@tui.star"
   [class.is-favorite]="isFav"
+  [attr.aria-label]="isFav ? 'Remove from Favorites' : 'Add to Favorites'"
   [attr.aria-pressed]="isFav"
   (click)="toggleFavorite(isFav ?? false)">
-  @if (isFav) {
-    <span class="icon">★</span> Remove from Favorites
-  } @else {
-    <span class="icon">☆</span> Add to Favorites
-  }
+  <span class="favorite-label">{{ isFav ? 'Remove from Favorites' : 'Add to Favorites' }}</span>
 </button>
 
 

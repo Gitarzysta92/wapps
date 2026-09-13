@@ -7,8 +7,16 @@
 .card-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: $space-3;
+}
+
+.card-header-main {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  flex: 1 1 $size-content-xxs;
+  min-width: 0;
 }
 
 .card-header-left {
@@ -21,7 +29,7 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  flex: 1 1 $size-content-xxs;
+  flex: 1;
   min-width: 0;
 }
 
@@ -29,9 +37,10 @@
   margin-left: auto;
   flex-shrink: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: $space-2;
+  max-width: 100%;
 }
 
 .card-header-left:empty, .card-header-right:empty { display: none; }
-

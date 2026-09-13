@@ -4,10 +4,10 @@
     tuiButton
     [size]="size()"
     [appearance]="appearance()"
-    class="app-reviews-chip">
+    class="app-reviews-chip" [attr.aria-label]="'Read ' + reviewsCount() + ' reviews'">
     <tui-icon icon="@tui.message-circle" />
-    See Reviews
-    <span class="reviews-count">({{ reviewsCount() }} reviews)</span>
+    <span class="reviews-label">See Reviews</span>
+    <span class="reviews-count">{{ reviewsCount() }}<span class="reviews-label"> reviews</span></span>
   </a>
 } @else {
   <button
@@ -15,10 +15,10 @@
     [size]="size()"
     [appearance]="appearance()"
     [disabled]="readonly()"
-    class="app-reviews-chip">
+    class="app-reviews-chip" [attr.aria-label]="'Read ' + reviewsCount() + ' reviews'">
     <tui-icon icon="@tui.message-circle" />
-    See Reviews
-    <span class="reviews-count">({{ reviewsCount() }} reviews)</span>
+    <span class="reviews-label">See Reviews</span>
+    <span class="reviews-count">{{ reviewsCount() }}<span class="reviews-label"> reviews</span></span>
   </button>
 }
 

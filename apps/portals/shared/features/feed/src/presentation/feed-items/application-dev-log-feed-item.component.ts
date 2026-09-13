@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
@@ -17,7 +17,6 @@ import { type VotingData } from '@portals/shared/features/voting';
 import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 //TODO: this has to be changed to application-changelog-feed-item
-
 
 export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-item';
 
@@ -44,7 +43,6 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
     AppChangelogDetailsComponent,
@@ -94,16 +92,8 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         <div class="changelog-version">
           <tui-badge class="changelog-badge" size="s">ver. {{ item.version }}</tui-badge> <small>{{ item.subtitle }}</small>
         </div>
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="applications"
-          [slug]="item.appSlug" [path]="item.appLink"
-          [title]="item.appName"
-        />
-        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.appLink" [attr.aria-label]="'View application: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a>
       </ui-card-header>
+
       <section class="changelog-info"><p>Version {{ item.version }} · {{ item.releaseDate | feedDate }}</p><p>{{ item.description }}</p></section>
       <ui-medium-card class="changelog-details">
         <tui-chip size="s" appearance="action-soft" slot="top-edge">
@@ -111,18 +101,34 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         </tui-chip>
         <app-changelog-details [data]="{ changes: item.changes }" />
       </ui-medium-card>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      <a tuiButton size="xs" appearance="flat" slot="bottom-bar" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open ' + (item.commentsNumber || 0) + ' discussions for ' + item.title"><tui-icon icon="@tui.message-circle" aria-hidden="true" />{{ item.commentsNumber || 0 }}</a>
 
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
-        <a tuiButton size="xs" appearance="flat" slot="right-side" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open discussions for ' + item.title">Discussions ({{ item.commentsNumber || 0 }})</a>
+      <ng-template #cardActions>
+        <share-toggle-button
+          appearance="action-soft"
+          size="s"
+          type="applications"
+          [slug]="item.appSlug"
+          [path]="item.appLink"
+          [title]="item.appName"
+        />
+        <a
+          tuiButton
+          appearance="action-soft"
+          size="s"
+          [routerLink]="item.appLink"
+          [attr.aria-label]="'View application: ' + item.title"
+          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a
+        >
         <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
-      </ui-card-footer>
+      </ng-template>
     </ui-medium-card>
   `,
 })

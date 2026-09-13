@@ -1,22 +1,12 @@
-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: all 0.2s ease;
+@use 'ui/design-system/src/styles' as *;
 
-  .icon {
-    font-size: 1.25rem;
-    line-height: 1;
-  }
+:host { display: block; }
 
-  &.is-favorite {
-    .icon {
-      color: var(--tui-status-warning);
-    }
+@container card (max-width: 30rem) {
+  button {
+    width: $size-touch-min;
+    height: $size-touch-min;
+    padding: 0;
   }
-
-  &:hover {
-    transform: scale(1.05);
-  }
+  .favorite-label { display: none; }
 }
-
