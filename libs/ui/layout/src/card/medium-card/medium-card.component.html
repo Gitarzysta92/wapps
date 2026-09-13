@@ -17,10 +17,19 @@
 <div class="card-toolbar" [class.card-toolbar--with-actions]="!!actions">
   <div class="card-bottom-bar">
     <ng-content select="[slot='bottom-bar']"></ng-content>
+    <div class="card-bottom-bar-end">
+      <ng-content select="[slot='bottom-bar-end']"></ng-content>
+      @if (footerActions && !actionsOpen) {
+      <div class="card-footer-actions">
+        <ng-container [ngTemplateOutlet]="footerActions" [ngTemplateOutletContext]="{ iconOnly: true }" />
+      </div>
+      }
+    </div>
   </div>
-  @if (actions) {
+  @if (actions || footerActions) {
   <div class="card-actions">
     <button
+      #actionsToggle
       class="card-actions-toggle"
       tuiButton
       type="button"
@@ -33,9 +42,9 @@
       tuiDropdownAlign="right"
       [(tuiDropdownOpen)]="actionsOpen"
     ></button>
-    @if (!actionsOpen) {
+    @if (actions && !actionsOpen) {
     <div class="card-actions-content card-actions-inline">
-      <ng-container [ngTemplateOutlet]="actions" />
+      <ng-container [ngTemplateOutlet]="actions" [ngTemplateOutletContext]="{ iconOnly: true }" />
     </div>
     }
   </div>
@@ -49,6 +58,7 @@
     role="group"
     aria-label="Item actions"
   >
-    <ng-container [ngTemplateOutlet]="actions ?? null" />
+    <ng-container [ngTemplateOutlet]="actions ?? null" [ngTemplateOutletContext]="{ iconOnly: false }" />
+    <ng-container [ngTemplateOutlet]="footerActions ?? null" [ngTemplateOutletContext]="{ iconOnly: false, activeZone: actionsZone }" />
   </div>
 </ng-template>

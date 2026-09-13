@@ -107,31 +107,32 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
       @if (item.discussionSlug; as discussionSlug) {
         <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
       }
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <share-toggle-button
-          appearance="action-soft"
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="applications"
           [slug]="item.appSlug"
           [path]="item.appLink"
           [title]="item.appName"
         />
-        <a
-          tuiButton
-          appearance="action-soft"
-          size="s"
-          [routerLink]="item.appLink"
-          [attr.aria-label]="'View application: ' + item.title"
-          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a
-        >
-        <feed-actions-menu
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
         />
+        <a
+          tuiButton
+          appearance="primary"
+          size="s"
+          iconStart="@tui.arrow-right"
+          [routerLink]="item.appLink"
+          [attr.aria-label]="'View changelog: ' + item.title"
+          >View changelog</a
+        >
       </ng-template>
     </ui-medium-card>
   `,

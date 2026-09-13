@@ -1,6 +1,14 @@
 @use 'ui/design-system/src/styles' as *;
-:host { display: inline-flex; flex-direction: column; align-items: flex-start; gap: $space-2; max-width: 100%; }
-.feedback, .fallback { @include text($font-size-sm); color: var(--tui-text-secondary); max-width: 28rem; overflow-wrap: anywhere; }
+:host { display: inline-flex; max-width: 100%; }
+.share-options {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: $size-content-xxs;
+  max-width: min($size-content-sm, calc(100vw - #{$space-8}));
+  padding: $space-1;
+}
+.feedback, .fallback { @include text($font-size-sm); color: var(--tui-text-secondary); margin: 0; padding: $space-3; box-sizing: border-box; overflow-wrap: anywhere; }
 .fallback { display: flex; flex-direction: column; gap: $space-1; width: 100%; }
 input { box-sizing: border-box; width: 100%; padding: $space-2; font: inherit; color: var(--tui-text-primary); background: var(--tui-background-base); border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-sm; }
 input:focus-visible { @include focus-ring($color-primary-600); }

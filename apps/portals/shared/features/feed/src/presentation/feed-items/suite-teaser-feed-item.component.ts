@@ -116,28 +116,28 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         </div>
       </div>
 
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <favorite-toggle-button type="suites" [slug]="suiteSlug" />
-        <share-toggle-button
-          appearance="action-soft"
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="suites"
           [slug]="suiteSlug"
           [path]="item.suiteLink"
           [title]="item.suiteTitle"
         />
-        <a tuiButton size="s" appearance="primary" [routerLink]="item.suiteLink">
-          <tui-icon icon="@tui.grid" />
-          Explore Suite
-        </a>
-        <feed-actions-menu
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="suites" [slug]="suiteSlug" />
+        <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
         />
+        <a tuiButton size="s" appearance="primary" iconStart="@tui.arrow-right" [routerLink]="item.suiteLink"
+          [attr.aria-label]="'View suite: ' + item.suiteTitle">
+          View suite
+        </a>
       </ng-template>
     </ui-medium-card>
   `,

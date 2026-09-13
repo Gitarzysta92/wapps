@@ -11,7 +11,7 @@ import { AttributionType, ContentNature } from '@domains/publication/attribution
   template: `
     <ui-medium-card>
       <p>Tile content</p>
-      <attribution-info-badge slot="bottom-bar" [attribution]="attribution" />
+      <attribution-info-badge slot="bottom-bar-end" [attribution]="attribution" />
       <ng-template #cardActions><button type="button">View item</button></ng-template>
     </ui-medium-card>
   `,

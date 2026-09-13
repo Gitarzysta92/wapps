@@ -90,32 +90,33 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
       @if (item.discussionSlug; as discussionSlug) {
         <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
       }
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <share-toggle-button
-          appearance="action-soft"
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="applications"
           [slug]="item.appSlug"
           [path]="item.appLink"
           [title]="item.appName"
         />
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <feed-actions-menu [iconOnly]="iconOnly"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
+        />
         <a
           tuiButton
           size="s"
           appearance="primary"
+          iconStart="@tui.arrow-right"
           [routerLink]="ctaPath || '/apps/:appSlug/reviews' | routePath : { appSlug: item.appSlug }"
+          [attr.aria-label]="'View reviews: ' + item.appName"
         >
-          <tui-icon icon="@tui.external-link" />
           View reviews
         </a>
-        <feed-actions-menu
-          [contextMenu]="item.contextMenu"
-          [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
-        />
       </ng-template>
     </ui-medium-card>
   `,

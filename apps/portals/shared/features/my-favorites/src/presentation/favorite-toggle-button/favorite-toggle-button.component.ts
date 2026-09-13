@@ -18,6 +18,9 @@ export class FavoriteToggleButtonComponent implements OnChanges {
   @Input({ required: true }) type!: 'applications' | 'suites' | 'articles' | 'discussions';
   @Input({ required: true }) slug!: string;
 
+  @Input() iconOnly = false;
+  @Input() appearance = 'secondary';
+
   private readonly _favoritesService = inject(MyFavoritesService);
 
   public isFavorite$: Observable<boolean> = of(false);
@@ -40,4 +43,3 @@ export class FavoriteToggleButtonComponent implements OnChanges {
     });
   }
 }
-

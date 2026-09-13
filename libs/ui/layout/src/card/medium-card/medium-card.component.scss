@@ -67,6 +67,17 @@
   display: none;
 }
 
+.card-bottom-bar-end, .card-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.card-bottom-bar-end {
+  margin-inline-start: auto;
+}
+
 @media #{$layout-breakpoint-md} {
   :host:has(> .card-toolbar--with-actions) {
     grid-template-columns: minmax(0, 1fr);
@@ -98,6 +109,7 @@
 
   .card-actions { margin-left: auto; }
   .card-actions-inline { display: none; }
+  .card-footer-actions { display: none; }
   .card-actions-toggle {
     display: inline-flex;
     width: $size-touch-min;
@@ -105,7 +117,7 @@
     padding: 0;
   }
 
-  .card-toolbar:not(.card-toolbar--with-actions):has(> .card-bottom-bar:empty) {
+  .card-toolbar:not(:has(.card-actions)):has(> .card-bottom-bar > .card-bottom-bar-end:only-child:empty) {
     display: none;
   }
 }
@@ -156,6 +168,8 @@
 // Hide empty slots
 .card-top-bar:empty,
 .card-bottom-bar:empty,
+.card-bottom-bar:has(> .card-bottom-bar-end:only-child:empty),
+.card-bottom-bar-end:empty,
 .card-footer:empty,
 .card-top-edge:empty {
   display: none;

@@ -77,32 +77,33 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
       </div>
       <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
       <span slot="bottom-bar">{{ item.commentsCount || 0 }} comments</span>
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <favorite-toggle-button type="articles" [slug]="articleSlug" />
-        <share-toggle-button
-          appearance="action-soft"
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="articles"
           [slug]="articleSlug"
           [path]="item.articleLink"
+          [title]="item.title"
+        />
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="articles" [slug]="articleSlug" />
+        <feed-actions-menu [iconOnly]="iconOnly"
+          [contextMenu]="item.contextMenu"
           [title]="item.title"
         />
         <a
           tuiButton
           appearance="primary"
           size="s"
+          iconStart="@tui.arrow-right"
           [routerLink]="item.articleLink"
           [attr.aria-label]="'Read article: ' + item.title"
-          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />Read article</a
+          >Read article</a
         >
-        <feed-actions-menu
-          [contextMenu]="item.contextMenu"
-          [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
-        />
       </ng-template>
     </ui-medium-card>
   `,

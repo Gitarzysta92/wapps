@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TuiIcon, TuiTitle} from '@taiga-ui/core';
 import {
-    TuiBadgeNotification,
+    TuiBadge,
 } from '@taiga-ui/kit';
 import {TuiCell} from '@taiga-ui/layout';
  
@@ -14,7 +14,7 @@ import {TuiCell} from '@taiga-ui/layout';
   ],
   imports: [
     FormsModule,
-    TuiBadgeNotification,
+    TuiBadge,
     TuiTitle,
     TuiIcon
   ],
