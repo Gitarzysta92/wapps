@@ -1,3 +1,4 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { RouterLink } from '@angular/router';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
@@ -28,6 +29,7 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     RouterLink,
     MediumCardComponent,
     CardHeaderComponent,
@@ -119,7 +121,9 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           <small style="opacity: 0.5">{{ item.notice.timestamp | date:'medium' }}</small>
         </div>
       </ui-medium-card>
-      <a tuiButton size="xs" appearance="flat" slot="bottom-bar" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open ' + (item.commentsNumber || 0) + ' discussions for ' + item.title"><tui-icon icon="@tui.message-circle" aria-hidden="true" />{{ item.commentsNumber || 0 }}</a>
+      @if (item.discussionSlug; as discussionSlug) {
+        <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+      }
       @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>

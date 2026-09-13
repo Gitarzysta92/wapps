@@ -1,3 +1,4 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
@@ -31,6 +32,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     FeedLocalVoteComponent,
     MediumCardComponent,
     CardHeaderComponent,
@@ -85,6 +87,9 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
       </review-quote-short>
 
       <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      @if (item.discussionSlug; as discussionSlug) {
+        <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+      }
       @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>

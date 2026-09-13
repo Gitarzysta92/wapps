@@ -3,6 +3,12 @@
 $thread-line-color: $color-border-muted;
 $thread-line-color-transparent: rgba(86, 93, 102, 0);
 
+:host {
+  display: block;
+  min-width: 0;
+  container: discussion / inline-size;
+}
+
 .opening-post-slot {
   position: relative;
 
@@ -66,5 +72,22 @@ $thread-line-color-transparent: rgba(86, 93, 102, 0);
       height: calc(100% - 30px);
       background: linear-gradient(to bottom, $thread-line-color-transparent 0%, $thread-line-color 100%);
     }
+  }
+}
+
+// Keep the thread hierarchy without squeezing messages in narrow containers.
+@container discussion (max-width: 30rem) {
+  .opening-post-slot::before { display: none; }
+  .reply-slot {
+    padding-left: $space-6;
+
+    &::before { left: $space-0; width: $space-4; }
+
+    ::ng-deep[slot='reply']::before {
+      left: -$space-6;
+      width: $space-4;
+    }
+
+    ::ng-deep[slot='reply']:not(:last-child)::after { left: -$space-6; }
   }
 }

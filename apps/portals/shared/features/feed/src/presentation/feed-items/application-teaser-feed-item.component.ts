@@ -1,3 +1,4 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
@@ -37,6 +38,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     ElevatedCardComponent,
     CoverImageComponent,
     TuiButton,
@@ -106,6 +108,9 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
             size="xs"
             appearance="action-soft-flat"
           />
+        @if (item.discussionSlug; as discussionSlug) {
+          <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+        }
         @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
         <ng-template #cardActions>

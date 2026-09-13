@@ -69,7 +69,7 @@ describe('Feed actions and discussion preview', () => {
       discussionData: { topic: 'Collaboration', messages: [{ author: 'John Developer', content: 'A real fixture message.', timestamp: new Date('2024-01-11T12:00:00Z') }, null] },
     });
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('article').length).toBe(1);
+    expect(fixture.nativeElement.querySelectorAll('ui-discussion-post').length).toBe(1);
     expect(fixture.nativeElement.textContent).toContain('A real fixture message.');
     expect(fixture.nativeElement.textContent).toContain('Jan 11, 2024');
     expect(fixture.nativeElement.textContent).not.toContain('Test Author');
