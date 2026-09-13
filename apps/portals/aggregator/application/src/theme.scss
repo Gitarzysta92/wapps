@@ -409,6 +409,13 @@ body.dark {
   }
 }
 
+status-history {
+  .status-label { color: var(--tui-text-secondary); }
+  .status-dot.operational { background-color: var(--tui-status-positive); }
+  .status-dot.degraded { background-color: var(--tui-status-warning); }
+  .status-dot.outage { background-color: var(--tui-status-negative); }
+}
+
 // Menus reuse each action's behavior with a quiet, consistent row appearance.
 [tuiAppearance][data-appearance='action-menu'] [tuiButton] {
   width: 100%;
