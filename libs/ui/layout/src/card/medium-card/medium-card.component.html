@@ -10,10 +10,45 @@
   <ng-content></ng-content>
 </div>
 
-<div class="card-bottom-bar">
-  <ng-content select="[slot='bottom-bar']"></ng-content>
-</div>
-
 <div class="card-footer">
   <ng-content select="[slot='footer']"></ng-content>
 </div>
+
+<div class="card-toolbar" [class.card-toolbar--with-actions]="!!actions">
+  <div class="card-bottom-bar">
+    <ng-content select="[slot='bottom-bar']"></ng-content>
+  </div>
+  @if (actions) {
+  <div class="card-actions">
+    <button
+      class="card-actions-toggle"
+      tuiButton
+      type="button"
+      size="s"
+      appearance="flat"
+      iconStart="@tui.ellipsis"
+      aria-label="Item actions"
+      [attr.aria-expanded]="actionsOpen"
+      [tuiDropdown]="actionsMenu"
+      tuiDropdownAlign="right"
+      [(tuiDropdownOpen)]="actionsOpen"
+    ></button>
+    @if (!actionsOpen) {
+    <div class="card-actions-content card-actions-inline">
+      <ng-container [ngTemplateOutlet]="actions" />
+    </div>
+    }
+  </div>
+  }
+</div>
+
+<ng-template #actionsMenu>
+  <div
+    class="card-actions-content card-actions-content--menu"
+    tuiAppearance="action-menu"
+    role="group"
+    aria-label="Item actions"
+  >
+    <ng-container [ngTemplateOutlet]="actions ?? null" />
+  </div>
+</ng-template>

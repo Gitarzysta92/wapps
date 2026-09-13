@@ -1,4 +1,5 @@
 export * from './sticky-element.directive';
+export * from './scroll-on-focus.directive';
 export * from './sticky-state.directive';
 export * from './sticky-state-indicator.directive';
 export * from './out-of-viewport.directive';

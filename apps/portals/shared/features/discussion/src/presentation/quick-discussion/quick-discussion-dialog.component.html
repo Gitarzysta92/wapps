@@ -1,0 +1,40 @@
+<header class="discussion-heading">
+  <h3>{{ thread()?.title ?? 'Discussion unavailable' }}</h3>
+  @if (thread(); as topic) {
+    <div class="discussion-meta">
+      <span>{{ topic.replies.length }} {{ topic.replies.length === 1 ? 'comment' : 'comments' }}</span>
+      <a tuiButton size="xs" appearance="flat" iconStart="@tui.external-link"
+        [routerLink]="['/apps', appSlug, 'discussions', topic.slug]" (click)="close()">Open full discussion</a>
+    </div>
+  }
+</header>
+
+<section #body class="discussion-body" tabindex="0" aria-label="Discussion messages">
+  @if (thread(); as topic) {
+    <ui-discussion-thread>
+      <ui-discussion-post slot="opening-post" [post]="topic" role="article" aria-label="Opening post">
+        <ui-discussion-post-header slot="header" [authorName]="topic.author.name" [authorAvatarUrl]="topic.author.avatar.url" [publishedTime]="topic.publishedTime" />
+        <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
+        <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug" [discussionSlug]="topic.slug" [post]="topic"
+          [expanded]="activeReplyId() === topic.id" (expandedChange)="activeReplyId.set($event ? topic.id : null)" (replied)="scrollToLatest()" />
+      </ui-discussion-post>
+      @for (comment of topic.replies; track comment.id) {
+        <ui-discussion-post slot="reply" [post]="comment" role="article" [attr.aria-label]="'Comment by ' + comment.author.name">
+          <ui-discussion-post-header slot="header" [authorName]="comment.author.name" [authorAvatarUrl]="comment.author.avatar.url" [publishedTime]="comment.publishedTime" [replyToName]="data.replyTarget(topic, comment)?.author?.name ?? null" />
+          <ui-discussion-expandable-post-content slot="content" [content]="comment.content" />
+          <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug" [discussionSlug]="topic.slug" [post]="comment"
+            [expanded]="activeReplyId() === comment.id" (expandedChange)="activeReplyId.set($event ? comment.id : null)" (replied)="scrollToLatest()" />
+        </ui-discussion-post>
+      }
+    </ui-discussion-thread>
+    @if (!topic.replies.length) {
+      <ui-content-state title="Start the conversation" description="Be the first to add a comment." icon="@tui.message-circle" />
+    }
+  } @else {
+    <ui-content-state title="Discussion not found" description="The conversation linked to this tile is unavailable." icon="@tui.messages-square">
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="close()">Back to feed</button>
+    </ui-content-state>
+  }
+</section>
+
+@if (thread() && !localMode) { <p>Posting comments is unavailable here.</p> }

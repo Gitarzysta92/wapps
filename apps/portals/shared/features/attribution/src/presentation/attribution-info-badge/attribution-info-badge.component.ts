@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TuiBadge } from '@taiga-ui/kit';
-import { TuiIcon, TuiHint } from '@taiga-ui/core';
+import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AttributionType, ContentNature, VerificationLevel } from '@domains/publication/attribution';
 
 export const ATTRIBUTION_INFO_BADGE_SELECTOR = 'attribution-info-badge';
@@ -21,15 +20,14 @@ export type AttributionInfoVM = {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TuiBadge,
-    TuiIcon,
-    TuiHint
+    TuiButton,
+    TuiDropdown,
   ],
   templateUrl: './attribution-info-badge.component.html',
   styleUrls: ['./attribution-info-badge.component.scss']
 })
 export class AttributionInfoBadgeComponent {
   @Input({ required: true }) attribution!: AttributionInfoVM;
-  
-  readonly infoHintText = 'Content Attribution Information';
+  @Input() title = 'this item';
+  open = false;
 }

@@ -1,5 +1,5 @@
 import { HomeSearchProviderService } from './home-search-provider.service';
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TuiDropdown } from "@taiga-ui/core";
 import { TuiBadgedContent } from "@taiga-ui/kit";
@@ -43,6 +43,7 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { DecorationFadeDirective, WobbleOutlineDirective } from '@ui/layout';
+import { ScrollOnFocusDirective } from '@ui/misc';
 import { NAVIGATION } from "../../navigation";
 import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 
@@ -67,11 +68,13 @@ type RegisteredFeedItem = Array<
 
 @Component({
   selector: 'home-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: "home.component.html",
   styleUrl: 'home.component.scss',
   imports: [
     CommonModule,
     MultiSearchComponent,
+    ScrollOnFocusDirective,
     HomeSearchResultsComponent,
     HomeRecentSearchesComponent,
     ArticleHighlightFeedItemComponent,

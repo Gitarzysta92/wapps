@@ -6,7 +6,7 @@ import { TuiAvatar, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { NgFor, NgIf } from '@angular/common';
 import type { SuiteTeaserFeedItem } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
@@ -28,7 +28,6 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
   imports: [
     MediumCardComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     MediumTitleComponent,
     ShareToggleButtonComponent,
     FavoriteToggleButtonComponent,
@@ -101,17 +100,8 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
           <tui-icon icon="@tui.box" />
           <span>{{ item.apps.length }} Applications</span>
         </div>
-        <favorite-toggle-button slot="right-side" type="suites" [slug]="suiteSlug" />
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="suites"
-          [slug]="suiteSlug" [path]="item.suiteLink"
-          [title]="item.suiteTitle"
-        />
       </ui-card-header>
-      
+
       <div class="apps-grid">
         <div *ngFor="let app of item.apps" class="app-tile">
           <tui-avatar size="l">
@@ -126,24 +116,29 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         </div>
       </div>
 
-      <a
-        tuiButton 
-        size="s" 
-        appearance="primary"
-        [routerLink]="item.suiteLink">
-          <tui-icon icon="@tui.grid"/>
-          Explore Suite
-      </a>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
+      <ng-template #cardActions>
+        <favorite-toggle-button type="suites" [slug]="suiteSlug" />
+        <share-toggle-button
+          appearance="action-soft"
+          size="s"
+          type="suites"
+          [slug]="suiteSlug"
+          [path]="item.suiteLink"
+          [title]="item.suiteTitle"
+        />
+        <a tuiButton size="s" appearance="primary" [routerLink]="item.suiteLink">
+          <tui-icon icon="@tui.grid" />
+          Explore Suite
+        </a>
         <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
-      </ui-card-footer>
+      </ng-template>
     </ui-medium-card>
   `,
 })

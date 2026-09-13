@@ -8,3 +8,7 @@
   }
 }
 
+
+@container card (max-width: 30rem) {
+  .reviews-label { display: none; }
+}

@@ -3,7 +3,7 @@ import { LOCAL_APPLICATION_DATA, LocalDiscussionsService } from '@portals/shared
 import { Component, inject, computed, input, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 import { TuiButton, TuiIcon, TuiAppearance } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
@@ -16,7 +16,8 @@ import {
   CommonSectionComponent,
   SectionHeaderComponent,
   SectionTitleComponent,
-  NoticeCardComponent
+  NoticeCardComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS, DISCUSSION_PREVIEW_DATA } from '@portals/shared/data';
@@ -35,6 +36,8 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
   selector: 'app-application-discussions-page',
   standalone: true,
   imports: [
+    RouterLink,
+    ContentStateComponent,
     CommonModule, FormsModule,
     TuiButton,
     TuiIcon,

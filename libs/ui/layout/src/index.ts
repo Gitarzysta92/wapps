@@ -19,3 +19,4 @@ export { PageTitleSkeletonComponent } from './page/page-title-skeleton/page-titl
 export { PageMetaComponent } from './page/page-meta/page-meta.component';
 export { PageMetaSkeletonComponent } from './page/page-meta-skeleton/page-meta-skeleton.component';
 export { DividerComponent } from './divider.component';
+export { ContentStateComponent } from './content-state/content-state.component';

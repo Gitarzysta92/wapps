@@ -3,9 +3,8 @@
 
 @include page.page;
 
-// The settings navigation is above the page on smaller screens.
-@media #{$layout-breakpoint-md} {
-  .page-header { margin-top: page.$content-gap; }
+.error-section {
+  @include page.content;
 }
 
 .settings-content {
@@ -17,6 +16,10 @@
 .settings-card[tuiCardLarge][data-space] {
   padding: $space-6;
   gap: page.$card-gap;
+
+  @media #{$layout-breakpoint-sm} {
+    padding: $space-6 $space-4 $space-4;
+  }
 }
 .settings-card-header {
   display: flex;
@@ -36,3 +39,54 @@
   margin: 0;
   > tui-icon, > .accent-bar { flex-shrink: 0; }
 }
+
+.page-description {
+  font-size: $font-size-md;
+  color: var(--tui-text-secondary);
+  margin: 0;
+}
+
+.section-icon { font-size: $font-size-lg; color: var(--tui-text-secondary); }
+.accent-bar { width: $space-1; height: 1.2em; border-radius: $radius-sm; }
+.section-subtitle, .setting-description, .danger-action__description {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+  margin: 0;
+  line-height: $line-height-normal;
+}
+
+.settings-group, .danger-actions { display: flex; flex-direction: column; gap: $space-4; }
+.setting-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: $space-4;
+  align-items: center;
+  padding: $space-4;
+
+  &--toggle .setting-control { justify-self: end; }
+  &--disabled { pointer-events: none; }
+
+  @media #{$layout-breakpoint-sm} {
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-3;
+    &--toggle .setting-control { justify-self: start; }
+  }
+}
+.setting-info, .danger-action__info { display: flex; flex-direction: column; gap: $space-1; min-width: 0; }
+.setting-label, .danger-action__title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  margin: 0;
+}
+.setting-control { display: flex; flex-wrap: wrap; gap: $space-2; min-width: 0; }
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: $space-4;
+  // The content stack already supplies 24px of the 32px section gap.
+  margin-top: page.$section-gap - page.$content-gap;
+  padding-top: page.$content-gap;
+  border-top: $border-width-thin solid var(--tui-border-normal);
+}
+.settings-feedback { margin: 0; }

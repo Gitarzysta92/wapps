@@ -18,7 +18,7 @@ export interface DiscussionPostVM {
   id: string;
   content: string;
   author: DiscussionAuthorVM;
-  publishedTime: Date;
+  publishedTime: Date | null;
   upvotesCount: number;
   downvotesCount: number;
   isEdited: boolean;

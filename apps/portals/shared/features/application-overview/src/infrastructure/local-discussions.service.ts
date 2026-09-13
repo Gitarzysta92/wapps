@@ -5,15 +5,18 @@ import { DiscussionThreadDto, DiscussionPreviewDto, DiscussionPostDto } from '@d
 const KEY = 'wapps.local-discussions.v1';
 const author = { id: 'local-reader', slug: 'local-reader', name: 'You (local)', avatar: { url: '' } };
 
+export type LocalDiscussionPost = (DiscussionPostDto | DiscussionThreadDto) & { replyToId?: string };
+export type LocalDiscussionThread = Omit<DiscussionThreadDto, 'replies'> & { replies: LocalDiscussionPost[] };
+
 /** Local-only drafts and replies; never represents a server submission. */
 @Injectable({ providedIn: 'root' })
 export class LocalDiscussionsService {
   readonly revision = signal(0);
-  private read(): DiscussionThreadDto[] {
+  private read(): LocalDiscussionThread[] {
     try {
       const saved: unknown = JSON.parse(localStorage.getItem(KEY) ?? '[]');
       if (!Array.isArray(saved)) return [];
-      return saved.filter((d): d is DiscussionThreadDto => !!d && typeof d.id === 'string' && typeof d.slug === 'string'
+      return saved.filter((d): d is LocalDiscussionThread => !!d && typeof d.id === 'string' && typeof d.slug === 'string'
         && typeof d.title === 'string' && typeof d.content === 'string' && Number.isFinite(new Date(d.publishedTime).getTime())
         && Array.isArray(d.tags) && d.tags.every((t: { slug: string; name: string }) => t && typeof t.slug === 'string' && typeof t.name === 'string')
         && typeof d.author?.name === 'string' && typeof d.author?.id === 'string' && typeof d.author?.avatar?.url === 'string' && Array.isArray(d.replies) && d.replies.every((r: DiscussionPostDto) =>
@@ -21,7 +24,7 @@ export class LocalDiscussionsService {
         .map(d => ({ ...d, publishedTime: new Date(d.publishedTime), replies: d.replies.map(r => ({ ...r, publishedTime: new Date(r.publishedTime) })) }));
     } catch { return []; }
   }
-  threads(slug: string | null): DiscussionThreadDto[] {
+  threads(slug: string | null): LocalDiscussionThread[] {
     this.revision();
     const app = APPLICATIONS.find(a => a.slug === slug);
     if (!app) return [];
@@ -51,10 +54,15 @@ export class LocalDiscussionsService {
     this.save(thread);
     return thread;
   }
-  reply(appSlug: string, discussionSlug: string, content: string): void {
+  replyTarget(thread: LocalDiscussionThread, post: LocalDiscussionPost): DiscussionPostDto | null {
+    return post.replyToId ? [thread, ...thread.replies].find(candidate => candidate.id === post.replyToId) ?? null : null;
+  }
+  reply(appSlug: string, discussionSlug: string, content: string, replyToId?: string): void {
     const thread = this.threads(appSlug).find(d => d.slug === discussionSlug);
     if (!thread || !content.trim() || content.trim().length > 5000) throw new Error('Invalid reply');
-    thread.replies.push({ id: crypto.randomUUID(), content: content.trim(), author, publishedTime: new Date(), upvotesCount: 0, downvotesCount: 0, isEdited: false });
+    const targetId = replyToId ?? thread.id;
+    if (![thread, ...thread.replies].some(post => post.id === targetId)) throw new Error('Reply target not found');
+    thread.replies.push({ id: crypto.randomUUID(), replyToId: targetId, content: content.trim(), author, publishedTime: new Date(), upvotesCount: 0, downvotesCount: 0, isEdited: false });
     thread.repliesCount = thread.replies.length;
     this.save(thread);
   }

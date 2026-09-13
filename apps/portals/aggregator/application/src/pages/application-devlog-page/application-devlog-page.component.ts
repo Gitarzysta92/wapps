@@ -13,7 +13,8 @@ import {
   PageTitleSkeletonComponent,
   PageMetaComponent,
   PageMetaSkeletonComponent,
-  MediumCardComponent
+  MediumCardComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
@@ -23,6 +24,7 @@ import { NAVIGATION_NAME_PARAMS } from '../../navigation';
   selector: 'app-application-devlog-page',
   standalone: true,
   imports: [
+    ContentStateComponent,
     CommonModule,
     RouterLink,
     TuiButton,

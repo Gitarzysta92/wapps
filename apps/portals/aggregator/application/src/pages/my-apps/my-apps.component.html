@@ -1,4 +1,4 @@
-<ui-page-header>
+<ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">My Apps</h1>
   <p slot="meta">
@@ -6,7 +6,7 @@
     {{ ownership().length }} unverified ownership drafts
   </p>
 </ui-page-header>
-<section class="draft-panel">
+<section tuiAppearance="card-panel" class="draft-panel">
   <h2>Local drafts</h2>
   <p>Drafts are saved in this browser. They are not published.</p>
   <div class="draft-actions">
@@ -16,24 +16,15 @@
   </div>
 </section>
 @if (store.error(); as error) {
-<div class="draft-panel">
-  <p class="draft-error" role="alert">{{ error }}</p>
-  <button
-    tuiButton
-    type="button"
-    appearance="secondary"
-    iconStart="@tui.refresh-cw"
-    (click)="store.refresh()"
-  >
-    Retry loading drafts
-  </button>
-</div>
+<ui-content-state [error]="true" title="Could not load drafts" description="{{ error }}" icon="@tui.circle-alert">
+    <button tuiButton size="m" type="button" (click)="store.refresh()">Retry loading drafts</button>
+  </ui-content-state>
 } @if (message()) {
 <p role="status">{{ message() }}</p>
 }
 <section class="draft-list" aria-label="Application drafts">
   @for (draft of drafts(); track draft.id) {
-  <article class="draft-panel">
+  <article tuiAppearance="card-panel" class="draft-panel">
     <span class="draft-status">Local draft · Not submitted</span>
     <h2>{{ draft.name }}</h2>
     <p class="draft-help">
@@ -98,16 +89,16 @@
     }
   </article>
   } @empty { @if (!store.error()) {
-  <p>
-    No application drafts yet. Start a draft to save application details here.
-  </p>
+  <ui-content-state title="No application drafts yet" description="Start a draft to save application details in this browser." icon="@tui.file-plus">
+    <button tuiButton size="m" type="button" (click)="editDraft()">New application draft</button>
+  </ui-content-state>
   } }
 </section>
 <section class="draft-list" aria-label="Ownership drafts">
   <h2>Ownership preparation</h2>
   <p>Ownership notes are saved locally. They are not submitted or verified.</p>
   @for (draft of ownership(); track draft.appSlug) {
-  <article class="draft-panel">
+  <article tuiAppearance="card-panel" class="draft-panel">
     <span class="draft-status">Local notes · Unverified · Not submitted</span>
     <h3>{{ draft.appSlug }}</h3>
     <p class="draft-help">Saved {{ draft.updatedAt | date : 'medium' }}</p>
@@ -154,6 +145,8 @@
     }
   </article>
   } @empty { @if (!store.error()) {
-  <p>No local ownership notes saved.</p>
+  <ui-content-state title="No ownership notes yet" description="Open an application draft to prepare ownership notes." icon="@tui.file-text">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+  </ui-content-state>
   } }
 </section>

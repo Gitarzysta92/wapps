@@ -8,17 +8,16 @@
   @if (profile(); as member) {
     <profile-details [profile]="member" [isLocalProfile]="isLocalProfile()" />
   } @else {
-    <section tuiCardLarge tuiAppearance="floating" class="profile-card" role="status">
-      <h2>This profile is not in the local directory</h2>
-      <p>Check the profile link or choose an available member below.</p>
-    </section>
+    <ui-content-state title="This profile is not in the local directory" description="Check the profile link or choose an available member below." icon="@tui.user-round">
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
   }
 
-  <section aria-labelledby="members-title">
+  <section class="profile-directory-section" aria-labelledby="members-title">
     <h2 id="members-title">{{ profile() ? 'Other community members' : 'Available community members' }}</h2>
     <div class="profile-directory" [class.profile-directory--list]="preferences.defaultView() === 'list'">
       @for (member of otherProfiles(); track member.id) {
-        <a class="profile-member" [routerLink]="profilePath(member.id)">
+        <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="profilePath(member.id)">
           <tui-avatar [src]="member.avatar?.uri || ''" size="m">{{ member.name.slice(0, 2).toUpperCase() }}</tui-avatar>
           <span>{{ member.name }}</span>
           <tui-icon icon="@tui.chevron-right" />

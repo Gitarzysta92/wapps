@@ -38,7 +38,6 @@
 .app-body .card-summary { margin-top: $space-1; -webkit-line-clamp: 1; }
 .discussion-card { height: 100%; box-sizing: border-box; }
 .discussion-cta { margin-top: auto; padding-top: $space-4; display: flex; align-items: center; gap: $space-2; font-size: $font-size-sm; }
-.empty-message { margin: 0; color: var(--tui-text-secondary); }
 @container digest (max-width: 40rem) {
   .portal-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
 }

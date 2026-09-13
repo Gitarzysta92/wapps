@@ -13,18 +13,19 @@
   <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
     Control how and when you receive notifications
   </p>
+  <settings-navigation slot="navigation" />
 </ui-page-header>
 
 @if (isLoading()) {
   <section class="settings-content" aria-label="Loading settings" aria-busy="true">
     @for (item of [1, 2, 3]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
     }
   </section>
 } @else if (isError()) {
-  <section class="error-section">
-    <p>Could not read preferences from this browser. Check storage access and reload to try again.</p>
-  </section>
+  <ui-content-state class="error-section" [error]="true" title="Could not load settings" description="Check browser storage access, then try again. Your saved settings have not been changed." icon="@tui.circle-alert">
+    <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/me/profile">Back to profile</a>
+  </ui-content-state>
 } @else {
   <section class="settings-content">
     <p class="page-description">These choices are saved only on this browser. They do not configure email or push delivery.</p>
@@ -33,7 +34,7 @@
     }
     <!-- Email Notifications -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -187,7 +188,7 @@
 
     <!-- In-App Notifications -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -286,7 +287,7 @@
 
     <!-- Push Notifications -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >

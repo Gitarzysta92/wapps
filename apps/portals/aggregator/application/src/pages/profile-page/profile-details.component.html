@@ -1,6 +1,6 @@
 @let member = profile();
-    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-label="Profile overview">
-      <div class="profile-summary">
+    <ui-medium-card tuiAppearance="card-panel" role="region" class="profile-card" aria-label="Profile overview">
+      <div slot="header" class="profile-summary">
         <tui-avatar [src]="member.avatar?.uri || ''" size="xl">{{ member.name.slice(0, 2).toUpperCase() }}</tui-avatar>
         <div class="profile-summary__details">
           <h2>{{ member.name }}</h2>
@@ -16,10 +16,10 @@
       @if (isLocalProfile()) {
         <p class="profile-meta">This preview includes your saved profile changes from this browser.</p>
       }
-    </section>
+    </ui-medium-card>
 
-    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-labelledby="about-title">
-      <header tuiHeader><h2 id="about-title">About</h2></header>
+    <ui-medium-card tuiAppearance="card-panel" role="region" class="profile-card" aria-labelledby="about-title">
+      <header slot="header"><h2 id="about-title">About</h2></header>
       <p class="profile-bio">{{ member.bio || 'No bio has been added to this profile.' }}</p>
       @if (member.location) {
         <p><tui-icon icon="@tui.map-pin" /> {{ member.location }}</p>
@@ -39,10 +39,10 @@
       } @else {
         <p class="profile-meta">No public links have been added.</p>
       }
-    </section>
+    </ui-medium-card>
 
-    <section tuiCardLarge tuiAppearance="floating" class="profile-card" aria-labelledby="activity-title">
-      <header tuiHeader><h2 id="activity-title">Activity</h2></header>
+    <ui-medium-card tuiAppearance="card-panel" role="region" class="profile-card" aria-labelledby="activity-title">
+      <header slot="header"><h2 id="activity-title">Activity</h2></header>
       @if (stats().length) {
         <dl class="profile-stats">
           @for (stat of stats(); track stat.label) {
@@ -52,4 +52,4 @@
       } @else {
         <p class="profile-meta">Activity totals are not available in this local profile record.</p>
       }
-    </section>
+    </ui-medium-card>

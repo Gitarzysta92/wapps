@@ -1,21 +1,22 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent, CardFooterComponent } from '@ui/layout';
+import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent } from '@ui/layout';
 import { CoverImageComponent } from '@ui/cover-image';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
 import type { AddTypeToArray } from '@foundation/standard';
-import { 
+import {
   MediumTitleComponent,
 } from '@ui/content';
 import { TagsComponent } from '@ui/tags';
-import { 
-  AppAvatarComponent, 
-  AppRatingComponent, 
+import {
+  AppAvatarComponent,
+  AppRatingComponent,
   AppCategoryChipComponent,
-  AppReviewsChipComponent 
+  AppReviewsChipComponent
 } from '@portals/shared/features/application-overview';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { ContextMenuItem } from '@ui/context-menu-chip';
@@ -37,6 +38,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     ElevatedCardComponent,
     CoverImageComponent,
     TuiButton,
@@ -45,7 +47,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     MediumCardComponent,
     MediumTitleComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     TagsComponent,
     AppAvatarComponent,
     AppRatingComponent,
@@ -55,6 +56,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     FeedActionsMenuComponent,
     FeedAttributionComponent,
   ],
+  styleUrl: './application-teaser-feed-item.component.scss',
   styles: [
     `
       .medium-card {
@@ -64,17 +66,8 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         background: var(--elevated-background);
         border-radius: 10px;
       }
-      .card-header {
-        padding: 1rem 0;
-        ui-tags {
-          margin: 0.1rem 0;
-        }
-      }
       .card-footer {
-        padding: 0.2rem 1.5rem;
-      }
-      .elevated-card {
-        padding-top: 100px;
+        padding: 0.2rem 0;
       }
       .cover-image {
         opacity: 0.3;
@@ -89,51 +82,51 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         [image]="item.coverImage"
         slot="backdrop">
       </ui-cover-image>
-      <!-- TODO: this should be moved to the card header -->
-      <favorite-toggle-button slot="actions" type="applications" [slug]="item.appSlug" />
       <ui-medium-card class="medium-card">
-        <app-category-chip 
+        <app-category-chip
           slot="top-edge"
           [category]="item.category"
         />
         <ui-card-header slot="header" class="card-header">
-          <app-avatar 
-            slot="left-side" 
-            [size]="'xl'" 
+          <app-avatar
+            slot="left-side"
+            [size]="'xl'"
             [avatar]="{ url: item.coverImage.url, alt: item.appName }"
           />
           <h3 uiMediumTitle>
             {{ item.appName }}
             <app-rating [readonly]="true" [rating]="item.aggregatedScore"/>
           </h3>
-          <ui-tags [tags]="item.tags"></ui-tags>
-          <p>{{ item.description }}</p>
         </ui-card-header>
-        <a
-          tuiButton 
-          size="s" 
-          appearance="primary"
-          [routerLink]="item.appLink">
-          <tui-icon icon="@tui.grid"/>
-          Discover Application
-        </a>
-      </ui-medium-card>
 
-      <ui-card-footer slot="footer" class="card-footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <app-reviews-chip slot="right-side"
-          [reviewsCount]="item.reviewsCount"
-          [reviewsLink]="item.reviewsLink"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-        <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
-        />
-      </ui-card-footer>
+        <ui-tags [tags]="item.tags"></ui-tags>
+        <p>{{ item.description }}</p>
+
+        <app-reviews-chip slot="bottom-bar"
+            [reviewsCount]="item.reviewsCount"
+            [reviewsLink]="item.reviewsLink"
+            size="xs"
+            appearance="action-soft-flat"
+          />
+        @if (item.discussionSlug; as discussionSlug) {
+          <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+        }
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
+
+        <ng-template #cardActions>
+          <favorite-toggle-button type="applications" [slug]="item.appSlug" />
+          <a tuiButton size="s" appearance="primary" [routerLink]="item.appLink">
+            <tui-icon icon="@tui.grid" />
+            View application
+          </a>
+          <feed-actions-menu
+            [contextMenu]="item.contextMenu"
+            [title]="item.title"
+            size="xs"
+            appearance="action-soft-flat"
+          />
+        </ng-template>
+    </ui-medium-card>
 
     </ui-elevated-card>
   `,

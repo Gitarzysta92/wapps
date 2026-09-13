@@ -1,0 +1,6 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host { display: none; min-width: 0; }
+@media #{$layout-breakpoint-md} {
+  :host { display: block; }
+}

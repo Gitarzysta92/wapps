@@ -21,7 +21,6 @@ p { margin: 0 0 $space-3; line-height: 1.7; }
 .app-copy p { margin: 0; }
 .app-copy span { display: block; }
 .actions { margin-top: $space-6; }
-.empty-state { padding: $space-8; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-lg; background: var(--tui-background-neutral-1); }
 .suite-form { width: 100%; min-width: 0; grid-template-columns: minmax(0, 1fr); max-width: 48rem; display: grid; gap: $space-3; }
 .suite-form > label { font-weight: $font-weight-medium; margin-top: $space-3; }
 .suite-form > input, textarea { box-sizing: border-box; width: 100%; font: inherit; padding: $space-3; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-md; color: var(--tui-text-primary); background: var(--tui-background-base); }
@@ -34,8 +33,7 @@ input:focus-visible, textarea:focus-visible, a:focus-visible { @include focus-ri
 @media #{$layout-breakpoint-sm} {
   .app-card { min-width: 0; max-width: 100%; flex-wrap: wrap; }
   .app-copy { flex-basis: 60%; }
-  .empty-state { padding: $space-4; }
-}
+  }
 
 .selectable input[type='checkbox'] { width: $space-4; height: $space-4; flex-shrink: 0; accent-color: $color-primary-600; cursor: pointer; }
 

@@ -21,25 +21,26 @@ export const FEED_ITEM_EXAMPLES = [
   {
     id: 'discussion-topic-1',
     type: 'discussion-topic-feed-item',
-    title: 'Quick task',
-    subtitle: 'Join the conversation about collaboration tools',
+    title: 'Photo Snap',
+    subtitle: 'Join the conversation about API integration',
     timestamp: new Date('2024-01-11T12:45:00Z'),
-    appSlug: 'quick-task',
+    appSlug: 'photo-snap',
     discussionSlug: SAMPLE_DISCUSSION.slug,
     discussionData: {
-      topic: 'Collaboration Tools',
+      topic: SAMPLE_DISCUSSION.title,
+      // Editorial snapshot: the question, the authentication fix and token-expiry advice.
       messages: [
-        {
-          id: 1,
-          author: 'John Developer',
-          content: 'What are your favorite features for collaboration?',
-          timestamp: new Date('2024-01-11T12:00:00Z')
-        }
-      ]
+        { post: SAMPLE_DISCUSSION, excerpt: SAMPLE_DISCUSSION.content.split('\n\n')[0] },
+        { post: SAMPLE_DISCUSSION.replies[0], excerpt: 'The key is to make sure you\'re including the Authorization header with "Bearer " prefix.' },
+        { post: SAMPLE_DISCUSSION.replies[1], excerpt: SAMPLE_DISCUSSION.replies[1].content },
+      ].map(({ post, excerpt }) => ({
+        id: post.id, author: post.author.name, authorAvatarUrl: post.author.avatar.url,
+        content: excerpt, timestamp: post.publishedTime,
+      })),
     },
-    participantsCount: 12,
-    viewsCount: 70,
-    commentsNumber: 10,
+    participantsCount: 3,
+    viewsCount: SAMPLE_DISCUSSION.viewsCount,
+    commentsNumber: SAMPLE_DISCUSSION.replies.length,
     voting: {
       upvotes: 10,
       downvotes: 3,

@@ -1,7 +1,12 @@
 @if (notFound()) {
-  <section tuiAppearance="card-elevated" class="metadata-section" role="status"><h1>Application not found</h1><p>This application is not in the catalog.</p><a tuiLink routerLink="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 } @else if (app.error()) {
-  <section tuiAppearance="card-elevated" class="metadata-section" role="alert"><h1>Unable to load application</h1><p>Please try again.</p><button tuiButton type="button" (click)="app.reload()">Retry</button></section>
+  <ui-content-state class="page-header" [page]="true" [error]="true" title="Unable to load application" description="Please try again, or return to the catalog." icon="@tui.circle-alert">
+    <button tuiButton type="button" size="m" (click)="app.reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+  </ui-content-state>
 } @else {
 <ui-page-header [uiStickyHeader]="pageContent" class="page-header">
   @if (app.isLoading()) {
@@ -198,7 +203,9 @@
           <discussion-small-card [data]="discussion" />
         </a>
       } @empty {
-        <p class="shortcut-description">No discussions yet. Start a conversation from the discussions page.</p>
+        <ui-content-state title="No discussions yet" description="Start a conversation about this application." icon="@tui.messages-square">
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'discussions']">Open discussions</a>
+  </ui-content-state>
       }
     </div>
   </section>

@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,8 @@ import { TuiSkeleton, TuiSwitch } from '@taiga-ui/kit';
 import { TuiCardLarge } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { PREFERENCES_STATE_PROVIDER, PreferencesService } from '@portals/shared/features/preferences';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
+import { SettingsNavigationComponent } from '../settings/settings-navigation.component';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import {
   EmailNotificationFrequency,
@@ -19,6 +21,9 @@ import {
   styleUrl: 'settings-notifications.component.scss',
   standalone: true,
   imports: [
+    RouterLink,
+    ContentStateComponent,
+    SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
     TuiButton,
@@ -53,6 +58,8 @@ export class SettingsNotificationsPageComponent implements routingDataConsumerFr
   protected readonly emailPreferences = signal({ ...DEFAULT_NOTIFICATION_PREFERENCES.email });
   protected readonly inAppPreferences = signal({ ...DEFAULT_NOTIFICATION_PREFERENCES.inApp });
   protected readonly pushPreferences = signal({ ...DEFAULT_NOTIFICATION_PREFERENCES.push });
+
+  public reload(): void { this.preferencesService.reload(); }
 
   private readonly preferencesService = inject(PreferencesService);
   protected readonly feedback = signal('');

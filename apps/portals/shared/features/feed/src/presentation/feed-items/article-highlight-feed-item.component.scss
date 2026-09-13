@@ -1,0 +1,34 @@
+@use 'ui/design-system/src/styles' as *;
+
+.cover-image {
+  margin-top: $space-4;
+  height: 150px;
+}
+
+h3 {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.article-label {
+  display: inline-flex;
+  align-items: center;
+  margin-left: $space-2;
+
+  tui-icon { height: $space-4; }
+}
+
+.article-summary {
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.cover-image:not(.no-image) + .article-summary {
+  margin-top: -$space-12;
+}
+
+@media #{$layout-breakpoint-sm} {
+  .article-summary { padding-inline: 0; }
+}

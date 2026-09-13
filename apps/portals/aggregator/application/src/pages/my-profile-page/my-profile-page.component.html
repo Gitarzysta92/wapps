@@ -11,14 +11,13 @@
 <div class="profile-content">
   @if (isLoading()) {
     @for (item of [1, 2]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
     }
   } @else if (isError()) {
-    <section tuiCardLarge tuiAppearance="floating" role="alert">
-      <h2>Could not read your local profile</h2>
-      <p>Check browser storage access and reload to try again.</p>
-    </section>
-  } @else if (profile()) {
+    <ui-content-state [error]="true" title="Could not read your local profile" description="Check browser storage access and try loading your profile again." icon="@tui.circle-alert">
+    <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
+  } @else if (profile().id) {
     <nav class="profile-actions" aria-label="Profile and account settings">
       <a tuiButton appearance="secondary" size="m" [routerLink]="publicPath()">View public profile preview</a>
       @for (link of quickLinks; track link.path) {
@@ -26,5 +25,9 @@
       }
     </nav>
     <profile-details [profile]="profile()" [isLocalProfile]="true" />
+  } @else {
+<ui-content-state title="No profile yet" description="Add your name and profile details to make this space your own." icon="@tui.user-round">
+    <a tuiButton appearance="secondary" size="m" routerLink="/me/settings/profile">Set up profile</a><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
   }
 </div>

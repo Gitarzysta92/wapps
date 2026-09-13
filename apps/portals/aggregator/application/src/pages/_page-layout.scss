@@ -11,6 +11,9 @@ $card-gap: $space-4;
   .page-header {
     --ui-page-header-offset: #{$offset};
     margin-top: var(--ui-page-header-offset);
+    @media #{$layout-breakpoint-md} {
+      --ui-page-header-offset: #{$space-4};
+    }
   }
 }
 

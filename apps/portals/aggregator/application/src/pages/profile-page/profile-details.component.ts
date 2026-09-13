@@ -2,7 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
-import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
+import { MediumCardComponent } from '@ui/layout';
 import { CustomerProfileDto } from '@domains/customer/profiles';
 import { PreferredDatePipe } from '@portals/shared/features/preferences';
 import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
@@ -14,9 +14,9 @@ import { NAVIGATION } from '../../navigation';
   selector: 'profile-details',
   standalone: true,
   templateUrl: './profile-details.component.html',
-  styleUrl: './profile-page.component.scss',
+  styleUrl: './profile-details.component.scss',
   host: { class: 'profile-details' },
-  imports: [RouterLink, TuiAppearance, TuiButton, TuiIcon, TuiAvatar, TuiCardLarge, TuiHeader,
+  imports: [RouterLink, TuiAppearance, TuiButton, TuiIcon, TuiAvatar, MediumCardComponent,
     ProfileBadgesComponent, PreferredDatePipe]
 })
 export class ProfileDetailsComponent {

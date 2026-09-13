@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, AfterViewInit, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewChild, AfterViewInit, DestroyRef } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RouteDrivenContainerDirective } from '@ui/routing';
@@ -31,7 +31,8 @@ import {
   ElevatedCardSkeletonComponent,
   MediumCardComponent,
   CardHeaderComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
 import {
@@ -51,7 +52,9 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
 @Component({
   selector: 'discover-page',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ContentStateComponent,
     CommonModule,
     RouterLink,
     SearchBarComponent,
@@ -142,6 +145,20 @@ export class DiscoverPageComponent implements AfterViewInit {
       this._globalState.activeSection$.next(null);
       this._globalState.setSearchResultsData(data);
     }),
+    // Keep card inputs stable through navigation, image loads and filter-menu events.
+    map(data => ({
+      ...data,
+      groups: data.groups.map(group => ({
+        ...group,
+        entries: group.entries.map(entry => {
+          switch (group.type) {
+            case DiscoverySearchResultType.Article: return this.toArticleVM(entry as DiscoverySearchResultArticleItemDto);
+            case DiscoverySearchResultType.Application: return this.toApplicationVM(entry);
+            case DiscoverySearchResultType.Suite: return this.toSuiteVM(entry);
+          }
+        }),
+      })),
+    })),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 

@@ -1,6 +1,7 @@
+import { RouterLink } from '@angular/router';
 import { Component, inject, input, effect, computed } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiIcon, TuiButton } from '@taiga-ui/core';
 import { APPLICATION_HEALTH_FEED_ITEM_SELECTOR, APPLICATION_REVIEW_FEED_ITEM_SELECTOR, APPLICATION_TEASER_FEED_ITEM_SELECTOR, APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR, SUITE_TEASER_FEED_ITEM_SELECTOR, DISCUSSION_TOPIC_FEED_ITEM_SELECTOR, ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR, NewsFeedService, FEED_PROVIDER_TOKEN } from '@portals/shared/features/feed';
 import { ArticleHighlightFeedItemComponent } from '@portals/shared/features/feed';
 import { ApplicationHealthFeedItemComponent } from '@portals/shared/features/feed';
@@ -12,7 +13,7 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { ApplicationTimelineFeedProviderService } from './application-timeline-feed-provider.service';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { APPLICATIONS } from '@portals/shared/data';
@@ -21,6 +22,9 @@ import { APPLICATIONS } from '@portals/shared/data';
   selector: 'app-application-timeline-page',
   standalone: true,
   imports: [
+    RouterLink,
+    TuiButton,
+    ContentStateComponent,
     AsyncPipe,
     BreadcrumbsComponent,
     PageHeaderComponent,

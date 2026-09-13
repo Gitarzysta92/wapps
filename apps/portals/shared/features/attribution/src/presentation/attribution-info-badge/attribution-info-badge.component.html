@@ -1,23 +1,22 @@
-<div class="attribution-badges">
-  <button 
-    type="button"
-    class="info-icon-button"
-    [tuiHint]="infoHintText">
-    <tui-icon 
-      icon="@tui.info" 
-      class="info-icon">
-    </tui-icon>
-  </button>
-  
-  <button 
-    type="button"
-    class="attribution-badge-button"
-    [tuiHint]="attribution.tooltipText">
-    <tui-badge 
-      [appearance]="attribution.badgeAppearance"
-      size="m"
-      class="attribution-badge">
-      <tui-icon [icon]="attribution.icon" class="badge-icon"></tui-icon>
-    </tui-badge>
-  </button>
-</div>
+<button
+  tuiButton
+  type="button"
+  size="xs"
+  appearance="flat"
+  class="attribution-badge-trigger"
+  iconStart="@tui.info"
+  [attr.aria-label]="'Content attribution for ' + title + ': ' + (attribution.displayText || 'Source details')"
+  [attr.aria-expanded]="open"
+  [tuiDropdown]="content"
+  tuiDropdownAlign="right"
+  [(tuiDropdownOpen)]="open"
+>
+  <span class="attribution-label">Content info</span>
+</button>
+
+<ng-template #content>
+  <section class="attribution-popover" aria-label="Content attribution">
+    <strong>{{ attribution.displayText || 'Source details' }}</strong>
+    <p>{{ attribution.tooltipText }}</p>
+  </section>
+</ng-template>

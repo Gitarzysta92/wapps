@@ -1,6 +1,7 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: inline-flex;
   align-items: center;
+  gap: $space-1;
 }
-
-

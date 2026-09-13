@@ -1,5 +1,8 @@
 @if (!app.isLoading() && !app.value()) {
-  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 } @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
@@ -24,7 +27,7 @@
   @if (reviewsData.isLoading()) {
     <ui-page-meta-skeleton slot="meta" />
   }
-  @if (ratingStats(); as stats) {
+  @if (!reviewsData.error() && ratingStats(); as stats) {
     <ui-page-meta slot="meta">
       <div class="meta-rating">
         <app-rating [readonly]="true" [rating]="stats.average" />
@@ -35,6 +38,16 @@
   }
 </ui-page-header>
 
+@if (reviewsData.error()) {
+  <ui-content-state title="Could not load reviews" description="Try loading again, or return to the application overview." icon="@tui.circle-alert" [error]="true">
+    <button tuiButton type="button" size="m" (click)="reviewsData.reload()">Retry</button>
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'overview']">Back to overview</a>
+  </ui-content-state>
+} @else if (!reviewsData.isLoading() && (!reviewsData.value()?.reviews?.length)) {
+  <ui-content-state title="No reviews yet" description="Reviews will appear here when they are added to the catalog." icon="@tui.star">
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'overview']">Back to overview</a>
+  </ui-content-state>
+} @else {
 <!-- Rating Summary Section -->
 <section class="rating-summary-section">
   @if (reviewsData.isLoading()) {
@@ -149,4 +162,5 @@
   } @else if (!reviewsData.isLoading()) { <p role="status">All available reviews are shown.</p> }
 </section>
 
+}
 }

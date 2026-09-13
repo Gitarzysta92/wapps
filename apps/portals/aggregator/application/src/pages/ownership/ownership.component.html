@@ -1,9 +1,9 @@
-<ui-page-header>
+<ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">Ownership preparation</h1>
   <p slot="meta">Local notes only · Unverified · Not submitted</p>
 </ui-page-header>
-<section class="draft-panel">
+<section tuiAppearance="card-panel" class="draft-panel">
   <h2>Prepare information for {{ appSlug() || 'an application' }}</h2>
   <p>Ownership notes are saved in this browser. They are not submitted or verified.</p>
 </section>
@@ -15,7 +15,7 @@
   in My Apps.
 </p>
 } @else {
-<form class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
+<form tuiAppearance="card-panel" class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
   <h2>Unverified ownership notes</h2>
   <div class="draft-field">
     <tui-textfield

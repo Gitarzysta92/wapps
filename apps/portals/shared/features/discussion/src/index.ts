@@ -11,3 +11,7 @@ export { DiscussionSmallCardComponent } from './presentation/discussion-small-ca
 export { DiscussionMediumCardComponent } from './presentation/discussion-medium-card/discussion-medium-card.component';
 export { DiscussionSmallCardSkeletonComponent } from './presentation/discussion-small-card-skeleton/discussion-small-card-skeleton.component';
 export { DiscussionMediumCardSkeletonComponent } from './presentation/discussion-medium-card-skeleton/discussion-medium-card-skeleton.component';
+export { QuickDiscussionButtonComponent } from './presentation/quick-discussion/quick-discussion-button.component';
+export { QuickDiscussionDialogComponent } from './presentation/quick-discussion/quick-discussion-dialog.component';
+export { QuickDiscussionService, type QuickDiscussionData } from './presentation/quick-discussion/quick-discussion.service';
+export { LocalDiscussionReplyComponent } from './presentation/local-discussion-reply/local-discussion-reply.component';

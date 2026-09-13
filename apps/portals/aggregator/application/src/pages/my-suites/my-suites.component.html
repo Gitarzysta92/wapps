@@ -1,19 +1,26 @@
-<main class="my-suites-page">
-  <header><div><h1>My suites</h1><p>Your own collections of applications.</p></div><a tuiButton size="m" routerLink="/suites/create">Create a suite</a></header>
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">My suites</h1>
+  <p slot="meta" class="page-description">Your own collections of applications.</p>
+  <a slot="actions" tuiButton size="s" routerLink="/suites/create">Create a suite</a>
+</ui-page-header>
+<section class="my-suites-page">
   <p class="notice">Local drafts are stored in this browser only. They are not published or synced to your account, and clearing browser data removes them.</p>
   <div class="suite-grid">
     @for (suite of suites; track suite.slug) {
-      <article class="suite-card">
+      <ui-medium-card tuiAppearance="card-panel" class="suite-card">
         <tui-badge>Local draft</tui-badge>
-        <h2><a tuiLink [routerLink]="['/suites', suite.slug]">{{ suite.title }}</a></h2>
+        <h2 slot="header"><a tuiLink [routerLink]="['/suites', suite.slug]">{{ suite.title }}</a></h2>
         @if (suite.description) { <p class="description">{{ suite.description }}</p> }
         <div class="avatars">@for (app of suite.apps.slice(0, 5); track app.slug) { <tui-avatar [src]="app.logo" [attr.aria-label]="app.name" size="m" /> }</div>
         <p>{{ suite.apps.length }} {{ suite.apps.length === 1 ? 'application' : 'applications' }}</p>
         <a tuiLink [routerLink]="['/suites', suite.slug]">Open suite →</a>
-      </article>
+      </ui-medium-card>
     } @empty {
-      <section class="empty-state"><h2>No suites yet</h2><p>Choose a few applications and save your first collection.</p><a tuiLink routerLink="/suites/create">Create your first suite →</a></section>
+      <ui-content-state title="No suites yet" description="Choose a few applications and save your first collection." icon="@tui.layers">
+    <a tuiButton appearance="secondary" size="m" routerLink="/suites/create">Create your first suite</a>
+  </ui-content-state>
     }
   </div>
   <a tuiLink routerLink="/suites" class="browse-link">Browse all suites</a>
-</main>
+</section>

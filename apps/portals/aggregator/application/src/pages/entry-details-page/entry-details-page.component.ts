@@ -1,3 +1,4 @@
+import { ContentStateComponent } from '@ui/layout';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,7 +18,7 @@ type DetailState =
 @Component({
   selector: 'entry-details-page',
   standalone: true,
-  imports: [AsyncPipe, DatePipe, RouterLink, ReactiveFormsModule, TuiButton, TuiLink, TuiAvatar, TuiBadge, FavoriteToggleButtonComponent],
+  imports: [ContentStateComponent, AsyncPipe, DatePipe, RouterLink, ReactiveFormsModule, TuiButton, TuiLink, TuiAvatar, TuiBadge, FavoriteToggleButtonComponent],
   templateUrl: './entry-details-page.component.html',
   styleUrl: './entry-details-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

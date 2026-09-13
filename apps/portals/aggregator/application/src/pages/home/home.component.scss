@@ -26,6 +26,11 @@
   @media #{$layout-breakpoint-md} {
     position: relative;
     top: 0;
+
+    multi-search {
+      --ui-scroll-on-focus-enabled: 1;
+      scroll-margin-top: $space-4;
+    }
   }
   multi-search {
     width: 100%;

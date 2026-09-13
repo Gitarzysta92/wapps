@@ -1,3 +1,4 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
@@ -7,7 +8,7 @@ import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { RoutePathPipe } from '@ui/routing';
 import type { ApplicationReviewFeedItem } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent, AppRatingComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
@@ -31,10 +32,10 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     FeedLocalVoteComponent,
     MediumCardComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     MediumTitleComponent,
     AppAvatarComponent,
     AppRatingComponent,
@@ -71,7 +72,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="review-label">
-            review <tui-icon [style.height]="'14px'" icon="@tui.star" /> 
+            review <tui-icon [style.height]="'14px'" icon="@tui.star" />
           </span>
         </h3>
         <review-author-badge
@@ -79,39 +80,43 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           [reviewDate]="item.reviewDate">
           <profile-badges slot='badges' [badges]="item.reviewerBadges"></profile-badges>
         </review-author-badge>
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="applications"
-          [slug]="item.appSlug" [path]="item.appLink"
-          [title]="item.appName"
-        />
       </ui-card-header>
 
       <review-quote-short class="review-quote-short" [quote]="item.testimonial">
         <app-rating [readonly]="true" [rating]="item.rating"/>
       </review-quote-short>
 
-      <a
-        tuiButton 
-        size="s" 
-        appearance="primary"
-        [routerLink]="(ctaPath || '/apps/:appSlug/reviews') | routePath:{ appSlug: item.appSlug }">
-          <tui-icon icon="@tui.external-link"/>
-          View reviews
-      </a>
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      @if (item.discussionSlug; as discussionSlug) {
+        <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+      }
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      <ng-template #cardActions>
+        <share-toggle-button
+          appearance="action-soft"
+          size="s"
+          type="applications"
+          [slug]="item.appSlug"
+          [path]="item.appLink"
+          [title]="item.appName"
+        />
+        <a
+          tuiButton
+          size="s"
+          appearance="primary"
+          [routerLink]="ctaPath || '/apps/:appSlug/reviews' | routePath : { appSlug: item.appSlug }"
+        >
+          <tui-icon icon="@tui.external-link" />
+          View reviews
+        </a>
         <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
-      </ui-card-footer>
+      </ng-template>
     </ui-medium-card>
   `,
 })

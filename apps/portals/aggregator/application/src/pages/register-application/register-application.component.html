@@ -1,9 +1,9 @@
-<ui-page-header>
+<ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">{{ title() }}</h1>
   <p slot="meta">Prepare a local draft. Nothing is submitted or published.</p>
 </ui-page-header>
-<section class="draft-panel" aria-label="Local draft information">
+<section tuiAppearance="card-panel" class="draft-panel" aria-label="Local draft information">
   <p>Drafts are saved in this browser. They are not published.</p>
 </section>
 @if (store.error(); as error) {
@@ -14,7 +14,7 @@
   start a new one.
 </p>
 } @else {
-<form class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
+<form tuiAppearance="card-panel" class="draft-panel draft-form" [formGroup]="form" (ngSubmit)="save()">
   <h2>Application details</h2>
   <div class="draft-field">
     <tui-textfield

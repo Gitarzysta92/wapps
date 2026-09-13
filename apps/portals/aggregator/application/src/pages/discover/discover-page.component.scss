@@ -39,8 +39,14 @@
   box-sizing: border-box;
   min-width: 0;
 }
+.item-card {
+  // Keep offscreen results searchable without laying out and painting every card on entry.
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 18rem;
+}
 .item-card ui-card-header { margin-bottom: $space-4; }
-.item-card h3 { flex-wrap: wrap; gap: $space-2; overflow-wrap: anywhere; }
+.item-card h3 { display: block; overflow-wrap: anywhere; }
+.item-card h3 app-rating { margin-inline-start: $space-2; vertical-align: middle; }
 .article-preview { display: flex; align-items: flex-start; gap: $space-4; }
 .article-cover { width: $space-32; aspect-ratio: 4 / 3; flex-shrink: 0; border-radius: $radius-sm; }
 .article-summary { display: flex; flex-direction: column; gap: $space-3; min-width: 0; }

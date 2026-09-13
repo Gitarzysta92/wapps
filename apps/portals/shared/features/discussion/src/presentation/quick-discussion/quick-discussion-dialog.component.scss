@@ -1,0 +1,39 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  min-width: 0;
+  height: min(40rem, calc(100dvh - #{$space-32 * 2}));
+}
+
+.discussion-heading { flex-shrink: 0; }
+.discussion-heading { display: grid; gap: $space-2; }
+h3, p { margin: 0; }
+h3 { font-size: $font-size-lg; line-height: $line-height-tight; }
+.discussion-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: $space-2; }
+
+.discussion-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-inline-end: $space-2;
+  overflow-wrap: anywhere;
+}
+
+.discussion-meta { font-size: $font-size-sm; font-weight: $font-weight-regular; }
+
+@media #{$layout-breakpoint-sm} {
+  :host { height: calc(100dvh - #{$space-32}); }
+}
+
+@media (max-height: 600px) {
+  :host { height: auto; max-height: none; }
+  .discussion-body { flex: none; max-height: 40dvh; }
+}

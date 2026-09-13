@@ -6,6 +6,15 @@ tui-dropdowns {
   z-index: $z-popover;
 }
 
+// Keep the conversation readable and the composer reachable on narrow screens.
+@media #{$layout-breakpoint-sm} {
+  tui-dialog[data-appearance='quick-discussion'] {
+    border-width: $space-4;
+
+    .t-content { padding: $space-4; }
+  }
+}
+
 // The reserved scrollbar gutter needs a solid base beneath background images.
 html {
   background: var(--body-background);
@@ -400,6 +409,40 @@ body.dark {
   }
 }
 
+status-history {
+  .status-label { color: var(--tui-text-secondary); }
+  .status-dot.operational { background-color: var(--tui-status-positive); }
+  .status-dot.degraded { background-color: var(--tui-status-warning); }
+  .status-dot.outage { background-color: var(--tui-status-negative); }
+}
+
+// Menus reuse each action's behavior with a quiet, consistent row appearance.
+[tuiAppearance][data-appearance='action-menu'] [tuiButton] {
+  width: 100%;
+  justify-content: flex-start;
+  padding-inline: $space-3;
+  gap: $space-2;
+  min-height: $size-touch-min;
+  height: auto;
+  @include text($font-size-sm);
+  white-space: normal;
+  text-align: start;
+  color: var(--tui-text-primary);
+  background: transparent;
+  border-radius: $radius-sm;
+  box-shadow: none;
+  backdrop-filter: none;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--tui-background-neutral-1-hover);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--tui-background-neutral-1-pressed);
+  }
+}
+
 
 [tuiAppearance][data-appearance='primary-soft'] {
   color: var(--tui-text-primary-inverse);
@@ -443,6 +486,14 @@ body.dark {
 
 
 // Navigation theme and appearances
+[tuiAppearance][data-appearance='navigation-primary'],
+common-mobile-bottom-bar .mobile-bottom-nav__item,
+user-auxiliary-sidebar .navigation_section [tuiButton] {
+  &:not(.active):not([aria-current='page']):not(:hover):not(:focus) {
+    color: var(--tui-text-secondary);
+  }
+}
+
 :root,
 body.light,
 [tuiTheme='light'] {
@@ -456,6 +507,31 @@ body.dark,
   --main-menu-item-background: linear-gradient(90deg, #a800ff 0%, #4b49b6 50%, #6d169d);
   --main-menu-item-active-text: #{$color-white};
   --main-menu-item-hover-background: linear-gradient(to right, #{rgba($color-purple-600, 0.32)}, #{rgba($color-indigo-400, 0.14)} 50%, transparent);
+}
+
+common-mobile-bottom-bar {
+  backdrop-filter: blur(48px);
+}
+
+common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
+  color: var(--tui-text-primary);
+  background: none;
+
+  &.active {
+    color: var(--main-menu-item-active-text);
+    background: var(--main-menu-item-background);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.active) {
+      background: var(--main-menu-item-hover-background);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-border-focus);
+    outline-offset: 2px;
+  }
 }
 
 [tuiAppearance][data-appearance='navigation-primary'] {
@@ -516,17 +592,98 @@ body.dark,
 // Card Appearances
 // ============================================================================
 
-[tuiAppearance][data-appearance='card-elevated'] {
+article-highlight-feed-item {
+  .article-label,
+  .article-details-badge {
+    color: var(--tui-text-secondary);
+  }
+
+  .cover-image {
+    color: var(--tui-text-secondary);
+    border-radius: 10px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+    mask-size: 100% 100%;
+    mask-position: 0 0;
+    mask-repeat: no-repeat;
+  }
+}
+
+favorite-toggle-button .is-favorite::before {
+  color: var(--tui-status-warning);
+}
+
+[tuiAppearance][data-appearance='review-preview'] {
+  background: var(--tui-background-elevation-1);
+
+  @container card (max-width: 30rem) {
+    background: transparent;
+  }
+}
+
+[tuiAppearance][data-appearance='card-elevated'],
+[tuiAppearance][data-appearance='card-panel'],
+[tuiCardLarge][tuiAppearance][data-appearance='card-panel'] {
   background: var(--elevated-background);
   border: 1px solid var(--elevated-background-border, #{$color-border});
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
+}
+
+[tuiAppearance][data-appearance='card-elevated'] {
   @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: $shadow-lg;
     border-color: var(--tui-primary);
+  }
+}
+
+// Account forms share the catalog surface, without interactive card motion.
+:is(settings-profile-page, settings-preferences-page, settings-notifications-page, settings-privacy-page) {
+  .setting-item, .danger-action, .visibility-option {
+    background: var(--tui-background-elevation-1);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-md;
+  }
+
+  .setting-item--master { border-color: var(--tui-border-focus); }
+  .setting-item--disabled { opacity: 0.6; }
+
+  .visibility-option {
+    color: var(--tui-text-primary);
+    @include transition((background, border-color), $duration-200, $ease-in-out);
+
+    &:hover { background: var(--tui-background-neutral-1-hover); }
+    &[aria-pressed='true'] {
+      background: color-mix(in srgb, var(--tui-text-action) 12%, var(--tui-background-elevation-1));
+      border-color: var(--tui-border-focus);
+      .visibility-option__icon { color: var(--tui-text-action); }
+    }
+    &:focus-visible {
+      outline: $space-0_5 solid var(--tui-border-focus);
+      outline-offset: $space-1;
+    }
+  }
+
+  .settings-card--danger[tuiAppearance][data-appearance='card-panel'] { border-color: var(--tui-status-negative); }
+  .settings-card--danger .section-title--danger,
+  .section-title--danger .section-icon { color: var(--tui-text-negative); }
+  .settings-feedback { color: var(--tui-text-positive); }
+  .settings-feedback--error { color: var(--tui-text-negative); }
+}
+
+:is(my-apps-page, register-application-page, ownership-page) {
+  textarea {
+    color: var(--tui-text-primary);
+    background: var(--tui-background-base);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-md;
+  }
+  a { color: var(--tui-text-action); }
+  textarea:focus-visible, a:focus-visible {
+    outline: $space-0_5 solid var(--tui-border-focus);
+    outline-offset: $space-1;
   }
 }
 

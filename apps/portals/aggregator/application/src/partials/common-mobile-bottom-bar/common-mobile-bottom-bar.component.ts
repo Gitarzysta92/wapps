@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, Injector, Input, Type } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Injector, Input, Type } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { RouterModule, IsActiveMatchOptions } from '@angular/router';
+import { RouterModule, Router, IsActiveMatchOptions, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -33,18 +35,35 @@ export class CommonMobileBottomBarPartialComponent {
 
   @Input() navigationPrimary: NavigationDeclarationDto[] = [];
   @Input() navigationSecondary: NavigationDeclarationDto[] = [];
+  @Input() navigationActive: NavigationDeclarationDto | null = null;
   @Input() sheetDialog: CommonMobileBottomBarPanel | null = null;
 
   private readonly _dialogService = inject(TuiSheetDialogService);
   private readonly _injector = inject(Injector);
-  
+  private readonly router = inject(Router);
+
+  constructor() {
+    const changeDetector = inject(ChangeDetectorRef);
+    // The shell reuses this OnPush menu when route inputs are unchanged.
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed(),
+    ).subscribe(() => changeDetector.markForCheck());
+  }
+
+  public isActive(item: NavigationDeclarationDto): boolean {
+    return this.navigationActive
+      ? this.navigationActive.path === item.path
+      : this.router.isActive(item.path.startsWith('/') ? item.path : '/' + item.path, this.getRouterLinkActiveOptions(item.path));
+  }
+
   public trackByNavigationPath(_: number, item: NavigationDeclarationDto): string {
     return item.path;
   }
 
   public getRouterLinkActiveOptions(path: string): IsActiveMatchOptions {
     return {
-      paths: path === '' ? 'exact' : 'subset',
+      paths: path === '' || path === '/' ? 'exact' : 'subset',
       queryParams: 'ignored',
       fragment: 'ignored',
       matrixParams: 'ignored'
@@ -61,6 +80,3 @@ export class CommonMobileBottomBarPartialComponent {
     ).subscribe();
   }
 }
-
-
-

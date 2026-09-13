@@ -1,5 +1,11 @@
 @use 'ui/design-system/src/styles' as *;
 
+:host {
+  display: block;
+  min-width: 0;
+  container: discussion-post / inline-size;
+}
+
 .discussion-post {
   display: flex;
   flex-direction: column;
@@ -20,4 +26,16 @@
   margin-bottom: $space-4;
   display: flex;
   align-items: center;
+
+  @media #{$layout-breakpoint-md} {
+    --tui-height-s: #{$size-touch-min};
+    --tui-height-xs: #{$size-touch-min};
+  }
+}
+
+@container discussion-post (max-width: 30rem) {
+  .discussion-post-content,
+  .discussion-post-bottom-bar {
+    margin-left: $space-0;
+  }
 }
