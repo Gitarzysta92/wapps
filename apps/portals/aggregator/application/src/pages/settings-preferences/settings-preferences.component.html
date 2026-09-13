@@ -19,7 +19,7 @@
 @if (isLoading()) {
   <section class="settings-content" aria-label="Loading settings" aria-busy="true">
     @for (item of [1, 2, 3]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
     }
   </section>
 } @else if (isError()) {
@@ -34,7 +34,7 @@
     }
     <!-- Display Settings -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -132,7 +132,7 @@
 
     <!-- Content Settings -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >

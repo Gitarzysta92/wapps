@@ -1,0 +1,17 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host { display: flex; flex-direction: column; gap: $space-6; min-width: 0; }
+.profile-card [slot="header"] { margin-bottom: $space-4; }
+h2 { margin: 0; font-size: $font-size-lg; font-weight: $font-weight-bold; line-height: $line-height-tight; }
+p { margin: 0; line-height: $line-height-normal; }
+.profile-meta { color: var(--tui-text-secondary); font-size: $font-size-sm; }
+.profile-bio { white-space: pre-wrap; overflow-wrap: anywhere; }
+.profile-summary { display: flex; align-items: center; flex-wrap: wrap; gap: $space-4; }
+.profile-summary__details { flex: 1; min-width: 0; display: grid; gap: $space-2; overflow-wrap: anywhere; }
+@container card (max-width: 30rem) {
+  .profile-summary > a { flex-basis: 100%; }
+}
+.profile-links { display: flex; flex-wrap: wrap; gap: $space-3; }
+.profile-stats { display: flex; flex-wrap: wrap; gap: $space-8; margin: 0; }
+.profile-stats dt { color: var(--tui-text-secondary); }
+.profile-stats dd { font-size: $font-size-xl; font-weight: $font-weight-bold; margin: $space-2 0 0; }

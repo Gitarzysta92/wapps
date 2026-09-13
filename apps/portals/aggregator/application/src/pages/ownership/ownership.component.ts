@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TuiButton, TuiTextfield } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiTextfield } from '@taiga-ui/core';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import {
@@ -36,6 +36,7 @@ import {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    TuiAppearance,
     TuiButton,
     TuiTextfield,
     PageHeaderComponent,

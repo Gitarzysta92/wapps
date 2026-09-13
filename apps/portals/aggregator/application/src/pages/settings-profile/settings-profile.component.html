@@ -19,7 +19,7 @@
 @if (isLoading()) {
   <section class="settings-content" aria-label="Loading settings" aria-busy="true">
     @for (item of [1, 2, 3]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
     }
   </section>
 } @else if (isError()) {
@@ -33,7 +33,7 @@
       <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
     }
     <!-- Avatar Section -->
-    <div tuiAppearance="floating" tuiCardLarge class="settings-card avatar-card">
+    <div tuiAppearance="card-panel" tuiCardLarge class="settings-card avatar-card">
       <header class="settings-card-header">
         <h2 class="section-title">
           <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
@@ -65,7 +65,7 @@
 
     <!-- Basic Info Section -->
     <form
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       tuiForm="m"
       class="settings-card"
@@ -90,19 +90,23 @@
         />
       </tui-textfield>
 
-      <tui-textfield>
-        <label tuiLabel>Bio</label>
-        <textarea
-          tuiTextfield
-          placeholder="Tell others about yourself..."
-          [ngModel]="formData().bio"
-          (ngModelChange)="onFieldChange('bio', $event)"
-          name="bio"
-          maxlength="500"
-          rows="3"
-        ></textarea>
-        <span tuiHint>Maximum 500 characters</span>
-      </tui-textfield>
+      <div class="setting-info">
+        <tui-textfield>
+          <label tuiLabel>Bio</label>
+          <textarea
+            tuiTextarea
+            [min]="3"
+            [max]="6"
+            placeholder="Tell others about yourself..."
+            [ngModel]="formData().bio"
+            (ngModelChange)="onFieldChange('bio', $event)"
+            name="bio"
+            maxlength="500"
+            aria-describedby="bio-guidance"
+          ></textarea>
+        </tui-textfield>
+        <p id="bio-guidance" class="setting-description">Maximum 500 characters</p>
+      </div>
 
       <tui-textfield>
         <label tuiLabel>Location</label>
@@ -118,7 +122,7 @@
 
     <!-- Social Links Section -->
     <form
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       tuiForm="m"
       class="settings-card"

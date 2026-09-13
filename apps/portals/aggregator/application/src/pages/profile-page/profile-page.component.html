@@ -13,11 +13,11 @@
   </ui-content-state>
   }
 
-  <section aria-labelledby="members-title">
+  <section class="profile-directory-section" aria-labelledby="members-title">
     <h2 id="members-title">{{ profile() ? 'Other community members' : 'Available community members' }}</h2>
     <div class="profile-directory" [class.profile-directory--list]="preferences.defaultView() === 'list'">
       @for (member of otherProfiles(); track member.id) {
-        <a class="profile-member" [routerLink]="profilePath(member.id)">
+        <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="profilePath(member.id)">
           <tui-avatar [src]="member.avatar?.uri || ''" size="m">{{ member.name.slice(0, 2).toUpperCase() }}</tui-avatar>
           <span>{{ member.name }}</span>
           <tui-icon icon="@tui.chevron-right" />

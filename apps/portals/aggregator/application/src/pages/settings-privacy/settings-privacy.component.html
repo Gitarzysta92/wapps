@@ -19,7 +19,7 @@
 @if (isLoading()) {
   <section class="settings-content" aria-label="Loading settings" aria-busy="true">
     @for (item of [1, 2, 3]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
     }
   </section>
 } @else if (isError()) {
@@ -34,7 +34,7 @@
     }
     <!-- Profile Visibility -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -56,7 +56,7 @@
             @for (option of visibilityOptions; track option.value) {
               <button
                 class="visibility-option"
-                [class.visibility-option--selected]="privacyPreferences().profileVisibility === option.value"
+                type="button"
                 [attr.aria-pressed]="privacyPreferences().profileVisibility === option.value"
                 (click)="onVisibilityChange(option.value)"
               >
@@ -75,7 +75,7 @@
 
     <!-- Profile Information Visibility -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -189,7 +189,7 @@
 
     <!-- Data & Analytics -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card"
     >
@@ -239,7 +239,7 @@
 
     <!-- Danger Zone -->
     <div
-      tuiAppearance="floating"
+      tuiAppearance="card-panel"
       tuiCardLarge
       class="settings-card settings-card--danger"
     >

@@ -1,7 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiIcon, TuiButton, TuiAppearance } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { EXAMPLE_PROFILES } from '@portals/shared/data';
 import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
@@ -17,7 +17,7 @@ import { NAVIGATION } from '../../navigation';
   standalone: true,
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss',
-  imports: [TuiButton, ContentStateComponent, RouterLink, TuiIcon, TuiAvatar,
+  imports: [TuiAppearance, TuiButton, ContentStateComponent, RouterLink, TuiIcon, TuiAvatar,
     ProfileDetailsComponent, BreadcrumbsComponent, PageHeaderComponent, PageTitleComponent]
 })
 export class ProfilePageComponent implements routingDataConsumerFrom<IBreadcrumbRouteData> {

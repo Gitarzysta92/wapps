@@ -1,37 +1,17 @@
-<div class="my-discussions-page">
-  <div class="my-discussions-page__container">
-    <div class="my-discussions-page__header">
-      <h1 class="my-discussions-page__title">My Discussions</h1>
-      <p class="my-discussions-page__subtitle">Your local conversations, saved in this browser</p>
-    </div>
-
-    <div class="my-discussions-page__content">
-      <div 
-        tuiCardLarge
-        tuiAppearance="floating"
-        class="my-discussions-page__card"
-      >
-        <header tuiHeader class="my-discussions-page__card-header">
-          <h2 tuiTitle>Recent Discussions</h2>
-        </header>
-
-        @if (discussions().length > 0) {
-          <div class="my-discussions-page__list">
-            @for (discussion of discussions(); track discussion.id) {
-              <article>
-                <h3><a [routerLink]="['/apps', discussion.appSlug, 'discussions', discussion.slug]">{{ discussion.title }}</a></h3>
-                <p>{{ discussion.appName }} · {{ discussion.replies.length }} replies</p>
-              </article>
-            }
-          </div>
-        } @else {
-          <ui-content-state title="No discussions yet" description="Find an application and join a conversation. Your local discussions and replies will appear here." icon="@tui.messages-square">
-    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
-  </ui-content-state>
-        }
-      </div>
-    </div>
-  </div>
-</div>
-
-
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">My Discussions</h1>
+  <p slot="meta" class="page-description">Your local conversations, saved in this browser.</p>
+</ui-page-header>
+<section class="discussions-content" aria-label="Recent discussions">
+  @for (discussion of discussions(); track discussion.id) {
+    <ui-medium-card tuiAppearance="card-panel">
+      <h2 slot="header"><a tuiLink [routerLink]="['/apps', discussion.appSlug, 'discussions', discussion.slug]">{{ discussion.title }}</a></h2>
+      <p class="page-description">{{ discussion.appName }} · {{ discussion.replies.length }} {{ discussion.replies.length === 1 ? 'reply' : 'replies' }}</p>
+    </ui-medium-card>
+  } @empty {
+    <ui-content-state title="No discussions yet" description="Find an application and join a conversation. Your local discussions and replies will appear here." icon="@tui.messages-square">
+      <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    </ui-content-state>
+  }
+</section>

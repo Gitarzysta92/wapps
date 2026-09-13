@@ -11,7 +11,7 @@
 <div class="profile-content">
   @if (isLoading()) {
     @for (item of [1, 2]; track item) {
-      <div tuiCardLarge tuiAppearance="floating" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
+      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
     }
   } @else if (isError()) {
     <ui-content-state [error]="true" title="Could not read your local profile" description="Check browser storage access and try loading your profile again." icon="@tui.circle-alert">

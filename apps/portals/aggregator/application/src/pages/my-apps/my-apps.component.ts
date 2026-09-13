@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { TuiButton } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { PageHeaderComponent, PageTitleComponent,
   ContentStateComponent
 } from '@ui/layout';
@@ -31,6 +31,7 @@ import { LocalApplicationDraftsService } from './local-application-drafts.servic
     RouterLink,
     ContentStateComponent,
     DatePipe,
+    TuiAppearance,
     TuiButton,
     PageHeaderComponent,
     PageTitleComponent,
