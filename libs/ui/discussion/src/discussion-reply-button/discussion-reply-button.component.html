@@ -1,5 +1,8 @@
 <button
   tuiButton
+  type="button"
+  [attr.aria-expanded]="expanded()"
+  [attr.aria-label]="accessibleLabel() || label()"
   appearance="flat"
   size="xs"
   (click)="onReply()"

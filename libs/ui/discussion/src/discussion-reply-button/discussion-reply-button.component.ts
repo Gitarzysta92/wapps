@@ -17,6 +17,8 @@ import { TuiButton, TuiIcon } from '@taiga-ui/core';
 export class DiscussionReplyButtonComponent {
   public readonly replyCount = input<number>(0);
   public readonly label = input<string>('Reply');
+  public readonly expanded = input<boolean | null>(null);
+  public readonly accessibleLabel = input<string | null>(null);
   
   public readonly reply = output<void>();
 

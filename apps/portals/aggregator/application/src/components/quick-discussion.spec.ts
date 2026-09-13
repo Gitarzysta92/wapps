@@ -1,10 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { randomUUID } from 'node:crypto';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { LOCAL_APPLICATION_DATA, LocalDiscussionsService } from '@portals/shared/features/application-overview';
-import { QuickDiscussionDialogComponent, QuickDiscussionButtonComponent, QuickDiscussionService } from '@portals/shared/features/discussion';
+import { QuickDiscussionDialogComponent, QuickDiscussionButtonComponent, QuickDiscussionService, LocalDiscussionReplyComponent } from '@portals/shared/features/discussion';
 import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed';
 import { MyFavoritesService } from '@portals/shared/features/my-favorites';
 import { SharingService } from '@portals/shared/features/sharing';
@@ -32,7 +33,9 @@ async function createDialog(slug = discussionSlug, application = appSlug, localM
 }
 
 const originalUuid = Object.getOwnPropertyDescriptor(crypto, 'randomUUID');
-beforeAll(() => Object.defineProperty(crypto, 'randomUUID', { configurable: true, value: randomUUID }));
+beforeAll(() => {
+  Object.defineProperty(crypto, 'randomUUID', { configurable: true, value: randomUUID });
+});
 afterAll(() => {
   if (originalUuid) Object.defineProperty(crypto, 'randomUUID', originalUuid);
   else Reflect.deleteProperty(crypto, 'randomUUID');
@@ -40,27 +43,39 @@ afterAll(() => {
 beforeEach(() => localStorage.clear());
 afterEach(() => jest.restoreAllMocks());
 
-it('reads the canonical thread and blocks blank or oversized comments without showing an initial error', async () => {
+async function openReply(fixture: ComponentFixture<QuickDiscussionDialogComponent>, index = 0) {
+  const control = fixture.debugElement.queryAll(By.directive(LocalDiscussionReplyComponent))[index];
+  control.nativeElement.querySelector('button').click();
+  fixture.detectChanges();
+  await fixture.whenStable();
+  fixture.detectChanges();
+  return control.componentInstance as LocalDiscussionReplyComponent;
+}
+
+it('reads the thread and opens a validated editor under the selected reply', async () => {
   const fixture = await createDialog();
-  const dialog = fixture.componentInstance;
-  expect(fixture.nativeElement.textContent).toContain('How to integrate with external APIs?');
   const thread = fixture.nativeElement.querySelector('ui-discussion-thread');
   expect(thread.querySelectorAll('ui-discussion-post[role="article"]')).toHaveLength(3);
-  expect(thread.querySelector('[slot="opening-post"] ui-discussion-expandable-post-content').textContent).toContain('existing API infrastructure');
-  expect(thread.querySelectorAll('ui-discussion-post[slot="reply"]')).toHaveLength(2);
+  expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  const editor = await openReply(fixture, 1);
+  const post = thread.querySelectorAll('ui-discussion-post')[1];
+  expect(post.querySelector('form')).not.toBeNull();
+  expect(post.querySelector('textarea').getAttribute('aria-describedby')).toContain(editor.post().id);
+  expect(post.querySelector('label').textContent).toContain('Mike Johnson');
   expect(fixture.nativeElement.textContent).not.toContain('Value is invalid');
-  expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
   const save = jest.spyOn(TestBed.inject(LocalDiscussionsService), 'reply');
-  for (const content of ['   ', 'a'.repeat(5001)]) {
-    dialog.edit(content);
-    dialog.saveReply();
-    expect(dialog.canSubmit()).toBe(false);
+  for (const content of [null, '   ', 'a'.repeat(5001)]) {
+    editor.edit(content);
+    editor.saveReply();
+    expect(editor.canSubmit()).toBe(false);
   }
   expect(save).not.toHaveBeenCalled();
 });
 
-it('saves from the form, refreshes the feed counter and persists the reply for the full discussion page', async () => {
+it('persists the selected parent from the form and refreshes the feed counter', async () => {
   const fixture = await createDialog();
+  const editor = await openReply(fixture, 1);
+  const parentId = editor.post().id;
   const button = TestBed.createComponent(QuickDiscussionButtonComponent);
   button.componentRef.setInput('appSlug', appSlug);
   button.componentRef.setInput('discussionSlug', discussionSlug);
@@ -69,58 +84,78 @@ it('saves from the form, refreshes the feed counter and persists the reply for t
   const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('textarea');
   textarea.value = '  A helpful local reply.  ';
   textarea.dispatchEvent(new Event('input', { bubbles: true }));
-  fixture.detectChanges();
-  await fixture.whenStable();
+  fixture.detectChanges(); await fixture.whenStable();
   fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-  fixture.detectChanges();
-  await fixture.whenStable();
-  fixture.detectChanges();
+  fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
   button.detectChanges();
-  expect(fixture.componentInstance.reply()).toBe('');
-  expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('Comment saved');
-  expect(fixture.nativeElement.textContent).toContain('A helpful local reply.');
+  expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('Reply saved');
+  expect(fixture.nativeElement.textContent).toContain('In reply to Mike Johnson');
   expect(button.componentInstance.count()).toBe(3);
-  // A fresh instance reads the same record used by the full-page discussion.
   const persisted = new LocalDiscussionsService().threads(appSlug).find(thread => thread.slug === discussionSlug)!;
-  expect(persisted.replies.at(-1)?.content).toBe('A helpful local reply.');
+  expect(persisted.replies.at(-1)).toMatchObject({ content: 'A helpful local reply.', replyToId: parentId });
   expect(new LocalDiscussionsService().threads('quick-task')).toHaveLength(0);
   button.nativeElement.querySelector('button').click();
   expect(TestBed.inject(QuickDiscussionService).open).toHaveBeenCalledWith({ appSlug, discussionSlug });
 });
 
-it('retains the draft after a storage failure and saves only once when retried', async () => {
+it('keeps drafts attached to their posts when switching, and clears only a cancelled draft', async () => {
   const fixture = await createDialog();
-  const dialog = fixture.componentInstance;
-  dialog.edit('Keep this comment.');
-  const write = jest.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new Error('Quota exceeded'); });
-  dialog.saveReply();
+  const first = await openReply(fixture);
+  first.edit('Reply for Sarah.');
+  const second = await openReply(fixture, 1);
+  second.edit('Reply for Mike.');
+  expect(first.expanded()).toBe(false);
+  expect(fixture.nativeElement.querySelectorAll('form')).toHaveLength(1);
+  await openReply(fixture);
+  expect(fixture.nativeElement.querySelector('textarea').value).toBe('Reply for Sarah.');
+  fixture.nativeElement.querySelector('.composer-actions button[type="button"]').click();
   fixture.detectChanges();
-  expect(dialog.reply()).toBe('Keep this comment.');
-  expect(dialog.thread()?.replies).toHaveLength(2);
-  expect(fixture.nativeElement.textContent).toContain('Could not save on this device');
-  write.mockRestore();
-  dialog.saveReply();
-  expect(dialog.thread()?.replies).toHaveLength(3);
-  expect(dialog.saveError()).toBe('');
+  expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  await openReply(fixture);
+  expect(first.draft()).toBe('');
+  await openReply(fixture, 1);
+  expect(second.draft()).toBe('Reply for Mike.');
 });
 
-it('opens only the requested thread without an application discussion picker', async () => {
+it('retains the draft and target on storage failure, then saves only once on retry', async () => {
+  const fixture = await createDialog();
+  const editor = await openReply(fixture, 2);
+  editor.edit('Keep this reply.');
+  const write = jest.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new Error('Quota exceeded'); });
+  editor.saveReply(); fixture.detectChanges();
+  expect(editor.draft()).toBe('Keep this reply.');
+  expect(editor.expanded()).toBe(true);
+  expect(fixture.componentInstance.thread()?.replies).toHaveLength(2);
+  expect(fixture.nativeElement.textContent).toContain('Could not save on this device');
+  write.mockRestore();
+  editor.saveReply(); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+  expect(fixture.componentInstance.thread()?.replies).toHaveLength(3);
+  expect(fixture.componentInstance.thread()?.replies.at(-1)?.replyToId).toBe(editor.post().id);
+  expect(editor.saveError()).toBe('');
+});
+
+it('opens only the requested thread and saves a reply to its opening post', async () => {
   const fixture = await createDialog('oauth-implementation');
   expect(fixture.nativeElement.querySelector('h3').textContent).toBe('OAuth Implementation Best Practices');
   expect(fixture.nativeElement.textContent).not.toContain('All discussions');
-  expect(fixture.nativeElement.querySelectorAll('.discussion-option')).toHaveLength(0);
   expect(fixture.nativeElement.querySelector('a').getAttribute('href')).toBe('/apps/photo-snap/discussions/oauth-implementation');
-  fixture.componentInstance.edit('Only for the OAuth thread.');
-  fixture.componentInstance.saveReply();
+  const editor = await openReply(fixture);
+  editor.edit('Only for the OAuth thread.'); editor.saveReply();
   const threads = new LocalDiscussionsService().threads(appSlug);
-  expect(threads.find(thread => thread.slug === 'oauth-implementation')?.replies.at(-1)?.content).toBe('Only for the OAuth thread.');
+  expect(threads.find(thread => thread.slug === 'oauth-implementation')?.replies.at(-1)).toMatchObject({ content: 'Only for the OAuth thread.', replyToId: editor.post().id });
   expect(threads.find(thread => thread.slug === discussionSlug)?.replies).toHaveLength(2);
 });
 
-it.each([
-  [discussionSlug, 'quick-task'],
-  ['missing-thread', appSlug],
-])('does not fall back to other threads for %s in %s', async (slug, application) => {
+it('rejects a reply to a post from another thread without writing', () => {
+  const data = new LocalDiscussionsService();
+  const other = data.threads(appSlug).find(thread => thread.slug === 'oauth-implementation')!;
+  const write = jest.spyOn(Storage.prototype, 'setItem');
+  expect(() => data.reply(appSlug, discussionSlug, 'Wrong target', other.id)).toThrow('Reply target not found');
+  expect(write).not.toHaveBeenCalled();
+});
+
+it.each([[discussionSlug, 'quick-task'], ['missing-thread', appSlug]])('does not fall back to other threads for %s in %s', async (slug, application) => {
   const fixture = await createDialog(slug, application);
   expect(fixture.nativeElement.textContent).toContain('Discussion not found');
   expect(fixture.nativeElement.querySelector('form')).toBeNull();
@@ -131,9 +166,7 @@ it.each([
 
 it('does not offer local submission when local data is disabled', async () => {
   const fixture = await createDialog(discussionSlug, appSlug, false);
-  fixture.componentInstance.edit('Do not save');
-  fixture.componentInstance.saveReply();
-  expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  expect(fixture.nativeElement.querySelector('ui-discussion-reply-button, form')).toBeNull();
   expect(fixture.componentInstance.thread()?.replies).toHaveLength(2);
 });
 

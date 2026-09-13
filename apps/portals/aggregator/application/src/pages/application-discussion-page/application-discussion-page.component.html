@@ -57,40 +57,33 @@
           </ui-discussion-post-header>
           <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
 
-          <button slot="bottom-bar" tuiButton size="s" appearance="secondary" [disabled]="!localMode" (click)="composing.set(true)">Reply locally</button>
+          <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug()!" [discussionSlug]="topic.slug" [post]="topic"
+            [expanded]="activeReplyId() === topic.id" (expandedChange)="activeReplyId.set($event ? topic.id : null)" />
         </ui-discussion-post>
 
         <!-- Replies -->
-        <ui-discussion-post 
-          *ngFor="let reply of topic.replies" 
-          slot="reply" 
-          [post]="$any(reply)">
+        @for (reply of topic.replies; track reply.id) {
+        <ui-discussion-post slot="reply" [post]="reply">
           <ui-discussion-post-header 
             slot="header"
-            [authorName]="$any(reply).author.name"
-            [authorAvatarUrl]="$any(reply).author.avatar.url"
-            [publishedTime]="$any(reply).publishedTime">
+            [authorName]="reply.author.name"
+            [authorAvatarUrl]="reply.author.avatar.url"
+            [publishedTime]="reply.publishedTime"
+            [replyToName]="localData.replyTarget(topic, reply)?.author?.name ?? null">
             <div slot="user-badges"></div>
           </ui-discussion-post-header>
-          <ui-discussion-expandable-post-content slot="content" [content]="$any(reply).content" />
+          <ui-discussion-expandable-post-content slot="content" [content]="reply.content" />
 
-          <button slot="bottom-bar" tuiButton size="s" appearance="secondary" [disabled]="!localMode" (click)="composing.set(true)">Reply locally</button>
+          <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug()!" [discussionSlug]="topic.slug" [post]="reply"
+            [expanded]="activeReplyId() === reply.id" (expandedChange)="activeReplyId.set($event ? reply.id : null)" />
         </ui-discussion-post>
+        }
       </ui-discussion-thread>
     }
   }
 </section>
 
 
-@if (composing()) {
-  <form class="local-composer" (ngSubmit)="saveReply()">
-    <p>Replies are saved only in this browser and are not published.</p>
-    <label>Reply <textarea name="reply" [(ngModel)]="replyContent" required maxlength="5000" rows="5"></textarea></label>
-    @if (saveError) { <p role="alert">{{ saveError }}</p> }
-    <button tuiButton type="submit" [disabled]="!replyContent.trim()">Save Local Reply</button>
-    <button tuiButton type="button" appearance="secondary" (click)="composing.set(false)">Cancel</button>
-  </form>
-}
 @if (!localMode) { <p>Posting replies is unavailable here.</p> }
 <!-- Related discussions -->
 <section class="related-discussions">

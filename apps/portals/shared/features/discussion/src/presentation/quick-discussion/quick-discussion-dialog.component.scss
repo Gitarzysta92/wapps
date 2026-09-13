@@ -8,7 +8,7 @@
   height: min(40rem, calc(100dvh - #{$space-32 * 2}));
 }
 
-.discussion-heading, .discussion-composer { flex-shrink: 0; }
+.discussion-heading { flex-shrink: 0; }
 .discussion-heading { display: grid; gap: $space-2; }
 h3, p { margin: 0; }
 h3 { font-size: $font-size-lg; line-height: $line-height-tight; }
@@ -27,14 +27,10 @@ h3 { font-size: $font-size-lg; line-height: $line-height-tight; }
   overflow-wrap: anywhere;
 }
 
-.discussion-meta, .composer-actions p { font-size: $font-size-sm; font-weight: $font-weight-regular; }
-.discussion-composer { display: grid; gap: $space-2; }
-.composer-actions { display: flex; align-items: center; justify-content: space-between; gap: $space-3; }
+.discussion-meta { font-size: $font-size-sm; font-weight: $font-weight-regular; }
 
 @media #{$layout-breakpoint-sm} {
   :host { height: calc(100dvh - #{$space-32}); }
-  .composer-actions { flex-wrap: wrap; }
-  .composer-actions button { width: 100%; }
 }
 
 @media (max-height: 600px) {

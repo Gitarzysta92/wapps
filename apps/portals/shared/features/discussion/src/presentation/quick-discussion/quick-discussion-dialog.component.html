@@ -15,11 +15,15 @@
       <ui-discussion-post slot="opening-post" [post]="topic" role="article" aria-label="Opening post">
         <ui-discussion-post-header slot="header" [authorName]="topic.author.name" [authorAvatarUrl]="topic.author.avatar.url" [publishedTime]="topic.publishedTime" />
         <ui-discussion-expandable-post-content slot="content" [content]="topic.content" />
+        <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug" [discussionSlug]="topic.slug" [post]="topic"
+          [expanded]="activeReplyId() === topic.id" (expandedChange)="activeReplyId.set($event ? topic.id : null)" (replied)="scrollToLatest()" />
       </ui-discussion-post>
       @for (comment of topic.replies; track comment.id) {
         <ui-discussion-post slot="reply" [post]="comment" role="article" [attr.aria-label]="'Comment by ' + comment.author.name">
-          <ui-discussion-post-header slot="header" [authorName]="comment.author.name" [authorAvatarUrl]="comment.author.avatar.url" [publishedTime]="comment.publishedTime" />
+          <ui-discussion-post-header slot="header" [authorName]="comment.author.name" [authorAvatarUrl]="comment.author.avatar.url" [publishedTime]="comment.publishedTime" [replyToName]="data.replyTarget(topic, comment)?.author?.name ?? null" />
           <ui-discussion-expandable-post-content slot="content" [content]="comment.content" />
+          <discussion-local-reply slot="bottom-bar" [appSlug]="appSlug" [discussionSlug]="topic.slug" [post]="comment"
+            [expanded]="activeReplyId() === comment.id" (expandedChange)="activeReplyId.set($event ? comment.id : null)" (replied)="scrollToLatest()" />
         </ui-discussion-post>
       }
     </ui-discussion-thread>
@@ -33,22 +37,4 @@
   }
 </section>
 
-@if (thread()) {
-  @if (localMode) {
-    <form class="discussion-composer" (ngSubmit)="saveReply()">
-      <tui-textfield>
-        <label tuiLabel>Your comment</label>
-        <textarea tuiTextarea name="comment" [min]="2" [max]="4" maxlength="5000"
-          [ngModel]="reply()" (ngModelChange)="edit($event)" aria-describedby="quick-discussion-guidance"></textarea>
-      </tui-textfield>
-      <tui-error [error]="saveError() || null" />
-      <div class="composer-actions">
-        <p id="quick-discussion-guidance">Saved only in this browser. Up to 5,000 characters.</p>
-        <button tuiButton type="submit" size="m" [disabled]="!canSubmit()">Add comment locally</button>
-      </div>
-      @if (saved()) { <p role="status">Comment saved on this browser.</p> }
-    </form>
-  } @else {
-    <p>Posting comments is unavailable here.</p>
-  }
-}
+@if (thread() && !localMode) { <p>Posting comments is unavailable here.</p> }

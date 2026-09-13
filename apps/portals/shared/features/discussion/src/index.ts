@@ -14,3 +14,4 @@ export { DiscussionMediumCardSkeletonComponent } from './presentation/discussion
 export { QuickDiscussionButtonComponent } from './presentation/quick-discussion/quick-discussion-button.component';
 export { QuickDiscussionDialogComponent } from './presentation/quick-discussion/quick-discussion-dialog.component';
 export { QuickDiscussionService, type QuickDiscussionData } from './presentation/quick-discussion/quick-discussion.service';
+export { LocalDiscussionReplyComponent } from './presentation/local-discussion-reply/local-discussion-reply.component';

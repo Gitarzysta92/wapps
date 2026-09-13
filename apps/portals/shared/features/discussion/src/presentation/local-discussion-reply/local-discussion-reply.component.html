@@ -1,0 +1,19 @@
+@if (localMode) {
+  <ui-discussion-reply-button #trigger label="Reply locally" [accessibleLabel]="'Reply to ' + post().author.name" [expanded]="expanded()" (reply)="expanded.set(true)" />
+  @if (expanded()) {
+    <form class="discussion-composer" [attr.aria-label]="'Reply to ' + post().author.name" (ngSubmit)="saveReply()">
+      <tui-textfield>
+        <label tuiLabel>Reply to {{ post().author.name }}</label>
+        <textarea tuiTextarea tuiAutoFocus name="reply" [min]="2" [max]="4" maxlength="5000"
+          [ngModel]="draft()" (ngModelChange)="edit($event)" [attr.aria-describedby]="guidanceId()"></textarea>
+      </tui-textfield>
+      <tui-error [error]="saveError() || null" />
+      <p [id]="guidanceId()">Saved only in this browser. Up to 5,000 characters.</p>
+      <div class="composer-actions">
+        <button tuiButton type="button" size="s" appearance="flat" (click)="cancel()">Cancel</button>
+        <button tuiButton type="submit" size="s" [disabled]="!canSubmit()">Save local reply</button>
+      </div>
+    </form>
+  }
+  @if (saved()) { <p role="status">Reply saved on this browser.</p> }
+}
