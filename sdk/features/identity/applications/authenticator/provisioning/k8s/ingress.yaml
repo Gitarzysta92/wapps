@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authenticator-ingress
+  namespace: default
+  labels:
+    app: authenticator
+    app.kubernetes.io/name: authenticator
+    app.kubernetes.io/component: auth
+    app.kubernetes.io/part-of: platform
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: authenticator.host.placeholder  # Overridden by environment
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+

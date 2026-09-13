@@ -1,8 +1,9 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { delay, Observable, of } from "rxjs";
 import { 
   IAuthenticationHandler, 
+  CredentialsDto,
   AuthenticationProvider, 
   AuthenticationMethodDto 
 } from "@domains/identity/authentication";
@@ -17,7 +18,7 @@ export class AuthenticationApiService implements IAuthenticationHandler {
 
   private readonly _httpClient = inject(HttpClient);
   
-  public authenticate(c: { login: string, password: string }): Observable<Result<string, Error>> {
+  public authenticate(c: CredentialsDto): Observable<Result<string, Error>> {
     console.log('[MOCK] authenticate', c);
     if (c.password === 'test123') {
       return of({
@@ -72,10 +73,16 @@ export class AuthenticationApiService implements IAuthenticationHandler {
     ]).pipe(delay(200));
   }
 
-  public getRefreshedToken(currentToken: string): Observable<Result<string>> {
+  public refreshToken(currentToken?: string): Observable<Result<string, Error>> {
+    console.log('[MOCK] refreshToken', { hasCurrentToken: !!currentToken });
     return of({
       ok: true as const,
       value: `MOCK-REFRESHED-TOKEN-${Date.now()}`,
     }).pipe(delay(500));
+  }
+
+  // Backwards-compatible alias (docs/tests may still reference this name)
+  public getRefreshedToken(currentToken: string): Observable<Result<string, Error>> {
+    return this.refreshToken(currentToken);
   }
 }

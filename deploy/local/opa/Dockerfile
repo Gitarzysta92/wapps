@@ -1,6 +1,6 @@
 FROM node:22-bookworm-slim AS policies
 WORKDIR /policies
-COPY libs/utils/opa/bundles /bundles
+COPY sdk/features/identity/packages/infrastructure/opa/bundles /bundles
 COPY deploy/local/opa/merge-data.mjs /merge-data.mjs
 RUN node /merge-data.mjs
 

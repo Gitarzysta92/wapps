@@ -143,8 +143,8 @@ services:
       dockerfile: deploy/local/Dockerfile
       target: backend
       args:
-        NX_PROJECT: apps.services.discussion
-        OUTPUT_PATH: dist/apps/services/discussion
+        NX_PROJECT: sdk-features-discussion-applications-management
+        OUTPUT_PATH: dist/sdk/features/discussion/applications/management
     environment:
       NODE_ENV: development
       DISCUSSION_DATABASE_HOST: mysql
@@ -230,8 +230,8 @@ services:
       dockerfile: deploy/local/Dockerfile
       target: backend
       args:
-        NX_PROJECT: apps.services.account-management
-        OUTPUT_PATH: dist/apps/services/account-management
+        NX_PROJECT: sdk-features-identity-applications-management
+        OUTPUT_PATH: dist/sdk/features/identity/applications/management
     environment:
       NODE_ENV: development
       INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
@@ -285,8 +285,8 @@ services:
       dockerfile: deploy/local/Dockerfile
       target: backend
       args:
-        NX_PROJECT: apps.services.firebase-auth-validator
-        OUTPUT_PATH: dist/apps/services/firebase-auth-validator
+        NX_PROJECT: sdk-features-identity-applications-authenticator
+        OUTPUT_PATH: dist/sdk/features/identity/applications/authenticator
     environment:
       NODE_ENV: development
       INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
@@ -372,8 +372,8 @@ services:
       dockerfile: deploy/local/Dockerfile
       target: backend
       args:
-        NX_PROJECT: apps.services.discussion-materializer
-        OUTPUT_PATH: dist/apps/services/discussion-materializer
+        NX_PROJECT: sdk-features-discussion-applications-materializer
+        OUTPUT_PATH: dist/sdk/features/discussion/applications/materializer
     environment:
       NODE_ENV: development
       QUEUE_HOST: rabbitmq

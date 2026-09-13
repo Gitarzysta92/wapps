@@ -20,19 +20,19 @@
   ],
   "references": [
     {
-      "path": "../../../foundation/standard/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/standard/tsconfig.lib.json"
     },
     {
-      "path": "../../../foundation/content-system/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/ontology/content/tsconfig.lib.json"
     },
     {
-      "path": "../../../foundation/identity-system/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/ontology/identity/tsconfig.lib.json"
     },
     {
-      "path": "../../../foundation/authority-system/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/ontology/authority/tsconfig.lib.json"
     },
     {
-      "path": "../../../foundation/workflow-system/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/ontology/workflow/tsconfig.lib.json"
     }
   ]
 }

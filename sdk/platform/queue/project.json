@@ -1,0 +1,20 @@
+{
+  "name": "sdk-platform-queue",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "sdk/platform/queue/src",
+  "tags": ["type:platform", "scope:queue"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/sdk/platform/queue"],
+      "options": {
+        "command": "tsc --build sdk/platform/queue/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

@@ -28,7 +28,7 @@ export class AuthenticationService {
   public authenticate(c: CredentialsDto): Observable<Result<string | null, Error>> {
     return this._authenticationHandler.authenticate(c)
       .pipe(tap(r => {
-        console.log('authenticate result', r);
+
         if (r.ok) {
           this._tokenStorage.setToken(r.value);
         }
@@ -38,7 +38,7 @@ export class AuthenticationService {
   public authenticateWithProvider(provider: AuthenticationProvider): Observable<Result<string | null, Error>> {
     return this._authenticationHandler.authenticateWithProvider(provider)
       .pipe(tap(r => {
-        console.log('authenticateWithProvider result', provider, r);
+
         if (r.ok) {
           this._tokenStorage.setToken(r.value);
         }
@@ -50,6 +50,8 @@ export class AuthenticationService {
   }
 
   public unauthenticate(): void {
-    this._tokenStorage.clear();
+    const signOut = this._authenticationHandler.signOut?.();
+    if (signOut) signOut.subscribe({ next: () => this._tokenStorage.clear(), error: () => this._tokenStorage.clear() });
+    else this._tokenStorage.clear();
   }
 }

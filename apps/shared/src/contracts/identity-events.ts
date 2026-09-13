@@ -1,4 +1,4 @@
-import { EventEnvelope } from '@cross-cutting/events';
+import { EventEnvelope } from '@sdk/kernel/aspects/events';
 
 export const IDENTITY_EVENTS_QUEUE_NAME = 'identity-events';
 
@@ -17,3 +17,5 @@ export type IdentityDeletedEvent = EventEnvelope<
   { identityId: string; subjectId?: string; provider?: 'firebase' }
 >;
 
+
+export type IdentityAuthenticatedEvent = EventEnvelope<'identity.authenticated', { identityId: string; provider: string }>;

@@ -1,0 +1,58 @@
+{
+  "name": "sdk-features-identity-applications-management",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "sdk/features/identity/applications/management/service/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:platform", "layer:identity-admin"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/sdk/features/identity/applications/management",
+        "main": "sdk/features/identity/applications/management/service/src/main.ts",
+        "tsConfig": "sdk/features/identity/applications/management/service/tsconfig.app.json",
+        "webpackConfig": "sdk/features/identity/applications/management/service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "sourceMap": true
+        },
+        "production": {
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "sdk-features-identity-applications-management:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "sdk-features-identity-applications-management:build:development"
+        },
+        "production": {
+          "buildTarget": "sdk-features-identity-applications-management:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "sdk/features/identity/applications/management/service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

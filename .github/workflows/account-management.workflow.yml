@@ -4,7 +4,12 @@ on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/services/account-management/**'
+      - 'sdk/kernel/**'
+      - 'sdk/platform/**'
+      - 'sdk/extras/**'
+      - 'sdk/features/identity/**'
+      - 'apps/shared/**'
+      - 'sdk/features/identity/applications/management/service/**'
       - 'environments/dev/apps/account-management-kustomization/**'
       - 'argocd/applications/platform/account-management.yaml'
       - '.github/workflows/account-management.workflow.yml'
@@ -61,7 +66,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npx nx build apps.services.account-management --configuration=production
+        run: npx nx build sdk-features-identity-applications-management --configuration=production
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -76,8 +81,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: dist/apps/services/account-management
-          file: apps/services/account-management/Dockerfile
+          context: dist/sdk/features/identity/applications/management
+          file: sdk/features/identity/applications/management/service/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha

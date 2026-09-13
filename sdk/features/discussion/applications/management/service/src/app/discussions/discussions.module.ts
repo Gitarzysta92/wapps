@@ -1,0 +1,76 @@
+import { Inject, Module, OnModuleInit } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { DiscussionsController } from './discussions.controller';
+import { DiscussionsService } from './discussions.service';
+import { MinioClient } from '../infrastructure/minio-client';
+import { IQueueChannel } from '@sdk/platform/queue';
+import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
+import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussion-payload.repository';
+import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
+import { ContentNodeEntity } from './infrastructure/content-node.entity';
+import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
+import { CommentLikeEntity } from './infrastructure/comment-like.entity';
+import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity, CommentLikeEntity])],
+  controllers: [DiscussionsController],
+  providers: [
+    DiscussionsService,
+    MysqlContentNodeRepository,
+    {
+      provide: MinioClient,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) =>
+        new MinioClient({
+          host: config.get('DISCUSSION_STORAGE_HOST') as string,
+          accessKey: config.get('DISCUSSION_STORAGE_ACCESSKEY') as string,
+          secretKey: config.get('DISCUSSION_STORAGE_SECRETKEY') as string,
+        }),
+    },
+    {
+      provide: RabbitMqQueueClient,
+      useFactory: () => new RabbitMqQueueClient(),
+    },
+    {
+      provide: PlatformMongoClient,
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const client = new PlatformMongoClient();
+        await client.connect({
+          host: config.get('MONGO_HOST') as string,
+          port: config.get('MONGO_PORT') as string,
+          username: config.get('MONGO_USERNAME') as string,
+          password: config.get('MONGO_PASSWORD') as string,
+          database: config.get('MONGO_DATABASE') as string,
+        });
+        return client;
+      },
+    },
+    {
+      provide: 'DISCUSSION_QUEUE',
+      inject: [RabbitMqQueueClient, ConfigService],
+      useFactory: async (client: RabbitMqQueueClient, config: ConfigService): Promise<IQueueChannel> =>
+        client.connect({
+          host: config.get('QUEUE_HOST') as string,
+          port: config.get('QUEUE_PORT') as string,
+          username: config.get('QUEUE_USERNAME') as string,
+          password: config.get('QUEUE_PASSWORD') as string,
+        }),
+    },
+  ],
+  exports: [DiscussionsService],
+})
+export class DiscussionsModule implements OnModuleInit {
+  constructor(
+    private readonly minioClient: MinioClient,
+    @Inject('DISCUSSION_QUEUE') private readonly queue: IQueueChannel
+  ) {}
+
+  async onModuleInit() {
+    await this.minioClient.ensureBucket(DISCUSSION_CONTENT_BUCKET_NAME);
+    await this.queue.assertQueue(DISCUSSION_PROJECTION_QUEUE_NAME);
+  }
+}

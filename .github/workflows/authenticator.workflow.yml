@@ -1,0 +1,295 @@
+name: 'Authenticator - Build & Deploy'
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'sdk/kernel/**'
+      - 'sdk/platform/**'
+      - 'sdk/extras/**'
+      - 'sdk/features/identity/**'
+      - 'apps/shared/**'
+      - 'sdk/features/identity/applications/authenticator/service/**'
+      - 'environments/dev/apps/authenticator-kustomization/**'
+      - '.github/workflows/authenticator.workflow.yml'
+      - '.github/actions/deploy-to-argocd/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  SERVICE_NAME: authenticator
+  REGISTRY: ghcr.io
+  IMAGE_NAME: gitarzysta92/wapps/authenticator
+
+jobs:
+  build:
+    name: 'Build Docker Image'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ENV="development"
+          else
+            ENV="development"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "Environment: ${ENV}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test authentication
+        run: npx nx run-many -t test -p sdk-features-identity-authentication,sdk-features-identity-applications-authenticator --runInBand
+
+      - name: Build application
+        run: npx nx build sdk-features-identity-applications-authenticator --configuration=production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: gitarzysta92
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: dist/sdk/features/identity/applications/authenticator
+          file: sdk/features/identity/applications/authenticator/service/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image pushed
+        run: |
+          echo "✅ Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+  deploy:
+    name: 'Deploy to ${{ needs.build.outputs.environment }}'
+    runs-on: self-hosted
+    needs: build
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          ENV_SHORT=$(echo "$ENV" | cut -d'-' -f1)
+          echo "env_short=${ENV_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Set ArgoCD server
+          echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
+
+      - name: Configure authenticator database and queue
+        env:
+          MYSQL_HOST: ${{ vars.IDENTITY_MYSQL_HOST }}
+          MYSQL_PORT: ${{ vars.IDENTITY_MYSQL_PORT }}
+          MYSQL_DATABASE: ${{ vars.IDENTITY_MYSQL_DATABASE }}
+          MYSQL_USERNAME: ${{ secrets.IDENTITY_MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.IDENTITY_MYSQL_PASSWORD }}
+          QUEUE_HOST: ${{ vars.QUEUE_HOST }}
+          QUEUE_PORT: ${{ vars.QUEUE_PORT }}
+          QUEUE_USERNAME: ${{ secrets.QUEUE_USERNAME }}
+          QUEUE_PASSWORD: ${{ secrets.QUEUE_PASSWORD }}
+        run: |
+          set -eu
+          : "${MYSQL_HOST:?Set IDENTITY_MYSQL_HOST}"
+          : "${MYSQL_DATABASE:?Set IDENTITY_MYSQL_DATABASE}"
+          : "${MYSQL_USERNAME:?Set IDENTITY_MYSQL_USERNAME}"
+          : "${MYSQL_PASSWORD:?Set IDENTITY_MYSQL_PASSWORD}"
+          : "${QUEUE_HOST:?Set QUEUE_HOST}"
+          : "${QUEUE_USERNAME:?Set QUEUE_USERNAME}"
+          : "${QUEUE_PASSWORD:?Set QUEUE_PASSWORD}"
+          kubectl create secret generic authenticator-runtime \
+            --from-literal=MYSQL_HOST="$MYSQL_HOST" \
+            --from-literal=MYSQL_PORT="${MYSQL_PORT:-3306}" \
+            --from-literal=MYSQL_DATABASE="$MYSQL_DATABASE" \
+            --from-literal=MYSQL_USERNAME="$MYSQL_USERNAME" \
+            --from-literal=MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+            --from-literal=QUEUE_HOST="$QUEUE_HOST" \
+            --from-literal=QUEUE_PORT="${QUEUE_PORT:-5672}" \
+            --from-literal=QUEUE_USERNAME="$QUEUE_USERNAME" \
+            --from-literal=QUEUE_PASSWORD="$QUEUE_PASSWORD" \
+            --namespace=default --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Update Firebase config secret
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          ENV="${{ needs.build.outputs.environment }}"
+          
+          # Get Firebase Project ID from GitHub Secrets
+          if [ "${ENV}" == "production" ]; then
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_PROD }}"
+          else
+            FIREBASE_ID="${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
+          fi
+          FIREBASE_WEB_API_KEY="${{ secrets.FIREBASE_WEB_API_KEY }}"
+          GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
+          GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
+          
+          if [ -z "$FIREBASE_ID" ]; then
+            echo "::error::Firebase Project ID not configured for ${ENV} environment"
+            exit 1
+          fi
+          
+          if [ -z "$FIREBASE_WEB_API_KEY" ]; then
+            echo "::error::FIREBASE_WEB_API_KEY not configured (set FIREBASE_WEB_API_KEY secret)"
+            exit 1
+          fi
+
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT_JSON not configured (paste Firebase Admin SDK serviceAccount.json into this GitHub secret)"
+            exit 1
+          fi
+          
+          # Create or update secret
+          kubectl create secret generic firebase-config \
+            --from-literal=project-id="${FIREBASE_ID}" \
+            --from-literal=web-api-key="${FIREBASE_WEB_API_KEY}" \
+            ${GOOGLE_CLIENT_ID:+--from-literal=google-client-id="${GOOGLE_CLIENT_ID}"} \
+            ${GOOGLE_CLIENT_SECRET:+--from-literal=google-client-secret="${GOOGLE_CLIENT_SECRET}"} \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "✅ Firebase config secret updated"
+
+          # Create or update Firebase Admin SDK credentials secret (service account JSON)
+          TMP_JSON="$(mktemp)"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$TMP_JSON"
+          
+          kubectl create secret generic firebase-admin-credentials \
+            --from-file=serviceAccount.json="$TMP_JSON" \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          rm -f "$TMP_JSON"
+          echo "✅ Firebase Admin credentials secret updated"
+
+      - name: Install ArgoCD CLI
+        run: |
+          if ! command -v argocd &> /dev/null; then
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            chmod +x argocd-linux-amd64
+            mkdir -p $HOME/.local/bin
+            mv argocd-linux-amd64 $HOME/.local/bin/argocd
+            echo "$HOME/.local/bin" >> $PATH
+          fi
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ steps.env-vars.outputs.server }} \
+            --username ${{ secrets.ARGO_INITIAL_USERNAME }} \
+            --password ${{ secrets.ARGO_INITIAL_PASSWORD }} \
+            --insecure --grpc-web
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Triggering ArgoCD sync for authenticator..."
+          argocd app sync authenticator --force --grpc-web
+          
+          echo "Waiting for sync to complete..."
+          argocd app wait authenticator --timeout 300 --grpc-web
+          
+          echo "✅ ArgoCD sync completed"
+
+      - name: Restart deployment to pull latest image
+        run: |
+          echo "Restarting deployment to pull :latest image..."
+          kubectl rollout restart deployment/authenticator -n default
+          
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/authenticator -n default --timeout=300s
+          
+          echo "✅ Deployment restarted successfully"
+
+      - name: Apply environment configuration
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          # Apply authenticator environment kustomization
+          if [ -d "environments/${ENV_SHORT}/apps/authenticator-kustomization" ]; then
+            kubectl apply -k environments/${ENV_SHORT}/apps/authenticator-kustomization/
+            echo "✅ Environment configuration applied"
+          fi
+
+      - name: Apply network policies
+        run: |
+          ENV_SHORT="${{ steps.env-vars.outputs.env_short }}"
+          
+          if [ -f "environments/${ENV_SHORT}/platform/backend-network-policies.yaml" ]; then
+            kubectl apply -f environments/${ENV_SHORT}/platform/backend-network-policies.yaml
+            echo "✅ Network policies applied"
+          fi
+
+  summary:
+    name: 'Deployment Summary'
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Authenticator - Deployment Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Environment: ${{ needs.build.outputs.environment }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "Job Results:"
+          echo "  - Build: ${{ needs.build.result }}"
+          echo "  - Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Authenticator deployed successfully!"
+            echo ""
+            echo "Service endpoints:"
+            echo "  - Validate: http://authenticator.default.svc.cluster.local/validate"
+            echo "  - Validate Optional: http://authenticator.default.svc.cluster.local/validate-optional"
+            echo "  - Health: http://authenticator.default.svc.cluster.local/health"
+            echo "  - Swagger UI: http://api.authenticator.development.wapps.ai/api-docs"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Test with a Firebase token"
+            echo "  2. Check logs: kubectl logs -n default -l app=authenticator --tail=50"
+            echo "  3. Verify ingress: kubectl get ingress -n default"
+          else
+            echo "⚠️ Deployment completed with issues. Check logs above."
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

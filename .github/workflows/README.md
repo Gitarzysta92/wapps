@@ -1,12 +1,12 @@
 # GitHub Actions Workflows
 
-## Firebase Auth Validator Workflow
+## Authenticator Workflow
 
-**File:** `firebase-auth-validator.workflow.yml`
+**File:** `authenticator.workflow.yml`
 
 ### Purpose
 
-Builds and deploys the Firebase authentication validator service that replaces Kong API Gateway.
+Builds and deploys the Authenticator service (authentication BFF / token validation for ingress-nginx).
 
 ### Triggers
 
@@ -14,8 +14,8 @@ Builds and deploys the Firebase authentication validator service that replaces K
 - Push to `develop` → Deploys to development
 - Push to `main` → Deploys to production
 - Changes to:
-  - `apps/services/firebase-auth-validator/**`
-  - `environments/*/apps/catalog-bff-kustomization/**`
+  - `apps/services/authenticator/**`
+  - `environments/*/apps/authenticator-kustomization/**`
 
 **Manual:**
 - Workflow dispatch with environment selection
@@ -73,7 +73,7 @@ The workflow automatically publishes to GitHub Container Registry (ghcr.io). No 
 
 Images are published to:
 ```
-ghcr.io/YOUR_USERNAME/YOUR_REPO/firebase-auth-validator:latest
+ghcr.io/YOUR_USERNAME/YOUR_REPO/authenticator:latest
 ```
 
 #### 3. Configure Self-Hosted Runner
@@ -86,7 +86,7 @@ The deploy job uses `self-hosted` runner. Ensure your runner has:
 ### Manual Trigger
 
 1. Go to **Actions** tab in GitHub
-2. Select **"Firebase Auth Validator - Build & Deploy"**
+2. Select **"Authenticator - Build & Deploy"**
 3. Click **"Run workflow"**
 4. Choose environment: `development` or `production`
 5. Click **"Run workflow"**
@@ -94,18 +94,18 @@ The deploy job uses `self-hosted` runner. Ensure your runner has:
 ### Monitoring
 
 #### View Workflow Runs
-GitHub → Actions → "Firebase Auth Validator - Build & Deploy"
+GitHub → Actions → "Authenticator - Build & Deploy"
 
 #### Check Deployment
 ```bash
 # Check pods
-kubectl get pods -n default -l app=firebase-auth-validator
+kubectl get pods -n default -l app=authenticator
 
 # Check logs
-kubectl logs -n default -l app=firebase-auth-validator --tail=100 -f
+kubectl logs -n default -l app=authenticator --tail=100 -f
 
 # Test health endpoint
-kubectl port-forward -n default svc/firebase-auth-validator 8080:80
+kubectl port-forward -n default svc/authenticator 8080:80
 curl http://localhost:8080/health
 ```
 
@@ -113,13 +113,13 @@ curl http://localhost:8080/health
 ```bash
 # With valid Firebase token
 curl -H "Authorization: Bearer YOUR_FIREBASE_TOKEN" \
-  http://firebase-auth-validator.default.svc.cluster.local/validate
+  http://authenticator.default.svc.cluster.local/validate
 
 # Without token (should fail)
-curl http://firebase-auth-validator.default.svc.cluster.local/validate
+curl http://authenticator.default.svc.cluster.local/validate
 
 # Optional auth (should succeed)
-curl http://firebase-auth-validator.default.svc.cluster.local/validate-optional
+curl http://authenticator.default.svc.cluster.local/validate-optional
 ```
 
 ### Image Tags
@@ -162,32 +162,32 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Firebase Auth Validator - Deployment Summary
+Authenticator - Deployment Summary
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Environment: development
-Image: ghcr.io/your-org/your-repo/firebase-auth-validator:develop-abc123
+Image: ghcr.io/your-org/your-repo/authenticator:develop-abc123
 
 Job Results:
   - Build: success
   - Deploy: success
 
-✅ Firebase Auth Validator deployed successfully!
+✅ Authenticator deployed successfully!
 
 Service endpoints:
-  - Validate: http://firebase-auth-validator.default.svc.cluster.local/validate
-  - Validate Optional: http://firebase-auth-validator.default.svc.cluster.local/validate-optional
-  - Health: http://firebase-auth-validator.default.svc.cluster.local/health
+  - Validate: http://authenticator.default.svc.cluster.local/validate
+  - Validate Optional: http://authenticator.default.svc.cluster.local/validate-optional
+  - Health: http://authenticator.default.svc.cluster.local/health
 
 Next steps:
   1. Test with a Firebase token
-  2. Check logs: kubectl logs -n default -l app=firebase-auth-validator --tail=50
+  2. Check logs: kubectl logs -n default -l app=authenticator --tail=50
   3. Verify ingress: kubectl get ingress -n catalog
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-## Comparison: Kong vs Firebase Auth Validator
+## Comparison: Kong vs Authenticator
 
 ### Before (Kong)
 ```bash
@@ -199,7 +199,7 @@ Next steps:
 - Deal with Enterprise-only plugins
 ```
 
-### After (Firebase Auth Validator)
+### After (Authenticator)
 ```bash
 # New workflow:
 - Builds proper Docker image

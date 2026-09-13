@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/sdk/features/discussion/core",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../dist/sdk/features/discussion/core/tsconfig.lib.tsbuildinfo"
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../kernel/ontology/content/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../kernel/ontology/authority/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../kernel/ontology/workflow/tsconfig.lib.json"
+    }
+  ]
+}

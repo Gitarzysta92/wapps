@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/sdk/kernel/aspects/events",
+    "rootDir": "src",
+    "declaration": true,
+    "composite": true,
+    "types": ["node"],
+    "tsBuildInfoFile": "../../../../dist/sdk/kernel/aspects/events/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+}

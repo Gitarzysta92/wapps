@@ -1,0 +1,11 @@
+import { Result } from '@sdk/kernel/standard';
+import { Identity } from '@sdk/features/identity/core';
+import { IdentityCreationDto } from '../models/identity-creation.dto';
+
+export interface IIdentityProvider {
+  obtainIdentity(claim: string): Promise<Result<Identity | null, Error>>;
+  createIdentity(
+    identityCreationDto: IdentityCreationDto,
+    extras?: { activate?: boolean }
+  ): Promise<Result<Identity, Error>>;
+}

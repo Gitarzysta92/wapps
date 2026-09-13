@@ -10,7 +10,7 @@ ENV NG_BUILD_MAX_WORKERS=2 NODE_OPTIONS=--max-old-space-size=2048
 COPY apps ./apps
 COPY libs ./libs
 COPY data ./data
-COPY scripts ./scripts
+COPY sdk ./sdk
 COPY nx.json tsconfig.base.json eslint.config.mjs jest.config.ts jest.preset.js ./
 ARG NX_PROJECT
 ARG OUTPUT_PATH
