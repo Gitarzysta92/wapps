@@ -43,6 +43,7 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 import { FeedContainerComponent } from "@portals/shared/features/feed";
 import { IntroHeroComponent } from '@ui/intro-hero';
 import { DecorationFadeDirective, WobbleOutlineDirective } from '@ui/layout';
+import { ScrollOnFocusDirective } from '@ui/misc';
 import { NAVIGATION } from "../../navigation";
 import { FEED_ITEM_EXAMPLES } from '@portals/shared/data';
 
@@ -73,6 +74,7 @@ type RegisteredFeedItem = Array<
   imports: [
     CommonModule,
     MultiSearchComponent,
+    ScrollOnFocusDirective,
     HomeSearchResultsComponent,
     HomeRecentSearchesComponent,
     ArticleHighlightFeedItemComponent,

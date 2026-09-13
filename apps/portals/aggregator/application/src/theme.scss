@@ -474,11 +474,20 @@ common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
   color: var(--tui-text-primary);
   background: none;
 
-  &.active,
-  &:hover,
-  &:focus-visible {
+  &.active {
     color: var(--main-menu-item-active-text);
     background: var(--main-menu-item-background);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.active) {
+      background: var(--main-menu-item-hover-background);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-border-focus);
+    outline-offset: 2px;
   }
 }
 
