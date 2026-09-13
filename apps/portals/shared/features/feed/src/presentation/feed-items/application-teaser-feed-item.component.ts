@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent } from '@ui/layout';
 import { CoverImageComponent } from '@ui/cover-image';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiButton } from '@taiga-ui/core';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
 import type { AddTypeToArray } from '@foundation/standard';
 import {
@@ -42,7 +42,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     ElevatedCardComponent,
     CoverImageComponent,
     TuiButton,
-    TuiIcon,
     RouterLink,
     MediumCardComponent,
     MediumTitleComponent,
@@ -114,17 +113,15 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
 
         <ng-template #cardActions let-iconOnly="iconOnly">
-          <favorite-toggle-button [iconOnly]="iconOnly" type="applications" [slug]="item.appSlug" />
-          <a tuiButton size="s" appearance="primary" [routerLink]="item.appLink">
-            <tui-icon icon="@tui.grid" />
-            View application
-          </a>
+          <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="applications" [slug]="item.appSlug" />
           <feed-actions-menu [iconOnly]="iconOnly"
             [contextMenu]="item.contextMenu"
             [title]="item.title"
-            size="xs"
-            appearance="action-soft-flat"
           />
+          <a tuiButton size="s" appearance="primary" iconStart="@tui.arrow-right" [routerLink]="item.appLink"
+            [attr.aria-label]="'View application: ' + item.title">
+            View application
+          </a>
         </ng-template>
     </ui-medium-card>
 

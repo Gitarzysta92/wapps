@@ -137,20 +137,19 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <a
-          tuiButton
-          appearance="action-soft"
-          size="s"
-          [routerLink]="item.appLink"
-          [attr.aria-label]="'View application: ' + item.title"
-          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a
-        >
         <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
         />
+        <a
+          tuiButton
+          appearance="primary"
+          size="s"
+          iconStart="@tui.arrow-right"
+          [routerLink]="item.appLink"
+          [attr.aria-label]="'View status: ' + item.title"
+          >View status</a
+        >
       </ng-template>
     </ui-medium-card>
   `,

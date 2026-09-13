@@ -416,8 +416,12 @@ status-history {
   .status-dot.outage { background-color: var(--tui-status-negative); }
 }
 
+feed-actions-menu summary[tuiAppearance] {
+  border-radius: var(--tui-radius-s);
+}
+
 // Menus reuse each action's behavior with a quiet, consistent row appearance.
-[tuiAppearance][data-appearance='action-menu'] [tuiButton] {
+[tuiAppearance][data-appearance='action-menu'] :is([tuiButton], summary[tuiAppearance]) {
   width: 100%;
   justify-content: flex-start;
   padding-inline: $space-3;

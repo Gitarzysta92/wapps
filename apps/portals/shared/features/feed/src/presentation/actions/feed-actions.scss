@@ -1,11 +1,10 @@
 @use 'ui/design-system/src/styles' as *;
 :host { display: inline-block; max-width: 100%; }
 :host:empty { display: none; }
-summary { display: flex; align-items: center; gap: $space-2; list-style: none; cursor: pointer; @include text($font-size-sm); padding: $space-2; min-height: var(--tui-height-s); box-sizing: border-box; }
+summary { display: flex; align-items: center; gap: $space-2; list-style: none; cursor: pointer; font: var(--tui-font-text-s); padding: $space-2; min-height: var(--tui-height-s); box-sizing: border-box; }
 summary::-webkit-details-marker { display: none; }
 summary tui-icon { font-size: $font-size-md; }
 summary.icon-only { justify-content: center; width: var(--tui-height-s); padding: 0; }
-summary:focus-visible { @include focus-ring($color-primary-600); }
 .menu { display: flex; flex-direction: column; gap: $space-1; padding: $space-2; background: var(--tui-background-base); border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-md; }
 small { color: var(--tui-text-secondary); margin-inline: $space-1; }
 [role='group'] { display: flex; flex-wrap: wrap; align-items: center; gap: $space-1; }

@@ -65,17 +65,17 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" type="discussions" [slug]="item.discussionSlug" />
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="discussions" [slug]="item.discussionSlug" />
+        <feed-actions-menu [iconOnly]="iconOnly" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
         <a
           tuiButton
           size="s"
           appearance="primary"
-          iconStart="@tui.message-circle"
+          iconStart="@tui.arrow-right"
           [routerLink]="topicLink"
           [attr.aria-label]="'Open discussion: ' + item.discussionData.topic"
-          >Open full discussion</a
+          >Open discussion</a
         >
-        <feed-actions-menu [iconOnly]="iconOnly" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
       </ng-template>
     </ui-medium-card>
   `,

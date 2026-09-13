@@ -4,7 +4,7 @@
   [attr.tuiIconButton]="iconOnly ? '' : null"
   [attr.title]="iconOnly ? (isFav ? 'Remove from Favorites' : 'Add to Favorites') : null"
   type="button"
-  appearance="secondary"
+  [appearance]="appearance"
   size="s"
   iconStart="@tui.star"
   [class.is-favorite]="isFav"

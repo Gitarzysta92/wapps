@@ -129,17 +129,15 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" type="suites" [slug]="suiteSlug" />
-        <a tuiButton size="s" appearance="primary" [routerLink]="item.suiteLink">
-          <tui-icon icon="@tui.grid" />
-          Explore Suite
-        </a>
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="suites" [slug]="suiteSlug" />
         <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
         />
+        <a tuiButton size="s" appearance="primary" iconStart="@tui.arrow-right" [routerLink]="item.suiteLink"
+          [attr.aria-label]="'View suite: ' + item.suiteTitle">
+          View suite
+        </a>
       </ng-template>
     </ui-medium-card>
   `,

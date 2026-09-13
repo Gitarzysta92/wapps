@@ -90,21 +90,20 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" type="articles" [slug]="articleSlug" />
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="articles" [slug]="articleSlug" />
+        <feed-actions-menu [iconOnly]="iconOnly"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
+        />
         <a
           tuiButton
           appearance="primary"
           size="s"
+          iconStart="@tui.arrow-right"
           [routerLink]="item.articleLink"
           [attr.aria-label]="'Read article: ' + item.title"
-          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />Read article</a
+          >Read article</a
         >
-        <feed-actions-menu [iconOnly]="iconOnly"
-          [contextMenu]="item.contextMenu"
-          [title]="item.title"
-          size="xs"
-          appearance="action-soft-flat"
-        />
       </ng-template>
     </ui-medium-card>
   `,
