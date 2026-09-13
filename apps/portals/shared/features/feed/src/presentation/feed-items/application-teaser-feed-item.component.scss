@@ -1,0 +1,23 @@
+@use 'ui/design-system/src/styles' as *;
+
+.card-header {
+  padding: $space-4 0;
+}
+
+.elevated-card {
+  padding-top: 100px;
+}
+
+@media #{$layout-breakpoint-sm} {
+  .elevated-card {
+    padding: ($space-24 * 2) 0 0;
+  }
+
+  .medium-card {
+    padding-inline: $space-6;
+  }
+
+  .card-header {
+    padding: 0 0 $space-4;
+  }
+}

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
 import type { DiscussionTopicFeedItem } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
@@ -23,7 +23,7 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
   selector: DISCUSSION_TOPIC_FEED_ITEM_SELECTOR,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TuiButton, MediumCardComponent, CardHeaderComponent, CardFooterComponent, MediumTitleComponent, ShareToggleButtonComponent, FavoriteToggleButtonComponent, FeedAttributionComponent, FeedActionsMenuComponent, FeedDatePipe],
+  imports: [RouterLink, TuiButton, MediumCardComponent, CardHeaderComponent, MediumTitleComponent, ShareToggleButtonComponent, FavoriteToggleButtonComponent, FeedAttributionComponent, FeedActionsMenuComponent, FeedDatePipe],
   styleUrl: './discussion-preview.scss',
   template: `
     <ui-medium-card>
@@ -31,9 +31,8 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
         <h3 uiMediumTitle>{{ item.discussionData.topic || item.title }}</h3>
         <p>{{ item.participantsCount }} participants · {{ item.viewsCount }} views</p>
         <small>{{ item.timestamp | feedDate }}</small>
-        <favorite-toggle-button slot="right-side" type="discussions" [slug]="item.discussionSlug" />
-        <share-toggle-button slot="right-side" size="s" type="discussions" [slug]="item.discussionSlug" [title]="item.discussionData.topic || item.title" [path]="topicLink" />
       </ui-card-header>
+
       <div class="discussion-preview">
         @for (message of messages; track $index) {
           <article>
@@ -42,11 +41,28 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
           </article>
         } @empty { <p>No messages are available in this preview.</p> }
       </div>
-      <a tuiButton size="s" appearance="primary" [routerLink]="topicLink" [attr.aria-label]="'Open discussion: ' + item.discussionData.topic">Open discussion</a>
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <feed-actions-menu slot="right-side" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
-      </ui-card-footer>
+
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+
+      <ng-template #cardActions>
+        <favorite-toggle-button type="discussions" [slug]="item.discussionSlug" />
+        <share-toggle-button
+          size="s"
+          type="discussions"
+          [slug]="item.discussionSlug"
+          [title]="item.discussionData.topic || item.title"
+          [path]="topicLink"
+        />
+        <a
+          tuiButton
+          size="s"
+          appearance="primary"
+          [routerLink]="topicLink"
+          [attr.aria-label]="'Open discussion: ' + item.discussionData.topic"
+          >Open discussion</a
+        >
+        <feed-actions-menu [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
+      </ng-template>
     </ui-medium-card>
   `,
 })

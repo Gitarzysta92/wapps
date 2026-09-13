@@ -13,7 +13,7 @@ import { TuiButton } from '@taiga-ui/core';
       @if (allowDownvote) {
         <button tuiButton type="button" size="xs" appearance="flat" [attr.aria-pressed]="vote() === -1" [attr.aria-label]="'Downvote ' + title + ' locally'" (click)="choose(-1)">↓ {{ downvotes + (vote() === -1 ? 1 : 0) }}</button>
       }
-      <small>Local vote</small>
+      <small class="vote-scope">Local vote</small>
     </div>
     @if (message()) { <small role="status">{{ message() }}</small> }
   `,

@@ -443,6 +443,14 @@ body.dark {
 
 
 // Navigation theme and appearances
+[tuiAppearance][data-appearance='navigation-primary'],
+common-mobile-bottom-bar .mobile-bottom-nav__item,
+user-auxiliary-sidebar .navigation_section [tuiButton] {
+  &:not(.active):not([aria-current='page']):not(:hover):not(:focus) {
+    color: var(--tui-text-secondary);
+  }
+}
+
 :root,
 body.light,
 [tuiTheme='light'] {
@@ -515,6 +523,18 @@ body.dark,
 // ============================================================================
 // Card Appearances
 // ============================================================================
+
+favorite-toggle-button .is-favorite::before {
+  color: var(--tui-status-warning);
+}
+
+[tuiAppearance][data-appearance='review-preview'] {
+  background: var(--tui-background-elevation-1);
+
+  @container card (max-width: 30rem) {
+    background: transparent;
+  }
+}
 
 [tuiAppearance][data-appearance='card-elevated'] {
   background: var(--elevated-background);

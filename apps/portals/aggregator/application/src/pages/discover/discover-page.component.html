@@ -102,6 +102,7 @@
     <ui-card-header slot="header">
       <h3 uiMediumTitle><a class="result-link" [routerLink]="vm.articleLink">{{ vm.title }}</a></h3>
     </ui-card-header>
+
     <div class="article-preview">
       @if (vm.coverImageUrl?.url) {
         <ui-cover-image class="article-cover" [image]="vm.coverImageUrl" />
@@ -117,7 +118,6 @@
   </ui-medium-card>
 </ng-template>
 
-
 <ng-template #articleEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
     <ui-medium-card-skeleton>
@@ -129,9 +129,6 @@
   </ui-elevated-card-skeleton>
 </ng-template>
 
-
-
-
 <ng-template #applicationEntry let-vm="entry">
   <ui-medium-card class="item-card" tuiAppearance="card-elevated">
     <ui-card-header slot="header">
@@ -140,19 +137,19 @@
         <a class="result-link" [routerLink]="vm.applicationLink">{{ vm.title }}</a>
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
-      <ui-tags [tags]="vm.tags"></ui-tags>
-      <favorite-toggle-button type="applications" [slug]="vm.slug" slot="right-side"/>
     </ui-card-header>
+      <ng-template #cardActions><favorite-toggle-button type="applications" [slug]="vm.slug"/></ng-template>
+
+    @if (vm.tags.length) { <ui-tags [tags]="vm.tags" /> }
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
     @if (vm.topReview) {
-      <top-review-card slot="footer" [review]="vm.topReview">
+      <top-review-card slot="footer" [review]="vm.topReview" [detailsLink]="vm.reviewsLink">
         <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
       </top-review-card>
     }
   </ui-medium-card>
 </ng-template>
-
 
 <ng-template #applicationEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">
@@ -163,8 +160,6 @@
   </ui-elevated-card-skeleton>
 </ng-template>
 
-
-
 <ng-template #suiteEntry let-vm="entry">
   <ui-medium-card class="item-card" tuiAppearance="card-elevated">
     <ui-card-header slot="header">
@@ -172,20 +167,20 @@
         <a class="result-link" [routerLink]="vm.suiteLink">{{ vm.title }}</a>
         <app-rating [readonly]="true" [rating]="vm.rating"/>
       </h3>
-      <favorite-toggle-button type="suites" [slug]="vm.slug" slot="right-side"/>
     </ui-card-header>
+      <ng-template #cardActions><favorite-toggle-button type="suites" [slug]="vm.slug"/></ng-template>
+
     <ui-tags [tags]="vm.tags"></ui-tags>
     <suite-app-avatars [apps]="vm.applications"></suite-app-avatars>
     <app-voting-chip slot="bottom-bar" [voting]="vm.voting"></app-voting-chip>
     <discussion-chip slot="bottom-bar" [commentsCount]="vm.commentsNumber"></discussion-chip>
     @if (vm.topReview) {
-      <top-review-card slot="footer" [review]="vm.topReview">
+      <top-review-card slot="footer" [review]="vm.topReview" [detailsLink]="vm.suiteLink">
         <profile-badges slot='badges' [badges]="vm.topReview.authorBadges"></profile-badges>
       </top-review-card>
     }
   </ui-medium-card>
 </ng-template>
-
 
 <ng-template #suiteEntrySkeleton>
   <ui-elevated-card-skeleton class="item-card-skeleton">

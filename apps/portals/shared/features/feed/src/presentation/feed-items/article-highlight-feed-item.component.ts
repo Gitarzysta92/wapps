@@ -8,7 +8,7 @@ import { CoverImageComponent } from '@ui/cover-image';
 import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ArticleHighlightFeedItem } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, ElevatedCardComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, ElevatedCardComponent, MediumCardComponent } from '@ui/layout';
 import { ExcerptComponent, FadeOutExcerptComponent, MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { type ContextMenuItem } from '@ui/context-menu-chip';
@@ -16,7 +16,6 @@ import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { TagsComponent } from '@ui/tags';
 import { ArticleDetailsBadgeComponent } from '@portals/shared/features/articles';
-
 
 export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item';
 
@@ -40,7 +39,6 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
     ExcerptComponent,
     TagsComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     MediumTitleComponent,
     CoverImageComponent,
     ShareToggleButtonComponent,
@@ -102,16 +100,6 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
           </span>
         </h3>
         <article-details-badge class="article-details-badge" [article]="item" />
-        <favorite-toggle-button slot="right-side" type="articles" [slug]="articleSlug" />
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="articles"
-          [slug]="articleSlug" [path]="item.articleLink"
-          [title]="item.title"
-        />
-        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.articleLink" [attr.aria-label]="'Read article: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />Read article</a>
       </ui-card-header>
 
       <ui-cover-image
@@ -125,26 +113,35 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
         <ui-tags [tags]="item.tags ?? []"></ui-tags>
         <ui-excerpt [excerpt]="item.excerpt" [maxLength]="200" />
       </div>
-      
-      <a
-        tuiButton 
-        size="s" 
-        appearance="primary"
-        [routerLink]="item.articleLink">
-          <tui-icon icon="@tui.book-open-text"/>
-          Read Article
-      </a>
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <feed-local-vote slot="right-side" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
-        <span slot="right-side">{{ item.commentsCount || 0 }} comments</span>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
+      <span slot="bottom-bar">{{ item.commentsCount || 0 }} comments</span>
+
+      <ng-template #cardActions>
+        <favorite-toggle-button type="articles" [slug]="articleSlug" />
+        <share-toggle-button
+          appearance="action-soft"
+          size="s"
+          type="articles"
+          [slug]="articleSlug"
+          [path]="item.articleLink"
+          [title]="item.title"
+        />
+        <a
+          tuiButton
+          appearance="primary"
+          size="s"
+          [routerLink]="item.articleLink"
+          [attr.aria-label]="'Read article: ' + item.title"
+          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />Read article</a
+        >
         <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
-      </ui-card-footer>
+      </ng-template>
     </ui-medium-card>
   `,
 })

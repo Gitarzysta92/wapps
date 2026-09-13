@@ -7,7 +7,7 @@ import { NgIf, DatePipe } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import type { ApplicationHealthFeedItemDto } from '@domains/feed';
-import { CardHeaderComponent, CardFooterComponent, MediumCardComponent } from '@ui/layout';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
@@ -31,7 +31,6 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
     RouterLink,
     MediumCardComponent,
     CardHeaderComponent,
-    CardFooterComponent,
     MediumTitleComponent,
     AppAvatarComponent,
     ShareToggleButtonComponent,
@@ -101,23 +100,14 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           <health-check-badge
             [status]="{ code: item.overallStatus, message: item.statusMessage }"/>
         </div>
-        <share-toggle-button
-          appearance="action-soft"
-          slot="right-side"
-          size="s"
-          type="applications"
-          [slug]="item.appSlug" [path]="item.appLink"
-          [title]="item.title"
-        />
-        <a tuiButton appearance="action-soft" size="s" slot="right-side" [routerLink]="item.appLink" [attr.aria-label]="'View application: ' + item.title"><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a>
       </ui-card-header>
-      
+
       <status-history
         class="status-history"
         [statusesHistory]="item.statusesHistory" />
 
-      <ui-medium-card 
-        *ngIf="item.notice" 
+      <ui-medium-card
+        *ngIf="item.notice"
         class="notice-details"
         [class.warning]="item.notice.type === 1"
         [class.error]="item.notice.type === 2">
@@ -129,17 +119,33 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           <small style="opacity: 0.5">{{ item.notice.timestamp | date:'medium' }}</small>
         </div>
       </ui-medium-card>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+      <a tuiButton size="xs" appearance="flat" slot="bottom-bar" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open ' + (item.commentsNumber || 0) + ' discussions for ' + item.title"><tui-icon icon="@tui.message-circle" aria-hidden="true" />{{ item.commentsNumber || 0 }}</a>
 
-      <ui-card-footer slot="footer">
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="left-side" [attribution]="item.attribution" /> }
-        <a tuiButton size="xs" appearance="flat" slot="right-side" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open discussions for ' + item.title">Discussions ({{ item.commentsNumber || 0 }})</a>
+      <ng-template #cardActions>
+        <share-toggle-button
+          appearance="action-soft"
+          size="s"
+          type="applications"
+          [slug]="item.appSlug"
+          [path]="item.appLink"
+          [title]="item.title"
+        />
+        <a
+          tuiButton
+          appearance="action-soft"
+          size="s"
+          [routerLink]="item.appLink"
+          [attr.aria-label]="'View application: ' + item.title"
+          ><tui-icon icon="@tui.circle-arrow-right" aria-hidden="true" />View application</a
+        >
         <feed-actions-menu
-          slot="right-side"
-          [contextMenu]="item.contextMenu" [title]="item.title"
+          [contextMenu]="item.contextMenu"
+          [title]="item.title"
           size="xs"
           appearance="action-soft-flat"
         />
-      </ui-card-footer>
+      </ng-template>
     </ui-medium-card>
   `,
 })
