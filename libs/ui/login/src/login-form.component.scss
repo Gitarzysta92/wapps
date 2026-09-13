@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: block;
 }
@@ -5,20 +7,25 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $space-4;
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: $space-2;
 }
 
 .error-container {
-  font-size: 0.875rem;
-  color: var(--tui-negative);
+  font-size: $font-size-sm;
 }
 
-button[tuiButton] {
-  margin-top: 1rem;
+.password-recovery {
+  text-align: end;
+  font-size: $font-size-sm;
+}
+
+.error-container:empty,
+.password-recovery:empty {
+  display: none;
 }

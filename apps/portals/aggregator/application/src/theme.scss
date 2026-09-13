@@ -6,6 +6,28 @@ tui-dropdowns {
   z-index: $z-popover;
 }
 
+authentication-dialog .footer,
+login-container .divider {
+  color: var(--tui-text-secondary);
+}
+
+login-container .divider::before,
+login-container .divider::after {
+  border-color: var(--tui-border-normal);
+}
+
+login-form .error-container {
+  color: var(--tui-status-negative);
+}
+
+@media #{$layout-breakpoint-sm} {
+  tui-dialog[data-appearance='authentication'] {
+    border-width: $space-4;
+
+    .t-content { padding: $space-6; }
+  }
+}
+
 // Keep the conversation readable and the composer reachable on narrow screens.
 @media #{$layout-breakpoint-sm} {
   tui-dialog[data-appearance='quick-discussion'] {

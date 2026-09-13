@@ -1176,6 +1176,8 @@ export const routes: Routes = [
     ...tuiGenerateDialogableRoute(RoutableDialogComponent, {
       path: 'identity',
       outlet: 'dialog',
+      size: 's',
+      appearance: 'authentication',
     }),
     children: [
       {

@@ -1,16 +1,9 @@
-<div class="header">
-  <h2>Log in to account</h2>
-</div>
-<div class="content">
-  <login-container></login-container>
-</div>
-<div class="footer">
-  <ul>
-    <li>
-      <a tuiLink routedDialogButton="identity/recover">Forgot password</a>
-    </li>
-    <li>
-      Dont have an account yet? <a tuiLink routedDialogButton="identity/register">Sign up</a>
-    </li>
-  </ul>
-</div>
+<header class="header">
+  <h2 tuiTitle="m">Sign in to Wapps</h2>
+</header>
+<login-container>
+  <button slot="password-recovery" tuiLink type="button" routedDialogButton="identity/recover">Forgot password?</button>
+</login-container>
+<footer class="footer">
+  New to Wapps? <button tuiLink type="button" routedDialogButton="identity/register">Create an account</button>
+</footer>

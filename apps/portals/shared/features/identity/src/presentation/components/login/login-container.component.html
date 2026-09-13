@@ -1,8 +1,11 @@
 @if (showEmailPasswordForm) {
   <login-form #loginForm (onSubmit)="authenticate($event)">
+    <ng-content select="[slot='password-recovery']" ngProjectAs="[slot='password-recovery']" />
     <button
       tuiButton
       type="submit"
+      size="m"
+      appearance="primary"
       [disabled]="!loginForm.valid || isAuthenticating">
       <tui-loader
         class="loader"
@@ -15,7 +18,7 @@
 }
 
 @if (availableMethods$ | async; as methods) {
-  @if (showEmailPasswordForm && methods.length > 1) {
+  @if (showEmailPasswordForm && hasAlternativeMethods(methods)) {
     <div class="divider">
       <span>or continue with</span>
     </div>

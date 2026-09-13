@@ -1,9 +1,10 @@
 import { Component, inject, output } from "@angular/core";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from "@angular/forms";
-import { NgIf, NgFor } from '@angular/common';
+import { InputValidationComponent } from '@ui/form';
 import { LoginFormDto } from "./login-form.dto";
 import { VALIDATION_MESSAGES } from "./validation-messages.port";
-import { TuiTextfield } from "@taiga-ui/core";
+import { TuiIcon, TuiTextfield } from "@taiga-ui/core";
+import { TuiPassword } from '@taiga-ui/kit';
 
 
 
@@ -13,10 +14,11 @@ import { TuiTextfield } from "@taiga-ui/core";
   styleUrl: "login-form.component.scss",
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
+    InputValidationComponent,
     ReactiveFormsModule,
-    TuiTextfield
+    TuiTextfield,
+    TuiIcon,
+    TuiPassword
 ]
 })
 export class LoginFormComponent {
@@ -43,6 +45,11 @@ export class LoginFormComponent {
     if (this.loginForm.valid) {
       this.onSubmit.emit(this.loginForm.getRawValue() as any);
     }
+  }
+
+  public activatePasswordToggle(event: Event): void {
+    event.preventDefault();
+    (event.currentTarget as HTMLElement).click();
   }
 
 }

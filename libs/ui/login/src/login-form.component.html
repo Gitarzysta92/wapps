@@ -1,40 +1,24 @@
 <form [formGroup]="loginForm" (ngSubmit)="submitForm()">
   <div class="form-field">
-
     <tui-textfield iconStart="@tui.mail">
-      <input type="text"  tuiTextfield="email" formControlName="login"/>
+      <label tuiLabel>Email</label>
+      <input tuiTextfield type="email" autocomplete="username" formControlName="login" />
     </tui-textfield>
-    <div class="error-container">
-      <ng-container *ngFor="let validation of validationMessages.email">
-        <div
-          class="error-message"
-          *ngIf="
-            loginForm.get('login')?.hasError(validation.type) &&
-            (loginForm.get('login')?.dirty || loginForm.get('login')?.touched)
-          ">
-          {{ validation.message }}
-        </div>
-      </ng-container>
-    </div>
+    <input-validation class="error-container" aria-live="polite"
+      [control]="loginForm.controls.login" [messages]="validationMessages.email" />
   </div>
 
   <div class="form-field">
     <tui-textfield iconStart="@tui.lock">
-      <input type="password" tuiTextfield="password" formControlName="password"/>
+      <label tuiLabel>Password</label>
+      <input #password tuiTextfield type="password" autocomplete="current-password" formControlName="password" />
+      <tui-icon tuiPassword role="button" tabindex="0"
+        [attr.aria-label]="password.type === 'password' ? 'Show password' : 'Hide password'"
+        (keydown.enter)="activatePasswordToggle($event)" (keydown.space)="activatePasswordToggle($event)" />
     </tui-textfield>
-
-    <div class="error-container">
-      <ng-container *ngFor="let validation of validationMessages.password">
-        <div
-          class="error-message"
-          *ngIf="
-            loginForm.get('password')?.hasError(validation.type) &&
-            (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
-          ">
-          {{ validation.message }}
-        </div>
-      </ng-container>
-    </div>
+    <input-validation class="error-container" aria-live="polite"
+      [control]="loginForm.controls.password" [messages]="validationMessages.password" />
+    <div class="password-recovery"><ng-content select="[slot='password-recovery']" /></div>
   </div>
-  <ng-content select="button[type=submit]"></ng-content>
+  <ng-content select="button[type=submit]" />
 </form>

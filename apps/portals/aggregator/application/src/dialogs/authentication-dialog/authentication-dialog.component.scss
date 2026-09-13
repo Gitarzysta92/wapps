@@ -1,0 +1,16 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.header {
+  padding-inline-end: $space-8;
+}
+
+.footer {
+  @include text($font-size-sm);
+  text-align: center;
+}

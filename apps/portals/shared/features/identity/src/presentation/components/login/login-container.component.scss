@@ -1,7 +1,17 @@
 @use 'ui/design-system/src/styles' as *;
 
-login-form {
-  margin-bottom: $space-5;
+:host {
+  display: block;
+}
+
+button[type='submit'] {
+  width: 100%;
+}
+
+.loader {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .divider {
@@ -14,13 +24,13 @@ login-form {
   &::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid var(--tui-border-normal);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
   }
   
   span {
     padding: 0 $space-4;
-    color: var(--tui-text-secondary);
-    font-size: 0.875rem;
+    font-size: $font-size-sm;
   }
 }
 

@@ -51,8 +51,11 @@ export class LoginContainerComponent implements OnInit {
     });
   }
 
+  public hasAlternativeMethods(methods: AuthenticationMethodDto[]): boolean {
+    return methods.some(method => method.enabled && method.provider !== AuthenticationProvider.EMAIL_PASSWORD);
+  }
+
   public authenticate(c: CredentialsDto) {
-    console.log('authenticate', c);
     if (this.isAuthenticating) {
       return;
     }

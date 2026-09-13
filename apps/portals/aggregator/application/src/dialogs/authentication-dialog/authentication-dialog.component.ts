@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
-import { TuiLink } from "@taiga-ui/core";
+import { TuiLink, TuiTitle } from "@taiga-ui/core";
 import { RoutedDialogButton } from "@ui/routable-dialog";
 import { filter, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -8,6 +8,7 @@ import { AuthenticationService, LoginContainerComponent } from "@portals/shared/
 
 @Component({
   templateUrl: "authentication-dialog.component.html",
+  styleUrl: "authentication-dialog.component.scss",
   selector: 'authentication-dialog',
   host: {
     'data-component-id': 'auth-dialog',
@@ -16,7 +17,8 @@ import { AuthenticationService, LoginContainerComponent } from "@portals/shared/
   imports: [
     LoginContainerComponent,
     RoutedDialogButton,
-    TuiLink
+    TuiLink,
+    TuiTitle
   ]
 })
 export class AuthenticationDialogComponent implements OnInit, OnDestroy {
