@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
 import { TuiCardLarge, TuiForm } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { MY_PROFILE_VIEW_STATE_PROVIDER, MyProfileService } from '@portals/shared/features/my-profile';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
 import { SettingsNavigationComponent } from '../settings/settings-navigation.component';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 
@@ -16,6 +17,8 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
   styleUrl: 'settings-profile.component.scss',
   standalone: true,
   imports: [
+    RouterLink,
+    ContentStateComponent,
     SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
@@ -51,6 +54,8 @@ export class SettingsProfilePageComponent implements routingDataConsumerFrom<IBr
     linkedin: '',
     github: ''
   });
+
+  public reload(): void { this.profileService.reload(); }
 
   private readonly profileService = inject(MyProfileService);
   protected readonly avatarUri = signal('');

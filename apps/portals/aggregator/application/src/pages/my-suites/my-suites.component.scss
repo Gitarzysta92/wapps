@@ -6,7 +6,7 @@ header { display: flex; align-items: center; justify-content: space-between; fle
 h1 { @include text($font-size-3xl, $font-weight-bold); color: var(--tui-text-primary); margin: 0 0 $space-2; }
 h2 { @include text($font-size-xl, $font-weight-bold); overflow-wrap: anywhere; margin: $space-3 0; }
 p { line-height: 1.6; }
-.notice, .empty-state { background: var(--tui-background-neutral-1); border-radius: $radius-md; padding: $space-4; }
+.notice { background: var(--tui-background-neutral-1); border-radius: $radius-md; padding: $space-4; }
 .suite-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: $space-4; margin: $space-6 0; }
 .suite-card { padding: $space-5; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-lg; background: var(--tui-background-base); }
 .description { white-space: pre-line; overflow-wrap: anywhere; }

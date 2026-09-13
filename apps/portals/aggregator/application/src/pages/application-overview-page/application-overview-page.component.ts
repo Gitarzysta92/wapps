@@ -13,7 +13,8 @@ import {
   PageTitleComponent, 
   PageTitleSkeletonComponent,
   MediumCardSkeletonComponent,
-  MediumCardComponent
+  MediumCardComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { TagsComponent } from '@ui/tags';
 import { CoverImageComponent, type CoverImageDto } from '@ui/cover-image';
@@ -36,6 +37,7 @@ import {
   selector: 'app-application-overview-page',
   standalone: true,
   imports: [
+    ContentStateComponent,
     CommonModule, FavoriteToggleButtonComponent,
     RouterLink,
     RoutePathPipe,

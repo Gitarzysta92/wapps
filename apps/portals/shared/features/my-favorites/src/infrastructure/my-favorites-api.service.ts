@@ -14,10 +14,12 @@ const FAVORITE_TYPES: FavoriteType[] = ['applications', 'suites', 'articles', 'd
 @Injectable()
 export class MyFavoritesApiService implements IMyFavoritesProvider {
   private readonly document = inject(DOCUMENT);
-  private favorites = this.read();
-
   getMyFavorites(): Observable<Result<CustomerFavoritesDto>> {
-    return of({ ok: true, value: this.copy(this.favorites) });
+    try {
+      return of({ ok: true, value: this.read() });
+    } catch {
+      return of({ ok: false, error: new Error('Could not read favorites. Check browser storage access and try again.') });
+    }
   }
 
   addToFavorites(type: FavoriteType, slug: string): Observable<Result<boolean, Error>> {
@@ -32,13 +34,12 @@ export class MyFavoritesApiService implements IMyFavoritesProvider {
     if (!FAVORITE_TYPES.includes(type) || !slug.trim()) {
       return of({ ok: false, error: new Error('Choose an item to save.') });
     }
-    const next = this.copy(this.favorites);
-    next[type] = add ? [...new Set([...next[type], slug])] : next[type].filter(item => item !== slug);
     try {
+      const next = this.read();
+      next[type] = add ? [...new Set([...next[type], slug])] : next[type].filter(item => item !== slug);
       const storage = this.document.defaultView?.localStorage;
       if (!storage) throw new Error('Favorites storage is unavailable in this browser.');
       storage.setItem(STORAGE_KEY, JSON.stringify(next));
-      this.favorites = next;
       return of({ ok: true, value: true });
     } catch {
       return of({ ok: false, error: new Error('Could not save favorites. Check your browser storage settings and try again.') });
@@ -50,9 +51,10 @@ export class MyFavoritesApiService implements IMyFavoritesProvider {
       applications: APPLICATIONS.slice(0, 2).map(app => app.slug),
       suites: [], articles: [], discussions: [],
     };
+    // Storage access failures must reach the caller, not masquerade as demo favorites.
+    const saved = this.document.defaultView?.localStorage.getItem(STORAGE_KEY);
+    if (!saved) return defaults;
     try {
-      const saved = this.document.defaultView?.localStorage.getItem(STORAGE_KEY);
-      if (!saved) return defaults;
       const value: unknown = JSON.parse(saved);
       if (!value || typeof value !== 'object') return defaults;
       const result = { applications: [], suites: [], articles: [], discussions: [] } as CustomerFavoritesDto;
@@ -62,9 +64,5 @@ export class MyFavoritesApiService implements IMyFavoritesProvider {
       }
       return result;
     } catch { return defaults; }
-  }
-
-  private copy(value: CustomerFavoritesDto): CustomerFavoritesDto {
-    return { applications: [...value.applications], suites: [...value.suites], articles: [...value.articles], discussions: [...value.discussions] };
   }
 }

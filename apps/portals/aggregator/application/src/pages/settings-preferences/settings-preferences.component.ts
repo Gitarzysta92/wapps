@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { TuiSkeleton, TuiSwitch } from '@taiga-ui/kit';
 import { TuiCardLarge } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { PREFERENCES_STATE_PROVIDER, PreferencesService } from '@portals/shared/features/preferences';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
 import { SettingsNavigationComponent } from '../settings/settings-navigation.component';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
 import {
@@ -24,6 +25,8 @@ import {
   styleUrl: 'settings-preferences.component.scss',
   standalone: true,
   imports: [
+    RouterLink,
+    ContentStateComponent,
     SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
@@ -81,6 +84,8 @@ export class SettingsPreferencesPageComponent implements routingDataConsumerFrom
   // Form state
   protected readonly displayPreferences = signal({ ...DEFAULT_DISPLAY_PREFERENCES });
   protected readonly contentPreferences = signal({ ...DEFAULT_CONTENT_PREFERENCES });
+
+  public reload(): void { this.preferencesService.reload(); }
 
   private readonly preferencesService = inject(PreferencesService);
   protected readonly feedback = signal('');

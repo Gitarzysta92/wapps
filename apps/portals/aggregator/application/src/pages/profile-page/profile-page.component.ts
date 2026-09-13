@@ -1,16 +1,15 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TuiAppearance, TuiIcon } from '@taiga-ui/core';
+import { TuiIcon, TuiButton } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
-import { TuiCardLarge } from '@taiga-ui/layout';
 import { EXAMPLE_PROFILES } from '@portals/shared/data';
 import { MY_PROFILE_VIEW_STATE_PROVIDER } from '@portals/shared/features/my-profile';
 import { PreferencesService } from '@portals/shared/features/preferences';
 import { ProfileDetailsComponent } from './profile-details.component';
 import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
 import { NAVIGATION } from '../../navigation';
 
 @Component({
@@ -18,7 +17,7 @@ import { NAVIGATION } from '../../navigation';
   standalone: true,
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss',
-  imports: [RouterLink, TuiAppearance, TuiIcon, TuiAvatar, TuiCardLarge,
+  imports: [TuiButton, ContentStateComponent, RouterLink, TuiIcon, TuiAvatar,
     ProfileDetailsComponent, BreadcrumbsComponent, PageHeaderComponent, PageTitleComponent]
 })
 export class ProfilePageComponent implements routingDataConsumerFrom<IBreadcrumbRouteData> {

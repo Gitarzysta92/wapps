@@ -3,6 +3,10 @@
 
 @include page.page;
 
+.error-section {
+  @include page.content;
+}
+
 .settings-content {
   display: flex;
   flex-direction: column;

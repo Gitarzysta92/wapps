@@ -1,5 +1,8 @@
 @if (!app.isLoading() && !app.value()) {
-  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 } @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
@@ -99,7 +102,9 @@
           class="unpinned-discussion-card" />
       }
     } @else {
-      @if (!unpinnedDiscussions().length) { <p>No recent discussions yet.</p> }
+      @if (!unpinnedDiscussions().length) { <ui-content-state title="No recent discussions yet" description="Start a conversation about this application." icon="@tui.messages-square">
+    @if (localMode) { <button tuiButton type="button" size="m" appearance="secondary" (click)="composing.set(true)">Start a local discussion</button> }
+  </ui-content-state> }
       @for (discussion of unpinnedDiscussions(); track discussion.id) {
         <discussion-medium-card
           class="unpinned-discussion-card"

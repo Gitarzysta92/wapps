@@ -2,15 +2,8 @@
 
 .not-found {
   min-height: 100dvh;
-  padding: $space-8;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: $space-6;
-  text-align: center;
-  color: var(--tui-text-primary);
-  h1 { font-size: $font-size-xl; line-height: $line-height-tight; }
-  p { color: var(--tui-text-secondary); }
-  nav { display: flex; flex-wrap: wrap; justify-content: center; gap: $space-4; }
+  display: grid;
+  place-items: center;
+  padding: $space-4;
+  box-sizing: border-box;
 }

@@ -28,6 +28,8 @@ export class PreferencesService implements IPreferencesStateProvider {
     data: DEFAULT_CUSTOMER_PREFERENCES
   });
 
+  public reload(): void { this._preferencesUpdated$.next(); }
+
   public readonly state = this._state.asReadonly();
   public readonly display = computed(() => this._state().data.display);
   public readonly defaultView = computed(() => this.display().defaultView);

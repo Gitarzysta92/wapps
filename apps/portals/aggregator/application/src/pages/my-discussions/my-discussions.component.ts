@@ -1,6 +1,7 @@
+import { ContentStateComponent } from '@ui/layout';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiTitle, TuiAppearance } from '@taiga-ui/core';
+import { TuiTitle, TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
 import { LocalDiscussionsService } from '@portals/shared/features/application-overview';
 import { APPLICATIONS } from '@portals/shared/data';
@@ -10,7 +11,7 @@ import { APPLICATIONS } from '@portals/shared/data';
   templateUrl: 'my-discussions.component.html',
   styleUrl: 'my-discussions.component.scss',
   standalone: true,
-  imports: [TuiTitle, TuiAppearance, TuiCardLarge, TuiHeader, RouterLink]
+  imports: [TuiButton, ContentStateComponent, TuiTitle, TuiAppearance, TuiCardLarge, TuiHeader, RouterLink]
 })
 export class MyDiscussionsPageComponent {
   private readonly localData = inject(LocalDiscussionsService);

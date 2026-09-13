@@ -1,5 +1,7 @@
 @if ((!app.isLoading() && !app.value()) || (!discussion.isLoading() && !discussion.value())) {
-  <section tuiAppearance="card-elevated" role="status"><h1>Discussion not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Discussion not found" description="This conversation is unavailable. Browse other discussions or return to the catalog." icon="@tui.messages-square">
+    @if (app.value()) { <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'discussions']">Back to discussions</a> } <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+  </ui-content-state>
 } @else {
 <ui-page-header class="page-header">
   @if (discussion.isLoading() || app.isLoading()) {
@@ -130,6 +132,10 @@
             }
           </div>
         </ui-medium-card>
+      } @empty {
+        <ui-content-state title="No related discussions yet" description="Explore other conversations about this application." icon="@tui.messages-square">
+          <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'discussions']">All discussions</a>
+        </ui-content-state>
       }
     }
   </div>
@@ -172,7 +178,7 @@
             @if (!last) { <ui-divider spacing="compact" /> }
           </li>
         } @empty {
-          <li class="top-authors__empty">No authors yet.</li>
+          <li><ui-content-state title="No authors yet" description="Contributors will appear here as the conversation grows." icon="@tui.users" /></li>
         }
       }
     </ul>

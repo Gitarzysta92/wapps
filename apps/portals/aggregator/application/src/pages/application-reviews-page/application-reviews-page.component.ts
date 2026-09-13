@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { Component, inject, computed, input, signal, effect } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -13,7 +14,8 @@ import {
   PageMetaComponent,
   PageMetaSkeletonComponent,
   MediumCardComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
@@ -37,6 +39,8 @@ interface ReviewData {
   selector: 'app-application-reviews-page',
   standalone: true,
   imports: [
+    RouterLink,
+    ContentStateComponent,
     CommonModule,
     TuiButton,
     TuiIcon,
@@ -128,7 +132,7 @@ export class ApplicationReviewsPageComponent implements
 
   public readonly ratingStats = computed(() => {
     const data = this.reviewsData.value();
-    if (!data) return null;
+    if (!data?.reviews.length) return null;
     
     const totalReviews = data.reviews.length;
     const avgRating = data.reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews;

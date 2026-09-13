@@ -12,7 +12,9 @@
         <a tuiLink [routerLink]="['/suites', suite.slug]">Open suite →</a>
       </article>
     } @empty {
-      <section class="empty-state"><h2>No suites yet</h2><p>Choose a few applications and save your first collection.</p><a tuiLink routerLink="/suites/create">Create your first suite →</a></section>
+      <ui-content-state title="No suites yet" description="Choose a few applications and save your first collection." icon="@tui.layers">
+    <a tuiButton appearance="secondary" size="m" routerLink="/suites/create">Create your first suite</a>
+  </ui-content-state>
     }
   </div>
   <a tuiLink routerLink="/suites" class="browse-link">Browse all suites</a>

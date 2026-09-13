@@ -25,9 +25,9 @@
             }
           </div>
         } @else {
-          <div class="my-discussions-page__empty">
-            <p>No discussions yet. Start participating in conversations!</p>
-          </div>
+          <ui-content-state title="No discussions yet" description="Find an application and join a conversation. Your local discussions and replies will appear here." icon="@tui.messages-square">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+  </ui-content-state>
         }
       </div>
     </div>

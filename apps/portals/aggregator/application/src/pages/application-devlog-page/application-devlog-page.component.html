@@ -1,5 +1,8 @@
 @if (!app.isLoading() && !app.value()) {
-  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 } @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
@@ -30,6 +33,14 @@
   }
 </ui-page-header>
 
+@if (changelog.error()) {
+  <ui-content-state title="Could not load releases" description="Try loading the release history again." icon="@tui.circle-alert" [error]="true">
+    <button tuiButton type="button" size="m" (click)="changelog.reload()">Retry</button>
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'overview']">Back to overview</a>
+  </ui-content-state>
+} @else if (changelog.isLoading()) {
+  <p role="status">Loading releases…</p>
+} @else {
 @if (version()) {
   @if (selectedEntry(); as entry) {
     <section class="release-details" aria-label="Release notes">
@@ -52,11 +63,15 @@
       <div class="changelog-grid">
         @for (previous of previousEntries(); track previous.version) {
           <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: previous}" />
-        } @empty { <p>No previous releases.</p> }
+        } @empty { <ui-content-state title="No previous releases" description="This is the earliest release in the catalog." icon="@tui.git-commit">
+
+  </ui-content-state> }
       </div>
     </section>
   } @else if (!changelog.isLoading()) {
-    <section class="release-details" role="status"><h2>Release not found</h2><p>This version is not in the catalog.</p></section>
+    <ui-content-state title="Release not found" description="This version is not in the catalog. Choose a version from all releases below." icon="@tui.git-commit">
+
+  </ui-content-state>
   }
   <a tuiButton size="s" appearance="action-soft" [routerLink]="'/apps/' + appSlug() + '/devlog'">All releases</a>
 } @else {
@@ -65,7 +80,9 @@
     <div class="changelog-grid">
       @for (entry of visibleStableEntries(); track entry.version) {
         <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: entry}" />
-      } @empty { <p role="status">No stable releases available.</p> }
+      } @empty { <ui-content-state title="No stable releases available" description="Stable releases will appear here when they are added to the catalog." icon="@tui.git-commit">
+
+  </ui-content-state> }
     </div>
     @if (stableLimit() < stableEntries().length) {
       <button class="load-more" tuiButton type="button" size="s" appearance="action-soft" (click)="loadMore()">Load more</button>
@@ -76,7 +93,9 @@
     <div class="changelog-grid">
       @for (entry of otherEntries(); track entry.version) {
         <ng-container *ngTemplateOutlet="releaseCard; context: {$implicit: entry}" />
-      } @empty { <p role="status">No other releases available.</p> }
+      } @empty { <ui-content-state title="No other releases available" description="There are no prereleases in the catalog for this application." icon="@tui.git-commit">
+
+  </ui-content-state> }
     </div>
   </section>
 }
@@ -95,4 +114,5 @@
     <a slot="footer" tuiButton size="s" appearance="action-soft" [routerLink]="releasePath(entry.version)" [attr.aria-label]="'View release v' + entry.version">View release</a>
   </ui-medium-card>
 </ng-template>
+}
 }

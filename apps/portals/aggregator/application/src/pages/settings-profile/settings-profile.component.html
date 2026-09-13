@@ -23,9 +23,9 @@
     }
   </section>
 } @else if (isError()) {
-  <section class="error-section">
-    <p>Could not read the profile from this browser. Check storage access and reload to try again.</p>
-  </section>
+  <ui-content-state class="error-section" [error]="true" title="Could not load settings" description="Check browser storage access, then try again. Your saved settings have not been changed." icon="@tui.circle-alert">
+    <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/me/profile">Back to profile</a>
+  </ui-content-state>
 } @else {
   <section class="settings-content">
     <p class="page-description">Changes are saved only on this browser and update the profile shown in this app.</p>

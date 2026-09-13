@@ -31,7 +31,8 @@ import {
   ElevatedCardSkeletonComponent,
   MediumCardComponent,
   CardHeaderComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
 import {
@@ -53,6 +54,7 @@ import { TopReviewCardComponent } from '@portals/shared/features/review';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ContentStateComponent,
     CommonModule,
     RouterLink,
     SearchBarComponent,

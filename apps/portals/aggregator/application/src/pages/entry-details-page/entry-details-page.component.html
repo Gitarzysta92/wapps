@@ -31,7 +31,9 @@
                 }
               </section>
             } @empty {
-              <section class="empty-state"><h2>Full article unavailable</h2><p>Only the summary is available for this article.</p></section>
+              <ui-content-state title="Full article unavailable" description="Only the summary is available for this article." icon="@tui.newspaper">
+    <a tuiButton appearance="secondary" size="m" routerLink="/articles">All articles</a>
+  </ui-content-state>
             }
           </div>
         </article>
@@ -63,7 +65,9 @@
                 }
               </div>
             } @empty {
-              <div class="empty-state"><h3>No applications yet</h3><p>This collection does not contain any applications.</p><a tuiLink routerLink="/">Explore applications</a></div>
+              <ui-content-state title="No applications yet" description="This collection does not contain any applications." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Explore applications</a>
+  </ui-content-state>
             }
           </div>
         </section>
@@ -88,7 +92,9 @@
                   <tui-avatar [src]="app.logo" size="m" />
                   <span class="app-copy"><strong>{{ app.name }}</strong><span class="muted">{{ app.description }}</span></span>
                 </label>
-              } @empty { <p>No applications are available to add yet.</p> }
+              } @empty { <ui-content-state title="No applications available" description="Browse other collections while the application catalog is empty." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/suites">Browse suites</a>
+  </ui-content-state> }
             </div>
           </fieldset>
           @if (error()) { <p role="alert">{{ error() }}</p> }
@@ -99,7 +105,9 @@
         </form>
       }
       @case ('missing') {
-        <section class="empty-state"><h1>{{ state.label }} not found</h1><p>This content is unavailable or the link is no longer valid.</p><a tuiButton appearance="secondary" size="m" [routerLink]="state.back">Browse {{ state.label === 'Content' ? 'home' : state.label.toLowerCase() + 's' }}</a></section>
+        <ui-content-state [page]="true" title="{{ state.label }} not found" description="This content is unavailable or the link is no longer valid." icon="@tui.search-x">
+    <a tuiButton appearance="secondary" size="m" [routerLink]="state.back">Browse {{ state.label === 'Content' ? 'home' : state.label.toLowerCase() + 's' }}</a>
+  </ui-content-state>
       }
     }
   }

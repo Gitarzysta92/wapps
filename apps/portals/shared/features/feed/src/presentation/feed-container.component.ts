@@ -2,7 +2,10 @@ import { Component, ContentChild, inject, OnInit, TemplateRef } from "@angular/c
 import { NewsFeedService } from "./services/news-feed.service";
 import { ContentFeedComponent, ContentFeedItemVm } from '@ui/content-feed';
 import { AsyncPipe } from "@angular/common";
-import { map } from "rxjs";
+import { combineLatest, map } from "rxjs";
+import { RouterLink } from '@angular/router';
+import { TuiButton } from '@taiga-ui/core';
+import { ContentStateComponent } from '@ui/layout';
 import { IFeedItem } from "./models/feed-item.interface";
 
 @Component({
@@ -12,7 +15,7 @@ import { IFeedItem } from "./models/feed-item.interface";
   standalone: true,
   imports: [
     ContentFeedComponent,
-    AsyncPipe
+    AsyncPipe, RouterLink, TuiButton, ContentStateComponent
   ]
 })
 export class FeedContainerComponent implements OnInit {
@@ -23,6 +26,13 @@ export class FeedContainerComponent implements OnInit {
 
   public feedItems$ = this._newsFeedService.feedItems$
     .pipe(map(i => i as (IFeedItem & ContentFeedItemVm)[]));
+
+  readonly state$ = combineLatest({
+    items: this.feedItems$,
+    loading: this._newsFeedService.loading$,
+    loaded: this._newsFeedService.loaded$,
+    error: this._newsFeedService.error$,
+  });
 
   ngOnInit(): void {
     this.loadNextItems()

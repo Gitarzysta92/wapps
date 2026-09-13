@@ -13,5 +13,4 @@
   &__item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: $space-4; padding: $space-4 0; border-bottom: 1px solid var(--tui-border-normal); }
   &__item:last-child { border: 0; }
   a { color: var(--tui-text-action); overflow-wrap: anywhere; }
-  &__empty { padding: $space-4 0; }
 }

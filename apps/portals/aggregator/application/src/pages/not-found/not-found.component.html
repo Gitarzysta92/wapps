@@ -1,10 +1,5 @@
 <main class="not-found">
-  <tui-icon icon="@tui.compass" />
-  <p>404 · Page not found</p>
-  <h1>Let's find your next favorite app.</h1>
-  <p>This page may have moved, or the link is incomplete.</p>
-  <nav aria-label="Return to the portal">
-    <a tuiButton routerLink="/discover">Discover apps</a>
-    <a tuiButton appearance="secondary" routerLink="/">Back to Explore</a>
-  </nav>
+<ui-content-state [page]="true" title="Page not found" description="404 · This page may have moved, or the link is incomplete." icon="@tui.compass">
+    <a tuiButton appearance="secondary" size="m" routerLink="/discover">Discover apps</a><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 </main>

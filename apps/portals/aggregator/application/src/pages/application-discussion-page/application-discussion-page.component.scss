@@ -137,7 +137,6 @@
     span { display: inline-flex; align-items: center; gap: $space-1; }
     tui-icon { font-size: $size-icon-xs; }
   }
-  &__empty { color: var(--tui-text-secondary); }
 }
 
 .local-composer { display: grid; gap: 1rem; margin-block: 2rem; padding: 1.5rem; border-radius: 1rem; background: var(--tui-background-elevation-1); }

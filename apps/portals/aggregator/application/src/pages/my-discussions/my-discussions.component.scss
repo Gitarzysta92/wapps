@@ -73,15 +73,6 @@
     gap: $space-4;
   }
 
-  &__empty {
-    padding: $space-12;
-    text-align: center;
-    color: var(--alt-text-color);
-    font-size: $font-size-lg;
-    background: var(--tui-secondary);
-    border-radius: $radius-md;
-    border: 2px dashed var(--tui-neutral);
-  }
 }
 
 
