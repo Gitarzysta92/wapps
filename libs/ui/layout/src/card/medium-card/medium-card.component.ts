@@ -1,11 +1,34 @@
-import { ChangeDetectionStrategy, Component, ContentChild, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, ElementRef, inject, TemplateRef } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiDropdown } from '@taiga-ui/core';
+import { TUI_VIEWPORT, TuiAppearance, TuiButton, TuiDropdown, tuiDropdownOptionsProvider, TuiRectAccessor } from '@taiga-ui/core';
+
+function cardViewport(): TuiRectAccessor {
+  const element = inject(ElementRef<HTMLElement>).nativeElement;
+  const viewport = inject(TUI_VIEWPORT, { skipSelf: true });
+
+  return {
+    type: 'dropdown',
+    getClientRect: () => {
+      // Let Taiga position and scroll popovers within the visible part of this card.
+      const card = element.getBoundingClientRect();
+      const screen = viewport.getClientRect();
+      const left = Math.max(card.left, screen.left);
+      const top = Math.max(card.top, screen.top);
+      return new DOMRect(left, top,
+        Math.max(0, Math.min(card.right, screen.right) - left),
+        Math.max(0, Math.min(card.bottom, screen.bottom) - top));
+    },
+  };
+}
 
 @Component({
   selector: 'ui-medium-card',
   standalone: true,
-  imports: [NgTemplateOutlet, TuiButton, TuiDropdown],
+  imports: [NgTemplateOutlet, TuiAppearance, TuiButton, TuiDropdown],
+  providers: [
+    { provide: TUI_VIEWPORT, useFactory: cardViewport },
+    tuiDropdownOptionsProvider({ direction: 'top', minHeight: 0 }),
+  ],
   templateUrl: './medium-card.component.html',
   styleUrl: './medium-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

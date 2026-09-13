@@ -15,7 +15,9 @@
 
 .attribution-popover {
   box-sizing: border-box;
-  width: min($size-content-sm, calc(100vw - #{$space-8}));
+  width: 100%;
+  min-width: $size-content-xxs;
+  max-width: $size-content-sm;
   padding: $space-4;
   display: flex;
   flex-direction: column;
