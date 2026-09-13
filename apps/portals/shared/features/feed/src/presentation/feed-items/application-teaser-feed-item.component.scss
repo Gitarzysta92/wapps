@@ -1,23 +1,57 @@
 @use 'ui/design-system/src/styles' as *;
 
-.card-header {
-  padding: $space-4 0;
-}
-
 .elevated-card {
-  padding-top: 100px;
+  padding: ($space-24 * 2) 0 0;
 }
 
-@media #{$layout-breakpoint-sm} {
-  .elevated-card {
-    padding: ($space-24 * 2) 0 0;
-  }
+.cover-image {
+  height: $space-24 * 2;
+}
 
-  .medium-card {
-    padding-inline: $space-6;
-  }
+.application-panel {
+  padding-top: $space-4;
+}
 
-  .card-header {
-    padding: 0 0 $space-4;
+.card-header {
+  padding-bottom: $space-4;
+}
+
+.application-avatar {
+  position: relative;
+  // Taiga's xl avatar is 80px; its center sits on the cover/content boundary.
+  margin-top: -($space-4 + $space-10);
+}
+
+.avatar-image {
+  display: block;
+}
+
+.avatar-category {
+  position: absolute;
+  inset-block-start: $space-2;
+  inset-inline-start: calc(100% + #{$space-3});
+  width: max-content;
+}
+
+.application-title {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+
+  app-rating {
+    flex-shrink: 0;
+  }
+}
+
+.application-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media #{$layout-breakpoint-md} {
+  .application-favorite {
+    position: absolute;
+    inset-block-start: -($space-24 * 2) + $space-4;
+    inset-inline-end: $space-4;
   }
 }

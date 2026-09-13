@@ -56,24 +56,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
     FeedAttributionComponent,
   ],
   styleUrl: './application-teaser-feed-item.component.scss',
-  styles: [
-    `
-      .medium-card {
-        border-radius: 10px;
-      }
-      .medium-card, .card-footer {
-        background: var(--elevated-background);
-        border-radius: 10px;
-      }
-      .card-footer {
-        padding: 0.2rem 0;
-      }
-      .cover-image {
-        opacity: 0.3;
-        /* filter: blur(5px); */
-      }
-    `
-  ],
   template: `
     <ui-elevated-card class="elevated-card">
       <ui-cover-image
@@ -81,21 +63,24 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         [image]="item.coverImage"
         slot="backdrop">
       </ui-cover-image>
-      <ui-medium-card class="medium-card">
-        <app-category-chip
-          slot="top-edge"
-          [category]="item.category"
-        />
+      <ui-medium-card class="application-panel">
         <ui-card-header slot="header" class="card-header">
-          <app-avatar
-            slot="left-side"
-            [size]="'xl'"
-            [avatar]="{ url: item.coverImage.url, alt: item.appName }"
-          />
-          <h3 uiMediumTitle>
-            {{ item.appName }}
+          <div class="application-avatar" slot="left-side">
+            <app-avatar
+              class="avatar-image"
+              size="xl"
+              role="img"
+              [attr.aria-label]="item.appName"
+              [avatar]="{ url: item.coverImage.url, alt: item.appName }"
+            />
+            <app-category-chip class="avatar-category" [category]="item.category" size="xs" />
+          </div>
+          <div class="application-title">
+            <h3 uiMediumTitle class="application-name">{{ item.appName }}</h3>
             <app-rating [readonly]="true" [rating]="item.aggregatedScore"/>
-          </h3>
+          </div>
+          <favorite-toggle-button slot="right-side" class="application-favorite"
+            [iconOnly]="true" appearance="flat" type="applications" [slug]="item.appSlug" />
         </ui-card-header>
 
         <ui-tags [tags]="item.tags"></ui-tags>
@@ -113,7 +98,6 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
 
         <ng-template #cardActions let-iconOnly="iconOnly">
-          <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="applications" [slug]="item.appSlug" />
           <feed-actions-menu [iconOnly]="iconOnly"
             [contextMenu]="item.contextMenu"
             [title]="item.title"

@@ -596,6 +596,16 @@ common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
 // Card Appearances
 // ============================================================================
 
+application-teaser-feed-item {
+  .elevated-card,
+  .application-panel { background: var(--elevated-background); }
+
+  .avatar-image {
+    border-radius: 50%;
+    box-shadow: 0 0 0 $space-1 var(--tui-background-elevation-1);
+  }
+}
+
 article-highlight-feed-item {
   .article-label,
   .article-details-badge {
