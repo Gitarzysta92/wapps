@@ -5,12 +5,11 @@
   [attr.aria-label]="accessibleLabel() || label()"
   appearance="flat"
   size="xs"
+  iconStart="@tui.message-circle"
   (click)="onReply()"
-  class="reply-button"
 >
-  <tui-icon icon="@tui.message-circle" />
-  <span class="reply-label">{{ label() }}</span>
+  {{ label() }}
   @if (replyCount() > 0) {
-    <span class="reply-count">({{ replyCount() }})</span>
+    ({{ replyCount() }})
   }
 </button>
