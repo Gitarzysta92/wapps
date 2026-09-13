@@ -135,36 +135,17 @@
     @for (item of [1, 2, 3]; track item) { <ui-medium-card-skeleton /> }
   </div>
   } @else if (result.error()) {
-  <div class="catalog-empty" role="alert">
-    <h2>Could not load the catalog</h2>
-    <p>Please try again.</p>
-    <button
-      tuiButton
-      appearance="secondary"
-      type="button"
-      (click)="result.reload()"
-    >
-      Retry
-    </button>
-  </div>
+  <ui-content-state [error]="true" title="Could not load the catalog" description="Try loading again, or return to Explore." icon="@tui.circle-alert">
+    <button tuiButton type="button" size="m" (click)="result.reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
   } @else { @if (result.value(); as listing) {
   <p class="result-count" role="status">
     {{ listing.total }} {{ listing.total === 1 ? 'result' : 'results' }}
   </p>
   @if (!listing.total) {
-  <div class="catalog-empty">
-    <tui-icon icon="@tui.search" />
-    <h2>No results found</h2>
-    <p>Try a different search, category, or tag.</p>
-    <button
-      tuiButton
-      appearance="secondary"
-      type="button"
-      (click)="clearFilters()"
-    >
-      Browse all content
-    </button>
-  </div>
+  <ui-content-state title="No results found" description="Try a different search, category, or tag." icon="@tui.search">
+    <button tuiButton appearance="secondary" size="m" type="button" (click)="clearFilters()">Browse all content</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
   } @else {
   <div class="items-grid" [class.items-grid--list]="view() === 'list'">
     @for (item of cards(); track item.kind + item.slug) {

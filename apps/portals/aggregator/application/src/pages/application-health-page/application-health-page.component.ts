@@ -1,8 +1,9 @@
+import { RouterLink } from '@angular/router';
 import { Component, inject, computed, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
-import { TuiIcon, TuiAppearance } from '@taiga-ui/core';
+import { TuiIcon, TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import { AppRecordDto } from '@domains/catalog/record';
 import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
@@ -13,7 +14,8 @@ import {
   PageMetaComponent,
   PageMetaSkeletonComponent,
   MediumCardComponent,
-  MediumCardSkeletonComponent
+  MediumCardSkeletonComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { APPLICATIONS } from '@portals/shared/data';
@@ -32,6 +34,9 @@ import { ApplicationHealthStatusCode } from '@domains/feed';
   selector: 'app-application-health-page',
   standalone: true,
   imports: [
+    RouterLink,
+    TuiButton,
+    ContentStateComponent,
     CommonModule,
     TuiIcon,
     TuiBadge,

@@ -1,8 +1,9 @@
+import { ContentStateComponent } from '@ui/layout';
 import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
-import { FavoriteToggleButtonComponent, MY_FAVORITES_STATE_PROVIDER } from '@portals/shared/features/my-favorites';
+import { FavoriteToggleButtonComponent, MyFavoritesService, MY_FAVORITES_STATE_PROVIDER } from '@portals/shared/features/my-favorites';
 import { APPLICATIONS, DISCUSSIONS } from '@portals/shared/data';
 import { CustomerFavoritesDto } from '@domains/customer/favorites';
 import { map } from 'rxjs';
@@ -15,15 +16,19 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   templateUrl: 'favorites.component.html',
   styleUrl: 'favorites.component.scss',
   standalone: true,
-  imports: [AsyncPipe, RouterLink, TuiButton, FavoriteToggleButtonComponent],
+  imports: [ContentStateComponent, AsyncPipe, RouterLink, TuiButton, FavoriteToggleButtonComponent],
 })
 export class FavoritesPageComponent {
+  private readonly service = inject(MyFavoritesService);
+  reload(): void { this.service.reload(); }
   private readonly favorites = inject(MY_FAVORITES_STATE_PROVIDER);
   private readonly content = inject(EntryDetailsDataService);
   readonly groups$ = this.favorites.myFavorites$.pipe(map(state => ({
     isError: state.isError,
+    hasItems: Object.values(state.data).some(items => items.length > 0),
     groups: (['applications', 'suites', 'articles', 'discussions'] as const).map(type => ({
       type,
+      browse: { applications: '/app', articles: '/articles', suites: '/suites', discussions: '/app' }[type],
       title: type.charAt(0).toUpperCase() + type.slice(1),
       items: state.data[type].map(slug => this.resolve(type, slug)),
     })),

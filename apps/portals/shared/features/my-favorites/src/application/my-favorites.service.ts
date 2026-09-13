@@ -13,6 +13,8 @@ export class MyFavoritesService implements IMyFavoritesStateProvider {
   private readonly _myFavoritesProvider = inject<IMyFavoritesProvider>(MY_FAVORITES_PROVIDER);
   private readonly _favoritesUpdated$ = new Subject<void>();
 
+  public reload(): void { this._favoritesUpdated$.next(); }
+
   public myFavorites$: Observable<MyFavoritesState> = this._favoritesUpdated$.pipe(
     startWith(void 0),
     switchMap(() => this._myFavoritesProvider.getMyFavorites()),

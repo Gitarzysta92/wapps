@@ -121,13 +121,6 @@
 .item-facets a {
   overflow-wrap: anywhere;
 }
-.catalog-empty {
-  padding: $space-12 $space-6;
-  text-align: center;
-}
-.catalog-empty p {
-  color: var(--tui-text-secondary);
-}
 .pagination {
   display: flex;
   align-items: center;

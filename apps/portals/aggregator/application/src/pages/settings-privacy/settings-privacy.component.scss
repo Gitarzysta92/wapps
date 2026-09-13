@@ -7,15 +7,6 @@
   margin: 0;
 }
 
-.error-section {
-  padding: $space-8;
-  text-align: center;
-  color: var(--tui-negative);
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: $radius-md;
-  margin-top: $space-8;
-}
-
 .settings-card--danger {
   border: 1px solid var(--tui-negative);
   background: rgba(239, 68, 68, 0.02);

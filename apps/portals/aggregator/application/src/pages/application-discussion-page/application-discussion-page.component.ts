@@ -7,7 +7,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
 import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
-import { DividerComponent } from '@ui/layout';
+import { DividerComponent, ContentStateComponent } from '@ui/layout';
 import { 
   DiscussionPostComponent, 
   DiscussionThreadComponent,
@@ -39,6 +39,7 @@ import { replaceBreadcrumbLabels } from '../../utils/breadcrumb.utils';
   selector: 'app-discussion-page',
   standalone: true,
   imports: [
+    ContentStateComponent,
     CommonModule, FormsModule, RouterLink, TuiButton,
     SlicePipe,
     TuiAppearance,

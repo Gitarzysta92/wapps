@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiAppearance, TuiIcon, TuiLink } from '@taiga-ui/core';
+import { TuiAppearance, TuiIcon, TuiLink, TuiButton } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
 import { PreferredDatePipe } from '@portals/shared/features/preferences';
 import { NAVIGATION } from '../../navigation';
 import { buildDigestContent } from './digest-content';
@@ -11,7 +11,7 @@ import { buildDigestContent } from './digest-content';
 @Component({
   selector: 'digest-page',
   standalone: true,
-  imports: [RouterLink, TuiAppearance, TuiIcon, TuiLink, TuiAvatar, BreadcrumbsComponent,
+  imports: [TuiButton, ContentStateComponent, RouterLink, TuiAppearance, TuiIcon, TuiLink, TuiAvatar, BreadcrumbsComponent,
     PageHeaderComponent, PageTitleComponent, PreferredDatePipe],
   templateUrl: './digest-page.component.html',
   styleUrl: './digest-page.component.scss',

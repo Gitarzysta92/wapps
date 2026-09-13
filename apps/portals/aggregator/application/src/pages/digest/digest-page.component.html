@@ -18,7 +18,9 @@
         <time class="card-date" [attr.datetime]="item.timestamp.toISOString()">{{ item.timestamp | preferredDate }}</time>
       </a>
     } @empty {
-      <p class="empty-message">No recent activity yet. Explore the articles and applications below.</p>
+      <ui-content-state title="No recent activity yet" description="Explore the articles and applications below." icon="@tui.clock">
+
+  </ui-content-state>
     }
   </div>
 </section>
@@ -46,7 +48,9 @@
           </div>
         </div>
       </a>
-    } @empty { <p class="empty-message">No articles yet.</p> }
+    } @empty { <ui-content-state title="No articles yet" description="New articles will appear here when they are available." icon="@tui.newspaper">
+
+  </ui-content-state> }
   </div>
 </section>
 
@@ -66,7 +70,9 @@
           </div>
           <tui-icon icon="@tui.chevron-right" aria-hidden="true" />
         </a>
-      } @empty { <p class="empty-message">No featured applications yet.</p> }
+      } @empty { <ui-content-state title="No featured applications yet" description="Browse the application catalog to find something useful." icon="@tui.box">
+
+  </ui-content-state> }
     </div>
   </section>
   <section class="digest-section" aria-labelledby="discussions-title">
@@ -81,7 +87,9 @@
           <p class="card-summary">{{ item.summary }}</p>
           <span class="discussion-cta">Join the conversation <tui-icon icon="@tui.arrow-right" aria-hidden="true" /></span>
         </a>
-      } @empty { <p class="empty-message">No discussions yet.</p> }
+      } @empty { <ui-content-state title="No discussions yet" description="Visit an application to start a conversation." icon="@tui.messages-square">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+  </ui-content-state> }
     </div>
   </section>
 </div>

@@ -36,7 +36,9 @@
     <a tuiLink routerLink="/discover" [queryParams]="{ type: null }" queryParamsHandling="merge">Search all types</a>
   }
   @if (!resultsData.groups.length) {
-    <section commonSection><p>No results found. Try another search or remove a filter.</p></section>
+    <ui-content-state title="No results found" description="Try another search or remove a filter to broaden your results." icon="@tui.search">
+    <a tuiButton appearance="secondary" size="m" routerLink="/discover">Clear search and filters</a><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
   }
   @for (group of resultsData.groups; track group.type) {
     @let label = getGroupLabel(group.type);

@@ -13,6 +13,8 @@ export class MyProfileService implements IMyProfileStateProvider {
   private readonly _profileUpdated$ = new Subject<void>();
   private _myProfile: CustomerProfileDto | null = null;
 
+  public reload(): void { this._profileUpdated$.next(); }
+
   public myProfile$: Observable<MyProfileState> = this._profileUpdated$.pipe(
     startWith(undefined),
     switchMap(() => this._myProfileProvider.getMyProfile()),

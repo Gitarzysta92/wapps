@@ -1,5 +1,8 @@
 @if (!app.isLoading() && !app.value()) {
-  <section tuiAppearance="card-elevated" role="status"><h1>Application not found</h1><p>Check the address or return to the application catalog.</p><a href="/">Browse applications</a></section>
+  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
+    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 } @else {
 <ui-page-header class="page-header">
   @if (app.isLoading()) {
@@ -21,7 +24,7 @@
     </h1>
   }
 
-  @if (healthData.isLoading()) {
+  @if (healthData.isLoading() || healthData.error()) {
     <ui-page-meta-skeleton slot="meta" />
   } @else {
     <ui-page-meta slot="meta">
@@ -29,6 +32,16 @@
     </ui-page-meta>
   }
 </ui-page-header>
+@if (healthData.error()) {
+  <ui-content-state title="Could not load health information" description="Try loading again, or return to the application overview." icon="@tui.circle-alert" [error]="true">
+    <button tuiButton type="button" size="m" (click)="healthData.reload()">Retry</button>
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'overview']">Back to overview</a>
+  </ui-content-state>
+} @else if (!healthData.isLoading() && (!healthData.value())) {
+  <ui-content-state title="No health information yet" description="No health report is available for this application." icon="@tui.heart-pulse">
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'overview']">Back to overview</a>
+  </ui-content-state>
+} @else {
 <p>Sample catalog data; this is not a live service report.</p>
 
 <!-- Overall Status Banner -->
@@ -118,11 +131,16 @@
   @if (healthData.isLoading()) {
     <ui-medium-card-skeleton tuiAppearance="card-elevated" />
   } @else {
+    @if (notices().length) {
     <health-notices-section
       [notices]="notices()"
       [showEmptyState]="true">
     </health-notices-section>
+    } @else {
+      <ui-content-state title="No recent notices" description="No notices are recorded for this application." icon="@tui.file-text" />
+    }
   }
 </section>
 
+}
 }

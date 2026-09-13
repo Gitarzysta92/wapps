@@ -7,9 +7,11 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
-import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
+import { PageHeaderComponent, PageTitleComponent,
+  ContentStateComponent
+} from '@ui/layout';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import {
   buildRoutePath,
@@ -26,6 +28,8 @@ import { LocalApplicationDraftsService } from './local-application-drafts.servic
   templateUrl: './my-apps.component.html',
   styleUrl: './my-apps.component.scss',
   imports: [
+    RouterLink,
+    ContentStateComponent,
     DatePipe,
     TuiButton,
     PageHeaderComponent,

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
-import { TuiAppearance, TuiButton, TuiIcon, TuiLink } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
 import {
   BreadcrumbsComponent,
   BreadcrumbsSkeletonComponent,
@@ -14,6 +14,7 @@ import {
   PageTitleComponent,
   PageTitleSkeletonComponent,
   MediumCardSkeletonComponent,
+  ContentStateComponent
 } from '@ui/layout';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import {
@@ -40,6 +41,7 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   styleUrl: './results-page.component.scss',
   host: { class: 'fluid-container' },
   imports: [
+    ContentStateComponent,
     CommonModule,
     PreferredDatePipe,
     RouterLink,
@@ -52,7 +54,6 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
     TuiDropdownOpen,
     TuiDropdownDirective,
     TuiDropdownOptionsDirective,
-    TuiIcon,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,
     PageHeaderComponent,

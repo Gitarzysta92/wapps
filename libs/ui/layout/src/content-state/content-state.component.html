@@ -1,0 +1,12 @@
+<section class="content-state">
+  <div class="message" [attr.role]="error() ? 'alert' : 'status'">
+    <tui-icon [icon]="icon()" aria-hidden="true" />
+    @if (page()) {
+      <h1>{{ title() }}</h1>
+    } @else {
+      <h2>{{ title() }}</h2>
+    }
+    <p>{{ description() }}</p>
+  </div>
+  <div class="actions"><ng-content /></div>
+</section>

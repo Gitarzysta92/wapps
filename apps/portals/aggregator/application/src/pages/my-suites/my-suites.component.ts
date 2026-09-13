@@ -1,3 +1,4 @@
+import { ContentStateComponent } from '@ui/layout';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiButton, TuiLink } from '@taiga-ui/core';
@@ -9,7 +10,7 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   templateUrl: './my-suites.component.html',
   styleUrl: './my-suites.component.scss',
   standalone: true,
-  imports: [RouterLink, TuiButton, TuiLink, TuiAvatar, TuiBadge],
+  imports: [ContentStateComponent, RouterLink, TuiButton, TuiLink, TuiAvatar, TuiBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MySuitesPageComponent {
