@@ -3,7 +3,7 @@
 
 @include page.page;
 
-.breadcrumbs-skeleton, .breadcrumbs {
+.breadcrumbs-skeleton {
   height: $space-3;
 }
 
@@ -24,6 +24,7 @@
 
 .pinned-discussions {
   display: grid;
+  width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: $space-6;
 }

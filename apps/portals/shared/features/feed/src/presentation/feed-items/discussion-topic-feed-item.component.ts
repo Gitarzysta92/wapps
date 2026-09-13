@@ -57,6 +57,7 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
           tuiButton
           size="s"
           appearance="primary"
+          iconStart="@tui.message-circle"
           [routerLink]="topicLink"
           [attr.aria-label]="'Open discussion: ' + item.discussionData.topic"
           >Open discussion</a

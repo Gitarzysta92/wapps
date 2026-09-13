@@ -400,6 +400,33 @@ body.dark {
   }
 }
 
+// Menus reuse each action's behavior with a quiet, consistent row appearance.
+[tuiAppearance][data-appearance='action-menu'] [tuiButton] {
+  width: 100%;
+  justify-content: flex-start;
+  padding-inline: $space-3;
+  gap: $space-2;
+  min-height: $size-touch-min;
+  height: auto;
+  @include text($font-size-sm);
+  white-space: normal;
+  text-align: start;
+  color: var(--tui-text-primary);
+  background: transparent;
+  border-radius: $radius-sm;
+  box-shadow: none;
+  backdrop-filter: none;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--tui-background-neutral-1-hover);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--tui-background-neutral-1-pressed);
+  }
+}
+
 
 [tuiAppearance][data-appearance='primary-soft'] {
   color: var(--tui-text-primary-inverse);
