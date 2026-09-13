@@ -22,17 +22,31 @@ export class SharingApiService implements ISharingProvider {
   }
 
   shareContent(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, title: string, path?: string): Observable<Result<boolean, Error>> {
+    return this.perform(() => {
+      const url = this.contentUrl(type, slug, path);
+      const navigator = this.document.defaultView?.navigator;
+      return navigator?.share
+        ? navigator.share({ title, url })
+        : this.copyUrl(url);
+    });
+  }
+
+  copyContent(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, path?: string): Observable<Result<boolean, Error>> {
+    return this.perform(() => this.copyUrl(this.contentUrl(type, slug, path)));
+  }
+
+  private copyUrl(url: string): Promise<void> {
+    const clipboard = this.document.defaultView?.navigator.clipboard;
+    return clipboard?.writeText
+      ? clipboard.writeText(url)
+      : Promise.reject(new Error('Clipboard access is unavailable. Select and copy the link.'));
+  }
+
+  private perform(operation: () => Promise<void>): Observable<Result<boolean, Error>> {
     return new Observable(observer => {
       const finish = (result: Result<boolean, Error>) => { observer.next(result); observer.complete(); };
       try {
-        const url = this.contentUrl(type, slug, path);
-        const navigator = this.document.defaultView?.navigator;
-        const operation = navigator?.share
-          ? navigator.share({ title, url })
-          : navigator?.clipboard?.writeText
-            ? navigator.clipboard.writeText(url)
-            : Promise.reject(new Error('Automatic sharing is unavailable. Copy the link below.'));
-        operation.then(() => finish({ ok: true, value: true })).catch((error: unknown) => {
+        operation().then(() => finish({ ok: true, value: true })).catch((error: unknown) => {
           if (error instanceof Error && error.name === 'AbortError') finish({ ok: true, value: false });
           else finish({ ok: false, error: new Error('Could not share automatically. Copy the link below.') });
         });
@@ -45,5 +59,9 @@ export class SharingApiService implements ISharingProvider {
   canShare(): boolean {
     const navigator = this.document.defaultView?.navigator;
     return !!(navigator?.share || navigator?.clipboard?.writeText);
+  }
+
+  canShareViaDevice(): boolean {
+    return typeof this.document.defaultView?.navigator.share === 'function';
   }
 }

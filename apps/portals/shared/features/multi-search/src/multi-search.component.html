@@ -10,8 +10,8 @@
     <tui-loader *ngIf="loadingResults && isFocused"/>
   </search-bar>
   
-<div class="dropdown" *ngIf="isFocused">
-   <div class="multisearch-result">
+<div class="dropdown" tuiAppearance="card-panel" *ngIf="isFocused">
+   <div class="multisearch-result" tuiAppearance="action-menu">
      @if (searchPhraseProvided$ | async) {
        <ng-content select="[search-results]"></ng-content>
      }

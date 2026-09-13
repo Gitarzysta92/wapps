@@ -21,11 +21,18 @@ export class SharingService {
     return this._sharingProvider.contentUrl(type, slug, path);
   }
 
+  public copyContent(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, path?: string): Observable<Result<boolean, Error>> {
+    return this._sharingProvider.copyContent(type, slug, path);
+  }
+
+  public canShareViaDevice(): boolean {
+    return this._sharingProvider.canShareViaDevice();
+  }
+
   public canShare(): boolean {
     return this._sharingProvider.canShare();
   }
 }
-
 
 
 

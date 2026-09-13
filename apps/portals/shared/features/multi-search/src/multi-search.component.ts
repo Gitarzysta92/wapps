@@ -1,7 +1,7 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, HostListener, ViewChild, AfterViewInit, DestroyRef, ChangeDetectorRef, ElementRef } from "@angular/core";
-import { TuiButton, TuiLoader } from "@taiga-ui/core";
+import { TuiAppearance, TuiButton, TuiLoader } from "@taiga-ui/core";
 import { catchError, distinctUntilChanged, map, Observable, of, shareReplay, startWith, switchMap, tap } from "rxjs";
 import { SearchResultVM } from "@ui/search-results";
 import { MULTISEARCH_ACCEPTED_QUERY_PARAM, MULTISEARCH_RESULTS_PROVIER, MULTISEARCH_STATE_PROVIDER } from "./multi-search.constants";
@@ -17,6 +17,7 @@ import { DiscoverySearchResultType } from "@domains/discovery";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    TuiAppearance,
     SearchBarComponent,
     TuiLoader,
     TuiButton,

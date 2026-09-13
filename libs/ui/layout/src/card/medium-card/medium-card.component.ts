@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, ContentChild, ElementRef, inject, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, ElementRef, inject, TemplateRef, ViewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { TuiActiveZone } from '@taiga-ui/cdk';
 import { TUI_VIEWPORT, TuiAppearance, TuiButton, TuiDropdown, tuiDropdownOptionsProvider, TuiRectAccessor } from '@taiga-ui/core';
 
 function cardViewport(): TuiRectAccessor {
@@ -37,6 +38,9 @@ function cardViewport(): TuiRectAccessor {
   }
 })
 export class MediumCardComponent {
-  @ContentChild('cardActions') actions?: TemplateRef<unknown>;
+  @ContentChild('cardActions') actions?: TemplateRef<{ iconOnly: boolean }>;
+  @ContentChild('cardFooterActions') footerActions?: TemplateRef<{ iconOnly: boolean; activeZone?: TuiActiveZone }>;
+  // Projected templates keep their declaration injector, so nested popovers need the menu's active zone.
+  @ViewChild('actionsToggle', { read: TuiActiveZone }) actionsZone?: TuiActiveZone;
   actionsOpen = false;
 }

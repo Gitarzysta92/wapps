@@ -30,6 +30,26 @@ describe('SharingApiService', () => {
     navigator.share = jest.fn().mockRejectedValue(Object.assign(new Error('Cancelled'), { name: 'AbortError' }));
     expect(await firstValueFrom(service.shareContent('articles', 'design', 'Design'))).toEqual({ ok: true, value: false });
   });
+  it('copies a link without opening native sharing, even when both are available', async () => {
+    navigator.share = jest.fn().mockResolvedValue(undefined);
+    navigator.clipboard = { writeText: jest.fn().mockResolvedValue(undefined) };
+    expect(service.canShareViaDevice()).toBe(true);
+    expect(await firstValueFrom(service.copyContent('discussions', 'topic', '/apps/photo-snap/discussions/topic')))
+      .toEqual({ ok: true, value: true });
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://portal.example/apps/photo-snap/discussions/topic');
+    expect(navigator.share).not.toHaveBeenCalled();
+  });
+  it('does not advertise device sharing when only clipboard access is available', () => {
+    navigator.clipboard = { writeText: jest.fn() };
+    expect(service.canShareViaDevice()).toBe(false);
+  });
+  it('returns a manual-copy fallback when clipboard access fails or is unavailable', async () => {
+    expect((await firstValueFrom(service.copyContent('articles', 'design'))).ok).toBe(false);
+    navigator.clipboard = { writeText: jest.fn().mockRejectedValue(new Error('Denied')) };
+    expect((await firstValueFrom(service.copyContent('articles', 'design'))).ok).toBe(false);
+    navigator.clipboard.writeText = jest.fn(() => { throw new Error('Unavailable'); });
+    expect((await firstValueFrom(service.copyContent('articles', 'design'))).ok).toBe(false);
+  });
   it('returns a recoverable error when clipboard is missing, rejected, or throws synchronously', async () => {
     expect(service.canShare()).toBe(false);
     expect((await firstValueFrom(service.shareContent('articles', 'design', 'Design'))).ok).toBe(false);

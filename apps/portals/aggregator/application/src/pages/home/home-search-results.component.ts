@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { TuiLink } from '@taiga-ui/core';
+import { TuiButton } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import {
   FullSearchRedirectComponent,
@@ -20,7 +20,7 @@ import {
     FormsModule,
     RouterLink,
     FullSearchRedirectComponent,
-    TuiLink,
+    TuiButton,
     SearchResultListSkeleton,
     TuiBadge,
     TuiAvatar,
@@ -34,14 +34,16 @@ import {
     .group-name { flex: 1; padding-left: 0.5rem; }
     .result-entry { font-size: 0.875rem; }
     .result-entries { padding-bottom: 0.5rem; }
+    .entry-info { min-width: 0; overflow-wrap: anywhere; }
 
     .custom-content {
       display: flex;  
       align-items: center;
       gap: 0.5rem;
+      min-width: 0;
+      flex: 1;
       tui-badge{
        padding: 0 6px;
-       color: #9f9f9f;
       }
 
       .entry-name {
@@ -71,7 +73,7 @@ import {
           >
           @for (group of searchResult.groups; track group.id) {
             <li>
-              <a class="group-header" tuiLink appearance="action-soft"
+              <a class="group-header" tuiButton size="s" appearance="flat"
                 [iconStart]="group.icon" iconEnd="@tui.chevron-right"
                 [routerLink]="searchResult.link"
                 [queryParams]="groupQuery(searchResult.query, group.type)">
@@ -79,7 +81,7 @@ import {
               </a>
               <ul class="result-entries">
               @for (entry of group.entries; track entry.link) {
-                <li><a class="result-entry" tuiLink appearance="link-soft"
+                <li><a class="result-entry" tuiButton size="s" appearance="flat"
                   [routerLink]="entry.link" iconEnd="@tui.chevron-right">
             <div class="custom-content">
               <tui-avatar size="s" [src]="entry.coverImageUrl.url" />
@@ -92,7 +94,7 @@ import {
                     @for (tag of entry.tags.slice(0, 3); track tag.name) {
                       <tui-badge 
                         size="s"
-                        appearance="secondary">
+                        appearance="neutral">
                         {{ tag.name | lowercase }}
                       </tui-badge>
                     }
@@ -108,7 +110,7 @@ import {
         </ul>
       }
       @else {
-        <p>No results</p>
+        <p class="no-results">No results</p>
       }
     }
   `
@@ -121,4 +123,3 @@ export class HomeSearchResultsComponent {
   @Input({ required: true }) searchResults$!: Observable<SearchResultVM>;
   @Input({ required: true }) loadingResults!: boolean;
 }
-

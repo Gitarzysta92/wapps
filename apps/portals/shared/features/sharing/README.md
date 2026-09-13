@@ -4,10 +4,12 @@ A reusable sharing feature for portals that provides a share toggle button compo
 
 ## Features
 
-- **Web Share API Support**: Uses native share functionality when available
-- **Clipboard Fallback**: Automatically falls back to copying URL to clipboard
+- **Share Options**: The button opens a popover before starting any share operation
+- **Copy Link**: Explicitly copies the portal link, even when native sharing is available
+- **Web Share API Support**: Offers "Share via device" when supported
+- **Manual Copy Fallback**: Keeps a selectable link and feedback inside the popover if automatic copying fails
 - **Type-Safe**: Supports applications, suites, articles, and discussions
-- **Responsive UI**: Modern share button with loading and success states
+- **Responsive UI**: Icon or labeled trigger, with progress and feedback contained in the popover
 
 ## Usage
 
@@ -52,9 +54,8 @@ Follows the standard feature architecture:
 ## Browser Support
 
 - Modern browsers with Web Share API support
-- Falls back to clipboard copy for unsupported browsers
+- Copy link remains available in browsers without native sharing
 - Requires HTTPS for Web Share API to work
-
 
 
 

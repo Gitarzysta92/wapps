@@ -639,6 +639,11 @@ favorite-toggle-button .is-favorite::before {
   }
 }
 
+multi-search {
+  .recent-heading,
+  .no-results { color: var(--tui-text-secondary); }
+}
+
 // Account forms share the catalog surface, without interactive card motion.
 :is(settings-profile-page, settings-preferences-page, settings-notifications-page, settings-privacy-page) {
   .setting-item, .danger-action, .visibility-option {

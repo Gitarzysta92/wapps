@@ -111,15 +111,15 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         @if (item.discussionSlug; as discussionSlug) {
           <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
         }
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
 
-        <ng-template #cardActions>
-          <favorite-toggle-button type="applications" [slug]="item.appSlug" />
+        <ng-template #cardActions let-iconOnly="iconOnly">
+          <favorite-toggle-button [iconOnly]="iconOnly" type="applications" [slug]="item.appSlug" />
           <a tuiButton size="s" appearance="primary" [routerLink]="item.appLink">
             <tui-icon icon="@tui.grid" />
             View application
           </a>
-          <feed-actions-menu
+          <feed-actions-menu [iconOnly]="iconOnly"
             [contextMenu]="item.contextMenu"
             [title]="item.title"
             size="xs"

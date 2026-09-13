@@ -14,7 +14,7 @@ describe('Projected tile actions', () => {
       removeFromFavorites: jest.fn(() => { favorite.next(false); return of({ ok: true }); }),
     };
     const url = 'http://localhost/apps/quick-task/discussions/collaboration';
-    const sharing = { canShare: () => false, contentUrl: jest.fn(() => url) };
+    const sharing = { canShareViaDevice: () => false, contentUrl: jest.fn(() => url), shareContent: jest.fn(), copyContent: jest.fn() };
     const moreAction = jest.fn();
     TestBed.configureTestingModule({ providers: [
       provideRouter([]),
@@ -43,10 +43,15 @@ describe('Projected tile actions', () => {
     expect(favorites.removeFromFavorites).toHaveBeenCalledTimes(1);
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
 
-    actions.querySelector<HTMLButtonElement>('share-toggle-button button')!.click();
+    const bottomBar = card.querySelector<HTMLElement>('.card-bottom-bar')!;
+    expect(card.querySelectorAll('share-toggle-button')).toHaveLength(1);
+    expect(actions.querySelector('share-toggle-button')).toBeNull();
+    bottomBar.querySelector<HTMLButtonElement>('share-toggle-button button')!.click();
     fixture.detectChanges();
     expect(sharing.contentUrl).toHaveBeenCalledTimes(1);
-    expect(actions.querySelector<HTMLInputElement>('share-toggle-button input')!.value).toBe(url);
+    expect(bottomBar.querySelector('share-toggle-button input')).toBeNull();
+    expect(sharing.shareContent).not.toHaveBeenCalled();
+    expect(sharing.copyContent).not.toHaveBeenCalled();
 
     actions.querySelector<HTMLElement>('summary')!.click();
     actions.querySelector<HTMLButtonElement>('feed-actions-menu button')!.click();

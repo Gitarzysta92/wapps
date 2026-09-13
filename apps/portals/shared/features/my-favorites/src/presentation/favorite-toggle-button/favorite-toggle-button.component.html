@@ -1,6 +1,8 @@
 @let isFav = isFavorite$ | async;
 <button 
   tuiButton
+  [attr.tuiIconButton]="iconOnly ? '' : null"
+  [attr.title]="iconOnly ? (isFav ? 'Remove from Favorites' : 'Add to Favorites') : null"
   type="button"
   appearance="secondary"
   size="s"
@@ -9,7 +11,7 @@
   [attr.aria-label]="isFav ? 'Remove from Favorites' : 'Add to Favorites'"
   [attr.aria-pressed]="isFav"
   (click)="toggleFavorite(isFav ?? false)">
-  <span class="favorite-label">{{ isFav ? 'Remove from Favorites' : 'Add to Favorites' }}</span>
+  @if (!iconOnly) { <span class="favorite-label">{{ isFav ? 'Remove from Favorites' : 'Add to Favorites' }}</span> }
 </button>
 
 

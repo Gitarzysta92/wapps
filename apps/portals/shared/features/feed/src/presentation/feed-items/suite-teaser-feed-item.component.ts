@@ -116,23 +116,25 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         </div>
       </div>
 
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <favorite-toggle-button type="suites" [slug]="suiteSlug" />
-        <share-toggle-button
-          appearance="action-soft"
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="suites"
           [slug]="suiteSlug"
           [path]="item.suiteLink"
           [title]="item.suiteTitle"
         />
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <favorite-toggle-button [iconOnly]="iconOnly" type="suites" [slug]="suiteSlug" />
         <a tuiButton size="s" appearance="primary" [routerLink]="item.suiteLink">
           <tui-icon icon="@tui.grid" />
           Explore Suite
         </a>
-        <feed-actions-menu
+        <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"
           size="xs"

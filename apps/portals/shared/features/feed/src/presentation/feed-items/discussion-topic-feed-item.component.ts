@@ -52,17 +52,20 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
       } @else { <p>No messages are available in this preview.</p> }
 
       <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="item.discussionSlug" />
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
-
-      <ng-template #cardActions>
-        <favorite-toggle-button type="discussions" [slug]="item.discussionSlug" />
-        <share-toggle-button
-          size="s"
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
+        <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
+          appearance="flat"
+          size="xs"
           type="discussions"
           [slug]="item.discussionSlug"
           [title]="item.discussionData.topic || item.title"
           [path]="topicLink"
         />
+      </ng-template>
+
+      <ng-template #cardActions let-iconOnly="iconOnly">
+        <favorite-toggle-button [iconOnly]="iconOnly" type="discussions" [slug]="item.discussionSlug" />
         <a
           tuiButton
           size="s"
@@ -72,7 +75,7 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
           [attr.aria-label]="'Open discussion: ' + item.discussionData.topic"
           >Open full discussion</a
         >
-        <feed-actions-menu [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
+        <feed-actions-menu [iconOnly]="iconOnly" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
       </ng-template>
     </ui-medium-card>
   `,

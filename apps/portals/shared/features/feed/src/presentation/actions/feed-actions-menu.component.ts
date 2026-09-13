@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
-import { TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { ContextMenuItem } from '@ui/context-menu-chip';
 
 @Component({
   selector: 'feed-actions-menu',
   standalone: true,
-  imports: [TuiButton],
+  imports: [TuiButton, TuiIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (contextMenu?.length) {
       <details #menu>
-        <summary [attr.aria-label]="'More actions for ' + title">More actions</summary>
+        <summary [class.icon-only]="iconOnly" [attr.aria-label]="'More actions for ' + title" [attr.title]="iconOnly ? 'More actions for ' + title : null">
+          <tui-icon icon="@tui.ellipsis" aria-hidden="true" />
+          @if (!iconOnly) { <span>More actions</span> }
+        </summary>
         <div class="menu">
           @for (action of contextMenu; track $index) {
             <button tuiButton type="button" size="s" appearance="flat" (click)="run(action, menu)">{{ action.label }}</button>
@@ -25,6 +28,7 @@ import { ContextMenuItem } from '@ui/context-menu-chip';
 export class FeedActionsMenuComponent {
   @Input() contextMenu: ContextMenuItem[] | undefined;
   @Input() title = 'this item';
+  @Input() iconOnly = false;
   @Input() size = 'xs';
   @Input() appearance = 'action-soft-flat';
   readonly error = signal('');
