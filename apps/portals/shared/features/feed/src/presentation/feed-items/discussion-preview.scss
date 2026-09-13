@@ -1,7 +1,4 @@
 @use 'ui/design-system/src/styles' as *;
 :host { display: block; min-width: 0; }
-.discussion-preview { display: grid; gap: $space-4; margin: $space-4 0; }
-article { padding: $space-4; border: $border-width-thin solid var(--tui-border-normal); border-radius: $radius-md; background: var(--tui-background-base); }
-header { display: flex; flex-wrap: wrap; align-items: center; gap: $space-3; }
-p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: $line-height-normal; }
+ui-discussion-thread { margin-top: $space-4; }
 small { color: var(--tui-text-secondary); }

@@ -10,7 +10,9 @@
           <ng-content select="[slot='user-badges']" />
         </div>
       </div>
-      <span class="published-time">{{ publishedTime() | date:'medium' }}</span>
+      @if (publishedTime()) {
+        <span class="published-time">{{ publishedTime() | date:'medium' }}</span>
+      }
     </div>
   </div>
 </div>

@@ -6,6 +6,15 @@ tui-dropdowns {
   z-index: $z-popover;
 }
 
+// Keep the conversation readable and the composer reachable on narrow screens.
+@media #{$layout-breakpoint-sm} {
+  tui-dialog[data-appearance='quick-discussion'] {
+    border-width: $space-4;
+
+    .t-content { padding: $space-4; }
+  }
+}
+
 // The reserved scrollbar gutter needs a solid base beneath background images.
 html {
   background: var(--body-background);

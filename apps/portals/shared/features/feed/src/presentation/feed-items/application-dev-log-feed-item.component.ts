@@ -1,3 +1,4 @@
+import { QuickDiscussionButtonComponent } from '@portals/shared/features/discussion';
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedDatePipe } from '../actions/feed-date.pipe';
 import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
@@ -33,6 +34,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    QuickDiscussionButtonComponent,
     FeedDatePipe,
     FeedLocalVoteComponent,
     RouterLink,
@@ -102,7 +104,9 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         <app-changelog-details [data]="{ changes: item.changes }" />
       </ui-medium-card>
       <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
-      <a tuiButton size="xs" appearance="flat" slot="bottom-bar" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open ' + (item.commentsNumber || 0) + ' discussions for ' + item.title"><tui-icon icon="@tui.message-circle" aria-hidden="true" />{{ item.commentsNumber || 0 }}</a>
+      @if (item.discussionSlug; as discussionSlug) {
+        <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
+      }
       @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
