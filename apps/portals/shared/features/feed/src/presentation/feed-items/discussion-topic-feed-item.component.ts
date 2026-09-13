@@ -42,7 +42,7 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
         } @empty { <p>No messages are available in this preview.</p> }
       </div>
 
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
         <favorite-toggle-button type="discussions" [slug]="item.discussionSlug" />

@@ -117,7 +117,7 @@
 
 .card-bottom-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: $space-3;
   margin-top: $space-2;

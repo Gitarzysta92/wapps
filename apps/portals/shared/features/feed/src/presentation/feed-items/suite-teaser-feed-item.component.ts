@@ -116,7 +116,7 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         </div>
       </div>
 
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
         <favorite-toggle-button type="suites" [slug]="suiteSlug" />

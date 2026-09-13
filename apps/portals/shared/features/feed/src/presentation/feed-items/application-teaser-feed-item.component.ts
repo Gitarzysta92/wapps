@@ -100,13 +100,13 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         <ui-tags [tags]="item.tags"></ui-tags>
         <p>{{ item.description }}</p>
 
-        @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
         <app-reviews-chip slot="bottom-bar"
             [reviewsCount]="item.reviewsCount"
             [reviewsLink]="item.reviewsLink"
             size="xs"
             appearance="action-soft-flat"
           />
+        @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
         <ng-template #cardActions>
           <favorite-toggle-button type="applications" [slug]="item.appSlug" />

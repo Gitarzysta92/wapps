@@ -84,8 +84,8 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         <app-rating [readonly]="true" [rating]="item.rating"/>
       </review-quote-short>
 
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
       <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
         <share-toggle-button

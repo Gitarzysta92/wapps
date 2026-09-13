@@ -75,9 +75,9 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
         <ui-tags [tags]="item.tags ?? []"></ui-tags>
         <ui-excerpt [excerpt]="item.excerpt" [maxLength]="200" />
       </div>
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
       <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
       <span slot="bottom-bar">{{ item.commentsCount || 0 }} comments</span>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
         <favorite-toggle-button type="articles" [slug]="articleSlug" />

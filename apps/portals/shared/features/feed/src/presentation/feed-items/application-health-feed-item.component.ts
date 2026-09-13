@@ -119,8 +119,8 @@ export type ApplicationHealthFeedItemVM = Omit<ApplicationHealthFeedItemDto, 'ca
           <small style="opacity: 0.5">{{ item.notice.timestamp | date:'medium' }}</small>
         </div>
       </ui-medium-card>
-      @if (item.attribution) { <feed-attribution [title]="item.title" slot="footer" [attribution]="item.attribution" /> }
       <a tuiButton size="xs" appearance="flat" slot="bottom-bar" [routerLink]="['/apps', item.appSlug, 'discussions']" [attr.aria-label]="'Open ' + (item.commentsNumber || 0) + ' discussions for ' + item.title"><tui-icon icon="@tui.message-circle" aria-hidden="true" />{{ item.commentsNumber || 0 }}</a>
+      @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar" [attribution]="item.attribution" /> }
 
       <ng-template #cardActions>
         <share-toggle-button
