@@ -780,7 +780,7 @@ export const routes: Routes = [
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
-              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigation: MOBILE_MAIN_NAVIGATION,
               navigationSecondary: null
             }
           },
@@ -883,7 +883,7 @@ export const routes: Routes = [
           leftSidebar: {
             component: CommonSidebarComponent,
             inputs: {
-              navigation: APPLICATION_VIEW_MAIN_NAVIGATION,
+              navigation: MOBILE_MAIN_NAVIGATION,
               navigationSecondary: null
             }
           },

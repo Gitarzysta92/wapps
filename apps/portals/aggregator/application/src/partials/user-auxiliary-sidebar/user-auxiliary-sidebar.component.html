@@ -6,6 +6,8 @@
   @if (isAuthenticated) {
     <button 
       class="user-profile-btn"
+      aria-label="My profile"
+      title="My profile"
       appearance="flat"
       tuiButton
       type="button"
@@ -24,6 +26,8 @@
 @if (!isAuthenticated) {
   <button
     class="login-button"
+    aria-label="Log In"
+    title="Log In"
     appearance="primary"
     tuiButton
     type="button"
@@ -64,6 +68,7 @@
             tuiButton
             type="button"
             [title]="item.label"
+            [attr.aria-label]="item.label"
             routedDialogButton="identity">
               <tui-icon
               [icon]="item.icon"
@@ -83,7 +88,8 @@
           appearance="flat"
           tuiButton
           type="button"
-          [title]="item.label">
+          [title]="item.label"
+          [attr.aria-label]="item.label">
           <tui-icon
             [icon]="item.icon"
             [style.height.rem]="1"/>
@@ -102,9 +108,9 @@
   <nav class="navigation_section" aria-label="Account">
     <ul>
       @for (item of navigationSecondary; track item.path) {
-        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path"><tui-icon [icon]="item.icon" [style.height.rem]="1"/><span class="nav-label">{{ item.label }}</span></a></li>
+        <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" [attr.aria-label]="item.label" [title]="item.label"><tui-icon [icon]="item.icon" [style.height.rem]="1"/><span class="nav-label">{{ item.label }}</span></a></li>
       }
-      <li><button tuiButton appearance="flat" type="button" (click)="authService?.unauthenticate()"><tui-icon icon="@tui.log-out" [style.height.rem]="1"/><span class="nav-label">Log out</span></button></li>
+      <li><button tuiButton appearance="flat" type="button" aria-label="Log out" title="Log out" (click)="authService?.unauthenticate()"><tui-icon icon="@tui.log-out" [style.height.rem]="1"/><span class="nav-label">Log out</span></button></li>
     </ul>
   </nav>
 }

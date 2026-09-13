@@ -1,0 +1,47 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page(page.$content-gap);
+:host { container: directory / inline-size; }
+.directory-search { display: block; margin-top: $space-4; }
+.directory-intro { margin: 0; color: var(--tui-text-secondary); }
+.view-toggle { display: flex; gap: $space-2; }
+.directory { @include page.content; }
+.directory-count { margin: 0 0 $space-4; color: var(--tui-text-secondary); }
+.directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: page.$card-gap; }
+.directory-card { display: flex; flex-direction: column; min-width: 0; padding: $space-6; gap: $space-4; }
+.directory-details { min-width: 0; }
+.directory-card-top { display: flex; align-items: center; justify-content: space-between; gap: $space-3; margin-bottom: $space-4; }
+.directory-icon { color: var(--tui-text-action); }
+.app-count, .parent-category { color: var(--tui-text-secondary); font-size: $font-size-xs; }
+.parent-category { margin: 0 0 $space-2; }
+h2 { margin: 0; font-size: $font-size-lg; line-height: $line-height-tight; }
+.directory-link { display: flex; align-items: flex-start; justify-content: space-between; gap: $space-2; color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.directory-link tui-icon { flex-shrink: 0; width: $space-4; height: $space-4; margin-top: $space-1; }
+.directory-description { margin: $space-2 0 0; color: var(--tui-text-secondary); }
+.featured-apps { border-top: 1px solid var(--tui-border-normal); padding-top: $space-4; min-width: 0; }
+.featured-apps h3 { margin: 0 0 $space-3; font-size: $font-size-xs; color: var(--tui-text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.featured-apps ul { display: flex; flex-direction: column; gap: $space-3; list-style: none; padding: 0; margin: 0; }
+.featured-app { display: flex; align-items: center; gap: $space-3; text-decoration: none; color: inherit; min-width: 0; }
+.featured-app tui-avatar { flex-shrink: 0; }
+.featured-app-copy { display: flex; flex-direction: column; gap: $space-1; min-width: 0; }
+.featured-app-name { font-weight: 600; }
+.featured-app-description { font-size: $font-size-xs; color: var(--tui-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.directory-link:hover, .featured-app:hover .featured-app-name { color: var(--tui-text-action); }
+.directory-link:focus-visible, .featured-app:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: $space-1; border-radius: $space-1; }
+.no-featured-apps { margin: 0; font-size: $font-size-sm; color: var(--tui-text-secondary); }
+.directory-more { display: flex; flex-direction: column; align-items: center; gap: $space-3; margin-top: $space-6; }
+.directory-more p { margin: 0; color: var(--tui-text-secondary); }
+.directory-grid--list {
+  grid-template-columns: minmax(0, 1fr);
+  .directory-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: $space-6; }
+  .featured-apps { border-top: 0; border-left: 1px solid var(--tui-border-normal); padding: 0 0 0 $space-6; }
+}
+@container directory (max-width: 30rem) {
+  .directory-grid { grid-template-columns: minmax(0, 1fr); }
+  .directory-card { padding: $space-4; }
+  .directory-grid--list {
+    .directory-card { grid-template-columns: minmax(0, 1fr); gap: $space-4; }
+    .featured-apps { border-left: 0; border-top: 1px solid var(--tui-border-normal); padding: $space-4 0 0; }
+  }
+}

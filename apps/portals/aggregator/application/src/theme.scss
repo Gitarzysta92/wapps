@@ -513,6 +513,22 @@ common-mobile-bottom-bar {
   backdrop-filter: blur(48px);
 }
 
+@media #{$layout-breakpoint-md} {
+  app-shell .sidebar.expanded .sidebar-inner {
+    background: var(--tui-background-elevation-1);
+    box-shadow: $shadow-lg;
+  }
+
+  @media #{$tui-tablet-min} {
+    discover-page .section__search,
+    app-shell .header search-bar search {
+      background: var(--elevated-background);
+      border-radius: $radius-md;
+      box-shadow: $shadow-md;
+    }
+  }
+}
+
 common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
   color: var(--tui-text-primary);
   background: none;

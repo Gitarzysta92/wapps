@@ -16,17 +16,10 @@
 }
 
 .section_quick-search {
-  position: sticky;
-  top: $space-4;
+  position: relative;
   z-index: $z-base-overlay;
-  //padding: $space-5 $space-4;
-  // border-radius: $radius-sm;
-  // background: var(--feed-radial-gradient);
 
   @media #{$layout-breakpoint-md} {
-    position: relative;
-    top: 0;
-
     multi-search {
       --ui-scroll-on-focus-enabled: 1;
       scroll-margin-top: $space-4;

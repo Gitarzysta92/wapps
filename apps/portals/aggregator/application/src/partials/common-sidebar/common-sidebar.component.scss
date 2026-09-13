@@ -15,11 +15,9 @@
   align-items: end;
 }
 
-.nav-item {
-  .nav-label {
-    @media #{$layout-breakpoint-md} {
-      visibility: hidden;
-    }
+:host:not(.expanded) .nav-label {
+  @media #{$layout-breakpoint-md} {
+    display: none;
   }
 }
 
@@ -28,13 +26,23 @@
   font-weight: 500;
 }
 
+@media #{$layout-breakpoint-md} {
+  :host:not(.expanded) [navigationItem] {
+    width: $space-16;
+    box-sizing: border-box;
+  }
+
+  :host:not(.expanded) .portal-logo-wrapper tui-avatar {
+    --t-size: #{$space-12};
+  }
+}
+
 :host.expanded {
   width: 100%;
 
   @media #{$layout-breakpoint-md} {
     .nav-label {
-      display: block
+      display: inline;
     }
   }
 }
-

@@ -12,6 +12,7 @@ export interface FilterSelectionDialogData {
   options: FilterOptionVm[];
   items: SearchableOption[];
   placeholder: string;
+  singleSelection?: boolean;
 }
 
 export interface FilterSelectionDialogResult {
@@ -35,6 +36,7 @@ export class FilterSelectionDialogComponent {
   private readonly _context = injectContext<TuiDialogContext<FilterSelectionDialogResult | undefined, FilterSelectionDialogData>>();
   private readonly _data = this._ensureData(this._context.data);
 
+  public readonly singleSelection = this._data.singleSelection ?? false;
   public readonly options = this._data.options;
   public readonly filterName = this._data.filterName;
   public readonly filterId = this._data.filterId;
@@ -64,6 +66,7 @@ export class FilterSelectionDialogComponent {
       throw new Error('FilterSelectionDialogComponent requires dialog data.');
     }
     return {
+      singleSelection: data.singleSelection,
       filterId: data.filterId,
       filterName: data.filterName,
       options: data.options ?? [],

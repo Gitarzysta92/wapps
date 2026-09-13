@@ -25,14 +25,19 @@
 @if (leftSidebar !== null && leftSidebar?.component) {
   <aside
     class="container sidebar left"
+    aria-label="Navigation sidebar"
+    (keydown.escape)="closeSidebars(); navigationToggle.focus()"
     [class.expanded]="leftSidebar.inputs.isExpanded">
     <div class="sidebar-inner">
       <button
+        #navigationToggle
         class="toggle-button"
         tuiButton
         appearance="flat"
         type="button"
         aria-label="Toggle navigation sidebar"
+        [attr.aria-expanded]="leftSidebar.inputs.isExpanded"
+        aria-controls="portal-navigation-sidebar"
         (click)="toggleLeftSidebar()">
         <tui-icon
           class="toggle-button-icon"
@@ -40,10 +45,12 @@
           [style.height.rem]="1"
           [style.width.rem]="1" />
       </button>
-      <ng-container
-        [safeComponentOutlet]="leftSidebar.component"
-        [safeComponentOutletInputs]="leftSidebar.inputs">
-      </ng-container>
+      <div id="portal-navigation-sidebar">
+        <ng-container
+          [safeComponentOutlet]="leftSidebar.component"
+          [safeComponentOutletInputs]="leftSidebar.inputs">
+        </ng-container>
+      </div>
     </div>
   </aside>
 }
@@ -56,14 +63,19 @@
 @if (rightSidebar !== null && rightSidebar?.component) {
   <aside
     class="container sidebar right"
+    aria-label="Account sidebar"
+    (keydown.escape)="closeSidebars(); accountToggle.focus()"
     [class.expanded]="rightSidebar.inputs.isExpanded">
     <div class="sidebar-inner">
       <button
+        #accountToggle
         class="toggle-button"
         tuiButton
         appearance="flat"
         type="button"
         aria-label="Toggle account sidebar"
+        [attr.aria-expanded]="rightSidebar.inputs.isExpanded"
+        aria-controls="portal-account-sidebar"
         (click)="toggleRightSidebar()">
         <tui-icon
           class="toggle-button-icon"
@@ -71,10 +83,12 @@
           [style.height.rem]="1"
           [style.width.rem]="1" />
       </button>
-      <ng-container
-        [safeComponentOutlet]="rightSidebar.component"
-        [safeComponentOutletInputs]="rightSidebar.inputs">
-      </ng-container>
+      <div id="portal-account-sidebar">
+        <ng-container
+          [safeComponentOutlet]="rightSidebar.component"
+          [safeComponentOutletInputs]="rightSidebar.inputs">
+        </ng-container>
+      </div>
     </div>
   </aside>
 }

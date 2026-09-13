@@ -1,0 +1,64 @@
+<search-bar class="directory-search" [initialValue]="search()" [ariaLabel]="'Search ' + noun()"
+  (onSearch)="searchDirectory($event)" (keydown.enter)="submitSearch($event)" (submit)="submitSearch($event)">
+  <button tuiButton type="button" size="s" appearance="flat" (click)="submitSearch($event)">Search</button>
+</search-bar>
+
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <p slot="meta" class="directory-intro">{{ kind() === 'category'
+    ? 'Find your next tool by category. Explore what each one offers and the apps worth a look.'
+    : 'Follow a topic that interests you. Explore tags and discover the apps behind them.' }}</p>
+  <div slot="actions" class="view-toggle" role="group" aria-label="Directory view">
+    <button tuiButton type="button" size="s" iconStart="@tui.layout-grid" aria-label="Grid view" title="Grid view"
+      [appearance]="view() === 'grid' ? 'primary' : 'secondary'" [attr.aria-pressed]="view() === 'grid'" (click)="setView('grid')"></button>
+    <button tuiButton type="button" size="s" iconStart="@tui.list" aria-label="List view" title="List view"
+      [appearance]="view() === 'list' ? 'primary' : 'secondary'" [attr.aria-pressed]="view() === 'list'" (click)="setView('list')"></button>
+  </div>
+</ui-page-header>
+
+<section class="directory" [attr.aria-label]="title()">
+  <p class="directory-count" role="status">{{ matchingEntries().length }} {{ matchingEntries().length === 1 ? kind() : noun() }}@if (search()) { matching “{{ search() }}” }</p>
+  @if (matchingEntries().length) {
+    <div class="directory-grid" [class.directory-grid--list]="view() === 'list'">
+      @for (entry of visibleEntries(); track entry.slug) {
+        <article class="directory-card" tuiAppearance="card-elevated" [attr.aria-labelledby]="'directory-' + kind() + '-' + entry.slug">
+          <div class="directory-details">
+            <div class="directory-card-top">
+              <tui-icon class="directory-icon" [icon]="icon(entry)" aria-hidden="true" />
+              <span class="app-count">{{ entry.appCount }} {{ entry.appCount === 1 ? 'app' : 'apps' }}</span>
+            </div>
+            @if (entry.parentName) { <p class="parent-category">{{ entry.parentName }}</p> }
+            <h2 [id]="'directory-' + kind() + '-' + entry.slug">
+              <a class="directory-link" [routerLink]="facetPath(entry)">{{ entry.name }}<tui-icon icon="@tui.arrow-up-right" aria-hidden="true" /></a>
+            </h2>
+            <p class="directory-description">{{ entry.description }}</p>
+          </div>
+          <div class="featured-apps">
+            <h3>Featured apps</h3>
+            @if (entry.featuredApps.length) {
+              <ul>
+                @for (app of entry.featuredApps; track app.slug) {
+                  <li><a class="featured-app" [routerLink]="['/apps', app.slug]">
+                    <tui-avatar [src]="app.image || '@tui.box'" size="s" aria-hidden="true" />
+                    <span class="featured-app-copy"><span class="featured-app-name">{{ app.name }}</span><span class="featured-app-description">{{ app.description }}</span></span>
+                  </a></li>
+                }
+              </ul>
+            } @else { <p class="no-featured-apps">No apps listed yet.</p> }
+          </div>
+        </article>
+      }
+    </div>
+    @if (visibleEntries().length < matchingEntries().length) {
+      <div class="directory-more">
+        <p>Showing {{ visibleEntries().length }} of {{ matchingEntries().length }} {{ noun() }}</p>
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="showMore()">Show more {{ noun() }}</button>
+      </div>
+    }
+  } @else {
+    <ui-content-state [title]="'No ' + noun() + ' found'" description="Try another word or clear your search to browse the directory." icon="@tui.search">
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="searchDirectory('')">Clear search</button>
+    </ui-content-state>
+  }
+</section>

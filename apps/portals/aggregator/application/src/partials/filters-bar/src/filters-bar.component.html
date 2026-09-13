@@ -8,14 +8,16 @@
       (close)="onCloseFilterDropdown(f.key)"
       (remove)="onDeactivateFilter(f.key)"
       [tuiDropdown]="filterDropdownTemplate"
-      [(tuiDropdownOpen)]="openFilterDropdowns[f.key]"
+      [tuiDropdownOpen]="openFilterDropdowns[f.key] ?? false"
+      (tuiDropdownOpenChange)="openFilterDropdowns[f.key] = $event"
     >
       <ng-template #filterDropdownTemplate>
         <div class="dropdown-panel">
           <filter-content
             [filterId]="f.key"
             [filterName]="f.name"
-            [items]="FILTERS_OPTIONS_DICTIONARY[f.key]"
+            [singleSelection]="isSingleSelection(f.key)"
+            [items]="optionsDictionary()[f.key]"
             [selectedOptions]="getSelectedOptionsWithFlag(f.key, f.options)"
             [placeholder]="getPlaceholder(f.key)"
             (selectionChange)="onFilterSelectionChange(f.key, $event)">

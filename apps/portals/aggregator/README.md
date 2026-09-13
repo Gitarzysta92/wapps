@@ -23,6 +23,13 @@ Open http://localhost:4300. The development environment uses the bundled catalog
 - **My Apps**: validated local registration drafts and ownership preparation notes.
 - **Account**: profile editing, avatar selection, display/content preferences, notification preferences, privacy preferences, and local data export.
 
+## Responsive navigation
+
+Desktop keeps full sidebars. Tablets (768–1040px at the default browser font size)
+use compact icon rails with expandable navigation and account panels around the
+centered content column. Only one panel opens at a time; successful navigation or
+Escape closes it. Phones below 768px use the bottom navigation and account sheet.
+
 ## Local data boundaries
 
 Favorites, profile/preferences, suite drafts, application drafts, and local discussions/replies use browser storage. They are not published or synchronized between devices. Storage failures are reported rather than treated as successful saves. Sample catalog metrics, reviews, and service notices are demonstration data, not live monitoring.

@@ -9,11 +9,11 @@ describe('searchable filter selection', () => {
     { name: 'Gamma', value: 'gamma', isSelected: true },
   ];
 
-  async function setup(filterId = 'category') {
+  async function setup(filterId = 'category', singleSelection = false) {
     const completeWith = jest.fn();
     TestBed.configureTestingModule({ imports: [FilterSelectionDialogComponent], providers: [
       { provide: POLYMORPHEUS_CONTEXT, useValue: {
-        data: { filterId, filterName: 'Options', items, options: [], placeholder: 'Search options...' },
+        data: { singleSelection, filterId, filterName: 'Options', items, options: [], placeholder: 'Search options...' },
         completeWith,
       } },
     ] });
@@ -75,6 +75,18 @@ describe('searchable filter selection', () => {
     await search(fixture, '');
     expect(fixture.nativeElement.querySelectorAll('input[type="checkbox"]')).toHaveLength(3);
     expect(fixture.nativeElement.querySelector('tui-textfield input').value).toBe('');
+  });
+
+  it('allows exactly one content type and applies the chosen radio option', async () => {
+    const { fixture, completeWith } = await setup('type', true);
+    const radios = [...fixture.nativeElement.querySelectorAll('input[type="radio"]')] as HTMLInputElement[];
+    expect(radios.map(radio => radio.checked)).toEqual([false, false, true]);
+    expect(radios[0].disabled).toBe(false);
+    radios[0].click(); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+    expect(radios.map(radio => radio.checked)).toEqual([true, false, false]);
+    expect(completeWith).not.toHaveBeenCalled();
+    fixture.componentInstance.onApply();
+    expect(completeWith.mock.calls[0][0].selected.map((item: { value: string }) => item.value)).toEqual(['alpha']);
   });
 
   it('discards changes when cancelled', async () => {

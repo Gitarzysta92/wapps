@@ -8,7 +8,7 @@
   border-radius: $radius-md;
 }
 
-@media #{$layout-breakpoint-md} {
+@media #{$layout-breakpoint-sm} {
   :host {
     display: block;
   }

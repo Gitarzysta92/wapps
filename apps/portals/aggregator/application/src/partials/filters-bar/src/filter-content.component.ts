@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TuiRadio } from '@taiga-ui/kit';
 import { CommonModule } from '@angular/common';
 import { MultiselectListComponent, SearchableOption, TextSearchInputComponent } from '@ui/form';
 
@@ -9,6 +11,8 @@ type SearchableOptionWithSelection = SearchableOption & { isSelected: boolean };
   standalone: true,
   imports: [
     CommonModule,
+    TuiRadio,
+    FormsModule,
     MultiselectListComponent,
     TextSearchInputComponent,
   ],
@@ -21,6 +25,7 @@ export class FilterContentComponent {
   @Input() items: SearchableOption[] = [];
   @Input() selectedOptions: SearchableOptionWithSelection[] = [];
   @Input() placeholder: string = '';
+  @Input() singleSelection = false;
   @Input() showSelectionSummary = false;
 
   @Output() selectionChange = new EventEmitter<SearchableOption[]>();

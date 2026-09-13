@@ -47,6 +47,11 @@
   box-sizing: border-box;
   padding-inline: $space-4;
   @include main-width();
+  @media #{$layout-breakpoint-md} {
+    @media #{$tui-tablet-min} {
+      z-index: $z-dropdown;
+    }
+  }
   @media #{$layout-breakpoint-sm} {
     padding-inline: $space-3;
   }
@@ -60,7 +65,9 @@
 .toggle-button {
   position: absolute;
   top: 0;
-  width: 100px;
+  width: $space-12;
+  height: $space-12;
+  padding: 0;
   z-index: $z-sticky + 1;
   display: none;
   @media #{$layout-breakpoint-md} {
@@ -111,7 +118,6 @@
       padding: 0 $space-4;
       box-sizing: content-box;
       transition: transform 0.2s;
-      // TODO: background color should be configurable, similar to the background color of the shell.
     }
   }
 
@@ -135,8 +141,7 @@
       }
     }
     .toggle-button {
-      right: 0;
-      padding: 0 $space-4 0 0;
+      right: $space-4;
       .toggle-button-icon {
         transform: rotate(180deg);
       }
@@ -161,8 +166,7 @@
       }
     }
     .toggle-button {
-      left: 0;
-      padding: 0 0 0 $space-4;
+      left: $space-4;
       .toggle-button-icon {
         transform: rotate(180deg);
       }
@@ -178,10 +182,12 @@
     transform: rotate(0deg);
   }
 
-  &.expanded .sidebar-inner {
-    @media #{$layout-breakpoint-md} {
-      background-color: var(--tui-background-elevation-1)
-    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar .sidebar-inner,
+  .sidebar .toggle-button-icon {
+    transition: none;
   }
 }
 
@@ -192,8 +198,7 @@
   ::ng-deep .main > * { min-width: 0; max-width: 100%; }
   .sidebar-inner { overflow-y: auto; overscroll-behavior: contain; }
   @media #{$layout-breakpoint-md} {
-    .sidebar { display: none; }
-    .footer { padding-bottom: calc($space-24 + env(safe-area-inset-bottom, 0px)); }
+    // Tablets retain the collapsible side rails around the content column.
     .main, &:not(:has(.sidebar.right)) .main, &:not(:has(.sidebar.left)) .main,
     .main:not(:has(.sidebar.right)), .main:not(:has(.sidebar.left)) {
       grid-template-columns: minmax(0, 1fr);

@@ -7,7 +7,7 @@ import { filter, startWith, map, Observable, combineLatest } from 'rxjs';
 import { AnimatedBackgroundComponent } from '@ui/intro-hero';
 import { DecorationFadeDirective } from '@ui/layout';
 import { SafeComponentOutletDirective } from '@ui/misc';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 
 export interface IAppShellRouteData {
   topBar?: {
@@ -46,6 +46,7 @@ export interface IAppShellSidebarComponent {
 }
 
 export interface IAppShellState {
+  closeSidebars(): void;
   toggleRightSidebar(): unknown;
   toggleLeftSidebar(): unknown;
   isLeftSidebarExpanded$: Observable<boolean>;
@@ -67,7 +68,8 @@ export const APP_SHELL_STATE_PROVIDER = new InjectionToken<IAppShellState>('APP_
     SafeComponentOutletDirective,
     AnimatedBackgroundComponent,
     DecorationFadeDirective,
-    TuiIcon
+    TuiIcon,
+    TuiButton
   ],
   hostDirectives: [
     ThemingDescriptorDirective
@@ -175,6 +177,10 @@ export class AppShellComponent {
 
   public toggleLeftSidebar(): void {
     this._shellStateProvider.toggleLeftSidebar();
+  }
+
+  public closeSidebars(): void {
+    this._shellStateProvider.closeSidebars();
   }
 
   public toggleRightSidebar(): void {

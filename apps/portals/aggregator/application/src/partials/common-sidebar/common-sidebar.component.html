@@ -14,6 +14,8 @@
     <a #navigationItem #activeLink="routerLinkActive"
       navigationItem
       appearance="navigation-primary"
+      [attr.aria-label]="item.label"
+      [title]="item.label"
       [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
       routerLinkActive=""
       [class.active]="activeLink.isActive && primaryActiveClass(item.path) === 'active'"
@@ -35,6 +37,8 @@
       <a #navigationItem
         navigationItem
         appearance="navigation-primary"
+        [attr.aria-label]="item.label"
+        [title]="item.label"
         [routerLink]="item.path.startsWith('/') ? item.path : '/' + item.path"
         [routerLinkActive]="navigationItem.activeClass"
         ariaCurrentWhenActive="page"

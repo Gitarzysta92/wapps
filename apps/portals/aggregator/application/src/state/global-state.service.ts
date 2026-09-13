@@ -1,5 +1,7 @@
-import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
+import { BehaviorSubject, filter } from 'rxjs';
 import { IAppShellState } from '../shells/app-shell/app-shell.component';
 import { DiscoverySearchResultType, DiscoverySearchResultDto } from '@domains/discovery';
 
@@ -16,6 +18,12 @@ export interface SearchResultsData extends DiscoverySearchResultDto {
 
 @Injectable()
 export class GlobalStateService implements IAppShellState {
+  constructor() {
+    inject(Router).events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed(),
+    ).subscribe(() => this.closeSidebars());
+  }
   private readonly _state = signal<GlobalState>({
     isLoading: false,
     currentTheme: 'light',
@@ -76,12 +84,19 @@ export class GlobalStateService implements IAppShellState {
 
   public isLeftSidebarExpanded$ = new BehaviorSubject(false);
   public toggleLeftSidebar(): void {
+    this.isRightSidebarExpanded$.next(false);
     this.isLeftSidebarExpanded$.next(!this.isLeftSidebarExpanded$.value);
   }
 
   public isRightSidebarExpanded$ = new BehaviorSubject(false);
   public toggleRightSidebar(): void {
+    this.isLeftSidebarExpanded$.next(false);
     this.isRightSidebarExpanded$.next(!this.isRightSidebarExpanded$.value);
+  }
+
+  public closeSidebars(): void {
+    this.isLeftSidebarExpanded$.next(false);
+    this.isRightSidebarExpanded$.next(false);
   }
 
 }

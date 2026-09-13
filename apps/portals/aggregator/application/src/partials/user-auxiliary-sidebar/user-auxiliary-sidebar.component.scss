@@ -120,20 +120,32 @@ hr {
   @media #{$layout-breakpoint-md} {
 
     button, a {
-      padding-left: $space-7;
+      width: $space-16;
+      box-sizing: border-box;
+      padding-inline: $space-4;
+      justify-content: center;
     }
 
-    span {
+    .nav-label,
+    .login-button span,
+    [my-profile-name] {
       display: none;
     }
 
     .user-profile_section {
-      padding-left: $space-3;
+      padding-left: 0;
+
+      .user-profile-btn {
+        width: $space-16;
+        padding-inline: 0;
+        justify-content: center;
+      }
     }
     
-    .favorites-section .section-title span,
-    .favorites-section .empty-message,
-    .favorites-section .cta-button span {
+    // Detailed content stays inside the expanded panel, out of the tab order.
+    .favorites-section,
+    .favorites-section + hr,
+    .tags-section {
       display: none;
     }
     
@@ -197,4 +209,3 @@ hr {
     }
   }
 }
-

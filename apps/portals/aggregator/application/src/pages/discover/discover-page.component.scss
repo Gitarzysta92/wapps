@@ -58,6 +58,22 @@
 }
 
 .section__search { margin-top: $space-4; }
+
+@media #{$layout-breakpoint-md} {
+  @media #{$tui-tablet-min} {
+    .section__search {
+      position: sticky;
+      top: $space-4;
+      z-index: $z-dropdown;
+    }
+
+    .section__filters {
+      // The search uses Taiga's large textfield height; leave a gap below it.
+      top: calc(#{$space-4} + var(--tui-height-l) + #{$space-2});
+    }
+  }
+}
+
 .result-link { color: inherit; text-decoration: none; }
 .result-link:hover { text-decoration: underline; }
 

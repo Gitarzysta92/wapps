@@ -1,1 +1,5 @@
-<results-page kind="all" browse="tag" />
+@if (isDirectory()) {
+  <catalog-directory-page kind="tag" />
+} @else {
+  <results-page kind="all" browse="tag" />
+}

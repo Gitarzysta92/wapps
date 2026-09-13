@@ -31,6 +31,8 @@ import { TuiAvatar } from '@taiga-ui/kit';
 import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
 import { CoverImageComponent } from '@ui/cover-image';
 import { HeaderPartialComponent } from '../../partials/header/header.component';
+import { FiltersMultiselectComponent } from '@ui/filters';
+import { FilterDefinition, FiltersBarComponent, FilterSelectionDialogResult } from '../../partials/filters-bar/src';
 import { NAVIGATION } from '../../navigation';
 import { EntryDetailsDataService } from '../entry-details-page/entry-details-data.service';
 
@@ -41,6 +43,8 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   styleUrl: './results-page.component.scss',
   host: { class: 'fluid-container' },
   imports: [
+    FiltersBarComponent,
+    FiltersMultiselectComponent,
     ContentStateComponent,
     CommonModule,
     PreferredDatePipe,
@@ -63,7 +67,7 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   ],
 })
 export class ResultsPageComponent {
-  filtersOpen = false;
+  displayOptionsOpen = false;
   readonly searchLabel = computed(() => this.kind() === 'all' ? 'Search this catalog' : 'Search ' + this.kind());
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -103,7 +107,7 @@ export class ResultsPageComponent {
     return {
       kind,
       search: params.get('search') ?? params.get('q') ?? '',
-      category: this.pathCategory() || params.get('category') || '',
+      category: this.pathCategory() || params.getAll('category').join(','),
       platform: params.getAll('platform').join(','),
       device: params.getAll('device').join(','),
       monetization: params.getAll('monetization').join(','),
@@ -174,12 +178,6 @@ export class ResultsPageComponent {
       { key: 'monetization' as const, label: 'Monetization', options: catalogFacets(apps, 'monetizations') },
     ];
   });
-  selectedApplicationFilter(key: 'platform' | 'device' | 'monetization'): string {
-    const selection = this.query()[key] ?? '';
-    return this.applicationFilters().find(control => control.key === key)?.options.find(option =>
-      normalizeCatalogFacet(option.slug) === normalizeCatalogFacet(selection) || String(option.id) === selection
-    )?.slug ?? selection;
-  }
   readonly categories = computed(() =>
     catalogFacets(this.scopeEntries(), 'categories')
   );
@@ -230,24 +228,47 @@ export class ResultsPageComponent {
         ?.items.map((entry) => ({ ...entry, path: this.detailPath(entry) })) ??
       []
   );
-  readonly selectedTag = computed(
-    () =>
-      this.tags().find(
-        (tag) =>
-          normalizeCatalogFacet(tag.slug) ===
-          normalizeCatalogFacet(this.query().tags[0] ?? '')
-      )?.slug ??
-      this.query().tags[0] ??
-      ''
-  );
-  readonly selectedCategory = computed(
-    () =>
-      this.categories().find(
-        (category) =>
-          normalizeCatalogFacet(category.slug) ===
-          normalizeCatalogFacet(this.query().category)
-      )?.slug ?? this.query().category
-  );
+  readonly filterDefinitions = computed<FilterDefinition[]>(() => [
+    ...(this.kind() === 'all' ? [{ key: 'type', name: 'Content type', singleSelection: true, options: [
+      { name: 'Applications', slug: 'applications' },
+      { name: 'Articles', slug: 'articles' },
+      { name: 'Suites', slug: 'suites' },
+    ] }] : []),
+    { key: 'category', name: 'Category', options: this.categories() },
+    { key: 'tag', name: 'Tag', options: this.tags() },
+    ...this.applicationFilters().filter(control => !this.query().kind || this.query().kind === 'applications' || !!this.query()[control.key])
+      .map(control => ({ key: control.key, name: control.label, options: control.options })),
+    { key: 'search', name: 'Search', options: [] },
+  ]);
+  readonly filterSelections = computed<Record<string, string[]>>(() => {
+    const query = this.query();
+    const values: Record<string, string[]> = {
+      type: this.kind() === 'all' && query.kind ? [query.kind] : [],
+      category: query.category.split(','), tag: query.tags,
+      platform: (query.platform ?? '').split(','), device: (query.device ?? '').split(','),
+      monetization: (query.monetization ?? '').split(','), search: query.search ? [query.search] : [],
+    };
+    return Object.fromEntries(this.filterDefinitions().map(definition => [definition.key,
+      [...new Set((values[definition.key] ?? []).filter(Boolean).map(value => definition.key === 'search' ? value :
+        definition.options.find(option => normalizeCatalogFacet(option.slug) === normalizeCatalogFacet(value) ||
+          (option.id !== undefined && String(option.id) === value))?.slug ?? value))],
+    ]));
+  });
+
+  onFilterSelectionChange({ filterId, selected }: FilterSelectionDialogResult): void {
+    const changes = {
+      [filterId]: selected.length ? selected.map(option => option.value) : null,
+      page: 1,
+      ...(filterId === 'tag' ? { tags: null } : {}),
+      ...(filterId === 'search' ? { q: null } : {}),
+    };
+    // Editing a path facet returns to its directory with the new selection in the URL.
+    const changesPath = (filterId === 'category' && this.pathCategory()) || (filterId === 'tag' && this.pathTag());
+    void this.router.navigate(changesPath ? [this.catalogPath()] : [], {
+      relativeTo: this.route, queryParamsHandling: 'merge', queryParams: changes,
+    });
+  }
+
   readonly hasDatedEntries = computed(() =>
     this.scopeEntries().some((entry) => !!entry.date)
   );
@@ -295,18 +316,17 @@ export class ResultsPageComponent {
       ...(key === 'search' ? { q: null } : {}),
     });
   }
+  private catalogPath(): string {
+    const path = this.browse() === 'category' ? NAVIGATION.categories.path
+      : this.browse() === 'tag' ? NAVIGATION.tags.path
+      : this.kind() === 'articles' ? NAVIGATION.articles.path
+      : this.kind() === 'suites' ? NAVIGATION.suites.path : NAVIGATION.discover.path;
+    return buildRoutePath(path, {}, { absolute: true });
+  }
   clearFilters(): void {
-    // Path constraints must also be removed, not just hidden by clearing query parameters.
-    const path =
-      this.browse() === 'category'
-        ? NAVIGATION.categories.path
-        : this.browse() === 'tag'
-        ? NAVIGATION.tags.path
-        : this.kind() === 'articles'
-        ? NAVIGATION.articles.path
-        : this.kind() === 'suites'
-        ? NAVIGATION.suites.path
-        : NAVIGATION.discover.path;
-    void this.router.navigate([buildRoutePath(path, {}, { absolute: true })]);
+    const params = this.queryParams();
+    void this.router.navigate([this.catalogPath()], {
+      queryParams: { sort: params.get('sort'), pageSize: params.get('pageSize'), view: params.get('view') },
+    });
   }
 }

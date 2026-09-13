@@ -1,3 +1,5 @@
+@use 'ui/design-system/src/styles' as *;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -6,3 +8,10 @@
 }
 
 multiselect-list { min-height: 0; }
+
+.single-options {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  label { display: flex; align-items: center; gap: $space-3; cursor: pointer; }
+}

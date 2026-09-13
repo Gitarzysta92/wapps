@@ -1,4 +1,6 @@
-import { signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { FiltersBarComponent } from '../../partials/filters-bar/src';
+import { Component, signal } from '@angular/core';
 import { TUI_DARK_MODE } from '@taiga-ui/core';
 import { TuiDropdowns, TuiDropdownDirective } from '@taiga-ui/core/directives/dropdown';
 import { TestBed } from '@angular/core/testing';
@@ -13,6 +15,9 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
 import { ResultsPageComponent } from './results-page.component';
 import { By } from '@angular/platform-browser';
 
+@Component({ standalone: true, imports: [ResultsPageComponent], template: '<results-page kind="all" browse="category" />' })
+class CatalogTestPageComponent {}
+
 async function settle(harness: RouterTestingHarness): Promise<void> {
   // Navigation activates the wrapper first; its signal inputs then start the resource.
   harness.detectChanges();
@@ -23,10 +28,10 @@ async function settle(harness: RouterTestingHarness): Promise<void> {
 }
 
 
-async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> {
+async function openPanel(harness: RouterTestingHarness, name = 'Display options'): Promise<HTMLElement> {
   const trigger = harness.routeDebugElement!
     .queryAll(By.directive(TuiDropdownDirective))
-    .find(element => element.nativeElement.textContent.trim() === 'Manage filters')!;
+    .find(element => element.nativeElement.textContent.trim() === name)!;
   const dropdown = trigger.injector.get(TuiDropdownDirective);
   if (!dropdown.ref()) {
     TestBed.createComponent(TuiDropdowns).detectChanges();
@@ -42,7 +47,7 @@ async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> 
     await settle(harness);
   }
   dropdown.ref()!.changeDetectorRef.detectChanges();
-  return document.querySelector<HTMLElement>('.catalog-filters')!;
+  return document.querySelector<HTMLElement>(name === 'Manage filters' ? '.filter-management-panel' : '.catalog-display-options')!;
 }
 
 describe('catalog page URL state', () => {
@@ -53,7 +58,9 @@ describe('catalog page URL state', () => {
         { provide: TUI_DARK_MODE, useValue: signal(false) },
         provideNoopAnimations(),
         provideRouter([
+          { path: 'catalog', component: CatalogTestPageComponent },
           { path: 'categories', component: CategoryResultsPageComponent },
+          { path: 'tags', component: TagResultsPageComponent },
           { path: 'articles', component: ArticlesPageComponent },
           { path: 'suites', component: SuitesPageComponent },
           { path: 'tags/:tagSlug', component: TagResultsPageComponent },
@@ -68,7 +75,7 @@ describe('catalog page URL state', () => {
 
   it('renders application filtering from the URL and responds to query navigation', async () => {
     const harness = await RouterTestingHarness.create(
-      '/categories?type=applications&search=Photo%20Snap'
+      '/catalog?type=applications&search=Photo%20Snap'
     );
     await settle(harness);
     expect(
@@ -79,7 +86,7 @@ describe('catalog page URL state', () => {
         ?.querySelector('.item-main')
         ?.getAttribute('href')
     ).toBe('/apps/photo-snap');
-    await harness.navigateByUrl('/categories?type=applications&search=does-not-exist');
+    await harness.navigateByUrl('/catalog?type=applications&search=does-not-exist');
     await settle(harness);
     expect(harness.routeNativeElement?.textContent).toContain(
       'No results found'
@@ -120,7 +127,7 @@ describe('catalog page URL state', () => {
   });
   it('encodes category segments once and uses semantic tag slugs', async () => {
     const harness = await RouterTestingHarness.create(
-      '/categories?type=applications&search=Photo%20Snap'
+      '/catalog?type=applications&search=Photo%20Snap'
     );
     await settle(harness);
     const links = [
@@ -152,7 +159,7 @@ describe('catalog page URL state', () => {
 
   it('sorts and paginates through controls while preserving search in the URL', async () => {
     const harness = await RouterTestingHarness.create(
-      '/categories?type=applications&search=a&pageSize=3'
+      '/catalog?type=applications&search=a&pageSize=3'
     );
     await settle(harness);
     const root = () => harness.routeNativeElement!;
@@ -174,7 +181,7 @@ describe('catalog page URL state', () => {
       page: '2',
     });
     expect(names().every((name) => !first.includes(name))).toBe(true);
-    const filterPanel = await openFilters(harness);
+    const filterPanel = await openPanel(harness);
     const sort = [...filterPanel.querySelectorAll('select')].find((select) =>
       [...select.options].some((option) => option.value === 'name-desc')
     )!;
@@ -219,72 +226,97 @@ describe('catalog page URL state', () => {
       else localStorage.setItem(storageKey, previous);
     }
   });
-  it('applies the three application filter controls and resets pagination', async () => {
-    const harness = await RouterTestingHarness.create(
-      '/categories?type=applications&page=2&platform=web&device=mobile'
-    );
+  const sharedFilters = (harness: RouterTestingHarness): FiltersBarComponent =>
+    harness.routeDebugElement!.query(By.directive(FiltersBarComponent)).componentInstance;
+
+  it.each(['/categories/photo-editing', '/tags/web-development'])('uses the shared filter picker on %s', async path => {
+    const harness = await RouterTestingHarness.create(path);
     await settle(harness);
-    const filterPanel = await openFilters(harness);
-    const controls = [
-      ...filterPanel.querySelectorAll('select'),
-    ];
-    const monetization = controls.find((select) =>
-      select.parentElement?.textContent?.includes('Monetization')
-    )!;
-    expect(monetization).toBeDefined();
-    monetization.value = 'freemium';
-    monetization.dispatchEvent(new Event('change'));
+    const panel = await openPanel(harness, 'Manage filters');
+    expect(panel.querySelector('filters-multiselect')).toBeTruthy();
+    expect(panel.querySelector('select')).toBeNull();
+    expect(panel.textContent).toContain('Category');
+    expect(panel.textContent).toContain('Content type');
+  });
+
+  it('applies application facets with the shared controls and resets pagination', async () => {
+    const harness = await RouterTestingHarness.create('/catalog?type=applications&page=2&platform=web&device=mobile');
     await settle(harness);
-    expect(
-      TestBed.inject(Router).parseUrl(TestBed.inject(Router).url).queryParams
-    ).toMatchObject({
-      platform: 'web',
-      device: 'mobile',
-      monetization: 'freemium',
-      page: '1',
+    sharedFilters(harness).onFilterSelectionChange('monetization', [{ id: 1, name: 'Freemium', value: 'freemium' }]);
+    await settle(harness);
+    expect(TestBed.inject(Router).parseUrl(TestBed.inject(Router).url).queryParams).toMatchObject({
+      platform: 'web', device: 'mobile', monetization: 'freemium', page: '1',
     });
-    expect(
-      harness.routeNativeElement!.querySelector('.result-count')!.textContent
-    ).toContain('1 result');
-    expect(
-      harness
-        .routeNativeElement!.querySelector('.item-main')!
-        .getAttribute('href')
-    ).toBe('/apps/photo-snap');
-  });
-  it('shows URL-selected category, tag, and application facets in native controls on first render', async () => {
-    const harness = await RouterTestingHarness.create('/categories?type=applications&category=photo-editing&tag=web-development&platform=0&device=1&monetization=1&sort=newest');
-    await settle(harness);
-    await openFilters(harness);
-    const selected = (label: string) => [...document.querySelectorAll('.catalog-filters label')]
-      .find(element => element.firstChild?.textContent?.trim() === label)?.querySelector('select')?.value;
-    expect(selected('Category')).toBe('photo-editing');
-    expect(selected('Tag')).toBe('Web Development');
-    expect(selected('Platform')).toBe('web');
-    expect(selected('Device')).toBe('mobile');
-    expect(selected('Monetization')).toBe('freemium');
-    expect(selected('Sort by')).toBe('newest');
-    await harness.navigateByUrl('/categories?type=applications');
-    await settle(harness);
-    await openFilters(harness);
-    for (const label of ['Category', 'Tag', 'Platform', 'Device', 'Monetization']) expect(selected(label)).toBe('');
+    expect(harness.routeNativeElement!.querySelector('.result-count')!.textContent).toContain('1 result');
+    expect(harness.routeNativeElement!.querySelector('.item-main')!.getAttribute('href')).toBe('/apps/photo-snap');
   });
 
-  it('shows the route tag in the disabled native selector immediately', async () => {
-    const harness = await RouterTestingHarness.create('/tags/web-development');
+  it('restores URL slugs and legacy facet IDs as named chips on first render', async () => {
+    const harness = await RouterTestingHarness.create('/catalog?type=applications&category=photo-editing&tag=web-development&platform=0&device=1&monetization=1&sort=newest');
     await settle(harness);
-    const filterPanel = await openFilters(harness);
-    const tag = [...filterPanel.querySelectorAll('label')]
-      .find(element => element.firstChild?.textContent?.trim() === 'Tag')!.querySelector('select')!;
-    expect(tag.value).toBe('Web Development');
-    expect(tag.disabled).toBe(true);
+    const filters = await firstValueFrom(sharedFilters(harness).filters$);
+    const value = (key: string) => filters.find(filter => filter.key === key)!.options[0];
+    expect(value('category')).toMatchObject({ value: 'photo-editing', name: 'Photo editing' });
+    expect(value('tag')).toMatchObject({ value: 'Web Development', name: 'Web Development' });
+    expect(value('platform')).toMatchObject({ value: 'web', name: 'Web' });
+    expect(value('device')).toMatchObject({ value: 'mobile', name: 'Mobile' });
+    expect(value('monetization')).toMatchObject({ value: 'freemium', name: 'Freemium' });
+    expect(harness.routeNativeElement!.querySelectorAll('selected-filter-chip')).toHaveLength(6);
+    await harness.navigateByUrl('/categories'); await settle(harness);
+    expect(harness.routeNativeElement!.querySelectorAll('selected-filter-chip')).toHaveLength(0);
   });
 
-  it.each([['/categories?type=applications', '20'], ['/categories?type=applications&pageSize=3', '3'], ['/categories?type=applications&pageSize=50', '50']])(
+  it.each([
+    ['/tags/web-development', 'tag', '/tags'],
+    ['/categories/photo-editing', 'category', '/categories'],
+  ])('removes the path facet from %s while preserving display settings', async (path, key, destination) => {
+    const harness = await RouterTestingHarness.create(path + '?sort=name-desc&pageSize=3&view=list');
+    await settle(harness);
+    expect((await firstValueFrom(sharedFilters(harness).filters$)).some(filter => filter.key === key)).toBe(true);
+    sharedFilters(harness).onDeactivateFilter(key); await settle(harness);
+    const router = TestBed.inject(Router);
+    expect(router.url.split('?')[0]).toBe(destination);
+    expect(router.parseUrl(router.url).queryParams).toMatchObject({ sort: 'name-desc', pageSize: '3', view: 'list' });
+    expect(harness.routeNativeElement!.querySelectorAll('selected-filter-chip')).toHaveLength(0);
+    expect(harness.routeNativeElement!.querySelectorAll('.directory-card').length).toBeGreaterThan(0);
+  });
+
+  it('combines multi-category choices and preserves them when changing another filter', async () => {
+    const harness = await RouterTestingHarness.create('/catalog?type=applications&category=photo-editing&category=project-management-software&view=list&pageSize=3');
+    await settle(harness);
+    const page = harness.routeDebugElement!.query(By.directive(ResultsPageComponent)).componentInstance as ResultsPageComponent;
+    expect(page.query().category).toBe('photo-editing,project-management-software');
+    expect(page.result.value()!.items.map(item => item.slug)).toEqual(expect.arrayContaining(['photo-snap', 'quick-task']));
+    sharedFilters(harness).onFilterSelectionChange('platform', [{ id: 0, name: 'Web', value: 'web' }]);
+    await settle(harness);
+    expect(TestBed.inject(Router).parseUrl(TestBed.inject(Router).url).queryParams).toMatchObject({
+      category: ['photo-editing', 'project-management-software'], platform: 'web', view: 'list', pageSize: '3',
+    });
+  });
+
+  it('clears search and tag aliases without leaving hidden filters behind', async () => {
+    const harness = await RouterTestingHarness.create('/tags/web-development?q=photo&tags=AI');
+    await settle(harness);
+    sharedFilters(harness).onDeactivateFilter('search'); await settle(harness);
+    expect(TestBed.inject(Router).url).not.toContain('q=');
+    sharedFilters(harness).onDeactivateFilter('tag'); await settle(harness);
+    expect(TestBed.inject(Router).url).toBe('/tags?page=1');
+  });
+
+  it('clear filters removes path constraints but retains display preferences', async () => {
+    const harness = await RouterTestingHarness.create('/tags/web-development?type=applications&q=photo&page=2&sort=name-desc&pageSize=3&view=list');
+    await settle(harness);
+    const clear = [...harness.routeNativeElement!.querySelectorAll('button')].find(button => button.textContent?.trim() === 'Clear filters')!;
+    clear.click(); await settle(harness);
+    expect(TestBed.inject(Router).url).toBe('/tags?sort=name-desc&pageSize=3&view=list');
+    expect(harness.routeNativeElement!.querySelectorAll('selected-filter-chip')).toHaveLength(0);
+  });
+
+  it.each([['/catalog?type=applications', '20'], ['/catalog?type=applications&pageSize=3', '3'], ['/catalog?type=applications&pageSize=50', '50']])(
     'initializes the native page-size selector for %s', async (url, expected) => {
       const harness = await RouterTestingHarness.create(url);
       await settle(harness);
-      const filterPanel = await openFilters(harness);
+      const filterPanel = await openPanel(harness);
       const select = [...filterPanel.querySelectorAll('label')]
         .find(element => element.firstChild?.textContent?.trim() === 'Per page')!.querySelector('select')!;
       expect(select.value).toBe(expected);

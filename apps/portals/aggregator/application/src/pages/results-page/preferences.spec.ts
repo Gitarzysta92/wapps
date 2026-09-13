@@ -16,10 +16,10 @@ async function settle(harness: RouterTestingHarness) {
 }
 
 
-async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> {
+async function openDisplayOptions(harness: RouterTestingHarness): Promise<HTMLElement> {
   const trigger = harness.routeDebugElement!
     .queryAll(By.directive(TuiDropdownDirective))
-    .find(element => element.nativeElement.textContent.trim() === 'Manage filters')!;
+    .find(element => element.nativeElement.textContent.trim() === 'Display options')!;
   const dropdown = trigger.injector.get(TuiDropdownDirective);
   if (!dropdown.ref()) {
     TestBed.createComponent(TuiDropdowns).detectChanges();
@@ -35,7 +35,7 @@ async function openFilters(harness: RouterTestingHarness): Promise<HTMLElement> 
     await settle(harness);
   }
   dropdown.ref()!.changeDetectorRef.detectChanges();
-  return document.querySelector<HTMLElement>('.catalog-filters')!;
+  return document.querySelector<HTMLElement>('.catalog-display-options')!;
 }
 
 describe('listing display preferences', () => {
@@ -70,7 +70,7 @@ describe('listing display preferences', () => {
       await settle(harness);
       expect(page.query().pageSize).toBe(size);
       expect(page.result.value()?.pageSize).toBe(size);
-      const filterPanel = await openFilters(harness);
+      const filterPanel = await openDisplayOptions(harness);
       const perPage = Array.from(filterPanel.querySelectorAll('select')).find(select => Array.from(select.options).some(option => option.value === '100'));
       expect(perPage?.value).toBe(String(size));
     }
@@ -85,7 +85,7 @@ describe('listing display preferences', () => {
     await firstValueFrom(preferences.updateDisplayPreferences({ dateFormat: 'MM/DD/YYYY' }));
     harness.detectChanges();
     expect(time?.textContent?.trim()).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
-    const filterPanel = await openFilters(harness);
+    const filterPanel = await openDisplayOptions(harness);
     const view = Array.from(filterPanel.querySelectorAll('select')).find(select => Array.from(select.options).some(option => option.value === 'list'));
     if (!view) throw new Error('View control missing');
     view.value = 'list'; view.dispatchEvent(new Event('change')); await settle(harness);
