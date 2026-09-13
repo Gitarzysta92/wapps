@@ -524,6 +524,22 @@ body.dark,
 // Card Appearances
 // ============================================================================
 
+article-highlight-feed-item {
+  .article-label,
+  .article-details-badge {
+    color: var(--tui-text-secondary);
+  }
+
+  .cover-image {
+    color: var(--tui-text-secondary);
+    border-radius: 10px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+    mask-size: 100% 100%;
+    mask-position: 0 0;
+    mask-repeat: no-repeat;
+  }
+}
+
 favorite-toggle-button .is-favorite::before {
   color: var(--tui-status-warning);
 }

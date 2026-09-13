@@ -5,11 +5,10 @@ import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CoverImageComponent } from '@ui/cover-image';
-import { TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ArticleHighlightFeedItem } from '@domains/feed';
-import { CardHeaderComponent, ElevatedCardComponent, MediumCardComponent } from '@ui/layout';
-import { ExcerptComponent, FadeOutExcerptComponent, MediumTitleComponent } from '@ui/content';
+import { CardHeaderComponent, MediumCardComponent } from '@ui/layout';
+import { ExcerptComponent, MediumTitleComponent } from '@ui/content';
 import { ShareToggleButtonComponent } from '@portals/shared/features/sharing';
 import { type ContextMenuItem } from '@ui/context-menu-chip';
 import { type AttributionInfoVM } from '@portals/shared/features/attribution';
@@ -44,48 +43,12 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
     ShareToggleButtonComponent,
     FeedActionsMenuComponent,
     FeedAttributionComponent,
-    TuiChip,
     TuiButton,
     TuiIcon,
     RouterLink,
     MediumCardComponent,
   ],
-  styles: [`
-    .cover-image {
-      margin-top: 1rem;
-      height: 150px;
-      color: var(--tui-text-secondary);
-      border-radius: 10px;
-      mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-      -webkit-mask-size: 100% 100%;
-      -webkit-mask-position: 0 0;
-      -webkit-mask-repeat: no-repeat;
-      mask-size: 100% 100%;
-      mask-position: 0 0;
-      mask-repeat: no-repeat;
-    }
-
-    .article-label {
-      display: inline-flex;
-      align-items: center;
-      opacity: 0.5;
-      margin-left: 0.5rem;
-    }
-
-    .article-details {
-      margin-top: -50px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .article-details-badge {
-     opacity: 0.5;
-    }
-
-  `],
+  styleUrl: './article-highlight-feed-item.component.scss',
   template: `
     <ui-medium-card>
       <ui-card-header slot="header">
@@ -96,7 +59,7 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
         <h3 uiMediumTitle>
           {{ item.author }}
           <span class="article-label">
-            article <tui-icon [style.height]="'16px'" icon="@tui.book-open-text" />
+            article <tui-icon icon="@tui.book-open-text" />
           </span>
         </h3>
         <article-details-badge class="article-details-badge" [article]="item" />
@@ -104,11 +67,10 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
 
       <ui-cover-image
         class="cover-image"
-        [image]="item.coverImage"
-        slot="backdrop">
+        [image]="item.coverImage">
       </ui-cover-image>
 
-      <div class="article-details">
+      <div class="article-summary">
         <h3 uiMediumTitle>{{ item.title }}</h3>
         <ui-tags [tags]="item.tags ?? []"></ui-tags>
         <ui-excerpt [excerpt]="item.excerpt" [maxLength]="200" />
