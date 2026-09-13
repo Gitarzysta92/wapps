@@ -5,6 +5,9 @@
     <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   }
   <h1 uiPageTitle slot="title" [tuiSkeleton]="isLoading()">My Profile</h1>
+  @if (authService?.isAuthenticated$ | async) {
+    <button slot="actions" tuiButton type="button" size="s" appearance="secondary" iconStart="@tui.log-out" (click)="logout()">Log out</button>
+  }
   <p slot="meta" class="profile-meta">Your saved profile on this browser.</p>
 </ui-page-header>
 

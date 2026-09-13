@@ -39,24 +39,6 @@
   </button> 
 }
 
-<!-- Logout Button -->
-<!-- @if (authService) {
-  <button
-    class="logout-button"
-    appearance="flat"
-    tuiButton
-    type="button"
-    (click)="authService.unauthenticate()"
-    [title]="'Log out'">
-    <tui-icon
-      icon="@tui.log-out"
-      [style.height.rem]="1"/>
-    <span class="nav-label">Log out</span>
-  </button>
-} -->
-
-
-
 <!-- Primary Navigation -->
 <nav class="navigation_section">
   @if (!isAuthenticated) {
@@ -110,7 +92,6 @@
       @for (item of navigationSecondary; track item.path) {
         <li><a tuiButton appearance="flat" [routerLink]="'/' + item.path" [attr.aria-label]="item.label" [title]="item.label"><tui-icon [icon]="item.icon" [style.height.rem]="1"/><span class="nav-label">{{ item.label }}</span></a></li>
       }
-      <li><button tuiButton appearance="flat" type="button" aria-label="Log out" title="Log out" (click)="authService?.unauthenticate()"><tui-icon icon="@tui.log-out" [style.height.rem]="1"/><span class="nav-label">Log out</span></button></li>
     </ul>
   </nav>
 }

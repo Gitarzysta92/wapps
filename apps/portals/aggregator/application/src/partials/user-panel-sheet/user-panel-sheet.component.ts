@@ -46,10 +46,4 @@ export class UserPanelSheetComponent  {
     this.close();
     void this.router.navigate([{ outlets: { dialog: 'identity' } }]);
   }
-  logout(): void {
-    this.service.unauthenticate();
-    this.close();
-    void this.router.navigateByUrl('/');
-  }
 }
-
