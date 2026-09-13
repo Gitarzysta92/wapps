@@ -1,16 +1,15 @@
 import { Injectable, inject } from "@angular/core";
 import { Router, UrlTree } from "@angular/router";
-import { IDENTITY_PROVIDER } from "../../application/identity-provider.token";
+import { AuthenticationStorage } from "../../infrastructure/authentication.storage";
 
 
 @Injectable()
 export class AuthenticationGuard {
-  private readonly _identityProvider = inject(IDENTITY_PROVIDER);
+  private readonly _storage = inject(AuthenticationStorage);
   private readonly _router = inject(Router);
 
-  //TODO: This guard needs to be refactored to use the new identity provider
   canActivate(): boolean | UrlTree {
-    if (this._identityProvider.getIdentity()) {
+    if (this._storage.getToken()) {
       return true;
     }
     return this._router.createUrlTree(['']);

@@ -4,7 +4,7 @@ import {
   IdentityCreationDto,
 } from '@sdk/features/identity/libs/authentication';
 import { err, isErr, ok, Result } from '@sdk/kernel/standard';
-import { FirebaseRestSessionGateway } from '@infrastructure/firebase-identity';
+import { FirebaseRestSessionGateway } from '@sdk/extras/identity-firebase';
 
 export class EmailAuthenticationStrategy implements IAuthenticationStrategy {
   static readonly provider = 'email';
@@ -33,7 +33,7 @@ export class EmailAuthenticationStrategy implements IAuthenticationStrategy {
     return ok({
       ...session,
       provider: EmailAuthenticationStrategy.provider,
-      claim: this.email,
+      claim: session.uid,
       identityType: 'email',
       identityId: session.uid,
       kind: 'user',

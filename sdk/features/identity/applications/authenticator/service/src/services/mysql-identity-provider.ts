@@ -1,3 +1,5 @@
+import { IdentityEventsPublisherHolder } from './identity-events-publisher.holder';
+import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IdentityCreationDto, IIdentityProvider } from '@sdk/features/identity/libs/authentication';
@@ -27,23 +29,40 @@ function toDomain(entity: IdentityEntity): Identity {
 export class MysqlIdentityProvider implements IIdentityProvider {
   constructor(
     @InjectRepository(IdentityEntity)
-    private readonly identityRepo: Repository<IdentityEntity>
+    private readonly identityRepo: Repository<IdentityEntity>,
+    private readonly events: IdentityEventsPublisherHolder
   ) {}
 
-  createIdentity(
-    identityCreationDto: IdentityCreationDto,
-    extras?: { activate?: boolean }
+  async createIdentity(
+    dto: IdentityCreationDto,
+    extras: { activate?: boolean } = { activate: true }
   ): Promise<Result<Identity, Error>> {
-    void identityCreationDto;
-    void extras;
-    throw new Error('Method not implemented.');
+    try {
+      const now = Date.now();
+      const entity = this.identityRepo.create({
+        id: randomUUID(), identityId: dto.identityId, claim: dto.claim,
+        kind: dto.kind, providerType: dto.provider,
+        isActive: extras.activate ?? true, isSuspended: false, isDeleted: false,
+        providerSecret: null, createdAt: now, updatedAt: now, deletedAt: 0,
+      });
+      await this.identityRepo.insert(entity);
+      this.events.get()?.publishCreated({ identityId: entity.identityId, subjectId: entity.id });
+      return ok(toDomain(entity));
+    } catch (e) {
+      // Concurrent first sign-ins must converge without overwriting account state.
+      if ((e as { code?: string }).code === 'ER_DUP_ENTRY') {
+        const existing = await this.obtainIdentity(dto.claim);
+        if (existing.ok && existing.value) return ok(existing.value);
+      }
+      return err(e instanceof Error ? e : new Error(String(e)));
+    }
   }
 
-  async obtainIdentity(claim: string): Promise<Result<Identity, Error>> {
+  async obtainIdentity(claim: string): Promise<Result<Identity | null, Error>> {
     try {
       const entity = await this.identityRepo.findOne({ where: { claim } });
       if (!entity) {
-        return err(new Error(`Identity not found for claim: ${claim}`));
+        return ok(null);
       }
       return ok(toDomain(entity));
     } catch (e) {

@@ -1,13 +1,13 @@
 import { ApplicationShell } from '@sdk/kernel/standard';
-import { PlatformMongoClient } from '@infrastructure/mongo';
-import { QueueClient } from '@infrastructure/platform-queue';
-import { MysqlClient } from '@infrastructure/mysql';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
+import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
+import { MysqlClient } from '@sdk/extras/mysql';
 import {
   DISCUSSION_PROJECTION_QUEUE_NAME,
   DiscussionMaterializationRequestedEvent,
 } from '@apps/shared';
-import { isEventEnvelope } from '@cross-cutting/events';
-import { MinioClient } from '@infrastructure/minio';
+import { isEventEnvelope } from '@sdk/kernel/aspects/events';
+import { MinioClient } from '@sdk/extras/minio';
 import { loadDiscussionPayload } from './minio-payload';
 import {
   getNode,
@@ -51,7 +51,7 @@ application.initialize(async (params) => {
     database: params.mongoDatabase,
   });
 
-  const queueClient = new QueueClient();
+  const queueClient = new RabbitMqQueueClient();
   const queue = await queueClient.connect({
     host: params.queueHost,
     port: params.queuePort,
@@ -81,15 +81,27 @@ application.initialize(async (params) => {
   return { mongoClient, queueClient, queue, mysqlClient, mysqlPool, minioClient, nodes, aggregates, applied };
 }).run(async ({ queue, mysqlPool, minioClient, nodes, aggregates, applied }) => {
   await queue.assertQueue(DISCUSSION_PROJECTION_QUEUE_NAME, { durable: true });
-  await queue.assertExchange(DISCUSSION_PROJECTION_QUEUE_NAME, 'direct', { durable: true });
-  await queue.bindQueue(DISCUSSION_PROJECTION_QUEUE_NAME, DISCUSSION_PROJECTION_QUEUE_NAME, { durable: true });
 
-  await queue.consumeJson<DiscussionMaterializationRequestedEvent>(
+  await queue.consume(
     DISCUSSION_PROJECTION_QUEUE_NAME,
-    async (evt) => {
+    async (msg) => {
+      if (!msg) return;
+      try {
+        const value: unknown = JSON.parse(msg.content.toString('utf8'));
+        if (!isEventEnvelope(value)) {
+          throw new Error('Invalid event envelope');
+        }
+        if (value.meta.type !== 'discussion.materialization.requested') {
+          throw new Error(`Unexpected event type: ${value.meta.type}`);
+        }
+        const evt = value as DiscussionMaterializationRequestedEvent;
+
       // Idempotency guard: if event already applied, do nothing.
       const already = await applied.findOne({ _id: evt.meta.id });
-      if (already) return;
+      if (already) {
+        msg.ack();
+        return;
+      }
 
       const nodeId = evt.payload.discussionId;
 
@@ -97,6 +109,7 @@ application.initialize(async (params) => {
       if (!node) {
         // Non-retryable: node does not exist (deleted or out-of-order).
         await applied.insertOne({ _id: evt.meta.id, appliedAt: new Date().toISOString() });
+        msg.ack();
         return;
       }
 
@@ -175,21 +188,12 @@ application.initialize(async (params) => {
       }
 
       await applied.insertOne({ _id: evt.meta.id, appliedAt: new Date().toISOString() });
+      msg.ack();
+      } catch {
+        msg.nack(true);
+      }
     },
-    {
-      ack: 'onSuccess',
-      nackOnError: true,
-      requeueOnError: true,
-      parse: (value: unknown) => {
-        if (!isEventEnvelope(value)) {
-          throw new Error('Invalid event envelope');
-        }
-        if (value.meta.type !== 'discussion.materialization.requested') {
-          throw new Error(`Unexpected event type: ${value.meta.type}`);
-        }
-        return value as DiscussionMaterializationRequestedEvent;
-      },
-    }
+    { noAck: false }
   );
 
 }).finally(async () => {

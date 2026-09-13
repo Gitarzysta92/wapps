@@ -1,4 +1,4 @@
-import { EventEnvelope } from '@cross-cutting/events';
+import { EventEnvelope } from '@sdk/kernel/aspects/events';
 
 export type IdentityCreatedEvent = EventEnvelope<
   'identity.created',

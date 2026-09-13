@@ -13,9 +13,9 @@ export class IdentityFactory implements IIdentityFactory {
   async create(identityCreationDto: IdentityCreationDto): Promise<Result<Identity, Error>> {
     return ok(new Identity({
       id: this.ids.generate(),
-      identityId: this.ids.generate(),
+      identityId: identityCreationDto.identityId,
       claim: identityCreationDto.claim,
-      kind: identityCreationDto.identityType,
+      kind: identityCreationDto.kind,
       isActive: false,
       isSuspended: false,
       isDeleted: false,

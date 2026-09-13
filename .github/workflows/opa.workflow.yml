@@ -7,7 +7,7 @@ on:
       - 'platform/cluster/opa/**'
       - 'argocd/applications/platform/opa.yaml'
       - 'environments/dev/platform/opa-kustomization/**'
-      - 'libs/utils/opa/bundles/discussion/**'
+      - 'sdk/features/identity/packages/infrastructure/opa/bundles/discussion/**'
       - '.github/workflows/opa.workflow.yml'
       - '.github/actions/sync-argocd-app/**'
   workflow_dispatch:

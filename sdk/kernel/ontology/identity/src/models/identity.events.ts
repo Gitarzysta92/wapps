@@ -2,7 +2,7 @@
  * Identity domain events.
  *
  * This file must be a TS module (export something), because it is re-exported
- * from `libs/foundation/identity-system/src/index.ts`.
+ * from the identity ontology package entrypoint.
  */
 
 export type IdentityEventType =

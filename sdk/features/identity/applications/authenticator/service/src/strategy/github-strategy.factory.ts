@@ -4,7 +4,7 @@ import {
   FirebaseRestSessionGateway,
   FirebaseTokenGenerator,
   FirebaseUserProvisioner,
-} from '@infrastructure/firebase-identity';
+} from '@sdk/extras/identity-firebase';
 import { GithubAuthenticationStrategy } from './github.strategy';
 
 export class GithubAuthenticationStrategyFactory {

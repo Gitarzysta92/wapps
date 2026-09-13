@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import * as admin from 'firebase-admin';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
@@ -7,8 +8,10 @@ import { AppModule } from './app.module';
 import { swaggerDocument } from './swagger.document';
 
 async function bootstrap() {
+  if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.applicationDefault(), projectId: process.env.FIREBASE_PROJECT_ID });
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.enableShutdownHooks();
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -35,7 +38,7 @@ async function bootstrap() {
     '/api-docs',
     swaggerUi.serve,
     swaggerUi.setup(swaggerDocument, {
-      customSiteTitle: 'Firebase Auth Validator API',
+      customSiteTitle: 'Authenticator API',
       customCss: '.swagger-ui .topbar { display: none }',
     })
   );
@@ -63,7 +66,7 @@ async function bootstrap() {
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   const githubClientId = process.env.GITHUB_CLIENT_ID;
 
-  console.log(`🔐 Firebase Auth Validator running on port ${port}`);
+  console.log(`🔐 Authenticator running on port ${port}`);
   console.log(`📋 Firebase Project ID: ${firebaseProjectId || 'NOT SET'}`);
   console.log(`📋 Firebase Web API Key: ${firebaseWebApiKey ? '✓ SET' : '✗ NOT SET'}`);
   console.log(`📋 Enabled providers:`);

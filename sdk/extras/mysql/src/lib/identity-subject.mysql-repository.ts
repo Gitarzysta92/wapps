@@ -1,6 +1,6 @@
 import type { Pool } from 'mysql2/promise';
-import { err, ok, Result } from '@foundation/standard';
-import { IIdentitySubjectRepository, IIdentitySubject } from '@foundation/identity-system';
+import { err, ok, Result } from '@sdk/kernel/standard';
+import { IIdentitySubjectRepository, IIdentitySubject } from '@sdk/kernel/ontology/identity';
 
 export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepository {
   constructor(private readonly pool: Pool) {}
@@ -32,9 +32,9 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
     }
   }
 
-  async getByProviderClaim(
-    provider: string,
-    claim: string
+  async getByProviderExternalId(
+    providerType: string,
+    externalId: string
   ): Promise<Result<IIdentitySubject | null, Error>> {
     try {
       const [rows] = await this.pool.query(
@@ -42,7 +42,7 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
          FROM identity_subjects
          WHERE provider = ? AND externalId = ? AND deletedAt = 0
          LIMIT 1`,
-        [provider, claim]
+        [providerType, externalId]
       );
       const row = (rows as any[])[0];
       const subject = row ? { ...row, claim: row.externalId } : null;
@@ -50,6 +50,13 @@ export class MysqlIdentitySubjectRepository implements IIdentitySubjectRepositor
     } catch (e) {
       return err(e instanceof Error ? e : new Error(String(e)));
     }
+  }
+
+  /**
+   * Backward-compatible alias for older call sites.
+   */
+  async getByProviderClaim(providerType: string, claim: string): Promise<Result<IIdentitySubject | null, Error>> {
+    return this.getByProviderExternalId(providerType, claim);
   }
 
   async upsert(subject: IIdentitySubject): Promise<Result<boolean, Error>> {

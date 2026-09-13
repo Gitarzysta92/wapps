@@ -4,7 +4,7 @@ import {
   IdentityCreationDto,
 } from '@sdk/features/identity/libs/authentication';
 import { err, isErr, ok, Result } from '@sdk/kernel/standard';
-import { FirebaseUserProvisioner, FirebaseGoogleCodeExchanger, FirebaseTokenGenerator, FirebaseRestSessionGateway } from '@infrastructure/firebase-identity';
+import { FirebaseUserProvisioner, FirebaseGoogleCodeExchanger, FirebaseTokenGenerator, FirebaseRestSessionGateway } from '@sdk/extras/identity-firebase';
 
 export class GoogleAuthenticationStrategy implements IAuthenticationStrategy {
 
@@ -57,7 +57,7 @@ export class GoogleAuthenticationStrategy implements IAuthenticationStrategy {
       uid: createdUserResult.value.uid,
       email: googleUser.email,
       provider: GoogleAuthenticationStrategy.provider,
-      claim: googleUser.email,
+      claim: createdUserResult.value.uid,
       identityType: 'email',
       identityId: createdUserResult.value.uid,
       kind: 'user',

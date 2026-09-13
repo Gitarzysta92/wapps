@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Result } from "@foundation/standard";
-import { IIdentityProvider, IdentityDto } from "@domains/identity/authentication";
+import { IClientIdentityProvider, ClientIdentityDto } from "@domains/identity/authentication";
 
 @Injectable()
-export class IdentityApiService implements IIdentityProvider {
-  getIdentity(): Observable<Result<IdentityDto, Error>> {
+export class IdentityApiService implements IClientIdentityProvider {
+  getIdentity(): Observable<Result<ClientIdentityDto, Error>> {
     return of({
       ok: true,
       value: {

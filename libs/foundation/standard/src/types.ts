@@ -1,1 +1,0 @@
-export type Uuidv7 = string;

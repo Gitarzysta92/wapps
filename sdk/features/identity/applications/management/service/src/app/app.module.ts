@@ -5,11 +5,12 @@ import { AuthValidationMiddleware } from './middleware/auth-validation.middlewar
 import { AccountManagementController } from './controllers/account-management.controller';
 import { PlatformController } from './controllers/platform.controller';
 import { AccountManagementAppService } from './services/account-management-app.service';
-import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
+import { IQueueChannel } from '@sdk/platform/queue';
+import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
 import { ConfigService } from '@nestjs/config';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
-import { PlatformMongoClient } from '@infrastructure/mongo';
-import { MysqlClient, MysqlIdentitySubjectRepository } from '@infrastructure/mysql';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
+import { MysqlClient, MysqlIdentitySubjectRepository } from '@sdk/extras/mysql';
 import { RabbitMqIdentityEventsPublisher } from './infrastructure/identity/rabbitmq-identity-events.publisher';
 import { IdentityProvisioner } from './infrastructure/identity/identity-provisioner';
 import { IIdentitySubjectRepository } from '@sdk/kernel/ontology/identity';
@@ -24,13 +25,13 @@ import { IIdentitySubjectRepository } from '@sdk/kernel/ontology/identity';
   providers: [
     AccountManagementAppService,
     {
-      provide: QueueClient,
-      useFactory: () => new QueueClient(),
+      provide: RabbitMqQueueClient,
+      useFactory: () => new RabbitMqQueueClient(),
     },
     {
       provide: 'IDENTITY_EVENTS_QUEUE',
-      inject: [QueueClient, ConfigService],
-      useFactory: async (client: QueueClient, config: ConfigService): Promise<QueueChannel> => {
+      inject: [RabbitMqQueueClient, ConfigService],
+      useFactory: async (client: RabbitMqQueueClient, config: ConfigService): Promise<IQueueChannel> => {
         // If queue env not set, events are disabled (best effort).
         const host = config.get('QUEUE_HOST') as string | undefined;
         const port = config.get('QUEUE_PORT') as string | undefined;
@@ -53,7 +54,7 @@ import { IIdentitySubjectRepository } from '@sdk/kernel/ontology/identity';
     {
       provide: 'IDENTITY_EVENTS_PUBLISHER',
       inject: ['IDENTITY_EVENTS_QUEUE'],
-      useFactory: async (queue: QueueChannel) => {
+      useFactory: async (queue: IQueueChannel) => {
         if (!queue) {
           return {
             publishCreated: () => undefined,

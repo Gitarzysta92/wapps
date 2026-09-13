@@ -4,7 +4,12 @@ on:
   push:
     branches: [develop, main]
     paths:
-      - 'apps/services/authenticator/**'
+      - 'sdk/kernel/**'
+      - 'sdk/platform/**'
+      - 'sdk/extras/**'
+      - 'sdk/features/identity/**'
+      - 'apps/shared/**'
+      - 'sdk/features/identity/applications/authenticator/service/**'
       - 'environments/dev/apps/authenticator-kustomization/**'
       - '.github/workflows/authenticator.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
@@ -59,8 +64,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test authentication
+        run: npx nx run-many -t test -p sdk-features-identity-authentication,sdk-features-identity-applications-authenticator --runInBand
+
       - name: Build application
-        run: npx nx build apps.services.authenticator --configuration=production
+        run: npx nx build sdk-features-identity-applications-authenticator --configuration=production
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -75,8 +83,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: dist/apps/services/authenticator
-          file: apps/services/authenticator/Dockerfile
+          context: dist/sdk/features/identity/applications/authenticator
+          file: sdk/features/identity/applications/authenticator/service/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
@@ -104,6 +112,38 @@ jobs:
           
           # Set ArgoCD server
           echo "server=argocd.${ENV}.wapps.ai" >> $GITHUB_OUTPUT
+
+      - name: Configure authenticator database and queue
+        env:
+          MYSQL_HOST: ${{ vars.IDENTITY_MYSQL_HOST }}
+          MYSQL_PORT: ${{ vars.IDENTITY_MYSQL_PORT }}
+          MYSQL_DATABASE: ${{ vars.IDENTITY_MYSQL_DATABASE }}
+          MYSQL_USERNAME: ${{ secrets.IDENTITY_MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.IDENTITY_MYSQL_PASSWORD }}
+          QUEUE_HOST: ${{ vars.QUEUE_HOST }}
+          QUEUE_PORT: ${{ vars.QUEUE_PORT }}
+          QUEUE_USERNAME: ${{ secrets.QUEUE_USERNAME }}
+          QUEUE_PASSWORD: ${{ secrets.QUEUE_PASSWORD }}
+        run: |
+          set -eu
+          : "${MYSQL_HOST:?Set IDENTITY_MYSQL_HOST}"
+          : "${MYSQL_DATABASE:?Set IDENTITY_MYSQL_DATABASE}"
+          : "${MYSQL_USERNAME:?Set IDENTITY_MYSQL_USERNAME}"
+          : "${MYSQL_PASSWORD:?Set IDENTITY_MYSQL_PASSWORD}"
+          : "${QUEUE_HOST:?Set QUEUE_HOST}"
+          : "${QUEUE_USERNAME:?Set QUEUE_USERNAME}"
+          : "${QUEUE_PASSWORD:?Set QUEUE_PASSWORD}"
+          kubectl create secret generic authenticator-runtime \
+            --from-literal=MYSQL_HOST="$MYSQL_HOST" \
+            --from-literal=MYSQL_PORT="${MYSQL_PORT:-3306}" \
+            --from-literal=MYSQL_DATABASE="$MYSQL_DATABASE" \
+            --from-literal=MYSQL_USERNAME="$MYSQL_USERNAME" \
+            --from-literal=MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+            --from-literal=QUEUE_HOST="$QUEUE_HOST" \
+            --from-literal=QUEUE_PORT="${QUEUE_PORT:-5672}" \
+            --from-literal=QUEUE_USERNAME="$QUEUE_USERNAME" \
+            --from-literal=QUEUE_PASSWORD="$QUEUE_PASSWORD" \
+            --namespace=default --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Update Firebase config secret
         env:

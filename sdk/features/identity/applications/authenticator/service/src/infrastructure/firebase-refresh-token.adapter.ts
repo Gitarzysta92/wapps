@@ -1,6 +1,6 @@
 import { Result } from '@sdk/kernel/standard';
 import { AuthSessionDto, IAuthenticationRefreshToken } from '@sdk/features/identity/libs/authentication';
-import { FirebaseRestSessionGateway } from '@infrastructure/firebase-identity';
+import { FirebaseRestSessionGateway } from '@sdk/extras/identity-firebase';
 
 export class FirebaseRefreshTokenAdapter implements IAuthenticationRefreshToken {
   constructor(private readonly sessionGateway: FirebaseRestSessionGateway) {}

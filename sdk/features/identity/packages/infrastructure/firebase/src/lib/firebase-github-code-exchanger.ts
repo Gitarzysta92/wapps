@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@sdk/kernel/standard';
-import { OAuthUserInfoDto } from '@sdk/features/identity/libs/authentication';
+import type { OAuthUserInfoDto } from './oauth-user-info.dto';
 
 export type FirebaseGithubCodeExchangerConfig = {
   clientId: string;
@@ -57,16 +57,10 @@ export class FirebaseGithubCodeExchanger {
       },
     });
 
-    let email = user.email;
-    if (!email && emailsResponse.ok) {
-      const emails = (await emailsResponse.json()) as any[];
-      const primaryEmail = emails.find((e) => e.primary && e.verified);
-      email = primaryEmail?.email || emails[0]?.email;
-    }
-
-    if (!email) {
-      return err(new Error('Could not get email from GitHub account'));
-    }
+    if (!emailsResponse.ok) return err(new Error('Could not verify GitHub email'));
+    const emails = (await emailsResponse.json()) as { email: string; primary: boolean; verified: boolean }[];
+    const email = (emails.find(e => e.primary && e.verified) ?? emails.find(e => e.verified))?.email;
+    if (!email) return err(new Error('A verified GitHub email is required'));
 
     return ok({
       email,

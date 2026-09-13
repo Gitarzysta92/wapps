@@ -1,18 +1,12 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@sdk/kernel/standard';
 
-
 export type FirebaseGoogleCodeExchangerConfig = {
   clientId: string;
   clientSecret: string;
 };
 
-export type OAuthUserInfoDto = {
-  email: string;
-  name: string;
-  picture: string;
-  emailVerified: boolean;
-};
+import type { OAuthUserInfoDto } from './oauth-user-info.dto';
 
 export class FirebaseGoogleCodeExchanger {
   constructor(private readonly config: FirebaseGoogleCodeExchangerConfig) {}
@@ -70,11 +64,12 @@ export class FirebaseGoogleCodeExchanger {
     }
 
     const userInfo = (await userInfoResponse.json()) as any;
+    if (userInfo.aud !== clientId || !userInfo.email) return err(new Error('Invalid Google identity'));
     return ok({
       email: userInfo.email,
       name: userInfo.name,
       picture: userInfo.picture,
-      emailVerified: userInfo.email_verified === 'true',
+      emailVerified: userInfo.email_verified === 'true' || userInfo.email_verified === true,
     });
   }
 }

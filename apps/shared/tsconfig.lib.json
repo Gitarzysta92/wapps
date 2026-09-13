@@ -9,7 +9,7 @@
   },
   "references": [
     {
-      "path": "../../libs/cross-cutting/events/tsconfig.lib.json"
+      "path": "../../sdk/kernel/aspects/events/tsconfig.lib.json"
     }
   ],
   "include": ["src/**/*.ts"],

@@ -1,7 +1,20 @@
 import * as admin from 'firebase-admin';
 import { err, ok, Result } from '@sdk/kernel/standard';
+import type { OAuthUserInfoDto } from './oauth-user-info.dto';
 
+export type ProvisionedUserDto = { uid: string };
 
+export type CreateUserDto = OAuthUserInfoDto;
+
+class FirebaseAdminError extends Error {
+  override name = 'FirebaseAdminError';
+  constructor(
+    message: string,
+    public readonly code?: string
+  ) {
+    super(message);
+  }
+}
 
 export class FirebaseUserProvisioner {
   async getUserByEmail(email: string): Promise<Result<ProvisionedUserDto, Error>> {
@@ -16,11 +29,20 @@ export class FirebaseUserProvisioner {
   }
 
   async createUser(data: CreateUserDto): Promise<Result<ProvisionedUserDto, Error>> {
+    if (!data.email || !data.emailVerified) return err(new Error('A verified provider email is required'));
     try {
+      const existing = await admin.auth().getUserByEmail(data.email).catch((error) => {
+        if (error.code === 'auth/user-not-found') return null;
+        throw error;
+      });
+      if (existing) {
+        if (existing.disabled || !existing.emailVerified) return err(new Error('Existing account cannot be linked'));
+        return ok({ uid: existing.uid });
+      }
       const user = await admin.auth().createUser({
         email: data.email,
-        displayName: data.displayName,
-        photoURL: data.photoURL,
+        displayName: data.name,
+        photoURL: data.picture,
         emailVerified: data.emailVerified,
       });
       return ok({ uid: user.uid });

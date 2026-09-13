@@ -24,6 +24,10 @@ export function validateAuthenticatorEnv(env: Record<string, unknown>): Record<s
   if (!get('MYSQL_PASSWORD')) missing.push('MYSQL_PASSWORD');
   if (!get('MYSQL_DATABASE')) missing.push('MYSQL_DATABASE');
 
+  for (const key of ['QUEUE_HOST', 'QUEUE_USERNAME', 'QUEUE_PASSWORD', 'FIREBASE_PROJECT_ID']) {
+    if (!get(key)) missing.push(key);
+  }
+
   // OAuth (conditional)
   const enableGoogle = get('ENABLE_GOOGLE') === 'true';
   const enableGithub = get('ENABLE_GITHUB') === 'true';
@@ -38,7 +42,7 @@ export function validateAuthenticatorEnv(env: Record<string, unknown>): Record<s
 
   // Email/password requires Firebase key
   const enableEmailPassword = get('ENABLE_EMAIL_PASSWORD') !== 'false';
-  if (enableEmailPassword && !get('FIREBASE_WEB_API_KEY')) {
+  if (!get('FIREBASE_WEB_API_KEY')) {
     missing.push('FIREBASE_WEB_API_KEY (required when email/password is enabled)');
   }
 

@@ -1,0 +1,9 @@
+export enum AuthenticationProvider {
+  EMAIL_PASSWORD = 'EMAIL_PASSWORD',
+  GOOGLE = 'GOOGLE',
+  GITHUB = 'GITHUB',
+  FACEBOOK = 'FACEBOOK',
+  APPLE = 'APPLE',
+  ANONYMOUS = 'ANONYMOUS',
+}
+

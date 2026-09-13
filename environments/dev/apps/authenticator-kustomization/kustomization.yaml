@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: default
 
 resources:
-  - ../../../../apps/services/authenticator/provisioning/k8s
+  - ../../../../sdk/features/identity/applications/authenticator/provisioning/k8s
 
 patches:
   - path: deployment-patch.yaml

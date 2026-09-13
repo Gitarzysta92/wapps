@@ -1,2 +1,2 @@
-export { MinioClient } from '@infrastructure/minio';
+export { MinioClient } from '@sdk/extras/minio';
 

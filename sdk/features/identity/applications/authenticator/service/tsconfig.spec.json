@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "types": ["node", "jest"], "outDir": "../../../../../../dist/test/authenticator" },
+  "include": ["src/**/*.ts"]
+}

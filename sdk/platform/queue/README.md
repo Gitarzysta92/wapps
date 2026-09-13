@@ -6,4 +6,4 @@ Interfaces (ports) for a message queue client. **Consumed by features**; no impl
 - `IQueueChannel` – channel to assert queues, send, consume
 - `IQueueClient` – connect / close
 
-Implementations live in **extras** (e.g. `@sdk/extras/queue` RabbitMQ). Wire the implementation at app bootstrap.
+Implementations live in **extras** (e.g. `@sdk/extras/queue-rabbitmq` for RabbitMQ). Wire the implementation at app bootstrap.

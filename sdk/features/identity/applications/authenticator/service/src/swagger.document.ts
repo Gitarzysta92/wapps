@@ -5,7 +5,7 @@
 export const swaggerDocument = {
   openapi: '3.0.0',
   info: {
-    title: 'Firebase Auth Validator API',
+    title: 'Authenticator API',
     version: '2.0.0',
     description:
       'Authentication BFF service for Firebase. Handles token validation for ingress-nginx and authentication flows for frontend apps.',
@@ -107,6 +107,12 @@ export const swaggerDocument = {
     },
   },
   paths: {
+    '/auth/methods': {
+      get: { tags: ['Authentication'], summary: 'List enabled sign-in methods', responses: { '200': { description: 'Enabled authentication methods' } } },
+    },
+    '/auth/signout': {
+      post: { tags: ['Authentication'], summary: 'Revoke refresh tokens for the authenticated user', security: [{ bearerAuth: [] }], responses: { '200': { description: 'Sessions revoked' }, '401': { description: 'Invalid session' } } },
+    },
     '/health': {
       get: {
         tags: ['Health'],

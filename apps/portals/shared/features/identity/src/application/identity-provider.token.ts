@@ -1,4 +1,4 @@
 import { InjectionToken } from "@angular/core";
-import { IIdentityProvider } from "@domains/identity/authentication";
+import { IClientIdentityProvider } from "@domains/identity/authentication";
 
-export const IDENTITY_PROVIDER = new InjectionToken<IIdentityProvider>('IDENTITY_PROVIDER_PORT');
+export const IDENTITY_PROVIDER = new InjectionToken<IClientIdentityProvider>('IDENTITY_PROVIDER_PORT');

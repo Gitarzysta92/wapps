@@ -1,0 +1,21 @@
+{
+  "name": "utils-opa",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "sdk/features/identity/packages/infrastructure/opa/src",
+  "projectType": "library",
+  "tags": [
+    "type:lib",
+    "scope:opa"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/utils/opa"
+      ],
+      "options": {
+        "command": "tsc --build sdk/features/identity/packages/infrastructure/opa/tsconfig.lib.json"
+      }
+    }
+  }
+}

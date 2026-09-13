@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity('identities')
-export class IdentityEntity implements  {
+export class IdentityEntity {
   @PrimaryColumn()
   id!: string;
 
@@ -27,7 +27,7 @@ export class IdentityEntity implements  {
   @Column({ name: 'provider_type', length: 64 })
   providerType!: string;
 
-  @Column({ name: 'provider_secret', nullable: true })
+  @Column({ name: 'provider_secret', type: 'varchar', nullable: true })
   providerSecret!: string | null;
 
   @Column({ name: 'created_at', type: 'bigint' })

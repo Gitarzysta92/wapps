@@ -20,7 +20,7 @@
   ],
   "references": [
     {
-      "path": "../../../foundation/standard/tsconfig.lib.json"
+      "path": "../../../../sdk/kernel/standard/tsconfig.lib.json"
     }
   ]
 }

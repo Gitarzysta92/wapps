@@ -1,3 +1,5 @@
+import { CreateIdentities1788566400000 } from './entities/create-identities.migration';
+import { TokenValidationService } from './services/token-validation.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +11,7 @@ import {
   FirebaseTokenGenerator,
   FirebaseGoogleCodeExchanger,
   FirebaseGithubCodeExchanger,
-} from '@infrastructure/firebase-identity';
+} from '@sdk/extras/identity-firebase';
 import {
   ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
   EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
@@ -58,6 +60,8 @@ import { MysqlIdentityProvider } from './services/mysql-identity-provider';
         database: config.get<string>('MYSQL_DATABASE'),
         entities: [IdentityEntity],
         synchronize: false,
+        migrations: [CreateIdentities1788566400000],
+        migrationsRun: true,
         logging: false,
       }),
     }),
@@ -71,6 +75,7 @@ import { MysqlIdentityProvider } from './services/mysql-identity-provider';
     AuthController
   ],
   providers: [
+    TokenValidationService,
     IdentityEventsPublisherHolder,
     {
       provide: SWAGGER_DOCUMENT,

@@ -21,13 +21,16 @@
       "path": "../../../libs/authentication/tsconfig.lib.json"
     },
     {
-      "path": "../../../../../../libs/infrastructure/firebase-identity/tsconfig.lib.json"
+      "path": "../../../packages/infrastructure/firebase/tsconfig.lib.json"
     },
     {
-      "path": "../../../../../../libs/infrastructure/platform-queue/tsconfig.lib.json"
+      "path": "../../../../../platform/queue/tsconfig.lib.json"
     },
     {
       "path": "../../../../../../apps/shared/tsconfig.lib.json"
     }
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
   ]
 }

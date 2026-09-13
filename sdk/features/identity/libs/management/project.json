@@ -1,5 +1,5 @@
 {
-  "name": "domains-identity-management",
+  "name": "sdk-features-identity-management",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "domains",

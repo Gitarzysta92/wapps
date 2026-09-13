@@ -4,5 +4,5 @@ import { Identity } from '@sdk/features/identity/core';
 export interface IIdentityRepository {
   deleteById(identityId: string): Promise<Result<boolean, Error>>;
   upsert(identity: Identity): Promise<Result<boolean, Error>>;
-  getByClaim(claim: string): Promise<Result<Identity, Error>>;
+  getByClaim(claim: string): Promise<Result<Identity | null, Error>>;
 }

@@ -4,14 +4,15 @@ import { ConfigService } from '@nestjs/config';
 import { DiscussionsController } from './discussions.controller';
 import { DiscussionsService } from './discussions.service';
 import { MinioClient } from '../infrastructure/minio-client';
-import { QueueClient, QueueChannel } from '@infrastructure/platform-queue';
+import { IQueueChannel } from '@sdk/platform/queue';
+import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
 import { DISCUSSION_CONTENT_BUCKET_NAME } from './infrastructure/minio-discussion-payload.repository';
 import { DISCUSSION_PROJECTION_QUEUE_NAME } from '@apps/shared';
 import { ContentNodeEntity } from './infrastructure/content-node.entity';
 import { ContentNodeRelationEntity } from './infrastructure/content-node-relation.entity';
 import { CommentLikeEntity } from './infrastructure/comment-like.entity';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
-import { PlatformMongoClient } from '@infrastructure/mongo';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ContentNodeEntity, ContentNodeRelationEntity, CommentLikeEntity])],
@@ -30,8 +31,8 @@ import { PlatformMongoClient } from '@infrastructure/mongo';
         }),
     },
     {
-      provide: QueueClient,
-      useFactory: () => new QueueClient(),
+      provide: RabbitMqQueueClient,
+      useFactory: () => new RabbitMqQueueClient(),
     },
     {
       provide: PlatformMongoClient,
@@ -50,8 +51,8 @@ import { PlatformMongoClient } from '@infrastructure/mongo';
     },
     {
       provide: 'DISCUSSION_QUEUE',
-      inject: [QueueClient, ConfigService],
-      useFactory: async (client: QueueClient, config: ConfigService): Promise<QueueChannel> =>
+      inject: [RabbitMqQueueClient, ConfigService],
+      useFactory: async (client: RabbitMqQueueClient, config: ConfigService): Promise<IQueueChannel> =>
         client.connect({
           host: config.get('QUEUE_HOST') as string,
           port: config.get('QUEUE_PORT') as string,
@@ -65,7 +66,7 @@ import { PlatformMongoClient } from '@infrastructure/mongo';
 export class DiscussionsModule implements OnModuleInit {
   constructor(
     private readonly minioClient: MinioClient,
-    @Inject('DISCUSSION_QUEUE') private readonly queue: QueueChannel
+    @Inject('DISCUSSION_QUEUE') private readonly queue: IQueueChannel
   ) {}
 
   async onModuleInit() {

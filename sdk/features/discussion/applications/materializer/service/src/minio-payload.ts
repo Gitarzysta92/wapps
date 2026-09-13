@@ -1,4 +1,4 @@
-import { MinioClient } from '@infrastructure/minio';
+import { MinioClient } from '@sdk/extras/minio';
 
 const DISCUSSION_CONTENT_BUCKET_NAME = 'discussion-content';
 

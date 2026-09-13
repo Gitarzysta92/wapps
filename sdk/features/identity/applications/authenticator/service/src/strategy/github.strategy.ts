@@ -9,7 +9,7 @@ import {
   FirebaseGithubCodeExchanger,
   FirebaseTokenGenerator,
   FirebaseRestSessionGateway,
-} from '@infrastructure/firebase-identity';
+} from '@sdk/extras/identity-firebase';
 
 export class GithubAuthenticationStrategy implements IAuthenticationStrategy {
   static readonly provider = 'github';
@@ -40,8 +40,8 @@ export class GithubAuthenticationStrategy implements IAuthenticationStrategy {
 
     const createdUserResult = await this.firebaseUserProvisioner.createUser({
       email: githubUser.email,
-      displayName: githubUser.name,
-      photoURL: githubUser.picture,
+      name: githubUser.name,
+      picture: githubUser.picture,
       emailVerified: githubUser.emailVerified,
     });
     if (isErr(createdUserResult)) {
@@ -66,7 +66,7 @@ export class GithubAuthenticationStrategy implements IAuthenticationStrategy {
       uid: createdUserResult.value.uid,
       email: githubUser.email,
       provider: GithubAuthenticationStrategy.provider,
-      claim: githubUser.email,
+      claim: createdUserResult.value.uid,
       identityType: 'email',
       identityId: createdUserResult.value.uid,
       kind: 'user',

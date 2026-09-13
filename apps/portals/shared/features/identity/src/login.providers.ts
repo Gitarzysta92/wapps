@@ -1,3 +1,5 @@
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthenticationInterceptor, AUTHENTICATED_ORIGINS } from './infrastructure/authentication.interceptor';
 import { ApplicationConfig, Type } from "@angular/core";
 import { AUTHENTICATION_HANDLER } from "./application/authentication-handler.token";
 import { AuthenticationApiService } from "./infrastructure/authentication-api.service";
@@ -15,6 +17,8 @@ export interface IdentityLoginFeatureConfig {
   validationMessages: LoginValidationMessages;
   /** URL to the authentication BFF service. When provided, uses BFF for authentication. */
   authBffUrl?: string;
+  /** Additional API origins allowed to receive the session token. */
+  authenticatedOrigins?: string[];
   /** Custom authentication handler class. Takes precedence over authBffUrl if both are provided. */
   authenticationHandler?: Type<IAuthenticationHandler>;
 }
@@ -22,6 +26,8 @@ export interface IdentityLoginFeatureConfig {
 export function provideIdentityLoginFeature(c: IdentityLoginFeatureConfig): ApplicationConfig {
   const providers: any[] = [
     AuthenticationStorage,
+    { provide: AUTHENTICATED_ORIGINS, useValue: c.authenticatedOrigins ?? [] },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
     AuthenticationService,
     { provide: VALIDATION_MESSAGES, useValue: c.validationMessages },
     { provide: IDENTITY_PROVIDER, useClass: IdentityApiService },

@@ -1,5 +1,5 @@
 import { IAuthenticationStrategy } from '@sdk/features/identity/libs/authentication';
-import { FirebaseRestSessionGateway } from '@infrastructure/firebase-identity';
+import { FirebaseRestSessionGateway } from '@sdk/extras/identity-firebase';
 import { AnonymousAuthenticationStrategy } from './anonymous.strategy';
 
 export class AnonymousAuthenticationStrategyFactory {

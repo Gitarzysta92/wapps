@@ -30,6 +30,7 @@ export class AuthenticationStorage {
   public clear(): void {
     this._token$.next(null);
     this._localStorage.removeItem(this._authTokenKey);
+    this._localStorage.removeItem("auth_refresh_token");
   }
 
   public getToken(): string | null {

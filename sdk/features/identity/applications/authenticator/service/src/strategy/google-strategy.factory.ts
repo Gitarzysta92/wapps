@@ -1,5 +1,5 @@
 import { IAuthenticationStrategy } from '@sdk/features/identity/libs/authentication';
-import { FirebaseGoogleCodeExchanger, FirebaseRestSessionGateway, FirebaseTokenGenerator, FirebaseUserProvisioner } from '@infrastructure/firebase-identity';
+import { FirebaseGoogleCodeExchanger, FirebaseRestSessionGateway, FirebaseTokenGenerator, FirebaseUserProvisioner } from '@sdk/extras/identity-firebase';
 import { GoogleAuthenticationStrategy } from "./google.strategy";
 
 export class GoogleAuthenticationStrategyFactory {

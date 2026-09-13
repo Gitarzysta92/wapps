@@ -7,11 +7,7 @@ export class AuthEventEmitterAdapter implements IAuthenticationEventEmitter {
   publishAuthenticated(payload: AuthenticationAuthenticatedPayload): void {
     const publisher = this.publisherHolder.get();
     if (publisher) {
-      publisher.publishCreated({
-        identityId: payload.identityId,
-        subjectId: payload.identityId,
-        correlationId: payload.identityId,
-      });
+      publisher.publishAuthenticated(payload);
     }
   }
 }

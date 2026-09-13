@@ -2,18 +2,32 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es2015",
-    "lib": ["es2020"],
-    "outDir": "../../../../../../dist/sdk/features/identity/libs/authentication",
+    "lib": [
+      "es2020"
+    ],
+    "outDir": "../../../../../dist/sdk/features/identity/libs/authentication",
     "types": [],
     "rootDir": "src",
     "composite": true,
-    "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/libs/authentication/tsconfig.lib.tsbuildinfo"
+    "tsBuildInfoFile": "../../../../../dist/sdk/features/identity/libs/authentication/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
   "references": [
-    { "path": "../../../../kernel/standard/tsconfig.lib.json" },
-    { "path": "../../../../kernel/ontology/identity/tsconfig.lib.json" },
-    { "path": "../../core/tsconfig.lib.json" }
+    {
+      "path": "../../../../kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../kernel/ontology/identity/tsconfig.lib.json"
+    },
+    {
+      "path": "../../core/tsconfig.lib.json"
+    }
   ]
 }

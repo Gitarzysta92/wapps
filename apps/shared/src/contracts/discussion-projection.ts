@@ -4,7 +4,7 @@
  * Keep transport-specific topology names (queues/topics) and message schemas here,
  * so domain libraries stay free of infrastructure details.
  */
-import { EventEnvelope } from '@cross-cutting/events';
+import { EventEnvelope } from '@sdk/kernel/aspects/events';
 
 export const DISCUSSION_PROJECTION_QUEUE_NAME = 'discussion-projection';
 

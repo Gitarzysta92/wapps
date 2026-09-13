@@ -1,6 +1,16 @@
 import * as admin from 'firebase-admin';
 import { err, ok, Result } from '@sdk/kernel/standard';
-import { IIdTokenVerifier, VerifiedIdTokenDto } from '@sdk/features/identity/libs/authentication';
+
+export type VerifiedIdTokenDto = {
+  uid: string;
+  email?: string;
+  authTime?: number;
+  claims?: unknown;
+};
+
+export interface IIdTokenVerifier {
+  verifyIdToken(token: string): Promise<Result<VerifiedIdTokenDto, Error>>;
+}
 
 export class TokenValidationError extends Error {
   override name = 'TokenValidationError';
@@ -15,7 +25,7 @@ export class TokenValidationError extends Error {
 export class FirebaseAdminIdTokenVerifier implements IIdTokenVerifier {
   async verifyIdToken(token: string): Promise<Result<VerifiedIdTokenDto, Error>> {
     try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
+      const decodedToken = await admin.auth().verifyIdToken(token, true);
 
       return ok({
         uid: decodedToken.uid,

@@ -14,12 +14,13 @@ export class IdentityProviderService implements IIdentityProvider {
     private readonly factory: IIdentityFactory,
   ) { }
   
-  async obtainIdentity(claim: string): Promise<Result<Identity, Error>> {
+  async obtainIdentity(claim: string): Promise<Result<Identity | null, Error>> {
     const result = await this.repository.getByClaim(claim);
     if (!result.ok) {
       return err(result.error);
     }
     const identity = result.value;
+    if (!identity) return ok(null);
 
     if (!identity.isValid()) {
       return err(new Error('Invalid identity'));

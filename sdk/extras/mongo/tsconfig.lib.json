@@ -1,11 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/libs/infrastructure/mongo",
+    "outDir": "../../../dist/sdk/extras/mongo",
     "declaration": true,
     "composite": true,
     "rootDir": "src",
-    "tsBuildInfoFile": "../../../dist/libs/infrastructure/mongo/tsconfig.lib.tsbuildinfo",
+    "tsBuildInfoFile": "../../../dist/sdk/extras/mongo/tsconfig.lib.tsbuildinfo",
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],

@@ -5,7 +5,7 @@ on:
     branches: [develop, main]
     paths:
       - 'apps/agents/editor/**'
-      - 'libs/cross-cutting/events/**'
+      - 'sdk/kernel/aspects/events/**'
       - 'environments/dev/apps/editor-agent-kustomization/**'
       - '.github/workflows/editor-agent.workflow.yml'
   workflow_dispatch:

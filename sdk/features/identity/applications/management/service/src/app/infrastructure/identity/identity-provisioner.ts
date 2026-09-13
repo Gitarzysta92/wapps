@@ -6,13 +6,9 @@ import {
   IIdentityNode,
   IIdentityNodeRelation,
   IIdentitySubjectRepository,
+  IIdentitySubject,
 } from '@sdk/kernel/ontology/identity';
-import { PlatformMongoClient } from '@infrastructure/mongo';
-import {
-  IdentityService,
-  IIdentityIdGenerator,
-  IIdentityNodeRepository,
-} from '@domains/identity/authentication';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
 
 export type EnsureIdentityResult = {
   identityId: string;
@@ -23,33 +19,10 @@ export type EnsureIdentityResult = {
 type IdentityNodeDoc = Document & IIdentityNode;
 type IdentityRelationDoc = Document & IIdentityNodeRelation;
 
-class MongoIdentityNodeRepository implements IIdentityNodeRepository {
-  constructor(private readonly nodes: Collection<IdentityNodeDoc>) {}
-
-  async createIfNotExists(node: IIdentityNode): Promise<Result<boolean, Error>> {
-    try {
-      await this.nodes.updateOne({ id: node.id } as any, { $setOnInsert: node } as any, { upsert: true });
-      return ok(true);
-    } catch (e) {
-      return err(e instanceof Error ? e : new Error(String(e)));
-    }
-  }
-
-  async deleteById(id: string): Promise<Result<boolean, Error>> {
-    try {
-      await this.nodes.deleteOne({ id } as any);
-      return ok(true);
-    } catch (e) {
-      return err(e instanceof Error ? e : new Error(String(e)));
-    }
-  }
-}
-
 export class IdentityProvisioner {
   private readonly nodes: Collection<IdentityNodeDoc>;
   private readonly relations: Collection<IdentityRelationDoc>;
   private readonly subjectsRepo: IIdentitySubjectRepository;
-  private readonly linking: IdentityService;
 
   constructor(
     mongo: PlatformMongoClient,
@@ -59,17 +32,53 @@ export class IdentityProvisioner {
     this.nodes = mongo.collection<IdentityNodeDoc>(opts?.nodesCollection ?? 'identity_nodes');
     this.relations = mongo.collection<IdentityRelationDoc>(opts?.relationsCollection ?? 'identity_relations');
     this.subjectsRepo = subjectsRepo;
-
-    const nodesRepo = new MongoIdentityNodeRepository(this.nodes);
-    const ids: IIdentityIdGenerator = { generate: () => uuidv7() };
-    this.linking = new IdentityService(nodesRepo, subjectsRepo, ids);
   }
 
   async ensureForFirebaseUid(uid: string): Promise<Result<EnsureIdentityResult, Error>> {
     try {
-      const r = await this.linking.addIdentityNode('firebase', uid);
-      if (!r.ok) return err(r.error);
-      return ok({ identityId: r.value.identityId, subjectId: r.value.subjectId, created: r.value.created });
+      const providerType = 'firebase';
+
+      const existing = await this.subjectsRepo.getByProviderExternalId(providerType, uid);
+      if (!existing.ok) return err(existing.error);
+      if (existing.value) {
+        return ok({
+          identityId: existing.value.identityId,
+          subjectId: existing.value.id,
+          created: false,
+        });
+      }
+
+      const now = Date.now();
+      const identityId = uuidv7();
+      const subjectId = identitySubjectId(providerType, uid);
+
+      const node: IIdentityNode = {
+        id: identityId as any,
+        kind: 'identity',
+        isActive: true,
+        isSuspended: false,
+        isDeleted: false,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: 0,
+      };
+
+      await this.nodes.updateOne({ id: node.id } as any, { $setOnInsert: node } as any, { upsert: true });
+
+      const subject: IIdentitySubject = {
+        id: subjectId,
+        identityId: identityId as any,
+        providerType,
+        claim: uid,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: 0,
+      };
+
+      const upserted = await this.subjectsRepo.upsert(subject);
+      if (!upserted.ok) return err(upserted.error);
+
+      return ok({ identityId, subjectId, created: true });
     } catch (e) {
       return err(e instanceof Error ? e : new Error(String(e)));
     }

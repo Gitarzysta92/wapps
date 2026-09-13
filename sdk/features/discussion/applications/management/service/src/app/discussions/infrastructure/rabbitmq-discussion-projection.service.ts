@@ -3,13 +3,13 @@ import {
   DISCUSSION_PROJECTION_QUEUE_NAME,
   DiscussionMaterializationRequestedEvent,
 } from '@apps/shared';
-import { QueueChannel } from '@infrastructure/platform-queue';
-import { toRabbitMqPublishOptions } from '@cross-cutting/events';
+import { IQueueChannel } from '@sdk/platform/queue';
+import { toRabbitMqPublishOptions } from '@sdk/kernel/aspects/events';
 import { randomUUID } from 'node:crypto';
 
 export class RabbitMqDiscussionProjectionService implements IDiscussionProjectionService {
   constructor(
-    private readonly queue: QueueChannel,
+    private readonly queue: IQueueChannel,
     private readonly queueName: string = DISCUSSION_PROJECTION_QUEUE_NAME
   ) {}
 

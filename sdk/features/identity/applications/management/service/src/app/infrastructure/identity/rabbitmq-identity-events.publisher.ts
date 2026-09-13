@@ -1,16 +1,16 @@
 import { randomUUID } from 'node:crypto';
-import { toRabbitMqPublishOptions } from '@cross-cutting/events';
+import { toRabbitMqPublishOptions } from '@sdk/kernel/aspects/events';
 import {
   IDENTITY_EVENTS_QUEUE_NAME,
   IdentityCreatedEvent,
   IdentityDeletedEvent,
   IdentityUpdatedEvent,
 } from '@apps/shared';
-import { QueueChannel } from '@infrastructure/platform-queue';
+import { IQueueChannel } from '@sdk/platform/queue';
 
 export class RabbitMqIdentityEventsPublisher {
   constructor(
-    private readonly queue: QueueChannel,
+    private readonly queue: IQueueChannel,
     private readonly queueName: string = IDENTITY_EVENTS_QUEUE_NAME
   ) {}
 

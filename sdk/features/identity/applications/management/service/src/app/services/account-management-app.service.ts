@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthorityValidationService } from '@sdk/kernel/ontology/authority';
 import { IdentityManagementContext, IdentityManagementService } from '@sdk/features/identity/libs/management';
-import { FirebaseAdminUserAdminPort } from '@infrastructure/firebase-identity';
+import { FirebaseAdminUserAdminPort } from '@sdk/extras/identity-firebase';
 import { OpaPolicyEvaluator } from '../infrastructure/opa-policy-evaluator';
 import { AuthenticatedUser } from '../decorators/auth-user.decorator';
 import { IdentityProvisioner } from '../infrastructure/identity/identity-provisioner';

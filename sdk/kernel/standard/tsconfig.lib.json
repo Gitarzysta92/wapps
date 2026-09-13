@@ -1,12 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../../dist/sdk/kernel/standard",
+    "outDir": "../../../dist/sdk/kernel/standard",
     "rootDir": "src",
     "declaration": true,
     "composite": true,
     "types": [],
-    "tsBuildInfoFile": "../../../../dist/sdk/kernel/standard/tsconfig.lib.tsbuildinfo"
+    "tsBuildInfoFile": "../../../dist/sdk/kernel/standard/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "src/**/*"

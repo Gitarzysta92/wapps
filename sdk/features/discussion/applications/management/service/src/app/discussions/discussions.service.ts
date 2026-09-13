@@ -6,7 +6,7 @@ import { IDiscussionPayloadRepository } from '@domains/discussion';
 import { IDiscussionProjectionService } from '@domains/discussion';
 import { IDiscussionIdentificatorGenerator, CommentCreationContext } from '@domains/discussion';
 import { MinioClient } from '../infrastructure/minio-client';
-import { QueueChannel } from '@infrastructure/platform-queue';
+import { IQueueChannel } from '@sdk/platform/queue';
 import { OpaPolicyEvaluator } from './infrastructure/opa-policy-evaluator';
 import { MinioDiscussionPayloadRepository } from './infrastructure/minio-discussion-payload.repository';
 import { MysqlContentNodeRepository } from './infrastructure/mysql-content-node.repository';
@@ -15,7 +15,7 @@ import { CryptoDiscussionIdentificatorGenerator } from './infrastructure/discuss
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CommentLikeEntity } from './infrastructure/comment-like.entity';
-import { PlatformMongoClient } from '@infrastructure/mongo';
+import { PlatformMongoClient } from '@sdk/extras/mongo';
 import type { Document } from 'mongodb';
 
 type DiscussionAggregateProjection = Document & {
@@ -44,7 +44,7 @@ export class DiscussionsService {
 
   constructor(
     minioClient: MinioClient,
-    @Inject('DISCUSSION_QUEUE') queue: QueueChannel,
+    @Inject('DISCUSSION_QUEUE') queue: IQueueChannel,
     contentNodeRepository: MysqlContentNodeRepository,
     mongoClient: PlatformMongoClient,
     @InjectRepository(CommentLikeEntity)

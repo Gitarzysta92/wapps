@@ -1,11 +1,15 @@
 {
-  "extends": "../../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
     "types": []
   },
-  "files": ["src/index.ts"],
-  "include": ["src/**/*.d.ts"]
+  "files": [
+    "src/index.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
 }

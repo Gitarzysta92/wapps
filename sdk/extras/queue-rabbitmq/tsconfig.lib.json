@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/sdk/extras/queue-rabbitmq",
+    "rootDir": "src",
+    "declaration": true,
+    "composite": true,
+    "types": ["node"],
+    "tsBuildInfoFile": "../../../dist/sdk/extras/queue-rabbitmq/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [{ "path": "../../platform/queue/tsconfig.lib.json" }]
+}

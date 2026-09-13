@@ -29,6 +29,9 @@ spec:
         ports:
         - containerPort: 8080
           name: http
+        envFrom:
+        - secretRef:
+            name: authenticator-runtime
         env:
         - name: PORT
           value: "8080"

@@ -3,11 +3,17 @@
   "$schema": "../../../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "sdk/features/identity/applications/authenticator/service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:platform", "layer:auth"],
+  "tags": [
+    "type:app",
+    "scope:platform",
+    "layer:auth"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -41,6 +47,12 @@
         "production": {
           "buildTarget": "sdk-features-identity-applications-authenticator:build:production"
         }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "sdk/features/identity/applications/authenticator/service/jest.config.cjs"
       }
     }
   }

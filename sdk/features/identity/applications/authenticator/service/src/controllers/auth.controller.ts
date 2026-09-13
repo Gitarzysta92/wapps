@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
+import * as admin from 'firebase-admin';
+import { TokenValidationService } from '../services/token-validation.service';
+import { Body, Headers, Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { IAuthenticationStrategy, IdentityAuthenticationService } from '@sdk/features/identity/libs/authentication';
 import { ConfigService } from '@nestjs/config';
@@ -25,6 +27,7 @@ export class AuthController {
   constructor(
     @Inject(IDENTITY_AUTH_SERVICE) private readonly authenticationService: IdentityAuthenticationService,
     private readonly config: ConfigService,
+    private readonly validation: TokenValidationService,
     @Inject(GOOGLE_AUTHENTICATION_STRATEGY_FACTORY) private readonly googleAuthenticationStrategyFactory: GoogleAuthenticationStrategyFactory,
     @Inject(GITHUB_AUTHENTICATION_STRATEGY_FACTORY) private readonly githubAuthenticationStrategyFactory: GithubAuthenticationStrategyFactory,
     @Inject(EMAIL_AUTHENTICATION_STRATEGY_FACTORY) private readonly emailAuthenticationStrategyFactory: EmailAuthenticationStrategyFactory,
@@ -33,6 +36,7 @@ export class AuthController {
 
   @Post('/auth/signin')
   async signIn(@Body() body: SignInCredentialsDto, @Res() res: Response) {
+    if (this.config.get<string>('ENABLE_EMAIL_PASSWORD') === 'false') return res.status(403).json({ error: 'Email sign-in disabled' });
     const { email, password } = body ?? {};
 
     if (!email || !password) {
@@ -50,6 +54,7 @@ export class AuthController {
 
   @Post('/auth/signin/anonymous')
   async signInAnonymous(@Res() res: Response) {
+    if (this.config.get<string>('ENABLE_ANONYMOUS') !== 'true') return res.status(403).json({ error: 'Anonymous sign-in disabled' });
     const strategy = this.anonymousAuthenticationStrategyFactory.create();
     const result = await this.authenticationService.authenticate(strategy);
     if (!result.ok) {
@@ -63,6 +68,7 @@ export class AuthController {
   async signInOAuth(@Body() body: SignInOAuthDto, @Res() res: Response) {
     const { provider, code, redirectUri, codeVerifier } = body;
 
+    if (this.config.get<string>(`ENABLE_${provider.toUpperCase()}`) !== 'true') return res.status(403).json({ error: 'Provider disabled' });
     let strategy: IAuthenticationStrategy;
     if (GoogleAuthenticationStrategy.appliesTo(provider)) {
       strategy = this.googleAuthenticationStrategyFactory.create(code, redirectUri, codeVerifier ?? '');
@@ -107,8 +113,21 @@ export class AuthController {
   }
 
   @Post('/auth/signout')
-  signOut() {
-    return { message: 'Signed out successfully' };
+  async signOut(@Headers('authorization') authorization: string | undefined, @Res() res: Response) {
+    const result = await this.validation.validateRequired(authorization);
+    if (!result.ok) return res.status(401).json({ error: 'Invalid session' });
+    await admin.auth().revokeRefreshTokens(result.value.uid);
+    return res.status(200).json({ message: 'Signed out successfully' });
+  }
+
+  @Get('/auth/methods')
+  methods() {
+    return { methods: [
+      { provider: 'EMAIL_PASSWORD', displayName: 'Email & Password', enabled: this.config.get<string>('ENABLE_EMAIL_PASSWORD') !== 'false' },
+      { provider: 'GOOGLE', displayName: 'Google', enabled: this.config.get<string>('ENABLE_GOOGLE') === 'true' },
+      { provider: 'GITHUB', displayName: 'GitHub', enabled: this.config.get<string>('ENABLE_GITHUB') === 'true' },
+      { provider: 'ANONYMOUS', displayName: 'Continue as guest', enabled: this.config.get<string>('ENABLE_ANONYMOUS') === 'true' },
+    ].filter(method => method.enabled) };
   }
 
   @Get('/auth/oauth/google/authorize')
