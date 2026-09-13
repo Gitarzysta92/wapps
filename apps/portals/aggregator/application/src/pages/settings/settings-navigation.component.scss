@@ -4,14 +4,3 @@
 @media #{$layout-breakpoint-md} {
   :host { display: block; }
 }
-nav {
-  position: relative;
-  display: flex;
-  gap: $space-2;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  overscroll-behavior-x: contain;
-  padding: $space-1;
-  margin: -$space-1;
-}
-a { flex-shrink: 0; white-space: nowrap; }

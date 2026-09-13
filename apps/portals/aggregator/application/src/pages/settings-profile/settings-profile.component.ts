@@ -16,6 +16,7 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
   styleUrl: 'settings-profile.component.scss',
   standalone: true,
   imports: [
+    SettingsNavigationComponent,
     FormsModule,
     TuiAppearance,
     TuiAvatar,
@@ -25,7 +26,6 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
     TuiForm,
     TuiTextfield,
     PageHeaderComponent,
-    SettingsNavigationComponent,
     PageTitleComponent,
     BreadcrumbsComponent,
     BreadcrumbsSkeletonComponent,

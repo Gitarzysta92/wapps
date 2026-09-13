@@ -78,7 +78,7 @@ export const NAVIGATION = {
   settingsProfile: {
     path: 'me/settings/profile',
     label: 'Profile Settings',
-    icon: '@tui.user',
+    icon: '@tui.user-pen',
   },
   settingsPreferences: {
     path: 'me/settings/preferences',
@@ -233,7 +233,7 @@ export const NAVIGATION = {
   userProfile: {
     path: `profiles/${ROUTE_PARAMS.profileId}`,
     label: 'User profile',
-    icon: '@tui.user',
+    icon: '@tui.contact',
   }
 }
 
@@ -332,4 +332,15 @@ export const SETTINGS_NAVIGATION = [
   NAVIGATION.settingsPreferences,
   NAVIGATION.settingsNotifications,
   NAVIGATION.settingsPrivacy,
+]
+
+export const PROFILE_VIEW_MAIN_NAVIGATION = [
+  { ...NAVIGATION.myProfile, label: 'Profile' },
+  NAVIGATION.myFavorite,
+  NAVIGATION.settings,
+]
+
+export const PUBLIC_PROFILE_VIEW_MAIN_NAVIGATION = [
+  NAVIGATION.userProfile,
+  NAVIGATION.myProfile,
 ]
