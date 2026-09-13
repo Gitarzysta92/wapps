@@ -1,30 +1,43 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+  container: status-history / inline-size;
+}
+
 .status-history {
   display: flex;
-  gap: 0.5rem;
+  gap: $space-3;
   align-items: center;
-  padding: 0 1rem;
 }
 
 .status-label {
-  opacity: 0.5;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.status-days {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: $space-2;
+  flex: 1;
+  min-width: 0;
 }
 
 .status-dot {
-  width: 12px;
-  height: 32px;
-  border-radius: 10px;
-  transition: all 0.2s;
+  height: $space-8;
+  border-radius: $radius-full;
   cursor: help;
 }
 
-.status-dot.operational {
-  background-color: var(--tui-status-positive);
-}
+@container status-history (max-width: 40rem) {
+  .status-history {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space-2;
+  }
 
-.status-dot.degraded {
-  background-color: var(--tui-status-warning);
-}
-
-.status-dot.outage {
-  background-color: var(--tui-status-negative);
+  .status-days { gap: $space-0_5; }
 }
