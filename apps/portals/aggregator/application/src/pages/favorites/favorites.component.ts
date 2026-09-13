@@ -1,8 +1,10 @@
-import { ContentStateComponent } from '@ui/layout';
-import { Component, inject } from '@angular/core';
+import { ContentStateComponent, PageHeaderComponent, PageTitleComponent, MediumCardComponent } from '@ui/layout';
+import { BreadcrumbsComponent } from '@ui/breadcrumbs';
+import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
+import { Component, input, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TuiButton } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { FavoriteToggleButtonComponent, MyFavoritesService, MY_FAVORITES_STATE_PROVIDER } from '@portals/shared/features/my-favorites';
 import { APPLICATIONS, DISCUSSIONS } from '@portals/shared/data';
 import { CustomerFavoritesDto } from '@domains/customer/favorites';
@@ -16,9 +18,10 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
   templateUrl: 'favorites.component.html',
   styleUrl: 'favorites.component.scss',
   standalone: true,
-  imports: [ContentStateComponent, AsyncPipe, RouterLink, TuiButton, FavoriteToggleButtonComponent],
+  imports: [TuiAppearance, PageHeaderComponent, PageTitleComponent, MediumCardComponent, BreadcrumbsComponent, ContentStateComponent, AsyncPipe, RouterLink, TuiButton, FavoriteToggleButtonComponent],
 })
 export class FavoritesPageComponent {
+  readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
   private readonly service = inject(MyFavoritesService);
   reload(): void { this.service.reload(); }
   private readonly favorites = inject(MY_FAVORITES_STATE_PROVIDER);

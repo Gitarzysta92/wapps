@@ -1,9 +1,10 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">My favorites</h1>
+  <p slot="meta" class="page-description">Your saved applications, collections, articles, and discussions.</p>
+  <a slot="actions" tuiButton appearance="secondary" size="s" routerLink="/discover">Discover</a>
+</ui-page-header>
 <section class="favorites-page">
-  <header class="favorites-page__header">
-    <h1>My favorites</h1>
-    <p>Your saved applications, collections, articles, and discussions.</p>
-    <a tuiButton appearance="secondary" size="s" routerLink="/discover">Discover more apps</a>
-  </header>
   @if (groups$ | async; as state) {
     @if (state.isError) {
       <ui-content-state [error]="true" title="Favorites could not be loaded" description="Check browser storage access and try again. Your saved favorites have not been changed." icon="@tui.circle-alert">
@@ -16,8 +17,8 @@
       </ui-content-state>
     } @else {
       @for (group of state.groups; track group.type) {
-        <section class="favorites-page__card">
-          <h2>{{ group.title }} <span>({{ group.items.length }})</span></h2>
+        <ui-medium-card tuiAppearance="card-panel" class="favorites-page__card">
+          <h2 slot="header">{{ group.title }} <span>({{ group.items.length }})</span></h2>
           @for (item of group.items; track item.slug) {
             <div class="favorites-page__item">
               <a [routerLink]="item.path">{{ item.name }}</a>
@@ -28,7 +29,7 @@
               <a tuiButton appearance="secondary" size="m" [routerLink]="group.browse">Browse {{ group.type }}</a>
             </ui-content-state>
           }
-        </section>
+        </ui-medium-card>
       }
     }
   }

@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton, TuiTextfield } from '@taiga-ui/core';
-import { TuiAvatar, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiAvatar, TuiSkeleton, TuiTextarea } from '@taiga-ui/kit';
 import { TuiCardLarge, TuiForm } from '@taiga-ui/layout';
 import { NavigationDeclarationDto, IBreadcrumbRouteData, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
 import { MY_PROFILE_VIEW_STATE_PROVIDER, MyProfileService } from '@portals/shared/features/my-profile';
@@ -28,6 +28,7 @@ import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcru
     TuiSkeleton,
     TuiForm,
     TuiTextfield,
+    TuiTextarea,
     PageHeaderComponent,
     PageTitleComponent,
     BreadcrumbsComponent,

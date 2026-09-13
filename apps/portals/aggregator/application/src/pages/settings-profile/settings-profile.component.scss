@@ -1,18 +1,6 @@
 @use 'ui/design-system/src/styles' as *;
 @use '../settings-page';
 
-.page-description {
-  font-size: $font-size-md;
-  color: var(--tui-text-secondary);
-  margin: 0;
-}
-
-.accent-bar {
-  width: 4px;
-  height: 1.2em;
-  border-radius: $radius-sm;
-}
-
 .avatar-card {
   display: flex;
   flex-direction: column;
@@ -49,18 +37,4 @@
 
 .avatar-guidance {
   font-size: $font-size-sm;
-}
-
-.settings-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: $space-4;
-  margin-top: $space-4;
-  padding-top: $space-6;
-  border-top: 1px solid var(--tui-base-03);
-}
-
-.settings-feedback {
-  color: var(--tui-text-positive);
-  &--error { color: var(--tui-text-negative); }
 }

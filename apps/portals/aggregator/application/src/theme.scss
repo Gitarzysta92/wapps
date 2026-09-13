@@ -577,17 +577,70 @@ favorite-toggle-button .is-favorite::before {
   }
 }
 
-[tuiAppearance][data-appearance='card-elevated'] {
+[tuiAppearance][data-appearance='card-elevated'],
+[tuiAppearance][data-appearance='card-panel'],
+[tuiCardLarge][tuiAppearance][data-appearance='card-panel'] {
   background: var(--elevated-background);
   border: 1px solid var(--elevated-background-border, #{$color-border});
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
+}
+
+[tuiAppearance][data-appearance='card-elevated'] {
   @include transition((transform, box-shadow, border-color), $duration-200, $ease-in-out);
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: $shadow-lg;
     border-color: var(--tui-primary);
+  }
+}
+
+// Account forms share the catalog surface, without interactive card motion.
+:is(settings-profile-page, settings-preferences-page, settings-notifications-page, settings-privacy-page) {
+  .setting-item, .danger-action, .visibility-option {
+    background: var(--tui-background-elevation-1);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-md;
+  }
+
+  .setting-item--master { border-color: var(--tui-border-focus); }
+  .setting-item--disabled { opacity: 0.6; }
+
+  .visibility-option {
+    color: var(--tui-text-primary);
+    @include transition((background, border-color), $duration-200, $ease-in-out);
+
+    &:hover { background: var(--tui-background-neutral-1-hover); }
+    &[aria-pressed='true'] {
+      background: color-mix(in srgb, var(--tui-text-action) 12%, var(--tui-background-elevation-1));
+      border-color: var(--tui-border-focus);
+      .visibility-option__icon { color: var(--tui-text-action); }
+    }
+    &:focus-visible {
+      outline: $space-0_5 solid var(--tui-border-focus);
+      outline-offset: $space-1;
+    }
+  }
+
+  .settings-card--danger[tuiAppearance][data-appearance='card-panel'] { border-color: var(--tui-status-negative); }
+  .settings-card--danger .section-title--danger,
+  .section-title--danger .section-icon { color: var(--tui-text-negative); }
+  .settings-feedback { color: var(--tui-text-positive); }
+  .settings-feedback--error { color: var(--tui-text-negative); }
+}
+
+:is(my-apps-page, register-application-page, ownership-page) {
+  textarea {
+    color: var(--tui-text-primary);
+    background: var(--tui-background-base);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-md;
+  }
+  a { color: var(--tui-text-action); }
+  textarea:focus-visible, a:focus-visible {
+    outline: $space-0_5 solid var(--tui-border-focus);
+    outline-offset: $space-1;
   }
 }
 

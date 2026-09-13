@@ -1,4 +1,4 @@
-<ui-page-header>
+<ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">My Apps</h1>
   <p slot="meta">
@@ -6,7 +6,7 @@
     {{ ownership().length }} unverified ownership drafts
   </p>
 </ui-page-header>
-<section class="draft-panel">
+<section tuiAppearance="card-panel" class="draft-panel">
   <h2>Local drafts</h2>
   <p>Drafts are saved in this browser. They are not published.</p>
   <div class="draft-actions">
@@ -24,7 +24,7 @@
 }
 <section class="draft-list" aria-label="Application drafts">
   @for (draft of drafts(); track draft.id) {
-  <article class="draft-panel">
+  <article tuiAppearance="card-panel" class="draft-panel">
     <span class="draft-status">Local draft · Not submitted</span>
     <h2>{{ draft.name }}</h2>
     <p class="draft-help">
@@ -98,7 +98,7 @@
   <h2>Ownership preparation</h2>
   <p>Ownership notes are saved locally. They are not submitted or verified.</p>
   @for (draft of ownership(); track draft.appSlug) {
-  <article class="draft-panel">
+  <article tuiAppearance="card-panel" class="draft-panel">
     <span class="draft-status">Local notes · Unverified · Not submitted</span>
     <h3>{{ draft.appSlug }}</h3>
     <p class="draft-help">Saved {{ draft.updatedAt | date : 'medium' }}</p>
