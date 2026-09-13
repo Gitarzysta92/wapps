@@ -1,26 +1,27 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TuiBadge } from '@taiga-ui/kit';
 import { ContentAttributionDto, ContentNature } from '@domains/publication/attribution';
-import { AttributionInfoVM, mapAttributionToVM } from '@portals/shared/features/attribution';
+import { AttributionInfoBadgeComponent, AttributionInfoVM, mapAttributionToVM } from '@portals/shared/features/attribution';
 
 @Component({
   selector: 'feed-attribution',
   standalone: true,
-  imports: [TuiBadge],
+  imports: [AttributionInfoBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './feed-actions.scss',
+  styleUrl: './feed-attribution.component.scss',
   template: `
-    <details>
-      <summary [attr.aria-label]="'Content attribution for ' + title">
-        Content attribution <tui-badge size="s">{{ label }}</tui-badge>
-      </summary>
-      <p>{{ details }}</p>
-    </details>
+    <attribution-info-badge [attribution]="badge" [title]="title" />
   `,
 })
 export class FeedAttributionComponent {
   @Input({ required: true }) attribution!: AttributionInfoVM | ContentAttributionDto;
   @Input() title = 'this item';
+  get badge(): AttributionInfoVM {
+    return {
+      ...mapAttributionToVM({ disclosureRequired: false, ...this.attribution }),
+      displayText: this.label,
+      tooltipText: this.details,
+    };
+  }
   get label(): string {
     switch (this.attribution.contentNature) {
       case ContentNature.SPONSORED: return this.attribution.sponsor ? `Sponsored by ${this.attribution.sponsor}` : 'Sponsored';
