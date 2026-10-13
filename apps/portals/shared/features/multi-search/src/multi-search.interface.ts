@@ -1,31 +1,40 @@
-import { Observable } from "rxjs";
-import { AddTypeToArray, Result } from "@foundation/standard";
-import { DiscoveryRecentSearchesDto, DiscoverySearchResultDto, DiscoverySearchResultGroupDto } from "@domains/discovery";
+import { Observable } from 'rxjs';
+import { Result } from '@sdk/kernel/standard';
+import { SearchResultVM } from '@ui/search-results';
 
-
-
-export interface IMultiSearchState {  
-  queryParamMap$: Observable<{ [key: string]: string }>;
+export interface IMultiSearchState {
+  queryParamMap$: Observable<Record<string, string>>;
   submitSearch?(phrase: string): void;
-  setQueryParams(p: { [key: string]: string | null }): void;
+  setQueryParams(params: Record<string, string | null>): void;
 }
-
 
 export interface IMultiSearchResultsProvider {
+  readonly availability$?: Observable<MultiSearchAvailability>;
+  /** True when retrying availability will trigger a new search itself. */
+  retry?(): boolean;
   getRecentSearches(): Observable<Result<MultiSearchRecentSearchesVM>>;
-  search(p: { [key: string]: string }): Observable<Result<MultiSearchResultVM>>;
+  search(
+    params: Record<string, string>
+  ): Observable<Result<MultiSearchResultVM>>;
 }
 
+export type MultiSearchResultVM = Omit<SearchResultVM, 'groups'> & {
+  groups: (SearchResultVM['groups'][number] & {
+    total?: number;
+    hiddenCount?: number;
+  })[];
+};
 
-type MultiSearchResultGroupVM = Omit<DiscoverySearchResultGroupDto, 'entries'> &
-{ entries: AddTypeToArray<DiscoverySearchResultGroupDto['entries'], { link: string }> }
-
-
-export type MultiSearchResultVM = Omit<DiscoverySearchResultDto, 'groups'> & {
-  groups: Array<MultiSearchResultGroupVM & { link: string }>
-  link: string;
+export interface MultiSearchAvailability {
+  status: 'ready' | 'loading' | 'unavailable';
+  message?: string;
 }
 
-export type MultiSearchRecentSearchesVM = Omit<DiscoveryRecentSearchesDto, 'searches'> & {
-  searches: AddTypeToArray<DiscoveryRecentSearchesDto['searches'], { link: string, name: string }>
+export type MultiSearchPreviewState =
+  | { status: 'idle' | 'loading'; message?: string }
+  | { status: 'ready'; result: MultiSearchResultVM }
+  | { status: 'error'; message?: string };
+
+export interface MultiSearchRecentSearchesVM {
+  searches: { link: string; name: string; query: Record<string, string> }[];
 }

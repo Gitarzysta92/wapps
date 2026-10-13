@@ -8,28 +8,37 @@
   @if (authService?.isAuthenticated$ | async) {
     <button slot="actions" tuiButton type="button" size="s" appearance="secondary" iconStart="@tui.log-out" (click)="logout()">Log out</button>
   }
-  <p slot="meta" class="profile-meta">Your saved profile on this browser.</p>
+  <p slot="meta" class="profile-meta">{{ isDemo ? 'Your demo profile on this browser.' : 'Your saved account profile.' }}</p>
 </ui-page-header>
 
+@let current = profile();
 <div class="profile-content">
   @if (isLoading()) {
     @for (item of [1, 2]; track item) {
       <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" aria-label="Loading profile">Profile details</div>
     }
   } @else if (isError()) {
-    <ui-content-state [error]="true" title="Could not read your local profile" description="Check browser storage access and try loading your profile again." icon="@tui.circle-alert">
+    <ui-content-state [error]="true" title="Could not load your profile" description="Try loading your profile again." icon="@tui.circle-alert">
     <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
   </ui-content-state>
-  } @else if (profile().id) {
+  } @else if (current && !current.name) {
+    <ui-content-state title="Complete your profile" description="Add a display name and profile details to your account." icon="@tui.user-round">
+      <a tuiButton appearance="secondary" size="m" routerLink="/me/settings/profile">Set up profile</a>
+    </ui-content-state>
+  } @else if (current) {
     <nav class="profile-actions" aria-label="Profile and account settings">
-      <a tuiButton appearance="secondary" size="m" [routerLink]="publicPath()">View public profile preview</a>
+      @if (isDemo || current.publicId) {
+        <a tuiButton appearance="secondary" size="m" [routerLink]="publicPath()">View public profile preview</a>
+      }
       @for (link of quickLinks; track link.path) {
         <a tuiButton appearance="secondary" size="m" [routerLink]="link.path">{{ link.label }}</a>
       }
+      @if (!isDemo) { <profile-badge-access [path]="badgeAdminPath" /> }
     </nav>
-    <profile-details [profile]="profile()" [isLocalProfile]="true" />
+    <profile-details [profile]="current" [isLocalProfile]="true" [showLegacyStats]="isDemo" />
+    @if (!isDemo) { <profile-totals /> <account-badges /> }
   } @else {
-<ui-content-state title="No profile yet" description="Add your name and profile details to make this space your own." icon="@tui.user-round">
+<ui-content-state title="Sign in to view your profile" description="Your account profile will appear after you sign in." icon="@tui.user-round">
     <a tuiButton appearance="secondary" size="m" routerLink="/me/settings/profile">Set up profile</a><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
   </ui-content-state>
   }

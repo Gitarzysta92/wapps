@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { IFeedProviderPort, IFeedPage, IFeedItem } from '@portals/shared/features/feed';
 import { APPLICATIONS, DISCUSSIONS, FEED_ITEM_EXAMPLES } from '@portals/shared/data';
-import { Result } from '@foundation/standard';
+import { Result } from '@sdk/kernel/standard';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { NAVIGATION } from '../../navigation';
 

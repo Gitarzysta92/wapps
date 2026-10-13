@@ -1,9 +1,14 @@
-<div class="top-review-card" tuiAppearance="review-preview" [class.has-details]="detailsLink()">
+<div
+  class="top-review-card"
+  tuiAppearance="review-preview"
+  [class.has-details]="detailsLink()"
+>
   <div class="review-header">
     <tui-avatar
       [src]="review().authorAvatarUrl"
       size="xs"
-      class="author-avatar">
+      class="author-avatar"
+    >
     </tui-avatar>
     <div class="author-info">
       <span class="author-name">{{ review().authorName }}</span>
@@ -18,7 +23,8 @@
     {{ review().date }}
   </div>
   @if (detailsLink()) {
-    <a class="review-details" tuiLink [routerLink]="detailsLink()">View details</a>
+  <a class="review-details" tuiLink [routerLink]="detailsLink()"
+    >View details</a
+  >
   }
 </div>
-

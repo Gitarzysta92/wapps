@@ -1,3 +1,15 @@
+export const APPLICATION_WORKSPACE_PATHS = {
+  claims: 'my/ownership',
+  claim: 'apps/ownership',
+  ownershipReview: 'editorial/ownership',
+  ownershipGrants: 'editorial/ownership/grants',
+  editing: 'my/apps/owned',
+  releases: 'my/releases',
+  articles: 'my/articles',
+  articleReviews: 'editorial/articles',
+  releaseReviews: 'editorial/releases',
+};
+
 export const NAVIGATION_NAME_PARAMS = {
   discussionName: ':discussionName',
   applicationName: ':applicationName',
@@ -44,6 +56,11 @@ export const NAVIGATION = {
     path: 'me/profile',
     label: 'My profile',
     icon: '@tui.user',
+  },
+  profileBadges: {
+    path: 'me/profile-badges',
+    label: 'Profile badges',
+    icon: '@tui.badge-check',
   },
   myFavorite: {
     path: 'me/favorite',
@@ -130,6 +147,11 @@ export const NAVIGATION = {
     label: 'Article',
     icon: '@tui.newspaper',
   },
+  favouriteArticles: {
+    path: 'my/favourites/articles',
+    label: 'Favourite articles',
+    icon: '@tui.star',
+  },
   applications: {
     path: 'app',
     label: 'Applications',
@@ -196,7 +218,7 @@ export const NAVIGATION = {
     icon: '@tui.folder-heart',
   },
   claimApplicationOwnership: {
-    path: `apps/ownership/${ROUTE_PARAMS.appSlug}`,
+    path: `${APPLICATION_WORKSPACE_PATHS.claim}/${ROUTE_PARAMS.appSlug}`,
     label: 'Claim application ownership',
     icon: '@tui.folder-heart',
   },
@@ -266,6 +288,7 @@ export const APPLICATION_VIEW_MAIN_NAVIGATION = [
 ]
 
 export const AUTHENTICATED_USER_MAIN_NAVIGATION = [
+  NAVIGATION.notifications,
   NAVIGATION.myFavorite,
   NAVIGATION.myDiscussions,
 ]
@@ -336,6 +359,7 @@ export const SETTINGS_NAVIGATION = [
 
 export const PROFILE_VIEW_MAIN_NAVIGATION = [
   { ...NAVIGATION.myProfile, label: 'Profile' },
+  NAVIGATION.notifications,
   NAVIGATION.myFavorite,
   NAVIGATION.settings,
 ]

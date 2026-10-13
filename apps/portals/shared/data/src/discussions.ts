@@ -1,4 +1,4 @@
-import type { DiscussionThreadDto } from '@domains/discussion';
+import type { DiscussionThreadDto } from '@domains/discussion/contracts';
 import { APPLICATIONS } from './applications';
 
 export const SAMPLE_DISCUSSION: DiscussionThreadDto = {
@@ -15,7 +15,7 @@ My current setup is using Node.js with Express, and I'm getting 401 errors when 
     id: 'user-1',
     slug: 'sarah-chen',
     name: 'Sarah Chen',
-    avatar: { url: 'https://i.pravatar.cc/40?img=1' }
+    avatar: { url: 'https://i.pravatar.cc/40?img=1' },
   },
   publishedTime: new Date(Date.now() - 1000 * 60 * 60 * 2),
   upvotesCount: 8,
@@ -28,7 +28,7 @@ My current setup is using Node.js with Express, and I'm getting 401 errors when 
   tags: [
     { slug: 'integration', name: 'Integration' },
     { slug: 'api', name: 'API' },
-    { slug: 'help', name: 'Help' }
+    { slug: 'help', name: 'Help' },
   ],
   replies: [
     {
@@ -47,12 +47,12 @@ const response = await fetch('/api/endpoint', {
         id: 'user-2',
         slug: 'mike-johnson',
         name: 'Mike Johnson',
-        avatar: { url: 'https://i.pravatar.cc/40?img=2' }
+        avatar: { url: 'https://i.pravatar.cc/40?img=2' },
       },
       publishedTime: new Date(Date.now() - 1000 * 60 * 60),
       upvotesCount: 5,
       downvotesCount: 0,
-      isEdited: false
+      isEdited: false,
     },
     {
       id: 'reply-2',
@@ -61,14 +61,14 @@ const response = await fetch('/api/endpoint', {
         id: 'user-3',
         slug: 'emma-wilson',
         name: 'Emma Wilson',
-        avatar: { url: 'https://i.pravatar.cc/40?img=3' }
+        avatar: { url: 'https://i.pravatar.cc/40?img=3' },
       },
       publishedTime: new Date(Date.now() - 1000 * 60 * 45),
       upvotesCount: 3,
       downvotesCount: 0,
-      isEdited: false
-    }
-  ]
+      isEdited: false,
+    },
+  ],
 };
 
 export const OAUTH_DISCUSSION: DiscussionThreadDto = {
@@ -81,7 +81,7 @@ export const OAUTH_DISCUSSION: DiscussionThreadDto = {
     id: 'user-4',
     slug: 'alex-turner',
     name: 'Alex Turner',
-    avatar: { url: 'https://i.pravatar.cc/40?img=4' }
+    avatar: { url: 'https://i.pravatar.cc/40?img=4' },
   },
   publishedTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
   upvotesCount: 12,
@@ -94,9 +94,9 @@ export const OAUTH_DISCUSSION: DiscussionThreadDto = {
   tags: [
     { slug: 'oauth', name: 'OAuth' },
     { slug: 'security', name: 'Security' },
-    { slug: 'authentication', name: 'Authentication' }
+    { slug: 'authentication', name: 'Authentication' },
   ],
-  replies: []
+  replies: [],
 };
 
 export const RATE_LIMITING_DISCUSSION: DiscussionThreadDto = {
@@ -109,7 +109,7 @@ export const RATE_LIMITING_DISCUSSION: DiscussionThreadDto = {
     id: 'user-5',
     slug: 'jordan-lee',
     name: 'Jordan Lee',
-    avatar: { url: 'https://i.pravatar.cc/40?img=5' }
+    avatar: { url: 'https://i.pravatar.cc/40?img=5' },
   },
   publishedTime: new Date(Date.now() - 1000 * 60 * 60 * 48),
   upvotesCount: 6,
@@ -122,13 +122,13 @@ export const RATE_LIMITING_DISCUSSION: DiscussionThreadDto = {
   tags: [
     { slug: 'api', name: 'API' },
     { slug: 'rate-limiting', name: 'Rate Limiting' },
-    { slug: 'performance', name: 'Performance' }
+    { slug: 'performance', name: 'Performance' },
   ],
-  replies: []
+  replies: [],
 };
 
 export const DISCUSSIONS: DiscussionThreadDto[] = [
   SAMPLE_DISCUSSION,
   OAUTH_DISCUSSION,
-  RATE_LIMITING_DISCUSSION
+  RATE_LIMITING_DISCUSSION,
 ];

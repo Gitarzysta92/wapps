@@ -32,6 +32,8 @@ export type ProfileStatsDto = {
 
 export type CustomerProfileDto = {
   id: string;
+  publicId?: string;
+  revision?: number;
   name: string;
   avatar?: ProfileAvatarDto;
   badges?: ProfileBadgeDto[];
@@ -39,6 +41,8 @@ export type CustomerProfileDto = {
   // Extended profile fields
   bio?: string;
   email?: string;
+  /** Member-supplied contact address; never populated from credential email. */
+  contactEmail?: string;
   location?: string;
   socialLinks?: ProfileSocialLinksDto;
 
@@ -57,6 +61,7 @@ export type UpdateCustomerProfileDto = {
   name?: string;
   avatar?: ProfileAvatarDto;
   bio?: string;
+  contactEmail?: string;
   location?: string;
   socialLinks?: ProfileSocialLinksDto;
 };

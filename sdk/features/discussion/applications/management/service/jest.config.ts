@@ -6,5 +6,5 @@ export default {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html', 'json'],
-  coverageDirectory: '../../../../../../coverage/sdk/features/discussion/applications/management',
+  coverageDirectory: '../../../../../../coverage/sdk/features/discussion/applications/management/service',
 };

@@ -1,0 +1,155 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">Notifications</h1>
+  <p slot="meta" class="page-description">Replies, mentions, and updates to your favorites.</p>
+  @if (inbox.signedIn() && !isDemo) {
+    <button slot="actions" tuiButton appearance="secondary" size="m" type="button" [disabled]="activeInbox().loading()" (click)="activeInbox().reload(true)">Refresh latest</button>
+  }
+  <div slot="navigation" class="notification-categories" aria-label="Notification categories">
+    <button tuiButton [appearance]="category() === 'replies' ? 'secondary' : 'flat'" size="m" type="button" [attr.aria-pressed]="category() === 'replies'" (click)="category.set('replies')">Replies</button>
+    <button tuiButton [appearance]="category() === 'favorites' ? 'secondary' : 'flat'" size="m" type="button" [attr.aria-pressed]="category() === 'favorites'" (click)="category.set('favorites')">Favorites</button>
+    <button tuiButton [appearance]="category() === 'mentions' ? 'secondary' : 'flat'" size="m" type="button" [attr.aria-pressed]="category() === 'mentions'" (click)="category.set('mentions')">Mentions</button>
+  </div>
+</ui-page-header>
+@if (category() === 'replies') {
+<section class="inbox-content" aria-label="Reply notifications" [attr.aria-busy]="inbox.loading()">
+  <a tuiLink routerLink="/me/settings/notifications">Notification settings</a>
+  @if (isDemo) {
+    <ui-content-state title="Demo notifications" description="Reply notifications are not delivered in demo mode." icon="@tui.bell" />
+  } @else if (!inbox.signedIn()) {
+    <ui-content-state title="Sign in to see your notifications" description="Your inbox belongs to your account." icon="@tui.user" />
+  } @else if (inbox.loading()) {
+    <ui-content-state title="Loading notifications" description="Checking your preferences and current conversation visibility." icon="@tui.loader" />
+  } @else if (inbox.error()) {
+    <ui-content-state title="Notifications could not be loaded" [description]="inbox.error()" [error]="true" icon="@tui.triangle-alert">
+      <button tuiButton appearance="secondary" size="m" type="button" (click)="inbox.reload()">Try again</button>
+    </ui-content-state>
+  } @else if (!inbox.enabled()) {
+    <ui-content-state title="Reply notifications are off" description="Enable in-app notifications and Discussion Replies in your notification settings to receive future replies." icon="@tui.bell-off" />
+  } @else {
+    @if (inbox.feedback()) { <p role="status" aria-live="polite" class="page-description">{{ inbox.feedback() }}</p> }
+    @for (item of inbox.items(); track item.id) {
+      <ui-medium-card tuiAppearance="card-panel">
+        <div slot="header" class="notification-heading">
+          <h2>A reply in {{ item.title }}</h2>
+          <span class="page-description">{{ item.readAt === null ? 'Unread' : 'Read' }}</span>
+        </div>
+        <p class="page-description">Someone replied to your post. Open the conversation to read the reply.</p>
+        <p class="page-description">{{ item.at | date : 'medium' }}</p>
+        <div slot="bottom-bar" class="notification-actions">
+          @if (item.target.kind === 'application') {
+            <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', item.slug, 'discussions', item.discussionId]">Open conversation</a>
+          } @else {
+            <a tuiButton appearance="secondary" size="m" [routerLink]="['/articles', item.slug]" [queryParams]="{ thread: item.discussionId }">Open conversation</a>
+          }
+          @if (item.readAt === null) {
+            <button tuiButton appearance="flat" size="m" type="button" [disabled]="inbox.reading() !== null" (click)="inbox.markRead(item.id)">{{ inbox.reading() === item.id ? 'Saving...' : 'Mark as read' }}</button>
+          }
+        </div>
+      </ui-medium-card>
+    } @empty {
+      <ui-content-state [title]="inbox.next() || inbox.olderPage() ? 'No visible replies on this page' : 'No reply notifications yet'" [description]="inbox.next() ? 'Some conversations are no longer public. Check older notifications to continue.' : 'New replies to your public posts will appear here. Your own replies do not create notifications.'" icon="@tui.bell" />
+    }
+    @if (inbox.next()) {
+      <button tuiButton appearance="secondary" size="m" type="button" [disabled]="inbox.reading() !== null" (click)="inbox.older()">Older notifications</button>
+    }
+  }
+</section>
+
+} @else if (category() === 'favorites') {
+<section class="inbox-content" aria-label="Favorite update notifications" [attr.aria-busy]="favorites.loading()">
+  <a tuiLink routerLink="/me/settings/notifications">Notification settings</a>
+  @if (isDemo) {
+    <ui-content-state title="Demo notifications" description="Favorite updates are not delivered in demo mode." icon="@tui.bell" />
+  } @else if (!favorites.signedIn()) {
+    <ui-content-state title="Sign in to see your notifications" description="Your inbox belongs to your account." icon="@tui.user" />
+  } @else if (favorites.loading()) {
+    <ui-content-state title="Loading favorite updates" description="Checking current public content and your saved favorites." icon="@tui.loader" />
+  } @else if (favorites.error()) {
+    <ui-content-state title="Favorite updates could not be loaded" [description]="favorites.error()" [error]="true" icon="@tui.triangle-alert">
+      <button tuiButton appearance="secondary" size="m" type="button" (click)="favorites.reload()">Try again</button>
+    </ui-content-state>
+  } @else if (!favorites.enabled()) {
+    <ui-content-state title="Favorite updates are off" description="Enable in-app notifications and Favorite Updates in your notification settings to receive future changes." icon="@tui.bell-off" />
+  } @else {
+    <p class="page-description">Published changes are checked periodically. Several changes between checks appear as one update.</p>
+    @if (favorites.feedback()) { <p role="status" aria-live="polite" class="page-description">{{ favorites.feedback() }}</p> }
+    @for (item of favorites.items(); track item.id) {
+      <ui-medium-card tuiAppearance="card-panel">
+        <div slot="header" class="notification-heading">
+          <h2>An update to {{ item.title }}</h2>
+          <span class="page-description">{{ item.readAt === null ? 'Unread' : 'Read' }}</span>
+        </div>
+        <p class="page-description">A saved favorite has new public content.</p>
+        <p class="page-description">{{ item.at | date : 'medium' }}</p>
+        <div slot="bottom-bar" class="notification-actions">
+          @switch (item.destination.kind) {
+            @case ('applications') { <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', item.destination.slug]">Open application</a> }
+            @case ('articles') { <a tuiButton appearance="secondary" size="m" [routerLink]="['/articles', item.destination.slug]">Open article</a> }
+            @case ('suites') { <a tuiButton appearance="secondary" size="m" [routerLink]="['/suites', item.target.id]">Open suite</a> }
+            @case ('discussions') {
+              @if (item.destination.parentKind === 'application') {
+                <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', item.destination.slug, 'discussions', item.target.id]">Open conversation</a>
+              } @else {
+                <a tuiButton appearance="secondary" size="m" [routerLink]="['/articles', item.destination.slug]" [queryParams]="{ thread: item.target.id }">Open conversation</a>
+              }
+            }
+          }
+          @if (item.readAt === null) {
+            <button tuiButton appearance="flat" size="m" type="button" [disabled]="favorites.reading() !== null" (click)="favorites.markRead(item.id)">{{ favorites.reading() === item.id ? 'Saving...' : 'Mark as read' }}</button>
+          }
+        </div>
+      </ui-medium-card>
+    } @empty {
+      <ui-content-state [title]="favorites.next() || favorites.olderPage() ? 'No visible updates on this page' : 'No favorite updates yet'" description="Updates appear for favorites you still have saved and content that is still public." icon="@tui.bell" />
+    }
+    @if (favorites.next()) {
+      <button tuiButton appearance="secondary" size="m" type="button" [disabled]="favorites.reading() !== null" (click)="favorites.older()">Older updates</button>
+    }
+  }
+</section>
+} @else {
+<section class="inbox-content" aria-label="Mention notifications" [attr.aria-busy]="mentions.loading()">
+  <a tuiLink routerLink="/me/settings/notifications">Notification settings</a>
+  @if (isDemo) {
+    <ui-content-state title="Demo notifications" description="Mention notifications are not delivered in demo mode." icon="@tui.bell" />
+  } @else if (!mentions.signedIn()) {
+    <ui-content-state title="Sign in to see your notifications" description="Your inbox belongs to your account." icon="@tui.user" />
+  } @else if (mentions.loading()) {
+    <ui-content-state title="Loading notifications" description="Checking your preferences and current conversation visibility." icon="@tui.loader" />
+  } @else if (mentions.error()) {
+    <ui-content-state title="Notifications could not be loaded" [description]="mentions.error()" [error]="true" icon="@tui.triangle-alert">
+      <button tuiButton appearance="secondary" size="m" type="button" (click)="mentions.reload()">Try again</button>
+    </ui-content-state>
+  } @else if (!mentions.enabled()) {
+    <ui-content-state title="Mention notifications are off" description="Enable in-app notifications and Discussion Mentions in your notification settings to receive future mentions." icon="@tui.bell-off" />
+  } @else {
+    @if (mentions.feedback()) { <p role="status" aria-live="polite" class="page-description">{{ mentions.feedback() }}</p> }
+    @for (item of mentions.items(); track item.id) {
+      <ui-medium-card tuiAppearance="card-panel">
+        <div slot="header" class="notification-heading">
+          <h2>A mention in {{ item.title }}</h2>
+          <span class="page-description">{{ item.readAt === null ? 'Unread' : 'Read' }}</span>
+        </div>
+        <p class="page-description">Someone mentioned you in a post. Open the conversation to read it.</p>
+        <p class="page-description">{{ item.at | date : 'medium' }}</p>
+        <div slot="bottom-bar" class="notification-actions">
+          @if (item.target.kind === 'application') {
+            <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', item.slug, 'discussions', item.discussionId]">Open conversation</a>
+          } @else {
+            <a tuiButton appearance="secondary" size="m" [routerLink]="['/articles', item.slug]" [queryParams]="{ thread: item.discussionId }">Open conversation</a>
+          }
+          @if (item.readAt === null) {
+            <button tuiButton appearance="flat" size="m" type="button" [disabled]="mentions.reading() !== null" (click)="mentions.markRead(item.id)">{{ mentions.reading() === item.id ? 'Saving...' : 'Mark as read' }}</button>
+          }
+        </div>
+      </ui-medium-card>
+    } @empty {
+      <ui-content-state [title]="mentions.next() || mentions.olderPage() ? 'No visible mentions on this page' : 'No mention notifications yet'" [description]="mentions.next() ? 'Some conversations are no longer public. Check older notifications to continue.' : 'New mentions in public posts will appear here. Repeated edits of the same mention do not create another notification.'" icon="@tui.bell" />
+    }
+    @if (mentions.next()) {
+      <button tuiButton appearance="secondary" size="m" type="button" [disabled]="mentions.reading() !== null" (click)="mentions.older()">Older notifications</button>
+    }
+  }
+</section>
+}

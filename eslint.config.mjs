@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+import { architectureConstraints } from './tools/readiness/architecture-policy.mjs';
 
 export default [
   ...nx.configs['flat/base'],
@@ -15,12 +16,7 @@ export default [
         {
           enforceBuildableLibDependency: true,
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
+          depConstraints: architectureConstraints,
         },
       ],
     },

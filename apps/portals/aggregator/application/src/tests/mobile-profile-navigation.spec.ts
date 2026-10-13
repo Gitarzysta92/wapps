@@ -28,10 +28,10 @@ const portalRoutes = routes[0].children!;
 const settingsRoute = portalRoutes.find(route => route.path === NAVIGATION.settings.path)!;
 const accountRoutes = portalRoutes.filter(route => [
   NAVIGATION.myProfile.path, NAVIGATION.myFavorite.path, NAVIGATION.myDiscussions.path,
-  NAVIGATION.userProfile.path,
+  NAVIGATION.userProfile.path, NAVIGATION.notifications.path,
 ].includes(route.path!));
-const homeRoute = portalRoutes.find(route => route.component)!;
-const accountMenu = ['Profile', 'Favorites', 'Settings', 'Explore'];
+const homeRoute = portalRoutes.find(route => route.path === NAVIGATION.home.path && route.loadComponent)!;
+const accountMenu = ['Profile', 'Notifications', 'Favorites', 'Settings', 'Explore'];
 const publicMenu = ['User profile', 'My profile', 'Explore'];
 
 function destination(route: Route): Route {
@@ -73,6 +73,7 @@ describe('Mobile profile navigation', () => {
 
   it.each([
     ['/me/profile', accountMenu, 'Profile'],
+    ['/notifications', accountMenu, 'Notifications'],
     ['/me/favorite', accountMenu, 'Favorites'],
     ['/me/discussions', accountMenu, 'Profile'],
     ['/me/settings', accountMenu, 'Settings'],

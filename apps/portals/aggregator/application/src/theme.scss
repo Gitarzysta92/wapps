@@ -272,6 +272,12 @@ body.dark {
   }
 }
 
+// Activity controls and preference notices need a stable surface above the decoration.
+.section__feed > explore-feed {
+  background: var(--elevated-background);
+  color: var(--tui-text-primary);
+}
+
 // Tiles grow to their natural size using the same progress as the decoration fade.
 .section__feed.ui-decoration-faded {
   --decoration-min-opacity: 0;
@@ -438,6 +444,19 @@ status-history {
   .status-dot.outage { background-color: var(--tui-status-negative); }
 }
 
+application-health-api-page {
+  .health-url, .health-detail, .health-history-dates, .health-legend { color: var(--tui-text-secondary); }
+  .health-state { color: var(--tui-text-primary); background: var(--tui-background-neutral-1); }
+  .health-state[data-status='operational'] { color: var(--tui-text-positive); background: var(--tui-status-positive-pale); }
+  .health-state[data-status='degraded'] { color: var(--tui-text-warning); background: var(--tui-status-warning-pale); }
+  .health-state[data-status='outage'] { color: var(--tui-text-negative); background: var(--tui-status-negative-pale); }
+  .health-day { background: var(--tui-background-neutral-2); }
+  .health-day[data-status='operational'] { background: var(--tui-status-positive); }
+  .health-day[data-status='degraded'] { background: var(--tui-status-warning); }
+  .health-day[data-status='outage'] { background: var(--tui-status-negative); }
+  .health-day:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: 2px; }
+}
+
 feed-actions-menu summary[tuiAppearance] {
   border-radius: var(--tui-radius-s);
 }
@@ -576,6 +595,19 @@ common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
   }
 }
 
+discover-api-page {
+  .discovery-input {
+    color: var(--tui-text-primary);
+    background: var(--tui-background-base);
+    border: 1px solid var(--tui-border-normal);
+    border-radius: $radius-sm;
+    &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
+  }
+  .discovery-note, .discovery-group-heading p, .discovery-card time, .discovery-recent span {
+    color: var(--tui-text-secondary);
+  }
+}
+
 [tuiAppearance][data-appearance='navigation-primary'] {
   padding: $space-4;
   width: $size-content-xxs;
@@ -664,6 +696,15 @@ favorite-toggle-button .is-favorite::before {
   color: var(--tui-status-warning);
 }
 
+favorites-page {
+  .page-description, .favorites-page h2 span, .favorites-page__target small {
+    color: var(--tui-text-secondary);
+  }
+  .favorites-page a { color: var(--tui-text-action); }
+  .favorites-page__item { border-bottom: 1px solid var(--tui-border-normal); }
+  .favorites-page__item:last-child { border-bottom: 0; }
+}
+
 [tuiAppearance][data-appearance='review-preview'] {
   background: var(--tui-background-elevation-1);
 
@@ -675,6 +716,7 @@ favorite-toggle-button .is-favorite::before {
 [tuiAppearance][data-appearance='card-elevated'],
 [tuiAppearance][data-appearance='card-panel'],
 [tuiCardLarge][tuiAppearance][data-appearance='card-panel'] {
+  color: var(--tui-text-primary);
   background: var(--elevated-background);
   border: 1px solid var(--elevated-background-border, #{$color-border});
   border-radius: $radius-md;
@@ -728,6 +770,38 @@ multi-search {
   .section-title--danger .section-icon { color: var(--tui-text-negative); }
   .settings-feedback { color: var(--tui-text-positive); }
   .settings-feedback--error { color: var(--tui-text-negative); }
+}
+
+profile-badge-admin {
+  input, textarea {
+    color: var(--tui-text-primary);
+    background: var(--tui-background-base);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-sm;
+  }
+  input:focus-visible, textarea:focus-visible {
+    outline: $space-0_5 solid var(--tui-border-focus);
+    outline-offset: $space-1;
+  }
+  input:disabled, textarea:disabled { color: var(--tui-text-secondary); }
+  .badge-card { border-radius: $radius-md; }
+}
+
+member-reviews {
+  .card { border-radius: $radius-md; }
+  .review-field {
+    color: var(--tui-text-primary);
+    background: var(--tui-background-base);
+    border: $border-width-thin solid var(--tui-border-normal);
+    border-radius: $radius-sm;
+  }
+  a { color: var(--tui-text-action); }
+  meter { accent-color: var(--tui-text-action); }
+  .review-field:focus-visible, a:focus-visible {
+    outline: $space-0_5 solid var(--tui-border-focus);
+    outline-offset: $space-1;
+  }
+  .review-field:disabled { color: var(--tui-text-secondary); }
 }
 
 :is(my-apps-page, register-application-page, ownership-page) {
@@ -914,4 +988,45 @@ a[tuiAppearance][data-appearance='card-elevated'] {
 
 .crown-animated {
   animation: crown-pulse 2s ease-in-out infinite;
+}
+
+// Suite controls inherit the active portal theme.
+private-suites-page, suite-publication-page {
+  .suite-input {
+    background: var(--tui-background-base);
+    color: var(--tui-text-primary);
+    border: 1px solid var(--tui-border-normal);
+    border-radius: var(--tui-radius-m);
+    &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
+    &:disabled { opacity: 0.65; }
+  }
+  .suite-label, small { color: var(--tui-text-secondary); }
+  .suite-feedback { color: var(--tui-text-negative); }
+}
+
+application-drafts-page, application-publication-page,
+application-ownership-page, application-editing-page, app-release-workspace,
+app-article-workspace, app-article-catalog, app-application-discussions-api-page,
+discussion-quick-api-dialog {
+  .application-draft-input {
+    background: var(--tui-background-base);
+    color: var(--tui-text-primary);
+    border: 1px solid var(--tui-border-normal);
+    border-radius: var(--tui-radius-m);
+    &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
+    &:disabled { opacity: 0.65; }
+  }
+  .application-draft-meta { color: var(--tui-text-secondary); }
+  .application-draft-feedback { color: var(--tui-text-negative); }
+}
+
+account-erasure-panel {
+  .erasure-confirmation input {
+    background: var(--tui-background-base);
+    color: var(--tui-text-primary);
+    border: 1px solid var(--tui-border-normal);
+    border-radius: var(--tui-radius-m);
+    &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
+  }
+  input[type='checkbox'] { accent-color: var(--tui-background-accent-1); }
 }

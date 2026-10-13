@@ -1,178 +1,197 @@
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@sdk/kernel/standard';
+import {
+  AuthSessionDto,
+  CredentialRegistrationRejected,
+  IdentityAuthenticationUnavailable,
+  RegistrationCredentials,
+} from '@sdk/features/identity/libs/authentication';
 
-
-function mapFirebaseRestAuthError(code: string | undefined): string {
-  const errorMessages: Record<string, string> = {
-    EMAIL_NOT_FOUND: 'No account found with this email',
-    INVALID_PASSWORD: 'Incorrect password',
-    INVALID_LOGIN_CREDENTIALS: 'Invalid email or password',
-    USER_DISABLED: 'This account has been disabled',
-    TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many failed attempts. Please try again later',
-    EMAIL_EXISTS: 'An account with this email already exists',
-    WEAK_PASSWORD: 'Password should be at least 6 characters',
-    INVALID_EMAIL: 'Invalid email address',
-    // token refresh-related
-    INVALID_REFRESH_TOKEN: 'Invalid refresh token',
-    TOKEN_EXPIRED: 'Refresh token expired',
-  };
-
-  return (code && errorMessages[code]) || 'Authentication failed. Please try again';
-}
+export type FirebaseAuthSessionDto = AuthSessionDto;
 
 class FirebaseRestError extends Error {
-  override name = 'FirebaseRestError';
-  constructor(
-    message: string,
-    public readonly code?: string
-  ) {
-    super(message);
+  constructor(public readonly code: string) {
+    super('Credentials were rejected. Check your details and try again.');
   }
 }
 
-type FirebaseErrorResponse = {
-  error?: {
-    message?: string;
-  };
-};
+export function firebaseRestErrorCode(input: unknown): string | null {
+  if (
+    !input ||
+    typeof input !== 'object' ||
+    !('error' in input) ||
+    !input.error ||
+    typeof input.error !== 'object' ||
+    !('message' in input.error) ||
+    typeof input.error.message !== 'string'
+  )
+    return null;
+  return input.error.message.split(' : ')[0];
+}
 
-type FirebaseSignInResponse = {
-  idToken: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-};
+function unavailable(): IdentityAuthenticationUnavailable {
+  return new IdentityAuthenticationUnavailable(
+    'Authentication service unavailable'
+  );
+}
 
-type FirebaseRefreshResponse = {
-  id_token: string;
-  refresh_token: string;
-  expires_in: string;
-  user_id: string;
-};
-
-export type FirebaseAuthSessionDto = {
-  token: string;
-  refreshToken: string;
-  expiresIn: string;
-  uid: string;
-};
-
-export class FirebaseRestSessionGateway {
+export class FirebaseRestSessionGateway implements RegistrationCredentials {
   constructor(
     private readonly apiKey: string | undefined,
     private readonly emulatorHost = process.env['FIREBASE_AUTH_EMULATOR_HOST']
   ) {}
 
-  private endpoint(host: string, path: string): string {
-    return this.emulatorHost
-      ? `http://${this.emulatorHost}/${host}${path}`
-      : `https://${host}${path}`;
-  }
-
-  private ensureApiKey(): Result<string, Error> {
-    if (!this.apiKey) {
-      return err(new Error('FIREBASE_WEB_API_KEY not set'));
-    }
-    return ok(this.apiKey);
-  }
-
-  async signInWithPassword(email: string, password: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
-    const apiKey = this.ensureApiKey();
-    if (!apiKey.ok) return apiKey;
-
-    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signInWithPassword?key=${apiKey.value}`);
-    return await this.postJson<FirebaseSignInResponse>(url, {
-      email,
-      password,
-      returnSecureToken: true,
-    });
-  }
-
-  async signUpAnonymous(): Promise<Result<FirebaseAuthSessionDto, Error>> {
-    const apiKey = this.ensureApiKey();
-    if (!apiKey.ok) return apiKey;
-
-    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signUp?key=${apiKey.value}`);
-    return await this.postJson<FirebaseSignInResponse>(url, {
-      returnSecureToken: true,
-    });
-  }
-
-  async signInWithCustomToken(customToken: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
-    const apiKey = this.ensureApiKey();
-    if (!apiKey.ok) return apiKey;
-
-    const url = this.endpoint('identitytoolkit.googleapis.com', `/v1/accounts:signInWithCustomToken?key=${apiKey.value}`);
-    return await this.postJson<FirebaseSignInResponse>(url, {
-      token: customToken,
-      returnSecureToken: true,
-    });
-  }
-
-  async refresh(refreshToken: string): Promise<Result<FirebaseAuthSessionDto, Error>> {
-    const apiKey = this.ensureApiKey();
-    if (!apiKey.ok) return apiKey;
-
-    const url = this.endpoint('securetoken.googleapis.com', `/v1/token?key=${apiKey.value}`);
-
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-        }),
-      });
-
-      const data = (await res.json()) as FirebaseRefreshResponse | FirebaseErrorResponse;
-
-      if (!res.ok) {
-        const code = (data as FirebaseErrorResponse)?.error?.message;
-        return err(new FirebaseRestError(mapFirebaseRestAuthError(code), code));
+  async registerOrAuthenticate(
+    email: string,
+    password: string
+  ): Promise<Result<AuthSessionDto, Error>> {
+    const created = await this.request(
+      'identitytoolkit.googleapis.com',
+      '/v1/accounts:signUp',
+      {
+        email,
+        password,
+        returnSecureToken: true,
       }
-
-      const okData = data as FirebaseRefreshResponse;
-      return ok({
-        token: okData.id_token,
-        refreshToken: okData.refresh_token,
-        expiresIn: okData.expires_in,
-        uid: okData.user_id,
-      });
-    } catch (e: any) {
-      const message = e?.message ? String(e.message) : 'Token refresh failed';
-      return err(new FirebaseRestError(message));
-    }
+    );
+    // A previous attempt may have created credentials before its SQL transaction failed.
+    const result =
+      !created.ok &&
+      created.error instanceof FirebaseRestError &&
+      created.error.code === 'EMAIL_EXISTS'
+        ? await this.signInWithPassword(email, password)
+        : created;
+    return !result.ok && result.error instanceof FirebaseRestError
+      ? err(
+          new CredentialRegistrationRejected(
+            'Registration could not be completed. Check your details or sign in.'
+          )
+        )
+      : result;
   }
 
-  private async postJson<T extends FirebaseSignInResponse>(
-    url: string,
-    body: Record<string, unknown>
-  ): Promise<Result<FirebaseAuthSessionDto, Error>> {
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = (await res.json()) as T | FirebaseErrorResponse;
-
-      if (!res.ok) {
-        const code = (data as FirebaseErrorResponse)?.error?.message;
-        return err(new FirebaseRestError(mapFirebaseRestAuthError(code), code));
+  signInWithPassword(
+    email: string,
+    password: string
+  ): Promise<Result<AuthSessionDto, Error>> {
+    return this.request(
+      'identitytoolkit.googleapis.com',
+      '/v1/accounts:signInWithPassword',
+      {
+        email,
+        password,
+        returnSecureToken: true,
       }
+    );
+  }
 
-      const okData = data as T;
-      return ok({
-        token: okData.idToken,
-        refreshToken: okData.refreshToken,
-        expiresIn: okData.expiresIn,
-        uid: okData.localId,
-      });
-    } catch (e: any) {
-      const message = e?.message ? String(e.message) : 'Firebase request failed';
-      return err(new FirebaseRestError(message));
+  signUpAnonymous(): Promise<Result<AuthSessionDto, Error>> {
+    return this.request(
+      'identitytoolkit.googleapis.com',
+      '/v1/accounts:signUp',
+      { returnSecureToken: true }
+    );
+  }
+
+  signInWithCustomToken(
+    customToken: string
+  ): Promise<Result<AuthSessionDto, Error>> {
+    return this.request(
+      'identitytoolkit.googleapis.com',
+      '/v1/accounts:signInWithCustomToken',
+      {
+        token: customToken,
+        returnSecureToken: true,
+      }
+    );
+  }
+
+  refresh(refreshToken: string): Promise<Result<AuthSessionDto, Error>> {
+    return this.request(
+      'securetoken.googleapis.com',
+      '/v1/token',
+      {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      },
+      true
+    );
+  }
+
+  private async request(
+    host: string,
+    path: string,
+    body: Record<string, unknown>,
+    refresh = false
+  ): Promise<Result<AuthSessionDto, Error>> {
+    if (!this.apiKey) return err(unavailable());
+    const base = this.emulatorHost
+      ? `http://${this.emulatorHost}/${host}`
+      : `https://${host}`;
+    try {
+      const response = await fetch(
+        `${base}${path}?key=${encodeURIComponent(this.apiKey)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          timeout: 10_000,
+          size: 32 * 1024,
+        }
+      );
+      const data: unknown = await response.json();
+      if (!response.ok) {
+        const code = firebaseRestErrorCode(data);
+        const rejected = [
+          'EMAIL_EXISTS',
+          'EMAIL_NOT_FOUND',
+          'INVALID_PASSWORD',
+          'INVALID_LOGIN_CREDENTIALS',
+          'USER_DISABLED',
+          'WEAK_PASSWORD',
+          'PASSWORD_DOES_NOT_MEET_REQUIREMENTS',
+          'INVALID_EMAIL',
+          'INVALID_REFRESH_TOKEN',
+          'TOKEN_EXPIRED',
+          'USER_NOT_FOUND',
+          'INVALID_CUSTOM_TOKEN',
+          'CREDENTIAL_MISMATCH',
+        ];
+        return err(
+          response.status === 400 && code && rejected.includes(code)
+            ? new FirebaseRestError(code)
+            : unavailable()
+        );
+      }
+      if (!data || typeof data !== 'object') return err(unavailable());
+      const values: Record<string, unknown> = data as Record<string, unknown>;
+      const token = values[refresh ? 'id_token' : 'idToken'];
+      const refreshToken = values[refresh ? 'refresh_token' : 'refreshToken'];
+      const expiresIn = values[refresh ? 'expires_in' : 'expiresIn'];
+      const uid = values[refresh ? 'user_id' : 'localId'];
+      if (
+        typeof token !== 'string' ||
+        token.length === 0 ||
+        token.length > 16384 ||
+        typeof refreshToken !== 'string' ||
+        refreshToken.length === 0 ||
+        refreshToken.length > 16384 ||
+        typeof expiresIn !== 'string' ||
+        !/^[1-9][0-9]*$/.test(expiresIn) ||
+        !Number.isSafeInteger(Number(expiresIn)) ||
+        typeof uid !== 'string' ||
+        uid.length === 0 ||
+        uid.length > 128 ||
+        uid.trim() !== uid ||
+        [...uid].some(
+          (character) =>
+            character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127
+        )
+      )
+        return err(unavailable());
+      return ok({ token, refreshToken, expiresIn, uid });
+    } catch {
+      return err(unavailable());
     }
   }
 }

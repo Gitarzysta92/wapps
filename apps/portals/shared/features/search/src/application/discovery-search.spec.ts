@@ -21,6 +21,14 @@ describe('discovery search', () => {
     expect(search({}).itemsNumber).toBe(CATALOG_ENTRIES.length);
   });
 
+  it.each([['application', 'applications'], ['article', 'articles'], ['suite', 'suites']])(
+    'accepts legacy %s and canonical %s group links in demo mode', (legacy, canonical) => {
+      const result = search({ type: canonical });
+      expect(result.itemsNumber).toBeGreaterThan(0);
+      expect(result.groups).toEqual(search({ type: legacy }).groups);
+    }
+  );
+
   it('applies application filters instead of only rendering their chips', () => {
     const names = (params: Record<string, string>) => search({type: 'application', ...params}).groups.flatMap(group => group.entries.map(entry => entry.name));
     expect(names({platform: 'desktop'})).toEqual(['Speedy VPN']);

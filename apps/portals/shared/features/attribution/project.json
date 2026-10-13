@@ -3,37 +3,34 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "attribution",
-  "sourceRoot": "apps/portals/shared/features/attribution",
-  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "sourceRoot": "apps/portals/shared/features/attribution/src",
+  "tags": [
+    "type:lib",
+    "scope:shared",
+    "scope:features",
+    "arch:feature"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "outputPath": "dist/apps/portals/shared/features/attribution",
-        "main": "apps/portals/shared/features/attribution/src/index.ts",
-        "tsConfig": "apps/portals/shared/features/attribution/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/features/attribution/*.md"],
-        "additionalEntryPoints": []
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/shared/features/attribution/jest.config.ts",
-        "passWithNoTests": true
+        "project": "apps/portals/shared/features/attribution/ng-package.json",
+        "tsConfig": "apps/portals/shared/features/attribution/tsconfig.lib.json"
       },
       "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+        "production": {},
+        "development": {}
+      },
+      "defaultConfiguration": "production"
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

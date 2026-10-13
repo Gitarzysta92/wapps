@@ -1,4 +1,7 @@
 **
+!.nvmrc
+!rules/**
+!tools/readiness/**
 !package.json
 !package-lock.json
 !nx.json

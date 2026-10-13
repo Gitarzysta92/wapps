@@ -6,7 +6,8 @@
   "sourceRoot": "sdk/features/identity/libs/authentication/src",
   "tags": [
     "type:domain",
-    "scope:identity"
+    "scope:identity",
+    "arch:usecase"
   ],
   "targets": {
     "build": {
@@ -25,7 +26,7 @@
       ],
       "options": {
         "jestConfig": "sdk/features/identity/libs/authentication/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       },
       "configurations": {
         "ci": {
@@ -39,6 +40,19 @@
       "outputs": [
         "{options.outputFile}"
       ]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p sdk/features/identity/libs/authentication/tsconfig.lib.json",
+          "tsc --noEmit -p sdk/features/identity/libs/authentication/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

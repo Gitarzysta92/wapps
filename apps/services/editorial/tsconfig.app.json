@@ -3,20 +3,96 @@
   "compilerOptions": {
     "outDir": "../../../dist/apps/services/editorial",
     "declaration": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "composite": true,
     "module": "commonjs",
-    "target": "es2020",
-    "strictPropertyInitialization": false
+    "target": "es2020"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", ".keystone", "jest.config.ts"],
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".keystone",
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/testing/**/*.ts"
+  ],
   "references": [
     {
+      "path": "../../../sdk/features/identity/packages/infrastructure/mysql/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/extras/mysql/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/catalog/media/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/extras/mongo/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/aspects/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/platform/queue/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/extras/queue-rabbitmq/tsconfig.lib.json"
+    },
+    {
       "path": "../../../data/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/catalog/record/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/ontology/content/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/ontology/authority/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/ontology/workflow/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/publication/suite/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/catalog/ownership/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/catalog/versioning/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/publication/article/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/customer/profiles/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/feed/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/reliability/tsconfig.lib.json"
     }
   ]
 }

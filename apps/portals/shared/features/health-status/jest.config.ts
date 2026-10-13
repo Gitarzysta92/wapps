@@ -1,5 +1,6 @@
 export default {
   displayName: 'health-status',
+  testEnvironment: 'jsdom',
   preset: '../../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory:

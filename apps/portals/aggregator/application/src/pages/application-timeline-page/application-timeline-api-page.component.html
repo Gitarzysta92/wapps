@@ -1,0 +1,29 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">Timeline</h1>
+  <p slot="meta">{{ app.application()?.name || 'Application activity' }}</p>
+  <button tuiButton slot="actions" type="button" size="s" appearance="secondary" [disabled]="app.isLoading() || (app.application() && timeline.loading())" (click)="refresh()">Refresh timeline</button>
+</ui-page-header>
+<section class="timeline-content" [attr.aria-busy]="app.isLoading() || (app.application() && timeline.loading())" aria-label="Application timeline">
+  <p class="timeline-description">Current public application updates, suite publications, releases, discussions and reviews. Each page selects up to ten recent items. Your content preferences and category exclusions apply; popular and recommended order compare only this page.</p>
+  @if (app.application() && timeline.order() === 'recommended' && timeline.personalizationDisabled()) { <p role="status">Personalization is off, so this page uses recent order.</p> }
+  @if (!app.application()) { <application-content-state [reader]="app" /> }
+  @else if (timeline.loading()) { <p role="status">Loading application activity and your saved choices...</p> }
+  @else if (timeline.notFound()) { <ui-content-state title="Application not found" description="This application is unavailable or no longer public." icon="@tui.box"><a tuiButton routerLink="/app" appearance="secondary">Browse applications</a></ui-content-state> }
+  @else if (timeline.error()) {
+    <ui-content-state title="Timeline unavailable" [description]="timeline.error()" icon="@tui.circle-alert" [error]="true"><button tuiButton type="button" (click)="timeline.retry()">Retry timeline</button></ui-content-state>
+  } @else if (timeline.loaded()) {
+    <div class="timeline-items">
+      @for (item of timeline.items(); track item.kind + ':' + item.id) {
+        @let destination = link(item.target);
+        <article class="timeline-card" tuiAppearance="card-elevated" [attr.data-id]="item.id" [attr.data-kind]="item.kind">
+          <header><span>{{ labels[item.kind] }}</span><time [attr.datetime]="timestamp(item.at)">{{ item.at | preferredDate }}</time></header>
+          <div class="timeline-copy"><h3><a tuiLink [routerLink]="destination.path" [queryParams]="destination.query">{{ item.title }}</a></h3>@if (item.engagement !== null) { <p>{{ item.engagement }} {{ item.kind === 'review' ? 'helpful marks' : 'net votes' }}</p> }</div>
+        </article>
+      } @empty { <ui-content-state title="No matching activity on this page" [description]="timeline.excluded() ? 'Items on this page were hidden by your saved content choices.' : 'No visible activity was found in this selection.'" icon="@tui.list-ordered" /> }
+    </div>
+    @if (timeline.excluded()) { <p role="status">{{ timeline.excluded() }} items hidden on this page by your saved content choices.</p> }
+    @if (timeline.after()) { <button tuiButton type="button" size="m" appearance="secondary" (click)="older()">Older activity</button> }
+    @else { <p role="status">End of the available activity.</p> }
+  }
+</section>

@@ -4,22 +4,29 @@
   "projectType": "library",
   "prefix": "cat",
   "sourceRoot": "libs/domains/catalog/versioning/src",
-  "tags": [
-    "type:domain",
-    "scope:catalog"
-  ],
+  "tags": ["type:domain", "scope:catalog", "arch:domain"],
   "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/domains/catalog/versioning/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit -p libs/domains/catalog/versioning/tsconfig.spec.json"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "outputs": ["{options.outputFile}"]
     },
     "build": {
       "executor": "nx:run-commands",
-      "outputs": [
-        "{projectRoot}/../../dist/domains/catalog/versioning"
-      ],
+      "outputs": ["{workspaceRoot}/dist/domains/catalog/versioning"],
       "options": {
         "command": "tsc --build libs/domains/catalog/versioning/tsconfig.lib.json"
       }

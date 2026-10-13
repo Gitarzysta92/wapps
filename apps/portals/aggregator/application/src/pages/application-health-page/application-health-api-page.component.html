@@ -1,0 +1,45 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">Application health</h1>
+  <p slot="meta">{{ app.application()?.name || 'HTTP endpoint observations' }}</p>
+  <button tuiButton slot="actions" type="button" size="s" appearance="secondary" [disabled]="app.isLoading() || (app.application() && health.loading())" (click)="refresh()">Refresh checks</button>
+</ui-page-header>
+<section class="health-content" [attr.aria-busy]="app.isLoading() || (app.application() && health.loading())" aria-label="Application HTTP health">
+  <p class="health-description">Checks measure configured public HTTP endpoints every five minutes. They do not verify every internal service. Missing and inconclusive checks remain unknown. This page refreshes every minute.</p>
+  @if (!app.application()) { <application-content-state [reader]="app" /> }
+  @else if (health.loading()) { <p role="status">Loading HTTP observations...</p> }
+  @else if (health.notFound()) { <ui-content-state title="Application not found" description="This application is unavailable or no longer public." icon="@tui.box"><a tuiButton routerLink="/app" appearance="secondary">Browse applications</a></ui-content-state> }
+  @else if (health.error()) { <ui-content-state title="Observations unavailable" [description]="health.error()" icon="@tui.circle-alert" [error]="true"><button tuiButton type="button" (click)="refresh()">Retry checks</button></ui-content-state> }
+  @else { @if (health.report(); as report) {
+    @if (report.monitors.length) {
+      <div class="health-summary" tuiAppearance="card-elevated" role="status">
+        <h2><span class="health-state" [attr.data-status]="health.status()">{{ labels[health.status()] }}</span> across monitored endpoints</h2>
+        <p>As of {{ report.asOf | date:'medium':'UTC' }} UTC. Results older than fifteen minutes are stale.</p>
+      </div>
+      <section class="health-section" aria-label="Endpoint observations">
+        <h2 class="section-title">Endpoint observations</h2>
+        <div class="health-monitors">
+          @for (monitor of report.monitors; track monitor.id) {
+            <article class="health-monitor" tuiAppearance="card-elevated" [attr.data-monitor]="monitor.id">
+              <header><div class="health-heading"><h3>{{ monitor.name }}</h3><p class="health-url">{{ monitor.url }}</p></div><span class="health-state" [attr.data-status]="monitor.status">{{ labels[monitor.status] }}</span></header>
+              <div class="health-evidence">
+                @if (monitor.latest; as latest) {
+                  <p>{{ reasons[latest.reason] }}</p>
+                  @if (latest.httpStatus !== null || latest.durationMs !== null) { <p class="health-http">@if (latest.httpStatus !== null) { <span>HTTP {{ latest.httpStatus }}</span> } @if (latest.durationMs !== null) { <span>Response time: {{ latest.durationMs }} ms</span> }</p> }
+                  <p>Last observed {{ latest.observedAt | date:'medium':'UTC' }} UTC.@if (monitor.status === 'stale') { <strong> No recent result is available.</strong> }</p>
+                } @else { <p>No observation has been recorded for this configuration.</p> }
+                <div class="health-metrics"><p><strong>{{ monitor.availabilityPercent === null ? 'Unknown' : (monitor.availabilityPercent | number:'1.0-2') + '%' }}</strong><span>Sampled availability</span></p><p><strong>{{ monitor.measured }} / {{ monitor.expected }}</strong><span>Measured five-minute intervals</span></p></div>
+                <p class="health-detail">Thirty UTC calendar days, including today. Slow successful responses count as available. Unknown checks and missing intervals are excluded from sampled availability; coverage is shown separately.</p>
+                <div class="health-history" role="list" aria-label="Daily observation history">
+                  @for (day of monitor.history; track day.day) { <span class="health-day" role="listitem" tabindex="0" [attr.data-status]="day.status" [attr.title]="dayLabel(day)" [attr.aria-label]="dayLabel(day)"></span> }
+                </div>
+                <p class="health-history-dates"><span>{{ monitor.history[0].day | date:'MMM d':'UTC' }}</span><span>Today (UTC)</span></p>
+              </div>
+            </article>
+          }
+        </div>
+        <p class="health-legend">Daily history: responding only when every interval was measured successfully; slow or failed checks show the observed issue; incomplete history remains unknown.</p>
+      </section>
+    } @else { <ui-content-state title="Health unknown" description="No eligible HTTP checks are configured for this application. No uptime is assumed." icon="@tui.circle-help" /> }
+  } }
+</section>

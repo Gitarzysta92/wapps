@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { defer, map, shareReplay } from "rxjs";
-import { isOk } from "@foundation/standard";
+import { isOk } from "@sdk/kernel/standard";
 import { PLATFORMS_PROVIDER } from "./platforms-provider.token";
 
 @Injectable()

@@ -1,14 +1,14 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, input, output, ViewChild, ElementRef, signal, computed, AfterViewInit, OnDestroy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input, output, ViewChild, ElementRef, signal, computed, AfterViewInit } from "@angular/core";
 
 @Component({
-  selector: 'chat-input',
+  selector: 'lib-chat-input',
   imports: [CommonModule],
   templateUrl: './chat-input.component.html',
   styleUrl: './chat-input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatInputComponent implements AfterViewInit, OnDestroy {
+export class ChatInputComponent implements AfterViewInit {
   @ViewChild('inputElement', { static: false }) inputElement!: ElementRef<HTMLDivElement>;
 
   // Input properties
@@ -19,9 +19,9 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
   public readonly maxHeight = input<number>(200);
 
   // Output events
-  public readonly onSubmit = output<string>();
-  public readonly onContentChange = output<string>();
-  public readonly onFocus = output<boolean>();
+  public readonly submitted = output<string>();
+  public readonly contentChanged = output<string>();
+  public readonly focusChanged = output<boolean>();
 
   // Internal state
   private readonly _content = signal<string>('');
@@ -42,10 +42,6 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    // Cleanup if needed
-  }
-
   // Event handlers
   public onInput(event: Event): void {
     const target = event.target as HTMLDivElement;
@@ -56,7 +52,7 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
     this.autoResize(target);
     
     // Emit content change
-    this.onContentChange.emit(content);
+    this.contentChanged.emit(content);
   }
 
   public onKeyDown(event: KeyboardEvent): void {
@@ -96,13 +92,13 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
       const target = event.target as HTMLDivElement;
       this._content.set(target.textContent || '');
       this.autoResize(target);
-      this.onContentChange.emit(target.textContent || '');
+      this.contentChanged.emit(target.textContent || '');
     }
   }
 
   public handleFocusChange(focused: boolean): void {
     this._isFocused.set(focused);
-    this.onFocus.emit(focused);
+    this.focusChanged.emit(focused);
   }
 
   public onSendClick(): void {
@@ -114,7 +110,7 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
     const content = this._content().trim();
     if (content && this.canSubmit()) {
       this._isSubmitting.set(true);
-      this.onSubmit.emit(content);
+      this.submitted.emit(content);
       
       // Clear the input after submission
       this.clearInput();
@@ -131,7 +127,7 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
       this.inputElement.nativeElement.textContent = '';
       this._content.set('');
       this.autoResize(this.inputElement.nativeElement);
-      this.onContentChange.emit('');
+      this.contentChanged.emit('');
     }
   }
 
@@ -187,7 +183,7 @@ export class ChatInputComponent implements AfterViewInit, OnDestroy {
       this.inputElement.nativeElement.textContent = value;
       this._content.set(value);
       this.autoResize(this.inputElement.nativeElement);
-      this.onContentChange.emit(value);
+      this.contentChanged.emit(value);
     }
   }
 

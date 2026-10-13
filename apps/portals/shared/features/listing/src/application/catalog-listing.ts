@@ -11,6 +11,7 @@ import {
   DISCOVERY_SEARCH_PREVIEW_DATA,
 } from '@portals/shared/data';
 import { DiscoverySearchResultType } from '@domains/discovery';
+import type { ClassifiedContent } from '@domains/publication/classification';
 
 export type CatalogKind = 'applications' | 'articles' | 'suites';
 export type CatalogSort = 'name' | 'name-desc' | 'newest';
@@ -19,7 +20,9 @@ export interface CatalogFacet {
   slug: string;
   name: string;
 }
-export interface CatalogEntry {
+export interface CatalogEntry extends ClassifiedContent {
+  id?: string;
+  revision?: number;
   kind: CatalogKind;
   slug: string;
   name: string;
@@ -36,6 +39,7 @@ export interface CatalogEntry {
   applications?: { name: string; slug: string }[];
 }
 export interface CatalogQuery {
+  unsupportedFilters?: readonly string[];
   kind?: CatalogKind;
   search: string;
   category: string;

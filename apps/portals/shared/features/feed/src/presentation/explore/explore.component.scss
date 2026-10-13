@@ -1,0 +1,44 @@
+@use 'ui/design-system/src/styles' as *;
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: $space-4;
+  border-radius: $radius-sm;
+}
+.explore-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-4;
+}
+.explore-controls p {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+.explore-description {
+  margin: $space-4 0 $space-6;
+}
+.explore-items {
+  display: grid;
+  gap: $space-6;
+  margin-bottom: $space-6;
+}
+.explore-card[tuiCardLarge][data-space] {
+  min-width: 0;
+  gap: $space-2;
+}
+.explore-card header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-2;
+}
+.explore-card h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.explore-card p {
+  margin: 0;
+}

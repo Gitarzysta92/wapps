@@ -3,7 +3,10 @@
   "dest": "../../../dist/libs/ui/filters",
   "lib": {
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["../../../libs"]
+    "styleIncludePaths": [
+      "../../../libs",
+      "../..",
+      "../design-system/src"
+    ]
   }
 }
-

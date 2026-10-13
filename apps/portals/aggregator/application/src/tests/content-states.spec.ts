@@ -4,8 +4,8 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { of, Subject } from 'rxjs';
-import { APPLICATION_OVERVIEW_PROVIDER } from '@portals/shared/features/application-overview';
-import { MyFavoritesService } from '@portals/shared/features/my-favorites';
+import { APPLICATION_OVERVIEW_PROVIDER, demoApplicationOverview, LOCAL_APPLICATION_DATA } from '@portals/shared/features/application-overview';
+import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { PreferencesService } from '@portals/shared/features/preferences';
 import { ApplicationOverviewPageComponent } from '../pages/application-overview-page/application-overview-page.component';
 import { ApplicationTimelinePageComponent } from '../pages/application-timeline-page/application-timeline-page.component';
@@ -31,7 +31,8 @@ describe('application missing and error states', () => {
       provideNoopAnimations(),
       provideRouter(pages.map(([path, component]) => ({ path: 'apps/:appSlug/' + path, component, data: { breadcrumb: [] } })), withComponentInputBinding()),
       { provide: APPLICATION_OVERVIEW_PROVIDER, useValue: provider },
-      { provide: MyFavoritesService, useValue: { isFavorite$: () => of(false) } },
+      { provide: LOCAL_APPLICATION_DATA, useValue: true },
+      ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
       { provide: PreferencesService, useValue: { dateFormat: signal('yyyy-MM-dd') } },
     ] });
   });
@@ -46,7 +47,7 @@ describe('application missing and error states', () => {
 
   it('does not show a 404 while loading, and retries a service error successfully', async () => {
     const pending = new Subject<unknown>();
-    provider.getOverview.mockReturnValueOnce(pending).mockReturnValueOnce(of({ ok: true, value: APPLICATIONS[0] }));
+    provider.getOverview.mockReturnValueOnce(pending).mockReturnValueOnce(of({ ok: true, value: demoApplicationOverview(APPLICATIONS[0]) }));
     const harness = await RouterTestingHarness.create('/apps/photo-snap/overview');
     expect(harness.routeNativeElement?.querySelector('ui-content-state')).toBeNull();
     pending.next({ ok: false, error: { status: 503 } }); pending.complete();

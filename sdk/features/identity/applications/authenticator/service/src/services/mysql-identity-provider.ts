@@ -1,36 +1,39 @@
-import { IdentityEventsPublisherHolder } from './identity-events-publisher.holder';
-import { randomUUID } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IdentityCreationDto, IIdentityProvider } from '@sdk/features/identity/libs/authentication';
-import { Identity } from '@sdk/features/identity/core';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  IdentityCreationDto,
+  IIdentityProvider,
+  IdentityAuthenticationUnavailable,
+} from '@sdk/features/identity/libs/authentication';
+import {
+  CanonicalIdentityState,
+  CanonicalIdentityStore,
+  Identity,
+} from '@sdk/features/identity/core';
 import { Result, err, ok } from '@sdk/kernel/standard';
-import { Repository } from 'typeorm';
-import { IdentityEntity } from '../entities/identity.entity';
 
-function toDomain(entity: IdentityEntity): Identity {
+export const CANONICAL_IDENTITIES = Symbol('CANONICAL_IDENTITIES');
+
+function toDomain(state: CanonicalIdentityState): Identity {
   return Identity.create({
-    id: entity.id,
-    identityId: entity.identityId,
-    claim: entity.claim,
-    kind: entity.kind,
-    isActive: entity.isActive,
-    isSuspended: entity.isSuspended,
-    isDeleted: entity.isDeleted,
-    providerType: entity.providerType,
-    providerSecret: entity.providerSecret ?? undefined,
-    createdAt: entity.createdAt,
-    updatedAt: entity.updatedAt,
-    deletedAt: entity.deletedAt,
+    id: state.subjectId,
+    identityId: state.identityId,
+    claim: state.identityId,
+    kind: state.kind,
+    isActive: state.isActive,
+    isSuspended: state.isSuspended,
+    isDeleted: state.isDeleted,
+    providerType: state.provider,
+    createdAt: state.createdAt,
+    updatedAt: state.updatedAt,
+    deletedAt: state.deletedAt,
   });
 }
 
 @Injectable()
 export class MysqlIdentityProvider implements IIdentityProvider {
   constructor(
-    @InjectRepository(IdentityEntity)
-    private readonly identityRepo: Repository<IdentityEntity>,
-    private readonly events: IdentityEventsPublisherHolder
+    @Inject(CANONICAL_IDENTITIES)
+    private readonly identities: CanonicalIdentityStore
   ) {}
 
   async createIdentity(
@@ -38,35 +41,32 @@ export class MysqlIdentityProvider implements IIdentityProvider {
     extras: { activate?: boolean } = { activate: true }
   ): Promise<Result<Identity, Error>> {
     try {
-      const now = Date.now();
-      const entity = this.identityRepo.create({
-        id: randomUUID(), identityId: dto.identityId, claim: dto.claim,
-        kind: dto.kind, providerType: dto.provider,
-        isActive: extras.activate ?? true, isSuspended: false, isDeleted: false,
-        providerSecret: null, createdAt: now, updatedAt: now, deletedAt: 0,
+      if (dto.claim !== dto.identityId)
+        throw new Error('Identity must match the verified Firebase UID');
+      const result = await this.identities.ensure({
+        uid: dto.claim,
+        provider: dto.provider,
+        kind: dto.kind,
+        activate: extras.activate ?? true,
       });
-      await this.identityRepo.insert(entity);
-      this.events.get()?.publishCreated({ identityId: entity.identityId, subjectId: entity.id });
-      return ok(toDomain(entity));
-    } catch (e) {
-      // Concurrent first sign-ins must converge without overwriting account state.
-      if ((e as { code?: string }).code === 'ER_DUP_ENTRY') {
-        const existing = await this.obtainIdentity(dto.claim);
-        if (existing.ok && existing.value) return ok(existing.value);
-      }
-      return err(e instanceof Error ? e : new Error(String(e)));
+      return ok(toDomain(result.state));
+    } catch {
+      return err(
+        new IdentityAuthenticationUnavailable(
+          'Identity persistence unavailable'
+        )
+      );
     }
   }
 
   async obtainIdentity(claim: string): Promise<Result<Identity | null, Error>> {
     try {
-      const entity = await this.identityRepo.findOne({ where: { claim } });
-      if (!entity) {
-        return ok(null);
-      }
-      return ok(toDomain(entity));
-    } catch (e) {
-      return err(e instanceof Error ? e : new Error(String(e)));
+      const result = await this.identities.find(claim);
+      return ok(result ? toDomain(result) : null);
+    } catch {
+      return err(
+        new IdentityAuthenticationUnavailable('Identity lookup unavailable')
+      );
     }
   }
 }

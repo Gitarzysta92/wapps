@@ -11,7 +11,7 @@ import { TuiIcon } from "@taiga-ui/core";
   ]
 })
 export class VotingIndicatorComponent {
-  @Input() upvotesCount: number = 0;
-  @Input() downvotesCount: number = 0;
+  @Input() upvotesCount = 0;
+  @Input() downvotesCount = 0;
 }
 

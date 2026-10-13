@@ -20,7 +20,7 @@ export class FilterDirective {
       }))
     }
 
-    for (let option of options) {
+    for (const option of options) {
       const prev = x.options.find(o => o.value === option.value);
       if (prev) {
         prev.isSelected = true

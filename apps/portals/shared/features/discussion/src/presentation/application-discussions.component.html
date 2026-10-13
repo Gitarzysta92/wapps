@@ -1,0 +1,405 @@
+<section
+  class="application-discussions"
+  aria-label="Application discussions"
+  [attr.aria-busy]="discussions.loading() || discussions.saving()"
+>
+  @if (discussions.feedback()) {
+  <p role="status">{{ discussions.feedback() }}</p>
+  @if (!threadId() && discussions.accepted(); as receipt) {
+  <a tuiLink [routerLink]="threadLink()(receipt.discussionId)"
+    >Open saved discussion</a
+  >
+  } } @if (discussions.error()) {
+  <p role="alert">{{ discussions.error() }}</p>
+  } @if (discussions.saving()) {
+  <p role="status">Saving discussion request...</p>
+  } @if (discussions.pending() && !discussions.saving()) {
+  <div class="discussion-card" tuiAppearance="card-panel" role="status">
+    <h2>Resolve the last discussion request</h2>
+    <p>
+      The result is unconfirmed. Retry sends the original change, including when
+      you return from another application. A full page reload clears this local
+      retry.
+    </p>
+    <button
+      tuiButton
+      size="s"
+      type="button"
+      (click)="discussions.retry()"
+      [disabled]="!discussions.signedIn()"
+    >
+      Retry last discussion request
+    </button>
+  </div>
+  }
+  <div class="discussion-actions">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      (click)="discussions.reload()"
+      [disabled]="discussions.loading()"
+    >
+      Reload discussions
+    </button>
+    @if (!threadId()) {
+    <button
+      tuiButton
+      size="s"
+      appearance="flat"
+      type="button"
+      (click)="discussions.reload(true)"
+      [disabled]="discussions.loading()"
+    >
+      Latest discussions
+    </button>
+    }
+  </div>
+  @if (discussions.loading()) {
+  <p role="status">Loading discussions...</p>
+  } @else if (!discussions.items().length && !discussions.error()) {
+  <p>No discussions yet. Start a conversation about this application.</p>
+  } @for (thread of discussions.items(); track thread.id) {
+  <article
+    class="discussion-card"
+    tuiAppearance="card-panel"
+    aria-label="Discussion topic"
+  >
+    <div class="discussion-heading">
+      @if (thread.pinned) {
+      <p aria-label="Pinned topic">Pinned topic</p>
+      } @if (!threadId()) {
+      <h2>
+        <a tuiLink [routerLink]="threadLink()(thread.id)">{{ thread.title }}</a>
+      </h2>
+      } @if (thread.tags.length) {
+      <p class="discussion-tags">Tags: {{ thread.tags.join(', ') }}</p>
+      }
+      <p>
+        {{ thread.replyCount }}
+        {{ thread.replyCount === 1 ? 'reply' : 'replies' }} (including removed
+        posts)
+      </p>
+    </div>
+    <div class="discussion-actions">
+      <favorite-toggle-button
+        type="discussions"
+        [targetId]="thread.id"
+        [slug]="thread.id"
+      />
+      @if (thread.canPin) {
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        [attr.aria-pressed]="thread.pinned"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+        (click)="pin(thread)"
+      >
+        {{ thread.pinned ? 'Unpin topic' : 'Pin topic' }}
+      </button>
+      }
+    </div>
+    @for (comment of thread.comments; track comment.id) {
+    <div
+      class="discussion-entry"
+      [class.discussion-reply]="comment.depth > 0"
+      [attr.data-post-id]="comment.id"
+    >
+      @if (comment.content; as content) {
+      <div class="discussion-heading">
+        <h3>{{ content.displayName }}</h3>
+        <p>
+          {{ comment.createdAt | date : 'medium' }} @if (comment.updatedAt) { /
+          Edited {{ comment.updatedAt | date : 'medium' }} }
+        </p>
+        @if (comment.depth > 0) {
+        <p>Reply to {{ parentLabel(comment, thread) }}</p>
+        }
+      </div>
+      <p class="discussion-text">
+        {{ threadId() ? content.text : (content.text | slice : 0 : 320)
+        }}{{ !threadId() && content.text.length > 320 ? '...' : '' }}
+      </p>
+      @if (content.mentions?.length) { <profile-mentioned-members [ids]="content.mentions || []" /> }
+      @if (comment.votes; as votes) {
+      <div class="discussion-actions" aria-label="Post votes">
+        <button
+          tuiButton
+          size="s"
+          type="button"
+          [appearance]="votes.mine === 1 ? 'primary' : 'secondary'"
+          [attr.aria-pressed]="votes.mine === 1"
+          [attr.title]="
+            discussions.signedIn()
+              ? votes.mine === 1
+                ? 'Remove your upvote'
+                : 'Upvote this post'
+              : 'Sign in to vote'
+          "
+          [disabled]="
+            !discussions.signedIn() ||
+            discussions.saving() ||
+            !!discussions.pending()
+          "
+          (click)="vote(comment, thread, 1)"
+        >
+          Upvote ({{ votes.upvotes }})
+        </button>
+        <button
+          tuiButton
+          size="s"
+          type="button"
+          [appearance]="votes.mine === -1 ? 'primary' : 'secondary'"
+          [attr.aria-pressed]="votes.mine === -1"
+          [attr.title]="
+            discussions.signedIn()
+              ? votes.mine === -1
+                ? 'Remove your downvote'
+                : 'Downvote this post'
+              : 'Sign in to vote'
+          "
+          [disabled]="
+            !discussions.signedIn() ||
+            discussions.saving() ||
+            !!discussions.pending()
+          "
+          (click)="vote(comment, thread, -1)"
+        >
+          Downvote ({{ votes.downvotes }})
+        </button>
+      </div>
+      } @if (threadId() && discussions.signedIn()) {
+      <div class="discussion-actions">
+        <button
+          tuiButton
+          size="s"
+          appearance="secondary"
+          type="button"
+          (click)="select('reply', comment, thread)"
+          [disabled]="discussions.saving() || !!discussions.pending()"
+        >
+          Reply
+        </button>
+        @if (comment.editable) {
+        <button
+          tuiButton
+          size="s"
+          appearance="flat"
+          type="button"
+          (click)="select('edit', comment, thread)"
+          [disabled]="discussions.saving() || !!discussions.pending()"
+        >
+          Edit post
+        </button>
+        } @if (comment.removable) {
+        <button
+          tuiButton
+          size="s"
+          appearance="flat"
+          type="button"
+          (click)="removing.set({ comment, revision: thread.revision })"
+          [disabled]="discussions.saving() || !!discussions.pending()"
+        >
+          Remove post
+        </button>
+        }
+      </div>
+      } } @else {
+      <p>Post removed. Replies remain in the conversation.</p>
+      }
+    </div>
+    } @if (!threadId()) {
+    <div class="discussion-actions">
+      <a
+        tuiButton
+        size="s"
+        appearance="secondary"
+        [routerLink]="threadLink()(thread.id)"
+        >Read discussion</a
+      >
+      @if (applicationSlug(); as slug) {
+      <discussion-quick-button
+        [appSlug]="slug"
+        [discussionSlug]="thread.id"
+        [topicTitle]="thread.title"
+        [replyCount]="thread.replyCount"
+        (closed)="discussions.reload()"
+      />
+      }
+    </div>
+    }
+  </article>
+  } @if (discussions.next()) {
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    (click)="discussions.older()"
+    [disabled]="discussions.loading()"
+  >
+    More discussions
+  </button>
+  } @if (removing(); as selected) {
+  <div class="discussion-card" tuiAppearance="card-panel" role="alert">
+    <h2>
+      {{
+        selected.comment.depth === 0
+          ? 'Remove this topic and all its replies?'
+          : 'Remove this post?'
+      }}
+    </h2>
+    <p>
+      {{
+        selected.comment.depth === 0
+          ? 'The topic will no longer be publicly available.'
+          : 'Its text will be removed. Replies remain with a removed-post placeholder.'
+      }}
+    </p>
+    <div class="discussion-actions">
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        (click)="remove()"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      >
+        Confirm removal
+      </button>
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="removing.set(null)"
+      >
+        Keep post
+      </button>
+    </div>
+  </div>
+  } @if (discussions.signedIn() && (!threadId() || discussions.items().length))
+  {
+  <form
+    class="discussion-card"
+    tuiAppearance="card-panel"
+    (ngSubmit)="submit()"
+  >
+    <div class="discussion-heading">
+      <h2>
+        {{
+          editing()?.type === 'edit'
+            ? 'Edit your post'
+            : threadId()
+            ? 'Write a reply'
+            : 'Start a discussion'
+        }}
+      </h2>
+      <p>
+        Your chosen name and post are public. @if (editing(); as edit) {
+        {{ edit.type === 'reply' ? 'Replying to' : 'Editing a post by' }}
+        {{ edit.label }}. }
+      </p>
+    </div>
+    <div class="discussion-field">
+      <label [attr.for]="idPrefix() + '-name'">Public name</label>
+      <input
+        [id]="idPrefix() + '-name'"
+        class="application-draft-input"
+        name="publicName"
+        required
+        maxlength="80"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      />
+    </div>
+    @if (!threadId() || (editing()?.type === 'edit' && editing()?.root)) {
+    <div class="discussion-field">
+      <label [attr.for]="idPrefix() + '-title'">Discussion title</label>
+      <input
+        [id]="idPrefix() + '-title'"
+        class="application-draft-input"
+        name="title"
+        required
+        maxlength="120"
+        [ngModel]="title()"
+        (ngModelChange)="title.set($event)"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      />
+    </div>
+    <div class="discussion-field">
+      <label [attr.for]="idPrefix() + '-tags'">Tags (optional)</label>
+      <input
+        [id]="idPrefix() + '-tags'"
+        class="application-draft-input"
+        name="tags"
+        maxlength="334"
+        [attr.aria-describedby]="idPrefix() + '-tags-help'"
+        [ngModel]="tags()"
+        (ngModelChange)="tags.set($event)"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      />
+      <p [id]="idPrefix() + '-tags-help'">
+        Up to eight distinct tags, separated by commas; 40 characters per tag.
+      </p>
+    </div>
+    }
+    <div class="discussion-field">
+      <label [attr.for]="idPrefix() + '-text'">Post</label>
+      <textarea
+        #postBody
+        [id]="idPrefix() + '-text'"
+        class="application-draft-input"
+        name="post"
+        required
+        maxlength="5000"
+        rows="6"
+        [ngModel]="text()"
+        (ngModelChange)="text.set($event)"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      ></textarea>
+    </div>
+    <profile-mention-picker [selected]="mentions()" (selectedChange)="mentions.set($event)" [disabled]="discussions.saving() || !!discussions.pending()" />
+    <div class="discussion-actions">
+      <button
+        tuiButton
+        size="s"
+        type="submit"
+        [disabled]="
+          discussions.saving() ||
+          !!discussions.pending() ||
+          !name().trim() ||
+          !text().trim() ||
+          ((!threadId() || (editing()?.type === 'edit' && editing()?.root)) &&
+            !title().trim())
+        "
+      >
+        {{
+          editing()?.type === 'edit'
+            ? 'Save post'
+            : threadId()
+            ? 'Post reply'
+            : 'Post discussion'
+        }}
+      </button>
+      @if (editing()) {
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="editing.set(null)"
+        [disabled]="discussions.saving() || !!discussions.pending()"
+      >
+        Use as a new reply
+      </button>
+      }
+    </div>
+  </form>
+  } @else if (!discussions.signedIn()) {
+  <p>Sign in to start a discussion, reply, or manage your posts.</p>
+  }
+</section>

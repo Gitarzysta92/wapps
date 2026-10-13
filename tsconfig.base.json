@@ -79,6 +79,9 @@
       ],
       "@domains/discovery": ["libs/domains/discovery/src/index.ts"],
       "@domains/discussion": ["sdk/features/discussion/core/src/index.ts"],
+      "@domains/discussion/contracts": [
+        "sdk/features/discussion/core/src/contracts.ts"
+      ],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
       "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/identity/authentication": [
@@ -324,6 +327,19 @@
       ],
       "@utils/opa/*": [
         "sdk/features/identity/packages/infrastructure/opa/src/*"
+      ],
+      "@sdk/extras/identity-mysql": [
+        "sdk/features/identity/packages/infrastructure/mysql/src/index.ts"
+      ],
+      "@domains/publication/suite": [
+        "libs/domains/publication/suite/src/index.ts"
+      ],
+      "@portals/shared/features/application-workspace": [
+        "apps/portals/shared/features/application-workspace/src/index.ts"
+      ],
+      "@sdk/features/review/core": ["sdk/features/review/core/src/index.ts"],
+      "@domains/publication/classification": [
+        "libs/domains/publication/classification/src/index.ts"
       ]
     }
   },

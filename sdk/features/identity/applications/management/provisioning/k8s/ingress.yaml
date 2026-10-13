@@ -9,8 +9,11 @@ metadata:
     app.kubernetes.io/component: identity-admin
     app.kubernetes.io/part-of: platform
   annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "2m"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/auth-url: "http://authenticator.default.svc.cluster.local/validate"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-User-Claims,X-Auth-Time,X-Anonymous,X-Ingress-Auth"
     # Restrict access at the ingress layer (override per environment)
     # nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8"
 spec:

@@ -1,0 +1,18 @@
+{
+  "name": "@ui/search-bar",
+  "version": "0.0.1",
+  "private": true,
+  "peerDependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "rxjs": "^7.8.0",
+    "@angular/forms": "^19.0.0",
+    "@taiga-ui/core": "^4.0.0",
+    "@taiga-ui/layout": "^4.0.0",
+    "@taiga-ui/legacy": "^4.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

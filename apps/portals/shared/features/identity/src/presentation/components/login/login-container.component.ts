@@ -1,116 +1,136 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { LoginFormComponent } from "@ui/login";
-import { AsyncPipe } from "@angular/common";
-import { 
-  CredentialsDto, 
-  AuthenticationProvider, 
-  AuthenticationMethodDto 
-} from "@domains/identity/authentication";
-import { TuiButton, TuiLoader, TuiNotification } from "@taiga-ui/core";
-import { TimedQueue } from "@foundation/primitives";
-import { WA_WINDOW } from "@ng-web-apis/common";
-import { AuthenticationService } from "../../../application/authentication.service";
-import { ProviderButtonsComponent } from "./provider-buttons.component";
-import { Observable } from "rxjs";
-
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LoginFormComponent } from '@ui/login';
+import { AsyncPipe } from '@angular/common';
+import {
+  CredentialsDto,
+  AuthenticationProvider,
+  AuthenticationMethodDto,
+} from '@sdk/features/identity/libs/authentication';
+import { TuiButton, TuiLoader, TuiNotification } from '@taiga-ui/core';
+import { AuthenticationService } from '../../../application/authentication.service';
+import { ProviderButtonsComponent } from './provider-buttons.component';
+import {
+  Observable,
+  catchError,
+  defer,
+  finalize,
+  of,
+  shareReplay,
+  tap,
+} from 'rxjs';
+import { Result } from '@sdk/kernel/standard';
 
 @Component({
-  selector: "login-container",
-  templateUrl: "login-container.component.html",
-  styleUrl: "login-container.component.scss",
+  selector: 'login-container',
+  templateUrl: 'login-container.component.html',
+  styleUrl: 'login-container.component.scss',
   imports: [
     LoginFormComponent,
     ProviderButtonsComponent,
     TuiNotification,
     TuiButton,
     TuiLoader,
-    AsyncPipe
-  ]
+    AsyncPipe,
+  ],
 })
 export class LoginContainerComponent implements OnInit {
-  private readonly window = inject(WA_WINDOW);
-  public readonly timedQueue = new TimedQueue<{ text: string }>(this.window);
   public readonly service = inject(AuthenticationService);
-  
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changes = inject(ChangeDetectorRef);
   public isAuthenticating = false;
   public authenticatingProvider: AuthenticationProvider | null = null;
   public availableMethods$: Observable<AuthenticationMethodDto[]> | undefined;
   public showEmailPasswordForm = false;
-  
-  // Expose enum to template
+  public loadingMethods = true;
+  public methodsError: string | null = null;
+  public error: string | null = null;
   public readonly AuthenticationProvider = AuthenticationProvider;
 
   ngOnInit(): void {
-    this.availableMethods$ = this.service.getAvailableMethods();
-    
-    // Check if email/password is enabled
-    this.availableMethods$.subscribe(methods => {
-      this.showEmailPasswordForm = methods.some(
-        m => m.provider === AuthenticationProvider.EMAIL_PASSWORD && m.enabled
-      );
-    });
+    this.loadMethods();
   }
 
-  public hasAlternativeMethods(methods: AuthenticationMethodDto[]): boolean {
-    return methods.some(method => method.enabled && method.provider !== AuthenticationProvider.EMAIL_PASSWORD);
+  loadMethods(): void {
+    this.loadingMethods = true;
+    this.methodsError = null;
+    this.showEmailPasswordForm = false;
+    this.availableMethods$ = defer(() =>
+      this.service.getAvailableMethods()
+    ).pipe(
+      tap((methods) => {
+        this.showEmailPasswordForm = methods.some(
+          (m) =>
+            m.provider === AuthenticationProvider.EMAIL_PASSWORD && m.enabled
+        );
+        if (!methods.some((m) => m.enabled))
+          this.methodsError = 'No sign-in methods are currently available.';
+        this.changes.markForCheck();
+      }),
+      catchError(() => {
+        this.methodsError = 'Sign-in is unavailable. Please retry.';
+        this.changes.markForCheck();
+        return of([]);
+      }),
+      finalize(() => {
+        this.loadingMethods = false;
+        this.changes.markForCheck();
+      }),
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
-  public authenticate(c: CredentialsDto) {
-    if (this.isAuthenticating) {
-      return;
-    }
-    this.isAuthenticating = true;
-    this.authenticatingProvider = AuthenticationProvider.EMAIL_PASSWORD;
-    
-    this.service.authenticate(c).subscribe({
-      next: v => {
-        if (!v.ok) {
-          this.timedQueue.enqueue(this._createExpectedErrorNotification(v.error), 3000);
-        }
-      },
-      error: e => this.timedQueue.enqueue(this._createUnexpectedErrorNotification(e), 3000),
-      complete: () => {
-        this.isAuthenticating = false;
-        this.authenticatingProvider = null;
-      }
-    });
+  hasAlternativeMethods(methods: AuthenticationMethodDto[]): boolean {
+    return methods.some(
+      (method) =>
+        method.enabled &&
+        method.provider !== AuthenticationProvider.EMAIL_PASSWORD
+    );
   }
 
-  public authenticateWithProvider(provider: AuthenticationProvider) {
-    console.log('authenticateWithProvider', provider);
-    if (this.isAuthenticating) {
-      return;
-    }
+  authenticate(credentials: CredentialsDto): void {
+    this.run(AuthenticationProvider.EMAIL_PASSWORD, () =>
+      this.service.authenticate(credentials)
+    );
+  }
+
+  authenticateWithProvider(provider: AuthenticationProvider): void {
+    this.run(provider, () => this.service.authenticateWithProvider(provider));
+  }
+
+  private run(
+    provider: AuthenticationProvider,
+    command: () => Observable<Result<string | null, Error>>
+  ): void {
+    if (this.isAuthenticating) return;
     this.isAuthenticating = true;
     this.authenticatingProvider = provider;
-    
-    this.service.authenticateWithProvider(provider).subscribe({
-      next: v => {
-        if (!v.ok) {
-          // Only show error if it's not a user cancellation
-          const errorMessage = v.error.message;
-          if (!errorMessage.includes('cancelled') && !errorMessage.includes('Cancelled')) {
-            this.timedQueue.enqueue(this._createExpectedErrorNotification(v.error), 3000);
-          }
-        }
-      },
-      error: e => this.timedQueue.enqueue(this._createUnexpectedErrorNotification(e), 3000),
-      complete: () => {
-        this.isAuthenticating = false;
-        this.authenticatingProvider = null;
-      }
-    });
-  }
-
-  private _createExpectedErrorNotification(e: Error): { text: string } {
-    return {
-      text: e.message
-    };
-  }
-
-  private _createUnexpectedErrorNotification(e: Error): { text: string } {
-    return {
-      text: e.message
-    };
+    this.error = null;
+    defer(command)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isAuthenticating = false;
+          this.authenticatingProvider = null;
+          this.changes.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          if (!result.ok) this.error = result.error.message;
+          this.changes.markForCheck();
+        },
+        error: () => {
+          this.error = 'Sign-in could not be completed. Please try again.';
+          this.changes.markForCheck();
+        },
+      });
   }
 }

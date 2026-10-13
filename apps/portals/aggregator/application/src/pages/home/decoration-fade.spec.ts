@@ -1,4 +1,4 @@
-import { createDecorationFade } from '../../../../../../../libs/ui/layout/src/decoration/decoration-fade';
+import { createDecorationFade } from '@ui/layout';
 
 describe('scroll-driven decoration fade', () => {
   let host: HTMLElement;
@@ -13,10 +13,20 @@ describe('scroll-driven decoration fade', () => {
     document.body.appendChild(host);
     scroll = 0;
     frames = new Map();
-    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scroll });
+    Object.defineProperty(window, 'scrollY', {
+      configurable: true,
+      get: () => scroll,
+    });
     let next = 0;
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.set(++next, callback); return next; });
-    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { frames.delete(id); });
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.set(++next, callback);
+        return next;
+      });
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      frames.delete(id);
+    });
   });
   afterEach(() => {
     cleanup?.();
@@ -24,11 +34,12 @@ describe('scroll-driven decoration fade', () => {
     jest.restoreAllMocks();
     Object.defineProperty(window, 'scrollY', originalScroll);
   });
-  const progress = () => Number(host.style.getPropertyValue('--decoration-fade-progress'));
+  const progress = () =>
+    Number(host.style.getPropertyValue('--decoration-fade-progress'));
   function flush() {
     const pending = [...frames.values()];
     frames.clear();
-    pending.forEach(callback => callback(0));
+    pending.forEach((callback) => callback(0));
   }
   function scrollTo(y: number) {
     scroll = y;
@@ -79,7 +90,9 @@ describe('scroll-driven decoration fade', () => {
   it('does not force computed-style reads during fallback scrolling', () => {
     cleanup = createDecorationFade(host);
     const readStyle = jest.spyOn(window, 'getComputedStyle');
-    scrollTo(100); scrollTo(200); scrollTo(300);
+    scrollTo(100);
+    scrollTo(200);
+    scrollTo(300);
     expect(readStyle).not.toHaveBeenCalled();
     expect(progress()).toBeCloseTo(0.84375);
   });

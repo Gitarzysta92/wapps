@@ -1,9 +1,11 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { PreferencesService, PreferredDatePipe } from '@portals/shared/features/preferences';
+import {
+  PreferencesService,
+  PreferredDatePipe,
+} from '@portals/shared/features/preferences';
 import { CommonModule } from '@angular/common';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { of } from 'rxjs';
 import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
 import {
   BreadcrumbsComponent,
@@ -14,13 +16,11 @@ import {
   PageTitleComponent,
   PageTitleSkeletonComponent,
   MediumCardSkeletonComponent,
-  ContentStateComponent
+  ContentStateComponent,
 } from '@ui/layout';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import {
-  browseCatalog,
-  CATALOG_ENTRIES,
-  catalogFacets,
+  CatalogBrowserService,
   CatalogEntry,
   CatalogKind,
   CatalogQuery,
@@ -28,13 +28,21 @@ import {
   normalizeCatalogFacet,
 } from '@portals/shared/features/listing';
 import { TuiAvatar } from '@taiga-ui/kit';
-import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
+import {
+  TuiDropdownOpen,
+  TuiDropdownDirective,
+  TuiDropdownOptionsDirective,
+} from '@taiga-ui/core/directives/dropdown';
 import { CoverImageComponent } from '@ui/cover-image';
 import { HeaderPartialComponent } from '../../partials/header/header.component';
 import { FiltersMultiselectComponent } from '@ui/filters';
-import { FilterDefinition, FiltersBarComponent, FilterSelectionDialogResult } from '../../partials/filters-bar/src';
+import {
+  FilterDefinition,
+  FiltersBarComponent,
+  FilterSelectionDialogResult,
+} from '../../partials/filters-bar/src';
 import { NAVIGATION } from '../../navigation';
-import { EntryDetailsDataService } from '../entry-details-page/entry-details-data.service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'results-page',
@@ -68,12 +76,14 @@ import { EntryDetailsDataService } from '../entry-details-page/entry-details-dat
 })
 export class ResultsPageComponent {
   displayOptionsOpen = false;
-  readonly searchLabel = computed(() => this.kind() === 'all' ? 'Search this catalog' : 'Search ' + this.kind());
+  readonly searchLabel = computed(() =>
+    this.kind() === 'all' ? 'Search this catalog' : 'Search ' + this.kind()
+  );
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly preferences = inject(PreferencesService, { optional: true });
   readonly pageSizeOptions = [3, 6, 10, 12, 20, 24, 50, 100];
-  private readonly details = inject(EntryDetailsDataService);
+  private readonly catalog = inject(CatalogBrowserService);
   readonly kind = input<CatalogKind | 'all'>('applications');
   readonly browse = input<'category' | 'tag' | null>(null);
   private readonly params = toSignal(this.route.paramMap, {
@@ -84,7 +94,9 @@ export class ResultsPageComponent {
   });
   readonly view = computed(() => {
     const explicit = this.queryParams().get('view');
-    return explicit === 'grid' || explicit === 'list' ? explicit : this.preferences?.defaultView() ?? 'grid';
+    return explicit === 'grid' || explicit === 'list'
+      ? explicit
+      : this.preferences?.defaultView() ?? 'grid';
   });
   readonly pathCategory = computed(
     () =>
@@ -95,7 +107,15 @@ export class ResultsPageComponent {
   );
   readonly query = computed<CatalogQuery>(() => {
     const params = this.queryParams();
-    const type = params.get('type');
+    const requestedType = params.get('type');
+    const type =
+      requestedType === 'application'
+        ? 'applications'
+        : requestedType === 'article'
+        ? 'articles'
+        : requestedType === 'suite'
+        ? 'suites'
+        : requestedType;
     const kind =
       this.kind() === 'all'
         ? ['applications', 'articles', 'suites'].includes(type ?? '')
@@ -106,6 +126,9 @@ export class ResultsPageComponent {
     const pageSize = Number(params.get('pageSize'));
     return {
       kind,
+      unsupportedFilters: ['social', 'estimated-users'].filter(
+        (key) => !!params.get(key)
+      ),
       search: params.get('search') ?? params.get('q') ?? '',
       category: this.pathCategory() || params.getAll('category').join(','),
       platform: params.getAll('platform').join(','),
@@ -126,62 +149,65 @@ export class ResultsPageComponent {
         ? sort
         : 'name') as CatalogSort,
       page: Number(params.get('page') ?? this.params().get('page') ?? 1),
-      pageSize: this.pageSizeOptions.includes(pageSize) ? pageSize : this.preferences?.itemsPerPage() ?? 20,
+      pageSize: this.pageSizeOptions.includes(pageSize)
+        ? pageSize
+        : this.preferences?.itemsPerPage() ?? 20,
     };
   });
-  readonly entries = computed<readonly CatalogEntry[]>(() => [
-    ...CATALOG_ENTRIES.filter((entry) => entry.kind !== 'suites'),
-    ...this.details.listSuites().map((suite) => {
-      const fixture = CATALOG_ENTRIES.find(
-        (entry) => entry.kind === 'suites' && entry.slug === suite.slug
-      );
-      return {
-        ...fixture,
-        kind: 'suites' as const,
-        slug: suite.slug,
-        name: suite.title,
-        description:
-          suite.description ||
-          fixture?.description ||
-          suite.apps.map((app) => app.name).join(', '),
-        author: suite.author ?? fixture?.author,
-        categories: fixture?.categories.length
-          ? fixture.categories
-          : [
-              {
-                name: suite.category,
-                slug: normalizeCatalogFacet(suite.category),
-              },
-            ],
-        tags: fixture?.tags ?? [],
-        applications: suite.apps.map((app) => ({
-          name: app.name,
-          slug: app.slug ?? '',
-        })),
-      };
-    }),
-  ]);
   readonly result = rxResource({
-    request: this.query,
-    loader: ({ request }) => of(browseCatalog(request, this.entries())),
+    request: () => ({
+      query: this.query(),
+      choice: this.catalog.contentChoice(),
+    }),
+    loader: ({ request }) =>
+      this.catalog
+        .browse(request.query)
+        .pipe(map((page) => ({ ...page, contentChoice: request.choice }))),
   });
-  readonly scopeEntries = computed(() =>
-    this.entries().filter(
-      (entry) => !this.query().kind || entry.kind === this.query().kind
-    )
+  readonly preferencesLoading = computed(
+    () => this.catalog.contentChoice()?.status === 'loading'
   );
-  readonly applicationFilters = computed(() => {
-    const apps = this.entries().filter(entry => entry.kind === 'applications');
-    return [
-      { key: 'platform' as const, label: 'Platform', options: catalogFacets(apps, 'platforms') },
-      { key: 'device' as const, label: 'Device', options: catalogFacets(apps, 'devices') },
-      { key: 'monetization' as const, label: 'Monetization', options: catalogFacets(apps, 'monetizations') },
-    ];
-  });
-  readonly categories = computed(() =>
-    catalogFacets(this.scopeEntries(), 'categories')
+  readonly preferencesError = computed(
+    () => this.catalog.contentChoice()?.status === 'unavailable'
   );
-  readonly tags = computed(() => catalogFacets(this.scopeEntries(), 'tags'));
+  readonly currentResult = computed(() =>
+    this.result.hasValue() &&
+    this.result.value().contentChoice === this.catalog.contentChoice()
+      ? this.result.value()
+      : null
+  );
+  readonly loading = computed(
+    () => this.preferencesLoading() || this.result.isLoading()
+  );
+  retry() {
+    if (this.preferencesError()) this.catalog.retryPreferences();
+    else this.result.reload();
+  }
+  readonly facets = computed(
+    () =>
+      this.currentResult()?.facets ?? {
+        categories: [],
+        tags: [],
+        platforms: [],
+        devices: [],
+        monetizations: [],
+      }
+  );
+  readonly applicationFilters = computed(() => [
+    {
+      key: 'platform' as const,
+      label: 'Platform',
+      options: this.facets().platforms,
+    },
+    { key: 'device' as const, label: 'Device', options: this.facets().devices },
+    {
+      key: 'monetization' as const,
+      label: 'Monetization',
+      options: this.facets().monetizations,
+    },
+  ]);
+  readonly categories = computed(() => this.facets().categories);
+  readonly tags = computed(() => this.facets().tags);
   readonly title = computed(() => {
     if (this.browse() === 'category')
       return (
@@ -214,69 +240,120 @@ export class ResultsPageComponent {
   readonly activeFilters = computed(
     () =>
       !!(
+        this.query().unsupportedFilters?.length ||
         this.query().search ||
         this.query().category ||
         this.query().tags.length ||
-        this.query().platform || this.query().device || this.query().monetization ||
+        this.query().platform ||
+        this.query().device ||
+        this.query().monetization ||
         (this.kind() === 'all' && this.query().kind)
       )
   );
   readonly cards = computed(
     () =>
-      this.result
-        .value()
-        ?.items.map((entry) => ({ ...entry, path: this.detailPath(entry) })) ??
-      []
+      this.currentResult()?.items.map((entry) => ({
+        ...entry,
+        path: this.detailPath(entry),
+      })) ?? []
   );
   readonly filterDefinitions = computed<FilterDefinition[]>(() => [
-    ...(this.kind() === 'all' ? [{ key: 'type', name: 'Content type', singleSelection: true, options: [
-      { name: 'Applications', slug: 'applications' },
-      { name: 'Articles', slug: 'articles' },
-      { name: 'Suites', slug: 'suites' },
-    ] }] : []),
+    ...(this.kind() === 'all' && this.catalog.kinds.length > 1
+      ? [
+          {
+            key: 'type',
+            name: 'Content type',
+            singleSelection: true,
+            options: this.catalog.kinds.map((kind) => ({
+              name: {
+                applications: 'Applications',
+                articles: 'Articles',
+                suites: 'Suites',
+              }[kind],
+              slug: kind,
+            })),
+          },
+        ]
+      : []),
     { key: 'category', name: 'Category', options: this.categories() },
     { key: 'tag', name: 'Tag', options: this.tags() },
-    ...this.applicationFilters().filter(control => !this.query().kind || this.query().kind === 'applications' || !!this.query()[control.key])
-      .map(control => ({ key: control.key, name: control.label, options: control.options })),
+    ...this.applicationFilters()
+      .filter(
+        (control) =>
+          !this.query().kind ||
+          this.query().kind === 'applications' ||
+          !!this.query()[control.key]
+      )
+      .map((control) => ({
+        key: control.key,
+        name: control.label,
+        options: control.options,
+      })),
     { key: 'search', name: 'Search', options: [] },
   ]);
   readonly filterSelections = computed<Record<string, string[]>>(() => {
     const query = this.query();
     const values: Record<string, string[]> = {
       type: this.kind() === 'all' && query.kind ? [query.kind] : [],
-      category: query.category.split(','), tag: query.tags,
-      platform: (query.platform ?? '').split(','), device: (query.device ?? '').split(','),
-      monetization: (query.monetization ?? '').split(','), search: query.search ? [query.search] : [],
+      category: query.category.split(','),
+      tag: query.tags,
+      platform: (query.platform ?? '').split(','),
+      device: (query.device ?? '').split(','),
+      monetization: (query.monetization ?? '').split(','),
+      search: query.search ? [query.search] : [],
     };
-    return Object.fromEntries(this.filterDefinitions().map(definition => [definition.key,
-      [...new Set((values[definition.key] ?? []).filter(Boolean).map(value => definition.key === 'search' ? value :
-        definition.options.find(option => normalizeCatalogFacet(option.slug) === normalizeCatalogFacet(value) ||
-          (option.id !== undefined && String(option.id) === value))?.slug ?? value))],
-    ]));
+    return Object.fromEntries(
+      this.filterDefinitions().map((definition) => [
+        definition.key,
+        [
+          ...new Set(
+            (values[definition.key] ?? [])
+              .filter(Boolean)
+              .map((value) =>
+                definition.key === 'search'
+                  ? value
+                  : definition.options.find(
+                      (option) =>
+                        normalizeCatalogFacet(option.slug) ===
+                          normalizeCatalogFacet(value) ||
+                        (option.id !== undefined && String(option.id) === value)
+                    )?.slug ?? value
+              )
+          ),
+        ],
+      ])
+    );
   });
 
-  onFilterSelectionChange({ filterId, selected }: FilterSelectionDialogResult): void {
+  onFilterSelectionChange({
+    filterId,
+    selected,
+  }: FilterSelectionDialogResult): void {
     const changes = {
-      [filterId]: selected.length ? selected.map(option => option.value) : null,
+      [filterId]: selected.length
+        ? selected.map((option) => option.value)
+        : null,
       page: 1,
       ...(filterId === 'tag' ? { tags: null } : {}),
       ...(filterId === 'search' ? { q: null } : {}),
     };
     // Editing a path facet returns to its directory with the new selection in the URL.
-    const changesPath = (filterId === 'category' && this.pathCategory()) || (filterId === 'tag' && this.pathTag());
+    const changesPath =
+      (filterId === 'category' && this.pathCategory()) ||
+      (filterId === 'tag' && this.pathTag());
     void this.router.navigate(changesPath ? [this.catalogPath()] : [], {
-      relativeTo: this.route, queryParamsHandling: 'merge', queryParams: changes,
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
+      queryParams: changes,
     });
   }
 
-  readonly hasDatedEntries = computed(() =>
-    this.scopeEntries().some((entry) => !!entry.date)
-  );
+  readonly hasDatedEntries = computed(() => this.query().kind !== 'suites');
 
   private facetName(key: 'categories' | 'tags', slug: string): string {
     if (!slug) return '';
     return (
-      catalogFacets(this.entries(), key).find(
+      this.facets()[key].find(
         (item) =>
           normalizeCatalogFacet(item.slug) === normalizeCatalogFacet(slug)
       )?.name ?? slug
@@ -317,16 +394,26 @@ export class ResultsPageComponent {
     });
   }
   private catalogPath(): string {
-    const path = this.browse() === 'category' ? NAVIGATION.categories.path
-      : this.browse() === 'tag' ? NAVIGATION.tags.path
-      : this.kind() === 'articles' ? NAVIGATION.articles.path
-      : this.kind() === 'suites' ? NAVIGATION.suites.path : NAVIGATION.discover.path;
+    const path =
+      this.browse() === 'category'
+        ? NAVIGATION.categories.path
+        : this.browse() === 'tag'
+        ? NAVIGATION.tags.path
+        : this.kind() === 'articles'
+        ? NAVIGATION.articles.path
+        : this.kind() === 'suites'
+        ? NAVIGATION.suites.path
+        : NAVIGATION.discover.path;
     return buildRoutePath(path, {}, { absolute: true });
   }
   clearFilters(): void {
     const params = this.queryParams();
     void this.router.navigate([this.catalogPath()], {
-      queryParams: { sort: params.get('sort'), pageSize: params.get('pageSize'), view: params.get('view') },
+      queryParams: {
+        sort: params.get('sort'),
+        pageSize: params.get('pageSize'),
+        view: params.get('view'),
+      },
     });
   }
 }

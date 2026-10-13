@@ -3,11 +3,18 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/services/content-node-registry/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:content", "layer:service"],
+  "tags": [
+    "type:app",
+    "scope:content",
+    "layer:service",
+    "arch:service"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -41,13 +48,6 @@
         "production": {
           "buildTarget": "apps.services.content-node-registry:build:production"
         }
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/services/content-node-registry/jest.config.ts"
       }
     },
     "lint": {

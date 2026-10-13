@@ -1,82 +1,137 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Headers,
+  ParseUUIDPipe,
+  UseFilters,
+  BadRequestException,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DiscussionsService } from './discussions.service';
 import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
 import { CreateDiscussionRequestDto } from './dto/create-discussion.request.dto';
+import {
+  CreateCommentRequestDto,
+  DeleteDiscussionRequestDto,
+  UpdateDiscussionRequestDto,
+} from './dto/mutate-discussion.request.dto';
+import { DiscussionActor } from './application/discussion-write.port';
+import { DiscussionErrorFilter } from './discussion-error.filter';
+
+export function discussionActor(
+  user: AuthenticatedUser
+): DiscussionActor | null {
+  if (!user.userId || user.isAnonymous) return null;
+  const tenant =
+    user.userClaims?.tenantId ??
+    process.env.DISCUSSION_PUBLIC_TENANT ??
+    'default';
+  const roles = user.userClaims?.roles ?? [];
+  if (
+    typeof tenant !== 'string' ||
+    !tenant ||
+    tenant.length > 128 ||
+    !Array.isArray(roles) ||
+    roles.length > 64 ||
+    !roles.every((role) => typeof role === 'string' && role.length <= 128)
+  )
+    throw new BadRequestException('Invalid actor scope');
+  return { identityId: user.userId, tenantId: tenant, roles };
+}
+
+export function requiredActor(user: AuthenticatedUser): DiscussionActor {
+  const actor = discussionActor(user);
+  if (!actor) throw new BadRequestException('Authenticated actor required');
+  return actor;
+}
 
 @ApiTags('discussions')
+@UseFilters(DiscussionErrorFilter)
 @Controller('discussions')
 export class DiscussionsController {
-  constructor(private readonly discussionsService: DiscussionsService) {}
+  constructor(private readonly discussions: DiscussionsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all discussions' })
-  findAll() {
-    return this.discussionsService.findAll();
+  findAll(@AuthUser({ optional: true }) user: AuthenticatedUser) {
+    return this.discussions.findAll(discussionActor(user));
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get discussion by ID' })
-  findOne(@Param('id') id: string) {
-    return this.discussionsService.findOne(id);
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @AuthUser({ optional: true }) user: AuthenticatedUser
+  ) {
+    return this.discussions.findOne(id, discussionActor(user));
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new discussion' })
+  @ApiOperation({
+    summary: 'Commit a discussion; materialization is asynchronous',
+  })
   @ApiBody({ type: CreateDiscussionRequestDto })
-  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
-  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
-  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
-  create(@Body() data: CreateDiscussionRequestDto, @AuthUser({ optional: true }) user: AuthenticatedUser) {
-    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
-    const ctx = {
-      identityId: user.userId ?? 'anonymous',
-      tenantId,
-      timestamp: Date.now(),
-    };
+  create(
+    @Body() data: CreateDiscussionRequestDto,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.create(data, requiredActor(user), key);
+  }
 
-    return this.discussionsService.create(data, ctx);
+  @Post(':id/comments')
+  reply(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() data: CreateCommentRequestDto,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.reply(id, data.content, requiredActor(user), key);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update discussion' })
-  update(@Param('id') id: string, @Body() patch: Record<string, unknown>) {
-    return this.discussionsService.update(id, patch);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() data: UpdateDiscussionRequestDto,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.update(id, data, requiredActor(user), key);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete discussion' })
-  remove(@Param('id') id: string) {
-    return this.discussionsService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() data: DeleteDiscussionRequestDto,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.remove(
+      id,
+      data.expectedRevision,
+      requiredActor(user),
+      key
+    );
   }
 
   @Post('comments/:id/like')
-  @ApiOperation({ summary: 'Like a comment (idempotent)' })
-  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
-  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
-  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
-  likeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
-    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
-    const ctx = {
-      identityId: user.userId ?? 'anonymous',
-      tenantId,
-      timestamp: Date.now(),
-    };
-    return this.discussionsService.likeComment(id, ctx);
+  likeComment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.likeComment(id, requiredActor(user), key);
   }
 
   @Delete('comments/:id/like')
-  @ApiOperation({ summary: 'Unlike a comment (idempotent)' })
-  @ApiHeader({ name: 'x-user-id', required: false, description: 'Authenticated user id (set by ingress)' })
-  @ApiHeader({ name: 'x-anonymous', required: false, description: 'Set to true to act as anonymous (set by ingress)' })
-  @ApiHeader({ name: 'x-ingress-auth', required: false, description: 'Ingress auth secret for user headers (set by ingress)' })
-  unlikeComment(@Param('id') id: string, @AuthUser({ optional: true }) user: AuthenticatedUser) {
-    const tenantId = (user.userClaims?.tenantId as string | undefined) ?? 'default';
-    const ctx = {
-      identityId: user.userId ?? 'anonymous',
-      tenantId,
-      timestamp: Date.now(),
-    };
-    return this.discussionsService.unlikeComment(id, ctx);
+  unlikeComment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @AuthUser() user: AuthenticatedUser,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.discussions.unlikeComment(id, requiredActor(user), key);
   }
 }

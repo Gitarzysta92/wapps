@@ -1,0 +1,59 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.application-discussions {
+  display: grid;
+  gap: $space-6;
+}
+.discussion-heading,
+.discussion-field {
+  display: grid;
+  gap: $space-2;
+}
+.discussion-card {
+  display: grid;
+  gap: $space-4;
+  padding: $space-6;
+  min-width: 0;
+}
+.discussion-entry {
+  display: grid;
+  gap: $space-4;
+  min-width: 0;
+}
+.discussion-entry + .discussion-entry {
+  padding-block-start: $space-4;
+}
+.discussion-reply {
+  margin-inline-start: $space-4;
+}
+.discussion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
+}
+.discussion-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+input,
+textarea {
+  width: 100%;
+  min-width: 0;
+  padding: $space-3 $space-4;
+  font: inherit;
+  box-sizing: border-box;
+}
+textarea {
+  resize: vertical;
+}
+h2,
+h3,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

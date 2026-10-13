@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc/ui-context-menu-chip",
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
@@ -16,9 +16,7 @@
   "include": [
     "src/**/*.ts"
   ],
-  "references": [
-    {
-      "path": "../../foundation/standard/tsconfig.lib.json"
-    }
-  ]
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
 }

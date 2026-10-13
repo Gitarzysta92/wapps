@@ -7,7 +7,7 @@ import { ElevatedCardComponent, MediumCardComponent, CardHeaderComponent } from 
 import { CoverImageComponent } from '@ui/cover-image';
 import { TuiButton } from '@taiga-ui/core';
 import type { ApplicationTeaserFeedItemDto } from '@domains/feed';
-import type { AddTypeToArray } from '@foundation/standard';
+import type { AddTypeToArray } from '@sdk/kernel/standard';
 import {
   MediumTitleComponent,
 } from '@ui/content';
@@ -80,7 +80,7 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
             <app-rating [readonly]="true" [rating]="item.aggregatedScore"/>
           </div>
           <favorite-toggle-button slot="right-side" class="application-favorite"
-            [iconOnly]="true" appearance="flat" type="applications" [slug]="item.appSlug" />
+            [iconOnly]="true" appearance="flat" type="applications" [slug]="item.appSlug" [targetId]="item.appId" />
         </ui-card-header>
 
         <ui-tags [tags]="item.tags"></ui-tags>

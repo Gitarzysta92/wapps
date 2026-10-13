@@ -6,11 +6,9 @@ import { TuiIcon } from '@taiga-ui/core';
   standalone: true,
   imports: [TuiIcon],
   templateUrl: './article-rating.component.html',
-  styleUrl: './article-rating.component.scss'
+  styleUrl: './article-rating.component.scss',
 })
 export class ArticleRatingComponent {
   rating = input.required<number>();
   readonly = input<boolean>(false);
 }
-
-

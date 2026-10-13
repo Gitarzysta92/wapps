@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: identity-enrollment-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://aggregator.development.wapps.ai,https://aggregator-csr.development.wapps.ai,https://discussion-csr.development.wapps.ai"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization, Idempotency-Key"
+spec:
+  rules:
+    - host: auth.development.wapps.ai
+      http:
+        paths:
+          - path: /auth/register
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/password-reset/verify
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/password-reset/complete
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/status
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/request
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/verify
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/complete
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80

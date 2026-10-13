@@ -10,8 +10,8 @@ import { NgForOf } from '@angular/common';
   imports: [NgForOf]
 })
 export class IntroHeroComponent {
-  @Input() title: string = 'Discover. Explore. Learn.';
-  @Input() subtitle: string = 'Improve your productivity with the best apps on the market.';
+  @Input() title = 'Discover. Explore. Learn.';
+  @Input() subtitle = 'Improve your productivity with the best apps on the market.';
   @Input() words: string[] = ['Explore.', 'Discover.', 'Digest.'];
 }
 

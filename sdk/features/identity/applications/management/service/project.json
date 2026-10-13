@@ -3,11 +3,18 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "sdk/features/identity/applications/management/service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:platform", "layer:identity-admin"],
+  "tags": [
+    "type:app",
+    "scope:platform",
+    "layer:identity-admin",
+    "arch:service"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -45,14 +52,29 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
-        "jestConfig": "sdk/features/identity/applications/management/service/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "sdk/features/identity/applications/management/service/jest.config.cjs",
+        "passWithNoTests": false
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p sdk/features/identity/applications/management/service/tsconfig.app.json",
+          "tsc --noEmit -p sdk/features/identity/applications/management/service/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ExploreModule } from './explore/explore.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { CatalogModule } from './catalog/catalog.module';
@@ -15,6 +16,7 @@ import { PlatformController } from './platform/platform.controller';
       maxRedirects: 5,
     }),
     CatalogModule,
+    ExploreModule,
   ],
   controllers: [HealthController, PlatformController],
 })

@@ -1,0 +1,361 @@
+<section
+  class="reviews"
+  aria-label="Member reviews"
+  [attr.aria-busy]="reviews.loading()"
+>
+  <div class="actions">
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="reviews.saving()"
+      (click)="reviews.reload(true)"
+    >
+      Reload reviews
+    </button>
+    @if (!detail() && reviews.canModerate()) {
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="reviews.saving()"
+      (click)="reviews.toggleModeration()"
+    >
+      {{ reviews.moderation() ? 'Public reviews' : 'Moderate reviews' }}
+    </button>
+    }
+  </div>
+  @if (reviews.feedback()) {
+  <p role="status">{{ reviews.feedback() }}</p>
+  } @if (reviews.error()) {
+  <p role="alert">{{ reviews.error() }}</p>
+  } @if (reviews.pending()) {
+  <aside tuiAppearance="neutral" class="card">
+    <h2>Unconfirmed review change</h2>
+    <p>
+      Retry the original request on its application page. Dismissing a retry
+      does not undo a saved change. This retry is kept in this browser session.
+      Session changes or a full browser reload clear it.
+    </p>
+    <div class="actions">
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        [disabled]="reviews.saving()"
+        (click)="reviews.retry()"
+      >
+        Retry same request
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="reviews.saving()"
+        (click)="reviews.dismissRetry()"
+      >
+        Dismiss retry
+      </button>
+    </div>
+  </aside>
+  } @if (reviews.loading()) {
+  <p role="status">Loading reviews...</p>
+  } @if (reviews.summary(); as summary) {
+  <section tuiAppearance="neutral" class="card" aria-label="Rating summary">
+    <h2>Member ratings</h2>
+    <p class="rating-summary">
+      {{
+        summary.average === null
+          ? 'No ratings yet'
+          : (summary.average | number : '1.1-1') + ' out of 5'
+      }}
+      <span>({{ summary.total }} reviews)</span>
+    </p>
+    <div class="distribution">
+      @for (stars of stars; track stars) {
+      <span>{{ stars }} stars</span
+      ><meter
+        min="0"
+        [max]="summary.total || 1"
+        [value]="summary.distribution[stars - 1]"
+        [attr.aria-label]="stars + ' star ratings'"
+      ></meter
+      ><span>{{ summary.distribution[stars - 1] }}</span>
+      }
+    </div>
+    <p>
+      Ratings count currently public member reviews. Imported editorial ratings
+      are separate.
+    </p>
+  </section>
+  } @if (reviews.signedIn() && (!detail() || reviews.mine())) {
+  <section tuiAppearance="neutral" class="card" aria-label="Your review">
+    <h2>Your review</h2>
+    @if (reviews.mine(); as mine) {
+    <p>
+      {{
+        mine.withdrawn
+          ? 'Withdrawn by you.'
+          : mine.hidden
+          ? 'Hidden by staff.'
+          : 'Published.'
+      }}
+    </p>
+    @if (mine.moderationReason) {
+    <p>Staff note: {{ mine.moderationReason }}</p>
+    } @if (mine.hidden) {
+    <p>Editing does not remove the staff restriction.</p>
+    } } @else {
+    <p>Share your experience with a public name and a rating from 1 to 5.</p>
+    } @if (!editing) {
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      [disabled]="locked()"
+      (click)="edit()"
+    >
+      {{ reviews.mine() ? 'Edit your review' : 'Write a review' }}
+    </button>
+    } @else {
+    <form (ngSubmit)="save()" class="review-form">
+      <label
+        >Public name<input
+          class="review-field"
+          name="displayName"
+          [(ngModel)]="displayName"
+          maxlength="80"
+          required
+          [disabled]="reviews.saving() || !!reviews.pending()"
+      /></label>
+      <label
+        >Rating<select
+          class="review-field"
+          name="rating"
+          [(ngModel)]="rating"
+          [disabled]="reviews.saving() || !!reviews.pending()"
+        >
+          @for (star of stars; track star) {
+          <option [value]="star">{{ star }} stars</option>
+          }
+        </select></label
+      >
+      <label
+        >Your review<textarea
+          class="review-field"
+          name="reviewText"
+          [(ngModel)]="text"
+          maxlength="6000"
+          rows="7"
+          required
+          [disabled]="reviews.saving() || !!reviews.pending()"
+        ></textarea>
+      </label>
+      <p>Your chosen name, rating and text are public when published.</p>
+      <div class="actions">
+        <button tuiButton type="submit" size="s" [disabled]="locked()">
+          {{
+            reviews.mine()?.withdrawn ? 'Republish review' : 'Publish review'
+          }}
+        </button>
+        <button
+          tuiButton
+          type="button"
+          size="s"
+          appearance="secondary"
+          [disabled]="reviews.saving() || !!reviews.pending()"
+          (click)="editing = false"
+        >
+          Cancel editing
+        </button>
+      </div>
+    </form>
+    } @if (reviews.mine(); as mine) { @if (!mine.withdrawn) {
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="locked()"
+      (click)="reviews.withdraw(mine)"
+    >
+      Withdraw your review
+    </button>
+    } }
+  </section>
+  } @else if (!reviews.signedIn()) {
+  <p>Sign in to write a review, mark reviews helpful, or report a concern.</p>
+  } @if (reviews.moderation()) {
+  <h2>Moderation queue</h2>
+  <p>
+    Includes hidden and withdrawn reviews. Staff actions resolve all current
+    open reports at the displayed revision.
+  </p>
+  } @if (!reviews.loading() && !reviews.error() && !reviews.items().length) {
+  <p>No reviews on this page.</p>
+  } @for (review of reviews.items(); track review.id) {
+  <article
+    tuiAppearance="neutral"
+    class="card"
+    [attr.data-review-id]="review.id"
+  >
+    <header>
+      <h2>
+        <a [routerLink]="reviewLink()(review.id)">{{
+          review.content.displayName
+        }}</a>
+      </h2>
+      <p>{{ review.content.rating }} out of 5</p>
+    </header>
+    <p>
+      {{ review.createdAt | date : 'mediumDate' }}@if (review.updatedAt !==
+      review.createdAt) {
+      <span> - Edited {{ review.updatedAt | date : 'mediumDate' }}</span> }
+    </p>
+    @if (review.withdrawn || review.hidden) {
+    <p>{{ review.withdrawn ? 'Withdrawn' : 'Hidden by staff' }}</p>
+    }
+    <p class="review-text">{{ review.content.text }}</p>
+    <div class="actions">
+      <span>{{ review.helpfulCount }} found this helpful</span>
+      @if (reviews.signedIn() && !review.mine && !review.hidden &&
+      !review.withdrawn) {
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [attr.aria-pressed]="review.helpful"
+        [disabled]="locked()"
+        (click)="reviews.helpful(review)"
+      >
+        {{ review.helpful ? 'Remove helpful mark' : 'Helpful' }}
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="locked() || review.reported"
+        (click)="showReport(review)"
+      >
+        {{ review.reported ? 'Reported' : 'Report review' }}
+      </button>
+      } @if (review.canModerate) {
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="locked()"
+        (click)="showModeration(review)"
+      >
+        Moderate ({{ review.openReports }} open reports)
+      </button>
+      }
+    </div>
+    @if (reportId === review.id && !review.reported) {
+    <form (ngSubmit)="reviews.report(review, reportReason)" class="review-form">
+      <label
+        >Report reason<textarea
+          class="review-field"
+          name="reportReason"
+          [(ngModel)]="reportReason"
+          rows="3"
+          maxlength="1000"
+          required
+          [disabled]="locked()"
+        ></textarea>
+      </label>
+      <button tuiButton type="submit" size="s" [disabled]="locked()">
+        Send report
+      </button>
+    </form>
+    } @if (moderateId === review.id && review.canModerate) {
+    <form
+      (ngSubmit)="reviews.moderate(review, hidden, moderationReason)"
+      class="review-form"
+    >
+      <label
+        >Decision<select
+          class="review-field"
+          name="decision"
+          [(ngModel)]="hidden"
+          [disabled]="locked()"
+        >
+          <option [ngValue]="true">Hide review and resolve reports</option>
+          <option [ngValue]="false">Allow review and dismiss reports</option>
+        </select></label
+      >
+      <label
+        >Staff reason<textarea
+          class="review-field"
+          name="moderationReason"
+          [(ngModel)]="moderationReason"
+          maxlength="1000"
+          rows="3"
+          required
+          [disabled]="locked()"
+        ></textarea>
+      </label>
+      <p>
+        The author can see this reason. Allowing a withdrawn review does not
+        republish it.
+      </p>
+      <button tuiButton type="submit" size="s" [disabled]="locked()">
+        Apply decision
+      </button>
+    </form>
+    @if (reviews.reportsLoading()) {
+    <p role="status">Loading reports...</p>
+    } @if (reviews.reportsError()) {
+    <p role="alert">{{ reviews.reportsError() }}</p>
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      (click)="reviews.loadReports(review.id)"
+    >
+      Reload reports
+    </button>
+    } @if (reviews.reports(); as reports) { @for (report of reports.items; track
+    report.id) {
+    <section class="report">
+      <h3>{{ report.resolution }} report</h3>
+      <p>{{ report.reason }}</p>
+      <p>
+        {{ report.createdAt | date : 'medium' }} - Reported content version
+        {{ report.contentRevision }}
+      </p>
+      <blockquote class="review-text">{{ report.content.text }}</blockquote>
+    </section>
+    } @if (!reports.items.length) {
+    <p>No reports.</p>
+    } @if (reports.next) {
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      (click)="reviews.loadReports(review.id, reports.next)"
+    >
+      More reports
+    </button>
+    } } }
+  </article>
+  } @if (reviews.next()) {
+  <button
+    tuiButton
+    type="button"
+    size="s"
+    appearance="secondary"
+    [disabled]="reviews.loading() || reviews.saving()"
+    (click)="reviews.older()"
+  >
+    More reviews
+  </button>
+  }
+</section>

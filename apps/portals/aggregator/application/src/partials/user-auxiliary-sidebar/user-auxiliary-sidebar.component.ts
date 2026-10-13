@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, computed, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
@@ -9,10 +9,9 @@ import { IAppShellSidebarComponent } from '../../shells/app-shell/app-shell.comp
 import { NavigationDeclarationDto, buildRoutePath } from '@portals/shared/boundary/navigation';
 import { RoutedDialogButton } from '@ui/routable-dialog';
 import { MY_PROFILE_STATE_PROVIDER } from '@portals/shared/features/my-profile';
-import { MyFavoritesGridComponent, MY_FAVORITES_STATE_PROVIDER, type MyFavoritesGridViewModel } from '@portals/shared/features/my-favorites';
-import { APPLICATIONS, TAG_DICTIONARY } from '@portals/shared/data';
+import { MyFavoritesGridComponent, FavoriteContentService } from '@portals/shared/features/my-favorites';
+import { TAG_DICTIONARY } from '@portals/shared/data';
 import { NAVIGATION } from '../../navigation';
-import { map } from 'rxjs';
 import type { TagDto } from '@domains/catalog/tags';
 
 @Component({
@@ -48,27 +47,33 @@ export class UserAuxiliarySidebarComponent implements IAppShellSidebarComponent 
 
   public readonly authService = inject(AuthenticationService, { optional: true });
   public readonly myProfileStateProvider = inject(MY_PROFILE_STATE_PROVIDER);
-  public readonly myFavoritesStateProvider = inject(MY_FAVORITES_STATE_PROVIDER);
+  public readonly favoritesContent = inject(FavoriteContentService);
   public readonly theme = inject(THEME_PROVIDER_TOKEN);
 
   public readonly myProfilePath = NAVIGATION.myProfile.path;
   
   public readonly myProfile$ = this.myProfileStateProvider.myProfile$;
   
-  public readonly favoritesGridVm$ = this.myFavoritesStateProvider.myFavorites$.pipe(
-    map(state => ({
-      items: state.data.applications.map(slug => {
-        const app = APPLICATIONS.find(a => a.slug === slug);
-        return {
-          slug,
-          path: buildRoutePath(NAVIGATION.application.path, { appSlug: slug }),
-          title: app?.name || slug,
-          avatarUrl: app?.logo || `https://api.dicebear.com/7.x/shapes/svg?seed=${slug}`
-        };
-      }),
-      hasItems: state.data.applications.length > 0
-    } as MyFavoritesGridViewModel))
-  );
+  public readonly favoritesGridVm = computed(() => {
+    const state = this.favoritesContent.view();
+    const apps = state.items.filter(item => item.kind === 'applications');
+    const items = apps.flatMap(item => item.slug === null ? [] : [{
+      slug: item.slug,
+      path: buildRoutePath(NAVIGATION.application.path, { appSlug: item.slug }, { absolute: true }),
+      title: item.name,
+      avatarUrl: item.image,
+    }]);
+    const hidden = apps.filter(item => item.status === 'hidden').length;
+    return {
+      items,
+      hasItems: items.length > 0,
+      isLoading: state.isLoading || state.contentLoading || state.preferencesLoading,
+      isError: state.isError || state.contentError || state.preferencesError,
+      preferencesError: state.preferencesError,
+      hidden,
+      unavailable: apps.length - items.length - hidden,
+    };
+  });
 
   // Curated tags to display
   public readonly curatedTags: TagDto[] = [

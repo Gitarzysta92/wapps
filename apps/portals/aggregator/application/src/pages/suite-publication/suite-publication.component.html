@@ -1,0 +1,308 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <p slot="meta">
+    {{
+      suiteMode() === 'owner'
+        ? 'Submit a saved version for review. Editing your draft does not change the published version.'
+        : suiteMode() === 'review' || suiteMode() === 'queue'
+        ? 'Review submitted collections before they appear publicly.'
+        : 'Application collections reviewed and published by the community.'
+    }}
+  </p>
+  <div slot="actions" class="suite-actions">
+    <a
+      tuiButton
+      appearance="secondary"
+      size="s"
+      [routerLink]="
+        suiteMode() === 'review' ? '/editorial/suites' : '/my/suites'
+      "
+      >{{ suiteMode() === 'review' ? 'Review queue' : 'My suites' }}</a
+    >
+  </div>
+</ui-page-header>
+<section
+  class="suite-workspace"
+  [attr.aria-busy]="publication.loading() || publication.saving()"
+>
+  @if ((suiteMode() === 'owner' || suiteMode() === 'review' || suiteMode() ===
+  'queue') && !publication.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Publication and review require an authenticated account."
+  />
+  } @else { @if (publication.error()) {
+  <p class="suite-feedback" role="alert">{{ publication.error() }}</p>
+  } @if (publication.uncertain()) {
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    [disabled]="publication.saving()"
+    (click)="publication.retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (publication.error()) {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="m"
+    type="button"
+    [disabled]="publication.saving()"
+    (click)="publication.reload()"
+  >
+    Reload suite publication
+  </button>
+  } @if (publication.feedback()) {
+  <p role="status">{{ publication.feedback() }}</p>
+  } @if (publication.loading()) {
+  <p role="status">{{ publication.preferencesLoading() ? 'Loading content preferences...' : 'Loading suites...' }}</p>
+  } @else if (publication.preferencesError()) {
+  <p role="alert">Your content preferences could not be loaded.</p>
+  <button tuiButton size="s" type="button" (click)="publication.reload()">Retry content preferences</button>
+  } @else if (publication.hidden()) {
+  <ui-content-state title="Suite hidden by your content preferences" description="Mature and unclassified content is hidden when mature content is disabled." />
+  <a tuiLink routerLink="/me/settings/preferences">Content preferences</a>
+  } @else { @if (suiteMode() === 'catalog') {
+  <form class="suite-search" (ngSubmit)="search(searchInput.value)">
+    <label for="public-suite-search">Search published suites</label>
+    <input
+      #searchInput
+      id="public-suite-search"
+      class="suite-input"
+      name="q"
+      maxlength="100"
+      [value]="q()"
+    />
+    <button tuiButton size="m" type="submit">Search</button>
+  </form>
+  @if (publication.hiddenCount()) {
+  <p role="status">{{ publication.hiddenCount() }} suites on this page are hidden by your content preferences. Totals include hidden suites.</p>
+  } @if (!publication.error() && !publication.items().length) {
+  <ui-content-state
+    [title]="publication.hiddenCount() ? 'No visible suites on this page' : 'No published suites'"
+    [description]="publication.hiddenCount() ? 'Try another page or change your content preferences.' : 'Published collections matching your search will appear here.'"
+  />
+  }
+  <div class="suite-grid">
+    @for (suite of publication.items(); track suite.id) {
+    <article class="suite-card" tuiAppearance="card-panel">
+      <h2>
+        <a tuiLink [routerLink]="['/suites', suite.id]">{{ suite.title }}</a>
+      </h2>
+      <p class="suite-description">{{ suite.description }}</p>
+      <p>{{ suite.applicationIds.length }} applications</p>
+      <a tuiLink [routerLink]="['/suites', suite.id]">Open suite</a>
+      <favorite-toggle-button type="suites" [targetId]="suite.id" />
+    </article>
+    }
+  </div>
+  } @if (suiteMode() === 'queue') { @if (!publication.error() &&
+  !publication.queue().length) {
+  <ui-content-state
+    title="No suites awaiting review"
+    description="New submissions from other members will appear here."
+  />
+  }
+  <div class="suite-grid">
+    @for (suite of publication.queue(); track suite.id) {
+    <article class="suite-card" tuiAppearance="card-panel">
+      <h2>{{ suite.latestSubmission?.title }}</h2>
+      <p>{{ suite.latestSubmission?.description }}</p>
+      <a tuiLink [routerLink]="['/editorial/suites', suite.id]"
+        >Review submission</a
+      >
+    </article>
+    }
+  </div>
+  } @if ((suiteMode() === 'catalog' || suiteMode() === 'queue') &&
+  publication.total() > 20) {
+  <nav class="suite-actions" aria-label="Suite pages">
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      type="button"
+      [disabled]="publication.page() <= 1"
+      (click)="paginate(publication.page() - 1)"
+    >
+      Previous
+    </button>
+    <span
+      >Page {{ publication.page() }} · {{ publication.total() }} suites</span
+    >
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      type="button"
+      [disabled]="publication.page() * 20 >= publication.total()"
+      (click)="paginate(publication.page() + 1)"
+    >
+      Next
+    </button>
+  </nav>
+  } @if (suiteMode() === 'owner' && publication.draft(); as draft) {
+  <article class="suite-card" tuiAppearance="card-panel">
+    <p class="suite-label">Saved draft</p>
+    <h2>{{ draft.title }}</h2>
+    <p class="suite-description">{{ draft.description }}</p>
+    <a tuiLink [routerLink]="['/my/suites', draft.id]">Edit draft</a>
+  </article>
+  } @if (publication.status(); as status) {
+  <article class="suite-card" tuiAppearance="card-panel">
+    <h2>
+      {{
+        status.publishedSubmissionRevision
+          ? 'Published version available'
+          : 'This suite is not public'
+      }}
+    </h2>
+    @if (status.publishedSubmissionRevision) {
+    <a tuiLink [routerLink]="['/suites', status.id]">View published suite</a> }
+    @if (status.latestSubmission; as submitted) {
+    <p role="status">Submission: {{ submitted.status }}</p>
+    @if (suiteMode() === 'review') {
+    <h2>{{ submitted.title }}</h2>
+    <p class="suite-description">{{ submitted.description }}</p>
+    <p>Submitted classification: {{ submitted.classification || 'Unclassified' }}. Approval confirms this classification with the suite.</p>
+    } @if (submitted.reason) {
+    <p class="suite-description">Review reason: {{ submitted.reason }}</p>
+    } } @else {
+    <p>No version has been submitted for review.</p>
+    } @if (suiteMode() === 'owner') {
+    <div class="suite-actions">
+      @if (status.latestSubmission?.status !== 'submitted') {
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="publication.saving() || publication.uncertain()"
+        (click)="publication.change('submit')"
+      >
+        Submit saved draft
+      </button>
+      } @if (status.publishedSubmissionRevision ||
+      status.latestSubmission?.status === 'submitted') {
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        [disabled]="publication.saving() || publication.uncertain()"
+        (click)="confirmingWithdrawal.set(true)"
+      >
+        Withdraw suite
+      </button>
+      }
+    </div>
+    @if (confirmingWithdrawal() && (status.publishedSubmissionRevision ||
+    status.latestSubmission?.status === 'submitted')) {
+    <p>
+      Withdrawal cancels pending review and removes the public version. Your
+      saved draft remains available.
+    </p>
+    <div class="suite-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="publication.saving() || publication.uncertain()"
+        (click)="
+          publication.change('withdraw'); confirmingWithdrawal.set(false)
+        "
+      >
+        Confirm withdrawal
+      </button>
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        (click)="confirmingWithdrawal.set(false)"
+      >
+        Keep suite
+      </button>
+    </div>
+    } } @if (suiteMode() === 'review' && status.latestSubmission?.status ===
+    'submitted') {
+    <label for="suite-review-reason"
+      >Review reason (required for rejection)</label
+    >
+    <textarea
+      id="suite-review-reason"
+      class="suite-input"
+      rows="4"
+      maxlength="1000"
+      [ngModel]="reason()"
+      (ngModelChange)="reason.set($event)"
+      [disabled]="publication.saving() || publication.uncertain()"
+    ></textarea>
+    <div class="suite-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="publication.saving() || publication.uncertain()"
+        (click)="publication.change('approve', reason())"
+      >
+        Approve submission
+      </button>
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        [disabled]="
+          publication.saving() || publication.uncertain() || !reason().trim()
+        "
+        (click)="publication.change('reject', reason())"
+      >
+        Reject submission
+      </button>
+    </div>
+    }
+  </article>
+  } @if (suiteMode() === 'public' && publication.detail(); as suite) {
+  <p class="suite-description">{{ suite.description }}</p>
+  <favorite-toggle-button type="suites" [targetId]="suite.id" />
+  } @if (memberIds().length) {
+  <section class="suite-section">
+    <h2>Applications ({{ memberIds().length }})</h2>
+    @if (publication.metadataError()) {
+    <p role="alert">{{ publication.metadataError() }}</p>
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      type="button"
+      (click)="publication.retryMembers()"
+    >
+      Retry application details
+    </button>
+    }
+    <ul class="suite-members">
+      @for (id of memberIds(); track id) {
+      <li class="suite-member" tuiAppearance="card-panel">
+        <div>
+          @if (publication.member(id); as app) {
+          <a tuiLink [routerLink]="['/apps', app.slug]">{{ app.name }}</a>
+          <p>{{ app.description }}</p>
+          } @else if (publication.hiddenMemberIds().includes(id)) {
+          <span>Application hidden by your content preferences</span>
+          } @else {
+          <span>{{
+            publication.metadataLoading()
+              ? 'Loading application...'
+              : 'Unavailable application'
+          }}</span>
+          }
+        </div>
+      </li>
+      }
+    </ul>
+  </section>
+  } } }
+</section>

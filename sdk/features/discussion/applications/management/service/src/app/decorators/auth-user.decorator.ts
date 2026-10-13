@@ -1,4 +1,9 @@
-import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Request } from 'express';
 
 /**
  * Decorator to extract authenticated user information from request.
@@ -6,25 +11,8 @@ import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@
  */
 export const AuthUser = createParamDecorator(
   (options: { optional?: boolean } = {}, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-
-    const user: AuthenticatedUser = {
-      userId: request.userId,
-      userEmail: request.userEmail,
-      authTime: request.authTime,
-      userClaims: request.userClaims,
-      isAnonymous: request.isAnonymous || false,
-    };
-
-    if (!user.userId && (user.isAnonymous || options.optional)) {
-      return user;
-    }
-
-    if (!user.userId && !options.optional) {
-      throw new UnauthorizedException('Authentication required');
-    }
-
-    return user;
+    const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
+    return extractAuthUser(request, options.optional);
   }
 );
 
@@ -32,6 +20,20 @@ export interface AuthenticatedUser {
   userId?: string;
   userEmail?: string;
   authTime?: string;
-  userClaims?: Record<string, any>;
+  userClaims?: Record<string, unknown>;
   isAnonymous: boolean;
+}
+
+export interface AuthenticatedRequest extends Request {
+  authUser?: AuthenticatedUser;
+}
+
+export function extractAuthUser(
+  request: Pick<AuthenticatedRequest, 'authUser'>,
+  optional = false
+): AuthenticatedUser {
+  const user = request.authUser ?? { isAnonymous: true };
+  if (!optional && (!user.userId || user.isAnonymous))
+    throw new UnauthorizedException('Authentication required');
+  return user;
 }

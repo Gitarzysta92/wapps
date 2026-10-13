@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node tools/readiness/workspace-checks.mjs test",
+    "lint": "node tools/readiness/workspace-checks.mjs lint",
+    "check:inventory": "node tools/readiness/workspace-checks.mjs inventory",
+    "check:boundaries": "node tools/readiness/workspace-checks.mjs boundaries && node tools/readiness/check-architecture.mjs",
     "agents:editor:dev": "npx nx serve editor-agent",
     "scrappers:storeapp:dev": "npx nx serve store-app",
     "opa:generate": "node sdk/features/identity/packages/infrastructure/opa/scripts/generate.cjs",
@@ -63,9 +66,15 @@
     "ts-node": "10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.29.0"
+    "typescript-eslint": "^8.29.0",
+    "yaml": "2.8.2"
   },
-  "nx": {},
+  "nx": {
+    "tags": [
+      "arch:tooling"
+    ],
+    "includedScripts": []
+  },
   "dependencies": {
     "@angular/animations": "^19.2.0",
     "@angular/cdk": "^19.2.0",
@@ -138,6 +147,7 @@
     "react-router-dom": "^6.30.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
+    "sharp": "0.35.5",
     "styled-components": "^6.1.19",
     "swagger-ui-express": "^5.0.1",
     "tslib": "^2.3.0",

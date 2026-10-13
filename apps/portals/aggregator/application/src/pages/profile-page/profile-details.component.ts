@@ -22,7 +22,12 @@ import { NAVIGATION } from '../../navigation';
 export class ProfileDetailsComponent {
   public readonly profile = input.required<CustomerProfileDto>();
   public readonly isLocalProfile = input(false);
+  public readonly showLegacyStats = input(true);
   public readonly links = computed(() => this.socialLinks(this.profile()));
+  public readonly contactLink = computed(() => {
+    const address = this.profile().contactEmail;
+    return address ? `mailto:${encodeURIComponent(address)}` : null;
+  });
   public readonly stats = computed(() => {
     const stats = this.profile().stats;
     if (!stats) return [];

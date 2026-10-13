@@ -1,12 +1,33 @@
 {
   "authority": {
     "permissions_by_role": {
+      "explore:reader": [
+        "discussion.explore.read"
+      ],
+      "notification:worker": [
+        "discussion.notifications.manage",
+        "discussion.mentions.manage",
+        "discussion.favorite-updates.read"
+      ],
+      "account-erasure:writer": [
+        "discussion.account-erasure.request"
+      ],
+      "account-export:reader": [
+        "discussion.account-export.read"
+      ],
+      "discussion:profile-reader": [
+        "discussion.profile.participation.read",
+        "discussion.profile.activity.read",
+        "discussion.profile.totals.read"
+      ],
       "admin": [
         "*"
       ],
       "discussion:writer": [
         "create-discussion",
         "create-comment",
+        "discussion.update",
+        "discussion.delete",
         "discussion.comment.like",
         "discussion.comment.unlike"
       ],
@@ -15,10 +36,6 @@
         "discussion.comment.unlike"
       ]
     },
-    "roles_by_identity": {
-      "example-user": [
-        "discussion:writer"
-      ]
-    }
+    "roles_by_identity": {}
   }
 }

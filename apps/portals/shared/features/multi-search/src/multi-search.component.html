@@ -1,13 +1,13 @@
 <div class="search-container" [class.focused]="isFocused">
   <search-bar
-    ariaLabel="Search applications articles suites"
+    [ariaLabel]="ariaLabel"
     (keydown.enter)="submitSearch($event)"
     (submit)="submitSearch($event)"
     [initialValue]="initialValue$ | async"
     (onSearch)="onSearchChange($event)"
     (onFocus)="onFocusChange()">
     <button type="button" tuiButton size="s" appearance="flat" (click)="submitSearch($event)" aria-label="Submit search">Search</button>
-    <tui-loader *ngIf="loadingResults && isFocused"/>
+    <tui-loader *ngIf="(searchState$ | async)?.status === 'loading' && isFocused"/>
   </search-bar>
   
 <div class="dropdown" tuiAppearance="card-panel" *ngIf="isFocused">

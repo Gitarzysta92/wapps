@@ -1,8 +1,8 @@
 export default {
   displayName: 'chat-input',
-  preset: '../../jest.preset.js',
+  preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../coverage/libs/ui',
+  coverageDirectory: '../../../coverage/libs/ui/chat-input',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

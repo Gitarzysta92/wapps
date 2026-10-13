@@ -41,7 +41,7 @@ describe('Mobile application navigation', () => {
         path: route.path, component: Destination,
         resolve: { bottomBar: route.resolve!['bottomBar'] },
       }),
-      { path: '', component: Destination, data: portalRoutes.find(route => route.component)!.data },
+      { path: '', component: Destination, data: portalRoutes.find(route => route.path === NAVIGATION.home.path && route.loadComponent)!.data },
     ]),
   ] }));
 

@@ -1,0 +1,58 @@
+@if (state$ | async; as state) {
+  @if (state.status === 'loading') {
+    <p role="status">{{ state.message || 'Searching...' }}</p>
+    <ul search-result-list-skeleton></ul>
+  } @else if (state.status === 'error') {
+    <p role="alert">{{ state.message || 'Search unavailable. Please try again.' }}</p>
+    <button tuiButton type="button" size="s" appearance="secondary" (click)="retry.emit()">Retry search</button>
+  } @else if (state.status === 'ready') {
+    @let searchResult = state.result;
+    @if (searchResult.groups.length > 0) {
+      <a class="full-search-redirect"
+        [full-search-redirect]="searchResult.itemsNumber"
+        [routerLink]="searchResult.link"
+        [queryParams]="searchResult.query">
+      </a>
+      <p class="preview-explanation">Up to three matches per group. Saved content choices apply to the preview; totals include all matches.</p>
+      <ul class="preview-list">
+        @for (group of searchResult.groups; track group.id) {
+          <li>
+            <a class="group-header" tuiButton size="s" appearance="flat"
+              [iconStart]="group.icon" iconEnd="@tui.chevron-right"
+              [routerLink]="group.link"
+              [queryParams]="groupQuery(searchResult.query, group.type)">
+              <span class="group-name">{{ group.name }}@if (group.total !== undefined) { <span class="group-total">({{ group.total }})</span> }</span><span>View all</span>
+            </a>
+            <ul class="result-entries">
+              @for (entry of group.entries; track entry.id) {
+                <li>
+                  <a class="result-entry" tuiButton size="s" appearance="flat"
+                    [routerLink]="entry.link" iconEnd="@tui.chevron-right">
+                    <div class="custom-content">
+                      <tui-avatar size="s" [src]="entry.coverImageUrl.url || '@tui.box'" />
+                      <div class="entry-info">
+                        <div class="entry-name">{{ entry.name }}</div>
+                        @if (entry.tags && entry.tags.length > 0) {
+                          <div class="tags">
+                            @for (tag of entry.tags.slice(0, 3); track tag.slug ?? tag.name) {
+                              <tui-badge size="s" appearance="neutral">{{ tag.name | lowercase }}</tui-badge>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+            @if (group.hiddenCount) {
+              <p class="preview-explanation" role="status">{{ group.hiddenCount }} hidden in this preview by saved choices.</p>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="no-results" role="status">No results</p>
+    }
+  }
+}

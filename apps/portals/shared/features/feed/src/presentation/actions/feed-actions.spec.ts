@@ -1,13 +1,30 @@
 import { FeedAttributionComponent } from './feed-attribution.component';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { TuiRoot, TUI_DARK_MODE } from '@taiga-ui/core';
+import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
+import { AttributionType, ContentNature } from '@domains/publication/attribution';
 import { FeedLocalVoteComponent } from './feed-local-vote.component';
 import { FeedDatePipe } from './feed-date.pipe';
 import { FeedActionsMenuComponent } from './feed-actions-menu.component';
 import { DiscussionTopicFeedItemComponent } from '../feed-items/discussion-topic-feed-item.component';
-import { MyFavoritesService } from '@portals/shared/features/my-favorites';
+import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { SharingService } from '@portals/shared/features/sharing';
+
+@Component({
+  imports: [TuiRoot, FeedAttributionComponent],
+  template: `<tui-root><feed-attribution title="Design article" [attribution]="attribution" /></tui-root>`,
+})
+class AttributionHostComponent {
+  readonly attribution = {
+    attributionType: AttributionType.HUMAN_CREATED,
+    contentNature: ContentNature.SPONSORED,
+    sponsor: 'Design Studio',
+    disclosureRequired: true,
+  };
+}
 
 describe('Feed actions and discussion preview', () => {
   afterEach(() => localStorage.removeItem('wapps.feed-vote.test-feed-item'));
@@ -45,20 +62,24 @@ describe('Feed actions and discussion preview', () => {
     expect(action).toHaveBeenCalledTimes(1);
     expect(fixture.nativeElement.querySelector('details').open).toBe(false);
   });
-  it('exposes source and sponsorship details through a named disclosure', () => {
-    const fixture = TestBed.createComponent(FeedAttributionComponent);
-    fixture.componentRef.setInput('title', 'Design article');
-    fixture.componentRef.setInput('attribution', { attributionType: 'human-created', contentNature: 'sponsored', sponsor: 'Design Studio', disclosureRequired: true });
+  it('exposes source and sponsorship details through a named disclosure', async () => {
+    TestBed.configureTestingModule({ providers: [provideNoopAnimations(), NG_EVENT_PLUGINS, { provide: TUI_DARK_MODE, useValue: signal(false) }] });
+    const fixture = TestBed.createComponent(AttributionHostComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('summary').getAttribute('aria-label')).toBe('Content attribution for Design article');
-    expect(fixture.nativeElement.textContent).toContain('Sponsored by Design Studio');
-    fixture.nativeElement.querySelector('summary').click(); fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('details').open).toBe(true);
-    expect(fixture.nativeElement.querySelector('p').textContent).toContain('Human');
+    const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(trigger.getAttribute('aria-label')).toBe('Content attribution for Design article: Sponsored by Design Studio');
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    trigger.click(); fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    const disclosure = document.querySelector('[aria-label="Content attribution"]');
+    expect(disclosure?.textContent).toContain('Sponsored by Design Studio');
+    expect(disclosure?.querySelector('p')?.textContent).toContain('Human');
   });
   it('renders only actual messages with formatted dates and a working discussion URL', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([]),
-      { provide: MyFavoritesService, useValue: { isFavorite$: () => of(false) } },
+      ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
       { provide: SharingService, useValue: {} },
     ] });
     const fixture = TestBed.createComponent(DiscussionTopicFeedItemComponent);

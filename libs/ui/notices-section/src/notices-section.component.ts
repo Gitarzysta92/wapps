@@ -19,5 +19,5 @@ export interface Notice {
 })
 export class NoticesSectionComponent {
   @Input() notices: Notice[] = [];
-  @Input() showEmptyState: boolean = true;
+  @Input() showEmptyState = true;
 }

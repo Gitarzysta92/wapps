@@ -1,0 +1,40 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+.article-editor-section {
+  @include page.section;
+  display: grid;
+  gap: $space-3;
+}
+.article-reading {
+  max-width: 70ch;
+  min-width: 0;
+  h2,
+  h3,
+  p {
+    overflow-wrap: anywhere;
+  }
+  p {
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+  > * + *,
+  section > * + * {
+    margin-top: $space-4;
+  }
+  > section {
+    @include page.section(false);
+  }
+}
+.article-filters {
+  display: grid;
+  gap: $space-4;
+}
+.application-workspace > article-comments.article-comments-section {
+  @include page.section;
+}
+.article-filter-field {
+  display: grid;
+  gap: $space-2;
+  min-width: 0;
+}

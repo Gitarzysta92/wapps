@@ -7,6 +7,10 @@ resources:
   - ../../../../sdk/features/identity/applications/authenticator/provisioning/k8s
 
 patches:
+  - path: enrollment-ingress-patch.yaml
+    target:
+      kind: Ingress
+      name: identity-enrollment-ingress
   - path: deployment-patch.yaml
     target:
       kind: Deployment

@@ -4,6 +4,8 @@ export * from './application/ports/record-provider.port';
 export * from './application/constants';
 export * from './application/ports/raw-record-processor.port';
 export * from './application/models/raw-record.dto';
-
-
-
+export * from './application/models/record-creation.dto';
+export * from './application/models/application-draft';
+export * from './application/models/application-publication';
+export * from './application/ports/record-projection-service.port';
+export * from './application/ports/record-identificatior-generator.port';

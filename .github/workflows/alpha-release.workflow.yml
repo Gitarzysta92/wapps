@@ -1,0 +1,124 @@
+name: Wapps Alpha Release
+
+on:
+  push:
+    branches: [codex/alpha-full-operation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wapps-alpha-release
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    uses: ./.github/workflows/workspace-quality.workflow.yml
+
+  images:
+    needs: quality
+    if: success()
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - name: editorial
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: apps.services.editorial
+            output: dist/apps/services/editorial
+          - name: discussion
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: sdk-features-discussion-applications-management
+            output: dist/sdk/features/discussion/applications/management
+          - name: catalog-bff
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: apps.services.catalog-bff
+            output: dist/apps/services/catalog-bff
+          - name: account-management
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: sdk-features-identity-applications-management
+            output: dist/sdk/features/identity/applications/management
+          - name: authenticator
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: sdk-features-identity-applications-authenticator
+            output: dist/sdk/features/identity/applications/authenticator
+          - name: discussion-materializer
+            dockerfile: deploy/alpha/Dockerfile.backend
+            project: sdk-features-discussion-applications-materializer
+            output: dist/sdk/features/discussion/applications/materializer
+          - name: portal
+            dockerfile: deploy/alpha/Dockerfile
+          - name: opa
+            dockerfile: deploy/alpha/Dockerfile.opa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/gitarzysta92/wapps-alpha-${{ matrix.name }}:${{ github.sha }}
+          build-args: |
+            NX_PROJECT=${{ matrix.project }}
+            OUTPUT_PATH=${{ matrix.output }}
+            WAPPS_REVISION=${{ github.sha }}
+          cache-from: type=gha,scope=alpha-${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=alpha-${{ matrix.name }}
+
+  firebase-configuration:
+    needs: quality
+    if: success()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+      - name: Seal existing development credentials for the alpha host
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEV }}
+          FIREBASE_WEB_API_KEY: ${{ secrets.FIREBASE_WEB_API_KEY }}
+          REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          account = json.loads(os.environ['FIREBASE_SERVICE_ACCOUNT_JSON'])
+          project = os.environ['FIREBASE_PROJECT_ID']
+          if project.startswith('demo-') or account['project_id'] != project:
+              raise SystemExit('Firebase project mismatch')
+          if not os.environ['FIREBASE_WEB_API_KEY'] or not account.get('private_key'):
+              raise SystemExit('Firebase credentials are incomplete')
+          bundle = {'serviceAccount': account, 'projectId': project,
+                    'apiKey': os.environ['FIREBASE_WEB_API_KEY'],
+                    'registryToken': os.environ['REGISTRY_TOKEN']}
+          (Path(os.environ['RUNNER_TEMP']) / 'alpha-firebase.json').write_text(json.dumps(bundle))
+          PY
+          openssl cms -encrypt -binary -aes-256-cbc -outform DER \
+            -in "$RUNNER_TEMP/alpha-firebase.json" \
+            -out "$RUNNER_TEMP/alpha-firebase.cms" \
+            deploy/alpha/host-transport.crt
+          rm "$RUNNER_TEMP/alpha-firebase.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alpha-firebase-${{ github.sha }}
+          path: ${{ runner.temp }}/alpha-firebase.cms
+          retention-days: 1
+          if-no-files-found: error

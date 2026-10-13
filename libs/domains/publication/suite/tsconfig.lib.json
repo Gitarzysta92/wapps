@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/domains/publication/suite",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../../dist/domains/publication/suite/tsconfig.lib.tsbuildinfo",
+    "noEmitOnError": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    {
+      "path": "../../../../sdk/kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../classification/tsconfig.lib.json"
+    }
+  ]
+}

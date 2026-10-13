@@ -21,4 +21,5 @@ data:
 
   # Service config
   DISCUSSION_CORS_ORIGIN: "*"
+  ACCOUNT_MANAGEMENT_URL: http://account-management.default.svc.cluster.local
 

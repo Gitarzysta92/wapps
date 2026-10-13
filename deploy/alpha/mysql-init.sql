@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS editorial;
+CREATE DATABASE IF NOT EXISTS discussion;
+CREATE DATABASE IF NOT EXISTS identity;
+GRANT ALL PRIVILEGES ON editorial.* TO 'wapps'@'%';
+GRANT ALL PRIVILEGES ON discussion.* TO 'wapps'@'%';
+GRANT ALL PRIVILEGES ON identity.* TO 'wapps'@'%';

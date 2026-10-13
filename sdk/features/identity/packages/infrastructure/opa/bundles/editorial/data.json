@@ -1,0 +1,61 @@
+{
+  "authority": {
+    "permissions_by_role": {
+      "editorial:health-manager": [
+        "editorial.health.configure"
+      ],
+      "health:monitor": [
+        "editorial.health.probe"
+      ],
+      "explore:reader": [
+        "editorial.explore.read"
+      ],
+      "account-erasure:writer": [
+        "editorial.account-erasure.request"
+      ],
+      "notification:worker": [
+        "editorial.favorite-updates.read"
+      ],
+      "account-export:reader": [
+        "editorial.account-export.read"
+      ],
+      "editorial:profile-reader": [
+        "editorial.profile.suites.read",
+        "editorial.profile.articles.read",
+        "editorial.profile.activity.read",
+        "editorial.profile.totals.read"
+      ],
+      "admin": [
+        "*"
+      ],
+      "editorial:publisher": [
+        "editorial.app.create",
+        "editorial.app.update",
+        "editorial.app.delete"
+      ],
+      "editorial:moderator": [
+        "editorial.app.update",
+        "editorial.app.delete"
+      ],
+      "editorial:taxonomy": [
+        "editorial.category.create",
+        "editorial.category.update",
+        "editorial.category.delete",
+        "editorial.tag.create",
+        "editorial.tag.update",
+        "editorial.tag.delete"
+      ],
+      "editorial:reviewer": [
+        "editorial.release.review",
+        "editorial.article.review",
+        "editorial.suite.review",
+        "editorial.application.review"
+      ],
+      "editorial:ownership-reviewer": [
+        "editorial.ownership.review",
+        "editorial.ownership.revoke"
+      ]
+    },
+    "roles_by_identity": {}
+  }
+}

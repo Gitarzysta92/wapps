@@ -1,0 +1,300 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      publicationMode() === 'owner'
+        ? 'Publish application'
+        : publicationMode() === 'review'
+        ? 'Review application'
+        : 'Application review queue'
+    }}
+  </h1>
+  <p slot="meta">
+    Review uses the submitted version. Private edits do not change approved
+    public content. Publication does not verify real-world ownership.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="s"
+    [routerLink]="
+      publicationMode() === 'owner' ? '/my/apps' : '/editorial/apps'
+    "
+    >{{ publicationMode() === 'owner' ? 'My Apps' : 'Review queue' }}</a
+  >
+  @if (publicationMode() === 'owner') { @if (publication.status()?.editing; as
+  editing) {
+  <nav slot="navigation" aria-label="Verified application editing">
+    <a
+      tuiLink
+      [routerLink]="['/' + workspacePaths.editing, editing.applicationId]"
+      [queryParams]="{ draftId: publication.status()?.id }"
+      >Compare and merge canonical content</a
+    >
+  </nav>
+  } }
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="publication.loading() || publication.saving()"
+>
+  @if (!publication.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Application authoring and review require your account."
+  />
+  } @else { @if (publication.error()) {
+  <p role="alert" class="application-draft-feedback">
+    {{ publication.error() }}
+  </p>
+  } @if (publication.feedback()) {
+  <p role="status">{{ publication.feedback() }}</p>
+  } @if (publication.uncertain()) {
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    [disabled]="publication.saving() || publication.loading()"
+    (click)="publication.retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="s"
+    type="button"
+    [disabled]="publication.saving() || publication.loading()"
+    (click)="publication.reload()"
+  >
+    Reload publication
+  </button>
+  } @if (publication.loading()) {
+  <p role="status">Loading publication...</p>
+  } @else if (publicationMode() === 'queue') { @if (!publication.error() &&
+  !publication.queue().length) {
+  <ui-content-state
+    title="No applications awaiting review"
+    description="Submitted applications from other authors appear here."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (item of publication.queue(); track item.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ item.latestSubmission?.name }}</h2>
+        <p>Submitted revision {{ item.latestSubmission?.submittedRevision }}</p>
+      </div>
+      <a
+        tuiButton
+        appearance="secondary"
+        size="s"
+        [routerLink]="['/editorial/apps', item.id]"
+        >Review application</a
+      >
+    </article>
+    }
+  </div>
+  @if (publication.total() > 20) {
+  <nav class="application-draft-actions" aria-label="Review pages">
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      [disabled]="publication.page() <= 1"
+      (click)="paginate(publication.page() - 1)"
+    >
+      Previous page
+    </button>
+    <span>Page {{ publication.page() }}</span>
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      [disabled]="publication.page() * 20 >= publication.total()"
+      (click)="paginate(publication.page() + 1)"
+    >
+      Next page
+    </button>
+  </nav>
+  } } @else { @if (publication.status(); as status) { @if (publicationMode() ===
+  'owner') { @if (publication.draft(); as draft) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Saved draft: {{ draft.name }}</h2>
+      <p class="application-draft-meta">
+        Revision {{ draft.revision }} / {{ draft.slug }}
+      </p>
+    </div>
+    <p class="application-draft-description">{{ draft.description }}</p>
+    <a tuiLink [href]="draft.website" target="_blank" rel="noopener noreferrer"
+      >Application website (new tab)</a
+    >
+    <div class="application-draft-actions">
+      <a
+        tuiButton
+        appearance="secondary"
+        size="s"
+        [routerLink]="
+          draft.editing
+            ? ['/' + workspacePaths.editing, draft.editing.applicationId]
+            : ['/apps/register']
+        "
+        [queryParams]="{ draftId: draft.id }"
+        >Edit draft</a
+      >
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        [disabled]="
+          publication.saving() ||
+          publication.uncertain() ||
+          (status.latestSubmission?.status === 'submitted' &&
+            status.latestSubmission?.images !== null)
+        "
+        (click)="publication.change('submit')"
+      >
+        {{
+          status.latestSubmission && status.latestSubmission.images === null
+            ? 'Resubmit with current images'
+            : 'Submit for review'
+        }}
+      </button>
+    </div>
+    <div class="application-image-grid" aria-label="Saved draft images">
+      @if (draft.images) { @for (purpose of imagePurposes; track purpose) {
+      <application-image-preview
+        [label]="'saved ' + purpose"
+        [reference]="draft.images[purpose]"
+        [target]="{ kind: 'draft', id: draft.id, purpose }"
+      />
+      } } @else {
+      <p>Saved image information is unavailable. Reload the draft.</p>
+      }
+    </div>
+  </section>
+  } }
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Publication status</h2>
+      <p>{{ status.publicSlug ? 'Public application' : 'Not public' }}</p>
+    </div>
+    @if (status.publicSlug) {
+    <a tuiLink [routerLink]="['/apps', status.publicSlug, 'overview']"
+      >Open public application</a
+    >
+    @if (status.publishedSubmissionRevision) {
+    <p>Published submission {{ status.publishedSubmissionRevision }}</p>
+    } @else {
+    <p>Editorial has changed the public version since the last approval.</p>
+    } } @if (status.latestSubmission; as submission) {
+    <div class="application-draft-heading">
+      <h2>{{ submission.name }}</h2>
+      <p>
+        Submission {{ submission.submittedRevision }}: {{ submission.status }}
+      </p>
+    </div>
+    <p class="application-draft-description">{{ submission.description }}</p>
+    <p>Submitted classification: {{ submission.classification || 'Unclassified' }}. Approval confirms this classification with the application.</p>
+    <p>Submitted slug: {{ submission.slug }}</p>
+    <a
+      tuiLink
+      [href]="submission.website"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Submitted website (new tab)</a
+    >
+    @if (submission.images; as images) {
+    <div class="application-image-grid" aria-label="Submitted images">
+      @for (purpose of imagePurposes; track purpose) {
+      <application-image-preview
+        [label]="'submitted ' + purpose"
+        [reference]="images[purpose]"
+        [target]="{
+          kind: 'submission',
+          id: status.id,
+          purpose,
+          revision: submission.submittedRevision,
+          review: publicationMode() === 'review'
+        }"
+      />
+      }
+    </div>
+    } @else {
+    <p role="alert">
+      This submission has no recorded image snapshot. Its author must resubmit
+      the saved draft before it can be approved. Existing publication remains
+      visible.
+    </p>
+    } @if (submission.reason) {
+    <p class="application-draft-description">
+      Review reason: {{ submission.reason }}
+    </p>
+    } @if (publicationMode() === 'review' && submission.status === 'submitted')
+    {
+    <fieldset [disabled]="publication.saving() || publication.uncertain()">
+      <label for="application-review-reason"
+        >Review reason (required for rejection)</label
+      >
+      <textarea
+        id="application-review-reason"
+        class="application-draft-input"
+        rows="4"
+        maxlength="1000"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      ></textarea>
+      <div class="application-draft-actions">
+        <button
+          tuiButton
+          size="s"
+          type="button"
+          [disabled]="!submission.images"
+          (click)="publication.change('approve', reason())"
+        >
+          Approve publication
+        </button>
+        <button
+          tuiButton
+          appearance="secondary"
+          size="s"
+          type="button"
+          (click)="publication.change('reject', reason())"
+        >
+          Reject submission
+        </button>
+      </div>
+    </fieldset>
+    } } @else {
+    <p>No submission yet. Submit the saved draft for review.</p>
+    } @if (publicationMode() === 'owner' && (status.publicSlug ||
+    status.latestSubmission?.status === 'submitted')) { @if
+    (confirmingWithdrawal()) {
+    <p>Withdraw the public application and cancel any pending submission?</p>
+    <button
+      tuiButton
+      size="s"
+      type="button"
+      [disabled]="publication.saving() || publication.uncertain()"
+      (click)="publication.change('withdraw'); confirmingWithdrawal.set(false)"
+    >
+      Confirm withdrawal
+    </button>
+    } @else {
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      type="button"
+      [disabled]="publication.saving() || publication.uncertain()"
+      (click)="confirmingWithdrawal.set(true)"
+    >
+      Withdraw application
+    </button>
+    } }
+  </section>
+  } } }
+</section>

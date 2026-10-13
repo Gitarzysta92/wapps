@@ -7,9 +7,8 @@
           class="favorite-app-avatar"
           [title]="item.title || item.slug">
           <tui-avatar size="m">
-            <img 
-              [src]="item.avatarUrl || 'https://api.dicebear.com/7.x/shapes/svg?seed=' + item.slug" 
-              [alt]="item.title || item.slug" />
+            @if (item.avatarUrl) { <img [src]="item.avatarUrl" [alt]="item.title || item.slug" /> }
+            @else { {{ (item.title || item.slug).charAt(0) }} }
           </tui-avatar>
         </a>
       }

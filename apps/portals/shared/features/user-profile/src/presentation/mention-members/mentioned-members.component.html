@@ -1,0 +1,15 @@
+@if (ids().length) {
+  <button tuiButton type="button" appearance="flat" size="s" [attr.aria-expanded]="expanded()" (click)="expanded.set(!expanded())">{{ expanded() ? 'Hide mentioned members' : 'Show mentioned members (' + ids().length + ')' }}</button>
+  @if (expanded()) {
+    @if (members.namesLoading()) { <p role="status">Checking mentioned members...</p> }
+    @else if (members.namesError()) {
+      <p role="status">{{ members.namesError() }}</p><button tuiButton type="button" appearance="flat" size="s" (click)="members.loadNames(ids())">Try member names again</button>
+    } @else {
+      <ul class="mention-selection" aria-label="Mentioned members">
+        @for (id of ids(); track id) {
+          <li>@if (members.names()[id]; as name) { <a tuiLink [routerLink]="['/profiles', id]">{{ name }}</a> } @else { <span>Unavailable member</span> }</li>
+        }
+      </ul>
+    }
+  }
+}

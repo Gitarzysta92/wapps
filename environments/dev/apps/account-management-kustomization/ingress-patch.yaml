@@ -4,6 +4,7 @@ metadata:
   name: account-management-ingress
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/auth-url: "http://authenticator.wapps.svc.cluster.local/validate"
     # Recommended: restrict this ingress in env overlays
     # nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8"
 spec:

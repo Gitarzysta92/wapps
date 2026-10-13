@@ -1,18 +1,51 @@
-@let isFav = isFavorite$ | async;
-<button 
+@let isFav = isFavorite$ | async; @let state = state$ | async; @if (supported ||
+isFav) {
+<button
   tuiButton
+    class="favorite-toggle"
   [attr.tuiIconButton]="iconOnly ? '' : null"
-  [attr.title]="iconOnly ? (isFav ? 'Remove from Favorites' : 'Add to Favorites') : null"
+  [attr.title]="
+    state?.signedIn
+      ? isFav
+        ? 'Remove from Favorites'
+        : 'Add to Favorites'
+      : 'Sign in to save favorites'
+  "
   type="button"
   [appearance]="appearance"
   size="s"
   iconStart="@tui.star"
+  [disabled]="
+    !state?.context ||
+    state?.isLoading ||
+    state?.isError ||
+    state?.isSaving ||
+    saving()
+  "
   [class.is-favorite]="isFav"
   [attr.aria-label]="isFav ? 'Remove from Favorites' : 'Add to Favorites'"
   [attr.aria-pressed]="isFav"
-  (click)="toggleFavorite(isFav ?? false)">
-  @if (!iconOnly) { <span class="favorite-label">{{ isFav ? 'Remove from Favorites' : 'Add to Favorites' }}</span> }
+  (click)="toggleFavorite(isFav ?? false)"
+>
+  @if (!iconOnly) {
+  <span class="favorite-label">{{
+    saving()
+      ? 'Saving...'
+      : !state?.signedIn
+      ? 'Sign in to save'
+      : isFav
+      ? 'Remove from Favorites'
+      : 'Add to Favorites'
+  }}</span>
+  }
 </button>
-
-
-@if (error()) { <p role="alert">{{ error() }}</p> }
+@if (state?.isError) {
+<button tuiButton type="button" appearance="flat" size="s" (click)="reload()">
+  Reload favorites
+</button>
+} } @if (error()) {
+<p role="alert">{{ error() }}</p>
+<button tuiButton type="button" appearance="flat" size="s" (click)="reload()">
+  Reload favorites
+</button>
+}

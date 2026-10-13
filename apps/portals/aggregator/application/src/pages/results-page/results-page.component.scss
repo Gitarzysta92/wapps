@@ -6,7 +6,9 @@
   min-width: 0;
 }
 @include page.page(page.$content-gap);
-:host { container: catalog / inline-size; }
+:host {
+  container: catalog / inline-size;
+}
 .catalog {
   margin-top: page.$content-gap;
 }
@@ -48,7 +50,9 @@
   font: inherit;
 }
 @media (max-width: 30rem) {
-  .catalog-display-options { grid-template-columns: minmax(0, 1fr); }
+  .catalog-display-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .catalog-toolbar {
   display: flex;
@@ -56,9 +60,13 @@
   flex-wrap: wrap;
   gap: $space-3;
   margin-top: page.$content-gap;
-  filters-bar { min-width: 0; }
+  filters-bar {
+    min-width: 0;
+  }
 }
-.display-options-trigger { margin-inline-start: auto; }
+.display-options-trigger {
+  margin-inline-start: auto;
+}
 .filter-management-panel {
   padding: $space-4;
   min-width: min(300px, calc(100vw - #{$space-16}));
@@ -88,8 +96,16 @@
   color: inherit;
   text-decoration: none;
 }
-.item-body { display: flex; flex-direction: column; gap: $space-2; flex: 1; min-width: 0; }
-.item-main > tui-avatar { flex-shrink: 0; }
+.item-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  flex: 1;
+  min-width: 0;
+}
+.item-main > tui-avatar {
+  flex-shrink: 0;
+}
 .item-main h2 {
   margin: 0 0 $space-2;
   font-size: $font-size-lg;
@@ -139,12 +155,26 @@
 }
 .items-grid--list {
   grid-template-columns: minmax(0, 1fr);
-  .item-main { flex-direction: row; align-items: flex-start; }
-  .item-image { width: $space-32; aspect-ratio: 4 / 3; }
+  .item-main {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .item-image {
+    width: $space-32;
+    aspect-ratio: 4 / 3;
+  }
 }
 
 @container catalog (max-width: 30rem) {
-  .items-grid { grid-template-columns: minmax(0, 1fr); }
-  .items-grid--list .item-main { flex-direction: column; }
-  .items-grid--list .item-image { width: 100%; aspect-ratio: 16 / 9; max-height: $space-32; }
+  .items-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .items-grid--list .item-main {
+    flex-direction: column;
+  }
+  .items-grid--list .item-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: $space-32;
+  }
 }

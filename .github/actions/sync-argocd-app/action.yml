@@ -85,7 +85,7 @@ runs:
             echo "Creating ArgoCD application from ${{ inputs.app-manifest-path }}..."
             kubectl apply -f ${{ inputs.app-manifest-path }}
             sleep 5
-            argocd app sync ${{ inputs.app-name }} --grpc-web || true
+            argocd app sync ${{ inputs.app-name }} --grpc-web
           else
             echo "Error: ArgoCD application '${{ inputs.app-name }}' does not exist and no app-manifest-path provided"
             exit 1
@@ -96,7 +96,7 @@ runs:
     - name: Wait for sync to complete
       run: |
         echo "Waiting for sync to complete..."
-        argocd app wait ${{ inputs.app-name }} --timeout ${{ inputs.sync-timeout }} --grpc-web || true
+        argocd app wait ${{ inputs.app-name }} --timeout ${{ inputs.sync-timeout }} --sync --health --grpc-web
         echo "✅ ArgoCD sync completed"
       shell: bash
 

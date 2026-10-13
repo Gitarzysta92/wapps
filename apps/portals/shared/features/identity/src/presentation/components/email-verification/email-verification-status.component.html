@@ -1,0 +1,27 @@
+<div class="verification-content" [attr.aria-busy]="verification.busy()">
+  @if (verification.mode === 'demo') {
+    <p>Email verification requires a connected account. It is unavailable in demo mode.</p>
+  } @else if (!verification.signedIn()) {
+    <p>Sign in to check or verify your sign-in email.</p>
+  } @else {
+    @if (verification.status(); as status) {
+      @if (status.email) {
+        <p class="verification-email">{{ status.email }}</p>
+        <p role="status">{{ status.verified ? 'Email verified' : 'Email not verified' }}</p>
+      } @else {
+        <p>This sign-in account has no email address to verify.</p>
+      }
+    } @else if (verification.busy()) {
+      <p role="status">Checking verification status...</p>
+    }
+    @if (verification.feedback()) {
+      <p [attr.role]="verification.error() ? 'alert' : 'status'">{{ verification.feedback() }}</p>
+    }
+    <div class="verification-actions">
+      @if (verification.status()?.email && !verification.status()?.verified) {
+        <button tuiButton type="button" size="m" [disabled]="verification.busy()" (click)="verification.request()">Request verification email</button>
+      }
+      <button tuiButton type="button" size="m" appearance="secondary" [disabled]="verification.busy()" (click)="verification.refresh()">Refresh status</button>
+    </div>
+  }
+</div>

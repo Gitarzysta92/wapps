@@ -2,8 +2,8 @@
   <ng-content slot="[top-badge]"></ng-content>
   <tui-avatar
     size="m"
+    [src]="avatarPath() || '@tui.user-round'"
     tuiAvatarOutline="var(--tui-background-accent-2)">
-    <img [src]="avatarPath()" />
   </tui-avatar>
 </tui-badged-content>
 

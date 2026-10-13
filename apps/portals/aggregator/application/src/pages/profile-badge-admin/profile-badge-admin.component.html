@@ -1,0 +1,74 @@
+@let member = badges.profile();
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs" />
+  <h1 uiPageTitle slot="title">Profile badges</h1>
+  <p slot="meta">Award or revoke a badge with a recorded reason. Staff decisions stay in the audit history.</p>
+</ui-page-header>
+<div class="badge-content">
+  @if (badges.access() === 'loading') {
+    <p role="status">Checking staff access...</p>
+  } @else if (badges.access() === 'denied') {
+    <p role="alert">Badge management requires an active staff account with badge permission.</p>
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="badges.checkAccess()">Check staff access again</button>
+  } @else if (badges.access() === 'unavailable') {
+    <p role="alert">Staff access could not be checked.</p>
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="badges.checkAccess()">Retry staff access</button>
+  } @else {
+    <form class="target-form" (ngSubmit)="badges.open()">
+      <label for="badge-profile-id">Public profile ID</label>
+      <input id="badge-profile-id" name="profileId" [ngModel]="badges.target()" (ngModelChange)="badges.target.set($event)" [disabled]="badges.blocked()" autocomplete="off" maxlength="36" required />
+      <p>Use the ID from the member's public profile link.</p>
+      <button tuiButton type="submit" appearance="secondary" size="m" [disabled]="badges.blocked()">Load profile</button>
+    </form>
+    @if (badges.feedback()) { <p role="status" aria-live="polite">{{ badges.feedback() }}</p> }
+    @if (badges.uncertain()) {
+      <p role="alert">The decision may have been saved. Retry this same decision before making another change.</p>
+      <button tuiButton type="button" size="m" [disabled]="badges.saving()" (click)="badges.retry()">Retry same decision</button>
+    }
+    @if (badges.conflict()) {
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="badges.open()">Reload current badges</button>
+    }
+    @if (badges.status() === 'loading') {
+      <p role="status">Loading profile badges and audit history...</p>
+    } @else if (badges.status() === 'missing') {
+      <p role="alert">This profile is unavailable. Check its public profile ID.</p>
+    } @else if (badges.status() === 'unavailable') {
+      <p role="alert">Profile badges could not be loaded.</p>
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="badges.open()">Retry profile badges</button>
+    } @else if (member) {
+      <section aria-labelledby="badge-member-title" class="badge-section">
+        <header><h2 id="badge-member-title">{{ member.name }}</h2><p>{{ member.active ? 'Active profile' : 'Inactive profile: existing badges can be revoked.' }}</p></header>
+        <label for="badge-reason">Reason for the decision</label>
+        <textarea id="badge-reason" name="reason" rows="4" maxlength="1000" [ngModel]="badges.reason()" (ngModelChange)="badges.reason.set($event)" [disabled]="badges.blocked() || badges.conflict()" aria-describedby="badge-reason-help"></textarea>
+        <p id="badge-reason-help">Required for awards and revocations. Only authorized staff can read this reason.</p>
+        <div class="badge-states">
+          @for (kind of kinds; track kind) {
+            <article tuiAppearance="card-elevated" class="badge-card">
+              <h3>{{ kind === 'verified' ? 'Verified' : 'Premium' }}</h3>
+              <p>{{ active(kind) ? 'Currently awarded' : 'Not currently awarded' }}</p>
+              <button tuiButton type="button" appearance="secondary" size="m" [disabled]="badges.blocked() || badges.conflict() || (!active(kind) && !member.active)" (click)="badges.change(kind, active(kind) ? 'revoke' : 'award')">{{ active(kind) ? 'Revoke' : 'Award' }} {{ kind }}</button>
+            </article>
+          }
+        </div>
+      </section>
+      <section aria-labelledby="badge-history-title" class="badge-section">
+        <h2 id="badge-history-title">Decision history</h2>
+        @if (!member.events.length) { <p>No badge decisions on this page.</p> }
+        <ol class="badge-history">
+          @for (event of member.events; track event.revision) {
+            <li tuiAppearance="card-elevated" class="badge-card">
+              <h3>{{ event.kind === 'verified' ? 'Verified' : 'Premium' }} {{ event.action === 'award' ? 'awarded' : 'revoked' }}</h3>
+              <p>{{ event.at | preferredDate }} · Revision {{ event.revision }}</p>
+              <p>Staff profile: {{ event.actorId ?? 'Deleted staff account' }}</p>
+              <p class="badge-reason">{{ event.reason ?? 'Reason removed with staff account.' }}</p>
+            </li>
+          }
+        </ol>
+        <div class="history-actions">
+          <button tuiButton type="button" appearance="secondary" size="m" [disabled]="badges.blocked()" (click)="badges.open()">Latest decisions</button>
+          @if (member.after) { <button tuiButton type="button" appearance="secondary" size="m" [disabled]="badges.blocked()" (click)="badges.open(member.after)">Older decisions</button> }
+        </div>
+      </section>
+    }
+  }
+</div>

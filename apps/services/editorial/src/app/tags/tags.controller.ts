@@ -1,40 +1,70 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Headers,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { TagsService } from './tags.service';
-import { Tag } from './entities/tag.entity';
+import { EditorialCommands } from '../application/editorial-commands';
+import { EditorialQueries } from '../application/editorial-queries';
+import type { EditorialActor } from '../application/editorial.ports';
+import { EditorialUser } from '../http/editorial-auth';
 
 @ApiTags('tags')
 @Controller('tags')
 export class TagsController {
-  constructor(private readonly tagsService: TagsService) {}
+  constructor(
+    private readonly commands: EditorialCommands,
+    private readonly queries: EditorialQueries
+  ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all tags' })
-  findAll() {
-    return this.tagsService.findAll();
+  findAll(@EditorialUser(true) actor: EditorialActor | null) {
+    return this.queries.list('tag', actor);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get tag by ID' })
-  findOne(@Param('id') id: string) {
-    return this.tagsService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @EditorialUser(true) actor: EditorialActor | null
+  ) {
+    return this.queries.find('tag', id, actor);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new tag' })
-  create(@Body() data: Partial<Tag>) {
-    return this.tagsService.create(data);
+  @ApiOperation({
+    summary:
+      'Create an authorized catalog resource with a durable materialization intent',
+  })
+  create(
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.create('tag', input, actor, key);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update tag' })
-  update(@Param('id') id: string, @Body() data: Partial<Tag>) {
-    return this.tagsService.update(id, data);
+  update(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.update('tag', id, input, actor, key);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete tag' })
-  remove(@Param('id') id: string) {
-    return this.tagsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.remove('tag', id, input, actor, key);
   }
 }

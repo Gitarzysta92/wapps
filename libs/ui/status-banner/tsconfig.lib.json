@@ -1,20 +1,21 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc/ui-status-banner",
     "declaration": true,
-    "types": []
+    "types": [],
+    "module": "es2022"
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
+    "jest.config.ts",
     "src/**/*.spec.ts",
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/test-setup.ts"
   ],
-  "references": [
-    {
-      "path": "../../foundation/standard/tsconfig.lib.json"
-    }
-  ]
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
 }

@@ -5,4 +5,11 @@ metadata:
   namespace: default
 spec:
   replicas: 1
+  template:
+    spec:
+      containers:
+        - name: account-management
+          env:
+            - name: DISCUSSION_URL
+              value: "http://discussion:1338"
 

@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
   ForbiddenException,
-  BadRequestException,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { isErr } from '@sdk/kernel/standard';
@@ -23,12 +23,14 @@ import { GenerateLinkRequestDto } from './dto/generate-link.request.dto';
 export class AccountManagementController {
   constructor(private readonly svc: AccountManagementAppService) {}
 
-  private ensureOk<T>(r: { ok: true; value: T } | { ok: false; error: Error }): T {
+  private ensureOk<T>(
+    r: { ok: true; value: T } | { ok: false; error: Error }
+  ): T {
     if (isErr(r)) {
       if (r.error.message.startsWith('Forbidden:')) {
         throw new ForbiddenException(r.error.message);
       }
-      throw new BadRequestException(r.error.message);
+      throw r.error;
     }
     return r.value;
   }
@@ -36,7 +38,10 @@ export class AccountManagementController {
   @Post(':uid/disable')
   @ApiOperation({ summary: 'Disable user account' })
   @ApiParam({ name: 'uid', description: 'Target Firebase uid' })
-  async disable(@Param('uid') uid: string, @AuthUser() user: AuthenticatedUser) {
+  async disable(
+    @Param('uid') uid: string,
+    @AuthUser() user: AuthenticatedUser
+  ) {
     const r = await this.svc.disableUser(uid, user);
     return { disabled: this.ensureOk(r) };
   }
@@ -50,16 +55,22 @@ export class AccountManagementController {
 
   @Post(':uid/revoke-tokens')
   @ApiOperation({ summary: 'Revoke refresh tokens (logout everywhere)' })
-  async revokeTokens(@Param('uid') uid: string, @AuthUser() user: AuthenticatedUser) {
+  async revokeTokens(
+    @Param('uid') uid: string,
+    @AuthUser() user: AuthenticatedUser
+  ) {
     const r = await this.svc.revokeTokens(uid, user);
     return { revoked: this.ensureOk(r) };
   }
 
   @Delete(':uid')
-  @ApiOperation({ summary: 'Delete user account' })
+  @HttpCode(202)
+  @ApiOperation({
+    summary: 'Tombstone user account and schedule credential cleanup',
+  })
   async delete(@Param('uid') uid: string, @AuthUser() user: AuthenticatedUser) {
     const r = await this.svc.deleteUser(uid, user);
-    return { deleted: this.ensureOk(r) };
+    return this.ensureOk(r);
   }
 
   @Patch(':uid/email')
@@ -113,15 +124,21 @@ export class AccountManagementController {
     @Body() body: GenerateLinkRequestDto,
     @AuthUser() user: AuthenticatedUser
   ) {
-    const r = await this.svc.generateEmailVerificationLink(uid, body.email, user);
+    const r = await this.svc.generateEmailVerificationLink(
+      uid,
+      body.email,
+      user
+    );
     return { link: this.ensureOk(r) };
   }
 
   @Get(':uid/identity')
   @ApiOperation({ summary: 'Get identity graph mapping for Firebase uid' })
-  async getIdentityMapping(@Param('uid') uid: string, @AuthUser() user: AuthenticatedUser) {
+  async getIdentityMapping(
+    @Param('uid') uid: string,
+    @AuthUser() user: AuthenticatedUser
+  ) {
     const r = await this.svc.getIdentityMapping(uid, user);
     return this.ensureOk(r);
   }
 }
-

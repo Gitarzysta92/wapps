@@ -46,6 +46,12 @@ The policy expects role/permission facts under `data.authority` (provided by `da
 - `data.authority.permissions_by_role[role] -> [actions...]`
 - `data.authority.roles_by_identity[identityId] -> [roles...]` (optional if roles are sent in input)
 
+Generated bundles contain no identity assignments. Example identity names have
+no implicit privileges; roles must come from trusted application input or an
+explicitly provisioned policy-data source. Policy tests can be run with an OPA
+1.4.2 binary using `OPA_BINARY=/path/to/opa node --test tools/readiness/opa-policies.test.mjs`
+from the repository root. This also validates the merged local-deployment data.
+
 ## Query
 
 This module defines:

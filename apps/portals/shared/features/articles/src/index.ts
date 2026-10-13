@@ -1,5 +1,13 @@
 export * from './presentation/article-rating/article-rating.component';
 export * from './presentation/article-rating/article-rating-skeleton.component';
 export * from './presentation/article-details-badge/article-details-badge.component';
-
-
+export * from './articles.providers';
+export * from './application/article-workspace.port';
+export * from './application/article-workspace.service';
+export * from './application/article-catalog.service';
+export * from './article-covers.providers';
+export * from './application/article-cover.port';
+export * from './application/article-cover.service';
+export * from './presentation/article-cover-image.component';
+export * from './presentation/article-cover-editor.component';
+export * from './presentation/article-comments.component';

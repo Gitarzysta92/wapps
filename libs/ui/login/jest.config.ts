@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'ui-login',
   preset: '../../../jest.preset.js',

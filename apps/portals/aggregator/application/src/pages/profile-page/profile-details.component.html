@@ -10,11 +10,11 @@
           }
         </div>
         @if (isLocalProfile()) {
-          <a tuiButton appearance="secondary" size="m" [routerLink]="editPath">Edit local profile</a>
+          <a tuiButton appearance="secondary" size="m" [routerLink]="editPath">Edit profile</a>
         }
       </div>
       @if (isLocalProfile()) {
-        <p class="profile-meta">This preview includes your saved profile changes from this browser.</p>
+        <p class="profile-meta">These are your saved profile details.</p>
       }
     </ui-medium-card>
 
@@ -23,6 +23,12 @@
       <p class="profile-bio">{{ member.bio || 'No bio has been added to this profile.' }}</p>
       @if (member.location) {
         <p><tui-icon icon="@tui.map-pin" /> {{ member.location }}</p>
+      }
+      @if (contactLink(); as contact) {
+        <p class="profile-contact">
+          Contact: <a [href]="contact">{{ member.contactEmail }}</a>
+          <span class="profile-meta">Member-provided; not verified by Wapps.</span>
+        </p>
       }
       @if (member.joinedAt) {
         <p class="profile-meta">Joined {{ member.joinedAt | preferredDate }}</p>
@@ -41,6 +47,7 @@
       }
     </ui-medium-card>
 
+    @if (showLegacyStats()) {
     <ui-medium-card tuiAppearance="card-panel" role="region" class="profile-card" aria-labelledby="activity-title">
       <header slot="header"><h2 id="activity-title">Activity</h2></header>
       @if (stats().length) {
@@ -50,6 +57,8 @@
           }
         </dl>
       } @else {
-        <p class="profile-meta">Activity totals are not available in this local profile record.</p>
+        <p class="profile-meta">Activity totals are not available.</p>
       }
     </ui-medium-card>
+
+    }

@@ -1,0 +1,105 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+.suite-workspace {
+  @include page.content;
+  display: flow-root;
+  > * + * {
+    margin-top: $space-6;
+  }
+  > .suite-section {
+    @include page.section;
+  }
+}
+.suite-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: $space-4;
+}
+.suite-card {
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+h2,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: $font-size-lg;
+}
+.suite-description {
+  white-space: pre-line;
+}
+.suite-form,
+fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  min-width: 0;
+}
+fieldset {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.suite-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: $space-3 $space-4;
+  font: inherit;
+}
+textarea {
+  resize: vertical;
+}
+.suite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+}
+.suite-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+.suite-members {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+.suite-member {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding: $space-4;
+  min-width: 0;
+}
+.suite-member > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.suite-member small {
+  display: block;
+  margin-top: $space-2;
+  overflow-wrap: anywhere;
+}
+.suite-member p {
+  margin-top: $space-2;
+}
+.suite-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: $space-3;
+}
+.suite-search label {
+  grid-column: 1 / -1;
+}

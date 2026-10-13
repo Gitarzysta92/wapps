@@ -12,6 +12,3 @@ export type { ListingItemMetadata } from './models/listing-item-metadata';
 // Factories
 export { ListingContainerFactory } from './factories/listing-container.factory';
 export { LoadingListingSliceFactory } from './factories/loading-listing-slice.factory';
-
-// Mappers
-export { ParamMapToAppListingRequestDtoMapper } from '../../../../apps/portals/shared/features/listing/src/presentation/param-map-to-app-listing-request-dto.mapper';

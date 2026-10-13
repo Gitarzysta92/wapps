@@ -19,7 +19,7 @@ button[type='submit'] {
   align-items: center;
   text-align: center;
   margin: $space-6 0;
-  
+
   &::before,
   &::after {
     content: '';
@@ -27,7 +27,7 @@ button[type='submit'] {
     border-bottom-width: 1px;
     border-bottom-style: solid;
   }
-  
+
   span {
     padding: 0 $space-4;
     font-size: $font-size-sm;

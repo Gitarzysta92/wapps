@@ -1,45 +1,48 @@
 @if (showEmailPasswordForm) {
-  <login-form #loginForm (onSubmit)="authenticate($event)">
-    <ng-content select="[slot='password-recovery']" ngProjectAs="[slot='password-recovery']" />
-    <button
-      tuiButton
-      type="submit"
-      size="m"
-      appearance="primary"
-      [disabled]="!loginForm.valid || isAuthenticating">
-      <tui-loader
-        class="loader"
-        [inheritColor]="true"
-        [overlay]="true"
-        [showLoader]="isAuthenticating && authenticatingProvider === AuthenticationProvider.EMAIL_PASSWORD"/>
-      Sign in
-    </button>
-  </login-form>
+<login-form #loginForm (onSubmit)="authenticate($event)">
+  <ng-content
+    select="[slot='password-recovery']"
+    ngProjectAs="[slot='password-recovery']"
+  />
+  <button
+    tuiButton
+    type="submit"
+    size="m"
+    appearance="primary"
+    [disabled]="!loginForm.valid || isAuthenticating"
+  >
+    <tui-loader
+      class="loader"
+      [inheritColor]="true"
+      [overlay]="true"
+      [showLoader]="
+        isAuthenticating &&
+        authenticatingProvider === AuthenticationProvider.EMAIL_PASSWORD
+      "
+    />
+    Sign in
+  </button>
+</login-form>
+} @if (availableMethods$ | async; as methods) { @if (showEmailPasswordForm &&
+hasAlternativeMethods(methods)) {
+<div class="divider">
+  <span>or continue with</span>
+</div>
 }
 
-@if (availableMethods$ | async; as methods) {
-  @if (showEmailPasswordForm && hasAlternativeMethods(methods)) {
-    <div class="divider">
-      <span>or continue with</span>
-    </div>
-  }
-  
-  <provider-buttons
-    [methods]="methods"
-    [authenticatingProvider]="authenticatingProvider"
-    (onProviderClick)="authenticateWithProvider($event)">
-  </provider-buttons>
-}
-
-@for (entry of timedQueue.entries; track entry.id) {
-  <tui-notification size="l" class="error-notification">
-    {{ entry.item.text }}
-    <button
-      (click)="timedQueue.dequeue(entry.id)"
-      iconStart="@tui.x"
-      tuiIconButton
-      type="button">
-        Close
-    </button>
-  </tui-notification>
+<provider-buttons
+  [methods]="methods"
+  [authenticatingProvider]="authenticatingProvider"
+  (onProviderClick)="authenticateWithProvider($event)"
+>
+</provider-buttons>
+} @if (loadingMethods) {
+<p role="status">Loading sign-in options...</p>
+} @if (methodsError) {
+<tui-notification role="alert">{{ methodsError }}</tui-notification>
+<button tuiButton type="button" (click)="loadMethods()">Retry</button>
+} @if (error) {
+<tui-notification size="l" class="error-notification" role="alert">{{
+  error
+}}</tui-notification>
 }

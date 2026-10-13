@@ -9,3 +9,4 @@ export type {
 } from './application/discovery-search-result.dto';
 export type { IDiscoverySearchResultProvider } from './application/discovery-search-result-provider.interface';
 export { DiscoverySearchResultType } from './application/constants';
+export * from './application/public-discovery';

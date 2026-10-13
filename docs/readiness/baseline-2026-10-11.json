@@ -1,0 +1,526 @@
+{
+  "assessmentDate": "2026-10-11",
+  "timezone": "Europe/Warsaw",
+  "branch": "codex/operational-readiness",
+  "baseCommit": "c965790e063139bcd5e6bacc759f289703e4ea9a",
+  "scope": "Local source and installed-dependency checks. No live Docker integration, clean install, public-site validation, or production changes.",
+  "preservedWorkingChanges": [
+    "package.json",
+    "apps/portals/aggregator/README.md",
+    "artifacts/",
+    "tools/recordings/"
+  ],
+  "runtime": {
+    "node": "22.17.1",
+    "nx": "20.8.2",
+    "typescript": "5.7.3",
+    "angular": "19.2.17"
+  },
+  "workspace": {
+    "discoveredProjects": 132,
+    "includesUntrackedRecordingsProject": true,
+    "buildTargets": 128,
+    "testTargets": 117,
+    "explicitLintTargets": 119,
+    "e2eTargets": 0
+  },
+  "build": {
+    "requested": 128,
+    "succeeded": 71,
+    "failed": 50,
+    "blocked": 7,
+    "failedTasks": [
+      "domains-publication-attribution:build",
+      "domains-discovery:build",
+      "shared-features-listing:build",
+      "ui-search-results:build:production",
+      "portals-shared-features-search:build",
+      "ui-search-bar:build:production",
+      "domains-customer-profiles:build",
+      "portals-shared-data:build",
+      "ui-layout:build:production",
+      "portals-shared-features-application-overview:build",
+      "ui-login:build:production",
+      "domains-customer-preferences:build",
+      "portals-shared-features-discussion:build",
+      "portals-shared-features-preferences:build",
+      "domains-customer-favorites:build",
+      "ui-infinite-scroll:build:production",
+      "ui-tags:build:production",
+      "ui-content:build:production",
+      "portals-shared-features-sharing:build",
+      "portals-shared-features-user-profile:build",
+      "portals-shared-features-my-favorites:build",
+      "portals-shared-features-compatibility:build",
+      "portals-shared-features-attribution:build",
+      "ui-routing:build:production",
+      "ui-chat:build:production",
+      "ui-navigation:build:production",
+      "portals-shared-features-tags:build",
+      "ui-intro-hero:build:production",
+      "portals-shared-features-filtering:build",
+      "portals-shared-features-my-profile:build",
+      "portals-shared-features-categories:build",
+      "portals-shared-features-smart-search:build",
+      "metrics:build",
+      "portals-shared-features-pricing:build",
+      "portals-shared-features-social:build",
+      "portals-shared-features-feed:build",
+      "ui-routable-dialog:build:production",
+      "ui-article-author-info:build:production",
+      "ui-my-profile:build:production",
+      "ui-breadcrumbs:build:production",
+      "domains-publication-article:build",
+      "ui-voting:build:production",
+      "governance-system:build",
+      "chat-input:build:production",
+      "domains-publishing:build",
+      "domains-reliability:build",
+      "portals-shared-cross-cutting-notification:build",
+      "portals-shared-features-discovery-search-result:build",
+      "domains-monetization:build",
+      "domains-acquisition:build"
+    ],
+    "blockedTasks": [
+      "health-status:build:production",
+      "portals-shared-features-multi-search:build:production",
+      "identity:build",
+      "aggregator-angular:build",
+      "ui-items-listing:build:production",
+      "ui-content-feed:build:production",
+      "domains-feed:build"
+    ]
+  },
+  "tests": {
+    "requested": 117,
+    "succeeded": 62,
+    "failed": 55,
+    "blocked": 0,
+    "failedTasks": [
+      "catalog-tags:test",
+      "catalog-pricing:test",
+      "catalog-references:test",
+      "catalog-category:test",
+      "catalog-metrics:test",
+      "ui-filters:test",
+      "ui-form:test",
+      "domains-discovery:test",
+      "catalog-ownership:test",
+      "ui-password-reset:test",
+      "ui-registration:test",
+      "domains-feed:test",
+      "portals-shared-data:test",
+      "ui-misc:test",
+      "ui-layout:test",
+      "ui-login:test",
+      "portals-shared-features-application-overview:test",
+      "ui-search-results:test",
+      "portals-shared-cross-cutting-theming:test",
+      "catalog-search:test",
+      "ui-infinite-scroll:test",
+      "ui-routing:test",
+      "sdk-extras-minio:test",
+      "ui-search-bar:test",
+      "ui-content-feed:test",
+      "portals-shared-features-attribution:test",
+      "health-status:test",
+      "portals-shared-features-compatibility:test",
+      "portals-shared-boundary-navigation:test",
+      "portals-shared-features-sharing:test",
+      "voting:test",
+      "chat-input:test",
+      "ui-chat:test",
+      "ui-my-profile:test",
+      "portals-shared-features-feed:test",
+      "portals-shared-features-filtering:test",
+      "portals-shared-boundary-routing:test",
+      "portals-shared-boundary-http:test",
+      "catalog-media:test",
+      "ui-routable-dialog:test",
+      "ui-navigation:test",
+      "catalog-angular:test",
+      "wapps:test",
+      "ui-items-listing:test",
+      "domains-publishing:test",
+      "domains-acquisition:test",
+      "catalog-filters:test",
+      "apps.services.content-node-registry:test",
+      "sdk-features-discussion-applications-materializer:test",
+      "shared-infrastructure-environment:test",
+      "catalog-contact:test",
+      "apps.services.catalog-bff:test",
+      "domains-monetization:test",
+      "domains-reliability:test",
+      "apps.services.editorial:test"
+    ],
+    "blockedTasks": [],
+    "successfulTargetsWithNoTests": [
+      "standard:test",
+      "authority-system:test",
+      "content-system:test",
+      "workflow-system:test",
+      "catalog-record:test",
+      "domains-publication-attribution:test",
+      "sdk-features-discussion-core:test",
+      "domains-publication-article:test",
+      "identity-system:test",
+      "ui-voting:test",
+      "sdk-features-identity-core:test",
+      "ui-discussion:test",
+      "shared-features-listing:test",
+      "portals-shared-features-discussion:test",
+      "primitives:test",
+      "apps.shared:test",
+      "ui-cover-image:test",
+      "portals-shared-features-review:test",
+      "portals-shared-features-articles:test",
+      "portals-shared-features-user-profile:test",
+      "portals-shared-features-my-favorites:test",
+      "portals-shared-features-changelog:test",
+      "sdk-features-identity-management:test",
+      "ui-context-menu-chip:test",
+      "ui-content:test",
+      "ui-tags:test",
+      "data:test",
+      "portals-shared-features-suite:test",
+      "portals-shared-features-social:test",
+      "portals-shared-features-pricing:test",
+      "metrics:test",
+      "portals-shared-features-my-profile:test",
+      "portals-shared-features-categories:test",
+      "portals-shared-features-smart-search:test",
+      "portals-shared-features-tags:test",
+      "ui-article-author-info:test",
+      "ui-breadcrumbs:test",
+      "discussion-angular:test",
+      "ui-notices-section:test",
+      "ui-service-status-item:test",
+      "governance-system:test",
+      "catalog-csr:test",
+      "discussion-csr:test",
+      "portals-shared-cross-cutting-notification:test",
+      "sdk-features-identity-applications-management:test",
+      "portals-shared-features-discovery-search-result:test",
+      "portals-shared-cross-cutting-configuration:test",
+      "aggregator-csr:test",
+      "ui-status-banner:test",
+      "ui-profile:test"
+    ],
+    "aggregator": {
+      "suitesPassed": 39,
+      "testsPassed": 279
+    },
+    "note": "62 successful targets include 50 empty test targets; 12 execute passing tests. Failed targets include configuration and transform errors, not just failed assertions."
+  },
+  "lint": {
+    "requested": 119,
+    "succeeded": 98,
+    "failed": 21,
+    "blocked": 0,
+    "failedTasks": [
+      "standard:lint",
+      "ui-filters:lint",
+      "ui-form:lint",
+      "ui-voting:lint",
+      "ui-misc:lint",
+      "shared-features-listing:lint",
+      "identity:lint",
+      "portals-shared-cross-cutting-theming:lint",
+      "portals-shared-features-preferences:lint",
+      "chat-input:lint",
+      "voting:lint",
+      "portals-shared-features-changelog:lint",
+      "ui-routing:lint",
+      "portals-shared-features-smart-search:lint",
+      "portals-shared-features-filtering:lint",
+      "ui-intro-hero:lint",
+      "discussion-angular:lint",
+      "aggregator-angular:lint",
+      "ui-status-banner:lint",
+      "ui-notices-section:lint",
+      "ui-items-listing:lint"
+    ],
+    "blockedTasks": []
+  },
+  "additionalInferredLint": {
+    "requested": 11,
+    "succeeded": 8,
+    "failed": 3,
+    "blocked": 0,
+    "failedTasks": [
+      "sdk-extras-minio:eslint:lint",
+      "store-app:eslint:lint",
+      "editor-agent:eslint:lint"
+    ],
+    "blockedTasks": []
+  },
+  "aggregatorProductionBuild": {
+    "status": "passed",
+    "initialBundle": "1.43 MB",
+    "initialWarningBudget": "1 MB",
+    "initialErrorBudget": "1.5 MB",
+    "warnings": [
+      "initial bundle budget",
+      "application-overview-page component style budget",
+      "app-shell component style budget",
+      "NG8107 optional chaining",
+      "NG8113 unused TuiChip"
+    ]
+  },
+  "aggregatorTypecheck": {
+    "status": "passed"
+  },
+  "targetedRuntimeBuilds": {
+    "status": "passed with prerequisite builds",
+    "note": "Initial dependency-excluded diagnostic failed for two identity apps with TS6305; rerunning their normal dependency-aware builds passed 2 apps and 13 prerequisites. Do not classify these as unresolved source-build defects."
+  },
+  "architecture": {
+    "filesScanned": 1034,
+    "counts": {
+      "ARCH001": 11,
+      "ARCH002": 2,
+      "ARCH003": 0,
+      "ARCH004": 0,
+      "ARCH005": 3,
+      "ARCH006": 10
+    },
+    "violations": [
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-discussion-page/application-discussion-page.component.ts",
+        "line": 3,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/local-discussions.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-discussion-page/application-discussion-page.component.ts",
+        "line": 3,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/overview-local.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-discussions-page/application-discussions-page.component.ts",
+        "line": 2,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/local-discussions.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-discussions-page/application-discussions-page.component.ts",
+        "line": 2,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/overview-local.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-overview-page/application-overview-page.component.ts",
+        "line": 28,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/local-discussions.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/application-reviews-page/application-reviews-page.component.ts",
+        "line": 23,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/overview-local.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/home/home.component.ts",
+        "line": 14,
+        "specifier": "@portals/shared/features/search",
+        "target": "apps/portals/shared/features/search/src/infrastructure/search-mock-data.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/my-discussions/my-discussions.component.ts",
+        "line": 7,
+        "specifier": "@portals/shared/features/application-overview",
+        "target": "apps/portals/shared/features/application-overview/src/infrastructure/local-discussions.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/settings-privacy/settings-privacy.component.ts",
+        "line": 5,
+        "specifier": "@portals/shared/features/my-profile",
+        "target": "apps/portals/shared/features/my-profile/src/infrastructure/my-profile-api.service.ts"
+      },
+      {
+        "rule": "ARCH006",
+        "file": "apps/portals/aggregator/application/src/pages/settings-privacy/settings-privacy.component.ts",
+        "line": 6,
+        "specifier": "@portals/shared/features/preferences",
+        "target": "apps/portals/shared/features/preferences/src/infrastructure/preferences-api.service.ts"
+      },
+      {
+        "rule": "ARCH005",
+        "file": "apps/portals/shared/features/identity/src/application/authentication.service.ts",
+        "line": 3,
+        "specifier": "../infrastructure/authentication.storage",
+        "target": "apps/portals/shared/features/identity/src/infrastructure/authentication.storage.ts"
+      },
+      {
+        "rule": "ARCH005",
+        "file": "apps/portals/shared/features/listing/src/application/categories.service.ts",
+        "line": 4,
+        "specifier": "../infrastructure/category-api.service",
+        "target": "apps/portals/shared/features/listing/src/infrastructure/category-api.service.ts"
+      },
+      {
+        "rule": "ARCH005",
+        "file": "apps/portals/shared/features/search/src/application/listing-search.service.ts",
+        "line": 4,
+        "specifier": "../infrastructure/search-mock-data.service",
+        "target": "apps/portals/shared/features/search/src/infrastructure/search-mock-data.service.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/catalog/media/src/index.ts",
+        "line": 5,
+        "specifier": "./infrastructure/constants",
+        "target": "libs/domains/catalog/media/src/infrastructure/constants.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/preferences/src/customer-preferences-provider.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/preferences/src/customer-preferences-updater.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/adapters/authentication.adapter.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/authentication-provider.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/event-listener.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/guest-profile-provider.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/infrastructure-providers.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/my-profile-provider.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/application/ports/my-profile-updater.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH001",
+        "file": "libs/domains/customer/profiles/src/profile-api-service.port.ts",
+        "line": 1,
+        "specifier": "@angular/core",
+        "target": "node_modules/@angular/core/index.d.ts"
+      },
+      {
+        "rule": "ARCH002",
+        "file": "libs/ui/breadcrumbs/src/breadcrumbs.component.ts",
+        "line": 5,
+        "specifier": "@portals/shared/boundary/navigation",
+        "target": "apps/portals/shared/boundary/navigation/src/index.ts"
+      },
+      {
+        "rule": "ARCH002",
+        "file": "libs/ui/items-listing/src/index.ts",
+        "line": 17,
+        "specifier": "../../../../apps/portals/shared/features/listing/src/presentation/param-map-to-app-listing-request-dto.mapper",
+        "target": "apps/portals/shared/features/listing/src/presentation/param-map-to-app-listing-request-dto.mapper.ts"
+      }
+    ]
+  },
+  "architectureSelfTests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "graphCycle": {
+    "projects": [
+      "portals-shared-cross-cutting-theming",
+      "portals-shared-features-preferences"
+    ],
+    "testIntroducedEdge": "apps/portals/shared/cross-cutting/theming/src/theming.service.spec.ts"
+  },
+  "composeConfiguration": {
+    "local": "passed",
+    "alpha": "passed"
+  },
+  "unverified": [
+    "clean npm ci",
+    "Docker image builds and live stack startup",
+    "real Firebase and OAuth provider configuration",
+    "browser-to-backend acceptance",
+    "cross-session and restart persistence",
+    "load and soak targets",
+    "backup restoration",
+    "deployment rollback",
+    "desktop/tablet/mobile visual qualification"
+  ],
+  "commandEnvironment": {
+    "NX_DAEMON": "false",
+    "NX_ISOLATE_PLUGINS": "false"
+  },
+  "commands": {
+    "build": "./node_modules/.bin/nx run-many -t build --all --parallel=2 --skip-nx-cache --outputStyle=static",
+    "tests": "./node_modules/.bin/nx run-many -t test --all --runInBand --parallel=2 --skip-nx-cache --outputStyle=static",
+    "lint": "./node_modules/.bin/nx run-many -t lint --all --parallel=2 --skip-nx-cache --outputStyle=static",
+    "additionalInferredLint": "./node_modules/.bin/nx run-many -t eslint:lint -p sdk-features-identity-applications-authenticator,sdk-identity-infrastructure-firebase,utils-opa,media-ingestion,discord-notifier,platform-queue,store-app,editor-agent,sdk-extras-minio,sdk-extras-mongo,sdk-extras-mysql --parallel=2 --skip-nx-cache --outputStyle=static",
+    "architecture": "node tools/readiness/check-architecture.mjs --json",
+    "architectureSelfTests": "node --test tools/readiness/check-architecture.test.mjs",
+    "authorization": "node --test tools/readiness/authorization.test.cjs",
+    "portalBuild": "./node_modules/.bin/nx build aggregator-csr --configuration=production --skip-nx-cache --outputStyle=static",
+    "portalTypecheck": "./node_modules/.bin/tsc -p apps/portals/aggregator/application/tsconfig.app.json --noEmit",
+    "identityBuild": "./node_modules/.bin/nx run-many -t build -p sdk-features-identity-applications-authenticator,sdk-features-identity-applications-management --configuration=production --parallel=2 --skip-nx-cache --outputStyle=static",
+    "localCompose": "docker compose config --quiet",
+    "alphaCompose": "docker compose -f compose.alpha.yaml config --quiet"
+  },
+  "authorizationTests": {
+    "passed": 6,
+    "failed": 3,
+    "failedCases": [
+      "addDiscussion rejects explicit policy denial before side effects",
+      "addComment rejects explicit policy denial before side effects",
+      "addRecord rejects explicit policy denial before side effects"
+    ],
+    "sideEffects": "In-memory node, payload, and publication substitutes; no live services contacted. RecordService is not wired into Editorial."
+  }
+}

@@ -1,0 +1,45 @@
+<header class="discussion-heading">
+  <h3>{{ title() }}</h3>
+  <div class="discussion-meta">
+    @if (application(); as app) {
+    <span>{{ app.name }}</span>
+    <a
+      tuiButton
+      size="xs"
+      appearance="flat"
+      iconStart="@tui.external-link"
+      [routerLink]="threadLink(threadId)"
+      (click)="close()"
+      >Open full discussion</a
+    >
+    }
+    <button
+      tuiButton
+      type="button"
+      size="xs"
+      appearance="flat"
+      (click)="close()"
+    >
+      Close discussion
+    </button>
+  </div>
+</header>
+<section
+  class="discussion-body"
+  tabindex="0"
+  aria-label="Quick discussion messages"
+  [attr.aria-busy]="
+    app.isLoading() || discussions.loading() || discussions.saving()
+  "
+>
+  @if (application(); as selected) {
+  <application-discussions
+    [applicationId]="selected.id"
+    [threadId]="threadId"
+    [threadLink]="threadLink"
+    idPrefix="quick-discussion"
+  />
+  } @else {
+  <application-content-state [reader]="app" />
+  }
+</section>

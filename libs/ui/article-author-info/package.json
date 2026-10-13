@@ -1,7 +1,15 @@
 {
-  "name": "@wapps/ui-article-author-info",
+  "name": "@ui/article-author-info",
   "version": "0.0.1",
-  "type": "commonjs"
+  "private": true,
+  "peerDependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "rxjs": "^7.8.0",
+    "@taiga-ui/kit": "^4.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
 }
-
-

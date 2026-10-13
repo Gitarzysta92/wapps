@@ -1,0 +1,25 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+@include page.page;
+.health-content { @include page.content; }
+.health-section { @include page.section; }
+.section-title { @include page.title; }
+.health-description { margin: 0 0 $space-6; }
+.health-summary, .health-monitor { padding: $space-4; min-width: 0; }
+.health-summary, .health-heading { display: flex; flex-direction: column; gap: $space-2; }
+.health-monitors { display: grid; gap: $space-6; }
+.health-monitor { display: flex; flex-direction: column; gap: $space-4; }
+.health-monitor header { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: start; gap: $space-4; }
+.health-heading { min-width: 0; flex: 1; }
+.health-url { overflow-wrap: anywhere; }
+.health-state { display: inline-block; white-space: nowrap; padding: $space-1 $space-2; border-radius: $radius-md; }
+.health-summary h2, .health-summary p, .health-monitor h3, .health-monitor p { margin: 0; }
+.health-evidence { display: flex; flex-direction: column; gap: $space-4; }
+.health-http { display: flex; flex-wrap: wrap; gap: $space-4; }
+.health-metrics { display: flex; flex-wrap: wrap; gap: $space-6; }
+.health-metrics p { display: flex; flex-direction: column; gap: $space-2; }
+.health-metrics strong { font-size: $font-size-xl; }
+.health-history { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)); gap: $space-1; }
+.health-day { height: $space-8; border-radius: $radius-sm; }
+.health-history-dates { display: flex; justify-content: space-between; gap: $space-2; }
+.health-legend { margin: $space-6 0 0; }

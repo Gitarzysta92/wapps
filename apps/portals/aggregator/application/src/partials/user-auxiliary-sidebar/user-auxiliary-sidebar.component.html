@@ -103,17 +103,23 @@
       <tui-icon icon="@tui.star" [style.height.rem]="1"/>
       <span>Favorite Apps</span>
     </h3>
-    @let vm = favoritesGridVm$ | async;
+    @let vm = favoritesGridVm();
     @if (vm) {
+      @if (vm.isLoading) { <p role="status">Loading favorites...</p> }
+      @else if (vm.isError) {
+        <p role="alert">{{ vm.preferencesError ? 'Content preferences could not be loaded. Favorite details stay hidden.' : 'Favorites could not be loaded.' }}</p>
+        <button tuiButton appearance="flat" size="s" type="button" (click)="favoritesContent.reload()">Retry favorites</button>
+        <a routerLink="/me/favorite">Manage saved references</a>
+      } @else {
       <my-favorites-grid
         class="favorites-grid"
         [vm]="vm"
         [maxItems]="15">
         <div empty-state>
           <tui-icon icon="@tui.star" [style.height.rem]="2"/>
-          <p class="empty-message">No favorite apps yet</p>
+          <p class="empty-message">{{ vm.hidden ? 'Saved apps are hidden by your content preferences' : vm.unavailable ? 'Saved apps are currently unavailable' : 'No favorite apps yet' }}</p>
           <a
-            [routerLink]="['/apps']"
+            [routerLink]="['/app']"
             appearance="primary"
             size="s"
             tuiButton
@@ -124,6 +130,9 @@
           </a>
         </div>
       </my-favorites-grid>
+      @if (vm.unavailable) { <a routerLink="/me/favorite">Manage unavailable favorites</a> }
+      @if (vm.hidden) { <a routerLink="/me/favorite">Manage {{ vm.hidden }} hidden {{ vm.hidden === 1 ? 'favorite' : 'favorites' }}</a> }
+      }
     }
   </section>
   <hr>
@@ -141,7 +150,7 @@
     <div class="tags-list">
       @for (tag of curatedTags; track tag.slug) {
         <a
-          [routerLink]="['/apps']"
+          [routerLink]="['/app']"
           [queryParams]="{tags: tag.slug}"
           class="tag-chip"
           tuiButton

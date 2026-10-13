@@ -5,14 +5,17 @@
     "declaration": true,
     "rootDir": "src",
     "composite": true,
+    "tsBuildInfoFile": "../../dist/apps/shared/tsconfig.lib.tsbuildinfo",
     "types": ["node"]
   },
   "references": [
     {
       "path": "../../sdk/kernel/aspects/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/domains/publication/classification/tsconfig.lib.json"
     }
   ],
   "include": ["src/**/*.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }
-

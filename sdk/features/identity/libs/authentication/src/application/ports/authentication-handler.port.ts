@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs';
-import type { Result } from '@foundation/standard';
+import type { Result } from '@sdk/kernel/standard';
 import type { CredentialsDto } from '../models/credentials.dto';
 import type { AuthenticationProvider } from '../models/authentication-provider';
 import type { AuthenticationMethodDto } from '../models/authentication-method.dto';

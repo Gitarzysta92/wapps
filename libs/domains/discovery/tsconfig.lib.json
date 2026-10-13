@@ -4,19 +4,24 @@
     "outDir": "../../../dist/domains/discovery",
     "types": [],
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "tsBuildInfoFile": "../../../dist/domains/discovery/tsconfig.lib.tsbuildinfo",
+    "noEmitOnError": true
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.test.ts"
-  ],
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
   "references": [
     {
-      "path": "../../foundation/standard/tsconfig.lib.json"
+      "path": "../../../sdk/kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../catalog/record/tsconfig.lib.json"
+    },
+    {
+      "path": "../publication/article/tsconfig.lib.json"
+    },
+    {
+      "path": "../publication/classification/tsconfig.lib.json"
     }
   ]
 }

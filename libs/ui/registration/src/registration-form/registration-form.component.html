@@ -1,80 +1,107 @@
 <form [formGroup]="registrationForm" (ngSubmit)="submitForm()">
-
   <div class="form-field">
     Nickname
     <tui-textfield
-      tuiHintContent="Type 5 letters or more"
+      tuiHintContent="Use 1 to 120 characters without surrounding spaces"
       [tuiTextfieldCleaner]="true"
-      iconStart="@tui.user">
-      <input tuiTextfield type="text" formControlName="nickname" />
+      iconStart="@tui.user"
+    >
+      <input
+        tuiTextfield
+        type="text"
+        formControlName="nickname"
+        autocomplete="nickname"
+        aria-label="Nickname"
+      />
       <ng-container *ngIf="registrationForm.get('nickname')?.valid">
         <ng-container *ngTemplateOutlet="success"></ng-container>
       </ng-container>
     </tui-textfield>
-    <input-validation 
-      class="error-container" 
+    <input-validation
+      class="error-container"
       [control]="registrationForm.get('nickname')"
-      [messages]="validationMessages.nickname">
+      [messages]="validationMessages.nickname"
+    >
     </input-validation>
   </div>
 
   <div class="form-field">
     Email
     <tui-textfield
-      tuiHintContent="Type 8 letters or more"
+      tuiHintContent="Enter your email address"
       [tuiTextfieldCleaner]="true"
-      iconStart="@tui.mail">
-      <input tuiTextfield type="text" formControlName="email" />
+      iconStart="@tui.mail"
+    >
+      <input
+        tuiTextfield
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        aria-label="Email"
+      />
       <ng-container *ngIf="registrationForm.get('email')?.valid">
         <ng-container *ngTemplateOutlet="success"></ng-container>
       </ng-container>
     </tui-textfield>
-    <input-validation 
-      class="error-container" 
+    <input-validation
+      class="error-container"
       [control]="registrationForm.get('email')"
-      [messages]="validationMessages.email">
+      [messages]="validationMessages.email"
+    >
     </input-validation>
   </div>
 
   <div class="form-field">
     Password
     <tui-textfield
-      tuiHintContent="Type 5 letters or more"
-      iconStart="@tui.lock">
-      <input tuiTextfield type="password" formControlName="password" />
+      tuiHintContent="Use 6 to 128 characters; account password policy may require more"
+      iconStart="@tui.lock"
+    >
+      <input
+        tuiTextfield
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+        aria-label="Password"
+      />
       <tui-icon tuiPassword />
     </tui-textfield>
-    <input-validation 
-      class="error-container" 
+    <input-validation
+      class="error-container"
       [control]="registrationForm.get('password')"
-      [messages]="validationMessages.password">
+      [messages]="validationMessages.password"
+    >
     </input-validation>
   </div>
 
   <div class="form-field">
-    <tui-textfield
-      iconStart="@tui.lock">
-      <input tuiTextfield type="password" formControlName="passwordConfirmation" />
+    Confirm password
+    <tui-textfield iconStart="@tui.lock">
+      <input
+        tuiTextfield
+        type="password"
+        formControlName="passwordConfirmation"
+        autocomplete="new-password"
+        aria-label="Confirm password"
+      />
     </tui-textfield>
-    <input-validation 
-      class="error-container" 
+    <input-validation
+      class="error-container"
       [control]="registrationForm.get('passwordConfirmation')"
-      [messages]="validationMessages.passwordConfirmation">
+      [messages]="validationMessages.passwordConfirmation"
+    >
     </input-validation>
-    <input-validation 
-      class="error-container" 
+    <input-validation
+      class="error-container"
       [control]="registrationForm"
-      [messages]="validationMessages.passwordConfirmation">
+      [messages]="validationMessages.passwordConfirmation"
+    >
     </input-validation>
   </div>
 
   <ng-content select="button[type=submit]"></ng-content>
 </form>
 
-
 <ng-template #success>
-  <tui-icon
-    icon="@tui.check"
-    class="success tui-space_left-3"
-  />
+  <tui-icon icon="@tui.check" class="success tui-space_left-3" />
 </ng-template>

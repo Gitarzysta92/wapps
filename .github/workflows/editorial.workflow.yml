@@ -20,12 +20,20 @@ on:
           - production
 
 env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
   SERVICE_NAME: editorial
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/wapps/editorial
 
 jobs:
+  quality:
+    name: Workspace Quality
+    uses: ./.github/workflows/workspace-quality.workflow.yml
+
   build:
+    needs: quality
     name: 'Build Docker Image'
     runs-on: ubuntu-latest
     permissions:
@@ -53,7 +61,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
 
       - name: Install dependencies
@@ -176,14 +184,45 @@ jobs:
           app-password: ${{ secrets.EDITORIAL_MYSQL_DATABASE_PASSWORD }}
 
       - name: Create NestJS secrets
+        env:
+          EDITORIAL_DATABASE_HOST: ${{ steps.env-vars.outputs.mysql_host }}
+          EDITORIAL_DATABASE_PORT: ${{ steps.env-vars.outputs.mysql_port }}
+          EDITORIAL_DATABASE_USERNAME: ${{ steps.env-vars.outputs.db_username }}
+          EDITORIAL_DATABASE_PASSWORD: ${{ secrets.EDITORIAL_MYSQL_DATABASE_PASSWORD }}
+          EDITORIAL_DATABASE_NAME: ${{ steps.env-vars.outputs.db_name }}
+          INGRESS_AUTH_SECRET: ${{ secrets.INGRESS_AUTH_SECRET }}
+          QUEUE_HOST: ${{ vars.QUEUE_HOST }}
+          QUEUE_PORT: ${{ vars.QUEUE_PORT || '5672' }}
+          QUEUE_USERNAME: ${{ secrets.QUEUE_USERNAME }}
+          QUEUE_PASSWORD: ${{ secrets.QUEUE_PASSWORD }}
+          MONGO_HOST: ${{ vars.EDITORIAL_MONGO_HOST }}
+          MONGO_PORT: ${{ vars.EDITORIAL_MONGO_PORT || '27017' }}
+          MONGO_DATABASE: ${{ vars.EDITORIAL_MONGO_DATABASE }}
+          MONGO_USERNAME: ${{ secrets.EDITORIAL_MONGO_USERNAME }}
+          MONGO_PASSWORD: ${{ secrets.EDITORIAL_MONGO_PASSWORD }}
         run: |
-          # NestJS uses individual database environment variables with EDITORIAL_ prefix
+          for var in EDITORIAL_DATABASE_HOST EDITORIAL_DATABASE_PORT EDITORIAL_DATABASE_USERNAME EDITORIAL_DATABASE_PASSWORD EDITORIAL_DATABASE_NAME INGRESS_AUTH_SECRET QUEUE_HOST QUEUE_PORT QUEUE_USERNAME QUEUE_PASSWORD MONGO_HOST MONGO_PORT MONGO_DATABASE MONGO_USERNAME MONGO_PASSWORD; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Missing required Editorial setting $var"
+              exit 1
+            fi
+          done
           kubectl create secret generic editorial-app-secrets \
-            --from-literal=EDITORIAL_DATABASE_HOST="${{ steps.env-vars.outputs.mysql_host }}" \
-            --from-literal=EDITORIAL_DATABASE_PORT="${{ steps.env-vars.outputs.mysql_port }}" \
-            --from-literal=EDITORIAL_DATABASE_USERNAME="${{ steps.env-vars.outputs.db_username }}" \
-            --from-literal=EDITORIAL_DATABASE_PASSWORD="${{ secrets.EDITORIAL_MYSQL_DATABASE_PASSWORD }}" \
-            --from-literal=EDITORIAL_DATABASE_NAME="${{ steps.env-vars.outputs.db_name }}" \
+            --from-literal=EDITORIAL_DATABASE_HOST="$EDITORIAL_DATABASE_HOST" \
+            --from-literal=EDITORIAL_DATABASE_PORT="$EDITORIAL_DATABASE_PORT" \
+            --from-literal=EDITORIAL_DATABASE_USERNAME="$EDITORIAL_DATABASE_USERNAME" \
+            --from-literal=EDITORIAL_DATABASE_PASSWORD="$EDITORIAL_DATABASE_PASSWORD" \
+            --from-literal=EDITORIAL_DATABASE_NAME="$EDITORIAL_DATABASE_NAME" \
+            --from-literal=INGRESS_AUTH_SECRET="$INGRESS_AUTH_SECRET" \
+            --from-literal=QUEUE_HOST="$QUEUE_HOST" \
+            --from-literal=QUEUE_PORT="$QUEUE_PORT" \
+            --from-literal=QUEUE_USERNAME="$QUEUE_USERNAME" \
+            --from-literal=QUEUE_PASSWORD="$QUEUE_PASSWORD" \
+            --from-literal=MONGO_HOST="$MONGO_HOST" \
+            --from-literal=MONGO_PORT="$MONGO_PORT" \
+            --from-literal=MONGO_DATABASE="$MONGO_DATABASE" \
+            --from-literal=MONGO_USERNAME="$MONGO_USERNAME" \
+            --from-literal=MONGO_PASSWORD="$MONGO_PASSWORD" \
             --namespace=editorial \
             --dry-run=client -o yaml | kubectl apply -f -
           

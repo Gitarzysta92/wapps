@@ -3,27 +3,72 @@
   "compilerOptions": {
     "outDir": "../../../../../../dist/sdk/features/identity/applications/management",
     "declaration": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "composite": true,
     "module": "commonjs",
     "target": "es2020",
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": true,
+    "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/applications/management/tsconfig.app.tsbuildinfo"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
   "references": [
-    { "path": "../../../libs/management/tsconfig.lib.json" },
-    { "path": "../../../../../kernel/ontology/authority/tsconfig.lib.json" },
-    { "path": "../../../../../kernel/ontology/identity/tsconfig.lib.json" },
-    { "path": "../../../../../kernel/standard/tsconfig.lib.json" },
-    { "path": "../../../packages/infrastructure/firebase/tsconfig.lib.json" },
-    { "path": "../../../../../extras/mysql/tsconfig.lib.json" },
-    { "path": "../../../../../extras/mongo/tsconfig.lib.json" },
-    { "path": "../../../../../extras/queue-rabbitmq/tsconfig.lib.json" },
-    { "path": "../../../../../platform/queue/tsconfig.lib.json" },
-    { "path": "../../../../../../apps/shared/tsconfig.lib.json" }
+    {
+      "path": "../../../../discussion/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../kernel/ontology/authority/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../packages/infrastructure/firebase/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../extras/queue-rabbitmq/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../platform/queue/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../apps/shared/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../packages/infrastructure/mysql/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/customer/profiles/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/customer/favorites/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/catalog/record/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/publication/suite/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/publication/article/tsconfig.lib.json"
+    }
   ]
 }

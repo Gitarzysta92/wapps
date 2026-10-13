@@ -1,0 +1,3 @@
+export const CANONICAL_IDENTITIES = Symbol('CANONICAL_IDENTITIES');
+export const ACCOUNT_STATE = Symbol('ACCOUNT_STATE');
+export const PASSWORD_RECOVERY = Symbol('PASSWORD_RECOVERY');

@@ -1,3 +1,5 @@
+import { provideIdentityLoginFeature } from '@portals/shared/features/identity';
+import { LOGIN_VALIDATION_MESSAGES } from '@portals/shared/data';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -17,10 +19,11 @@ describe('account state recovery', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({ providers: [
+        ...provideIdentityLoginFeature({ mode: 'demo', authBffUrl: '', accountApiUrl: '', validationMessages: LOGIN_VALIDATION_MESSAGES }).providers,
       provideRouter([]), provideHttpClient(), provideNoopAnimations(),
-      ...providePreferencesFeature({ apiBaseUrl: '' }).providers,
-      ...provideMyProfileFeature({ apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers,
-      ...provideMyFavoritesFeature({ apiBaseUrl: '' }).providers,
+      ...providePreferencesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
+      ...provideMyProfileFeature({ mode: 'demo', apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers,
+      ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
     ] });
   });
   afterEach(() => jest.restoreAllMocks());
@@ -30,7 +33,7 @@ describe('account state recovery', () => {
     SettingsNotificationsPageComponent, SettingsPrivacyPageComponent,
   ])('retries a failed storage read in %p without replacing data', async component => {
     const read = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Storage blocked'); });
-    const fixture = TestBed.createComponent(component);
+    const fixture = TestBed.createComponent<unknown>(component);
     fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
     const retry = fixture.nativeElement.querySelector('ui-content-state button');
@@ -60,9 +63,11 @@ describe('account state recovery', () => {
   it('shows one useful empty favorites state instead of four empty sections', async () => {
     localStorage.setItem('wapps.favorites.v1', JSON.stringify({ applications: [], articles: [], suites: [], discussions: [] }));
     const fixture = TestBed.createComponent(FavoritesPageComponent);
+    fixture.componentRef.setInput('favoriteKind', undefined);
     fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('ui-content-state')).toHaveLength(1);
     expect(fixture.nativeElement.textContent).toContain('No favorites yet');
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain('My favorites');
     expect(fixture.nativeElement.querySelector('ui-content-state a[href="/discover"]')).not.toBeNull();
   });
 });

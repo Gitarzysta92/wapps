@@ -10,7 +10,7 @@ import { FiltersMultiselectComponent } from '@ui/filters';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiDropdownOpen, TuiDropdownDirective, TuiDropdownOptionsDirective } from '@taiga-ui/core/directives/dropdown';
 import { ParamMapToFilterVmListMapper } from '@portals/shared/features/filtering';
-import { DiscoverPageComponent } from './discover-page.component';
+import { DemoDiscoverPageComponent as DiscoverPageComponent } from './demo-discover-page.component';
 import { DISCOVER_REDIRECT_ROUTES } from './discover-redirect.routes';
 import { FiltersBarComponent } from '../../partials/filters-bar/src';
 import { GlobalStateService } from '../../state/global-state.service';
@@ -70,9 +70,9 @@ describe('Discover search', () => {
   it('applies, restores and removes filters on Discover', async () => {
     const harness = await RouterTestingHarness.create('/discover?search=photo');
     const filters = harness.routeDebugElement!.query(By.directive(FiltersBarComponent)).componentInstance as FiltersBarComponent;
-    expect(filters.getSelectedOptionsWithFlag('search', [{ id: 0, name: 'photo', value: 'photo' }]))
-      .toEqual([{ id: 0, name: 'photo', value: 'photo', isSelected: true }]);
-    filters.onFilterSelectionChange('platform', [{ id: 2, name: 'Desktop', value: 'desktop' }]);
+    expect(filters.getSelectedOptionsWithFlag('search', [{ name: 'photo', value: 'photo' }]))
+      .toEqual([{ name: 'photo', value: 'photo', isSelected: true }]);
+    filters.onFilterSelectionChange('platform', [{ name: 'Desktop', value: 'desktop' }]);
     await harness.fixture.whenStable(); harness.detectChanges();
     expect(TestBed.inject(Router).url).toBe('/discover?search=photo&platform=desktop');
     expect(TestBed.inject(GlobalStateService).searchResultsData$.value.itemsNumber).toBe(0);

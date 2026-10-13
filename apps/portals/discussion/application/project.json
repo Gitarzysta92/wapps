@@ -4,20 +4,16 @@
   "projectType": "library",
   "prefix": "discussion",
   "sourceRoot": "apps/portals/discussion/application/src",
-  "tags": ["type:lib"],
+  "tags": [
+    "type:lib",
+    "arch:portal"
+  ],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/discussion/application/jest.config.ts",
-        "passWithNoTests": true
-      }
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

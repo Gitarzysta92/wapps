@@ -1,5 +1,14 @@
 {
-  "name": "@wapps/ui-misc",
+  "name": "@ui/misc",
   "version": "0.0.1",
-  "type": "commonjs"
+  "private": true,
+  "peerDependencies": {
+    "@angular/common": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
 }

@@ -6,13 +6,14 @@
   "sourceRoot": "libs/domains/customer/favorites/src",
   "tags": [
     "type:domain",
-    "scope:customer"
+    "scope:customer",
+    "arch:domain"
   ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "outputs": [
-        "{projectRoot}/../../dist/domains/customer/favorites"
+        "{workspaceRoot}/dist/domains/customer/favorites"
       ],
       "options": {
         "command": "tsc --build libs/domains/customer/favorites/tsconfig.lib.json"
@@ -23,6 +24,26 @@
       "outputs": [
         "{options.outputFile}"
       ]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/domains/customer/favorites/jest.config.cjs",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/domains/customer/favorites/tsconfig.lib.json",
+          "tsc --noEmit -p libs/domains/customer/favorites/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

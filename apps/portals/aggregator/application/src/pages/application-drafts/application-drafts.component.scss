@@ -1,0 +1,107 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+.page-header [slot='navigation'] {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: $space-3;
+  overflow-x: auto;
+  > a {
+    flex: 0 0 auto;
+  }
+}
+.application-workspace {
+  @include page.content;
+  display: flow-root;
+  > * + * {
+    margin-top: $space-6;
+  }
+}
+.application-draft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: $space-4;
+}
+.application-draft-card {
+  min-width: 0;
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+h2,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: $font-size-lg;
+}
+.application-draft-description {
+  white-space: pre-wrap;
+}
+.application-draft-heading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+  display: grid;
+  gap: $space-3;
+}
+.application-draft-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: $space-3 $space-4;
+  font: inherit;
+}
+textarea {
+  resize: vertical;
+}
+.application-draft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+.ownership-proof,
+.application-editing-field {
+  display: grid;
+  gap: $space-2;
+  min-width: 0;
+}
+.ownership-challenge {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.application-editing-comparison {
+  min-width: 0;
+  padding: $space-3 0;
+  > summary {
+    display: list-item;
+    list-style: disclosure-closed inside;
+    cursor: pointer;
+  }
+  &[open] > summary {
+    list-style-type: disclosure-open;
+  }
+  > :not(summary) {
+    margin-top: $space-2;
+  }
+}
+.application-image-comparison {
+  display: grid;
+  gap: $space-6;
+  min-width: 0;
+}
+.application-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: $space-6;
+}

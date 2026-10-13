@@ -1,0 +1,517 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      articleMode() === 'list'
+        ? 'My articles'
+        : articleMode() === 'new'
+        ? 'New article'
+        : articleMode() === 'edit'
+        ? 'Edit article'
+        : articleMode() === 'queue'
+        ? 'Article review queue'
+        : 'Review article'
+    }}
+  </h1>
+  <p slot="meta">
+    Write privately, then submit a saved version for independent staff review.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    size="s"
+    appearance="secondary"
+    routerLink="/articles"
+    >Read articles</a
+  >
+  <nav slot="navigation" aria-label="Article workspace sections">
+    <a tuiLink [routerLink]="'/' + paths.articles">My articles</a>
+    <a tuiLink [routerLink]="['/' + paths.articles, 'new']">Write an article</a>
+    <a tuiLink [routerLink]="'/' + paths.articleReviews">Staff review</a>
+  </nav>
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="workspace.loading() || workspace.saving()"
+>
+  @if (!workspace.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Article drafts belong to your account and independent reviewers."
+  />
+  } @else { @if (workspace.error()) {
+  <p role="alert">{{ workspace.error() }}</p>
+  } @if (workspace.uncertain()) {
+  <p>
+    The last change has not been confirmed. Keep this browser session open and
+    retry the same request before making another change.
+  </p>
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    [disabled]="workspace.saving() || workspace.loading()"
+    (click)="workspace.retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (workspace.error()) {
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    [disabled]="workspace.locked()"
+    (click)="confirmation.set('reload')"
+  >
+    Reload saved article
+  </button>
+  } @if (workspace.feedback()) {
+  <p role="status">{{ workspace.feedback() }}</p>
+  } @if (workspace.saving()) {
+  <p role="status">Saving article change...</p>
+  } @if (workspace.result(); as receipt) { @if (receipt.id !== draftId() &&
+  hasSavedDraft(receipt)) {
+  <a tuiLink [routerLink]="receiptPath(receipt)"
+    >Open completed article request</a
+  >
+  } } @if (workspace.loading()) {
+  <p role="status">Loading articles...</p>
+  } @else if (articleMode() === 'list') { @if (!workspace.items().length &&
+  !workspace.error()) {
+  <ui-content-state
+    title="No article drafts yet"
+    description="Start an article and save it to your account."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (draft of workspace.items(); track draft.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ draft.title }}</h2>
+        <p>
+          {{ draft.byline }} / Updated {{ draft.updatedAt | date : 'medium' }}
+        </p>
+      </div>
+      <p>{{ draft.excerpt }}</p>
+      <a tuiButton size="s" [routerLink]="['/' + paths.articles, draft.id]"
+        >Edit article draft</a
+      >
+    </article>
+    }
+  </div>
+  } @else if (articleMode() === 'queue') { @if (!workspace.queue().length &&
+  !workspace.error()) {
+  <ui-content-state
+    title="No articles awaiting review"
+    description="Submitted articles appear here for independent staff reviewers."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (entry of workspace.queue(); track entry.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ entry.latestSubmission?.title }}</h2>
+        <p>
+          {{ entry.latestSubmission?.byline }} /
+          {{ entry.latestSubmission?.category }}
+        </p>
+      </div>
+      <p>{{ entry.latestSubmission?.excerpt }}</p>
+      <a
+        tuiButton
+        size="s"
+        [routerLink]="['/' + paths.articleReviews, entry.id]"
+        >Review submitted article</a
+      >
+    </article>
+    }
+  </div>
+  @if (!workspace.error()) {
+  <nav class="application-draft-actions" aria-label="Article review pages">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      [disabled]="workspace.page() <= 1"
+      (click)="paginate(workspace.page() - 1)"
+    >
+      Previous page
+    </button>
+    <span
+      >Page {{ workspace.page() }} / {{ workspace.total() }} submissions</span
+    >
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      [disabled]="workspace.page() * workspace.pageSize >= workspace.total()"
+      (click)="paginate(workspace.page() + 1)"
+    >
+      Next page
+    </button>
+  </nav>
+  } } @if (!workspace.loading() && ((articleMode() === 'new' &&
+  !workspace.createdHere()) || (articleMode() === 'edit' && workspace.draft())))
+  {
+  <form
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    (ngSubmit)="workspace.save()"
+  >
+    <div class="application-draft-heading">
+      <h2>Private draft</h2>
+      <p>
+        The byline is public text you choose. Staff review it with your article.
+        The article URL becomes permanent after first publication.
+      </p>
+    </div>
+    <fieldset [disabled]="workspace.locked()">
+      @for (field of textFields; track field.key) {
+      <label [for]="'article-' + field.key">{{ field.label }}</label>
+      <input
+        class="application-draft-input"
+        [id]="'article-' + field.key"
+        [name]="field.key"
+        [maxlength]="field.max"
+        required
+        [readOnly]="field.key === 'slug' && !!workspace.status()?.publicSlug"
+        [ngModel]="workspace.fields()[field.key]"
+        (ngModelChange)="workspace.setField(field.key, $event)"
+      />
+      }
+      <label for="article-classification">Proposed content classification</label>
+      <select id="article-classification" name="classification" class="application-draft-input" [ngModel]="workspace.fields().classification" (ngModelChange)="workspace.setField('classification', $event)">
+        <option [ngValue]="undefined">Unclassified</option>
+        <option value="general">General</option>
+        <option value="mature">Mature</option>
+      </select>
+      <p>Staff reviews this classification with the submitted content. Mature and unclassified content is hidden in Discover when mature content is disabled.</p>
+      <label for="article-excerpt">Summary</label>
+      <textarea
+        class="application-draft-input"
+        id="article-excerpt"
+        name="excerpt"
+        rows="3"
+        maxlength="1000"
+        required
+        [ngModel]="workspace.fields().excerpt"
+        (ngModelChange)="workspace.setField('excerpt', $event)"
+      ></textarea>
+      <label for="article-tags">Tags, separated by commas</label>
+      <input
+        class="application-draft-input"
+        id="article-tags"
+        name="tags"
+        maxlength="500"
+        [ngModel]="workspace.tagsText()"
+        (ngModelChange)="workspace.setTags($event)"
+      />
+      <p>Use up to 12 tags with lowercase letters, digits and hyphens.</p>
+      @for (section of workspace.fields().sections; track $index; let
+      sectionIndex = $index) {
+      <section class="article-editor-section">
+        <h3>Section {{ sectionIndex + 1 }}</h3>
+        <label [for]="'article-heading-' + sectionIndex"
+          >Heading (optional)</label
+        >
+        <input
+          class="application-draft-input"
+          [id]="'article-heading-' + sectionIndex"
+          [name]="'heading-' + sectionIndex"
+          maxlength="160"
+          [ngModel]="section.heading"
+          (ngModelChange)="workspace.setHeading(sectionIndex, $event)"
+        />
+        @for (paragraph of section.paragraphs; track $index; let paragraphIndex
+        = $index) {
+        <label
+          [for]="'article-paragraph-' + sectionIndex + '-' + paragraphIndex"
+          >Paragraph {{ paragraphIndex + 1 }}</label
+        >
+        <textarea
+          class="application-draft-input"
+          [id]="'article-paragraph-' + sectionIndex + '-' + paragraphIndex"
+          [name]="'paragraph-' + sectionIndex + '-' + paragraphIndex"
+          rows="5"
+          maxlength="4000"
+          required
+          [ngModel]="paragraph"
+          (ngModelChange)="
+            workspace.setParagraph(sectionIndex, paragraphIndex, $event)
+          "
+        ></textarea>
+        <button
+          tuiButton
+          size="s"
+          appearance="flat"
+          type="button"
+          [disabled]="section.paragraphs.length <= 1"
+          (click)="workspace.removeParagraph(sectionIndex, paragraphIndex)"
+        >
+          Remove paragraph {{ paragraphIndex + 1 }}
+        </button>
+        }
+        <div class="application-draft-actions">
+          <button
+            tuiButton
+            size="s"
+            appearance="secondary"
+            type="button"
+            [disabled]="section.paragraphs.length >= 16"
+            (click)="workspace.addParagraph(sectionIndex)"
+          >
+            Add paragraph
+          </button>
+          <button
+            tuiButton
+            size="s"
+            appearance="flat"
+            type="button"
+            [disabled]="workspace.fields().sections.length <= 1"
+            (click)="workspace.removeSection(sectionIndex)"
+          >
+            Remove section {{ sectionIndex + 1 }}
+          </button>
+        </div>
+      </section>
+      }
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        [disabled]="workspace.fields().sections.length >= 30"
+        (click)="workspace.addSection()"
+      >
+        Add section
+      </button>
+      <p>
+        Write plain text. Each paragraph allows 4,000 characters; the complete
+        article has a 24,000-character content limit.
+      </p>
+      <button tuiButton size="m" type="submit">Save article draft</button>
+    </fieldset>
+  </form>
+  } @if (articleMode() === 'new' && !workspace.createdHere()) {
+  <p>Save the article draft before uploading its optional cover.</p>
+  } @if (articleMode() === 'edit' && workspace.draft(); as draft) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <article-cover-editor
+      [articleId]="draft.id"
+      [workspacePath]="'/' + paths.articles"
+      [cover]="workspace.fields().cover"
+      [disabled]="workspace.locked()"
+      (changed)="workspace.setField('cover', $event)"
+    />
+    <button
+      tuiButton
+      size="m"
+      type="button"
+      [disabled]="workspace.locked()"
+      (click)="workspace.save()"
+    >
+      Save article and cover
+    </button>
+  </section>
+  } @if (workspace.status(); as state) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Publication</h2>
+      <p>
+        {{
+          state.visible
+            ? 'An approved version is public.'
+            : 'This article is not public.'
+        }}
+      </p>
+    </div>
+    @if (state.visible && state.publicSlug) {
+    <a tuiLink [routerLink]="['/articles', state.publicSlug]"
+      >Read published article</a
+    >
+    } @if (articleMode() === 'edit') { @if (workspace.dirty()) {
+    <p>You have unsaved changes. Save them before submitting.</p>
+    }
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="
+          workspace.locked() ||
+          workspace.dirty() ||
+          state.latestSubmission?.status === 'submitted'
+        "
+        (click)="workspace.publish('submit')"
+      >
+        Submit saved article
+      </button>
+      <button
+        tuiButton
+        size="m"
+        appearance="secondary"
+        type="button"
+        [disabled]="
+          workspace.locked() ||
+          (!state.visible && state.latestSubmission?.status !== 'submitted')
+        "
+        (click)="confirmation.set('withdraw')"
+      >
+        Withdraw article
+      </button>
+      <button
+        tuiButton
+        size="m"
+        appearance="flat"
+        type="button"
+        [disabled]="
+          workspace.locked() ||
+          state.visible ||
+          state.latestSubmission?.status === 'submitted'
+        "
+        (click)="confirmation.set('delete')"
+      >
+        Delete private draft
+      </button>
+      <button
+        tuiButton
+        size="m"
+        appearance="flat"
+        type="button"
+        [disabled]="workspace.locked()"
+        (click)="confirmation.set('reload')"
+      >
+        Reload saved article
+      </button>
+    </div>
+    } @if (state.latestSubmission; as submitted) {
+    <h3>
+      Submitted version {{ submitted.submittedRevision }} /
+      {{ submitted.status }}
+    </h3>
+    @if (submitted.reason) {
+    <p>{{ submitted.reason }}</p>
+    }
+    <article class="article-reading" aria-label="Submitted article">
+      <h2>{{ submitted.title }}</h2>
+      <p>{{ submitted.byline }} / {{ submitted.category }}</p>
+      <p>/articles/{{ submitted.slug }}</p>
+      <p>{{ submitted.excerpt }}</p>
+      <p>Submitted classification: {{ submitted.classification || 'Unclassified' }}. Approval confirms this classification with the article.</p>
+      <p>{{ submitted.tags.join(', ') }}</p>
+      @if (submitted.cover; as cover) {
+      <article-cover-image
+        [target]="{
+          kind: 'submission',
+          id: state.id,
+          revision: submitted.submittedRevision,
+          review: articleMode() === 'review'
+        }"
+        [alt]="cover.alt"
+      />
+      <p>Cover description: {{ cover.alt }}</p>
+      } @for (section of submitted.sections; track $index) {
+      <section>
+        @if (section.heading) {
+        <h3>{{ section.heading }}</h3>
+        } @for (paragraph of section.paragraphs; track $index) {
+        <p>{{ paragraph }}</p>
+        }
+      </section>
+      }
+    </article>
+    @if (articleMode() === 'review' && submitted.status === 'submitted') {
+    <label for="article-review-reason"
+      >Review note (required for rejection)</label
+    >
+    <textarea
+      class="application-draft-input"
+      id="article-review-reason"
+      rows="3"
+      maxlength="1000"
+      [disabled]="workspace.locked()"
+      [ngModel]="reason()"
+      (ngModelChange)="reason.set($event)"
+    ></textarea>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="workspace.locked()"
+        (click)="workspace.publish('approve', reason())"
+      >
+        Approve submitted article
+      </button>
+      <button
+        tuiButton
+        size="m"
+        appearance="secondary"
+        type="button"
+        [disabled]="workspace.locked() || !reason().trim()"
+        (click)="workspace.publish('reject', reason())"
+      >
+        Reject submitted article
+      </button>
+      <button
+        tuiButton
+        size="m"
+        appearance="flat"
+        type="button"
+        [disabled]="workspace.locked()"
+        (click)="confirmation.set('reload')"
+      >
+        Reload submission
+      </button>
+    </div>
+    } }
+  </section>
+  } @if (confirmation(); as action) {
+  <section
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    role="alert"
+  >
+    <h2>
+      {{
+        action === 'delete'
+          ? 'Delete this private draft?'
+          : action === 'withdraw'
+          ? 'Withdraw this article?'
+          : 'Reload saved content?'
+      }}
+    </h2>
+    <p>
+      {{
+        action === 'delete'
+          ? 'The private draft and submission history will be removed. Its previously published URL remains reserved.'
+          : action === 'withdraw'
+          ? 'This cancels any pending review and makes the article unavailable to readers immediately.'
+          : 'Your unsaved edits will be replaced by the saved article.'
+      }}
+    </p>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="workspace.locked()"
+        (click)="confirm()"
+      >
+        Confirm {{ action }}</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        (click)="confirmation.set(null)"
+      >
+        Cancel
+      </button>
+    </div>
+  </section>
+  } }
+</section>

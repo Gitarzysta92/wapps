@@ -1,0 +1,401 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      ownershipMode() === 'queue' ||
+      ownershipMode() === 'grants' ||
+      ownershipMode() === 'review'
+        ? 'Ownership review'
+        : ownershipMode() === 'create'
+        ? 'Claim application ownership'
+        : 'My ownership claims'
+    }}
+  </h1>
+  <p slot="meta">
+    Prove control of the official website, then request independent staff
+    approval. Content changes still require review.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="s"
+    routerLink="/my/apps"
+    >My Apps</a
+  >
+  <nav
+    slot="navigation"
+    class="application-draft-actions"
+    aria-label="Ownership sections"
+  >
+    <a tuiLink [routerLink]="'/' + workspacePaths.claims">My claims</a>
+    <a tuiLink [routerLink]="'/' + workspacePaths.ownershipReview"
+      >Staff review</a
+    >
+    <a tuiLink [routerLink]="'/' + workspacePaths.ownershipGrants"
+      >Active grants</a
+    >
+  </nav>
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="ownership.loading() || ownership.saving()"
+>
+  @if (!ownership.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Ownership claims are private to your account and assigned reviewers."
+  />
+  } @else { @if (ownership.error()) {
+  <p role="alert" class="application-draft-feedback">{{ ownership.error() }}</p>
+  } @if (ownership.uncertain()) {
+  <button
+    tuiButton
+    type="button"
+    size="m"
+    [disabled]="ownership.saving() || ownership.loading()"
+    (click)="retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (ownership.error()) {
+  <button
+    tuiButton
+    type="button"
+    appearance="secondary"
+    size="m"
+    [disabled]="ownership.saving()"
+    (click)="ownership.reload()"
+  >
+    Reload ownership
+  </button>
+  } @if (ownership.feedback()) {
+  <p role="status">{{ ownership.feedback() }}</p>
+  } @if (ownership.loading()) {
+  <p role="status">Loading ownership...</p>
+  } @else if (ownershipMode() === 'create') { @if (ownership.application(); as
+  application) {
+  <form
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    (ngSubmit)="create()"
+  >
+    <div class="application-draft-heading">
+      <h2>Claim {{ application.name }}</h2>
+      <p>
+        The server uses this application's current official website for DNS
+        verification.
+      </p>
+    </div>
+    <fieldset [disabled]="ownership.saving() || ownership.uncertain()">
+      <label for="ownership-evidence">Public evidence URL</label>
+      <input
+        class="application-draft-input"
+        id="ownership-evidence"
+        name="evidence"
+        type="url"
+        maxlength="2048"
+        required
+        [ngModel]="evidenceUrl()"
+        (ngModelChange)="evidenceUrl.set($event)"
+      />
+      <p>
+        A company or project page explaining your relationship to the
+        application.
+      </p>
+      <label for="ownership-notes">Your relationship to the application</label>
+      <textarea
+        class="application-draft-input"
+        id="ownership-notes"
+        name="notes"
+        rows="5"
+        minlength="20"
+        maxlength="2000"
+        required
+        [ngModel]="notes()"
+        (ngModelChange)="notes.set($event)"
+      ></textarea>
+      <p>
+        Describe your role in 20-2,000 characters. Evidence becomes immutable
+        when submitted.
+      </p>
+    </fieldset>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="submit"
+        size="m"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+      >
+        Create ownership claim
+      </button>
+    </div>
+  </form>
+  } } @else if (ownershipMode() === 'list' || ownershipMode() === 'queue' ||
+  ownershipMode() === 'grants') { @if (!ownership.error() &&
+  !ownership.items().length) {
+  <ui-content-state
+    [title]="
+      ownershipMode() === 'grants'
+        ? 'No active ownership grants'
+        : ownershipMode() === 'queue'
+        ? 'No claims awaiting review'
+        : 'No ownership claims yet'
+    "
+    description="Open a public application and choose Claim ownership to start."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (claim of ownership.items(); track claim.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ claim.applicationName }}</h2>
+        <p>Claim {{ claim.status }} / Revision {{ claim.revision }}</p>
+      </div>
+      <p>
+        {{ claim.hostname }} / Updated {{ claim.updatedAt | date : 'medium' }}
+      </p>
+      <a
+        tuiButton
+        size="s"
+        appearance="secondary"
+        [routerLink]="[
+          ownershipMode() === 'list'
+            ? '/' + workspacePaths.claims
+            : '/' + workspacePaths.ownershipReview,
+          claim.id
+        ]"
+        >{{ ownershipMode() === 'list' ? 'Open claim' : 'Review claim' }}</a
+      >
+    </article>
+    }
+  </div>
+  @if (ownership.total() > 20 || ownership.page() > 1) {
+  <div class="application-draft-actions">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      [disabled]="ownership.page() <= 1"
+      (click)="paginate(ownership.page() - 1)"
+    >
+      Previous page</button
+    ><span>Page {{ ownership.page() }} / {{ ownership.total() }} claims</span
+    ><button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      [disabled]="ownership.page() * 20 >= ownership.total()"
+      (click)="paginate(ownership.page() + 1)"
+    >
+      Next page
+    </button>
+  </div>
+  } } @else { @if (ownership.claim(); as claim) {
+  <article class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>{{ claim.applicationName }}</h2>
+      <p>Claim {{ claim.status }} / Revision {{ claim.revision }}</p>
+    </div>
+    <p class="application-draft-description">{{ claim.notes }}</p>
+    <a
+      tuiLink
+      [href]="claim.evidenceUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Open submitted evidence (new tab)</a
+    >
+    <a tuiLink [routerLink]="['/apps', claim.applicationSlug, 'overview']"
+      >View application</a
+    >
+    @if (claim.reason) {
+    <p class="application-draft-description">
+      Decision reason: {{ claim.reason }}
+    </p>
+    } @if (claim.verifiedAt) {
+    <p>
+      Domain proof observed {{ claim.verifiedAt | date : 'medium' }}. Approval
+      needs proof observed within 24 hours.
+    </p>
+    }
+  </article>
+  @if (claim.status === 'awaiting-proof' || claim.status === 'awaiting-review')
+  {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Verify website control</h2>
+      <p>
+        Publish this exact DNS TXT record for {{ claim.hostname }}. Challenge
+        expires {{ claim.expiresAt | date : 'medium' }}.
+      </p>
+    </div>
+    <div class="ownership-proof">
+      <p>Record name</p>
+      <code class="ownership-challenge" data-ownership-name>{{
+        claim.challengeName
+      }}</code>
+      <p>Record value</p>
+      <code class="ownership-challenge" data-ownership-value>{{
+        claim.challengeValue
+      }}</code>
+    </div>
+    <p>
+      DNS providers may ask for a relative record name. Use the exact value,
+      allow propagation, and wait at least 30 seconds between checks. A claim
+      allows at most ten checks.
+    </p>
+    @if (ownershipMode() === 'owner') {
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="change('verify')"
+      >
+        Check DNS proof</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="confirmation.set('cancel')"
+      >
+        Cancel claim
+      </button>
+    </div>
+    }
+  </section>
+  } @if (ownershipMode() === 'review' && (claim.status === 'awaiting-review' ||
+  claim.status === 'approved')) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Independent staff decision</h2>
+      <p>
+        Website control is evidence. Review the claimant's relationship to the
+        application before granting ownership.
+      </p>
+    </div>
+    <fieldset [disabled]="ownership.saving() || ownership.uncertain()">
+      <label for="ownership-reason"
+        >Decision reason (required to reject or revoke)</label
+      ><textarea
+        class="application-draft-input"
+        id="ownership-reason"
+        rows="4"
+        maxlength="1000"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      ></textarea>
+    </fieldset>
+    <div class="application-draft-actions">
+      @if (claim.status === 'awaiting-review') {
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="change('approve')"
+      >
+        Approve ownership
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="change('reject')"
+      >
+        Reject ownership claim
+      </button>
+      } @else {
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="confirmation.set('revoke')"
+      >
+        Revoke ownership
+      </button>
+      }
+    </div>
+  </section>
+  } @if (claim.status === 'approved' && ownershipMode() === 'owner') {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <a tuiButton size="m" [routerLink]="['/' + workspacePaths.releases, 'new']" [queryParams]="{ applicationId: claim.applicationId }">Write release notes</a>
+    <div class="application-draft-heading">
+      <h2>Verified-owner editing</h2>
+      <p>
+        Create a private editing copy of the canonical application. Your changes
+        require independent content review.
+      </p>
+    </div>
+    <div class="application-draft-actions">
+      <a
+        tuiButton
+        size="m"
+        [routerLink]="['/' + workspacePaths.editing, claim.applicationId]"
+        >Edit verified application</a
+      ><button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="confirmation.set('release')"
+      >
+        Release ownership
+      </button>
+    </div>
+  </section>
+  } @if (claim.status === 'rejected' || claim.status === 'revoked' ||
+  claim.status === 'cancelled') {
+  <p>
+    This claim grants no current editing authority. Your private drafts remain
+    in My Apps. You may create a new claim from the application's public page.
+  </p>
+  } @if (confirmation(); as action) {
+  <section
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    aria-label="Confirm ownership change"
+  >
+    <div class="application-draft-heading">
+      <h2>
+        {{
+          action === 'cancel'
+            ? 'Cancel this claim?'
+            : 'End this ownership grant?'
+        }}
+      </h2>
+      <p>
+        Public content remains available. Existing private drafts are retained,
+        and a later grant requires a new editing draft.
+      </p>
+    </div>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="ownership.saving() || ownership.uncertain()"
+        (click)="change(action)"
+      >
+        Confirm {{ action }}</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        (click)="confirmation.set(null)"
+      >
+        Keep current state
+      </button>
+    </div>
+  </section>
+  } } } }
+</section>
