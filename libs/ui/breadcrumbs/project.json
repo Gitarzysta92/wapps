@@ -4,42 +4,32 @@
   "projectType": "library",
   "prefix": "ui",
   "sourceRoot": "libs/ui/breadcrumbs/src",
-  "tags": ["type:ui", "scope:breadcrumbs"],
+  "tags": [
+    "type:ui",
+    "scope:breadcrumbs",
+    "arch:ui"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "project": "libs/ui/breadcrumbs/ng-package.json"
+        "project": "libs/ui/breadcrumbs/ng-package.json",
+        "tsConfig": "libs/ui/breadcrumbs/tsconfig.lib.json"
       },
       "configurations": {
-        "production": {
-          "tsConfig": "libs/ui/breadcrumbs/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "libs/ui/breadcrumbs/tsconfig.lib.json"
-        }
+        "production": {},
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "libs/ui/breadcrumbs/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

@@ -1,0 +1,51 @@
+{
+  "name": "portals-shared-features-application-workspace",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "application",
+  "sourceRoot": "apps/portals/shared/features/application-workspace/src",
+  "tags": [
+    "type:feature",
+    "scope:application-workspace",
+    "arch:feature"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
+      "options": {
+        "project": "apps/portals/shared/features/application-workspace/ng-package.json",
+        "tsConfig": "apps/portals/shared/features/application-workspace/tsconfig.lib.json"
+      },
+      "configurations": {
+        "production": {},
+        "development": {}
+      },
+      "defaultConfiguration": "production"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/portals/shared/features/application-workspace/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "command": "tsc --noEmit -p apps/portals/shared/features/application-workspace/tsconfig.spec.json"
+      }
+    }
+  }
+}

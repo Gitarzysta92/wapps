@@ -29,6 +29,83 @@ spec:
               containerPort: 1337
               protocol: TCP
           env:
+            - name: EXPLORE_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: explore-service-secret
+                  key: secret
+                  optional: true
+            - name: NOTIFICATION_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: secret
+            - name: ACCOUNT_ERASURE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-erasure-secret
+                  key: secret
+            - name: ACCOUNT_EXPORT_SOURCE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-export-secret
+                  key: secret
+            - name: INGRESS_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: INGRESS_AUTH_SECRET
+            - name: OPA_URL
+              value: "http://opa.opa:8181"
+            - name: EDITORIAL_PUBLIC_TENANT
+              value: "default"
+            - name: EDITORIAL_SEED_DEMO_DATA
+              value: "false"
+            - name: MONGO_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: MONGO_HOST
+            - name: MONGO_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: MONGO_PORT
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: MONGO_PASSWORD
+            - name: MONGO_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: MONGO_DATABASE
+            - name: QUEUE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: QUEUE_HOST
+            - name: QUEUE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: QUEUE_PORT
+            - name: QUEUE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: QUEUE_USERNAME
+            - name: QUEUE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: editorial-app-secrets
+                  key: QUEUE_PASSWORD
             - name: EDITORIAL_NODE_ENV
               value: "production"
             - name: EDITORIAL_HOST

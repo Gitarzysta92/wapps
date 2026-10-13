@@ -1,13 +1,18 @@
-import { IAuthenticationEventEmitter, AuthenticationAuthenticatedPayload } from '@sdk/features/identity/libs/authentication';
-import { IdentityEventsPublisherHolder } from '../services/identity-events-publisher.holder';
+import type {
+  IAuthenticationEventEmitter,
+  AuthenticationAuthenticatedPayload,
+} from '@sdk/features/identity/libs/authentication';
+import type { CanonicalIdentityStore } from '@sdk/features/identity/core';
 
 export class AuthEventEmitterAdapter implements IAuthenticationEventEmitter {
-  constructor(private readonly publisherHolder: IdentityEventsPublisherHolder) {}
+  constructor(private readonly identities: CanonicalIdentityStore) {}
 
-  publishAuthenticated(payload: AuthenticationAuthenticatedPayload): void {
-    const publisher = this.publisherHolder.get();
-    if (publisher) {
-      publisher.publishAuthenticated(payload);
-    }
+  publishAuthenticated(
+    payload: AuthenticationAuthenticatedPayload
+  ): Promise<void> {
+    return this.identities.recordAuthentication(
+      payload.identityId,
+      payload.provider
+    );
   }
 }

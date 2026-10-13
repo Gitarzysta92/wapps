@@ -3,13 +3,9 @@
   "compilerOptions": {
     "outDir": "../../../../../../dist/sdk/features/identity/applications/authenticator",
     "module": "commonjs",
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "references": [
     {
       "path": "../../../../../kernel/standard/tsconfig.lib.json"
@@ -28,9 +24,10 @@
     },
     {
       "path": "../../../../../../apps/shared/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../packages/infrastructure/mysql/tsconfig.lib.json"
     }
   ],
-  "exclude": [
-    "src/**/*.spec.ts"
-  ]
+  "exclude": ["src/**/*.spec.ts"]
 }

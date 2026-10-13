@@ -1,0 +1,55 @@
+name: Workspace Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
+
+jobs:
+  checks:
+    name: Builds, Architecture, Lint and Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Check architecture and test inventory
+        run: |
+          npm run check:boundaries
+          npm run check:inventory
+      - name: Lint supported projects
+        run: npm run lint
+        env:
+          WAPPS_CHECK_OUTPUT_DIR: ${{ runner.temp }}/wapps-quality
+      - name: Run all project and portable test suites
+        run: npm test
+        env:
+          WAPPS_CHECK_OUTPUT_DIR: ${{ runner.temp }}/wapps-quality
+      - name: Build every declared workspace target
+        run: npx nx run-many -t build --all --skip-nx-cache --parallel=3
+      - name: Inspect emitted Angular packages
+        run: node tools/readiness/check-angular-packages.mjs --all
+      - name: Check declared source and test types
+        run: npx nx run-many -t typecheck --all --skip-nx-cache --parallel=3
+      - name: Preserve check reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-quality-${{ github.run_id }}-${{ github.job }}
+          path: ${{ runner.temp }}/wapps-quality
+          if-no-files-found: warn

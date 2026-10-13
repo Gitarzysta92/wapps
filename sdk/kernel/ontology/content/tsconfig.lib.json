@@ -6,18 +6,13 @@
     "types": [],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "rootDir": "src",
     "composite": true,
+    "tsBuildInfoFile": "../../../../dist/sdk/kernel/ontology/content/tsconfig.lib.tsbuildinfo"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "jest.config.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
     {
       "path": "../../standard/tsconfig.lib.json"

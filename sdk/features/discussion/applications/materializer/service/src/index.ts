@@ -1,201 +1,219 @@
-import { ApplicationShell } from '@sdk/kernel/standard';
 import { PlatformMongoClient } from '@sdk/extras/mongo';
 import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
 import { MysqlClient } from '@sdk/extras/mysql';
-import {
-  DISCUSSION_PROJECTION_QUEUE_NAME,
-  DiscussionMaterializationRequestedEvent,
-} from '@apps/shared';
-import { isEventEnvelope } from '@sdk/kernel/aspects/events';
 import { MinioClient } from '@sdk/extras/minio';
-import { loadDiscussionPayload } from './minio-payload';
 import {
-  getNode,
-  getRelationsFrom,
-  pickDiscussedSubjectId,
-  pickReplyParentId,
-  resolveDiscussionRoot,
-} from './mysql-reader';
-import type { DiscussionAggregateProjection, DiscussionNodeProjection } from './projection-types';
+  DISCUSSION_GENERATION_QUEUE_NAME,
+  DiscussionGenerationHead,
+  DiscussionGenerationNode,
+} from '@apps/shared';
+import { MysqlDiscussionSnapshotReader } from './mysql-snapshot-reader';
+import { MinioImmutablePayloadReader } from './immutable-payload-reader';
+import { MongoGenerationStore } from './mongo-generation-store';
+import { enqueueDiscussionRebuildPage } from './rebuild';
+import { reconcileDiscussions } from './reconciliation';
+import { MysqlDiscussionReconciliationSource } from './mysql-reconciliation-source';
+import { MongoGenerationInspector } from './mongo-generation-inspector';
+import {
+  consumeGeneration,
+  ensureGenerationQueues,
+} from './generation-consumer';
 
-const application = new ApplicationShell({
-  mongoHost: { value: process.env.MONGO_HOST as string },
-  mongoPort: { value: process.env.MONGO_PORT as string },
-  mongoUsername: { value: process.env.MONGO_USERNAME as string },
-  mongoPassword: { value: process.env.MONGO_PASSWORD as string },
-  mongoDatabase: { value: process.env.MONGO_DATABASE as string },
+function required(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing configuration: ${name}`);
+  return value;
+}
 
-  queueHost: { value: process.env.QUEUE_HOST as string },
-  queuePort: { value: process.env.QUEUE_PORT as string },
-  queueUsername: { value: process.env.QUEUE_USERNAME as string },
-  queuePassword: { value: process.env.QUEUE_PASSWORD as string },
-
-  mysqlHost: { value: process.env.MYSQL_HOST as string },
-  mysqlPort: { value: process.env.MYSQL_PORT as string },
-  mysqlUsername: { value: process.env.MYSQL_USERNAME as string },
-  mysqlPassword: { value: process.env.MYSQL_PASSWORD as string },
-  mysqlDatabase: { value: process.env.MYSQL_DATABASE as string },
-
-  minioHost: { value: process.env.DISCUSSION_STORAGE_HOST as string },
-  minioAccessKey: { value: process.env.DISCUSSION_STORAGE_ACCESSKEY as string },
-  minioSecretKey: { value: process.env.DISCUSSION_STORAGE_SECRETKEY as string },
-});
-
-application.initialize(async (params) => {
-  const mongoClient = new PlatformMongoClient();
-  await mongoClient.connect({
-    host: params.mongoHost,
-    port: params.mongoPort,
-    username: params.mongoUsername,
-    password: params.mongoPassword,
-    database: params.mongoDatabase,
+async function run(): Promise<void> {
+  const mongo = new PlatformMongoClient();
+  const broker = new RabbitMqQueueClient();
+  const mysql = new MysqlClient();
+  const abort = new AbortController();
+  const active = new Set<Promise<unknown>>();
+  let stopped: () => void = () => undefined;
+  const stopRequested = new Promise<void>((resolve) => {
+    stopped = resolve;
   });
-
-  const queueClient = new RabbitMqQueueClient();
-  const queue = await queueClient.connect({
-    host: params.queueHost,
-    port: params.queuePort,
-    username: params.queueUsername,
-    password: params.queuePassword,
-  });
-
-  const mysqlClient = new MysqlClient();
-  const mysqlPool = await mysqlClient.connect({
-    host: params.mysqlHost,
-    port: Number(params.mysqlPort),
-    user: params.mysqlUsername,
-    password: params.mysqlPassword,
-    database: params.mysqlDatabase,
-  });
-
-  const minioClient = new MinioClient({
-    host: params.minioHost,
-    accessKey: params.minioAccessKey,
-    secretKey: params.minioSecretKey,
-  });
-
-  const nodes = mongoClient.collection<DiscussionNodeProjection>('discussion_nodes');
-  const aggregates = mongoClient.collection<DiscussionAggregateProjection>('discussion_aggregates');
-  const applied = mongoClient.collection<{ _id: string; appliedAt: string }>('materializer_applied_events');
-
-  return { mongoClient, queueClient, queue, mysqlClient, mysqlPool, minioClient, nodes, aggregates, applied };
-}).run(async ({ queue, mysqlPool, minioClient, nodes, aggregates, applied }) => {
-  await queue.assertQueue(DISCUSSION_PROJECTION_QUEUE_NAME, { durable: true });
-
-  await queue.consume(
-    DISCUSSION_PROJECTION_QUEUE_NAME,
-    async (msg) => {
-      if (!msg) return;
-      try {
-        const value: unknown = JSON.parse(msg.content.toString('utf8'));
-        if (!isEventEnvelope(value)) {
-          throw new Error('Invalid event envelope');
+  const stop = () => {
+    abort.abort();
+    stopped();
+  };
+  process.once('SIGINT', stop);
+  process.once('SIGTERM', stop);
+  try {
+    await mongo.connect({
+      host: required('MONGO_HOST'),
+      port: required('MONGO_PORT'),
+      username: required('MONGO_USERNAME'),
+      password: required('MONGO_PASSWORD'),
+      database: required('MONGO_DATABASE'),
+    });
+    const pool = mysql.connect({
+      host: required('MYSQL_HOST'),
+      port: Number(required('MYSQL_PORT')),
+      user: required('MYSQL_USERNAME'),
+      password: required('MYSQL_PASSWORD'),
+      database: required('MYSQL_DATABASE'),
+    });
+    await pool.query('SELECT 1');
+    const minio = new MinioClient({
+      host: required('DISCUSSION_STORAGE_HOST'),
+      accessKey: required('DISCUSSION_STORAGE_ACCESSKEY'),
+      secretKey: required('DISCUSSION_STORAGE_SECRETKEY'),
+    });
+    const queue = await broker.connect({
+      host: required('QUEUE_HOST'),
+      port: required('QUEUE_PORT'),
+      username: required('QUEUE_USERNAME'),
+      password: required('QUEUE_PASSWORD'),
+    });
+    const reader = new MysqlDiscussionSnapshotReader(pool);
+    const payloads = new MinioImmutablePayloadReader(minio);
+    const store = new MongoGenerationStore(
+      mongo.collection<DiscussionGenerationNode>('discussion_generation_nodes'),
+      mongo.collection<DiscussionGenerationHead>('discussion_generation_heads')
+    );
+    await store.ensureIndexes();
+    await ensureGenerationQueues(queue);
+    await queue.prefetch(1);
+    const failed = () => {
+      process.exitCode = 1;
+      stop();
+    };
+    void queue.closed.then(() => {
+      if (!abort.signal.aborted) failed();
+    });
+    await queue.consume(
+      DISCUSSION_GENERATION_QUEUE_NAME,
+      (message) => {
+        if (!message) {
+          failed();
+          return;
         }
-        if (value.meta.type !== 'discussion.materialization.requested') {
-          throw new Error(`Unexpected event type: ${value.meta.type}`);
-        }
-        const evt = value as DiscussionMaterializationRequestedEvent;
+        const work = consumeGeneration(
+          message,
+          queue,
+          reader,
+          payloads,
+          store,
+          { signal: abort.signal }
+        )
+          .then((outcome) => {
+            if (outcome === 'dead-lettered')
+              console.error(
+                'Materialization request moved to the failed queue'
+              );
+          })
+          .catch(() => {
+            if (!abort.signal.aborted)
+              console.error(
+                'Materializer stopped with unfinished delivery; broker will redeliver'
+              );
+            failed();
+          });
+        active.add(work);
+        void work.finally(() => active.delete(work));
+      },
+      { noAck: false }
+    );
+    await stopRequested;
+  } finally {
+    abort.abort();
+    await Promise.allSettled(active);
+    await Promise.allSettled([broker.close(), mysql.close(), mongo.close()]);
+    process.removeListener('SIGINT', stop);
+    process.removeListener('SIGTERM', stop);
+  }
+}
 
-      // Idempotency guard: if event already applied, do nothing.
-      const already = await applied.findOne({ _id: evt.meta.id });
-      if (already) {
-        msg.ack();
-        return;
+async function rebuild(): Promise<void> {
+  const mysql = new MysqlClient();
+  try {
+    const pool = mysql.connect({
+      host: required('MYSQL_HOST'),
+      port: Number(required('MYSQL_PORT')),
+      user: required('MYSQL_USERNAME'),
+      password: required('MYSQL_PASSWORD'),
+      database: required('MYSQL_DATABASE'),
+    });
+    let afterId = '';
+    let total = 0;
+    while (true) {
+      const page = await enqueueDiscussionRebuildPage(pool, afterId);
+      total += page.queued;
+      console.log(
+        `Discussion rebuild: ${total} authoritative aggregates queued`
+      );
+      if (page.queued === 0) break;
+      afterId = page.nextId;
+    }
+  } finally {
+    await mysql.close();
+  }
+}
+
+async function reconcile(apply: boolean): Promise<void> {
+  const mysql = new MysqlClient();
+  const mongo = new PlatformMongoClient();
+  try {
+    const pool = mysql.connect({
+      host: required('MYSQL_HOST'),
+      port: Number(required('MYSQL_PORT')),
+      user: required('MYSQL_USERNAME'),
+      password: required('MYSQL_PASSWORD'),
+      database: required('MYSQL_DATABASE'),
+    });
+    await mongo.connect({
+      host: required('MONGO_HOST'),
+      port: required('MONGO_PORT'),
+      username: required('MONGO_USERNAME'),
+      password: required('MONGO_PASSWORD'),
+      database: required('MONGO_DATABASE'),
+    });
+    const report = await reconcileDiscussions(
+      new MysqlDiscussionReconciliationSource(pool),
+      new MongoGenerationInspector(
+        mongo.collection<DiscussionGenerationNode>(
+          'discussion_generation_nodes'
+        ),
+        mongo.collection<DiscussionGenerationHead>(
+          'discussion_generation_heads'
+        )
+      ),
+      {
+        apply,
+        onResult: (discussionId, condition, queued) =>
+          console.log(JSON.stringify({ discussionId, condition, queued })),
       }
+    );
+    console.log(
+      JSON.stringify({ mode: apply ? 'requeue' : 'inspect', ...report })
+    );
+    if (report.failed || report.conflicts) process.exitCode = 1;
+    else if (report.changed || (!apply && report.needsRebuild))
+      process.exitCode = 2;
+  } finally {
+    await Promise.allSettled([mysql.close(), mongo.close()]);
+  }
+}
 
-      const nodeId = evt.payload.discussionId;
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+  if (!args.length) return run();
+  if (args.length === 1 && args[0] === '--rebuild') return rebuild();
+  if (
+    args[0] === '--reconcile' &&
+    (args.length === 1 || (args.length === 2 && args[1] === '--apply'))
+  )
+    return reconcile(args.length === 2);
+  throw new Error('Expected --rebuild or --reconcile [--apply]');
+}
 
-      const node = await getNode(mysqlPool, nodeId);
-      if (!node) {
-        // Non-retryable: node does not exist (deleted or out-of-order).
-        await applied.insertOne({ _id: evt.meta.id, appliedAt: new Date().toISOString() });
-        msg.ack();
-        return;
-      }
-
-      const rels = await getRelationsFrom(mysqlPool, nodeId);
-      const parentId = pickReplyParentId(rels);
-      const subjectId = pickDiscussedSubjectId(rels);
-
-      const { discussionId, depth } =
-        node.kind === 'discussion'
-          ? { discussionId: node.id, depth: 0 }
-          : await resolveDiscussionRoot(mysqlPool, nodeId);
-
-      // For now we keep subjectReferenceKey null unless subjectId is known and resolvable.
-      // If you later want subjectReferenceKey, resolve it via an extra getNode(mysqlPool, subjectId).
-      const subjectReferenceKey = null;
-
-      const payload = await loadDiscussionPayload(minioClient, nodeId);
-
-      const projection: DiscussionNodeProjection = {
-        _id: node.id,
-        kind: node.kind,
-        discussionId,
-        parentId,
-        depth,
-        subjectId,
-        subjectReferenceKey,
-        referenceKey: node.referenceKey,
-        state: node.state,
-        visibility: node.visibility,
-        createdAt: node.createdAt,
-        updatedAt: node.updatedAt,
-        deletedAt: node.deletedAt,
-        payload,
-        materializedAt: new Date().toISOString(),
-        materializedFromEventId: evt.meta.id,
-        materializedFromOccurredAt: evt.meta.occurredAt,
-      };
-
-      await nodes.updateOne({ _id: projection._id }, { $set: projection }, { upsert: true });
-
-      // Maintain tiny aggregate for root discussions (fast sorting).
-      // Keep it replay-safe by using the applied-events guard above.
-      if (discussionId === node.id) {
-        // root discussion itself
-        await aggregates.updateOne(
-          { _id: discussionId },
-          {
-            $setOnInsert: {
-              _id: discussionId,
-              subjectId,
-              subjectReferenceKey,
-              createdAt: node.createdAt,
-              descendantsCount: 0,
-            },
-            $max: { lastActivityAt: node.createdAt },
-          },
-          { upsert: true }
-        );
-      } else {
-        // comment: bump root lastActivityAt + descendantsCount
-        await aggregates.updateOne(
-          { _id: discussionId },
-          {
-            $setOnInsert: {
-              _id: discussionId,
-              subjectId,
-              subjectReferenceKey,
-              createdAt: node.createdAt,
-              descendantsCount: 0,
-            },
-            $max: { lastActivityAt: node.createdAt },
-            $inc: { descendantsCount: 1 },
-          },
-          { upsert: true }
-        );
-      }
-
-      await applied.insertOne({ _id: evt.meta.id, appliedAt: new Date().toISOString() });
-      msg.ack();
-      } catch {
-        msg.nack(true);
-      }
-    },
-    { noAck: false }
+void main().catch((error) => {
+  console.error(
+    'Discussion materializer failed to start:',
+    error instanceof Error ? error.name : 'Unknown error'
   );
-
-}).finally(async () => {
-  // TODO: close clients on shutdown (mongo, queue, mysql)
+  process.exitCode = 1;
 });

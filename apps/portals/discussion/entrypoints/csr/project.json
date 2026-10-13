@@ -4,20 +4,30 @@
   "projectType": "application",
   "prefix": "discussion",
   "sourceRoot": "apps/portals/discussion/entrypoints/csr/src",
-  "tags": ["type:app"],
+  "tags": [
+    "type:app",
+    "arch:entrypoint"
+  ],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "dependsOn": [],
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/portals/discussion/entrypoints/csr",
         "index": "apps/portals/discussion/entrypoints/csr/src/index.html",
         "main": "apps/portals/discussion/entrypoints/csr/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/portals/discussion/entrypoints/csr/tsconfig.app.json",
         "stylePreprocessorOptions": {
-          "includePaths": ["libs", "libs/ui/design-system/src"]
+          "includePaths": [
+            "libs",
+            "libs/ui/design-system/src"
+          ]
         },
         "assets": [
           "apps/portals/discussion/entrypoints/csr/src/assets",
@@ -91,22 +101,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/discussion/entrypoints/csr/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

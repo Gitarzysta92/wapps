@@ -3,11 +3,11 @@
 </section>
 
 <section class="section_quick-search">
-  <multi-search #multiSearch uiScrollOnFocus>
+  <multi-search #multiSearch uiScrollOnFocus [ariaLabel]="searchLabel">
     <home-search-results
       search-results
-      [searchResults$]="multiSearch.searchResults$"
-      [loadingResults]="multiSearch.loadingResults">
+      [state$]="multiSearch.searchState$"
+      (retry)="multiSearch.retrySearch()">
     </home-search-results>
 
     <home-recent-searches
@@ -18,10 +18,13 @@
 </section>
 
 <section class="section__feed-heading">
-  <h2>Explore</h2>
+  <h2 id="explore">Explore</h2>
 </section>
 
 <section class="section__feed" uiWobbleOutline uiDecorationFade>
+  @if (apiMode) {
+    <explore-feed class="section__feed-container" />
+  } @else {
   <feed-container class="section__feed-container">
     <ng-template #itemTemplate let-item>
       @switch (item.type) {
@@ -78,4 +81,5 @@
       }
     </ng-template>
   </feed-container>
+  }
 </section>

@@ -8,5 +8,3 @@ export interface IPreferencesStateProvider {
   isError: Signal<boolean>;
   preferences$: Observable<PreferencesState>;
 }
-
-

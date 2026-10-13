@@ -1,37 +1,71 @@
 <header [searchWithinPage]="true" [searchLabel]="searchLabel()"></header>
 
 <ui-page-header class="page-header">
-  @if (result.isLoading()) {
+  @if (loading()) {
   <ui-breadcrumbs-skeleton slot="top-bar" />
   } @else {
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
-  } @if (result.isLoading()) {
+  } @if (loading()) {
   <ui-page-title-skeleton slot="title" />
   } @else {
   <h1 uiPageTitle slot="title">{{ title() }}</h1>
   }
-  <button slot="actions" tuiButton type="button" size="s" appearance="primary" iconStart="@tui.funnel-plus"
-    [tuiDropdown]="filterManagement" tuiDropdownAlign="right" [(tuiDropdownOpen)]="filtersBar.addFilterDropdownOpen">
+  <button
+    slot="actions"
+    tuiButton
+    type="button"
+    size="s"
+    appearance="primary"
+    iconStart="@tui.funnel-plus"
+    [tuiDropdown]="filterManagement"
+    tuiDropdownAlign="right"
+    [(tuiDropdownOpen)]="filtersBar.addFilterDropdownOpen"
+  >
     Manage filters
   </button>
 </ui-page-header>
 
 <ng-template #filterManagement>
   <div class="filter-management-panel">
-    <filters-multiselect [availableFilters]="filtersBar.availableFiltersOptions$ | async"
+    <filters-multiselect
+      [availableFilters]="filtersBar.availableFiltersOptions$ | async"
       [activeFilters]="filtersBar.activeFiltersOptions$ | async"
       (activated)="filtersBar.onActivateFilter($event)"
-      (deactivated)="filtersBar.onDeactivateFilter($event)" />
+      (deactivated)="filtersBar.onDeactivateFilter($event)"
+    />
   </div>
 </ng-template>
 <div class="catalog-toolbar">
-  <filters-bar #filtersBar [definitions]="filterDefinitions()" [selectedValues]="filterSelections()"
-    (selectionChange)="onFilterSelectionChange($event)" />
+  <filters-bar
+    #filtersBar
+    [definitions]="filterDefinitions()"
+    [selectedValues]="filterSelections()"
+    (selectionChange)="onFilterSelectionChange($event)"
+  />
   @if (activeFilters()) {
-    <button tuiButton appearance="flat" size="s" type="button" (click)="clearFilters()">Clear filters</button>
+  <button
+    tuiButton
+    appearance="flat"
+    size="s"
+    type="button"
+    (click)="clearFilters()"
+  >
+    Clear filters
+  </button>
   }
-  <button class="display-options-trigger" tuiButton type="button" size="s" appearance="secondary" iconStart="@tui.settings-2"
-    [tuiDropdown]="displayOptions" tuiDropdownAlign="right" [(tuiDropdownOpen)]="displayOptionsOpen">Display options</button>
+  <button
+    class="display-options-trigger"
+    tuiButton
+    type="button"
+    size="s"
+    appearance="secondary"
+    iconStart="@tui.settings-2"
+    [tuiDropdown]="displayOptions"
+    tuiDropdownAlign="right"
+    [(tuiDropdownOpen)]="displayOptionsOpen"
+  >
+    Display options
+  </button>
 </div>
 
 @if (directory().length) {
@@ -59,7 +93,9 @@
         <option value="name">Name: A–Z</option>
         <option value="name-desc">Name: Z–A</option>
         @if (hasDatedEntries()) {
-        <option value="newest" [selected]="query().sort === 'newest'">Newest first</option>
+        <option value="newest" [selected]="query().sort === 'newest'">
+          Newest first
+        </option>
         }
       </select>
     </label>
@@ -67,11 +103,14 @@
       >Per page
       <select [value]="query().pageSize" (change)="filter('pageSize', $event)">
         @for (size of pageSizeOptions; track size) {
-          <option [value]="size" [selected]="size === query().pageSize">{{ size }}</option>
+        <option [value]="size" [selected]="size === query().pageSize">
+          {{ size }}
+        </option>
         }
       </select>
     </label>
-    <label>View
+    <label
+      >View
       <select [value]="view()" (change)="filter('view', $event)">
         <option value="grid">Grid</option>
         <option value="list">List</option>
@@ -81,48 +120,101 @@
 </ng-template>
 
 <section class="catalog" aria-label="Catalog results">
-  @if (result.isLoading()) {
-  <div class="items-grid" [class.items-grid--list]="view() === 'list'" aria-label="Loading catalog">
+  @if (loading()) {
+  <div
+    class="items-grid"
+    [class.items-grid--list]="view() === 'list'"
+    aria-label="Loading catalog"
+  >
     @for (item of [1, 2, 3]; track item) { <ui-medium-card-skeleton /> }
   </div>
+  } @else if (preferencesError()) {
+  <p role="alert">Your content preferences could not be loaded.</p>
+  <button tuiButton type="button" size="m" (click)="retry()">Retry content preferences</button>
   } @else if (result.error()) {
-  <ui-content-state [error]="true" title="Could not load the catalog" description="Try loading again, or return to Explore." icon="@tui.circle-alert">
-    <button tuiButton type="button" size="m" (click)="result.reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  <ui-content-state
+    [error]="true"
+    title="Could not load the catalog"
+    description="Try loading again, or return to Explore."
+    icon="@tui.circle-alert"
+  >
+    <button tuiButton type="button" size="m" (click)="retry()">
+      Retry</button
+    ><a tuiButton appearance="secondary" size="m" routerLink="/"
+      >Back to Explore</a
+    >
   </ui-content-state>
-  } @else { @if (result.value(); as listing) {
+  } @else { @if (currentResult(); as listing) {
   <p class="result-count" role="status">
     {{ listing.total }} {{ listing.total === 1 ? 'result' : 'results' }}
   </p>
-  @if (!listing.total) {
-  <ui-content-state title="No results found" description="Try a different search, category, or tag." icon="@tui.search">
-    <button tuiButton appearance="secondary" size="m" type="button" (click)="clearFilters()">Browse all content</button><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  @if (listing.hiddenCount) {
+  <p role="status">{{ listing.hiddenCount }} results on this page are hidden by your content preferences. Totals include hidden results.</p>
+  } @if (!listing.items.length && listing.hiddenCount) {
+  <ui-content-state title="No visible results on this page" description="Try another page or change your content preferences." />
+  } @if (!listing.total) {
+  <ui-content-state
+    title="No results found"
+    description="Try a different search, category, or tag."
+    icon="@tui.search"
+  >
+    <button
+      tuiButton
+      appearance="secondary"
+      size="m"
+      type="button"
+      (click)="clearFilters()"
+    >
+      Browse all content</button
+    ><a tuiButton appearance="secondary" size="m" routerLink="/"
+      >Back to Explore</a
+    >
   </ui-content-state>
   } @else {
   <div class="items-grid" [class.items-grid--list]="view() === 'list'">
     @for (item of cards(); track item.kind + item.slug) {
     <article class="item-card" tuiAppearance="card-elevated">
-      <a class="item-main" [routerLink]="item.path" [attr.aria-labelledby]="'catalog-' + item.kind + '-' + item.slug">
+      <a
+        class="item-main"
+        [routerLink]="item.path"
+        [attr.aria-labelledby]="'catalog-' + item.kind + '-' + item.slug"
+      >
         @if (item.kind === 'applications') {
-          <tui-avatar [src]="item.image || '@tui.box'" size="l" aria-hidden="true" />
+        <tui-avatar
+          [src]="item.image || '@tui.box'"
+          size="l"
+          aria-hidden="true"
+        />
         } @else if (item.image) {
-          <ui-cover-image class="item-image" [image]="{url: item.image, alt: item.name}" />
+        <ui-cover-image
+          class="item-image"
+          [image]="{ url: item.image, alt: item.name }"
+        />
         }
         <div class="item-body">
-        @if (kind() === 'all') {
-          <span class="item-kind">{{ item.kind === 'applications' ? 'Application' : item.kind === 'articles' ? 'Article' : 'Suite' }}</span>
-        }
-        <h2 [id]="'catalog-' + item.kind + '-' + item.slug">{{ item.name }}</h2>
-        <p class="item-description">{{ item.description }}</p>
-        <div class="item-meta">
-          @if (item.rating !== undefined) {
-          <span>★ {{ item.rating }} rating</span> } @if (item.author) {
-          <span>By {{ item.author }}</span> } @if (item.date) {
-          <time [attr.datetime]="item.date.toISOString()">{{
-            item.date | preferredDate
-          }}</time>
-          } @if (item.applications) {
-          <span>{{ item.applications.length }} applications</span> }
-        </div>
+          @if (kind() === 'all') {
+          <span class="item-kind">{{
+            item.kind === 'applications'
+              ? 'Application'
+              : item.kind === 'articles'
+              ? 'Article'
+              : 'Suite'
+          }}</span>
+          }
+          <h2 [id]="'catalog-' + item.kind + '-' + item.slug">
+            {{ item.name }}
+          </h2>
+          <p class="item-description">{{ item.description }}</p>
+          <div class="item-meta">
+            @if (item.rating !== undefined) {
+            <span>★ {{ item.rating }} rating</span> } @if (item.author) {
+            <span>By {{ item.author }}</span> } @if (item.date) {
+            <time [attr.datetime]="item.date.toISOString()">{{
+              item.date | preferredDate
+            }}</time>
+            } @if (item.applications) {
+            <span>{{ item.applications.length }} applications</span> }
+          </div>
         </div>
       </a>
       <div class="item-facets">
@@ -131,7 +223,8 @@
           category.name
         }}</a>
         } @for (tag of item.tags; track tag.slug) {
-        <a tuiLink [routerLink]="facetPath('tag', tag.slug)">#{{ tag.name }}</a> }
+        <a tuiLink [routerLink]="facetPath('tag', tag.slug)">#{{ tag.name }}</a>
+        }
       </div>
     </article>
     }

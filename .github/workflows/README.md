@@ -1,219 +1,56 @@
-# GitHub Actions Workflows
+# Workspace quality and release workflows
 
-## Authenticator Workflow
+Every pull request runs `workspace-quality.workflow.yml` without path filters.
+Pushes to `main` and `develop` and manual calls also run it. All 15 existing
+application image-build jobs depend on this reusable workflow. A failed or
+skipped quality job prevents the dependent build from publishing an image.
+The aggregator also has an explicit PR trigger; its publishing job runs only
+for push or manual dispatch.
 
-**File:** `authenticator.workflow.yml`
+## Engineering gate
 
-### Purpose
+The workflow checks out the caller revision, uses the Node version in `.nvmrc`,
+and runs `npm ci`. It requires the architecture/inventory audit, product lint,
+all inventoried project and portable test suites, every declared build, Angular
+package artifact inspection, and every declared source/test typecheck target.
+Per-project test/lint reports are uploaded even when a check fails.
 
-Builds and deploys the Authenticator service (authentication BFF / token validation for ingress-nginx).
+The workflow currently checks the whole workspace, including for individual
+service releases. This costs more than affected-project selection but covers
+shared SDK, feature, tooling and configuration changes consistently. A future
+optimization must preserve these dependencies and failure behavior.
 
-### Triggers
+The shared `test-and-lint` composite action uses the same inventory, architecture,
+lint and test entrypoints. It no longer accepts empty tests or uploads a nonexistent
+coverage file. See `tools/readiness/README.md` for local commands and coverage gaps.
 
-**Automatic:**
-- Push to `develop` → Deploys to development
-- Push to `main` → Deploys to production
-- Changes to:
-  - `apps/services/authenticator/**`
-  - `environments/*/apps/authenticator-kustomization/**`
+Repository branch-protection settings must require the Workspace Quality check
+to prevent merging a failed PR. Those remote settings were not changed here.
+No GitHub workflow run or deployment is certified by local workflow tests.
 
-**Manual:**
-- Workflow dispatch with environment selection
+## Deployment limits
 
-### Required Secrets
+Existing application workflows retain their environment inputs, registry and
+cluster configuration. They still contain mutable image tags, source environment
+patching, mixed runtime images and unpinned CLI downloads. These are open OP03/OP10
+release blockers. A green engineering gate does not qualify this deployment path.
 
-#### Development Environment
-```
-FIREBASE_PROJECT_ID_DEV = your-firebase-dev-project-id
-```
+The shared ArgoCD action now propagates sync failures, including after creating
+an Application, and requires successful sync and health waiting. Failed commands
+must never be followed by an unconditional success report.
 
-#### Production Environment
-```
-FIREBASE_PROJECT_ID_PROD = your-firebase-prod-project-id
-```
+Maintainer and Producer remain manually invoked placeholder workflows for
+unimplemented projects. Their quality dependency does not create those services;
+their missing application builds cannot complete successfully.
 
-### What It Does
+## Release evidence
 
-#### Job 1: Build
-1. ✅ Checks out code
-2. ✅ Sets environment (dev/prod)
-3. ✅ Installs Node.js dependencies
-4. ✅ Builds TypeScript → JavaScript
-5. ✅ Builds Docker image
-6. ✅ Pushes to GitHub Container Registry (ghcr.io)
+`tools/readiness/ci-gates.test.mjs` checks the workflow dependency gates, unfiltered
+PR coverage and aggregator publishing condition, and executes the ArgoCD sync/wait
+shell steps with failing local command substitutes. These tests make no cluster
+changes. They supplement review and do not replace a real GitHub Actions run.
 
-#### Job 2: Deploy
-1. ✅ Updates Firebase config secret in Kubernetes
-2. ✅ Deploys auth validator service
-3. ✅ Waits for rollout completion
-4. ✅ Verifies deployment health
-5. ✅ Applies ingress configurations with external auth
-6. ✅ Applies network policies
-
-#### Job 3: Summary
-1. ✅ Shows deployment summary
-2. ✅ Provides service endpoints
-3. ✅ Suggests next steps
-
-### Setup Instructions
-
-#### 1. Add GitHub Secrets
-
-Go to: **GitHub Repository → Settings → Secrets and variables → Actions**
-
-Add:
-```
-FIREBASE_PROJECT_ID_DEV = your-dev-firebase-project-id
-FIREBASE_PROJECT_ID_PROD = your-prod-firebase-project-id
-```
-
-#### 2. Enable GitHub Container Registry
-
-The workflow automatically publishes to GitHub Container Registry (ghcr.io). No additional setup needed - it uses `GITHUB_TOKEN` which is automatically provided.
-
-Images are published to:
-```
-ghcr.io/YOUR_USERNAME/YOUR_REPO/authenticator:latest
-```
-
-#### 3. Configure Self-Hosted Runner
-
-The deploy job uses `self-hosted` runner. Ensure your runner has:
-- ✅ kubectl installed and configured
-- ✅ Access to Kubernetes cluster
-- ✅ Permissions to create secrets and deployments
-
-### Manual Trigger
-
-1. Go to **Actions** tab in GitHub
-2. Select **"Authenticator - Build & Deploy"**
-3. Click **"Run workflow"**
-4. Choose environment: `development` or `production`
-5. Click **"Run workflow"**
-
-### Monitoring
-
-#### View Workflow Runs
-GitHub → Actions → "Authenticator - Build & Deploy"
-
-#### Check Deployment
-```bash
-# Check pods
-kubectl get pods -n default -l app=authenticator
-
-# Check logs
-kubectl logs -n default -l app=authenticator --tail=100 -f
-
-# Test health endpoint
-kubectl port-forward -n default svc/authenticator 8080:80
-curl http://localhost:8080/health
-```
-
-#### Test Authentication
-```bash
-# With valid Firebase token
-curl -H "Authorization: Bearer YOUR_FIREBASE_TOKEN" \
-  http://authenticator.default.svc.cluster.local/validate
-
-# Without token (should fail)
-curl http://authenticator.default.svc.cluster.local/validate
-
-# Optional auth (should succeed)
-curl http://authenticator.default.svc.cluster.local/validate-optional
-```
-
-### Image Tags
-
-The workflow creates multiple tags:
-- `latest` - Latest build from main branch
-- `main-SHA` - Specific commit from main
-- `develop-SHA` - Specific commit from develop
-
-### Troubleshooting
-
-#### Issue: "Firebase Project ID not configured"
-
-**Solution:** Add secret in GitHub repository settings
-```
-Settings → Secrets → New repository secret
-Name: FIREBASE_PROJECT_ID_DEV
-Value: your-firebase-project-id
-```
-
-#### Issue: "Self-hosted runner offline"
-
-**Solution:** 
-1. Check runner status: Settings → Actions → Runners
-2. Restart runner on your server
-
-#### Issue: "kubectl command not found"
-
-**Solution:** Install kubectl on self-hosted runner:
-```bash
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-```
-
-#### Issue: "Permission denied" when pushing to ghcr.io
-
-**Solution:** Ensure workflow has `packages: write` permission (already configured)
-
-### Workflow Output Example
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Authenticator - Deployment Summary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Environment: development
-Image: ghcr.io/your-org/your-repo/authenticator:develop-abc123
-
-Job Results:
-  - Build: success
-  - Deploy: success
-
-✅ Authenticator deployed successfully!
-
-Service endpoints:
-  - Validate: http://authenticator.default.svc.cluster.local/validate
-  - Validate Optional: http://authenticator.default.svc.cluster.local/validate-optional
-  - Health: http://authenticator.default.svc.cluster.local/health
-
-Next steps:
-  1. Test with a Firebase token
-  2. Check logs: kubectl logs -n default -l app=authenticator --tail=50
-  3. Verify ingress: kubectl get ingress -n catalog
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-## Comparison: Kong vs Authenticator
-
-### Before (Kong)
-```bash
-# Kong workflow had to:
-- Replace Firebase placeholders manually
-- Deploy ConfigMap
-- Restart Kong
-- Manually sync ArgoCD
-- Deal with Enterprise-only plugins
-```
-
-### After (Authenticator)
-```bash
-# New workflow:
-- Builds proper Docker image
-- Deploys to Kubernetes
-- Uses official Firebase SDK
-- Actually works!
-```
-
-## Benefits
-
-- ✅ **Automated builds** - TypeScript compiled and Docker image built
-- ✅ **Container registry** - Images stored in GitHub Container Registry
-- ✅ **Environment-specific** - Dev and prod configurations
-- ✅ **Self-contained** - No manual scripts needed
-- ✅ **Proper versioning** - Git SHA tags for rollback
-- ✅ **Health checks** - Automatic verification after deployment
-
+Full operational scope, deployment acceptance, migration/recovery and rollback
+criteria are in `docs/OPERATIONAL-READINESS.md`. Implementation evidence is in
+`docs/readiness/implementation-2026-10-11.json`. No workflow configuration change
+in this branch has been pushed or deployed.

@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "https://aggregator.development.wapps.ai,https://aggregator-csr.development.wapps.ai,https://discussion-csr.development.wapps.ai"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization, Idempotency-Key"
 spec:
   rules:
   # Auth BFF endpoint for frontend apps

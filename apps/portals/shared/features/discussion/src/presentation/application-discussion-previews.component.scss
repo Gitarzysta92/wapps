@@ -1,0 +1,45 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.discussion-previews {
+  display: grid;
+  gap: $space-6;
+}
+.preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
+  justify-content: space-between;
+}
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-4;
+
+  @media #{$layout-breakpoint-md} {
+    grid-template-columns: 1fr;
+  }
+}
+.discussion-preview {
+  display: grid;
+  align-content: start;
+  gap: $space-4;
+  padding: $space-6;
+  min-width: 0;
+}
+header {
+  display: grid;
+  gap: $space-2;
+}
+h3,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.preview-text {
+  white-space: pre-wrap;
+}

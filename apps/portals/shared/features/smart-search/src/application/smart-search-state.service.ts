@@ -5,12 +5,12 @@ import { ISmartSearchState } from '../smart-search.interface';
 
 @Injectable()
 export class SmartSearchStateService implements ISmartSearchState {
-  public query: string = '';
+  public query = '';
   public results: any = null;
   public suggestions: string[] = [];
   public recommendations: any[] = [];
   public recentSearches: string[] = [];
-  public isLoading: boolean = false;
+  public isLoading = false;
   public error: string | null = null;
 
   private readonly _querySubject = new BehaviorSubject<string>('');

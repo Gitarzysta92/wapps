@@ -4,32 +4,26 @@
   "projectType": "library",
   "prefix": "std",
   "sourceRoot": "sdk/kernel/standard/src",
-  "tags": ["type:foundation", "scope:standard"],
+  "tags": [
+    "type:foundation",
+    "scope:standard",
+    "arch:kernel"
+  ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/sdk/kernel/standard"],
+      "outputs": [
+        "{workspaceRoot}/dist/sdk/kernel/standard"
+      ],
       "options": {
         "command": "tsc --build sdk/kernel/standard/tsconfig.lib.json"
       }
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "sdk/kernel/standard/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

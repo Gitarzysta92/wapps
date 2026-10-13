@@ -21,13 +21,21 @@ on:
           - production
 
 env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
   SERVICE_NAME: media-ingestion
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/wapps/media-ingestion
   NAMESPACE_MANIFEST: apps/services/media-ingestion/provisioning/k8s/namespace.yaml
 
 jobs:
-  build:  
+  quality:
+    name: Workspace Quality
+    uses: ./.github/workflows/workspace-quality.workflow.yml
+
+  build:
+    needs: quality
     name: 'Build Docker Image'
     runs-on: ubuntu-latest
     permissions:
@@ -55,7 +63,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
 
       - name: Install dependencies

@@ -1,0 +1,39 @@
+{
+  "name": "domains-publication-suite",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/publication/suite/src",
+  "tags": ["type:domain", "scope:customer", "arch:domain"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/domains/publication/suite"],
+      "options": {
+        "command": "tsc --build libs/domains/publication/suite/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/domains/publication/suite/jest.config.cjs",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/domains/publication/suite/tsconfig.lib.json",
+          "tsc --noEmit -p libs/domains/publication/suite/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

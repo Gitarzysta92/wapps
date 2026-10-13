@@ -5,25 +5,10 @@
   "sourceRoot": "sdk/kernel/ontology/content/src",
   "tags": [
     "type:foundation",
-    "scope:content-system"
+    "scope:content-system",
+    "arch:kernel"
   ],
   "targets": {
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "sdk/kernel/ontology/content/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": [

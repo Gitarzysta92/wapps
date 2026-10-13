@@ -1,3 +1,4 @@
+import { isRecord } from './firebase-errors';
 import fetch from 'node-fetch';
 import { err, ok, Result } from '@sdk/kernel/standard';
 
@@ -16,60 +17,72 @@ export class FirebaseGoogleCodeExchanger {
     redirectUri: string,
     codeVerifier: string
   ): Promise<Result<OAuthUserInfoDto, Error>> {
-    const { clientId, clientSecret } = this.config;
+    try {
+      const { clientId, clientSecret } = this.config;
 
-    const params = new URLSearchParams({
-      code,
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: redirectUri,
-      grant_type: 'authorization_code',
-    });
-    if (codeVerifier) {
-      params.set('code_verifier', codeVerifier);
-    }
+      const params = new URLSearchParams({
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code',
+      });
+      if (codeVerifier) {
+        params.set('code_verifier', codeVerifier);
+      }
 
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-
-    if (!tokenResponse.ok) {
-      const errorJson = (await tokenResponse.json().catch(() => undefined)) as any;
-      const errorCode = errorJson?.error?.error ?? errorJson?.error;
-      const errorDescription =
-        errorJson?.error?.message ??
-        errorJson?.error_description ??
-        errorJson?.error?.description;
-
-      console.error('Google token exchange error:', {
-        status: tokenResponse.status,
-        errorCode,
-        errorDescription,
-        raw: errorJson,
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        timeout: 10000,
+        size: 65536,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
       });
 
-      const details = [errorCode, errorDescription].filter(Boolean).join(': ');
-      return err(new Error(`Google token exchange failed${details ? ` (${details})` : ''}`));
+      if (!tokenResponse.ok) {
+        return err(new Error('Google token exchange failed'));
+      }
+
+      const tokens: unknown = await tokenResponse.json();
+      if (
+        !isRecord(tokens) ||
+        typeof tokens['id_token'] !== 'string' ||
+        !tokens['id_token']
+      )
+        return err(new Error('Invalid Google token response'));
+      const userInfoResponse = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(
+          tokens['id_token']
+        )}`,
+        { timeout: 10000, size: 65536 }
+      );
+
+      if (!userInfoResponse.ok) {
+        return err(new Error('Failed to get Google user info'));
+      }
+
+      const userInfo: unknown = await userInfoResponse.json();
+      if (
+        !isRecord(userInfo) ||
+        userInfo['aud'] !== clientId ||
+        typeof userInfo['email'] !== 'string' ||
+        !userInfo['email']
+      )
+        return err(new Error('Invalid Google identity'));
+      return ok({
+        email: userInfo['email'],
+        name:
+          typeof userInfo['name'] === 'string' ? userInfo['name'] : undefined,
+        picture:
+          typeof userInfo['picture'] === 'string'
+            ? userInfo['picture']
+            : undefined,
+        emailVerified:
+          userInfo['email_verified'] === 'true' ||
+          userInfo['email_verified'] === true,
+      });
+    } catch {
+      return err(new Error('Google authentication provider unavailable'));
     }
-
-    const tokens = (await tokenResponse.json()) as any;
-    const userInfoResponse = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?id_token=${tokens.id_token}`
-    );
-
-    if (!userInfoResponse.ok) {
-      return err(new Error('Failed to get Google user info'));
-    }
-
-    const userInfo = (await userInfoResponse.json()) as any;
-    if (userInfo.aud !== clientId || !userInfo.email) return err(new Error('Invalid Google identity'));
-    return ok({
-      email: userInfo.email,
-      name: userInfo.name,
-      picture: userInfo.picture,
-      emailVerified: userInfo.email_verified === 'true' || userInfo.email_verified === true,
-    });
   }
 }

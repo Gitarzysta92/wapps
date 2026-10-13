@@ -3,7 +3,7 @@ export default {
   testEnvironment: 'jsdom',
   preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../../../coverage/apps/portals/aggregator/angular',
+  coverageDirectory: '../../../../coverage/apps/portals/aggregator/application',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

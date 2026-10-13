@@ -9,4 +9,5 @@ resources:
 patchesStrategicMerge:
   - deployment-patch.yaml
   - ingress-patch.yaml
+  - email-action-ingress-patch.yaml
 

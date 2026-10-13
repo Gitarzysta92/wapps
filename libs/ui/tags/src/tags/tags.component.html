@@ -1,12 +1,16 @@
 <div class="tags-container">
-  @for (tag of tags(); track tag.slug) {
-    <tui-chip 
-      class="tag" 
-      [size]="size()"
-      [appearance]="appearance()">
-      {{ tag.name }}
-    </tui-chip>
-  }
+  @for (tag of tags(); track tag.slug) { @if (tag.link) {
+  <a
+    tuiChip
+    class="tag"
+    [routerLink]="tag.link"
+    [size]="size()"
+    [appearance]="appearance()"
+    >{{ tag.name }}</a
+  >
+  } @else {
+  <tui-chip class="tag" [size]="size()" [appearance]="appearance()">
+    {{ tag.name }}
+  </tui-chip>
+  } }
 </div>
-
-

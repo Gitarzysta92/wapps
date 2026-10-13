@@ -1,0 +1,117 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">My Discussions</h1>
+  <p slot="meta" class="page-description">
+    Application topics you started or replied to, newest topics first. Only
+    visible topics with one of your live posts appear here.
+  </p>
+  @if (discussions.signedIn()) {
+  <button
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="m"
+    [disabled]="discussions.loading()"
+    (click)="discussions.reload(true)"
+  >
+    Refresh latest
+  </button>
+  }
+</ui-page-header>
+<section
+  class="discussions-content"
+  aria-label="Your application discussions"
+  [attr.aria-busy]="discussions.loading()"
+>
+  @if (!discussions.signedIn()) {
+  <ui-content-state
+    title="Sign in to see your discussions"
+    description="Your topics and replies belong to your account."
+    icon="@tui.user"
+  />
+  } @else if (discussions.loading()) {
+  <ui-content-state
+    title="Loading your discussions"
+    description="Checking your posts and current application visibility."
+    icon="@tui.loader"
+  />
+  } @else if (discussions.error()) {
+  <ui-content-state
+    title="Discussions could not be loaded"
+    [description]="discussions.error()"
+    icon="@tui.triangle-alert"
+  >
+    <button
+      tuiButton
+      appearance="secondary"
+      size="m"
+      (click)="discussions.reload()"
+    >
+      Try again
+    </button>
+  </ui-content-state>
+  } @else { @for (discussion of discussions.items(); track discussion.id) {
+  <ui-medium-card tuiAppearance="card-panel">
+    <h2 slot="header">
+      <a
+        tuiLink
+        [routerLink]="[
+          '/apps',
+          discussion.applicationSlug,
+          'discussions',
+          discussion.id
+        ]"
+        >{{ discussion.title }}</a
+      >
+    </h2>
+    <p class="page-description">
+      {{ discussion.applicationName }} &middot;
+      {{
+        discussion.participation === 'author'
+          ? 'You started this topic'
+          : 'You replied'
+      }}
+      &middot; {{ discussion.replyCount }}
+      {{ discussion.replyCount === 1 ? 'reply' : 'replies' }}
+    </p>
+    <p class="page-description">
+      Started {{ discussion.createdAt | date : 'mediumDate' }}
+    </p>
+    <discussion-quick-button
+      slot="bottom-bar"
+      [appSlug]="discussion.applicationSlug"
+      [discussionSlug]="discussion.id"
+      [topicTitle]="discussion.title"
+      [replyCount]="discussion.replyCount"
+      (closed)="discussions.reload()"
+    />
+  </ui-medium-card>
+  } @empty {
+  <ui-content-state
+    [title]="
+      discussions.next() || discussions.olderPage()
+        ? 'No visible topics on this page'
+        : 'No visible discussions'
+    "
+    [description]="
+      discussions.next()
+        ? 'Some applications or posts are no longer visible. Load more to check older topics.'
+        : 'Join an application conversation. Topics with your live posts will appear here.'
+    "
+    icon="@tui.messages-square"
+  >
+    <a tuiButton appearance="secondary" size="m" routerLink="/app"
+      >Browse applications</a
+    >
+  </ui-content-state>
+  } @if (discussions.next()) {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="m"
+    (click)="discussions.older()"
+  >
+    Load more
+  </button>
+  } }
+</section>

@@ -4,32 +4,50 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import swaggerUi from 'swagger-ui-express';
-import { AppModule } from './app.module';
+import { runIdentityMaintenance } from '@sdk/extras/identity-mysql';
 import { swaggerDocument } from './swagger.document';
 
 async function bootstrap() {
-  if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.applicationDefault(), projectId: process.env.FIREBASE_PROJECT_ID });
+  const maintenance = await runIdentityMaintenance(
+    process.argv.slice(2),
+    process.env,
+    (value) => console.log(JSON.stringify(value))
+  );
+  if (maintenance !== null) {
+    process.exitCode = maintenance;
+    return;
+  }
+  const { AppModule } = await import('./app.module');
+  if (!admin.apps.length)
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      projectId: process.env.FIREBASE_PROJECT_ID,
+    });
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableShutdownHooks();
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: false,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
       transform: true,
-      transformOptions: { enableImplicitConversion: true },
+      validationError: { target: false, value: false },
     })
   );
 
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .filter(Boolean);
   app.enableCors({
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
-      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) return cb(null, true);
+      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin))
+        return cb(null, true);
       return cb(null, false);
     },
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
     credentials: true,
   });
 
@@ -51,11 +69,15 @@ async function bootstrap() {
   const firebaseWebApiKey = process.env.FIREBASE_WEB_API_KEY;
 
   if (!ingressSecret) {
-    console.warn('⚠️  WARNING: INGRESS_AUTH_SECRET not set - backend services cannot validate auth headers!');
+    console.warn(
+      '⚠️  WARNING: INGRESS_AUTH_SECRET not set - backend services cannot validate auth headers!'
+    );
   }
 
   if (!firebaseWebApiKey) {
-    console.warn('⚠️  WARNING: FIREBASE_WEB_API_KEY not set - email/password authentication will not work!');
+    console.warn(
+      '⚠️  WARNING: FIREBASE_WEB_API_KEY not set - email/password authentication will not work!'
+    );
   }
 
   const enableEmailPassword = process.env.ENABLE_EMAIL_PASSWORD !== 'false';
@@ -68,7 +90,9 @@ async function bootstrap() {
 
   console.log(`🔐 Authenticator running on port ${port}`);
   console.log(`📋 Firebase Project ID: ${firebaseProjectId || 'NOT SET'}`);
-  console.log(`📋 Firebase Web API Key: ${firebaseWebApiKey ? '✓ SET' : '✗ NOT SET'}`);
+  console.log(
+    `📋 Firebase Web API Key: ${firebaseWebApiKey ? '✓ SET' : '✗ NOT SET'}`
+  );
   console.log(`📋 Enabled providers:`);
   console.log(`   - Email/Password: ${enableEmailPassword ? '✓' : '✗'}`);
   console.log(`   - Google: ${enableGoogle && googleClientId ? '✓' : '✗'}`);
@@ -76,4 +100,9 @@ async function bootstrap() {
   console.log(`   - Anonymous: ${enableAnonymous ? '✓' : '✗'}`);
 }
 
-void bootstrap();
+void bootstrap().catch(() => {
+  console.error(
+    'Authenticator startup/maintenance failed; check configuration, migrations and service dependencies'
+  );
+  process.exitCode = 1;
+});

@@ -6,7 +6,7 @@
     "types": [],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "rootDir": "src",
     "composite": true,
     "tsBuildInfoFile": "../../../../dist/sdk/kernel/ontology/governance/tsconfig.lib.tsbuildinfo"

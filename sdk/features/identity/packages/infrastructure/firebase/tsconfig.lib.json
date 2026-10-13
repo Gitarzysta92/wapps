@@ -6,13 +6,30 @@
     "composite": true,
     "rootDir": "src",
     "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/packages/infrastructure/firebase/tsconfig.lib.tsbuildinfo",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
   "references": [
-    { "path": "../../../../../kernel/standard/tsconfig.lib.json" },
-    { "path": "../../../libs/authentication/tsconfig.lib.json" },
-    { "path": "../../../libs/management/tsconfig.lib.json" }
+    {
+      "path": "../../../../../kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/authentication/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../core/tsconfig.lib.json"
+    }
   ]
 }

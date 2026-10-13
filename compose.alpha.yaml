@@ -1,15 +1,444 @@
-# Coolify builds this from the repository root. Cloudflared runs on the host.
+# Server deployment. Provision /data/wapps-alpha/secrets before startup.
+name: wapps-alpha
 services:
-  portal:
-    build:
-      context: .
-      dockerfile: deploy/alpha/Dockerfile
-    ports:
-      - "127.0.0.1:4203:8080"
-    restart: unless-stopped
+  mysql:
+    image: mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./deploy/alpha/mysql-init.sql:/docker-entrypoint-initdb.d/10-wapps.sql:ro
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      test:
+        - CMD-SHELL
+        - MYSQL_PWD="$$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u wapps -D discussion
+          -e "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/mysql.env
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  mongodb:
+    image: mongo:7@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mongosh --quiet --host 127.0.0.1 -u "$$MONGO_INITDB_ROOT_USERNAME" -p
+          "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval
+          "db.adminCommand({ping:1})"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/mongodb.env
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  rabbitmq:
+    image: rabbitmq:4-management@sha256:8dd6e3570ddaa2ef82a6c3a8950e79c1f73893adfbdddbc374fc1f1ac8a0f5dd
+    hostname: rabbitmq
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q
+          check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/rabbitmq.env
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  minio:
+    image: ghcr.io/coollabsio/minio:RELEASE.2025-04-22T22-12-26Z@sha256:a4938f37f1be1841b8e7b627ad0207b265345fd0d063e42d7410c78af0e63e68
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9001
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mc ready local
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/minio.env
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  opa:
+    restart: unless-stopped
+    image: ghcr.io/gitarzysta92/wapps-alpha-opa:${WAPPS_IMAGE_TAG:?Set the full
+      tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  editorial:
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+      opa:
+        condition: service_started
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      editorial-migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+      mongodb:
+        condition: service_healthy
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e
+          "fetch('http://127.0.0.1:1337/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/editorial.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-editorial:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  editorial-materializer:
+    command:
+      - node
+      - main.js
+      - --materialize
+    depends_on:
+      editorial:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+    init: true
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/editorial-materializer.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-editorial:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  discussion-migrate:
+    command:
+      - node
+      - main.js
+      - --migrate
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: no
+    env_file:
+      - /data/wapps-alpha/secrets/discussion-migrate.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-discussion:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  discussion:
+    depends_on:
+      discussion-migrate:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      minio:
+        condition: service_healthy
+        restart: true
+      opa:
+        condition: service_started
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e
+          "fetch('http://127.0.0.1:1338/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/discussion.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-discussion:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  catalog-bff:
+    depends_on:
+      editorial:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/catalog-bff.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-catalog-bff:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  identity-migrate:
+    command:
+      - node
+      - main.js
+      - --migrate
+    depends_on:
+      mysql:
+        condition: service_healthy
+    init: true
+    restart: no
+    env_file:
+      - /data/wapps-alpha/secrets/identity-migrate.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-authenticator:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  account-management:
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+      opa:
+        condition: service_started
+        restart: true
+      mysql:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e
+          "fetch('http://127.0.0.1:1340/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/account-management.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-account-management:${WAPPS_IMAGE_TAG:?Set
+      the full tested source SHA}
+    volumes:
+      - type: bind
+        source: /data/wapps-alpha/secrets/firebase-service-account.json
+        target: /run/secrets/firebase.json
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  firebase-auth-validator:
+    depends_on:
+      identity-migrate:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    init: true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e
+          "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/firebase-auth-validator.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-authenticator:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    volumes:
+      - type: bind
+        source: /data/wapps-alpha/secrets/firebase-service-account.json
+        target: /run/secrets/firebase.json
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  discussion-materializer:
+    depends_on:
+      discussion:
+        condition: service_healthy
+        restart: true
+    init: true
+    restart: unless-stopped
+    env_file:
+      - /data/wapps-alpha/secrets/discussion-materializer.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-discussion-materializer:${WAPPS_IMAGE_TAG:?Set
+      the full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  editorial-migrate:
+    depends_on:
+      mysql:
+        condition: service_healthy
+    init: true
+    restart: no
+    env_file:
+      - /data/wapps-alpha/secrets/editorial.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-editorial:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    command:
+      - node
+      - main.js
+      - --migrate
+  storage-init:
+    depends_on:
+      minio:
+        condition: service_healthy
+    init: true
+    restart: no
+    env_file:
+      - /data/wapps-alpha/secrets/editorial.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-editorial:${WAPPS_IMAGE_TAG:?Set the
+      full tested source SHA}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    command:
+      - node
+      - provision-storage.cjs
+  portal:
+    image: ghcr.io/gitarzysta92/wapps-alpha-portal:${WAPPS_IMAGE_TAG:?Set the full
+      tested source SHA}
+    ports:
+      - 127.0.0.1:${WAPPS_GATEWAY_PORT:-4203}:8080
+    depends_on:
+      editorial:
+        condition: service_healthy
+      discussion:
+        condition: service_healthy
+      catalog-bff:
+        condition: service_healthy
+      account-management:
+        condition: service_healthy
+      firebase-auth-validator:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1:8080/health
       interval: 15s
       timeout: 3s
       start_period: 5s
-      retries: 3
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+volumes:
+  mysql-data:
+    name: wapps-alpha-mysql-data
+    external: true
+  mongodb-data:
+    name: wapps-alpha-mongodb-data
+    external: true
+  rabbitmq-data:
+    name: wapps-alpha-rabbitmq-data
+    external: true
+  minio-data:
+    name: wapps-alpha-minio-data
+    external: true

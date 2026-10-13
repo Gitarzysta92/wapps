@@ -1,8 +1,8 @@
-import { Controller, Get, Headers, Inject, Res } from '@nestjs/common';
+import { Controller, Get, Headers, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { IDENTITY_AUTH_SERVICE } from '../tokens';
 import { TokenValidationService } from '../services/token-validation.service';
+import { IdentityAuthenticationUnavailable } from '@sdk/features/identity/libs/authentication';
 
 @Controller()
 export class ValidationController {
@@ -12,15 +12,19 @@ export class ValidationController {
   ) {}
 
   @Get('/validate')
-  async validateRequired(@Headers('authorization') authorization: string | undefined, @Res() res: Response) {
-    const result = await this.identificationService.validateRequired(authorization);
+  async validateRequired(
+    @Headers('authorization') authorization: string | undefined,
+    @Res() res: Response
+  ) {
+    const result = await this.identificationService.validateRequired(
+      authorization
+    );
     if (!result.ok) {
-      // eslint-disable-next-line no-console
       console.error('❌ Token validation failed:', result.error.message);
 
       const code =
-        result.error && typeof (result.error as { code?: string }).code === 'string'
-          ? (result.error as unknown as { code: string }).code
+        'code' in result.error && typeof result.error.code === 'string'
+          ? result.error.code
           : undefined;
 
       if (code === 'auth/id-token-expired') {
@@ -40,15 +44,12 @@ export class ValidationController {
     res.setHeader('X-User-Email', principal.email || '');
     res.setHeader('X-Auth-Time', principal.authTime?.toString() || '');
 
-    if (this.config.get<string>('INGRESS_AUTH_SECRET')) {
-      res.setHeader('X-Ingress-Auth', this.config.get<string>('INGRESS_AUTH_SECRET')!);
-    }
+    this.setIngressSecret(res);
 
     if (principal.claims) {
       res.setHeader('X-User-Claims', JSON.stringify(principal.claims));
     }
 
-    // eslint-disable-next-line no-console
     console.log(`✅ Token validated for user: ${principal.uid}`);
 
     return res.status(200).json({
@@ -58,28 +59,46 @@ export class ValidationController {
   }
 
   @Get('/validate-optional')
-  async validateOptional(@Headers('authorization') authorization: string | undefined, @Res() res: Response) {
-    const result = await this.identificationService.validateOptional(authorization);
+  async validateOptional(
+    @Headers('authorization') authorization: string | undefined,
+    @Res() res: Response
+  ) {
+    const result = await this.identificationService.validateOptional(
+      authorization
+    );
 
-    if (!result.ok || result.value.authenticated !== true) {
+    if (!result.ok) {
+      return res
+        .status(
+          result.error instanceof IdentityAuthenticationUnavailable ? 503 : 401
+        )
+        .json({ error: 'Identity validation failed' });
+    }
+
+    if (result.value.authenticated !== true) {
       res.setHeader('X-Anonymous', 'true');
-      if (this.config.get<string>('INGRESS_AUTH_SECRET')) {
-        res.setHeader('X-Ingress-Auth', this.config.get<string>('INGRESS_AUTH_SECRET')!);
-      }
+      this.setIngressSecret(res);
       return res.status(200).json({ authenticated: false, anonymous: true });
     }
 
     const principal = result.value.principal;
     res.setHeader('X-User-Id', principal.uid);
     res.setHeader('X-User-Email', principal.email || '');
-
-    if (this.config.get<string>('INGRESS_AUTH_SECRET')) {
-      res.setHeader('X-Ingress-Auth', this.config.get<string>('INGRESS_AUTH_SECRET')!);
+    res.setHeader('X-Auth-Time', principal.authTime?.toString() || '');
+    if (principal.claims) {
+      res.setHeader('X-User-Claims', JSON.stringify(principal.claims));
     }
+
+    this.setIngressSecret(res);
 
     return res.status(200).json({
       authenticated: true,
       uid: principal.uid,
     });
+  }
+
+  private setIngressSecret(res: Response): void {
+    const secret = this.config.get<string>('INGRESS_AUTH_SECRET');
+    if (secret) res.setHeader('X-Ingress-Auth', secret);
   }
 }

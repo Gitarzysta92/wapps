@@ -1,0 +1,19 @@
+<section aria-label="Profile totals" class="profile-totals">
+  <header>
+    <h2>Profile totals</h2>
+    <p class="profile-meta">Current public contributions and saved public favorites. Discussion threads count once, including threads with replies by this member.</p>
+  </header>
+  @if (totals.status() === 'loading') {
+    <p role="status" aria-busy="true">Loading profile totals...</p>
+  } @else if (totals.status() === 'unavailable') {
+    <p role="alert">Profile totals could not be loaded. Access or content may have changed.</p>
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="totals.reload()">Retry profile totals</button>
+  } @else {
+    <dl>
+      @for (item of items(); track item.label) {
+        <div><dt>{{ item.label }}</dt><dd>{{ item.value === null ? 'Not shared' : item.value }}</dd></div>
+      }
+    </dl>
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="totals.reload()">Refresh profile totals</button>
+  }
+</section>

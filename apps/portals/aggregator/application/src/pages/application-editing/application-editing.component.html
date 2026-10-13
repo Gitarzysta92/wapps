@@ -1,0 +1,341 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">Edit verified application</h1>
+  <p slot="meta">
+    Keep a private working copy, compare it with current canonical content, and
+    submit saved changes for independent review.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    size="s"
+    appearance="secondary"
+    routerLink="/my/apps"
+    >My Apps</a
+  >
+  <nav slot="navigation" aria-label="Application editing sections">
+    <a tuiLink [routerLink]="'/' + workspacePaths.claims"
+      >My ownership claims</a
+    >
+  </nav>
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="editing.loading() || editing.saving()"
+>
+  @if (!editing.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Private editing drafts belong to your account."
+  />
+  } @else { @if (editing.error()) {
+  <p role="alert" class="application-draft-feedback">{{ editing.error() }}</p>
+  } @if (editing.uncertain()) {
+  <button
+    tuiButton
+    type="button"
+    size="m"
+    [disabled]="editing.saving() || editing.loading()"
+    (click)="retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @if (editing.feedback()) {
+  <p role="status">{{ editing.feedback() }}</p>
+  } @if (!editing.draft() && (media.pending() || media.error() ||
+  media.feedback() || !media.recoveryReady())) {
+  <application-media-recovery
+    [disabled]="editing.saving() || editing.uncertain()"
+  />
+  } @if (editing.loading()) {
+  <p role="status">Loading editing workspace...</p>
+  } @else {
+  <div class="application-draft-actions">
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="
+        editing.saving() ||
+        editing.uncertain() ||
+        media.saving() ||
+        !!media.pending()
+      "
+      (click)="editing.refreshSource()"
+    >
+      Refresh canonical content</button
+    ><button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="
+        editing.saving() ||
+        editing.uncertain() ||
+        media.saving() ||
+        !!media.pending()
+      "
+      (click)="editing.reload()"
+    >
+      Reload saved draft
+    </button>
+  </div>
+  @if (editing.sourceChanged()) {
+  <p role="alert">
+    The canonical application changed since this draft was prepared. Your
+    private edits are retained. Compare the fields and explicitly merge before
+    publishing.
+  </p>
+  } @if (editing.grantChanged()) {
+  <p role="alert">
+    This draft belongs to an earlier ownership grant. You can keep its private
+    text, but a new grant requires a new draft. Rename or remove the old draft
+    in My Apps to free its slug.
+  </p>
+  } @if (editing.draft() || editing.source()) {
+  <form
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    (ngSubmit)="save()"
+  >
+    <div class="application-draft-heading">
+      <h2>
+        {{ editing.draft() ? 'Private editing draft' : 'New editing draft' }}
+      </h2>
+      <p>
+        Saving remains private. Merging cancels pending review without changing
+        the public application.
+      </p>
+    </div>
+    <fieldset
+      [disabled]="
+        editing.saving() ||
+        editing.uncertain() ||
+        media.saving() ||
+        !!media.pending()
+      "
+    >
+      <label for="application-editing-classification">Proposed content classification</label>
+      <select id="application-editing-classification" name="classification" class="application-draft-input" [ngModel]="editing.fields().classification" (ngModelChange)="editing.setField('classification', $event)">
+        <option [ngValue]="undefined">Unclassified</option>
+        <option value="general">General</option>
+        <option value="mature">Mature</option>
+      </select>
+      <p>Staff reviews this classification with the submitted content. Mature and unclassified content is hidden in Discover when mature content is disabled.</p>
+      @if (editing.source(); as source) {
+      <p>Current approved classification: {{ source.fields.classification || 'Unclassified' }}</p>
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="editing.useCanonical('classification')">Use approved classification</button>
+      }
+      @for (field of fieldNames; track field.key) {
+      <div class="application-editing-field">
+        <label [for]="'application-editing-' + field.key">{{
+          field.label
+        }}</label>
+        @if (field.key === 'description') {
+        <textarea
+          class="application-draft-input"
+          [id]="'application-editing-' + field.key"
+          [name]="field.key"
+          rows="6"
+          minlength="20"
+          [maxlength]="field.max"
+          required
+          [ngModel]="editing.fields()[field.key]"
+          (ngModelChange)="editing.setField(field.key, $event)"
+        ></textarea>
+        } @else {
+        <input
+          class="application-draft-input"
+          [id]="'application-editing-' + field.key"
+          [name]="field.key"
+          [type]="field.key === 'website' ? 'url' : 'text'"
+          [maxlength]="field.max"
+          required
+          [ngModel]="editing.fields()[field.key]"
+          (ngModelChange)="editing.setField(field.key, $event)"
+        />
+        } @if (editing.source(); as source) {
+        <details
+          class="application-editing-comparison"
+          [open]="editing.sourceChanged()"
+        >
+          <summary>Current canonical {{ field.label.toLowerCase() }}</summary>
+          <p class="application-draft-description">
+            {{ source.fields[field.key] || 'Not provided' }}
+          </p>
+          <button
+            tuiButton
+            type="button"
+            size="s"
+            appearance="secondary"
+            (click)="editing.useCanonical(field.key)"
+          >
+            Use canonical {{ field.label.toLowerCase() }}
+          </button>
+        </details>
+        }
+      </div>
+      }
+      <p>
+        Use a lowercase slug, a complete HTTP(S) website and a description of
+        20-2,000 characters. Changing the form never automatically overwrites
+        canonical content.
+      </p>
+    </fieldset>
+    @if (editing.draft(); as draft) { @if (editing.source(); as source) {
+    <section aria-label="Image comparison" class="application-image-comparison">
+      <div class="application-draft-heading">
+        <h2>Images for canonical merge</h2>
+        <p>
+          Choose each saved image or its current canonical version. Use Merge
+          with current revision to apply these choices.
+        </p>
+      </div>
+      @if (draft.images && source.images) { @for (purpose of imagePurposes;
+      track purpose) {
+      <fieldset
+        [disabled]="
+          editing.saving() ||
+          editing.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+      >
+        <legend>{{ purpose === 'logo' ? 'Logo' : 'Banner' }}</legend>
+        <div class="application-image-grid">
+          <div class="application-draft-heading">
+            <label
+              ><input
+                type="radio"
+                [name]="'image-merge-' + purpose"
+                [checked]="editing.imageChoices()[purpose] === 'draft'"
+                (change)="editing.chooseImage(purpose, 'draft')"
+              />
+              Keep saved {{ purpose }}</label
+            >
+            <application-image-preview
+              [label]="'saved ' + purpose"
+              [reference]="draft.images[purpose]"
+              [target]="{ kind: 'draft', id: draft.id, purpose }"
+            />
+          </div>
+          <div class="application-draft-heading">
+            <label
+              ><input
+                type="radio"
+                [name]="'image-merge-' + purpose"
+                [checked]="editing.imageChoices()[purpose] === 'canonical'"
+                (change)="editing.chooseImage(purpose, 'canonical')"
+              />
+              Use canonical {{ purpose }}</label
+            >
+            <application-image-preview
+              [label]="'canonical ' + purpose"
+              [reference]="source.images[purpose]"
+              [target]="{
+                kind: 'canonical',
+                id: source.applicationId,
+                purpose
+              }"
+            />
+          </div>
+        </div>
+      </fieldset>
+      } } @else {
+      <p>Reload image information before merging this draft.</p>
+      }
+    </section>
+    } }
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="submit"
+        size="m"
+        [disabled]="
+          editing.saving() ||
+          editing.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+      >
+        Save private draft
+      </button>
+      @if (editing.draft(); as draft) {
+      <a
+        tuiButton
+        size="m"
+        appearance="secondary"
+        [routerLink]="['/my/apps', draft.id, 'publication']"
+        >Manage publication</a
+      >
+      @if (editing.source() && !editing.grantChanged()) {
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="
+          editing.saving() ||
+          editing.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+        (click)="confirmingMerge.set(true)"
+      >
+        Merge with current revision
+      </button>
+      } }
+    </div>
+  </form>
+  @if (editing.draft(); as draft) {
+  <application-media-editor
+    [draft]="draft"
+    [disabled]="editing.saving() || editing.uncertain()"
+    (changed)="editing.acceptImageChange($event)"
+  />
+  } @else {
+  <p>Save this editing draft before uploading images.</p>
+  } } @if (confirmingMerge()) {
+  <section
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    aria-label="Confirm canonical merge"
+  >
+    <div class="application-draft-heading">
+      <h2>Save this merged draft?</h2>
+      <p>
+        The form's current values become the private draft based on canonical
+        revision {{ editing.source()?.sourcePublicationRevision }}, using the
+        {{ editing.imageChoices().logo }} logo and
+        {{ editing.imageChoices().banner }} banner. Any pending review is
+        cancelled. Current public content is retained.
+      </p>
+    </div>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="
+          editing.saving() ||
+          editing.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+        (click)="save(true)"
+      >
+        Confirm merged draft</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        (click)="confirmingMerge.set(false)"
+      >
+        Keep editing
+      </button>
+    </div>
+  </section>
+  } } }
+</section>

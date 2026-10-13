@@ -1,4 +1,4 @@
-import { DiscussionPreviewDto } from '@domains/discussion';
+import type { DiscussionPreviewDto } from '@domains/discussion/contracts';
 import { APPLICATIONS } from './applications';
 
 export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
@@ -13,9 +13,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 156,
     isPinned: true,
     tags: ['integration', 'api', 'help'],
-    excerpt: 'I\'m trying to integrate this app with our existing API infrastructure but running into authentication issues...',
+    excerpt:
+      "I'm trying to integrate this app with our existing API infrastructure but running into authentication issues...",
     slug: 'how-to-integrate-with-external-apis',
-    associationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug,
   },
   {
     id: '2',
@@ -28,9 +29,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 89,
     isPinned: false,
     tags: ['performance', 'optimization'],
-    excerpt: 'After using this app for a few weeks, I\'ve discovered some great performance optimization techniques...',
+    excerpt:
+      "After using this app for a few weeks, I've discovered some great performance optimization techniques...",
     slug: 'performance-optimization-tips',
-    associationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug,
   },
   {
     id: '3',
@@ -43,9 +45,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 234,
     isPinned: false,
     tags: ['feature-request', 'ui', 'dark-mode'],
-    excerpt: 'Would love to see dark mode support added to the application. Many users have requested this feature...',
+    excerpt:
+      'Would love to see dark mode support added to the application. Many users have requested this feature...',
     slug: 'feature-request-dark-mode-support',
-    associationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug,
   },
   {
     id: '4',
@@ -58,9 +61,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 78,
     isPinned: false,
     tags: ['bug-report', 'mobile', 'login'],
-    excerpt: 'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
+    excerpt:
+      'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
     slug: 'bug-report-login-issues-on-mobile',
-    associationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug,
   },
   {
     id: '5',
@@ -73,9 +77,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 312,
     isPinned: true,
     tags: ['collaboration', 'best-practices', 'team'],
-    excerpt: 'Sharing some tips and tricks we\'ve learned for effective team collaboration using this platform...',
+    excerpt:
+      "Sharing some tips and tricks we've learned for effective team collaboration using this platform...",
     slug: 'best-practices-for-team-collaboration',
-    associationSlug: APPLICATIONS[0].slug
+    associationSlug: APPLICATIONS[0].slug,
   },
 
   {
@@ -89,9 +94,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 156,
     isPinned: true,
     tags: ['integration', 'api', 'help'],
-    excerpt: 'I\'m trying to integrate this app with our existing API infrastructure but running into authentication issues...',
+    excerpt:
+      "I'm trying to integrate this app with our existing API infrastructure but running into authentication issues...",
     slug: 'how-to-integrate-with-external-apis',
-    associationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug,
   },
   {
     id: '7',
@@ -104,9 +110,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 89,
     isPinned: false,
     tags: ['performance', 'optimization'],
-    excerpt: 'After using this app for a few weeks, I\'ve discovered some great performance optimization techniques...',
+    excerpt:
+      "After using this app for a few weeks, I've discovered some great performance optimization techniques...",
     slug: 'performance-optimization-tips',
-    associationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug,
   },
   {
     id: '8',
@@ -119,9 +126,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 234,
     isPinned: false,
     tags: ['feature-request', 'ui', 'dark-mode'],
-    excerpt: 'Would love to see dark mode support added to the application. Many users have requested this feature...',
+    excerpt:
+      'Would love to see dark mode support added to the application. Many users have requested this feature...',
     slug: 'feature-request-dark-mode-support',
-    associationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug,
   },
   {
     id: '9',
@@ -134,9 +142,10 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 78,
     isPinned: false,
     tags: ['bug-report', 'mobile', 'login'],
-    excerpt: 'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
+    excerpt:
+      'Experiencing login failures on mobile devices. The authentication seems to work fine on desktop but fails on mobile browsers...',
     slug: 'bug-report-login-issues-on-mobile',
-    associationSlug: APPLICATIONS[1].slug
+    associationSlug: APPLICATIONS[1].slug,
   },
   {
     id: '10',
@@ -149,8 +158,9 @@ export const DISCUSSION_PREVIEW_DATA: DiscussionPreviewDto[] = [
     viewsCount: 312,
     isPinned: true,
     tags: ['collaboration', 'best-practices', 'team'],
-    excerpt: 'Sharing some tips and tricks we\'ve learned for effective team collaboration using this platform...',
+    excerpt:
+      "Sharing some tips and tricks we've learned for effective team collaboration using this platform...",
     slug: 'best-practices-for-team-collaboration',
-    associationSlug: APPLICATIONS[1].slug
-  }
-]
+    associationSlug: APPLICATIONS[1].slug,
+  },
+];

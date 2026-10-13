@@ -4,30 +4,35 @@
   "projectType": "library",
   "prefix": "ui",
   "sourceRoot": "libs/ui/intro-hero/src",
-  "tags": ["type:ui", "scope:intro-hero"],
+  "tags": [
+    "type:ui",
+    "scope:intro-hero",
+    "arch:ui"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "project": "libs/ui/intro-hero/ng-package.json"
+        "project": "libs/ui/intro-hero/ng-package.json",
+        "tsConfig": "libs/ui/intro-hero/tsconfig.lib.json"
       },
       "configurations": {
-        "production": {
-          "tsConfig": "libs/ui/intro-hero/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "libs/ui/intro-hero/tsconfig.lib.json"
-        }
+        "production": {},
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "libs/ui/intro-hero/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       },
       "configurations": {
         "ci": {
@@ -38,8 +43,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

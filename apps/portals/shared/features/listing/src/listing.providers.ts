@@ -1,18 +1,35 @@
-import { ApplicationConfig } from "@angular/core";
-import { APP_LISTING_PROVIDER, AppListingService, CategoriesService } from "./application";
-import { AppListingApiService, AppListingBffApiService } from "./infrastructure";
+import { ApplicationConfig } from '@angular/core';
+import {
+  CATALOG_BROWSER,
+  CATALOG_API_URL,
+  DEMO_CATALOG_ENTRIES,
+} from './application/catalog-browser.port';
+import { CatalogBrowserService } from './application/catalog-browser.service';
+import { CATALOG_ENTRIES } from './application/catalog-listing';
+import { CatalogBrowseApiService } from './infrastructure/catalog-browse-api.service';
+import { CatalogBrowseDemoService } from './infrastructure/catalog-browse-demo.service';
 
-export function provideListingFeature(config?: { useBff?: boolean }): ApplicationConfig {
-  const useRealApi = config?.useBff ?? true;
-  
+export function provideListingFeature(config: {
+  mode: 'api' | 'demo';
+  apiUrl?: string;
+}): ApplicationConfig {
   return {
     providers: [
-      { 
-        provide: APP_LISTING_PROVIDER, 
-        useClass: useRealApi ? AppListingBffApiService : AppListingApiService 
+      {
+        provide: CATALOG_API_URL,
+        useValue: (config.apiUrl ?? '').replace(/\/$/, ''),
       },
-      AppListingService,
-      CategoriesService
-    ]
+      ...(config.mode === 'demo'
+        ? [{ provide: DEMO_CATALOG_ENTRIES, useValue: () => CATALOG_ENTRIES }]
+        : []),
+      {
+        provide: CATALOG_BROWSER,
+        useClass:
+          config.mode === 'api'
+            ? CatalogBrowseApiService
+            : CatalogBrowseDemoService,
+      },
+      CatalogBrowserService,
+    ],
   };
 }

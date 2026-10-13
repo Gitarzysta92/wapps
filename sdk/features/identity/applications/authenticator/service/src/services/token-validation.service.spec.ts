@@ -1,21 +1,38 @@
 import { TokenValidationService } from './token-validation.service';
 import { err, ok } from '@sdk/kernel/standard';
+import type { FirebaseAdminIdTokenVerifier } from '@sdk/extras/identity-firebase';
+import type { MysqlIdentityProvider } from './mysql-identity-provider';
 
 describe('Token validation', () => {
   const verifier = { verifyIdToken: jest.fn() };
   const identities = { obtainIdentity: jest.fn() };
-  const service = new TokenValidationService(verifier as any, identities as any);
-  beforeEach(() => jest.resetAllMocks());
-  it.each(['Bearer signed-token', 'bearer signed-token', 'BEARER\tsigned-token'])(
-    'validates the token in %j', async (header) => {
-      verifier.verifyIdToken.mockResolvedValue(ok({ uid: 'uid' }));
-      identities.obtainIdentity.mockResolvedValue(ok({ canBeObtained: () => true }));
-      expect((await service.validateRequired(header)).ok).toBe(true);
-      expect(verifier.verifyIdToken).toHaveBeenCalledWith('signed-token');
-    }
+  const service = new TokenValidationService(
+    verifier as unknown as FirebaseAdminIdTokenVerifier,
+    identities as unknown as MysqlIdentityProvider
   );
-  it.each([undefined, '', 'Basic signed-token', 'signed-token', 'Bearer ', 'Bearer\\ssigned-token'])(
-    'rejects malformed header %j without validating a token', async (header) => {
+  beforeEach(() => jest.resetAllMocks());
+  it.each([
+    'Bearer signed-token',
+    'bearer signed-token',
+    'BEARER\tsigned-token',
+  ])('validates the token in %j', async (header) => {
+    verifier.verifyIdToken.mockResolvedValue(ok({ uid: 'uid' }));
+    identities.obtainIdentity.mockResolvedValue(
+      ok({ canBeObtained: () => true })
+    );
+    expect((await service.validateRequired(header)).ok).toBe(true);
+    expect(verifier.verifyIdToken).toHaveBeenCalledWith('signed-token');
+  });
+  it.each([
+    undefined,
+    '',
+    'Basic signed-token',
+    'signed-token',
+    'Bearer ',
+    'Bearer\\ssigned-token',
+  ])(
+    'rejects malformed header %j without validating a token',
+    async (header) => {
       expect((await service.validateRequired(header)).ok).toBe(false);
       expect(verifier.verifyIdToken).not.toHaveBeenCalled();
     }
@@ -35,12 +52,20 @@ describe('Token validation', () => {
     expect((await service.validateRequired('Bearer token')).ok).toBe(false);
   });
   it('returns the verified principal for an active identity', async () => {
-    verifier.verifyIdToken.mockResolvedValue(ok({ uid: 'uid', email: 'a@example.com' }));
-    identities.obtainIdentity.mockResolvedValue(ok({ canBeObtained: () => true }));
-    expect(await service.validateRequired('Bearer token')).toEqual(ok({ uid: 'uid', email: 'a@example.com' }));
+    verifier.verifyIdToken.mockResolvedValue(
+      ok({ uid: 'uid', email: 'a@example.com' })
+    );
+    identities.obtainIdentity.mockResolvedValue(
+      ok({ canBeObtained: () => true })
+    );
+    expect(await service.validateRequired('Bearer token')).toEqual(
+      ok({ uid: 'uid', email: 'a@example.com' })
+    );
   });
   it('allows a missing token for optional authentication', async () => {
-    expect(await service.validateOptional()).toEqual(ok({ authenticated: false }));
+    expect(await service.validateOptional()).toEqual(
+      ok({ authenticated: false })
+    );
     expect(verifier.verifyIdToken).not.toHaveBeenCalled();
   });
 });

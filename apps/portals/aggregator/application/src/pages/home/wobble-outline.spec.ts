@@ -1,9 +1,11 @@
-import { createWobbleOutline } from '../../../../../../../libs/ui/layout/src/decoration/wobble-outline';
+import { createWobbleOutline } from '@ui/layout';
 
 describe('canvas feed backing', () => {
   let host: HTMLElement;
   let top: number, width: number, height: number, scroll: number;
-  let resize: () => void, themeChange: (records?: MutationRecord[]) => void, motionChange: () => void;
+  let resize: () => void,
+    themeChange: (records?: MutationRecord[]) => void,
+    motionChange: () => void;
   let reduced: boolean, hidden: boolean;
   let frames: Map<number, FrameRequestCallback>;
   let cleanup: (() => void) | undefined;
@@ -13,50 +15,112 @@ describe('canvas feed backing', () => {
 
   function makeContext() {
     return {
-      setTransform: jest.fn(), clearRect: jest.fn(), beginPath: jest.fn(),
-      moveTo: jest.fn(), lineTo: jest.fn(), bezierCurveTo: jest.fn(), closePath: jest.fn(), stroke: jest.fn(), fill: jest.fn(),
-      createLinearGradient: jest.fn((_x0: number, _y0: number, _x1: number, _y1: number) => ({ addColorStop: jest.fn() })),
+      setTransform: jest.fn(),
+      clearRect: jest.fn(),
+      beginPath: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      bezierCurveTo: jest.fn(),
+      closePath: jest.fn(),
+      stroke: jest.fn(),
+      fill: jest.fn(),
+      createLinearGradient: jest.fn(
+        (_x0: number, _y0: number, _x1: number, _y1: number) => ({
+          addColorStop: jest.fn(),
+        })
+      ),
       fillStyle: '',
     };
   }
   function advance(stamp: number) {
     const scheduled = [...frames.values()];
     frames.clear();
-    scheduled.forEach(callback => callback(stamp));
+    scheduled.forEach((callback) => callback(stamp));
   }
   beforeEach(() => {
-    scroll = 0; top = 200; width = 848; height = 3000; reduced = hidden = false;
+    scroll = 0;
+    top = 200;
+    width = 848;
+    height = 3000;
+    reduced = hidden = false;
     frames = new Map();
     host = document.createElement('section');
     host.innerHTML = '<button>Feed action</button>';
-    host.style.cssText = '--wobble-outline-amplitude: 8; --wobble-outline-duration: 16s; --wobble-outline-color: #667eea; border-radius: 8px;';
+    host.style.cssText =
+      '--wobble-outline-amplitude: 8; --wobble-outline-duration: 16s; --wobble-outline-color: #667eea; border-radius: 8px;';
     document.body.appendChild(host);
-    jest.spyOn(host, 'getBoundingClientRect').mockImplementation(() => ({ top, bottom: top + height, width, height } as DOMRect));
-    for (const key of ['ResizeObserver', 'MutationObserver', 'matchMedia', 'devicePixelRatio', 'scrollY']) originals.set(key, Object.getOwnPropertyDescriptor(window, key));
-    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scroll });
-    Object.defineProperty(window, 'ResizeObserver', { configurable: true, value: class {
-      constructor(callback: () => void) { resize = callback; }
-      observe() {} disconnect = disconnect;
-    }});
-    Object.defineProperty(window, 'MutationObserver', { configurable: true, value: class {
-      constructor(callback: (records?: MutationRecord[]) => void) { themeChange = callback; }
-      observe() {} disconnect = disconnect;
-    }});
-    Object.defineProperty(window, 'matchMedia', { configurable: true, value: () => ({
-      get matches() { return reduced; },
-      addEventListener: (_: string, callback: () => void) => { motionChange = callback; },
-      removeEventListener: jest.fn(),
-    })});
-    Object.defineProperty(window, 'devicePixelRatio', { configurable: true, value: 3 });
+    jest
+      .spyOn(host, 'getBoundingClientRect')
+      .mockImplementation(
+        () => ({ top, bottom: top + height, width, height } as DOMRect)
+      );
+    for (const key of [
+      'ResizeObserver',
+      'MutationObserver',
+      'matchMedia',
+      'devicePixelRatio',
+      'scrollY',
+    ])
+      originals.set(key, Object.getOwnPropertyDescriptor(window, key));
+    Object.defineProperty(window, 'scrollY', {
+      configurable: true,
+      get: () => scroll,
+    });
+    Object.defineProperty(window, 'ResizeObserver', {
+      configurable: true,
+      value: class {
+        constructor(callback: () => void) {
+          resize = callback;
+        }
+        observe = jest.fn();
+        disconnect = disconnect;
+      },
+    });
+    Object.defineProperty(window, 'MutationObserver', {
+      configurable: true,
+      value: class {
+        constructor(callback: (records?: MutationRecord[]) => void) {
+          themeChange = callback;
+        }
+        observe = jest.fn();
+        disconnect = disconnect;
+      },
+    });
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: () => ({
+        get matches() {
+          return reduced;
+        },
+        addEventListener: (_: string, callback: () => void) => {
+          motionChange = callback;
+        },
+        removeEventListener: jest.fn(),
+      }),
+    });
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      value: 3,
+    });
     jest.spyOn(document, 'hidden', 'get').mockImplementation(() => hidden);
     paint = makeContext();
-    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(paint as unknown as CanvasRenderingContext2D);
+    jest
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockReturnValue(paint as unknown as CanvasRenderingContext2D);
     let nextFrame = 0;
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.set(++nextFrame, callback); return nextFrame; });
-    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { frames.delete(id); });
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.set(++nextFrame, callback);
+        return nextFrame;
+      });
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      frames.delete(id);
+    });
   });
   afterEach(() => {
-    cleanup?.(); cleanup = undefined;
+    cleanup?.();
+    cleanup = undefined;
     host.remove();
     jest.restoreAllMocks();
     for (const [key, value] of originals) {
@@ -66,7 +130,10 @@ describe('canvas feed backing', () => {
     originals.clear();
     jest.clearAllMocks();
   });
-  function start() { cleanup = createWobbleOutline(host); advance(0); }
+  function start() {
+    cleanup = createWobbleOutline(host);
+    advance(0);
+  }
 
   function enableGradient() {
     host.style.setProperty('--wobble-outline-color-2', '#764ba2');
@@ -82,15 +149,19 @@ describe('canvas feed backing', () => {
   }
 
   it('draws bubbles within the same canvas and gradient without changing content layout', () => {
-    enableGradient(); enableBubbles();
+    enableGradient();
+    enableBubbles();
     start();
     const canvas = host.querySelector('canvas')!;
     expect(host.querySelectorAll('canvas')).toHaveLength(1);
     expect(parseFloat(canvas.style.top)).toBeLessThan(-60);
     expect(paint.fill).toHaveBeenCalledTimes(11); // Backing plus ten liquid patches.
-    expect(paint.fillStyle).toBe(paint.createLinearGradient.mock.results[0].value);
+    expect(paint.fillStyle).toBe(
+      paint.createLinearGradient.mock.results[0].value
+    );
     const outline = [...paint.lineTo.mock.calls];
-    paint.lineTo.mockClear(); advance(4500);
+    paint.lineTo.mockClear();
+    advance(4500);
     expect(paint.lineTo.mock.calls).not.toEqual(outline);
     expect(paint.lineTo.mock.calls.flat().every(Number.isFinite)).toBe(true);
     expect(host.style.padding).toBe('');
@@ -98,16 +169,24 @@ describe('canvas feed backing', () => {
   });
 
   it('limits bubbles on narrow screens and skips them below the top or with reduced motion', () => {
-    enableBubbles(); width = 320;
+    enableBubbles();
+    width = 320;
     start();
     expect(paint.fill).toHaveBeenCalledTimes(5);
     paint.fill.mockClear();
-    top = -5_000_000; height = 10_000_000;
-    window.dispatchEvent(new Event('scroll')); advance(1000);
+    top = -5_000_000;
+    height = 10_000_000;
+    window.dispatchEvent(new Event('scroll'));
+    advance(1000);
     expect(paint.fill).toHaveBeenCalledTimes(1);
-    expect(host.querySelector('canvas')!.height).toBeLessThanOrEqual((window.innerHeight + 400) * 2);
+    expect(host.querySelector('canvas')!.height).toBeLessThanOrEqual(
+      (window.innerHeight + 400) * 2
+    );
     paint.fill.mockClear();
-    top = 200; reduced = true; motionChange(); advance(2000);
+    top = 200;
+    reduced = true;
+    motionChange();
+    advance(2000);
     expect(paint.fill).toHaveBeenCalledTimes(1);
     expect(frames.size).toBe(0);
     expect(host.querySelector('canvas')!.style.top).toBe('-10px');
@@ -119,7 +198,11 @@ describe('canvas feed backing', () => {
     const initial = paint.createLinearGradient.mock.calls[0];
     const gradient = paint.createLinearGradient.mock.results[0].value;
     expect(paint.fillStyle).toBe(gradient);
-    expect(gradient.addColorStop.mock.calls).toEqual([[0, '#667eea'], [0.5, '#764ba2'], [1, '#4f46e5']]);
+    expect(gradient.addColorStop.mock.calls).toEqual([
+      [0, '#667eea'],
+      [0.5, '#764ba2'],
+      [1, '#4f46e5'],
+    ]);
     advance(6000);
     expect(paint.createLinearGradient.mock.calls[1]).not.toEqual(initial);
     advance(24_000);
@@ -127,10 +210,17 @@ describe('canvas feed backing', () => {
     advance(23_999);
     const before = paint.createLinearGradient.mock.calls[3];
     advance(24_001);
-    expect(paint.createLinearGradient.mock.calls[4].every((n, i) => Math.abs(n - before[i]) < 0.25)).toBe(true);
+    expect(
+      paint.createLinearGradient.mock.calls[4].every(
+        (n, i) => Math.abs(n - before[i]) < 0.25
+      )
+    ).toBe(true);
     host.style.setProperty('--wobble-outline-color-2', '#4f46e5');
-    themeChange(); advance(25_000);
-    expect(paint.createLinearGradient.mock.results.at(-1)!.value.addColorStop).toHaveBeenCalledWith(0.5, '#4f46e5');
+    themeChange();
+    advance(25_000);
+    expect(
+      paint.createLinearGradient.mock.results.at(-1)!.value.addColorStop
+    ).toHaveBeenCalledWith(0.5, '#4f46e5');
   });
 
   it('keeps the gradient static and attached to the feed when scrolling with reduced motion', () => {
@@ -139,7 +229,8 @@ describe('canvas feed backing', () => {
     start();
     const initial = paint.createLinearGradient.mock.calls[0];
     top = -2000;
-    window.dispatchEvent(new Event('scroll')); advance(6000);
+    window.dispatchEvent(new Event('scroll'));
+    advance(6000);
     expect(paint.createLinearGradient.mock.calls[1]).toEqual(initial);
     expect(frames.size).toBe(0);
   });
@@ -174,11 +265,17 @@ describe('canvas feed backing', () => {
       advance(stamp);
       return paint.bezierCurveTo.mock.calls.flat();
     };
-    const before = geometry(15_999), after = geometry(16_001);
-    expect(after.every((value, i) => Math.abs(value - before[i]) < 0.1)).toBe(true);
+    const before = geometry(15_999),
+      after = geometry(16_001);
+    expect(after.every((value, i) => Math.abs(value - before[i]) < 0.1)).toBe(
+      true
+    );
     // The straight top edge cannot escape its 8px deformation envelope (10px bleed).
-    const topEdge = paint.bezierCurveTo.mock.calls.slice(0, Math.ceil((width - 32) / 12));
-    expect(topEdge.every(call => call[5] >= 2 && call[5] <= 18)).toBe(true);
+    const topEdge = paint.bezierCurveTo.mock.calls.slice(
+      0,
+      Math.ceil((width - 32) / 12)
+    );
+    expect(topEdge.every((call) => call[5] >= 2 && call[5] <= 18)).toBe(true);
   });
 
   it('adds broad top crests without widening the sides and stays continuous at the loop seam', () => {
@@ -186,16 +283,29 @@ describe('canvas feed backing', () => {
     host.style.setProperty('--wobble-top-wavelength', '220');
     start();
     const canvas = host.querySelector('canvas')!;
-    const firstEdge = paint.bezierCurveTo.mock.calls.slice(0, Math.ceil((width - 32) / 12));
-    const surface = firstEdge.map(call => call[5] + parseFloat(canvas.style.top));
+    const firstEdge = paint.bezierCurveTo.mock.calls.slice(
+      0,
+      Math.ceil((width - 32) / 12)
+    );
+    const surface = firstEdge.map(
+      (call) => call[5] + parseFloat(canvas.style.top)
+    );
     expect(Math.min(...surface)).toBeLessThan(-18);
     expect(Math.max(...surface) - Math.min(...surface)).toBeGreaterThan(16);
     expect(canvas.width).toBe((width + 20) * 2);
-    expect(paint.bezierCurveTo.mock.calls.flat().every(Number.isFinite)).toBe(true);
-    paint.bezierCurveTo.mockClear(); advance(15_999);
+    expect(paint.bezierCurveTo.mock.calls.flat().every(Number.isFinite)).toBe(
+      true
+    );
+    paint.bezierCurveTo.mockClear();
+    advance(15_999);
     const before = paint.bezierCurveTo.mock.calls.flat();
-    paint.bezierCurveTo.mockClear(); advance(16_001);
-    expect(paint.bezierCurveTo.mock.calls.flat().every((value, i) => Math.abs(value - before[i]) < 0.1)).toBe(true);
+    paint.bezierCurveTo.mockClear();
+    advance(16_001);
+    expect(
+      paint.bezierCurveTo.mock.calls
+        .flat()
+        .every((value, i) => Math.abs(value - before[i]) < 0.1)
+    ).toBe(true);
   });
 
   it('joins every side and corner when the whole feed fits in the viewport', () => {
@@ -207,24 +317,37 @@ describe('canvas feed backing', () => {
     expect(paint.fill).toHaveBeenCalledTimes(1);
   });
 
-  it.each([320, 848])('keeps side edges fixed while horizontal edges animate at %ipx', viewportWidth => {
-    width = viewportWidth; height = 160;
-    host.style.setProperty('--wobble-outline-side-amplitude', '0');
-    host.style.setProperty('--wobble-top-amplitude', '24');
-    start();
-    const before = [...paint.bezierCurveTo.mock.calls];
-    paint.bezierCurveTo.mockClear(); advance(4000);
-    const after = paint.bezierCurveTo.mock.calls;
-    expect(after.map(c => [c[0], c[2], c[4]])).toEqual(before.map(c => [c[0], c[2], c[4]]));
-    const sides = (calls: typeof before) => calls.filter(c =>
-      c[0] === c[2] && c[2] === c[4] && (c[4] === 10 || c[4] === width + 10));
-    expect(sides(before).length).toBeGreaterThan(2);
-    expect(sides(after)).toEqual(sides(before));
-    expect(after).not.toEqual(before);
-  });
+  it.each([320, 848])(
+    'keeps side edges fixed while horizontal edges animate at %ipx',
+    (viewportWidth) => {
+      width = viewportWidth;
+      height = 160;
+      host.style.setProperty('--wobble-outline-side-amplitude', '0');
+      host.style.setProperty('--wobble-top-amplitude', '24');
+      start();
+      const before = [...paint.bezierCurveTo.mock.calls];
+      paint.bezierCurveTo.mockClear();
+      advance(4000);
+      const after = paint.bezierCurveTo.mock.calls;
+      expect(after.map((c) => [c[0], c[2], c[4]])).toEqual(
+        before.map((c) => [c[0], c[2], c[4]])
+      );
+      const sides = (calls: typeof before) =>
+        calls.filter(
+          (c) =>
+            c[0] === c[2] &&
+            c[2] === c[4] &&
+            (c[4] === 10 || c[4] === width + 10)
+        );
+      expect(sides(before).length).toBeGreaterThan(2);
+      expect(sides(after)).toEqual(sides(before));
+      expect(after).not.toEqual(before);
+    }
+  );
 
   it('bounds both pixels and sampled edges for a long feed, including deep scrolling', () => {
-    height = 10_000_000; top = -5_000_000;
+    height = 10_000_000;
+    top = -5_000_000;
     start();
     const canvas = host.querySelector('canvas')!;
     expect(canvas.width).toBe((width + 20) * 2);
@@ -232,14 +355,23 @@ describe('canvas feed backing', () => {
     expect(paint.moveTo).toHaveBeenCalledTimes(1);
     expect(paint.lineTo).toHaveBeenCalledTimes(1); // Join the two visible sides below the crop.
     expect(paint.moveTo.mock.calls[0][1]).toBeLessThan(0);
-    expect(paint.lineTo.mock.calls[0][1]).toBeGreaterThan(window.innerHeight + 20);
+    expect(paint.lineTo.mock.calls[0][1]).toBeGreaterThan(
+      window.innerHeight + 20
+    );
     expect(paint.bezierCurveTo.mock.calls.length).toBeLessThan(300);
-    expect(paint.bezierCurveTo.mock.calls.flat().every(n => Number.isFinite(n) && Math.abs(n) < 2000)).toBe(true);
-    width = 280; height += 500;
-    resize(); advance(100);
+    expect(
+      paint.bezierCurveTo.mock.calls
+        .flat()
+        .every((n) => Number.isFinite(n) && Math.abs(n) < 2000)
+    ).toBe(true);
+    width = 280;
+    height += 500;
+    resize();
+    advance(100);
     expect(canvas.width).toBe((width + 20) * 2);
     host.style.setProperty('--wobble-outline-color', '#764ba2');
-    themeChange(); advance(200);
+    themeChange();
+    advance(200);
     expect(paint.fillStyle).toBe('#764ba2');
   });
 
@@ -249,41 +381,51 @@ describe('canvas feed backing', () => {
     expect(paint.fill).toHaveBeenCalledTimes(1);
     expect(frames.size).toBe(0);
     top = -300;
-    window.dispatchEvent(new Event('scroll')); advance(1000);
+    window.dispatchEvent(new Event('scroll'));
+    advance(1000);
     expect(paint.fill).toHaveBeenCalledTimes(2);
     expect(frames.size).toBe(0);
-    reduced = false; motionChange(); advance(2000);
+    reduced = false;
+    motionChange();
+    advance(2000);
     expect(frames.size).toBe(1);
-    reduced = true; motionChange(); advance(3000);
+    reduced = true;
+    motionChange();
+    advance(3000);
     expect(frames.size).toBe(0);
   });
 
   it('pauses offscreen and in hidden tabs, then resumes with current geometry', () => {
     start();
     top = -height - 20;
-    window.dispatchEvent(new Event('scroll')); advance(100);
+    window.dispatchEvent(new Event('scroll'));
+    advance(100);
     expect(host.querySelector('canvas')!.style.display).toBe('none');
     expect(frames.size).toBe(0);
     top = 0;
-    window.dispatchEvent(new Event('scroll')); advance(200);
+    window.dispatchEvent(new Event('scroll'));
+    advance(200);
     expect(frames.size).toBe(1);
     hidden = true;
     document.dispatchEvent(new Event('visibilitychange'));
     expect(frames.size).toBe(0);
     hidden = false;
-    document.dispatchEvent(new Event('visibilitychange')); advance(300);
+    document.dispatchEvent(new Event('visibilitychange'));
+    advance(300);
     expect(frames.size).toBe(1);
   });
 
   it('reuses its bitmap through small scroll movements', () => {
-    enableBubbles(); width = 390;
+    enableBubbles();
+    width = 390;
     start();
     const canvas = host.querySelector('canvas')!;
     const setHeight = jest.spyOn(canvas, 'height', 'set');
     const setWidth = jest.spyOn(canvas, 'width', 'set');
     for (let i = 1; i <= 40; i++) {
       top = 200 - i * 10;
-      window.dispatchEvent(new Event('scroll')); advance(i * 16);
+      window.dispatchEvent(new Event('scroll'));
+      advance(i * 16);
     }
     expect(setHeight).not.toHaveBeenCalled();
     expect(setWidth).not.toHaveBeenCalled();
@@ -295,11 +437,22 @@ describe('canvas feed backing', () => {
     const readStyle = jest.spyOn(window, 'getComputedStyle');
     const oldValue = host.getAttribute('style');
     host.style.setProperty('--decoration-fade-progress', '0.5');
-    const record = { target: host, attributeName: 'style', oldValue } as MutationRecord;
+    const record: MutationRecord = {
+      type: 'attributes',
+      target: host,
+      attributeName: 'style',
+      attributeNamespace: null,
+      addedNodes: document.createDocumentFragment().childNodes,
+      removedNodes: document.createDocumentFragment().childNodes,
+      nextSibling: null,
+      previousSibling: null,
+      oldValue,
+    };
     themeChange([record]);
     expect(readStyle).not.toHaveBeenCalled();
     host.style.setProperty('--wobble-outline-color', '#123456');
-    themeChange([record]); advance(16);
+    themeChange([record]);
+    advance(16);
     expect(readStyle).toHaveBeenCalledTimes(1);
     expect(paint.fillStyle).toBe('#123456');
   });
@@ -312,11 +465,13 @@ describe('canvas feed backing', () => {
     start();
     paint.clearRect.mockClear();
     scroll = 500;
-    window.dispatchEvent(new Event('scroll')); advance(1000);
+    window.dispatchEvent(new Event('scroll'));
+    advance(1000);
     expect(frames.size).toBe(0);
     expect(paint.clearRect).not.toHaveBeenCalled();
     scroll = 200;
-    window.dispatchEvent(new Event('scroll')); advance(2000);
+    window.dispatchEvent(new Event('scroll'));
+    advance(2000);
     expect(paint.clearRect).toHaveBeenCalledTimes(1);
     expect(frames.size).toBe(1);
   });
@@ -326,12 +481,15 @@ describe('canvas feed backing', () => {
     start();
     for (let i = 0; i < 5; i++) window.dispatchEvent(new Event('scroll'));
     expect(frames.size).toBe(1);
-    cleanup!(); cleanup = undefined;
+    cleanup!();
+    cleanup = undefined;
     expect(host.querySelector('canvas')).toBeNull();
     expect(host.classList.contains('ui-wobble-ready')).toBe(false);
     expect(frames.size).toBe(0);
     expect(disconnect).toHaveBeenCalledTimes(2);
-    expect(remove.mock.calls.map(([type]) => type)).toEqual(expect.arrayContaining(['scroll', 'resize']));
+    expect(remove.mock.calls.map(([type]) => type)).toEqual(
+      expect.arrayContaining(['scroll', 'resize'])
+    );
     window.dispatchEvent(new Event('scroll'));
     expect(frames.size).toBe(0);
   });

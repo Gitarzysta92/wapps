@@ -2,11 +2,12 @@
   "name": "store-app",
   "version": "0.0.1",
   "dependencies": {
-    "amqplib": "^0.10.3",
     "dotenv": "^16.5.0",
     "puppeteer": "^24.10.2",
     "node-fetch": "^2.6.12",
-    "@aws-sdk/client-s3": "^3.839.0"
-  }
+    "@domains/catalog/media": "0.0.1",
+    "@domains/catalog/record": "0.0.1",
+    "@sdk/kernel/standard": "0.0.1"
+  },
+  "private": true
 }
-

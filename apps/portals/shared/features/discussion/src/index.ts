@@ -13,5 +13,16 @@ export { DiscussionSmallCardSkeletonComponent } from './presentation/discussion-
 export { DiscussionMediumCardSkeletonComponent } from './presentation/discussion-medium-card-skeleton/discussion-medium-card-skeleton.component';
 export { QuickDiscussionButtonComponent } from './presentation/quick-discussion/quick-discussion-button.component';
 export { QuickDiscussionDialogComponent } from './presentation/quick-discussion/quick-discussion-dialog.component';
-export { QuickDiscussionService, type QuickDiscussionData } from './presentation/quick-discussion/quick-discussion.service';
+export {
+  QuickDiscussionService,
+  type QuickDiscussionData,
+} from './presentation/quick-discussion/quick-discussion.service';
 export { LocalDiscussionReplyComponent } from './presentation/local-discussion-reply/local-discussion-reply.component';
+
+export { ApplicationDiscussionsService } from './application/application-discussions.service';
+export { ApplicationDiscussionsComponent } from './presentation/application-discussions.component';
+export { ApplicationDiscussionPreviewsComponent } from './presentation/application-discussion-previews.component';
+export { provideApplicationDiscussions } from './application-discussions.providers';
+export { provideQuickDiscussions } from './application-discussions.providers';
+export { MyDiscussionsService } from './application/my-discussions.service';
+export { provideMyDiscussions } from './my-discussions.providers';

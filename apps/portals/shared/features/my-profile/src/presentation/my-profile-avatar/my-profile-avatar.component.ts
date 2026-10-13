@@ -1,14 +1,11 @@
-import { Component, input } from "@angular/core";
-import { TuiAvatar, TuiBadgedContent } from "@taiga-ui/kit";
+import { Component, input } from '@angular/core';
+import { TuiAvatar, TuiBadgedContent } from '@taiga-ui/kit';
 
 @Component({
-  selector: "[my-profile-avatar]",
+  selector: '[my-profile-avatar]',
   templateUrl: 'my-profile-avatar.component.html',
   styles: `tui-avatar { border: 2px solid }`,
-  imports: [
-    TuiBadgedContent,
-    TuiAvatar
-  ]
+  imports: [TuiBadgedContent, TuiAvatar],
 })
 export class MyProfileAvatarComponent {
   public readonly avatarPath = input<string | null>(null);

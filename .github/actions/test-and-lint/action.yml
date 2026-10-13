@@ -15,35 +15,34 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version-file: .nvmrc
         cache: 'npm'
 
     - name: Install dependencies
       run: |
-        echo "Installing dependencies for ${{ inputs.app-name }}..."
-        npm ci || { echo "❌ npm ci failed"; exit 1; }
+        npm ci
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    - name: Run linting
+    - name: Check project and architecture
+      env:
+        APP_NAME: ${{ inputs.app-name }}
+        NX_DAEMON: 'false'
+        NX_ISOLATE_PLUGINS: 'false'
+        NX_NO_CLOUD: 'true'
       run: |
-        echo "Running linting for ${{ inputs.app-name }}..."
-        npx nx lint ${{ inputs.app-name }} || { echo "❌ Linting failed for ${{ inputs.app-name }}"; exit 1; }
+        npx nx show project "$APP_NAME" --json
+        npm run check:boundaries
+        npm run check:inventory
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    - name: Run tests
-      run: |
-        echo "Running tests for ${{ inputs.app-name }}..."
-        npx nx test ${{ inputs.app-name }} --coverage --ci --passWithNoTests || { echo "❌ Tests failed for ${{ inputs.app-name }}"; exit 1; }
+    - name: Run workspace linting
+      run: npm run lint
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    - name: Upload coverage reports
-      if: always()
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
-        flags: ${{ inputs.app-name }}
-        name: ${{ inputs.app-name }}-coverage
-        fail_ci_if_error: false
+    - name: Run inventoried tests
+      run: npm test
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}

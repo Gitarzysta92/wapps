@@ -1,0 +1,67 @@
+<div class="media-pending">
+  @if (media.error()) {
+  <p role="alert">{{ media.error() }}</p>
+  } @if (media.feedback()) {
+  <p role="status">{{ media.feedback() }}</p>
+  } @if (media.recovering()) {
+  <p role="status">Recovering pending image changes...</p>
+  } @else if (!media.recoveryReady()) {
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    (click)="media.restore()"
+  >
+    Reload image recovery
+  </button>
+  } @if (media.pending(); as pending) {
+  <section class="media-pending" aria-label="Pending image change">
+    <h3>Finish the pending image change</h3>
+    @if (draftId() && pending.intent.draftId !== draftId()) {
+    <p>
+      This request belongs to another draft. Retrying finishes that original
+      request.
+    </p>
+    }
+    <p>
+      Retry with the same intent before making another image change. File
+      contents are never stored in browser recovery data.
+    </p>
+    <div class="media-actions">
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        [disabled]="disabled() || media.saving()"
+        (click)="media.retry()"
+      >
+        Retry image change
+      </button>
+      @if (pending.intent.type === 'upload' || pending.intent.type ===
+      'reserve') {
+      <label class="media-file"
+        >Select original image to retry
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          aria-label="Original image for retry"
+          [disabled]="disabled() || media.saving()"
+          (change)="resume($event)"
+        />
+      </label>
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        [disabled]="disabled() || media.saving()"
+        (click)="media.cancelPendingUpload()"
+      >
+        Cancel pending upload
+      </button>
+      }
+    </div>
+  </section>
+  }
+</div>

@@ -33,15 +33,15 @@ export class PasswordResetRequestForm {
   public readonly validationMessages = inject(VALIDATION_MESSAGES);
   
   public readonly resetRequestForm = new FormGroup({
-    email: new FormControl('', [
+    email: new FormControl('', { nonNullable: true, validators: [
       Validators.required,
       Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
-    ]),
+    ] }),
   });
 
   public submitForm(): void {
     if (this.resetRequestForm.valid) {
-      this.onSubmit.emit(this.resetRequestForm.getRawValue() as any);
+      this.onSubmit.emit(this.resetRequestForm.getRawValue());
     }
   }
 

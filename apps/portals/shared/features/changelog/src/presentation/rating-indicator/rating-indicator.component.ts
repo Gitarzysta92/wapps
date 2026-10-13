@@ -11,6 +11,6 @@ import { TuiIcon } from "@taiga-ui/core";
   ]
 })
 export class RatingIndicatorComponent {
-  @Input() rating: number = 0;
+  @Input() rating = 0;
 }
 

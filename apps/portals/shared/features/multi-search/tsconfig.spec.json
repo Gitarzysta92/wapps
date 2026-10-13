@@ -2,7 +2,18 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ],
+    "lib": [
+      "es2022",
+      "dom",
+      "dom.iterable"
+    ]
   },
-  "include": ["src/**/*.spec.ts", "test-setup.ts"]
+  "include": [
+    "src/**/*.spec.ts",
+    "test-setup.ts"
+  ]
 }

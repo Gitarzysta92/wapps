@@ -1,0 +1,64 @@
+<form class="discovery-search" [formGroup]="form" (ngSubmit)="submit()" aria-label="Discover search">
+  <label class="discovery-search-field">Search public content<input class="discovery-input" type="search" formControlName="search" maxlength="100" placeholder="Find applications, articles and suites" /></label>
+  <button tuiButton type="submit" size="m">Search</button>
+</form>
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs" />
+  <h1 uiPageTitle slot="title">Discover</h1>
+  <p slot="meta">Explore approved applications, published articles and shared suites.</p>
+  <button slot="actions" tuiButton appearance="secondary" size="s" type="button" [disabled]="results.loading()" (click)="results.reload()">Refresh results</button>
+</ui-page-header>
+<div class="discovery-content">
+  <div class="discovery-controls">
+    <label>Content<select class="discovery-input" [formControl]="selectedType" (change)="changeType(selectedType.value)">@if (selectedType.value.includes(',')) { <option [value]="selectedType.value">Selected types</option> }<option value="all">All types</option><option value="application">Applications</option><option value="article">Articles</option><option value="suite">Suites</option></select></label>
+    <label>Order<select #sort class="discovery-input" [value]="results.query()?.sort ?? 'name'" (change)="change({ sort: sort.value })"><option value="name">Name A-Z</option><option value="name-desc">Name Z-A</option><option value="newest">Newest</option></select></label>
+    <label>Per group<select #size class="discovery-input" [value]="results.query()?.pageSize ?? 20" (change)="change({ pageSize: size.value })">@if (results.query()?.pageSize; as pageSize) { @if (![10,20,50,100].includes(pageSize)) { <option [value]="pageSize">{{ pageSize }}</option> } }<option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select></label>
+    <label>View<select #view class="discovery-input" [value]="results.view()" (change)="change({ view: view.value })"><option value="grid">Grid</option><option value="list">List</option></select></label>
+  </div>
+  @if (form.controls.type.value === 'application' || form.controls.type.value === 'article') {
+    <form class="discovery-filters" [formGroup]="form" (ngSubmit)="submit()" aria-label="Content filters">
+      <label>Category<input class="discovery-input" formControlName="category" [placeholder]="form.controls.type.value === 'application' ? 'e.g. productivity' : 'Published category'" /></label>
+      <label>Tag<input class="discovery-input" formControlName="tag" placeholder="e.g. collaboration" /></label>
+      @if (form.controls.type.value === 'application') {
+        <label>Platform<input class="discovery-input" formControlName="platform" placeholder="e.g. web" /></label>
+        <label>Device<input class="discovery-input" formControlName="device" placeholder="e.g. desktop" /></label>
+        <label>Pricing<input class="discovery-input" formControlName="monetization" placeholder="e.g. free" /></label>
+      }
+      <button tuiButton type="submit" size="s" appearance="secondary">Apply filters</button>
+    </form>
+  }
+  <div class="discovery-actions"><a tuiLink routerLink="/discover">Clear search and filters</a><a tuiLink routerLink="/settings/preferences">Saved choices</a></div>
+  @if (results.recentSearches$ | async; as recent) {
+    @if (recent.length) { <nav class="discovery-recent" aria-label="Recent searches on this device"><span>Recent on this device:</span>@for (search of recent; track search) { <button tuiButton appearance="flat" type="button" size="xs" (click)="searchRecent(search)">{{ search }}</button> }</nav> }
+  }
+  <p class="discovery-note">Search matches application names and descriptions, and article and suite titles. Each group is paged separately. Totals count the source search; saved category exclusions hide matching items on the current page. Disabling mature content also hides mature and unclassified results. Suites have no category taxonomy.</p>
+  <div [attr.aria-busy]="results.loading()" aria-live="polite">
+    @let groups = results.groups();
+    @if (results.loading()) { <p role="status">Loading results and your saved choices...</p> }
+    @else if (results.error()) {
+      <ui-content-state [title]="results.invalid() ? 'Adjust your search' : 'Discover unavailable'" [description]="results.error()" icon="@tui.search" [error]="true">
+        @if (!results.invalid()) { <button tuiButton type="button" size="m" (click)="results.retry()">Retry search</button> }
+        <a tuiButton appearance="secondary" size="m" routerLink="/discover">Start a new search</a>
+      </ui-content-state>
+    } @else if (groups) {
+      @for (group of groups; track group.kind) {
+        <section class="discovery-group" [class.discovery-group--first]="$first" [id]="group.kind" [attr.aria-labelledby]="group.kind + '-title'">
+          <header class="discovery-group-heading"><h2 [id]="group.kind + '-title'">{{ labels[group.kind] }}</h2><p>{{ group.total }} matching results @if (group.hidden) { · {{ group.hidden }} hidden on this page by saved choices }</p></header>
+          <div class="discovery-grid" [class.discovery-grid--list]="results.view() === 'list'">
+            @for (item of group.items; track item.id) {
+              <article class="discovery-card" tuiAppearance="card-elevated" [attr.data-id]="item.id">
+                <header><h3><a tuiLink [routerLink]="link(group.kind, item)">{{ item.title }}</a></h3><time [attr.datetime]="timestamp(item.at)">{{ group.kind === 'application' ? 'Added' : 'Published' }} {{ item.at | preferredDate }}</time></header>
+                @if (item.summary) { <p>{{ item.summary }}</p> }
+              </article>
+            } @empty { <ui-content-state title="No matching results on this page" description="Try another search, a different page, or adjust your saved category choices." icon="@tui.search" /> }
+          </div>
+          <nav class="discovery-pagination" [attr.aria-label]="labels[group.kind] + ' pages'">
+            <button tuiButton type="button" size="s" appearance="secondary" [disabled]="group.page <= 1" (click)="page(group.kind, group.page - 1)" [attr.aria-label]="'Previous ' + labels[group.kind] + ' page'">Previous</button>
+            <span>Page {{ group.page }} of {{ group.totalPages }}</span>
+            <button tuiButton type="button" size="s" appearance="secondary" [disabled]="group.page >= group.totalPages || group.page >= 10000" (click)="page(group.kind, group.page + 1)" [attr.aria-label]="'Next ' + labels[group.kind] + ' page'">Next</button>
+          </nav>
+        </section>
+      }
+    }
+  </div>
+</div>

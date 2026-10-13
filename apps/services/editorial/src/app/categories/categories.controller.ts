@@ -1,40 +1,70 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Headers,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { CategoriesService } from './categories.service';
-import { Category } from './entities/category.entity';
+import { EditorialCommands } from '../application/editorial-commands';
+import { EditorialQueries } from '../application/editorial-queries';
+import type { EditorialActor } from '../application/editorial.ports';
+import { EditorialUser } from '../http/editorial-auth';
 
 @ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(
+    private readonly commands: EditorialCommands,
+    private readonly queries: EditorialQueries
+  ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all categories' })
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@EditorialUser(true) actor: EditorialActor | null) {
+    return this.queries.list('category', actor);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category by ID' })
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @EditorialUser(true) actor: EditorialActor | null
+  ) {
+    return this.queries.find('category', id, actor);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new category' })
-  create(@Body() data: Partial<Category>) {
-    return this.categoriesService.create(data);
+  @ApiOperation({
+    summary:
+      'Create an authorized catalog resource with a durable materialization intent',
+  })
+  create(
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.create('category', input, actor, key);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update category' })
-  update(@Param('id') id: string, @Body() data: Partial<Category>) {
-    return this.categoriesService.update(id, data);
+  update(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.update('category', id, input, actor, key);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete category' })
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.remove('category', id, input, actor, key);
   }
 }

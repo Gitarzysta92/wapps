@@ -1,0 +1,66 @@
+<div class="photo-actions" [attr.aria-busy]="editor.busy()">
+  <input
+    #photo
+    type="file"
+    accept="image/png,image/jpeg,image/webp"
+    hidden
+    (change)="select($event)"
+  />
+  <button
+    tuiButton
+    appearance="secondary"
+    size="s"
+    type="button"
+    [disabled]="!enabled() || editor.busy()"
+    (click)="photo.click()"
+  >
+    Change photo
+  </button>
+  @if (editor.selected()) {
+  <button
+    tuiButton
+    size="s"
+    type="button"
+    [disabled]="!enabled() || editor.busy()"
+    (click)="editor.save()"
+  >
+    {{ editor.failed() ? 'Retry photo change' : 'Save photo' }}
+  </button>
+  }
+  <button
+    tuiButton
+    appearance="flat"
+    size="s"
+    type="button"
+    [disabled]="!enabled() || !hasPhoto() || editor.busy()"
+    (click)="editor.remove()"
+  >
+    Remove photo
+  </button>
+</div>
+<p class="photo-guidance">
+  PNG, JPEG or WebP up to 2 MiB. Still images only, up to 8192 pixels per side
+  and 16 million pixels total. Saved photos are resized to fit 512 pixels and
+  follow your profile visibility in Privacy Settings.
+</p>
+@if (!enabled()) {
+<p class="photo-guidance">
+  Save or cancel your profile text edits before changing a photo.
+</p>
+} @if (editor.selected()) {
+<p class="photo-file">{{ editor.selected() }}</p>
+} @if (editor.message()) {
+<p [attr.role]="editor.failed() ? 'alert' : 'status'" aria-live="polite">
+  {{ editor.message() }}
+</p>
+} @if (editor.failed()) {
+<button
+  tuiButton
+  appearance="secondary"
+  size="s"
+  type="button"
+  (click)="editor.reload()"
+>
+  Discard selection and reload
+</button>
+}

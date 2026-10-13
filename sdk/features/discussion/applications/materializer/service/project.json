@@ -3,11 +3,18 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "sdk/features/discussion/applications/materializer/service/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:discussion", "layer:service"],
+  "tags": [
+    "type:app",
+    "scope:discussion",
+    "layer:service",
+    "arch:service"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -45,13 +52,29 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
-        "jestConfig": "sdk/features/discussion/applications/materializer/service/jest.config.ts"
+        "jestConfig": "sdk/features/discussion/applications/materializer/service/jest.config.ts",
+        "passWithNoTests": false
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p sdk/features/discussion/applications/materializer/service/tsconfig.app.json",
+          "tsc --noEmit -p sdk/features/discussion/applications/materializer/service/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

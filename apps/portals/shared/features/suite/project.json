@@ -4,37 +4,39 @@
   "projectType": "library",
   "prefix": "suite",
   "sourceRoot": "apps/portals/shared/features/suite/src",
-  "tags": ["type:feature", "scope:suite"],
+  "tags": [
+    "type:feature",
+    "scope:suite",
+    "arch:feature"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "outputPath": "dist/apps/portals/shared/features/suite",
-        "main": "apps/portals/shared/features/suite/src/index.ts",
-        "tsConfig": "apps/portals/shared/features/suite/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/features/suite/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/shared/features/suite/jest.config.ts",
-        "passWithNoTests": true
+        "project": "apps/portals/shared/features/suite/ng-package.json",
+        "tsConfig": "apps/portals/shared/features/suite/tsconfig.lib.json"
       },
       "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+        "production": {},
+        "development": {}
+      },
+      "defaultConfiguration": "production"
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/portals/shared/features/suite/jest.config.ts",
+        "passWithNoTests": false
+      }
     }
   }
 }
-
-

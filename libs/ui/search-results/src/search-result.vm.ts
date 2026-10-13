@@ -3,20 +3,21 @@ export type SearchResultVM = {
   itemsNumber: number;
   groups: SearchResultGroupVM[];
   link: string;
-}
+};
 
 export type SearchResultGroupVM = {
-  id: number;
+  id: number | string;
   name: string;
   link: string;
   icon: string;
   type: string;
   entries: SearchResultEntryVM[];
-}
+};
 
 export type SearchResultEntryVM = {
-  id: number;
-  groupId: number;
+  id: number | string;
+  revision?: number;
+  groupId: number | string;
   type: string;
   name: string;
   description: string;
@@ -28,5 +29,5 @@ export type SearchResultEntryVM = {
   authorName?: string;
   authorAvatarUrl?: string;
   // Common
-  tags?: Array<{ id: number; name: string }>;
-}
+  tags?: Array<{ id?: number | string; slug?: string; name: string }>;
+};

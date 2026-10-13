@@ -1,0 +1,9 @@
+{
+  "name": "wapps-recordings",
+  "private": true,
+  "type": "module",
+  "description": "Local video encoder for repeatable portal walkthroughs",
+  "dependencies": {
+    "ffmpeg-static": "5.3.0"
+  }
+}

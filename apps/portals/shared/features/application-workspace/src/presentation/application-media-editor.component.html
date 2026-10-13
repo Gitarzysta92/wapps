@@ -1,0 +1,158 @@
+<section
+  class="media-card"
+  tuiAppearance="card-panel"
+  aria-label="Application images"
+  [attr.aria-busy]="media.loading() || media.saving() || media.recovering()"
+>
+  <div class="media-heading">
+    <h2>Application images</h2>
+    <p>
+      Upload a logo or banner, then attach it to the saved draft. Image changes
+      remain private until reviewed.
+    </p>
+  </div>
+  @if (media.pending() || media.error() || media.feedback() ||
+  !media.recoveryReady()) {
+  <application-media-recovery [draftId]="draft().id" [disabled]="disabled()" />
+  }
+  <div class="media-grid">
+    @for (purpose of purposes; track purpose) {
+    <section class="media-slot" [attr.aria-label]="'Draft ' + purpose">
+      <h3>{{ purpose === 'logo' ? 'Logo' : 'Banner' }}</h3>
+      @if (draft().images === undefined) {
+      <p>
+        Saved image information is unavailable. Reload the draft before changing
+        images.
+      </p>
+      } @else {
+      <application-image-preview
+        [label]="'draft ' + purpose"
+        [reference]="draft().images?.[purpose] ?? null"
+        [target]="{ kind: 'draft', id: draft().id, purpose }"
+      />
+      @if (draft().images?.[purpose]) {
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        [disabled]="disabled() || media.blocked()"
+        (click)="media.attach(draft(), purpose, null)"
+      >
+        Remove {{ purpose }}
+      </button>
+      } }
+      <label class="media-file"
+        >Upload {{ purpose }}
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          [attr.aria-label]="'Upload ' + purpose"
+          [disabled]="
+            disabled() || media.blocked() || draft().images === undefined
+          "
+          (change)="choose($event, purpose)"
+        />
+      </label>
+    </section>
+    }
+  </div>
+  <p>
+    PNG, JPEG or WebP still images, up to 8 MiB and 20 million pixels. Images
+    are normalized and private until publication.
+  </p>
+  <div class="media-heading">
+    <h3>Retained uploads</h3>
+    <p>
+      Ready images can be attached. Pending uploads need the exact original
+      file. Referenced images cannot be cancelled.
+    </p>
+  </div>
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    [disabled]="media.saving() || media.loading()"
+    (click)="media.reload()"
+  >
+    Reload uploads
+  </button>
+  @if (media.loading()) {
+  <p role="status">Loading retained uploads...</p>
+  } @else if (media.listError()) {
+  <p role="alert">{{ media.listError() }}</p>
+  } @else if (!media.items().length) {
+  <p>No retained uploads are listed for this draft.</p>
+  }
+  <div class="media-uploads">
+    @for (upload of media.items(); track upload.id) {
+    <section
+      class="media-upload"
+      [attr.aria-label]="upload.purpose + ' upload ' + upload.id"
+    >
+      <p>
+        <strong>{{ upload.purpose === 'logo' ? 'Logo' : 'Banner' }}</strong> /
+        {{ upload.status === 'ready' ? 'Ready' : 'Pending' }} /
+        {{ upload.createdAt | date : 'medium' }}
+      </p>
+      @if (upload.status === 'pending') {
+      <p>Reservation expires {{ upload.expiresAt | date : 'medium' }}.</p>
+      <label class="media-file"
+        >Resume with original file
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          aria-label="Resume upload with original file"
+          [disabled]="disabled() || media.blocked()"
+          (change)="resume($event, upload)"
+        />
+      </label>
+      }
+      <div class="media-actions">
+        @if (upload.asset) {
+        <button
+          tuiButton
+          size="s"
+          appearance="secondary"
+          type="button"
+          (click)="
+            previewing.set(previewing() === upload.id ? null : upload.id)
+          "
+        >
+          {{ previewing() === upload.id ? 'Hide preview' : 'Preview upload' }}
+        </button>
+        <button
+          tuiButton
+          size="s"
+          type="button"
+          [disabled]="
+            disabled() || media.blocked() || draft().images === undefined
+          "
+          (click)="media.attach(draft(), upload.purpose, upload.id)"
+        >
+          Use image as {{ upload.purpose }}
+        </button>
+        }
+        <button
+          tuiButton
+          size="s"
+          appearance="secondary"
+          type="button"
+          [disabled]="disabled() || media.blocked()"
+          (click)="media.cancel(upload)"
+        >
+          Cancel unused upload
+        </button>
+      </div>
+      @if (previewing() === upload.id && upload.asset) {
+      <application-image-preview
+        [label]="'uploaded ' + upload.purpose"
+        [reference]="{ kind: 'upload', asset: upload.asset }"
+        [target]="{ kind: 'upload', id: upload.id }"
+      />
+      }
+    </section>
+    }
+  </div>
+</section>

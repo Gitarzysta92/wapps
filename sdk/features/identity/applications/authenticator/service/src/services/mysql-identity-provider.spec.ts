@@ -1,27 +1,78 @@
+import {
+  CanonicalIdentityState,
+  CanonicalIdentityStore,
+} from '@sdk/features/identity/core';
 import { MysqlIdentityProvider } from './mysql-identity-provider';
 
-const dto = { identityId: 'uid', claim: 'uid', provider: 'google', kind: 'user', identityType: 'email' };
-describe('MySQL identity persistence', () => {
-  const repo = { create: jest.fn(v => v), insert: jest.fn(), findOne: jest.fn() };
-  const publisher = { publishCreated: jest.fn() };
-  const provider = new MysqlIdentityProvider(repo as any, { get: () => publisher } as any);
-  beforeEach(() => { jest.clearAllMocks(); repo.insert.mockReset(); repo.findOne.mockReset(); });
+const dto = {
+  identityId: 'uid',
+  claim: 'uid',
+  provider: 'google',
+  kind: 'user',
+  identityType: 'email',
+};
+const state: CanonicalIdentityState = {
+  identityId: 'uid',
+  subjectId: 'subject',
+  provider: 'google',
+  kind: 'user',
+  isActive: true,
+  isSuspended: false,
+  isDeleted: false,
+  createdAt: 1,
+  updatedAt: 1,
+  deletedAt: 0,
+  revision: 1,
+};
+describe('canonical identity authentication adapter', () => {
+  const find = jest.fn();
+  const ensure = jest.fn();
+  const store: CanonicalIdentityStore = {
+    find,
+    ensure,
+    recordAuthentication: jest.fn(),
+    setSuspended: jest.fn(),
+    requestDeletion: jest.fn(),
+  };
+  const provider = new MysqlIdentityProvider(store);
+  beforeEach(() => {
+    find.mockReset();
+    ensure.mockReset();
+  });
   it('distinguishes absence from a database error', async () => {
-    repo.findOne.mockResolvedValue(null);
-    expect(await provider.obtainIdentity('uid')).toEqual({ ok: true, value: null });
-    repo.findOne.mockRejectedValue(new Error('connection lost'));
+    find.mockResolvedValue(null);
+    expect(await provider.obtainIdentity('uid')).toEqual({
+      ok: true,
+      value: null,
+    });
+    find.mockRejectedValue(new Error('connection lost'));
     expect((await provider.obtainIdentity('uid')).ok).toBe(false);
   });
-  it('creates an active identity and publishes its creation once', async () => {
+  it('uses the same canonical UID and existing subject for authenticated identity', async () => {
+    ensure.mockResolvedValue({ state, created: true });
     const result = await provider.createIdentity(dto);
     expect(result.ok && result.value.canBeObtained()).toBe(true);
-    expect(publisher.publishCreated).toHaveBeenCalledTimes(1);
+    expect(result.ok && result.value.identityId).toBe('uid');
+    expect(ensure).toHaveBeenCalledWith({
+      uid: 'uid',
+      provider: 'google',
+      kind: 'user',
+      activate: true,
+    });
   });
-  it('preserves existing account state when two sign-ins race', async () => {
-    repo.insert.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
-    repo.findOne.mockResolvedValue({ ...dto, id: 'existing', isActive: false, isSuspended: true, isDeleted: false, createdAt: 1 });
+  it('preserves a concurrent provisioning winner and its restrictions', async () => {
+    ensure.mockResolvedValue({
+      state: { ...state, isSuspended: true },
+      created: false,
+    });
     const result = await provider.createIdentity(dto);
     expect(result.ok && result.value.isSuspended).toBe(true);
-    expect(publisher.publishCreated).not.toHaveBeenCalled();
+    expect(result.ok && result.value.canBeObtained()).toBe(false);
+  });
+  it('does not let credentials inject a different actor ID', async () => {
+    expect(
+      (await provider.createIdentity({ ...dto, identityId: 'other' })).ok
+    ).toBe(false);
+    expect(ensure).not.toHaveBeenCalled();
   });
 });

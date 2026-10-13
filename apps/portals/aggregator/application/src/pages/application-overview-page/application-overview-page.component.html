@@ -1,159 +1,214 @@
-@if (notFound()) {
-  <ui-content-state class="page-header" [page]="true" title="Application not found" description="Check the address or browse the application catalog." icon="@tui.box">
-    <a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
-    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
-  </ui-content-state>
+@if (preferencesLoading()) {
+<ui-content-state class="page-header" [page]="true" title="Loading content preferences..." description="Checking your saved content choices before showing this application." />
+} @else if (preferencesError()) {
+<ui-content-state class="page-header" [page]="true" [error]="true" title="Your content preferences could not be loaded" description="Retry to check your saved choices before showing this application.">
+  <button tuiButton type="button" size="m" (click)="retry()">Retry content preferences</button>
+</ui-content-state>
+} @else if (hidden()) {
+<ui-content-state class="page-header" [page]="true" title="Application hidden by your content preferences" description="Mature and unclassified content is hidden when mature content is disabled.">
+  <a tuiButton appearance="secondary" size="m" routerLink="/me/settings/preferences">Content preferences</a>
+</ui-content-state>
+} @else if (notFound()) {
+<ui-content-state
+  class="page-header"
+  [page]="true"
+  title="Application not found"
+  description="Check the address or browse the application catalog."
+  icon="@tui.box"
+>
+  <a tuiButton appearance="secondary" size="m" routerLink="/app"
+    >Browse applications</a
+  >
+  <a tuiButton appearance="secondary" size="m" routerLink="/"
+    >Back to Explore</a
+  >
+</ui-content-state>
 } @else if (app.error()) {
-  <ui-content-state class="page-header" [page]="true" [error]="true" title="Unable to load application" description="Please try again, or return to the catalog." icon="@tui.circle-alert">
-    <button tuiButton type="button" size="m" (click)="app.reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/app">Browse applications</a>
-  </ui-content-state>
+<ui-content-state
+  class="page-header"
+  [page]="true"
+  [error]="true"
+  title="Unable to load application"
+  description="Please try again, or return to the catalog."
+  icon="@tui.circle-alert"
+>
+  <button tuiButton type="button" size="m" (click)="retry()">Retry</button
+  ><a tuiButton appearance="secondary" size="m" routerLink="/app"
+    >Browse applications</a
+  >
+</ui-content-state>
 } @else {
 <ui-page-header [uiStickyHeader]="pageContent" class="page-header">
-  @if (app.isLoading()) {
-    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  @if (loading()) {
+  <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
   } @else {
-    <ui-breadcrumbs
-      class="breadcrumbs"
-      slot="top-bar"
-      [breadcrumbs]="breadcrumbData()">
-    </ui-breadcrumbs>
-  }
-
-  @if (app.isLoading()) {
-    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  <ui-breadcrumbs
+    class="breadcrumbs"
+    slot="top-bar"
+    [breadcrumbs]="breadcrumbData()"
+  >
+  </ui-breadcrumbs>
+  } @if (loading()) {
+  <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
   } @else {
-    <h1 uiPageTitle class="page-title" slot="title">
-      {{ app.value()?.name }}
-    </h1>
+  <h1 uiPageTitle class="page-title" slot="title">
+    {{ record()?.name }}
+  </h1>
   }
-
 </ui-page-header>
 
 <div #pageContent class="page-content">
-<!-- Hero Section with Cover Image -->
-<section class="hero-section">
-  @if (app.isLoading()) {
+  <!-- Hero Section with Cover Image -->
+  <section class="hero-section">
+    @if (loading()) {
     <div class="cover-skeleton"></div>
-  } @else {
-    <ui-cover-image
-      class="cover-image"
-      [image]="getCoverImage()">
-    </ui-cover-image>
-  }
-  
-  <div class="hero-content">
-    @if (app.isLoading()) {
-      <div class="avatar-skeleton"></div>
     } @else {
+    <ui-cover-image class="cover-image" [image]="getCoverImage()">
+    </ui-cover-image>
+    }
+
+    <div class="hero-content">
+      @if (loading()) {
+      <div class="avatar-skeleton"></div>
+      } @else {
       <app-avatar
         class="app-avatar"
         [size]="'xl'"
-        [avatar]="{ url: app.value()?.logo ?? '', alt: app.value()?.name ?? '' }">
+        [avatar]="{ url: record()?.logo ?? '', alt: record()?.name ?? '' }"
+      >
       </app-avatar>
-    }
-    
-    <div class="hero-info">
-      @if (overviewData.isLoading()) {
+      }
+
+      <div class="hero-info">
+        @if (overviewData.isLoading()) {
         <div class="rating-skeleton"></div>
-      }
-      @if (overviewData.value(); as data) {
+        } @if (overviewData.value(); as data) {
         <div class="rating-section">
+          @if (!localMode && record(); as application) {
+              <application-review-summary [applicationId]="application.id" [reviewsLink]="memberReviewsLink()" />
+          } @else {
+          @if (data.aggregatedScore !== null) {
           <app-rating [readonly]="true" [rating]="data.aggregatedScore" />
-          <span class="rating-text">{{ data.aggregatedScore.toFixed(1) }}/5</span>
+          <span class="rating-text"
+            >{{ data.aggregatedScore.toFixed(1) }}/5</span
+          >
+          } @if (data.reviewsCount !== null) {
           <span class="reviews-count">({{ data.reviewsCount }} reviews)</span>
+          } @else {
+          <span class="reviews-count">Reviews unavailable</span>
+          }
+          }
         </div>
-      }
-      
-      <div class="app-labels">
-        @if (app.value(); as record) { <favorite-toggle-button type="applications" [slug]="record.slug" /> }
-        @if (app.value()?.isPwa) { <tui-badge appearance="info" size="s">PWA Ready</tui-badge> }
+        }
+
+        <div class="app-labels">
+          @if (record(); as record) {
+          <favorite-toggle-button type="applications" [slug]="record.slug" [targetId]="record.id" />
+          <a tuiButton appearance="secondary" size="s" [routerLink]="CLAIM_PATH | routePath : { appSlug: record.slug } : 'string'">{{ localMode ? 'Prepare ownership notes' : 'Claim ownership' }}</a>
+          } @if (record()?.isPwa) {
+          <tui-badge appearance="info" size="s">PWA Ready</tui-badge> }
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Category & Tags Section -->
-<section class="metadata-section">
-  @if (overviewData.isLoading()) {
+  <!-- Category & Tags Section -->
+  <section class="metadata-section">
+    @if (overviewData.isLoading()) {
     <div class="metadata-skeleton"></div>
-  }
-  @if (overviewData.value(); as data) {
+    } @if (overviewData.value(); as data) {
     <div class="category-row">
       <span class="label">Category:</span>
-      <app-category-chip [category]="data.category" />
+      @for (category of data.categories; track category.slug) {
+      <app-category-chip [category]="category" />
+      } @empty { <span>Not specified</span> }
     </div>
     <div class="tags-row">
       <span class="label">Tags:</span>
       <ui-tags [tags]="data.tags" />
     </div>
-  }
-</section>
-
-<!-- Quick Access Section -->
-<section class="quick-access-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-indigo"></span>
-    Quick Access
-  </h2>
-
-  <div class="shortcuts-grid">
-    @if (overviewData.isLoading()) {
-      @for (i of [1, 2, 3, 4]; track i) {
-        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-      }
     }
-    @if (shortcuts(); as shortcutList) {
-      @for (shortcut of shortcutList; track shortcut.title) {
-        <a 
-          class="shortcut-card"
-          tuiAppearance="card-elevated"
-          [routerLink]="shortcut.path | routePath:{ appSlug: appSlug() }:'string'">
-          <div class="shortcut-icon" [class]="shortcut.colorClass">
-            <tui-icon [icon]="shortcut.icon"></tui-icon>
-          </div>
-          <div class="shortcut-content">
-            <h3 class="shortcut-title">{{ shortcut.title }}</h3>
-            <p class="shortcut-description">{{ shortcut.description }}</p>
-          </div>
-          <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
-        </a>
-      }
-    }
-  </div>
-</section>
+  </section>
 
-<!-- Overview Section -->
-<section class="overview-section">
-  <h2 class="section-title">
-    <span tuiAppearance="accent-bar-warm"></span>
-    About This Application
-  </h2>
+  <!-- Quick Access Section -->
+  <section class="quick-access-section">
+    <h2 class="section-title">
+      <span tuiAppearance="accent-bar-indigo"></span>
+      Quick Access
+    </h2>
 
-  @if (app.isLoading()) {
+    <div class="shortcuts-grid">
+      @if (overviewData.isLoading()) { @for (i of [1, 2, 3, 4]; track i) {
+      <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      } } @if (shortcuts(); as shortcutList) { @for (shortcut of shortcutList;
+      track shortcut.title) {
+      <a
+        class="shortcut-card"
+        tuiAppearance="card-elevated"
+        [routerLink]="
+          shortcut.path | routePath : { appSlug: appSlug() } : 'string'
+        "
+      >
+        <div class="shortcut-icon" [class]="shortcut.colorClass">
+          <tui-icon [icon]="shortcut.icon"></tui-icon>
+        </div>
+        <div class="shortcut-content">
+          <h3 class="shortcut-title">{{ shortcut.title }}</h3>
+          <p class="shortcut-description">{{ shortcut.description }}</p>
+        </div>
+        <tui-icon icon="@tui.arrow-right" class="shortcut-arrow"></tui-icon>
+      </a>
+      } }
+    </div>
+  </section>
+
+  <!-- Overview Section -->
+  <section class="overview-section">
+    <h2 class="section-title">
+      <span tuiAppearance="accent-bar-warm"></span>
+      About This Application
+    </h2>
+
+    @if (loading()) {
     <div class="description-skeleton"></div>
-  } @else {
-    <p class="app-description">{{ app.value()?.description }}</p>
-  }
-</section>
-
-<section class="preview-section" aria-labelledby="application-details-title">
-  <h2 class="section-title" id="application-details-title">
-    <span tuiAppearance="accent-bar-indigo"></span>
-    Application Details
-  </h2>
-
-  <div class="preview-grid">
-    @if (app.isLoading()) {
-      @for (i of [1, 2]; track i) {
-        <ui-medium-card-skeleton tuiAppearance="card-elevated" />
-      }
+    } @else {
+    <p class="app-description">
+      {{ record()?.description || 'No description provided.' }}
+    </p>
     }
-    @if (overviewData.value(); as data) {
+  </section>
+
+  <section class="preview-section" aria-labelledby="application-details-title">
+    <h2 class="section-title" id="application-details-title">
+      <span tuiAppearance="accent-bar-indigo"></span>
+      Application Details
+    </h2>
+
+    <div class="preview-grid">
+      @if (loading()) { @for (i of [1, 2]; track i) {
+      <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+      } } @if (overviewData.value(); as data) {
       <ui-medium-card tuiAppearance="card-elevated">
         <div class="preview-card-header" slot="header">
-          <h3 class="preview-card-title"><tui-icon icon="@tui.globe" />Availability</h3>
+          <h3 class="preview-card-title">
+            <tui-icon icon="@tui.globe" />Availability
+          </h3>
         </div>
         <dl class="detail-list">
+          <div class="detail-row">
+            <dt class="label">Website</dt>
+            <dd>
+              @if (record()?.website; as website) {
+              <a
+                tuiLink
+                [href]="website"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Visit website</a
+              >
+              } @else { Not provided }
+            </dd>
+          </div>
           <div class="detail-row">
             <dt class="label">Platforms</dt>
             <dd>{{ data.platforms.join(', ') || 'Not specified' }}</dd>
@@ -167,83 +222,138 @@
 
       <ui-medium-card tuiAppearance="card-elevated">
         <div class="preview-card-header" slot="header">
-          <h3 class="preview-card-title"><tui-icon icon="@tui.info" />Catalog Details</h3>
+          <h3 class="preview-card-title">
+            <tui-icon icon="@tui.info" />Catalog Details
+          </h3>
         </div>
         <dl class="detail-list">
           <div class="detail-row">
             <dt class="label">Estimated users</dt>
-            <dd>{{ data.estimatedUsers === null ? 'Not provided' : (data.estimatedUsers | number:'1.0-0') }}</dd>
+            <dd>
+              {{
+                data.estimatedUsers === null
+                  ? 'Not provided'
+                  : (data.estimatedUsers | number : '1.0-0')
+              }}
+            </dd>
           </div>
           <div class="detail-row">
             <dt class="label">Listed on</dt>
-            <dd>{{ (app.value()?.listingDate | preferredDate) || 'Not provided' }}</dd>
+            <dd>
+              {{ (record()?.listingDate | preferredDate) || 'Not provided' }}
+            </dd>
           </div>
           <div class="detail-row">
             <dt class="label">Listing updated</dt>
-            <dd>{{ (app.value()?.updateDate | preferredDate) || 'Not provided' }}</dd>
+            <dd>
+              {{ (record()?.updateDate | preferredDate) || 'Not provided' }}
+            </dd>
           </div>
         </dl>
       </ui-medium-card>
-    }
-  </div>
-</section>
+      }
+    </div>
+  </section>
 
-@if (!app.isLoading()) {
+  @if (!loading()) {
   <section class="preview-section" aria-labelledby="overview-discussions-title">
     <div class="section-heading">
       <h2 class="section-title" id="overview-discussions-title">
         <span tuiAppearance="accent-bar-indigo"></span>Community Discussions
       </h2>
-      <a tuiLink [routerLink]="DISCUSSIONS_PATH | routePath:{appSlug: appSlug()}:'string'" iconEnd="@tui.arrow-right">All discussions</a>
+      <a
+        tuiLink
+        [routerLink]="
+          DISCUSSIONS_PATH | routePath : { appSlug: appSlug() } : 'string'
+        "
+        iconEnd="@tui.arrow-right"
+        >All discussions</a
+      >
     </div>
+    @if (!localMode) {
+      @if (record(); as application) {
+      <application-discussion-previews [applicationId]="application.id" [threadLink]="discussionLink" />
+      }
+    } @else {
     <div class="preview-grid">
       @for (discussion of recentDiscussions(); track discussion.id) {
-        <a tuiAppearance="card-elevated" class="preview-link"
-          [routerLink]="['/apps', appSlug(), 'discussions', discussion.slug]" [attr.aria-label]="discussion.title">
-          <discussion-small-card [data]="discussion" />
-        </a>
+      <a
+        tuiAppearance="card-elevated"
+        class="preview-link"
+        [routerLink]="['/apps', appSlug(), 'discussions', discussion.slug]"
+        [attr.aria-label]="discussion.title"
+      >
+        <discussion-small-card [data]="discussion" />
+      </a>
       } @empty {
-        <ui-content-state title="No discussions yet" description="Start a conversation about this application." icon="@tui.messages-square">
-    <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'discussions']">Open discussions</a>
-  </ui-content-state>
+      <ui-content-state
+        title="No discussions yet"
+        description="Start a conversation about this application."
+        icon="@tui.messages-square"
+      >
+        <a
+          tuiButton
+          appearance="secondary"
+          size="m"
+          [routerLink]="['/apps', appSlug(), 'discussions']"
+          >Open discussions</a
+        >
+      </ui-content-state>
       }
     </div>
+    }
   </section>
 
   @if (includedSuites().length) {
-    <section class="preview-section" aria-labelledby="overview-suites-title">
-      <div class="section-heading">
-        <h2 class="section-title" id="overview-suites-title">
-          <span tuiAppearance="accent-bar-indigo"></span>Included in Suites
-        </h2>
-        <a tuiLink routerLink="/suites" iconEnd="@tui.arrow-right">All suites</a>
-      </div>
-      <div class="preview-grid">
-        @for (suite of includedSuites(); track suite.slug) {
-          <a tuiAppearance="card-elevated" class="preview-link suite-card" [routerLink]="['/suites', suite.slug]"
-            [attr.aria-labelledby]="'overview-suite-' + suite.slug">
-            @if (suite.image) {
-              <ui-cover-image class="suite-cover" [image]="{url: suite.image, alt: suite.name}" />
-            }
-            <ui-medium-card>
-              <div class="preview-card-header" slot="header">
-                <h3 class="preview-card-title" [id]="'overview-suite-' + suite.slug">{{ suite.name }}</h3>
-              </div>
-              <p class="shortcut-description preview-summary">
-                @for (member of suite.members; track member.slug || member.name) {
-                  {{ member.name }}{{ $last ? '' : ', ' }}
-                }
-              </p>
-              <div class="suite-meta" slot="footer">
-                <span>{{ suite.members.length }} {{ suite.members.length === 1 ? 'application' : 'applications' }}</span>
-                @if (suite.author) { <span>By {{ suite.author }}</span> }
-              </div>
-            </ui-medium-card>
-          </a>
+  <section class="preview-section" aria-labelledby="overview-suites-title">
+    <div class="section-heading">
+      <h2 class="section-title" id="overview-suites-title">
+        <span tuiAppearance="accent-bar-indigo"></span>Included in Suites
+      </h2>
+      <a tuiLink routerLink="/suites" iconEnd="@tui.arrow-right">All suites</a>
+    </div>
+    <div class="preview-grid">
+      @for (suite of includedSuites(); track suite.slug) {
+      <a
+        tuiAppearance="card-elevated"
+        class="preview-link suite-card"
+        [routerLink]="['/suites', suite.slug]"
+        [attr.aria-labelledby]="'overview-suite-' + suite.slug"
+      >
+        @if (suite.image) {
+        <ui-cover-image
+          class="suite-cover"
+          [image]="{ url: suite.image, alt: suite.name }"
+        />
         }
-      </div>
-    </section>
-  }
-}
+        <ui-medium-card>
+          <div class="preview-card-header" slot="header">
+            <h3
+              class="preview-card-title"
+              [id]="'overview-suite-' + suite.slug"
+            >
+              {{ suite.name }}
+            </h3>
+          </div>
+          <p class="shortcut-description preview-summary">
+            @for (member of suite.members; track member.slug || member.name) {
+            {{ member.name }}{{ $last ? '' : ', ' }}
+            }
+          </p>
+          <div class="suite-meta" slot="footer">
+            <span
+              >{{ suite.members.length }}
+              {{
+                suite.members.length === 1 ? 'application' : 'applications'
+              }}</span
+            >
+            @if (suite.author) { <span>By {{ suite.author }}</span> }
+          </div>
+        </ui-medium-card>
+      </a>
+      }
+    </div>
+  </section>
+  } }
 </div>
 }

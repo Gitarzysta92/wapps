@@ -4,35 +4,27 @@
   "projectType": "library",
   "prefix": "id",
   "sourceRoot": "apps/portals/shared/cross-cutting/theming",
-  "tags": ["type:cross-cutting", "scope:theming"],
+  "tags": [
+    "type:cross-cutting",
+    "scope:theming",
+    "arch:portal-support"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "outputPath": "dist/apps/portals/shared/cross-cutting/theming",
-        "main": "apps/portals/shared/cross-cutting/theming/src/index.ts",
-        "tsConfig": "apps/portals/shared/cross-cutting/theming/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/cross-cutting/theming/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/shared/cross-cutting/theming/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "project": "apps/portals/shared/cross-cutting/theming/ng-package.json",
+        "tsConfig": "apps/portals/shared/cross-cutting/theming/tsconfig.lib.json"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

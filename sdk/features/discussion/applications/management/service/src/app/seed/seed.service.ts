@@ -3,8 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v5 as uuidv5 } from 'uuid';
 import { ContentNodeEntity } from '../discussions/infrastructure/content-node.entity';
-import { ContentNodeState, ContentNodeVisibility } from '@sdk/kernel/ontology/content';
-import { Uuidv7, isErr } from '@sdk/kernel/standard';
+import {
+  ContentNodeState,
+  ContentNodeVisibility,
+} from '@sdk/kernel/ontology/content';
+import { Uuidv7 } from '@sdk/kernel/standard';
 import { DiscussionsService } from '../discussions/discussions.service';
 import { categories, tags } from '@data';
 import { CategoryTreeDto } from '@domains/catalog/category';
@@ -17,7 +20,7 @@ export class SeedService {
   constructor(
     @InjectRepository(ContentNodeEntity)
     private contentNodeRepo: Repository<ContentNodeEntity>,
-    private readonly discussionsService: DiscussionsService,
+    private readonly discussionsService: DiscussionsService
   ) {}
 
   async seed() {
@@ -51,7 +54,8 @@ export class SeedService {
   }
 
   private async seedDemoDiscussionIfEnabled() {
-    const enabled = (process.env.DISCUSSION_SEED_DEMO_DATA || '').toLowerCase() === 'true';
+    const enabled =
+      (process.env.DISCUSSION_SEED_DEMO_DATA || '').toLowerCase() === 'true';
     if (!enabled) {
       return;
     }
@@ -60,26 +64,16 @@ export class SeedService {
 
     const seedContent = this.buildSeedContent();
     const payload = {
-      id: this.buildSeedUuid('demo-discussion'),
-      referenceKey: this.buildSeedUuid('demo-discussion-ref'),
       content: seedContent,
     };
 
     const ctx = {
       identityId: 'seed',
       tenantId: 'default',
-      timestamp: Date.now(),
+      roles: ['discussion:writer'],
     };
 
-    const result = await this.discussionsService.create(payload, ctx);
-    if (isErr(result)) {
-      if (this.isDuplicateError(result.error)) {
-        this.logger.log('✅ Demo discussion already seeded, skipping...');
-        return;
-      }
-      this.logger.error('❌ Demo discussion seed failed', result.error);
-      return;
-    }
+    await this.discussionsService.create(payload, ctx, 'demo-discussion-v2');
 
     this.logger.log('✅ Seeded demo discussion');
   }
@@ -94,9 +88,12 @@ export class SeedService {
       { id: 0, slug: 'general', name: 'General', childs: [] },
     ];
 
-    const availableTags = Array.isArray(tags) && tags.length > 0 ? tags : fallbackTags;
+    const availableTags =
+      Array.isArray(tags) && tags.length > 0 ? tags : fallbackTags;
     const availableCategories =
-      Array.isArray(categories) && categories.length > 0 ? categories : fallbackCategories;
+      Array.isArray(categories) && categories.length > 0
+        ? categories
+        : fallbackCategories;
 
     const leafCategories = this.flattenCategories(availableCategories);
     const selectedCategory = leafCategories[0] ?? fallbackCategories[0];
@@ -105,18 +102,23 @@ export class SeedService {
     return {
       type: 'seed',
       title: `Seeded discussion: ${selectedCategory.name}`,
-      text:
-        'This discussion was seeded from @data. Set DISCUSSION_SEED_DEMO_DATA=false to disable.',
+      text: 'This discussion was seeded from @data. Set DISCUSSION_SEED_DEMO_DATA=false to disable.',
       category: {
         id: selectedCategory.id,
         slug: selectedCategory.slug,
         name: selectedCategory.name,
       },
-      tags: selectedTags.map((tag) => ({ id: tag.id, slug: tag.slug, name: tag.name })),
+      tags: selectedTags.map((tag) => ({
+        id: tag.id,
+        slug: tag.slug,
+        name: tag.name,
+      })),
     };
   }
 
-  private flattenCategories(nodes: CategoryTreeDto[]): Array<Pick<CategoryTreeDto, 'id' | 'slug' | 'name'>> {
+  private flattenCategories(
+    nodes: CategoryTreeDto[]
+  ): Array<Pick<CategoryTreeDto, 'id' | 'slug' | 'name'>> {
     const result: Array<Pick<CategoryTreeDto, 'id' | 'slug' | 'name'>> = [];
     for (const node of nodes) {
       if (Array.isArray(node.childs) && node.childs.length > 0) {
@@ -130,15 +132,5 @@ export class SeedService {
 
   private buildSeedUuid(name: string): Uuidv7 {
     return uuidv5(`discussion:${name}`, uuidv5.DNS) as Uuidv7;
-  }
-
-  private isDuplicateError(error: unknown): boolean {
-    if (!error || typeof error !== 'object') {
-      return false;
-    }
-    const code = (error as { code?: string }).code;
-    const errno = (error as { errno?: number }).errno;
-    const message = (error as { message?: string }).message;
-    return code === 'ER_DUP_ENTRY' || errno === 1062 || !!message?.includes('Duplicate entry');
   }
 }

@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
-import { Result } from '@foundation/standard';
+import { Result } from '@sdk/kernel/standard';
 import { Observable } from 'rxjs';
 import { ISharingProvider } from '../application/sharing-provider.port';
 import { SHARING_BASE_URL_PROVIDER } from '../application/infrastructure-providers.port';

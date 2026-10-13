@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, inject, Output } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { combineLatest, map } from 'rxjs';
 
@@ -21,11 +21,13 @@ export class RouteDrivenContainerDirective {
 
   private _combineParamMaps(p: ParamMap, q: ParamMap): { [key: string]: Set<string> } {
     const map: { [key: string]: Set<string> } = {};
-    for (let pmap of [p, q]) {
-      for (let key of pmap.keys) {
-        key in map ?
-          pmap.getAll(key).forEach(k => map[key].add(k)) :
+    for (const pmap of [p, q]) {
+      for (const key of pmap.keys) {
+        if (key in map) {
+          pmap.getAll(key).forEach(k => map[key].add(k));
+        } else {
           map[key] = new Set(pmap.getAll(key));
+        }
       }
     }
     return map;

@@ -6,6 +6,8 @@ h2 { margin: 0; font-size: $font-size-lg; font-weight: $font-weight-bold; line-h
 p { margin: 0; line-height: $line-height-normal; }
 .profile-meta { color: var(--tui-text-secondary); font-size: $font-size-sm; }
 .profile-bio { white-space: pre-wrap; overflow-wrap: anywhere; }
+.profile-contact { overflow-wrap: anywhere; }
+.profile-contact .profile-meta { display: block; }
 .profile-summary { display: flex; align-items: center; flex-wrap: wrap; gap: $space-4; }
 .profile-summary__details { flex: 1; min-width: 0; display: grid; gap: $space-2; overflow-wrap: anywhere; }
 @container card (max-width: 30rem) {

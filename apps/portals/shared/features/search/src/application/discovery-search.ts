@@ -30,7 +30,7 @@ export function searchDiscoveryCatalog(params: Record<string, string>): Discover
     return socialMatches && usersMatch;
   });
   for (const type of Object.values(DiscoverySearchResultType)) {
-    if (params['type'] && params['type'] !== type) continue;
+    if (params['type'] && params['type'] !== type && params['type'] !== kinds[type]) continue;
     const catalogQuery: CatalogQuery = {
       kind: kinds[type], search: query.search, category: params['category'] ?? '',
       tags: [params['tag'], params['tags']].filter(Boolean).join(',').split(',').filter(Boolean),

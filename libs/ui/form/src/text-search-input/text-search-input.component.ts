@@ -20,10 +20,10 @@ import { debounceTime, Subject, takeUntil } from 'rxjs';
 })
 export class TextSearchInputComponent implements OnInit, OnDestroy, OnChanges {
   @Input() selectedOptions: FilterOptionVm[] = [];
-  @Input() placeholder: string = 'Search...';
+  @Input() placeholder = 'Search...';
   @Output() textChange: EventEmitter<FilterOptionVm[]> = new EventEmitter();
 
-  public searchValue: string = '';
+  public searchValue = '';
   private readonly _searchSubject = new Subject<string>();
   private readonly _destroy$ = new Subject<void>();
 

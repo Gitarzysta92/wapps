@@ -18,10 +18,9 @@ export interface TopReview {
   standalone: true,
   imports: [CommonModule, TuiAvatar, TuiAppearance, TuiLink, RouterLink],
   templateUrl: './top-review-card.component.html',
-  styleUrl: './top-review-card.component.scss'
+  styleUrl: './top-review-card.component.scss',
 })
 export class TopReviewCardComponent {
   review = input.required<TopReview>();
   detailsLink = input<string>();
 }
-

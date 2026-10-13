@@ -1,0 +1,302 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      draftMode() === 'list'
+        ? 'My Apps'
+        : draftId()
+        ? 'Edit application draft'
+        : 'Register application'
+    }}
+  </h1>
+  <p slot="meta">
+    Private application drafts saved to your account. Submit a saved version for
+    review to publish it. Ownership verification is a separate process.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="s"
+    [routerLink]="draftMode() === 'list' ? '/apps/register' : '/my/apps'"
+    >{{ draftMode() === 'list' ? 'New draft' : 'My Apps' }}</a
+  >
+  <nav slot="navigation" aria-label="Application workspace sections">
+    <a tuiLink [routerLink]="'/' + workspacePaths.releases">My release notes</a>
+    <a tuiLink [routerLink]="'/' + workspacePaths.claims"
+      >My ownership claims</a
+    >
+  </nav>
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="workspace.loading() || workspace.saving()"
+>
+  @if (!workspace.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Application drafts belong to your account."
+  />
+  } @else { @if (workspace.error()) {
+  <p role="alert" class="application-draft-feedback">{{ workspace.error() }}</p>
+  } @if (workspace.uncertain()) {
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    [disabled]="workspace.saving()"
+    (click)="retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (workspace.error()) {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="m"
+    type="button"
+    [disabled]="workspace.saving()"
+    (click)="workspace.reload()"
+  >
+    Reload application drafts
+  </button>
+  } @if (workspace.feedback()) {
+  <p role="status">{{ workspace.feedback() }}</p>
+  } @if (!workspace.detail() && (media.pending() || media.error() ||
+  media.feedback() || !media.recoveryReady())) {
+  <application-media-recovery
+    [disabled]="workspace.saving() || workspace.uncertain()"
+  />
+  } @if (workspace.loading()) {
+  <p role="status">Loading application drafts...</p>
+  } @else if (draftMode() === 'list') { @if (!workspace.error() &&
+  !workspace.items().length) {
+  <ui-content-state
+    title="No application drafts yet"
+    description="Create a private draft and reopen it from any signed-in session."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (draft of workspace.items(); track draft.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ draft.name }}</h2>
+        <p class="application-draft-meta">
+          Private draft / {{ draft.slug }} / Updated
+          {{ draft.updatedAt | date : 'medium' }}
+        </p>
+      </div>
+      <p class="application-draft-description">{{ draft.description }}</p>
+      <a
+        tuiLink
+        [href]="draft.website"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Visit website (new tab)</a
+      >
+      <div class="application-draft-actions">
+        <a
+          tuiButton
+          appearance="secondary"
+          size="s"
+          [routerLink]="
+            draft.editing
+              ? ['/' + workspacePaths.editing, draft.editing.applicationId]
+              : ['/apps/register']
+          "
+          [queryParams]="{ draftId: draft.id }"
+          >Edit draft</a
+        >
+        <a
+          tuiButton
+          appearance="secondary"
+          size="s"
+          [routerLink]="['/my/apps', draft.id, 'publication']"
+          >Manage publication</a
+        >
+        <button
+          tuiButton
+          appearance="secondary"
+          size="s"
+          type="button"
+          [disabled]="
+            workspace.saving() ||
+            workspace.uncertain() ||
+            media.saving() ||
+            !!media.pending()
+          "
+          (click)="pendingDelete.set(draft)"
+        >
+          Delete draft
+        </button>
+      </div>
+    </article>
+    }
+  </div>
+  } @else if (!draftId() || workspace.detail()) {
+  <form
+    class="application-draft-card application-draft-form"
+    tuiAppearance="card-panel"
+    (ngSubmit)="save()"
+  >
+    <h2>Application details</h2>
+    <fieldset
+      [disabled]="
+        workspace.saving() ||
+        workspace.uncertain() ||
+        media.saving() ||
+        !!media.pending()
+      "
+    >
+      <label for="application-draft-name">Application name</label>
+      <input
+        id="application-draft-name"
+        name="name"
+        class="application-draft-input"
+        minlength="2"
+        maxlength="100"
+        required
+        [ngModel]="workspace.fields().name"
+        (ngModelChange)="workspace.setField('name', $event)"
+      />
+      <label for="application-draft-slug">Draft slug</label>
+      <input
+        id="application-draft-slug"
+        name="slug"
+        class="application-draft-input"
+        maxlength="80"
+        required
+        [ngModel]="workspace.fields().slug"
+        (ngModelChange)="workspace.setField('slug', $event)"
+        aria-describedby="application-slug-help"
+      />
+      <p id="application-slug-help" class="application-draft-meta">
+        Lowercase letters, numbers and single hyphens. Saving does not reserve a
+        public address.
+      </p>
+      <label for="application-draft-website">Website</label>
+      <input
+        id="application-draft-website"
+        name="website"
+        type="url"
+        class="application-draft-input"
+        maxlength="2048"
+        required
+        [ngModel]="workspace.fields().website"
+        (ngModelChange)="workspace.setField('website', $event)"
+      />
+      <label for="application-draft-classification">Proposed content classification</label>
+      <select id="application-draft-classification" name="classification" class="application-draft-input" [ngModel]="workspace.fields().classification" (ngModelChange)="workspace.setField('classification', $event)">
+        <option [ngValue]="undefined">Unclassified</option>
+        <option value="general">General</option>
+        <option value="mature">Mature</option>
+      </select>
+      <p>Staff reviews this classification with the submitted content. Mature and unclassified content is hidden in Discover when mature content is disabled.</p>
+      <label for="application-draft-description">Description</label>
+      <textarea
+        id="application-draft-description"
+        name="description"
+        class="application-draft-input"
+        rows="6"
+        minlength="20"
+        maxlength="2000"
+        required
+        [ngModel]="workspace.fields().description"
+        (ngModelChange)="workspace.setField('description', $event)"
+      ></textarea>
+      <p class="application-draft-meta">
+        Describe the application in 20-2,000 characters.
+      </p>
+    </fieldset>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        size="m"
+        type="submit"
+        [disabled]="
+          workspace.saving() ||
+          workspace.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+      >
+        {{ workspace.saving() ? 'Saving...' : 'Save draft' }}
+      </button>
+      @if (workspace.detail(); as draft) {
+      <a
+        tuiButton
+        appearance="secondary"
+        size="m"
+        [routerLink]="['/my/apps', draft.id, 'publication']"
+        >Manage publication</a
+      >
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        [disabled]="
+          workspace.saving() ||
+          workspace.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+        (click)="pendingDelete.set(draft)"
+      >
+        Delete draft
+      </button>
+      }
+    </div>
+  </form>
+  @if (workspace.detail(); as draft) {
+  <application-media-editor
+    [draft]="draft"
+    [disabled]="workspace.saving() || workspace.uncertain()"
+    (changed)="workspace.acceptImageChange($event)"
+  />
+  } @else {
+  <p>Save this draft before uploading application images.</p>
+  } } @if (pendingDelete(); as draft) {
+  <section
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    aria-label="Confirm draft deletion"
+  >
+    <div class="application-draft-heading">
+      <h2>Delete {{ draft.name }}?</h2>
+      <p>
+        @if (draft.editing) { This removes the private editing draft and cancels
+        its review. The public application is retained. } @else { This removes
+        the saved draft and cancels its review. Its public version is withdrawn
+        only if this draft still controls publication; applications under
+        verified ownership are retained. }
+      </p>
+    </div>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="
+          workspace.saving() ||
+          workspace.uncertain() ||
+          media.saving() ||
+          !!media.pending()
+        "
+        (click)="remove()"
+      >
+        Confirm deletion
+      </button>
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        (click)="pendingDelete.set(null)"
+      >
+        Keep draft
+      </button>
+    </div>
+  </section>
+  } }
+</section>

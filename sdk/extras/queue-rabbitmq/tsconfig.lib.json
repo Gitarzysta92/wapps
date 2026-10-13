@@ -10,5 +10,8 @@
   },
   "include": ["src/**/*"],
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "references": [{ "path": "../../platform/queue/tsconfig.lib.json" }]
+  "references": [
+    { "path": "../../platform/queue/tsconfig.lib.json" },
+    { "path": "../../kernel/aspects/events/tsconfig.lib.json" }
+  ]
 }

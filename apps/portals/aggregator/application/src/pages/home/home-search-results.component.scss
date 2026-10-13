@@ -1,0 +1,62 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.group-header,
+.result-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-2 $space-5;
+  border-radius: var(--tui-radius-m);
+}
+.group-name {
+  flex: 1;
+  padding-left: $space-2;
+}
+.group-total {
+  margin-inline-start: $space-1;
+}
+.result-entry {
+  font-size: $font-size-sm;
+}
+.result-entries {
+  padding-bottom: $space-2;
+}
+.preview-explanation {
+  margin: $space-2 $space-5;
+  font-size: $font-size-sm;
+}
+.entry-info {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.custom-content {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+  flex: 1;
+  tui-badge {
+    padding: 0 $space-1_5;
+  }
+
+  .entry-name {
+    padding: 0 $space-1_5;
+  }
+}
+
+.tags {
+  display: flex;
+  gap: $space-1;
+  flex-wrap: wrap;
+}

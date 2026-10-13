@@ -1,6 +1,13 @@
 {
   "authority": {
     "permissions_by_role": {
+      "notification:worker": [
+        "identity.mention-recipients.read"
+      ],
+      "identity:badge-manager": [
+        "identity.profile-badges.read",
+        "identity.profile-badges.update"
+      ],
       "admin": [
         "*"
       ],
@@ -17,10 +24,6 @@
         "identity.user.generate_email_verification_link"
       ]
     },
-    "roles_by_identity": {
-      "example-admin": [
-        "identity:admin"
-      ]
-    }
+    "roles_by_identity": {}
   }
 }

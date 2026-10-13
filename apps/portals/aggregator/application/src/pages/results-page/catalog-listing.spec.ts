@@ -112,9 +112,8 @@ describe('catalog browsing', () => {
     ).toBe(0);
   });
   it('honors supported preference page sizes up to 100', () => {
-    expect(browseCatalog(query({pageSize: 100})).pageSize).toBe(100);
-    expect(browseCatalog(query({pageSize: 50})).pageSize).toBe(50);
-    expect(browseCatalog(query({pageSize: 1000})).pageSize).toBe(100);
+    expect(browseCatalog(query({ pageSize: 100 })).pageSize).toBe(100);
+    expect(browseCatalog(query({ pageSize: 50 })).pageSize).toBe(50);
+    expect(browseCatalog(query({ pageSize: 1000 })).pageSize).toBe(100);
   });
-
 });

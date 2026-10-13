@@ -8,4 +8,5 @@ export interface IQueueConnectConfig {
   username: string;
   password: string;
   vhost?: string;
+  connectionTimeoutMs?: number;
 }

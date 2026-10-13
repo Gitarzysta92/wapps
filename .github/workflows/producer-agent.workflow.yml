@@ -8,6 +8,9 @@ on:
   workflow_dispatch: # Disabled - only for manual trigger if needed
 
 env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
   APP_NAME: producer-agent
   IMAGE_NAME: producer-agent
   REGISTRY: ghcr.io
@@ -18,16 +21,8 @@ env:
 
 jobs:
   test:
-    name: 'Test and Lint'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests and linting
-        uses: ./.github/actions/test-and-lint
-        with:
-          app-name: ${{ env.APP_NAME }}
+    name: Workspace Quality
+    uses: ./.github/workflows/workspace-quality.workflow.yml
 
   build:
     name: 'Build and Push'
@@ -43,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
 
       - name: Install dependencies

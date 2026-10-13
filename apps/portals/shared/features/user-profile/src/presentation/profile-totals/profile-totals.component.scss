@@ -1,0 +1,44 @@
+@use 'ui/design-system/src/styles' as *;
+:host {
+  display: block;
+  min-width: 0;
+}
+section {
+  display: grid;
+  gap: $space-6;
+}
+header {
+  display: grid;
+  gap: $space-2;
+}
+h2,
+p,
+dl,
+dd {
+  margin: 0;
+}
+h2 {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $space-4;
+}
+dl > div {
+  display: grid;
+  gap: $space-2;
+}
+dd {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+button {
+  justify-self: start;
+}
+@media (max-width: 600px) {
+  dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

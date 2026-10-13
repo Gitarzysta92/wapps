@@ -1,0 +1,31 @@
+@if (erasure.signedIn() || erasure.terminal()) {
+<section tuiCardLarge tuiAppearance="card-panel" class="erasure-content" aria-label="Account deletion" [attr.aria-busy]="erasure.busy()">
+  <h2>Delete Account</h2>
+  @if (erasure.feedback()) {
+  <p [attr.role]="erasure.state() === 'accepted' ? 'status' : 'alert'" aria-live="polite">{{ erasure.feedback() }}</p>
+  }
+  @if (!erasure.terminal()) {
+  <p>Close your account permanently and remove private account data. Published articles, suites, releases and discussion contributions remain with the author anonymized. Application ownership access ends. Cleanup can continue after you are signed out.</p>
+  <p>Export any data you want to keep before continuing. This action cannot be undone.</p>
+  @if (erasure.state() === 'confirming' || erasure.state() === 'submitting') {
+  <h3>Confirm deletion of {{ erasure.account()?.name || 'your current account' }}</h3>
+  <label class="erasure-consent">
+    <input type="checkbox" [ngModel]="understood()" (ngModelChange)="understood.set($event)" [disabled]="erasure.busy()" />
+    <span>I understand that my account closes permanently, private data is removed, and public contributions remain anonymous.</span>
+  </label>
+  <label class="erasure-confirmation">
+    <span>Type DELETE to confirm</span>
+    <input type="text" autocomplete="off" spellcheck="false" [ngModel]="confirmation()" (ngModelChange)="confirmation.set($event)" [disabled]="erasure.busy()" />
+  </label>
+  <div class="erasure-actions">
+    <button tuiButton type="button" appearance="error" [disabled]="erasure.busy() || !understood() || confirmation() !== 'DELETE'" (click)="erasure.confirm(confirmation(), understood())">{{ erasure.state() === 'submitting' ? 'Requesting Deletion...' : 'Permanently Delete Account' }}</button>
+    <button tuiButton type="button" appearance="secondary" [disabled]="erasure.busy()" (click)="erasure.cancel()">Keep My Account</button>
+  </div>
+  } @else {
+  <div class="erasure-actions">
+    <button tuiButton type="button" appearance="error" [disabled]="erasure.busy()" (click)="begin()">{{ erasure.state() === 'checking' ? 'Checking Account...' : 'Delete Account' }}</button>
+  </div>
+  }
+  }
+</section>
+}

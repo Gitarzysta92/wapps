@@ -1,0 +1,59 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.article-comments {
+  display: grid;
+  gap: $space-6;
+}
+.comment-heading,
+.comment-field {
+  display: grid;
+  gap: $space-2;
+}
+.comment-card {
+  display: grid;
+  gap: $space-4;
+  padding: $space-6;
+  min-width: 0;
+}
+.comment-entry {
+  display: grid;
+  gap: $space-4;
+  min-width: 0;
+}
+.comment-entry + .comment-entry {
+  padding-block-start: $space-4;
+}
+.comment-reply {
+  margin-inline-start: $space-4;
+}
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
+}
+.comment-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+input,
+textarea {
+  width: 100%;
+  min-width: 0;
+  padding: $space-3 $space-4;
+  font: inherit;
+  box-sizing: border-box;
+}
+textarea {
+  resize: vertical;
+}
+h2,
+h3,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

@@ -1,5 +1,8 @@
-import { Uuidv7 } from "@foundation/standard";
-import { ContentNodeState, ContentNodeVisibility } from "@foundation/content-system";
+import { Uuidv7 } from '@sdk/kernel/standard';
+import {
+  ContentNodeState,
+  ContentNodeVisibility,
+} from '@foundation/content-system';
 
 export type RecordCreationDto = {
   slug: string;
@@ -10,4 +13,4 @@ export type RecordCreationDto = {
   platformIds: Uuidv7[];
   state: ContentNodeState;
   visibility: ContentNodeVisibility;
-}
+};

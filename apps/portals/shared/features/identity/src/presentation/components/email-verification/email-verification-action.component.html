@@ -1,0 +1,22 @@
+<div class="verification-content" [attr.aria-busy]="busy()">
+  @if (completed()) {
+    <p role="status">The email address for this link is now verified. Sign in to that account and refresh its status in Profile Settings.</p>
+  } @else {
+    @if (busy()) {
+      <p role="status">{{ valid() ? 'Confirming verification...' : 'Checking verification link...' }}</p>
+    } @else if (valid()) {
+      <p>Confirm that you want to verify the email address that received this link. This does not sign you in or change your current account.</p>
+    }
+    @if (error()) {
+      <p role="alert">{{ error() }}</p>
+      <p>If a previous attempt completed, refresh your verification status in Profile Settings.</p>
+    }
+    <div class="verification-actions">
+      @if (valid()) {
+        <button tuiButton type="button" size="m" [disabled]="busy()" (click)="complete()">Verify email</button>
+      } @else if (code && !busy()) {
+        <button tuiButton type="button" size="m" appearance="secondary" (click)="check()">Check link again</button>
+      }
+    </div>
+  }
+</div>

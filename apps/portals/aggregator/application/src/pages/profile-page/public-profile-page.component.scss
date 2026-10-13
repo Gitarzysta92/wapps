@@ -1,0 +1,79 @@
+@use 'ui/design-system/src/styles' as *;
+@use './profile-page.component.scss';
+@use '../page-layout' as page;
+
+account-badges,
+profile-totals {
+  @include page.section;
+}
+
+.shared-favorites .profile-member > span,
+.shared-activity .profile-member > span,
+.shared-discussions .profile-member > span,
+.shared-articles .profile-member > span,
+.shared-suites .profile-member > span {
+  display: grid;
+  gap: $space-2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.access-card {
+  display: block;
+  margin-top: $space-6;
+}
+.access-card [slot='header'] {
+  margin-bottom: $space-4;
+}
+.access-card h2 {
+  margin-bottom: 0;
+}
+.profile-content > .profile-meta,
+.command-feedback {
+  margin-top: $space-6;
+}
+.access-card p,
+.command-feedback p {
+  margin: 0 0 $space-4;
+}
+.follower-list {
+  display: grid;
+  gap: $space-4;
+}
+.follower-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding: $space-4;
+  min-width: 0;
+  h3,
+  p {
+    margin: 0 0 $space-2;
+    overflow-wrap: anywhere;
+  }
+}
+.follower-actions,
+.list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+.list-actions {
+  margin-top: $space-4;
+}
+.profile-directory-section > .profile-meta {
+  margin: 0 0 $space-6;
+}
+.profile-directory-section > h2:has(+ .profile-meta) {
+  margin-bottom: $space-2;
+}
+.follower-actions button,
+.list-actions button,
+.command-feedback button {
+  max-width: 100%;
+  height: auto;
+  min-height: $space-10;
+  white-space: normal;
+}

@@ -1,0 +1,205 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      application() && version()
+        ? 'Release ' + version()
+        : channel() === 'stable'
+        ? 'Stable releases'
+        : channel() === 'prerelease'
+        ? 'Prereleases'
+        : 'Release notes'
+    }}
+  </h1>
+  <p slot="meta">
+    Reviewed releases{{
+      application()
+        ? ' from ' + application()!.name
+        : ''
+    }}.
+  </p>
+  <a
+    tuiButton
+    slot="actions"
+    size="s"
+    appearance="secondary"
+    [routerLink]="['/apps', appSlug(), 'overview']"
+    >Application</a
+  >
+  <nav slot="navigation" aria-label="Release sections">
+    <a tuiLink [routerLink]="['/apps', appSlug(), 'devlog']"
+      >All release notes</a
+    >
+    @if (!version()) {
+    <a
+      tuiLink
+      [routerLink]="['/apps', appSlug(), 'devlog']"
+      [queryParams]="{ channel: 'stable' }"
+      [attr.aria-current]="channel() === 'stable' ? 'page' : null"
+      >Stable</a
+    >
+    <a
+      tuiLink
+      [routerLink]="['/apps', appSlug(), 'devlog']"
+      [queryParams]="{ channel: 'prerelease' }"
+      [attr.aria-current]="channel() === 'prerelease' ? 'page' : null"
+      >Prereleases</a
+    >
+    }
+  </nav>
+</ui-page-header>
+<section class="application-workspace" [attr.aria-busy]="app.isLoading() || (application() && catalog.loading())">
+  @if (!application()) {
+  <application-content-state [reader]="app" />
+  } @else if (catalog.loading()) {
+  <p role="status">Loading release notes...</p>
+  } @else if (catalog.error()) {
+  <ui-content-state
+    [title]="
+      catalog.missing()
+        ? 'Release notes not found'
+        : 'Release notes unavailable'
+    "
+    [description]="catalog.error()"
+  />
+  <button
+    tuiButton
+    type="button"
+    appearance="secondary"
+    size="m"
+    (click)="reload()"
+  >
+    Retry release notes
+  </button>
+  } @else { @if (!catalog.items().length) {
+  <ui-content-state
+    [title]="
+      pageNumber() > 1
+        ? 'No releases on this page'
+        : 'No published release notes yet'
+    "
+    description="Only reviewed and currently published release notes appear here."
+  />
+  } @for (release of catalog.items(); track release.id) {
+  <article class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>{{ release.title }}</h2>
+      <p>
+        {{ release.version }} / {{ release.channel }} / {{ release.type }} /
+        {{ release.releasedOn }}
+      </p>
+    </div>
+    <p class="application-draft-description">{{ release.description }}</p>
+    @if (version()) { @for (change of release.changes; track $index) {
+    <p class="application-draft-description">
+      {{ change.type }}: {{ change.description }}
+    </p>
+    }
+    <a
+      tuiLink
+      [routerLink]="['/' + paths.releases, 'new']"
+      [queryParams]="{
+        applicationId: release.applicationId,
+        releaseId: release.id
+      }"
+      >Edit notes as verified owner</a
+    >
+    } @else {
+    <a
+      tuiButton
+      size="s"
+      [routerLink]="['/apps', appSlug(), 'devlog', release.version]"
+      >Read {{ release.version }}</a
+    >
+    }
+  </article>
+  } @if (version()) {
+  <section class="release-history" aria-labelledby="previous-release-title">
+    <h2 id="previous-release-title">Previous releases</h2>
+    @if (catalog.previousLoading()) {
+    <p role="status">Loading previous releases...</p>
+    } @else if (catalog.previousError()) {
+    <p role="alert">{{ catalog.previousError() }}</p>
+    <button tuiButton size="s" type="button" (click)="reload()">
+      Retry previous releases
+    </button>
+    } @else { @for (release of catalog.previous(); track release.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ release.title }}</h2>
+        <p>
+          {{ release.version }} / {{ release.channel }} /
+          {{ release.releasedOn }}
+        </p>
+      </div>
+      <p class="application-draft-description">{{ release.description }}</p>
+      <a
+        tuiButton
+        size="s"
+        [routerLink]="['/apps', appSlug(), 'devlog', release.version]"
+        >Read {{ release.version }}</a
+      >
+    </article>
+    } @empty {
+    <p>
+      {{
+        pageNumber() > 1
+          ? 'No previous releases on this page.'
+          : 'No earlier release dates are published.'
+      }}
+    </p>
+    } @if (catalog.previousTotal() > catalog.pageSize || pageNumber() > 1) {
+    <nav class="application-draft-actions" aria-label="Previous release pages">
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        appearance="secondary"
+        [disabled]="pageNumber() <= 1"
+        (click)="paginate(pageNumber() - 1)"
+      >
+        Previous history page
+      </button>
+      <span
+        >History page {{ pageNumber() }} /
+        {{ catalog.previousTotal() }} releases</span
+      >
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        appearance="secondary"
+        [disabled]="pageNumber() * catalog.pageSize >= catalog.previousTotal()"
+        (click)="paginate(pageNumber() + 1)"
+      >
+        Next history page
+      </button>
+    </nav>
+    } }
+  </section>
+  } @else {
+  <nav class="application-draft-actions" aria-label="Release pages">
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="s"
+      [disabled]="pageNumber() <= 1"
+      (click)="paginate(pageNumber() - 1)"
+    >
+      Previous page
+    </button>
+    <span>Page {{ pageNumber() }} / {{ catalog.total() }} releases</span>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="s"
+      [disabled]="pageNumber() * catalog.pageSize >= catalog.total()"
+      (click)="paginate(pageNumber() + 1)"
+    >
+      Next page
+    </button>
+  </nav>
+  } }
+</section>

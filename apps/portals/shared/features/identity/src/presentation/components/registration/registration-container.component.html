@@ -1,26 +1,23 @@
+@if (registered) {
+<tui-notification role="status"
+  >Your account is ready. Sign in to continue. Open Profile Settings to verify your sign-in email.</tui-notification
+>
+} @else {
 <registration-form #registrationForm (onSubmit)="register($event)">
   <button
     tuiButton
     type="submit"
-    [disabled]="!registrationForm.valid">
+    [disabled]="!registrationForm.valid || isRegistering"
+  >
     <tui-loader
       class="loader"
       [inheritColor]="true"
       [overlay]="true"
-      [showLoader]="isRegistering"/>
-    Sign in
+      [showLoader]="isRegistering"
+    />
+    Create account
   </button>
 </registration-form>
-
-@for (entry of timeoutQueue.entries; track entry.id) {
-  <tui-notification size="l">
-    {{ entry.item.text }}
-    <button
-      (click)="timeoutQueue.dequeue(entry.id)"
-      iconStart="@tui.x"
-      tuiIconButton
-      type="button">
-        Close
-    </button>
-  </tui-notification>
+} @if (error) {
+<tui-notification role="alert">{{ error }}</tui-notification>
 }

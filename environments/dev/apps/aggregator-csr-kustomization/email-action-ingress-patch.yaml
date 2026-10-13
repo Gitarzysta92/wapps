@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aggregator-email-action-ingress
+spec:
+  rules:
+    - host: aggregator-csr.development.wapps.ai
+      http:
+        paths:
+          - path: /auth/action
+            pathType: Exact
+            backend:
+              service:
+                name: aggregator-csr-service
+                port:
+                  number: 80

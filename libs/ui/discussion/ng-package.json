@@ -3,8 +3,10 @@
   "dest": "../../../dist/libs/ui/discussion",
   "lib": {
     "entryFile": "src/index.ts",
-    "styleIncludePaths": ["../../../libs"]
+    "styleIncludePaths": [
+      "../../../libs",
+      "../..",
+      "../design-system/src"
+    ]
   }
 }
-
-

@@ -1,173 +1,71 @@
 # My Favorites Feature
 
-This feature provides functionality for managing user favorites across different content types.
+Canonical account favorites and explicit browser-local demo behavior.
 
-## Features
+## API mode
 
-- Display user favorites organized by category (applications, suites, articles, discussions)
-- Add items to favorites
-- Remove items from favorites
-- Check if an item is favorited
-- Reactive state management with RxJS
+Applications and approved public suites support add/remove. Article/discussion
+adds remain unavailable; previously saved references can still be removed.
+Membership uses canonical UUIDs, independent of titles, slugs and target metadata.
 
-## Components
+Compose the feature with the identity session and HTTP providers:
 
-### MyFavoritesListComponent
-
-Displays all user favorites organized by category.
-
-**Usage:**
-```html
-<my-favorites-list></my-favorites-list>
-```
-
-### MyFavoritesGridComponent
-
-A presentational component that displays favorite apps as avatars in a grid layout. Perfect for sidebars and compact spaces. This component follows the container/presentational pattern - it receives data via a view model and uses content projection for the empty state CTA.
-
-**View Model Interface:**
 ```typescript
-export interface FavoriteAppItem {
-  slug: string;          // Unique identifier
-  path: string;          // Route path for the item
-  avatarUrl?: string;    // Optional custom avatar URL
-  title?: string;        // Optional title for accessibility
-}
-
-export interface MyFavoritesGridViewModel {
-  items: FavoriteAppItem[];
-  hasItems: boolean;
-}
+const favorites = provideMyFavoritesFeature({
+  mode: 'api',
+  apiBaseUrl: '',
+  catalogBaseUrl: '',
+});
 ```
 
-**Usage:**
-```typescript
-// In your container component
-import { MyFavoritesGridViewModel, MY_FAVORITES_STATE_PROVIDER } from '@portals/shared/features/my-favorites';
-
-export class MyContainerComponent {
-  private favoritesProvider = inject(MY_FAVORITES_STATE_PROVIDER);
-  
-  public favoritesVm$ = this.favoritesProvider.myFavorites$.pipe(
-    map(state => ({
-      items: state.data.applications.map(slug => ({
-        slug,
-        path: `/app/${slug}`,
-        title: slug,
-        avatarUrl: `https://api.dicebear.com/7.x/shapes/svg?seed=${slug}`
-      })),
-      hasItems: state.data.applications.length > 0
-    } as MyFavoritesGridViewModel))
-  );
-}
-```
+The empty origins deliberately select the same-origin gateway. Merge the returned
+application configuration at the host composition root. The account origin must
+provide `GET/PUT /api/me/favorites`; the catalog origin must provide both
+`/api/catalog/app-selection` and `/api/catalog/suite-selection`. A bare
+application-only BFF does not supply the suite endpoint.
 
 ```html
-<!-- In your template -->
-<section class="favorites-section">
-  <h3 class="section-title">
-    <tui-icon icon="@tui.star"/>
-    <span>Favorite Apps</span>
-  </h3>
-  
-  @let vm = favoritesVm$ | async;
-  @if (vm) {
-    <my-favorites-grid [vm]="vm" [maxItems]="15">
-      <div empty-state>
-        <tui-icon icon="@tui.star" [style.height.rem]="2"/>
-        <p>No favorite apps yet</p>
-        <a [routerLink]="['/apps']" tuiButton>Browse Apps</a>
-      </div>
-    </my-favorites-grid>
-  }
-</section>
+<favorite-toggle-button type="suites" [targetId]="suite.id" />
 ```
 
-**Inputs:**
-- `vm` (required): View model containing the items and state
-- `maxItems` (optional): Maximum number of items to display (default: 15)
+`type` selects the content family. `targetId` is a canonical UUID in API mode;
+`slug` is the demo identifier. Optional `iconOnly` and `appearance` configure
+presentation. The component exposes sign-in/loading/saving/error states and
+retains the original command intent for a retry after an uncertain response.
 
-**Content Projection:**
-- `[empty-state]`: Content to display when there are no items
+`MyFavoritesService` owns session-scoped membership, loaded revision and commands.
+`FavoriteContentService` resolves display metadata through its port. Use its view
+for saved-content screens; raw IDs must never be presented as a fabricated title,
+slug, image or route. `MyFavoritesGridComponent` is a presentation-only avatar grid
+with `vm` and `maxItems` inputs and an `empty-state` projection slot.
 
-**Features:**
-- Pure presentational component - no direct provider dependencies
-- View model pattern for clean data flow
-- Content projection for flexible empty state CTA
-- 3-column grid layout with centered avatars
-- Avatar display with hover effects
-- Responsive design
+## Consistency and recovery
 
-### FavoriteToggleButtonComponent
+- Account authorization and current lifecycle are enforced by the backend.
+- Relation, shared account revision, receipt and outbox commit atomically.
+- Adds check current target eligibility; removal and completed retries do not need
+  target metadata. An old add receipt cannot restore a removed relation.
+- Suite titles come from the approved public version. Private edits do not alter
+  them; withdrawal/deletion removes metadata and links while retaining a removable
+  saved reference.
+- At most 200 relations resolve in bounded batches of 50 per content family.
+  Malformed/failed metadata invalidates the displayed details without deleting
+  canonical membership. Batch reads do not form a global cross-service snapshot.
+- Account switches cancel obsolete reads/writes and clear private UI state.
+  Cancelling a browser request cannot retract a server commit.
 
-A button component that allows users to add/remove items from their favorites.
+## Demo mode
 
-**Usage:**
-```html
-<favorite-toggle-button 
-  [type]="'applications'" 
-  [slug]="'my-app-slug'">
-</favorite-toggle-button>
-```
+`mode: 'demo'` explicitly selects browser storage and slug-based sample content.
+Demo data never seeds account storage. Use `slug` when composing demo toggle
+buttons. Do not fall back to the demo adapter after a missing configuration or
+failed service request.
 
-**Inputs:**
-- `type` (required): The type of content - `'applications' | 'suites' | 'articles' | 'discussions'`
-- `slug` (required): The unique identifier for the item
+## Qualification
 
-## Setup
-
-Add the feature provider to your application configuration:
-
-```typescript
-import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // ... other providers
-    provideMyFavoritesFeature({
-      apiBaseUrl: 'https://api.example.com'
-    })
-  ]
-};
-```
-
-## Service
-
-The `MyFavoritesService` provides programmatic access to favorites functionality:
-
-```typescript
-import { MyFavoritesService } from '@portals/shared/features/my-favorites';
-
-class MyComponent {
-  private favoritesService = inject(MyFavoritesService);
-
-  addToFavorites() {
-    this.favoritesService
-      .addToFavorites('applications', 'my-app-slug')
-      .subscribe();
-  }
-
-  removeFromFavorites() {
-    this.favoritesService
-      .removeFromFavorites('applications', 'my-app-slug')
-      .subscribe();
-  }
-
-  checkIfFavorite() {
-    this.favoritesService
-      .isFavorite$('applications', 'my-app-slug')
-      .subscribe(isFav => console.log(isFav));
-  }
-}
-```
-
-## Architecture
-
-This feature follows a clean architecture pattern with:
-
-- **Application Layer**: Business logic and state management
-- **Infrastructure Layer**: API communication
-- **Presentation Layer**: UI components
-
-The feature uses dependency injection tokens to maintain loose coupling and testability.
-
+Feature behavior is covered by `favorites.spec.ts`. Real application favorite
+checks use `tools/readiness/qualify-materialization.cjs --favorites-browser`.
+Suite publication/favorite checks use `tools/readiness/qualify-suites.cjs
+--favorites`, with compiled API-mode portal, account and Editorial services plus
+SQL/Mongo/OPA and independent browsers. See the repository readiness evidence for
+fixture boundaries and the still-open production qualification gates.

@@ -1,24 +1,23 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc/ui-profile",
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": []
+    "types": [],
+    "module": "es2022"
   },
   "exclude": [
-    "src/**/*.spec.ts",
-    "src/test-setup.ts",
     "jest.config.ts",
-    "src/**/*.test.ts"
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-setup.ts"
   ],
   "include": [
     "src/**/*.ts"
   ],
-  "references": [
-    {
-      "path": "../../foundation/standard/tsconfig.lib.json"
-    }
-  ]
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
 }

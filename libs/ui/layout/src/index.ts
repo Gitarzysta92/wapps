@@ -13,6 +13,14 @@ export { PageHeaderComponent } from './page/page-header/page-header.component';
 export { StickyHeaderDirective } from './page/page-header/sticky-header.directive';
 export { WobbleOutlineDirective } from './decoration/wobble-outline.directive';
 export { DecorationFadeDirective } from './decoration/decoration-fade.directive';
+export { createDecorationFade } from './decoration/decoration-fade';
+export { createWobbleOutline } from './decoration/wobble-outline';
+export {
+  createLiquidBubbleMotion,
+  liquidBubbleContours,
+  sampleLiquidBubbles,
+} from './decoration/liquid-bubbles';
+export type { BubblePhysics, LiquidBubble } from './decoration/liquid-bubbles';
 export { PageHeaderSkeletonComponent } from './page/page-header-skeleton/page-header-skeleton.component';
 export { PageTitleComponent } from './page/page-title/page-title.component';
 export { PageTitleSkeletonComponent } from './page/page-title-skeleton/page-title-skeleton.component';

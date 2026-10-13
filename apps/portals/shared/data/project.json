@@ -4,36 +4,31 @@
   "projectType": "library",
   "prefix": "id",
   "sourceRoot": "apps/portals/shared/data/src",
-  "tags": ["type:data", "scope:shared"],
+  "tags": [
+    "type:data",
+    "scope:shared",
+    "arch:portal-support"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
-        "rootDir": ".",
         "outputPath": "dist/apps/portals/shared/data",
         "main": "apps/portals/shared/data/src/index.ts",
         "tsConfig": "apps/portals/shared/data/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/data/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/shared/data/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "assets": [
+          "apps/portals/shared/data/*.md"
+        ]
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

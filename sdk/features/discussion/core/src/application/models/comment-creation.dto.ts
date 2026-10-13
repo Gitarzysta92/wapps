@@ -1,5 +1,8 @@
-import { ContentNodeState, ContentNodeVisibility } from '@foundation/content-system';
-import { Uuidv7 } from '@foundation/standard';
+import {
+  ContentNodeState,
+  ContentNodeVisibility,
+} from '@foundation/content-system';
+import { Uuidv7 } from '@sdk/kernel/standard';
 
 export type CommentCreationDto = {
   content: string;

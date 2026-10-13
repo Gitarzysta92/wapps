@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aggregator-email-action-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: aggregator-csr.host.placeholder
+      http:
+        paths:
+          - path: /auth/action
+            pathType: Exact
+            backend:
+              service:
+                name: aggregator-csr-service
+                port:
+                  number: 80

@@ -2,11 +2,19 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "@nx/js:tsc": {
+      "dependsOn": [
+        "^build"
+      ],
       "cache": true,
-      "inputs": ["default", "^default"]
+      "inputs": [
+        "default",
+        "^default"
+      ]
     }
   },
   "projects": {},
@@ -24,29 +32,6 @@
   "workspaceLayout": {},
   "defaultProject": "",
   "pluginsConfig": {},
-  "enforceModuleBoundaries": [
-    {
-      "sourceTag": "type:app",
-      "onlyDependOnLibsWithTags": [
-        "type:lib",
-        "type:ui",
-        "type:primitive",
-        "type:domain"
-      ]
-    },
-    {
-      "sourceTag": "type:domain",
-      "onlyDependOnLibsWithTags": ["type:lib", "type:ui", "type:primitive"]
-    },
-    {
-      "sourceTag": "type:lib",
-      "onlyDependOnLibsWithTags": ["type:ui", "type:primitive"]
-    },
-    {
-      "sourceTag": "type:ui",
-      "onlyDependOnLibsWithTags": ["type:primitive"]
-    }
-  ],
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",

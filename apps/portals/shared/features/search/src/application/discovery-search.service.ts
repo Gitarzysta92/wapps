@@ -10,7 +10,7 @@ export class DiscoverySearchService {
   private readonly recent = new BehaviorSubject<string[]>(this.readRecent());
   readonly recentSearches$ = this.recent.asObservable();
 
-  search(params: Record<string, string>) {
+  searchDemo(params: Record<string, string>) {
     return searchDiscoveryCatalog(params);
   }
 

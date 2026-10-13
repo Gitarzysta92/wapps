@@ -1,0 +1,22 @@
+@switch (reader().status()) {
+  @case ('preferences-loading') { <p role="status">Loading content preferences...</p> }
+  @case ('loading') { <p role="status">Loading application...</p> }
+  @case ('preferences-unavailable') {
+    <ui-content-state title="Content preferences unavailable" description="Your content preferences could not be loaded. Retry before viewing this application." [error]="true">
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="reader().reload()">Retry content preferences</button>
+    </ui-content-state>
+  }
+  @case ('hidden') {
+    <ui-content-state title="Application hidden" description="This application is hidden by your content preferences." />
+  }
+  @case ('missing') {
+    <ui-content-state title="Application not found" description="This application is unavailable or no longer public.">
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="reader().reload()">Reload application</button>
+    </ui-content-state>
+  }
+  @case ('unavailable') {
+    <ui-content-state title="Application unavailable" description="The application is unavailable or still updating. Reload to check again." [error]="true">
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="reader().reload()">Reload application</button>
+    </ui-content-state>
+  }
+}

@@ -1,0 +1,13 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+.application-workspace > .release-history {
+  @include page.section;
+  > h2 {
+    margin: 0 0 $space-6;
+  }
+  > article + article,
+  > nav {
+    margin-top: $space-4;
+  }
+}

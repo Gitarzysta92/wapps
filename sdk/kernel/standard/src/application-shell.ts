@@ -29,20 +29,18 @@ export class ApplicationShell {
   initialize<TInit>(fn: (params: any) => Promise<TInit>): ApplicationShellWithInitialize<TInit> {
     this.initializeFn = fn;
     
-    const self = this;
-    
     return {
-      run(runFn: (data: TInit) => Promise<void>): ApplicationShellWithRun<TInit> {
-        self.runFn = runFn as any;
+      run: (runFn: (data: TInit) => Promise<void>): ApplicationShellWithRun<TInit> => {
+        this.runFn = runFn as any;
         
         return {
-          catch(catchFn: (err: unknown) => Promise<void>): ApplicationShellWithCatch<TInit> {
-            self.catchFn = catchFn;
+          catch: (catchFn: (err: unknown) => Promise<void>): ApplicationShellWithCatch<TInit> => {
+            this.catchFn = catchFn;
             
             return {
-              finally(finallyFn: (data: TInit) => Promise<void>): ApplicationShellWithCatch<TInit> {
-                self.finallyFn = finallyFn as any;
-                self.execute();
+              finally: (finallyFn: (data: TInit) => Promise<void>): ApplicationShellWithCatch<TInit> => {
+                this.finallyFn = finallyFn as any;
+                this.execute();
                 return {
                   finally: (fn: (data: TInit) => Promise<void>) => {
                     return {} as ApplicationShellWithCatch<TInit>;
@@ -51,9 +49,9 @@ export class ApplicationShell {
               }
             };
           },
-          finally(finallyFn: (data: TInit) => Promise<void>): ApplicationShellWithRun<TInit> {
-            self.finallyFn = finallyFn as any;
-            self.execute();
+          finally: (finallyFn: (data: TInit) => Promise<void>): ApplicationShellWithRun<TInit> => {
+            this.finallyFn = finallyFn as any;
+            this.execute();
             return {
               catch: (fn: (err: unknown) => Promise<void>) => {
                 return {} as ApplicationShellWithRun<TInit>;

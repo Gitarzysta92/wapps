@@ -32,6 +32,12 @@ spec:
             - configMapRef:
                 name: discussion-config
           env:
+            - name: EXPLORE_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: explore-service-secret
+                  key: secret
+                  optional: true
             - name: DISCUSSION_NODE_ENV
               value: "production"
             - name: DISCUSSION_HOST
@@ -93,6 +99,21 @@ spec:
                 secretKeyRef:
                   name: discussion-mongo
                   key: password
+            - name: NOTIFICATION_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: secret
+            - name: ACCOUNT_ERASURE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-erasure-secret
+                  key: secret
+            - name: ACCOUNT_EXPORT_SOURCE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-export-secret
+                  key: secret
             - name: INGRESS_AUTH_SECRET
               valueFrom:
                 secretKeyRef:

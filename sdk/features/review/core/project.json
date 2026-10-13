@@ -1,0 +1,35 @@
+{
+  "name": "sdk-features-review-core",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "sdk/features/review/core/src",
+  "tags": ["type:domain", "scope:review", "arch:domain"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/sdk/features/review/core"],
+      "options": {
+        "command": "tsc --build sdk/features/review/core/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "sdk/features/review/core/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit -p sdk/features/review/core/tsconfig.spec.json"
+      }
+    }
+  }
+}

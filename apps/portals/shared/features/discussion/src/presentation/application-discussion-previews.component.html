@@ -1,0 +1,67 @@
+<section
+  class="discussion-previews"
+  aria-label="Discussion previews"
+  [attr.aria-busy]="discussions.loading()"
+>
+  <div class="preview-actions">
+    <p>Pinned topics first, then newest. Showing up to three discussions.</p>
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="discussions.loading()"
+      (click)="discussions.reload(true)"
+    >
+      Reload previews
+    </button>
+  </div>
+  @if (discussions.loading()) {
+  <p role="status">Loading discussion previews...</p>
+  } @else if (discussions.error()) {
+  <div role="alert">
+    <h3>Discussion previews unavailable</h3>
+    <p>{{ discussions.error() }}</p>
+  </div>
+  } @else {
+  <div class="preview-grid">
+    @for (thread of items(); track thread.id) {
+    <article
+      tuiAppearance="card-elevated"
+      class="discussion-preview"
+      [attr.data-thread-id]="thread.id"
+    >
+      <header>
+        @if (thread.pinned) {
+        <p>Pinned discussion</p>
+        }
+        <h3>
+          <a tuiLink [routerLink]="threadLink()(thread.id)">{{
+            thread.title
+          }}</a>
+        </h3>
+      </header>
+      @if (thread.comments[0]; as root) { @if (root.content; as content) {
+      <p class="preview-text">
+        {{ content.text | slice : 0 : 180
+        }}{{ content.text.length > 180 ? '...' : '' }}
+      </p>
+      <p>
+        By {{ content.displayName }} -
+        {{ root.createdAt | date : 'mediumDate' }}
+      </p>
+      } }
+      <p>
+        {{ thread.replyCount }}
+        {{ thread.replyCount === 1 ? 'reply' : 'replies' }} (including removed
+        posts)
+      </p>
+    </article>
+    } @empty {
+    <p>
+      {{ excludeId() ? 'No other discussions yet.' : 'No discussions yet.' }}
+    </p>
+    }
+  </div>
+  }
+</section>

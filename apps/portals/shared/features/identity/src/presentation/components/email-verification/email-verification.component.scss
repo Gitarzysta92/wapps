@@ -1,0 +1,25 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.verification-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  min-width: 0;
+}
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.verification-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+}
+button {
+  max-width: 100%;
+  white-space: normal;
+}

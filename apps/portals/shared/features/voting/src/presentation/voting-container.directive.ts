@@ -7,14 +7,14 @@ export interface VotingData {
 }
 
 @Directive({
-  selector: '[votingContainer]',
+  selector: '[libVotingContainer]',
   standalone: true,
   exportAs: 'votingContainer'
 })
 export class VotingContainerDirective {
   private votingData = signal<VotingData>({ upvotes: 0, downvotes: 0, userVote: null });
 
-  @Input() set votingContainer(data: VotingData | undefined) {
+  @Input() set libVotingContainer(data: VotingData | undefined) {
     if (data) {
       this.votingData.set(data);
     }

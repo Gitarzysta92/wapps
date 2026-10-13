@@ -1,290 +1,278 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { Observable, map, catchError, of } from "rxjs";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import {
+  EMPTY,
+  Observable,
+  map,
+  catchError,
+  of,
+  defer,
+  switchMap,
+  shareReplay,
+  firstValueFrom,
+} from 'rxjs';
 import {
   IAuthenticationHandler,
   CredentialsDto,
   AuthenticationProvider,
-  AuthenticationMethodDto
-} from "@domains/identity/authentication";
-import { Result, ok, err } from "@foundation/standard";
-import { AUTH_BFF_URL } from "./auth-bff-url.token";
-import { WA_WINDOW } from "@ng-web-apis/common";
-
-interface AuthResponse {
-  token: string;
-  refreshToken: string;
-  expiresIn: string;
-  uid: string;
-}
-
-interface AuthMethodsResponse {
-  methods: AuthenticationMethodDto[];
-}
+  AuthenticationMethodDto,
+} from '@sdk/features/identity/libs/authentication';
+import { Result, ok, err } from '@sdk/kernel/standard';
+import { AUTH_BFF_URL } from './auth-bff-url.token';
+import { WA_WINDOW } from '@ng-web-apis/common';
+import { AUTHENTICATION_SESSION } from '../../application/authentication-session.port';
+import {
+  IDENTITY_CONNECTION,
+  identityApiError,
+  parseIdentitySession,
+} from '../identity-connection';
+import { OAuthCallbackHandler } from '../../application/oauth-callback.port';
 
 @Injectable()
-export class BffAuthenticationService implements IAuthenticationHandler {
-  private readonly _http = inject(HttpClient);
-  private readonly _authBffUrl = inject(AUTH_BFF_URL);
-  private readonly _window = inject(WA_WINDOW);
+export class BffAuthenticationService
+  implements IAuthenticationHandler, OAuthCallbackHandler
+{
+  private readonly http = inject(HttpClient);
+  private readonly authUrl = inject(AUTH_BFF_URL);
+  private readonly window = inject(WA_WINDOW);
+  private readonly session = inject(AUTHENTICATION_SESSION);
+  private readonly connection = inject(IDENTITY_CONNECTION);
 
-  /**
-   * Authenticate with email/password via BFF
-   */
+  completeCallback(input: {
+    code: string | null;
+    state: string | null;
+    error: string | null;
+  }): Observable<Result<string, Error>> {
+    return defer(async () => {
+      if (this.connection.mode !== 'api')
+        throw new Error('OAuth requires a connected identity service.');
+      if (!input.state || !/^[A-Za-z0-9_-]{16,128}$/.test(input.state))
+        throw new Error('Invalid OAuth state. Please sign in again.');
+      const raw = this.window.localStorage.getItem(`oauth_ctx_${input.state}`);
+      this.window.localStorage.removeItem(`oauth_ctx_${input.state}`);
+      if (input.error || !input.code || input.code.length > 4096 || !raw)
+        throw new Error('Sign-in could not be completed. Please start again.');
+      const context: unknown = JSON.parse(raw);
+      if (
+        !context ||
+        typeof context !== 'object' ||
+        !('provider' in context) ||
+        (context.provider !== 'google' && context.provider !== 'github') ||
+        !('redirectUri' in context) ||
+        context.redirectUri !==
+          `${this.window.location.origin}/auth/callback` ||
+        !('createdAt' in context) ||
+        typeof context.createdAt !== 'number' ||
+        context.createdAt > Date.now() ||
+        Date.now() - context.createdAt > 600_000 ||
+        !('returnTo' in context) ||
+        typeof context.returnTo !== 'string' ||
+        !context.returnTo.startsWith('/') ||
+        context.returnTo.startsWith('//') ||
+        new URL(context.returnTo, this.window.location.origin).origin !==
+          this.window.location.origin
+      )
+        throw new Error(
+          'Invalid or expired sign-in context. Please sign in again.'
+        );
+      const codeVerifier =
+        'codeVerifier' in context ? context.codeVerifier : undefined;
+      if (
+        context.provider === 'google' &&
+        (typeof codeVerifier !== 'string' ||
+          !/^[A-Za-z0-9_-]{43,128}$/.test(codeVerifier))
+      )
+        throw new Error(
+          'Invalid sign-in verification context. Please sign in again.'
+        );
+      const value = await firstValueFrom(
+        this.http.post<unknown>(`${this.authUrl}/auth/signin/oauth`, {
+          provider: context.provider,
+          code: input.code,
+          redirectUri: context.redirectUri,
+          ...(context.provider === 'google' ? { codeVerifier } : {}),
+        })
+      );
+      const session = parseIdentitySession(value);
+      this.session.setRefreshToken(session.refreshToken);
+      this.session.setToken(session.token);
+      return ok(context.returnTo);
+    }).pipe(
+      catchError((error) =>
+        of(
+          err(
+            identityApiError(error, 'OAuth sign-in failed. Please start again.')
+          )
+        )
+      )
+    );
+  }
+
   authenticate(credentials: CredentialsDto): Observable<Result<string, Error>> {
-    return this._http.post<AuthResponse>(
-      `${this._authBffUrl}/auth/signin`,
-      {
-        email: credentials.login,
-        password: credentials.password
-      }
-    ).pipe(
-      map(response => {
-        // Store refresh token for later use
-        this._storeRefreshToken(response.refreshToken);
-        return ok(response.token);
-      }),
-      catchError(error => {
-        console.error('Authentication error:', error);
-        const errorMessage = error.error?.error || 'Authentication failed';
-        return of(err(new Error(errorMessage)));
-      })
+    return this.exchange('/auth/signin', {
+      email: credentials.login,
+      password: credentials.password,
+    });
+  }
+
+  authenticateWithProvider(
+    provider: AuthenticationProvider
+  ): Observable<Result<string, Error>> {
+    if (provider === AuthenticationProvider.ANONYMOUS)
+      return this.exchange('/auth/signin/anonymous', {});
+    if (
+      provider !== AuthenticationProvider.GOOGLE &&
+      provider !== AuthenticationProvider.GITHUB
+    )
+      return of(err(new Error('This sign-in provider is not supported.')));
+    return defer(() => this.redirectOAuth(provider.toLowerCase())).pipe(
+      switchMap(() => EMPTY),
+      catchError(() =>
+        of(
+          err(
+            new Error(
+              'Sign-in could not start. Check browser storage permissions and try again.'
+            )
+          )
+        )
+      )
     );
   }
 
-  /**
-   * Authenticate with OAuth providers via BFF
-   */
-  authenticateWithProvider(provider: AuthenticationProvider): Observable<Result<string, Error>> {
-    switch (provider) {
-      case AuthenticationProvider.ANONYMOUS:
-        return this._signInAnonymously();
-      case AuthenticationProvider.GOOGLE:
-      case AuthenticationProvider.GITHUB:
-      case AuthenticationProvider.FACEBOOK:
-      case AuthenticationProvider.APPLE:
-        return this._signInWithOAuth(provider);
-      default:
-        return of(err(new Error(`Provider ${provider} not supported`)));
-    }
-  }
-
-  /**
-   * Get available authentication methods from BFF
-   */
   getAvailableMethods(): Observable<AuthenticationMethodDto[]> {
-    return this._http.get<AuthMethodsResponse>(
-      `${this._authBffUrl}/auth/methods`
-    ).pipe(
-      map(response => response.methods.map(m => ({
-        ...m,
-        provider: m.provider as AuthenticationProvider
-      }))),
-      catchError(error => {
-        console.error('Failed to get auth methods:', error);
-        // Return default method as fallback
-        return of([{
-          provider: AuthenticationProvider.EMAIL_PASSWORD,
-          displayName: 'Email & Password',
-          enabled: true
-        }]);
-      })
-    );
+    return this.http
+      .get<{ methods: AuthenticationMethodDto[] }>(
+        `${this.authUrl}/auth/methods`
+      )
+      .pipe(
+        map((response) => {
+          if (
+            !Array.isArray(response?.methods) ||
+            response.methods.some(
+              (method) =>
+                !Object.values(AuthenticationProvider).includes(
+                  method.provider
+                ) ||
+                typeof method.enabled !== 'boolean' ||
+                typeof method.displayName !== 'string'
+            )
+          )
+            throw new Error('Invalid authentication configuration');
+          return response.methods;
+        }),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
   }
 
-  /**
-   * Refresh the authentication token
-   */
   refreshToken(): Observable<Result<string, Error>> {
-    const refreshToken = this._getRefreshToken();
-    
-    if (!refreshToken) {
-      return of(err(new Error('No refresh token available')));
-    }
-    
-    return this._http.post<AuthResponse>(
-      `${this._authBffUrl}/auth/refresh`,
-      { refreshToken }
-    ).pipe(
-      map(response => {
-        this._storeRefreshToken(response.refreshToken);
-        return ok(response.token);
-      }),
-      catchError(error => {
-        console.error('Token refresh error:', error);
-        this._clearRefreshToken();
-        return of(err(new Error('Session expired. Please sign in again.')));
-      })
-    );
+    return defer(() => {
+      const refreshToken = this.session.getRefreshToken();
+      const accessToken = this.session.getToken();
+      if (!refreshToken)
+        return of(
+          err(new Error('No refresh token available. Please sign in.'))
+        );
+      return this.exchange(
+        '/auth/refresh',
+        { refreshToken },
+        () =>
+          this.session.getToken() === accessToken &&
+          this.session.getRefreshToken() === refreshToken
+      );
+    });
   }
 
-  /**
-   * Sign out
-   */
   signOut(): Observable<Result<void, Error>> {
-    return this._http.post<void>(
-      `${this._authBffUrl}/auth/signout`,
-      {}
-    ).pipe(
+    const token = this.session.getToken();
+    const clearCurrent = () => {
+      if (this.session.getToken() === token) this.session.clear();
+    };
+    return this.http.post<unknown>(`${this.authUrl}/auth/signout`, {}).pipe(
       map(() => {
-        this._clearRefreshToken();
+        clearCurrent();
         return ok(undefined);
       }),
-      catchError(error => {
-        console.error('Sign out error:', error);
-        // Clear tokens anyway
-        this._clearRefreshToken();
-        return of(ok(undefined));
+      catchError((error) => {
+        clearCurrent();
+        return of(
+          err(
+            identityApiError(
+              error,
+              'Signed out on this browser. Server session revocation was not confirmed.'
+            )
+          )
+        );
       })
     );
   }
 
-  /**
-   * Sign in anonymously
-   */
-  private _signInAnonymously(): Observable<Result<string, Error>> {
-    return this._http.post<AuthResponse>(
-      `${this._authBffUrl}/auth/signin/anonymous`,
-      {}
-    ).pipe(
-      map(response => {
-        this._storeRefreshToken(response.refreshToken);
-        return ok(response.token);
+  private exchange(
+    path: string,
+    body: Record<string, unknown>,
+    currentSession: () => boolean = () => true
+  ): Observable<Result<string, Error>> {
+    return this.http.post<unknown>(`${this.authUrl}${path}`, body).pipe(
+      map((value) => {
+        if (!currentSession())
+          throw new Error('Authentication session changed');
+        const session = parseIdentitySession(value);
+        this.session.setRefreshToken(session.refreshToken);
+        return ok(session.token);
       }),
-      catchError(error => {
-        console.error('Anonymous sign in error:', error);
-        const errorMessage = error.error?.error || 'Anonymous sign in failed';
-        return of(err(new Error(errorMessage)));
+      catchError((error) => {
+        if (
+          path === '/auth/refresh' &&
+          currentSession() &&
+          error instanceof HttpErrorResponse &&
+          error.status === 401
+        )
+          this.session.clearRefreshToken();
+        return of(err(identityApiError(error, 'Authentication failed.')));
       })
     );
   }
 
-  /**
-   * Sign in with OAuth provider
-   */
-  private _signInWithOAuth(provider: AuthenticationProvider): Observable<Result<string, Error>> {
-    const providerName = provider.toLowerCase();
-    const redirectUri = `${this._window.location.origin}/auth/callback`;
-    const state = this._generateState();
-    const returnTo = `${this._window.location.pathname}${this._window.location.search}${this._window.location.hash}`;
-
-    // Redirect (industry standard): no popup/opener/COOP complexity.
-    void this._redirectOAuth(providerName, redirectUri, state, returnTo);
-    return new Observable<Result<string, Error>>(() => undefined);
-  }
-
-  private async _redirectOAuth(providerName: string, redirectUri: string, state: string, returnTo: string) {
-    // Persist context (works across redirects/tabs)
-    const ctx: any = { provider: providerName, redirectUri, returnTo, createdAt: Date.now() };
-
-    // PKCE only for Google (optional, but recommended for SPA-style redirect flows)
-    if (providerName === 'google') {
-      const pkce = await this._createPkce();
-      ctx.codeVerifier = pkce.codeVerifier;
-      ctx.codeChallenge = pkce.codeChallenge;
-      ctx.codeChallengeMethod = 'S256';
+  private async redirectOAuth(provider: string): Promise<void> {
+    const state = this.window.crypto.randomUUID();
+    const redirectUri = `${this.window.location.origin}/auth/callback`;
+    const context: {
+      provider: string;
+      redirectUri: string;
+      returnTo: string;
+      createdAt: number;
+      codeVerifier?: string;
+    } = {
+      provider,
+      redirectUri,
+      returnTo: `${this.window.location.pathname}${this.window.location.search}${this.window.location.hash}`,
+      createdAt: Date.now(),
+    };
+    const params = new URLSearchParams({ redirect_uri: redirectUri, state });
+    if (provider === 'google') {
+      const bytes = this.window.crypto.getRandomValues(new Uint8Array(32));
+      context.codeVerifier = this.base64Url(bytes);
+      const digest = await this.window.crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(context.codeVerifier)
+      );
+      params.set('code_challenge', this.base64Url(new Uint8Array(digest)));
+      params.set('code_challenge_method', 'S256');
     }
-
-    try {
-      localStorage.setItem(`oauth_ctx_${state}`, JSON.stringify(ctx));
-    } catch {
-      // ignore
-    }
-
-    const qs = new URLSearchParams({
-      redirect_uri: redirectUri,
-      state,
-    });
-
-    if (providerName === 'google' && ctx.codeChallenge) {
-      qs.set('code_challenge', ctx.codeChallenge);
-      qs.set('code_challenge_method', 'S256');
-    }
-
-    const authUrl = `${this._authBffUrl}/auth/oauth/${providerName}/authorize?${qs.toString()}`;
-    this._window.location.assign(authUrl);
-  }
-
-  private async _createPkce(): Promise<{ codeVerifier: string; codeChallenge: string }> {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    const codeVerifier = this._base64UrlEncode(bytes);
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(codeVerifier));
-    const codeChallenge = this._base64UrlEncode(new Uint8Array(digest));
-    return { codeVerifier, codeChallenge };
-  }
-
-  private _base64UrlEncode(bytes: Uint8Array): string {
-    let str = '';
-    for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
-    const b64 = btoa(str);
-    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-  }
-
-  /**
-   * Exchange OAuth code for token
-   */
-  private _exchangeOAuthCode(provider: string, code: string, redirectUri: string): Observable<Result<string, Error>> {
-    return this._http.post<AuthResponse>(
-      `${this._authBffUrl}/auth/signin/oauth`,
-      {
-        provider,
-        code,
-        redirectUri
-      }
-    ).pipe(
-      map(response => {
-        this._storeRefreshToken(response.refreshToken);
-        return ok(response.token);
-      }),
-      catchError(error => {
-        console.error('OAuth code exchange error:', error);
-        const errorMessage = error.error?.error || 'OAuth authentication failed';
-        return of(err(new Error(errorMessage)));
-      })
+    // Failed persistence must stop redirect; a callback without its state cannot be trusted.
+    this.window.localStorage.setItem(
+      `oauth_ctx_${state}`,
+      JSON.stringify(context)
+    );
+    this.window.location.assign(
+      `${this.authUrl}/auth/oauth/${provider}/authorize?${params}`
     );
   }
 
-  /**
-   * Generate random state for OAuth
-   */
-  private _generateState(): string {
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  /**
-   * Store refresh token securely
-   */
-  private _storeRefreshToken(token: string): void {
-    try {
-      localStorage.setItem('auth_refresh_token', token);
-    } catch (e) {
-      console.warn('Could not store refresh token:', e);
-    }
-  }
-
-  /**
-   * Get stored refresh token
-   */
-  private _getRefreshToken(): string | null {
-    try {
-      return localStorage.getItem('auth_refresh_token');
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /**
-   * Clear refresh token
-   */
-  private _clearRefreshToken(): void {
-    try {
-      localStorage.removeItem('auth_refresh_token');
-    } catch (e) {
-      // Ignore
-    }
+  private base64Url(bytes: Uint8Array): string {
+    return this.window
+      .btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/g, '');
   }
 }
-

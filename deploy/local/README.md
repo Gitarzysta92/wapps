@@ -70,6 +70,34 @@ The emulator exports accounts on graceful shutdown.
 
 ## Everyday commands
 
+### Private application images
+
+The Editorial media API uses a separate private, unversioned `application-images`
+bucket; create it in the local MinIO console before uploading. Compose supplies
+local-only credentials and uses `http://localhost:4203` as the public gateway
+origin. Override `EDITORIAL_MEDIA_BUCKET` and `EDITORIAL_MEDIA_PUBLIC_ORIGIN` in
+`deploy/local/.env` when necessary. Never enable bucket versioning or lifecycle
+deletion: cleanup retains empty markers to fence delayed writes.
+
+Run Editorial's explicit migrations before normal API startup, then enable
+`EDITORIAL_MEDIA_CLEANUP_ENABLED=true` for continuous retirement. It defaults to
+disabled, so provisioning mistakes cannot masquerade as working cleanup.
+
+```sh
+docker compose run --rm --no-deps editorial node main.js --migrate
+docker compose run --rm --no-deps editorial node main.js --media-cleanup-status
+docker compose run --rm --no-deps editorial node main.js --media-cleanup
+docker compose run --rm --no-deps editorial node main.js --media-cleanup-requeue IMAGE_UUID
+```
+
+These commands require the configured MySQL/MinIO services to be running. The
+cleanup batch runs at most 20 attempts; failed jobs retain their image IDs and
+can be requeued after fixing storage access. Exit 2 means work is failed,
+scheduled for retry or unconfirmed. Historical references retain their images.
+Portal media controls and full-stack deployment qualification remain open.
+
+### Containers
+
 ```sh
 docker compose logs -f discussion discussion-materializer
 COMPOSE_BAKE=false docker compose --parallel 2 build discussion

@@ -1,15 +1,17 @@
 <div class="suite-apps">
   @for (app of apps().slice(0, maxVisible()); track $index) {
-    <tui-avatar
-      class="app-avatar"
-      [src]="app.avatarUrl || '@tui.box'"
-      [tuiHint]="app.name"
-      size="m">
-    </tui-avatar>
-  }
-  @if (apps().length > maxVisible()) {
-    <tui-avatar [src]="'+' + (apps().length - maxVisible())" size="m"
-      [attr.aria-label]="(apps().length - maxVisible()) + ' more applications'" />
+  <tui-avatar
+    class="app-avatar"
+    [src]="app.avatarUrl || '@tui.box'"
+    [tuiHint]="app.name"
+    size="m"
+  >
+  </tui-avatar>
+  } @if (apps().length > maxVisible()) {
+  <tui-avatar
+    [src]="'+' + (apps().length - maxVisible())"
+    size="m"
+    [attr.aria-label]="apps().length - maxVisible() + ' more applications'"
+  />
   }
 </div>
-

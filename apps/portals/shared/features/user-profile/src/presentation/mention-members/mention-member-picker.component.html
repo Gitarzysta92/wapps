@@ -1,0 +1,49 @@
+<fieldset class="mention-members" [disabled]="disabled()">
+  <legend>Mention members (optional)</legend>
+  <p>Select up to ten members. New mentions can notify them if their profile access and notification settings allow it. Typing a name alone does not send a notification.</p>
+  @if (selected().length) {
+    <ul class="mention-selection" aria-label="Selected mentioned members">
+      @for (id of selected(); track id; let index = $index) {
+        <li>
+          <span>{{ members.names()[id] || (members.namesLoading() ? 'Checking member...' : 'Unavailable member ' + (index + 1)) }}</span>
+          <button tuiButton type="button" appearance="flat" size="xs" [attr.aria-label]="'Remove mention ' + (members.names()[id] || (index + 1))" (click)="remove(id)">Remove</button>
+        </li>
+      }
+    </ul>
+  }
+  @if (members.namesError()) {
+    <p role="status">{{ members.namesError() }}</p>
+    <button tuiButton type="button" appearance="flat" size="s" (click)="members.loadNames(selected())">Retry member names</button>
+  }
+  <div class="mention-actions">
+    <button tuiButton type="button" appearance="secondary" size="s" [disabled]="members.loading()" (click)="members.browse()">Browse members</button>
+    <span>{{ selected().length }} / {{ limit }} selected</span>
+  </div>
+  @if (members.opened()) {
+    @if (members.loading()) { <p role="status">Loading members...</p> }
+    @else if (members.error()) {
+      <p role="alert">{{ members.error() }}</p>
+      <button tuiButton type="button" appearance="secondary" size="s" (click)="members.browse()">Try members again</button>
+    } @else {
+      <ul class="mention-directory" aria-label="Available members">
+        @for (member of members.items(); track member.id) {
+          <li>
+            <span>{{ member.name }}</span>
+            <button tuiButton type="button" appearance="flat" size="s" [disabled]="selected().includes(member.id) || selected().length >= limit" [attr.aria-label]="'Mention ' + member.name" (click)="add(member.id)">{{ selected().includes(member.id) ? 'Selected' : 'Mention' }}</button>
+          </li>
+        } @empty { <li>No discoverable members on this page.</li> }
+      </ul>
+      @if (members.after(); as after) {
+        <button tuiButton type="button" appearance="flat" size="s" (click)="members.browse(after)">Next members</button>
+      }
+    }
+    <label class="mention-link">Member profile link
+      <input class="application-draft-input" type="text" maxlength="2048" placeholder="Paste a member's profile link" [ngModel]="link()" (ngModelChange)="link.set($event)" [ngModelOptions]="{standalone: true}" />
+    </label>
+    <button tuiButton type="button" appearance="secondary" size="s" [disabled]="members.finding() || !link().trim()" (click)="members.find(link())">{{ members.finding() ? 'Checking member...' : 'Find member' }}</button>
+    @if (members.findError()) { <p role="status">{{ members.findError() }}</p> }
+    @if (members.match(); as member) {
+      <div class="mention-actions"><span>{{ member.name }}</span><button tuiButton type="button" appearance="flat" size="s" [disabled]="selected().includes(member.id) || selected().length >= limit" (click)="add(member.id)">Mention this member</button></div>
+    }
+  }
+</fieldset>

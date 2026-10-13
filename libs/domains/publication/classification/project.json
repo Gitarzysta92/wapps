@@ -1,0 +1,39 @@
+{
+  "name": "domains-publication-classification",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/publication/classification/src",
+  "tags": ["type:domain", "scope:publication", "arch:domain"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/domains/publication/classification"],
+      "options": {
+        "command": "tsc --build libs/domains/publication/classification/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/domains/publication/classification/jest.config.cjs",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/domains/publication/classification/tsconfig.lib.json",
+          "tsc --noEmit -p libs/domains/publication/classification/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

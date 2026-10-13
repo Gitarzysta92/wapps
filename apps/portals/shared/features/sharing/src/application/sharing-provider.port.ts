@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Result } from "@foundation/standard";
+import { Result } from "@sdk/kernel/standard";
 
 export interface ISharingProvider {
   shareContent(type: 'applications' | 'suites' | 'articles' | 'discussions', slug: string, title: string, path?: string): Observable<Result<boolean, Error>>;

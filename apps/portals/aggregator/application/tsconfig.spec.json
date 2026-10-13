@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../../../dist/out-tsc",
-    "types": ["jasmine", "node"]
+    "types": ["jest", "node"],
+    "lib": ["es2022", "dom", "dom.iterable"]
   },
   "include": ["src/**/*.spec.ts", "src/**/*.test.ts"]
 }

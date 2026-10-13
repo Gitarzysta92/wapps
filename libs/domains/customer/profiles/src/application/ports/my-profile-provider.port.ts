@@ -1,11 +1,7 @@
-import { InjectionToken } from "@angular/core";
-import { Observable } from "rxjs";
-import { Result } from "@foundation/standard";
-import { CustomerProfileDto } from "../models/profile.dto";
-
-export const MY_PROFILE_PROVIDER = new InjectionToken<IMyProfileProvider>('MY_PROFILE_PROVIDER');
+import { Observable } from 'rxjs';
+import { Result } from '@sdk/kernel/standard';
+import { CustomerProfileDto } from '../models/profile.dto';
 
 export interface IMyProfileProvider {
-  getMyProfile(): Observable<Result<CustomerProfileDto>>
+  getMyProfile(): Observable<Result<CustomerProfileDto>>;
 }
-

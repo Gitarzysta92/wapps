@@ -11,7 +11,7 @@ import { TuiCheckbox, TuiChip } from '@taiga-ui/kit';
   ]
 })
 export class ChipCheckboxComponent {
-  @Input() checked: boolean = false;
+  @Input() checked = false;
   @Output() change: EventEmitter<boolean> = new EventEmitter()
 }
   

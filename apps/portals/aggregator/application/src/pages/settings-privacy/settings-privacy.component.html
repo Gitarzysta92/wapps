@@ -1,11 +1,8 @@
 <ui-page-header class="page-header">
   @if (isLoading()) {
-    <ui-breadcrumbs-skeleton slot="top-bar" />
+  <ui-breadcrumbs-skeleton slot="top-bar" />
   } @else {
-  <ui-breadcrumbs
-    slot="top-bar"
-    [breadcrumbs]="breadcrumb()">
-  </ui-breadcrumbs>
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()"> </ui-breadcrumbs>
   }
 
   <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Privacy Settings</h1>
@@ -17,300 +14,398 @@
 </ui-page-header>
 
 @if (isLoading()) {
-  <section class="settings-content" aria-label="Loading settings" aria-busy="true">
-    @for (item of [1, 2, 3]; track item) {
-      <div tuiCardLarge tuiAppearance="card-panel" [tuiSkeleton]="true" class="settings-card">Loading settings</div>
-    }
-  </section>
+<section
+  class="settings-content"
+  aria-label="Loading settings"
+  aria-busy="true"
+>
+  @for (item of [1, 2, 3]; track item) {
+  <div
+    tuiCardLarge
+    tuiAppearance="card-panel"
+    [tuiSkeleton]="true"
+    class="settings-card"
+  >
+    Loading settings
+  </div>
+  }
+</section>
+} @else if (isGuest()) {
+<ui-content-state
+  class="error-section"
+  title="Sign in to manage account settings"
+  description="Guest display choices stay on this browser and are kept separate from account preferences."
+  icon="@tui.user-round"
+>
+  <a tuiButton appearance="secondary" size="m" routerLink="/"
+    >Back to Explore</a
+  >
+</ui-content-state>
 } @else if (isError()) {
-  <ui-content-state class="error-section" [error]="true" title="Could not load settings" description="Check browser storage access, then try again. Your saved settings have not been changed." icon="@tui.circle-alert">
-    <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/me/profile">Back to profile</a>
-  </ui-content-state>
+<ui-content-state
+  class="error-section"
+  [error]="true"
+  title="Could not load settings"
+  [description]="
+    isDemo
+      ? 'Check browser storage access, then try again. Your saved settings have not been changed.'
+      : 'Check your connection and try again. Your saved account settings have not been changed.'
+  "
+  icon="@tui.circle-alert"
+>
+  <button tuiButton size="m" type="button" (click)="reload()">Retry</button
+  ><a tuiButton appearance="secondary" size="m" routerLink="/me/profile"
+    >Back to profile</a
+  >
+</ui-content-state>
 } @else {
-  <section class="settings-content">
-    <p class="page-description">These choices are saved only on this browser. They do not change server visibility, data collection or account permissions.</p>
-    @if (feedback()) {
-      <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
-    }
-    <!-- Profile Visibility -->
-    <div
-      tuiAppearance="card-panel"
-      tuiCardLarge
-      class="settings-card"
-    >
-      <header class="settings-card-header">
-        <h2 class="section-title">
-          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
-          <tui-icon icon="@tui.eye" class="section-icon" />
-          Profile Visibility
-        </h2>
-      </header>
+<section class="settings-content">
+  <p class="page-description">
+    {{
+      isDemo
+        ? 'These choices are saved only on this browser.'
+        : 'These choices are saved to your account.'
+    }}
+    {{ isDemo ? 'Public-profile visibility and follower access are not applied in demo mode.' : 'Profile text and photos use your saved visibility. Followers Only requires your approval; manage requests from your public profile preview.' }}
+    {{ isDemo ? '' : 'Show Email Address shares only the contact address you explicitly saved in Profile Settings, within that audience. Your sign-in email stays private.' }}
+    {{ isDemo ? '' : 'Show Favorites shares your currently public saved items with the same profile audience.' }}
+    {{ isDemo ? '' : 'Show Suites shares your reviewed, published collections with the same profile audience.' }}
+    {{ isDemo ? '' : 'Show Discussions shares public application topics and article comment threads you currently participate in, within your profile audience.' }}
+    Badges, activity and
+    data-collection controls still need their corresponding integrations.
+  </p>
+  @if (feedback()) {
+  <p
+    [attr.role]="saveError() ? 'alert' : 'status'"
+    aria-live="polite"
+    class="settings-feedback"
+    [class.settings-feedback--error]="saveError()"
+  >
+    {{ feedback() }}
+  </p>
+  } @if (conflict()) {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="m"
+    type="button"
+    (click)="reload()"
+  >
+    Discard edits and reload saved settings
+  </button>
+  }
+  <!-- Profile Visibility -->
+  <div tuiAppearance="card-panel" tuiCardLarge class="settings-card">
+    <header class="settings-card-header">
+      <h2 class="section-title">
+        <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+        <tui-icon icon="@tui.eye" class="section-icon" />
+        Profile Visibility
+      </h2>
+    </header>
 
-      <div class="settings-group">
-        <div class="setting-item setting-item--visibility">
-          <div class="setting-info">
-            <h3 class="setting-label">Who can see your profile?</h3>
-            <p class="setting-description">Control who can view your profile information</p>
-          </div>
-          <div class="visibility-options">
-            @for (option of visibilityOptions; track option.value) {
-              <button
-                class="visibility-option"
-                type="button"
-                [attr.aria-pressed]="privacyPreferences().profileVisibility === option.value"
-                (click)="onVisibilityChange(option.value)"
-              >
-                <tui-icon 
-                  [icon]="option.value === 'public' ? '@tui.globe' : option.value === 'followers' ? '@tui.users' : '@tui.lock'"
-                  class="visibility-option__icon"
-                />
-                <span class="visibility-option__label">{{ option.label }}</span>
-                <span class="visibility-option__description">{{ option.description }}</span>
-              </button>
-            }
-          </div>
+    <div class="settings-group">
+      <div class="setting-item setting-item--visibility">
+        <div class="setting-info">
+          <h3 class="setting-label">Who can see your profile?</h3>
+          <p class="setting-description">
+            Control who can view your profile information
+          </p>
+        </div>
+        <div class="visibility-options">
+          @for (option of visibilityOptions; track option.value) {
+          <button
+            class="visibility-option"
+            type="button"
+            [attr.aria-pressed]="
+              privacyPreferences().profileVisibility === option.value
+            "
+            (click)="onVisibilityChange(option.value)"
+          >
+            <tui-icon
+              [icon]="
+                option.value === 'public'
+                  ? '@tui.globe'
+                  : option.value === 'followers'
+                  ? '@tui.users'
+                  : '@tui.lock'
+              "
+              class="visibility-option__icon"
+            />
+            <span class="visibility-option__label">{{ option.label }}</span>
+            <span class="visibility-option__description">{{
+              option.description
+            }}</span>
+          </button>
+          }
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Profile Information Visibility -->
-    <div
-      tuiAppearance="card-panel"
-      tuiCardLarge
-      class="settings-card"
-    >
-      <header class="settings-card-header">
-        <h2 class="section-title">
-          <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
-          <tui-icon icon="@tui.user-check" class="section-icon" />
-          Information Visibility
-        </h2>
-        <p class="section-subtitle">Choose what information to show on your public profile</p>
-      </header>
+  <!-- Profile Information Visibility -->
+  <div tuiAppearance="card-panel" tuiCardLarge class="settings-card">
+    <header class="settings-card-header">
+      <h2 class="section-title">
+        <span tuiAppearance="accent-bar-warm" class="accent-bar"></span>
+        <tui-icon icon="@tui.user-check" class="section-icon" />
+        Information Visibility
+      </h2>
+      <p class="section-subtitle">
+        Choose what information to show on your public profile
+      </p>
+    </header>
 
-      <div class="settings-group">
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Email Address</h3>
-            <p class="setting-description">Display your email address on your profile</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Email Address"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showEmail"
-              (ngModelChange)="onPrivacyToggle('showEmail', $event)"
-            />
-          </div>
+    <div class="settings-group">
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Email Address</h3>
+          <p class="setting-description">
+            Share your saved contact address with your profile's current audience.
+            Add or remove it in <a routerLink="/me/settings/profile">Profile Settings</a>.
+            This does not share your sign-in email or verify the contact address.
+          </p>
         </div>
-
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Badges</h3>
-            <p class="setting-description">Display your earned badges on your profile</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Badges"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showBadges"
-              (ngModelChange)="onPrivacyToggle('showBadges', $event)"
-            />
-          </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Email Address"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showEmail"
+            (ngModelChange)="onPrivacyToggle('showEmail', $event)"
+          />
         </div>
+      </div>
 
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Activity History</h3>
-            <p class="setting-description">Display your recent activity on your profile</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Activity History"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showActivityHistory"
-              (ngModelChange)="onPrivacyToggle('showActivityHistory', $event)"
-            />
-          </div>
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Badges</h3>
+          <p class="setting-description">
+            Display your earned badges on your profile
+          </p>
         </div>
-
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Favorites</h3>
-            <p class="setting-description">Let others see your favorite apps and suites</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Favorites"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showFavorites"
-              (ngModelChange)="onPrivacyToggle('showFavorites', $event)"
-            />
-          </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Badges"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showBadges"
+            (ngModelChange)="onPrivacyToggle('showBadges', $event)"
+          />
         </div>
+      </div>
 
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Discussions</h3>
-            <p class="setting-description">Display discussions you've participated in</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Discussions"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showDiscussions"
-              (ngModelChange)="onPrivacyToggle('showDiscussions', $event)"
-            />
-          </div>
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Activity History</h3>
+          <p class="setting-description">
+            Display your recent activity on your profile
+          </p>
         </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Activity History"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showActivityHistory"
+            (ngModelChange)="onPrivacyToggle('showActivityHistory', $event)"
+          />
+        </div>
+      </div>
 
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Show Suites</h3>
-            <p class="setting-description">Display suites you've created or contributed to</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Show Suites"
-              tuiSwitch
-              [ngModel]="privacyPreferences().showSuites"
-              (ngModelChange)="onPrivacyToggle('showSuites', $event)"
-            />
-          </div>
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Favorites</h3>
+          <p class="setting-description">
+            Let others see your favorite apps and suites
+          </p>
+        </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Favorites"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showFavorites"
+            (ngModelChange)="onPrivacyToggle('showFavorites', $event)"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Discussions</h3>
+          <p class="setting-description">
+            Share public application topics and article comment threads you currently participate in
+          </p>
+        </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Discussions"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showDiscussions"
+            (ngModelChange)="onPrivacyToggle('showDiscussions', $event)"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Show Suites</h3>
+          <p class="setting-description">
+            Display your reviewed, published suites within your profile audience
+          </p>
+        </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Show Suites"
+            tuiSwitch
+            [ngModel]="privacyPreferences().showSuites"
+            (ngModelChange)="onPrivacyToggle('showSuites', $event)"
+          />
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Data & Analytics -->
-    <div
-      tuiAppearance="card-panel"
-      tuiCardLarge
-      class="settings-card"
-    >
-      <header class="settings-card-header">
-        <h2 class="section-title">
-          <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
-          <tui-icon icon="@tui.bar-chart-2" class="section-icon" />
-          Data & Analytics
-        </h2>
-        <p class="section-subtitle">Control how your data is used to improve the platform</p>
-      </header>
+  <!-- Data & Analytics -->
+  <div tuiAppearance="card-panel" tuiCardLarge class="settings-card">
+    <header class="settings-card-header">
+      <h2 class="section-title">
+        <span tuiAppearance="accent-bar-indigo" class="accent-bar"></span>
+        <tui-icon icon="@tui.bar-chart-2" class="section-icon" />
+        Data & Analytics
+      </h2>
+      <p class="section-subtitle">
+        Control how your data is used to improve the platform
+      </p>
+    </header>
 
-      <div class="settings-group">
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Usage Analytics</h3>
-            <p class="setting-description">Help us improve by sharing anonymous usage data</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Usage Analytics"
-              tuiSwitch
-              [ngModel]="privacyPreferences().allowAnalytics"
-              (ngModelChange)="onPrivacyToggle('allowAnalytics', $event)"
-            />
-          </div>
+    <div class="settings-group">
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Usage Analytics</h3>
+          <p class="setting-description">
+            Help us improve by sharing anonymous usage data
+          </p>
         </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Usage Analytics"
+            tuiSwitch
+            [ngModel]="privacyPreferences().allowAnalytics"
+            (ngModelChange)="onPrivacyToggle('allowAnalytics', $event)"
+          />
+        </div>
+      </div>
 
-        <div class="setting-item setting-item--toggle">
-          <div class="setting-info">
-            <h3 class="setting-label">Personalization</h3>
-            <p class="setting-description">Allow us to personalize your experience based on your activity</p>
-          </div>
-          <div class="setting-control">
-            <input
-              type="checkbox"
-              aria-label="Personalization"
-              tuiSwitch
-              [ngModel]="privacyPreferences().allowPersonalization"
-              (ngModelChange)="onPrivacyToggle('allowPersonalization', $event)"
-            />
-          </div>
+      <div class="setting-item setting-item--toggle">
+        <div class="setting-info">
+          <h3 class="setting-label">Personalization</h3>
+          <p class="setting-description">
+            Allow us to personalize your experience based on your activity
+          </p>
+        </div>
+        <div class="setting-control">
+          <input
+            type="checkbox"
+            aria-label="Personalization"
+            tuiSwitch
+            [ngModel]="privacyPreferences().allowPersonalization"
+            (ngModelChange)="onPrivacyToggle('allowPersonalization', $event)"
+          />
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Danger Zone -->
-    <div
-      tuiAppearance="card-panel"
-      tuiCardLarge
-      class="settings-card settings-card--danger"
-    >
-      <header class="settings-card-header">
-        <h2 class="section-title section-title--danger">
-          <tui-icon icon="@tui.alert-triangle" class="section-icon" />
-          Danger Zone
-        </h2>
-      </header>
+  <!-- Danger Zone -->
+  <div
+    tuiAppearance="card-panel"
+    tuiCardLarge
+    class="settings-card settings-card--danger"
+  >
+    <header class="settings-card-header">
+      <h2 class="section-title section-title--danger">
+        <tui-icon icon="@tui.alert-triangle" class="section-icon" />
+        Danger Zone
+      </h2>
+    </header>
 
-      <div class="settings-group">
-        <div class="danger-actions">
-          <div class="danger-action">
-            <div class="danger-action__info">
-              <h3 class="danger-action__title">Export Your Data</h3>
-              <p class="danger-action__description">Download saved local profile and preferences as JSON. Includes demo defaults when no local record exists; excludes remote data and unsaved edits.</p>
-            </div>
-            <button
-              tuiButton
-              appearance="secondary"
-              iconStart="@tui.download"
-              (click)="onExport()"
-              [disabled]="isExporting()"
-              type="button"
-            >
-              {{ isExporting() ? 'Exporting...' : 'Export Local Settings' }}
-            </button>
+    <div class="settings-group">
+      <div class="danger-actions">
+        @if (!isDemo) { <account-export-panel /> }
+        <div class="danger-action">
+          <div class="danger-action__info">
+            <h3 class="danger-action__title">Export Saved Settings</h3>
+            <p class="danger-action__description">
+              {{
+                includeLocalProfile
+                  ? 'Download saved local profile and preferences as JSON. Includes demo defaults when no local record exists; excludes remote data and unsaved edits.'
+                  : isDemo
+                  ? 'Download saved browser preferences as JSON. Excludes profile, remote data and unsaved edits.'
+                  : 'Download just your saved account preferences as JSON. Use the account archive above for all retained account data.'
+              }}
+            </p>
           </div>
-
-          <div class="danger-action">
-            <div class="danger-action__info">
-              <h3 class="danger-action__title">Delete Account</h3>
-              <p class="danger-action__description">Remote account deletion is unavailable in this app. No account or server data will be deleted.</p>
-            </div>
-            <button
-              tuiButton
-              appearance="error"
-              iconStart="@tui.trash-2"
-              disabled
-              type="button"
-            >
-              Deletion Unavailable
-            </button>
-          </div>
+          <button
+            tuiButton
+            appearance="secondary"
+            iconStart="@tui.download"
+            (click)="onExport()"
+            [disabled]="isExporting()"
+            type="button"
+          >
+            {{
+              isExporting()
+                ? 'Exporting...'
+                : isDemo
+                ? 'Export Local Settings'
+                : 'Export Saved Preferences'
+            }}
+          </button>
         </div>
-      </div>
-    </div>
 
-    <!-- Actions -->
-    <div class="settings-actions">
-      <button
-        tuiButton
-        appearance="secondary"
-        type="button"
-        (click)="onCancel()"
-      >
-        Reset to Saved
-      </button>
-      <button
-        tuiButton
-        appearance="primary"
-        type="button"
-        [disabled]="isSaving() || isLoading()"
-        (click)="onSave()"
-      >
-        @if (isSaving()) {
-          Saving...
-        } @else {
-          Save Changes
+        @if (isDemo) {
+        <div class="danger-action">
+          <div class="danger-action__info">
+            <h3 class="danger-action__title">Delete Account</h3>
+            <p class="danger-action__description">
+              Account deletion is unavailable in demo mode. No server data will be deleted.
+            </p>
+          </div>
+          <button
+            tuiButton
+            appearance="error"
+            iconStart="@tui.trash-2"
+            disabled
+            type="button"
+          >
+            Deletion Unavailable
+          </button>
+        </div>
         }
-      </button>
+      </div>
     </div>
-  </section>
+  </div>
+
+  <!-- Actions -->
+  <div class="settings-actions">
+    <button tuiButton appearance="secondary" type="button" (click)="onCancel()">
+      Reset to Saved
+    </button>
+    <button
+      tuiButton
+      appearance="primary"
+      type="button"
+      [disabled]="isSaving() || isLoading()"
+      (click)="onSave()"
+    >
+      @if (isSaving()) { Saving... } @else { Save Changes }
+    </button>
+  </div>
+</section>
 }
+@if (!isDemo) { <account-erasure-panel /> }

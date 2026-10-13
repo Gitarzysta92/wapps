@@ -29,24 +29,62 @@ spec:
           ports:
             - containerPort: 1340
               name: http
+          envFrom:
+            - secretRef:
+                name: authenticator-runtime
           env:
+            - name: REPLY_NOTIFICATION_WORKER_ENABLED
+              value: "false"
+            - name: MENTION_NOTIFICATION_WORKER_ENABLED
+              value: "false"
+            - name: FAVORITE_UPDATE_WORKER_ENABLED
+              value: "false"
             - name: ACCOUNT_MANAGEMENT_PORT
               value: "1340"
+            - name: EDITORIAL_URL
+              value: "http://editorial.default.svc.cluster.local:1337"
+            - name: DISCUSSION_URL
+              value: "http://discussion.discussion.svc.cluster.local:1338"
             - name: FIREBASE_PROJECT_ID
               valueFrom:
                 secretKeyRef:
                   name: firebase-config
                   key: project-id
+            - name: NOTIFICATION_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: secret
+            - name: ACCOUNT_ERASURE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-erasure-secret
+                  key: secret
+            - name: ACCOUNT_EXPORT_SOURCE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: account-export-secret
+                  key: secret
             - name: INGRESS_AUTH_SECRET
               valueFrom:
                 secretKeyRef:
                   name: ingress-auth-secret
                   key: secret
-                  optional: true
+            - name: FIREBASE_WEB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: firebase-config
+                  key: web-api-key
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/var/secrets/firebase/serviceAccount.json"
             - name: OPA_URL
               value: "http://opa.default.svc.cluster.local:8181"
             - name: OPA_IDENTITY_ADMIN_ALLOW_PATH
               value: "/v1/data/wapps/identity_admin/authz/allow"
+          volumeMounts:
+            - name: firebase-admin-credentials
+              mountPath: /var/secrets/firebase
+              readOnly: true
           resources:
             requests:
               cpu: 50m
@@ -66,4 +104,8 @@ spec:
               port: 1340
             initialDelaySeconds: 5
             periodSeconds: 5
+      volumes:
+        - name: firebase-admin-credentials
+          secret:
+            secretName: firebase-admin-credentials
 
