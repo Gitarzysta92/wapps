@@ -31,7 +31,9 @@ See `docs/OPERATIONAL-READINESS.md` for those limitations.
 before publishing any image. All eight application images are tagged with the
 full source SHA; infrastructure and build images are pinned by digest. The portal
 also serves `/release.json`, containing the baked source revision and `mode: api`.
-The image runtime installs its generated locked production dependencies.
+The image runtime installs its locked production dependencies. Runtime locks are
+pruned offline from the complete workspace lock and checked for unchanged
+versions, registry locations and integrity hashes before `npm ci` installs them.
 
 The `development` GitHub environment already supplies Firebase credentials.
 The release workflow encrypts them to `deploy/alpha/host-transport.crt`; only the

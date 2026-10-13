@@ -79,7 +79,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - curl -f http://127.0.0.1:9000/minio/health/live
+        - mc ready local
       interval: 10s
       timeout: 5s
       retries: 30
