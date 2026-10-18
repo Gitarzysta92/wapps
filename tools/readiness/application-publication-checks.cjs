@@ -510,7 +510,12 @@ async function applicationPublicationChecks({
       [reviewerIdentityId, racingId]
     );
     try {
-      await assert.rejects(migrate, /reviewer/);
+      await assert.rejects(
+        migrate,
+        reviewerIdentityId === null
+          ? /Anonymous Editorial review has no exact erasure timestamp/
+          : /Invalid independent Editorial review attribution/
+      );
     } finally {
       await source.query(
         'UPDATE application_submissions SET reviewerIdentityId = ? WHERE applicationId = ?',

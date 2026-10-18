@@ -21,26 +21,31 @@ module.exports = async function prepareDiscussionErasure(options) {
     until,
     pass,
   } = options;
-  assert.equal(source.options.database, 'export_discussion');
-  const other = 'AccountExportOther';
-  const write = async (route, body, uid = owner, method = 'POST') => {
-    const response = await fetch(`${discussionOrigin()}/api/${route}`, {
-      method,
-      headers: {
-        ...headers(uid),
-        'idempotency-key': randomUUID(),
-        'x-user-claims': '{"roles":["admin"],"tenantId":"default"}',
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(10000),
+  assert.equal(
+    source.options.database,
+    options.discussionDatabase ?? 'export_discussion'
+  );
+  const other = options.other ?? 'AccountExportOther';
+  const write =
+    options.writeDiscussion ??
+    (async (route, body, uid = owner, method = 'POST') => {
+      const response = await fetch(`${discussionOrigin()}/api/${route}`, {
+        method,
+        headers: {
+          ...headers(uid),
+          'idempotency-key': randomUUID(),
+          'x-user-claims': '{"roles":["admin"],"tenantId":"default"}',
+        },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(10000),
+      });
+      assert.equal(
+        response.status,
+        method === 'POST' ? 201 : 200,
+        await response.clone().text()
+      );
+      return response.json();
     });
-    assert.equal(
-      response.status,
-      method === 'POST' ? 201 : 200,
-      await response.clone().text()
-    );
-    return response.json();
-  };
   const publicRoot = await write('discussions', {
     content: {
       displayName: 'Runtime erased author',
@@ -59,10 +64,13 @@ module.exports = async function prepareDiscussionErasure(options) {
     },
     other
   );
-  const [application] = await editorialSource.query(
-    'SELECT id FROM app_records WHERE slug=?',
-    ['export-application']
-  );
+  const application =
+    options.application ??
+    (
+      await editorialSource.query('SELECT id FROM app_records WHERE slug=?', [
+        'export-application',
+      ])
+    )[0];
   assert.ok(application);
   const reviewBase = `application-reviews/${application.id}`;
   const publish = (uid, expectedRevision, text) =>
@@ -244,8 +252,10 @@ module.exports = async function prepareDiscussionErasure(options) {
       owner,
       'Default-off activation must preserve pending content'
     );
+    await options.fenceWorkers?.();
     env.DISCUSSION_ERASURE_WORKERS_FENCED = 'true';
     await restartDiscussion();
+    await options.resumeEditorial?.();
     await restartAccount();
     assert.equal(
       (await invoke()).status,
@@ -253,6 +263,7 @@ module.exports = async function prepareDiscussionErasure(options) {
       'Missing inventory must block cleanup'
     );
     assert.equal((await receipt()).completedAt, null);
+    await options.stopDiscussion?.();
     const inventory = (...args) =>
       JSON.parse(
         execFileSync(
@@ -266,6 +277,7 @@ module.exports = async function prepareDiscussionErasure(options) {
       );
     for (let page = 0; page < 64; page++) {
       const plan = inventory();
+      options.recordInventory?.(plan);
       const result = inventory(
         '--apply',
         plan.fingerprint,
@@ -274,6 +286,7 @@ module.exports = async function prepareDiscussionErasure(options) {
       if (result.progress.completedAt !== null) break;
       assert.ok(page < 63, 'Inventory did not finish');
     }
+    await restartDiscussion();
 
     const mongo = mongoClient();
     try {
@@ -400,6 +413,7 @@ module.exports = async function prepareDiscussionErasure(options) {
           state: 'retired',
         });
       }
+      await options.assertRetiredObjects?.(originalObjects);
       const response = await fetch(
         `${discussionOrigin()}/api/discussions/${publicRoot.id}`,
         { signal: AbortSignal.timeout(10000) }
@@ -410,7 +424,9 @@ module.exports = async function prepareDiscussionErasure(options) {
       assert.ok(retained.includes('Independent reply survives'));
       assert.ok(!retained.includes('Runtime erased author'));
       const reviewResponse = await fetch(
-        `${discussionOrigin()}/api/${reviewBase}/${publicReview.id}`
+        `${options.reviewOrigin?.() ?? discussionOrigin()}/api/${reviewBase}/${
+          publicReview.id
+        }`
       );
       assert.equal(reviewResponse.status, 200);
       const retainedReview = await reviewResponse.text();

@@ -1,11 +1,21 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CatalogReadiness } from './catalog-readiness';
 
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
+  constructor(private readonly readiness: CatalogReadiness) {}
   @Get()
-  @ApiOperation({ summary: 'Health check', description: 'Returns the health status of the service' })
+  @ApiOperation({
+    summary: 'Health check',
+    description: 'Returns the health status of the service',
+  })
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   check() {
     return {
@@ -16,14 +26,16 @@ export class HealthController {
   }
 
   @Get('ready')
-  @ApiOperation({ summary: 'Readiness check', description: 'Returns the readiness status of the service' })
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({
+    summary: 'Readiness check',
+    description: 'Returns the readiness status of the service',
+  })
   @ApiResponse({ status: 200, description: 'Service is ready' })
-  ready() {
-    return {
-      status: 'ready',
-      service: 'catalog-bff',
-      timestamp: new Date().toISOString(),
-    };
+  async ready() {
+    const report = await this.readiness.check();
+    if (report.status !== 'ready')
+      throw new ServiceUnavailableException(report);
+    return report;
   }
 }
-

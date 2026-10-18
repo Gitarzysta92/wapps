@@ -6,6 +6,44 @@ status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
 
+Current integrated baseline I28 (October 18, 2026) combines full account erasure,
+application publication/ownership and operational foundations. The 4,316-file
+source passes 6,879 Jest tests / 428 suites, 34 portable tests, full lint,
+140 builds, 49 typechecks, 64 Angular artifact checks and zero boundary violations.
+Fresh Docker runs pass 31 erasure, 31 application, 27 export, 29 suite, 25 profile
+and 25 member groups, including 9,600 repeated authenticated reads across the six
+selected runs. Operational qualification passes both SQL/projection recovery tests
+and 11 readiness fault/recovery groups. Counts overlap between invocations.
+The [I28 checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-erasure-applications-and-operational-baseline-october-18-2026) and
+`/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json` record exact source, commands,
+substitutions and cleanup. Earlier native-only transport limitations below describe
+those historical runs; the combined Docker regressions now pass. Production
+fencing/inventories, archived-data policy, broad readiness, recovery/load/soak,
+frontend acceptance and deployment remain open. Live installation stays A21.
+
+A28 account erasure (October 18, 2026) extends the integrated baseline with the
+[independent-process full-erasure qualification](ACCOUNT-ERASURE-QUALIFICATION.md).
+It covers both native gateway configurations, credential/content completion,
+private cleanup, anonymous retained content, receipt failures, quarantine/requeue
+and coordinator crash recovery in disposable stores. Full workspace and relevant
+real-store gates are recorded in `/tmp/wapps-a28-account-erasure-20261018/`.
+The original lane leaves transport unqualified; I28 supplies the combined Docker
+evidence above. Production fencing, archived-data policy, frontend acceptance and
+deployment remain open; live installation remains A21.
+
+O01 operational foundations (October 18, 2026): `wappsA` repairs the reproduced
+Docker gateway connection-churn trigger with bounded auth/BFF connection reuse
+and explicit auth timeouts. Both complete local/alpha Docker gateways and the
+preserved profile/member/export/suite extensions have separate qualification.
+The two obsolete Editorial recovery qualifiers now share the production migration
+roster and pass against disposable real stores. Scoped Editorial/BFF catalog
+readiness distinguishes dependency/schema/worker/backlog/poison failures and
+recovers, while liveness remains independent. The [O01 checkpoint](IMPLEMENTATION-PROGRESS.md#o01-operational-transport-migration-recovery-and-scoped-readiness-october-18-2026)
+and [operator runbook](EDITORIAL-CATALOG-READINESS.md) record bounds, full gate
+results, failures and fixture limits. This closes those bounded source/runtime
+gaps; deployed probe/alert wiring, Registry/other-journey readiness, whole-product
+recovery/load and release acceptance remain open. Live services are unchanged.
+
 Integrated parallel baseline (October 18, 2026): A27 export, suite lifecycle and
 publication, and discovery article all-tags filtering now share one verified source
 snapshot. The 4,298-file manifest and exact local snapshot identity are recorded in
@@ -15,9 +53,9 @@ lint, 140 builds, 49 typechecks, 64 Angular artifact checks and zero boundary
 violations. Separate runtime runs pass 25 export, 27 suite, six discovery and
 23 member groups, with overlapping baseline groups counted per invocation.
 Native gateway and discovery setup/projection substitutions remain explicit;
-Docker-to-host transport and release acceptance are still open. Next parallel work
-is A28 full erasure, application publication/ownership, and operational transport,
-migration qualifiers and dependency-aware readiness. Main's dirty backlog and
+Docker-to-host transport and the then-next parallel assignments were open at that
+checkpoint. I28 above integrates and verifies A28 full erasure, application
+publication/ownership and operational foundations; release acceptance stays open. Main's dirty backlog and
 each lane's completed source are preserved. Live installation remains A21; this
 integration does not deploy, migrate live stores or enable live workers. See the
 [integrated checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-export-suites-and-discovery-baseline-october-18-2026).

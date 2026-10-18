@@ -173,7 +173,7 @@ module.exports = async function qualifyHealthMonitors({
           service === 'local_auth'
             ? 'http://local_auth'
             : `http://host.docker.internal:${
-                service === 'catalog-bff'
+                service === 'portal_bff'
                   ? bffPort
                   : service === 'editorial'
                   ? ownerPort
@@ -197,7 +197,8 @@ module.exports = async function qualifyHealthMonitors({
       limit_req_zone $binary_remote_addr zone=identity_recovery:1m rate=100r/s;
       limit_req_zone $binary_remote_addr zone=identity_enrollment:1m rate=100r/s;
       map $http_authorization $validation_path { "" /api/internal/authentication/validate-optional; default /api/internal/authentication/validate; }
-      upstream local_auth { server host.docker.internal:${bffPort}; }
+      proxy_http_version 1.1;
+      upstream local_auth { server host.docker.internal:${bffPort}; keepalive 32; keepalive_timeout 3s; }
       server { listen 8080; include /etc/nginx/qualification/local-api.conf; }
       server { listen 8081; include /etc/nginx/qualification/alpha-api.conf; }
     }\n`

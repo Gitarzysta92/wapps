@@ -1,6 +1,86 @@
 # Workspace verification
 
+## Operational foundations
+
+`WAPPS_OPERATIONAL_INTEGRATION=1 node --test tools/readiness/operational-foundations.test.cjs`
+runs the two Editorial SQL/projection recovery qualifiers against this invocation's
+disposable Docker stores, then qualifies scoped Editorial/BFF readiness with real
+OPA, SQL, Mongo, RabbitMQ and a separate materializer. Build Editorial/BFF with
+prerequisites first. Nested qualifiers must emit one passing, non-skipped test;
+an inherited Node test context or empty output cannot count as qualification.
+See [the readiness contract and operator runbook](../../docs/EDITORIAL-CATALOG-READINESS.md).
+
+Docker gateway qualification leaves `WAPPS_NGINX_BINARY` unset. The local-auth
+harness preserves the checked-in bounded upstream pools, substitutes only service
+addresses and also starts the complete local and alpha gateway configurations.
+It adds 1,600 bounded authenticated reads through all four gateways/includes,
+invalid-token checks and independent Account/BFF restart recovery, with no request
+retry or pacing. Keep profile/member/export/erasure/suite/application extensions in
+separate invocations. I28 qualifies all six on the combined source; its command/log
+index is `/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json`.
+Native Nginx remains an optional comparator, not a substitute for Docker evidence.
+
 ## Local authentication and BFF
+
+### Full account erasure (A28)
+
+The current independent Authentication/Account entrypoint is
+`WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_ERASURE_PARITY_INTEGRATION=1 node --test tools/readiness/local-auth.test.cjs`.
+Build the complete snapshot first. Use only the runner's fresh stores; the erasure
+extension runs separately from profile/member/export/suite/application extensions. See
+[the A28 qualification contract](../../docs/ACCOUNT-ERASURE-QUALIFICATION.md) for
+commands, process fences/inventory evidence, supplemental regressions and limits.
+The historical Firebase export/erasure composition is not the current entrypoint.
+
+### Application publication and ownership parity
+
+Run `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_APPLICATION_PARITY_INTEGRATION=1
+node --test tools/readiness/local-auth.test.cjs` in a fresh Node 22.17.1 lockfile
+installation after all builds finish. Profile, member, export, erasure, suite and
+application extensions are mutually exclusive. `WAPPS_APPLICATION_LOCAL_ONLY=1` limits the new
+application workflow to local ingress for qualification before an alpha route change;
+omit it for the required local/alpha comparison. Shared authentication checks still
+run against both configurations.
+
+`application-parity-services.cjs` owns fresh Editorial SQL, Mongo, MinIO, real OPA,
+the compiled API/materializer and the parent qualifier's RabbitMQ. The shared
+`ownership-dns-fixture.cjs` supplies controlled UDP TXT responses to the production
+Node DNS resolver. This substitutes public authoritative DNS propagation, while
+preserving exact challenges, negative responses, failures and bounded recovery.
+Real local credentials and canonical Identity/Account resolution authorize every
+portal workflow; the test provider assigns dedicated staff claims before sign-in.
+
+The application qualifier exercises frozen submission/classification, independent
+content and ownership decisions, immutable media, canonical grants, revoke/release,
+claim-bound drafts, revision/key conflicts, concurrent replay, SQL/outbox rollback,
+broker projection lag and old-event suppression. DNS recovery expires only its own
+failed lease, kills Editorial and retries the original command after restart.
+Full route-family case/slash/unknown-suffix and command checks stop BFF to detect
+owner fallbacks. Object/projection/owner/policy failures must recover truthfully.
+
+`application-parity-privacy-checks.cjs` exercises existing Editorial participant
+hooks after canonical self-deletion, then obtains successor ownership. Its own
+materializer is stopped before enabling the disposable erasure fence. It verifies
+retained approved content/media, private provenance removal and the permanent
+ownership fence. Full Account erasure orchestration, credential cleanup convergence,
+other participants and their final receipts are covered by the separate A28 extension.
+Archived data and production fencing remain release dependencies.
+
+Leave `WAPPS_NGINX_BINARY` unset for required Docker qualification; set it explicitly
+only for a native comparison. Both checked-in API/auth configurations retain their
+own routes; only listener/dependency addresses change.
+Local application media is included for the necessary publication round trip;
+alpha media keeps its separate routing and is not qualified by that round trip.
+The complete gateway startup check also uses Docker. I28 passes the combined
+Docker workflow; native results alone do not establish container transport. Public
+DNS/TLS, browser acceptance and deployment remain separate.
+
+Additional isolated regressions use `WAPPS_SUITES_OPA_DOCKER=1` and a unique
+`WAPPS_SUITES_OUTPUT` with `node tools/readiness/qualify-suites.cjs
+--application-ownership --ownership-http --no-browser`, then a separate run with
+`--application-publication --delivery --no-browser`. These preserve controlled
+setup identities/direct projection where documented and add competing claims,
+reviewers, rebase, migration guards, broker acknowledgement/rebuild/reordering.
 
 ### Suite lifecycle and publication parity
 
@@ -39,11 +119,11 @@ preserving its frozen content. Only the disposable participant is enabled and it
 materializer is fenced. This does not complete the Account export archive or
 cross-service provider saga; A27/A28 privacy qualification remains separate.
 
-Set `WAPPS_NGINX_BINARY` explicitly for native gateway comparison. Both checked-in
-API/auth configurations run with temporary listener/dependency addresses; the
-unrelated media include is excluded. Docker-to-host transport remains unqualified,
-and the complete gateway startup probe still uses Docker. No live activation,
-browser presentation acceptance, external providers or backup/restore is implied.
+Leave `WAPPS_NGINX_BINARY` unset for Docker; set it explicitly only for native
+comparison. Both checked-in API/auth configurations use temporary listener/dependency
+addresses; unrelated media is excluded. I28 qualifies suite transport alongside
+the complete Docker gateways. No live activation, browser presentation acceptance,
+external providers or backup/restore is implied.
 
 ### Authentication baseline
 
@@ -57,7 +137,7 @@ It removes that tag during cleanup. Docker images `mysql:8.4`,
 `rabbitmq:4-management`, `openpolicyagent/opa:1.4.2-static` and `nginx:1.28-alpine` must be cached locally. Only random-
 named test containers/images are created/removed; no existing Wapps store is used.
 
-Nineteen groups cover staged legacy import, registration/replay, independent sessions, concurrent refresh,
+Twenty-one baseline groups cover complete Docker gateway transport plus staged legacy import, registration/replay, independent sessions, concurrent refresh,
 expiry, sign-out, process restart, canonical suspension/deletion, operator claims,
 password updates, transaction fault/retry, private export allowlists, durable
 credential cleanup and provider/database failures. The staff group exercises both
@@ -158,9 +238,10 @@ NX_DAEMON=false NX_ISOLATE_PLUGINS=false \
 
 It uses the same prerequisites, fresh stores and source setup described above.
 Finish all builds before starting either runtime suite: service restarts read
-`dist`, which a concurrent build can replace. The two extension flags are mutually
-exclusive. Set `WAPPS_NGINX_BINARY` explicitly for the native comparison; A26 retains
-A25's Docker-to-host limitation and still runs the full Docker gateway startup check.
+`dist`, which a concurrent build can replace. All six extension flags are mutually
+exclusive. Leave `WAPPS_NGINX_BINARY` unset for the required Docker run. A26's
+historical native-only limitation is superseded by I28's combined Docker regression;
+a native comparator still does not establish deployment acceptance.
 
 `bff-favorites-inbox-parity-checks.cjs` enables actual reply/mention/watch workers
 only in disposable Account. It covers all four favorite kinds; General/Mature/
@@ -759,7 +840,7 @@ WAPPS_SUITES_OPA_DOCKER=1 WAPPS_SUITES_OUTPUT=/tmp/unique-export-evidence \
   node tools/readiness/qualify-suites.cjs --account-export-editorial --no-browser
 ```
 
-Run the profile, member, export and suite extensions separately. The export extension uses
+Run the profile, member, export, suite and application extensions separately. The export extension uses
 fresh test-owned SQL/RabbitMQ/Mongo/MinIO/OPA, independent Authentication/Account/BFF,
 and real Editorial/Community sources. Credential subjects differ from application
 identity IDs; the archive includes their exact verified binding. Both local and

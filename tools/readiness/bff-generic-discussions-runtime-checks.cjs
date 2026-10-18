@@ -264,7 +264,7 @@ module.exports = async function qualifyGenericDiscussionBff({
           service === 'local_auth'
             ? 'http://local_auth'
             : `http://host.docker.internal:${
-                service === 'catalog-bff'
+                service === 'portal_bff'
                   ? bffPort
                   : service === 'discussion'
                   ? ownerPort
@@ -288,7 +288,8 @@ module.exports = async function qualifyGenericDiscussionBff({
       limit_req_zone $binary_remote_addr zone=identity_recovery:1m rate=10r/s;
       limit_req_zone $binary_remote_addr zone=identity_enrollment:1m rate=10r/s;
       map $request_method $validation_path { default /validate; }
-      upstream local_auth { server host.docker.internal:${authPort}; }
+      proxy_http_version 1.1;
+      upstream local_auth { server host.docker.internal:${authPort}; keepalive 32; keepalive_timeout 3s; }
       server { listen 8080; include /etc/nginx/qualification/local/api.conf; }
       server { listen 8081; include /etc/nginx/qualification/alpha/api.conf; }
     }\n`

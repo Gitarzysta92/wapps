@@ -1,9 +1,22 @@
 # Portal gateway route parity
 
-Source inventory through A27 and suite integration, October 18, 2026, on `codex/full-operation` at base
+Source inventory through I28 integrated erasure, application/ownership and operational
+foundations, October 18, 2026, on `codex/full-operation` at base
 `95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb` plus the preserved working tree.
 This describes checked-in routing, not the live installation (still A21).
 The [completion checklist](BACKEND-COMPLETION-CHECKLIST.md) owns release status.
+
+## Combined Docker qualification
+
+I28 preserves all six separate local-auth extensions and verifies both complete
+Docker gateways plus API/auth include fixtures. Erasure/application/export/suite/
+profile/member runs pass 31/31/27/29/25/25 groups respectively, with 1,600 bounded
+authenticated reads and independent Account/BFF restart recovery per invocation.
+Alpha application/ownership routes use the shared `portal_bff` upstream. Evidence
+and exact source identity: `/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json`.
+Earlier sections retain their native-lane results; I28 supersedes their bounded
+Docker transport gap. It does not qualify deployed routing, broad media families,
+public DNS/TLS or original frontend acceptance. Remaining direct routes stay below.
 
 ## Account settings slice
 
@@ -154,8 +167,37 @@ from full Account privacy completion. Evidence and exact source manifest are in
 Both gateway configurations use the explicit native Nginx comparison. This does
 not resolve the A25/A26 Docker-to-host stalls or establish deployed alpha routing.
 The integrated alpha config and local-auth harness retain both export and suite
-extensions. Profile, member, export and suite extensions must run separately;
+extensions. Profile, member, export, erasure, suite and application must run separately;
 their remaining routes retain their own status.
+
+## Application publication and ownership
+
+The application lane starts from integrated baseline
+`908e60952cc4100dfcc6807978ff419a432c9dfc` in `wappsB`. After the explicit local
+BFF workflow passed, alpha's direct Editorial alternatives were removed for
+`/api/me/application-drafts/*`, `/api/editorial/application-reviews/*`,
+`/api/me/ownership-claims/*` and `/api/editorial/ownership-reviews/*`. Both
+configurations now require the existing explicit [application BFF handlers](../apps/services/catalog-bff/src/app/applications/)
+for each complete family, including case/slash variants and unknown suffixes.
+They retain 64 KiB bodies, bounded timeouts and disabled upstream retries.
+
+`WAPPS_APPLICATION_PARITY_INTEGRATION=1` runs separately from profile/member/export/
+erasure/suite extensions. The fresh-source qualifier passes 29 combined groups with real
+local credential sessions, canonical Identity/Account, Editorial, OPA, SQL, Mongo,
+MinIO and RabbitMQ. It proves frozen independent publication, exact DNS proof and
+independent grant decisions, canonical revoke/release during projection lag,
+claim-bound editing, transactional rollback, crash/replay, successor ownership and
+withdrawal. Both configuration matrices fail with BFF stopped and no owner fallback.
+The shared controlled UDP fixture uses the production DNS resolver; external DNS
+propagation is substituted. Evidence: `/tmp/wappsB-application-ownership-20261018-5_ffh246/verification.json`.
+
+Existing Editorial erasure hooks remove the old owner's grants/private provenance
+before a successor acquires a new claim. This is participant compatibility, not
+A28 full Account erasure completion. Local application-media bytes are exercised
+only as needed for frozen publication and retained content; alpha's independent
+media families remain migration work. Both API/auth comparisons use native Nginx
+1.28.3; Docker-to-host transport, original frontend acceptance, public DNS/TLS and
+deployment remain unqualified by this lane. Live installation stays A21.
 
 ## Remaining direct routes
 
@@ -166,7 +208,6 @@ both gateways, including denial, failures, case/slash variants and unknown suffi
 
 | Family | Local | Alpha | Caller and existing BFF support / next qualification |
 | --- | --- | --- | --- |
-| `/me/application-drafts/*`, `/editorial/application-reviews/*`, `/me/ownership-claims/*`, `/editorial/ownership-reviews/*` | BFF | Editorial | [Application-workspace adapters](../apps/portals/shared/features/application-workspace/src/infrastructure/); [applications BFF](../apps/services/catalog-bff/src/app/applications/). Qualify draft publication and exact ownership proof/provider outcomes (BC10/11/12). |
 | `/me/releases/*`, `/editorial/release-reviews/*`, `/catalog/releases/*` | BFF | Editorial | [ReleaseApiService](../apps/portals/shared/features/application-workspace/src/infrastructure/release-api.service.ts); [releases BFF](../apps/services/catalog-bff/src/app/releases/). Qualify immutable history, review/publication and parent revocation (BC14). |
 | `/me/articles/*`, `/editorial/article-reviews/*`, `/catalog/{articles,article-selection,article-visibility}` | BFF | Editorial | [Article adapters](../apps/portals/shared/features/articles/src/infrastructure/); [articles BFF](../apps/services/catalog-bff/src/app/articles/). Qualify classification, review, slug/tombstone and current Discussion authority (BC13). No direct portal caller for `article-visibility` was found; BFF retains an explicit handler/client. |
 | `/me/{application-images,article-covers}/*`, `/media/{applications,articles}/*` | BFF | Editorial | [ApplicationMediaApiService](../apps/portals/shared/features/application-workspace/src/infrastructure/application-media-api.service.ts), [ArticleCoverApiService](../apps/portals/shared/features/articles/src/infrastructure/article-cover-api.service.ts); explicit BFF media controllers. Also audit media nested under draft/review routes. Qualify byte bounds, source authorization, staging/commit/replay and object-store failures (BC15). |
@@ -186,8 +227,19 @@ generic Discussion and dedicated application-discussion/article-comment/review
 families already cross BFF in both configurations. Other `/api/*` requests use the
 default BFF route; these catch-alls grant no owning-service proxy capability.
 
-Recommended next privacy slice: A28 full erasure (BC22/27), with independent
-credential cleanup, exact participant receipts and retained-public-content convergence.
+### A28 erasure qualification
+
+The [A28 journey](ACCOUNT-ERASURE-QUALIFICATION.md) qualifies existing
+`DELETE /api/me`, staff `DELETE /api/admin/users/:uid` and read-only
+`GET /api/admin/users/:uid/deletion-status` through both native gateway
+configurations. Independent Authentication removes the verified provider subject;
+Account reports completion only after its credential journal and the fixed
+Account/Editorial/Discussion erasure plan complete. Denial, dependency/BFF outage,
+pending/failed/completed status, replay/restart, final receipt failure,
+quarantine/requeue, process crash and retained-public-content convergence are
+covered. No ingress family or presentation is changed by A28. Media assertions
+use owning-service/object-store evidence, not media gateway parity.
+
 Coordinated
 activation, archived-data policy, external providers, public monitoring egress,
 backup/restore/soak and the original frontend merge remain separate release work.

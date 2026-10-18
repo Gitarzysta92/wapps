@@ -133,8 +133,9 @@ async function profileParityServices({
       clearTimeout(deadline);
     }
   }
-  const restartEditorial = async () => {
+  const restartEditorial = async (overrides = {}) => {
     await editorial?.stop();
+    Object.assign(editorialEnv, overrides);
     editorial = await start(
       editorialBundle,
       editorialEnv,
@@ -142,8 +143,9 @@ async function profileParityServices({
       '/api/health'
     );
   };
-  const restartDiscussion = async () => {
+  const restartDiscussion = async (overrides = {}) => {
     await discussion?.stop();
+    Object.assign(discussionEnv, overrides);
     discussion = await start(
       discussionBundle,
       discussionEnv,
@@ -212,6 +214,21 @@ async function profileParityServices({
     await restartDiscussion();
     return {
       endpoints,
+      editorialEnv,
+      discussionEnv,
+      editorialSource: sql,
+      mongo,
+      storage,
+      stopWorker,
+      assertStopped: () => {
+        assert.ok(editorial.isStopped());
+        assert.ok(discussion.isStopped());
+        assert.ok(
+          !worker.child ||
+            worker.child.exitCode !== null ||
+            worker.child.signalCode !== null
+        );
+      },
       close,
       restartEditorial,
       restartDiscussion,

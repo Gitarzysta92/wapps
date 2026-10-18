@@ -63,8 +63,12 @@ test(
       process.env.WAPPS_PUBLIC_PROFILES_INTEGRATION === '1' ||
       process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1' ||
       process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1' ||
-      process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1'
-        ? 480000
+      process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1'
+        ? process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1'
+          ? 900000
+          : 480000
         : 240000,
   },
   async () => {
@@ -78,9 +82,11 @@ test(
         'WAPPS_PUBLIC_PROFILES_INTEGRATION',
         'WAPPS_MEMBER_PARITY_INTEGRATION',
         'WAPPS_EXPORT_PARITY_INTEGRATION',
+        'WAPPS_ERASURE_PARITY_INTEGRATION',
         'WAPPS_SUITE_PARITY_INTEGRATION',
+        'WAPPS_APPLICATION_PARITY_INTEGRATION',
       ].filter((name) => process.env[name] === '1').length <= 1,
-      'Run profile, member, export and suite extensions separately'
+      'Run profile, member, export, erasure, suite and application extensions separately'
     );
     const id = randomUUID().replaceAll('-', ''),
       password = randomUUID();
@@ -475,14 +481,25 @@ test(
       );
 
       // Qualify the checked-in local gateway route include, substituting only dependency addresses.
+      assert.equal(
+        readFileSync(
+          path.join(root, 'deploy/local/nginx/upstreams.conf'),
+          'utf8'
+        ),
+        readFileSync(
+          path.join(root, 'deploy/alpha/nginx/upstreams.conf'),
+          'utf8'
+        ),
+        'Both gateway environments must qualify the same upstream transport settings'
+      );
       const config = readFileSync(
         path.join(root, 'deploy/local/nginx/api.conf'),
         'utf8'
       )
         .replaceAll('/etc/nginx/local/', '/etc/nginx/qualification/')
         .replace(/http:\/\/([a-z_-]+)(?::\d+)?/g, (_all, service) =>
-          service === 'local_auth'
-            ? 'http://local_auth'
+          ['local_auth', 'portal_bff'].includes(service)
+            ? `http://${service}`
             : `http://host.docker.internal:${
                 service === 'catalog-bff'
                   ? bffPort
@@ -500,8 +517,8 @@ test(
           .replaceAll('/etc/nginx/wapps/', '/etc/nginx/qualification/')
           .replaceAll('/auth.conf', '/alpha-auth.conf')
           .replace(/http:\/\/([a-z_-]+)(?::\d+)?/g, (_all, service) =>
-            service === 'local_auth'
-              ? 'http://local_auth'
+            ['local_auth', 'portal_bff'].includes(service)
+              ? `http://${service}`
               : `http://host.docker.internal:${
                   service === 'catalog-bff'
                     ? bffPort
@@ -523,7 +540,53 @@ test(
       );
       writeFileSync(
         path.join(directory, 'application-media.conf'),
-        '# Media is outside this authentication qualification.\n'
+        process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1'
+          ? readFileSync(
+              path.join(root, 'deploy/local/nginx/application-media.conf'),
+              'utf8'
+            )
+              .replaceAll('/etc/nginx/local/', '/etc/nginx/qualification/')
+              .replaceAll(
+                'http://catalog-bff:3000',
+                `http://host.docker.internal:${bffPort}`
+              )
+          : '# Media is outside this authentication qualification.\n'
+      );
+      // Alpha media remains its own migration family. Do not substitute local routing for it.
+      if (process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1') {
+        const target = path.join(directory, 'alpha-api.conf');
+        writeFileSync(
+          target,
+          readFileSync(target, 'utf8').replace(
+            '/application-media.conf',
+            '/alpha-application-media.conf'
+          )
+        );
+        writeFileSync(
+          path.join(directory, 'alpha-application-media.conf'),
+          readFileSync(
+            path.join(root, 'deploy/alpha/nginx/application-media.conf'),
+            'utf8'
+          )
+            .replaceAll('/etc/nginx/wapps/', '/etc/nginx/qualification/')
+            .replaceAll('/auth.conf', '/alpha-auth.conf')
+            .replaceAll(
+              'http://editorial:1337',
+              'http://host.docker.internal:1'
+            )
+        );
+      }
+      writeFileSync(
+        path.join(directory, 'upstreams.conf'),
+        readFileSync(
+          path.join(root, 'deploy/local/nginx/upstreams.conf'),
+          'utf8'
+        )
+          .replace(
+            'account-management:1340',
+            `host.docker.internal:${accountPort}`
+          )
+          .replace('catalog-bff:3000', `host.docker.internal:${bffPort}`)
       );
       writeFileSync(
         path.join(directory, 'nginx.conf'),
@@ -534,7 +597,7 @@ test(
       limit_req_zone $binary_remote_addr zone=identity_recovery:1m rate=100r/s;
       limit_req_zone $binary_remote_addr zone=identity_enrollment:1m rate=100r/s;
       map $http_authorization $validation_path { "" /api/internal/authentication/validate-optional; default /api/internal/authentication/validate; }
-      upstream local_auth { server host.docker.internal:${accountPort}; }
+      include /etc/nginx/qualification/upstreams.conf;
       server { listen 8080; include /etc/nginx/qualification/api.conf; }
       server { listen 8081; include /etc/nginx/qualification/alpha-api.conf; }
     }\n`
@@ -606,6 +669,7 @@ test(
       mkdirSync(gatewayDirectory);
       for (const file of [
         'gateway.conf',
+        'upstreams.conf',
         'api.conf',
         'auth.conf',
         'application-media.conf',
@@ -622,6 +686,10 @@ test(
           .replaceAll(
             'http://account-management:1340',
             `http://host.docker.internal:${accountPort}`
+          )
+          .replaceAll(
+            'server catalog-bff:3000;',
+            `server host.docker.internal:${bffPort};`
           )
           .replaceAll(
             'http://catalog-bff:3000',
@@ -687,6 +755,85 @@ test(
       await call('/api/me', { at: fullGatewayOrigin, status: 401 });
       console.log(
         'PASS complete local gateway starts without domain services; BFF authentication remains available and absent domain routes fail'
+      );
+      const alphaDirectory = path.join(directory, 'full-alpha');
+      mkdirSync(alphaDirectory);
+      for (const file of [
+        'nginx.conf',
+        'upstreams.conf',
+        'api.conf',
+        'auth.conf',
+        'application-media.conf',
+      ]) {
+        const original =
+          file === 'nginx.conf'
+            ? path.join(root, 'deploy/alpha/nginx.conf')
+            : path.join(root, 'deploy/alpha/nginx', file);
+        const contents = readFileSync(original, 'utf8')
+          .replaceAll('/etc/nginx/wapps/', '/etc/nginx/qualification/')
+          .replace(
+            'server account-management:1340;',
+            `server host.docker.internal:${accountPort};`
+          )
+          .replace(
+            'server catalog-bff:3000;',
+            `server host.docker.internal:${bffPort};`
+          )
+          .replace(/http:\/\/([a-z_-]+)(?::\d+)?/g, (match, service) =>
+            ['local_auth', 'portal_bff'].includes(service)
+              ? match
+              : `http://host.docker.internal:${
+                  service === 'account-management' ? accountPort : 1
+                }`
+          );
+        writeFileSync(
+          path.join(
+            alphaDirectory,
+            file === 'nginx.conf' ? 'gateway.conf' : file
+          ),
+          contents
+        );
+      }
+      writeFileSync(
+        path.join(alphaDirectory, 'nginx.conf'),
+        'events {}\nhttp { include /etc/nginx/qualification/gateway.conf; }\n'
+      );
+      const fullAlphaPort = await container(
+        'full-alpha',
+        'nginx:1.28-alpine',
+        8080,
+        [
+          ...(process.platform === 'linux'
+            ? ['--add-host', 'host.docker.internal:host-gateway']
+            : []),
+          '--mount',
+          `type=bind,source=${alphaDirectory},target=/etc/nginx/qualification,readonly`,
+        ],
+        [
+          'nginx',
+          '-c',
+          '/etc/nginx/qualification/nginx.conf',
+          '-g',
+          'daemon off;',
+        ]
+      );
+      await docker([
+        'exec',
+        names.at(-1),
+        'nginx',
+        '-c',
+        '/etc/nginx/qualification/nginx.conf',
+        '-t',
+      ]);
+      const fullAlphaOrigin = `http://127.0.0.1:${fullAlphaPort}`;
+      assert.equal(
+        (await call('/api/me', { at: fullAlphaOrigin, token: login.token }))
+          .uid,
+        login.uid
+      );
+      await call('/api/me', { at: fullAlphaOrigin, status: 401 });
+      console.log(
+        'PASS complete alpha gateway with real Authentication/Account/BFF and isolated unavailable domain endpoints'
       );
       const me = await call('/api/me', {
         token: login.token,
@@ -1235,6 +1382,91 @@ test(
         ingressSecret: env.INGRESS_AUTH_SECRET,
         ...serviceLifecycle,
       });
+      const transportSession = await call('/api/auth/signin', {
+        body: { email, password: input.password },
+      });
+      for (let phase = 0; phase < 2; phase++) {
+        for (const at of [
+          origin,
+          alphaOrigin,
+          fullGatewayOrigin,
+          fullAlphaOrigin,
+        ]) {
+          for (let index = 0; index < 200; index++) {
+            const started = Date.now();
+            await call(index % 2 ? '/api/me/profile' : '/api/me/preferences', {
+              at,
+              token: transportSession.token,
+            });
+            assert.ok(
+              Date.now() - started < 5000,
+              'Ordinary gateway request exceeded the transport qualification bound'
+            );
+            if (index % 25 === 0)
+              await call('/api/me', { at, token: 'invalid', status: 401 });
+          }
+        }
+        if (phase === 0) {
+          await restartAccount();
+          await restartBff();
+        }
+      }
+      console.log(
+        'PASS Docker-capable local/alpha gateway transport: 1600 repeated bounded authenticated requests through includes and complete gateways, invalid-token denial and independent Account/BFF restart recovery without request retries or pacing'
+      );
+      if (process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1') {
+        const {
+          applicationParityServices,
+        } = require('./application-parity-services.cjs');
+        const {
+          qualifyApplicationParity,
+        } = require('./bff-application-parity-checks.cjs');
+        const services = await applicationParityServices({
+          root,
+          env,
+          password,
+          container,
+          names,
+          start,
+          freePort,
+          execute,
+          processes,
+        });
+        console.log(
+          'APPLICATION qualification resources ' +
+            JSON.stringify({
+              root,
+              node: process.version,
+              containers: [...names],
+              endpoints: services.endpoints,
+              dns: services.dns.address,
+              bucket: services.bucket,
+              gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+            })
+        );
+        try {
+          await restartAccount(services.endpoints);
+          await restartBff(services.endpoints);
+          await qualifyApplicationParity({
+            call,
+            origins:
+              process.env.WAPPS_APPLICATION_LOCAL_ONLY === '1'
+                ? [origin, origin]
+                : [origin, alphaOrigin],
+            input,
+            credentials,
+            subjectFor,
+            services,
+            ...serviceLifecycle,
+            restartAccount: () => restartAccount(services.endpoints),
+            restartBff: () => restartBff(services.endpoints),
+          });
+        } finally {
+          await services.close();
+          await restartAccount();
+          await restartBff();
+        }
+      }
       if (process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1') {
         const { suiteParityServices } = require('./suite-parity-services.cjs');
         const { qualifySuiteParity } = require('./bff-suite-parity-checks.cjs');
@@ -1284,7 +1516,8 @@ test(
       if (
         process.env.WAPPS_PUBLIC_PROFILES_INTEGRATION === '1' ||
         process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1' ||
-        process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1'
+        process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1' ||
+        process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1'
       ) {
         const {
           profileParityServices,
@@ -1302,6 +1535,17 @@ test(
           execute,
           processes,
         });
+        if (process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1')
+          console.log(
+            'ERASURE qualification resources ' +
+              JSON.stringify({
+                root,
+                node: process.version,
+                containers: [...names],
+                endpoints: services.endpoints,
+                gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+              })
+          );
         try {
           const memberParity =
             process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1';
@@ -1321,6 +1565,9 @@ test(
             : process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1'
             ? require('./bff-export-parity-runtime-checks.cjs')
                 .qualifyExportParity
+            : process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1'
+            ? require('./bff-erasure-parity-runtime-checks.cjs')
+                .qualifyErasureParity
             : qualifyPublicProfiles;
           await restartAccount(accountEndpoints);
           await restartBff(services.endpoints);
@@ -1334,6 +1581,19 @@ test(
             scoped: scopedLogin,
             services,
             credentials,
+            credentialSource,
+            root,
+            execute,
+            accountMaintenance: (args) =>
+              execute(
+                process.execPath,
+                [path.join(root, 'dist', accountBundle, 'main.js'), ...args],
+                {
+                  cwd: root,
+                  env: { ...env, ...accountEndpoints },
+                  timeout: 30000,
+                }
+              ),
             subjectFor,
             ingressSecret: env.INGRESS_AUTH_SECRET,
             ...serviceLifecycle,

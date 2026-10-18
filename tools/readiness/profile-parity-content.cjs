@@ -13,6 +13,7 @@ async function profileParityContent({
   checkLag = true,
   startWorker = true,
   saveFavorite = true,
+  prepareApplication,
 }) {
   // Provision reviewed source content with canonical test identities through owning APIs.
   // Profile reads and Discussion commands below use the real authenticated portal gateway.
@@ -74,6 +75,7 @@ async function profileParityContent({
       description: 'Canonical source for shared profile content.',
     },
   });
+  await prepareApplication?.(application, editorial);
   await publish('application-drafts', 'application-reviews', application);
   const suite = await editorial('me/suites', {
     status: 201,

@@ -17,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './health/health.controller';
+import { CatalogReadiness } from './health/catalog-readiness';
 import { PlatformController } from './platform/platform.controller';
 
 @Module({
@@ -45,5 +46,6 @@ import { PlatformController } from './platform/platform.controller';
     PortalAuthModule,
   ],
   controllers: [HealthController, PlatformController],
+  providers: [CatalogReadiness],
 })
 export class AppModule {}

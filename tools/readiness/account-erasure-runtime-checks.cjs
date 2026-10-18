@@ -4,7 +4,7 @@ const {
   MysqlCanonicalIdentities,
 } = require('../../libs/adapters/account-mysql/src');
 
-// Shares only the disposable services created by account-export-runtime-checks.
+// Shares only explicitly owned disposable services supplied by a qualifier.
 module.exports = async function qualifyAccountErasureRuntime(options) {
   const {
     accountSource,
@@ -39,14 +39,19 @@ module.exports = async function qualifyAccountErasureRuntime(options) {
         discussionSource,
       });
     await stopDiscussion();
-    const response = await fetch(`${accountOrigin()}/api/me`, {
-      method: 'DELETE',
-      headers: headers(owner),
-      signal: AbortSignal.timeout(10000),
-    });
-    assert.equal(response.status, 202);
-    const deletion = await response.json();
+    const deletion = options.requestDeletion
+      ? await options.requestDeletion()
+      : await (async () => {
+          const response = await fetch(`${accountOrigin()}/api/me`, {
+            method: 'DELETE',
+            headers: headers(owner),
+            signal: AbortSignal.timeout(10000),
+          });
+          assert.equal(response.status, 202);
+          return response.json();
+        })();
     assert.equal(deletion.cleanup, 'pending');
+    await options.afterAccepted?.(deletion);
     const job = async () =>
       (
         await accountSource.query(
@@ -79,10 +84,13 @@ module.exports = async function qualifyAccountErasureRuntime(options) {
       (row) => row.completedAt !== null,
       'Credential removal did not finish'
     );
-    await assert.rejects(
-      credentialApp.auth().getUser(owner),
-      (error) => error.code === 'auth/user-not-found'
-    );
+    if (options.assertCredentialRemoved)
+      await options.assertCredentialRemoved();
+    else
+      await assert.rejects(
+        credentialApp.auth().getUser(owner),
+        (error) => error.code === 'auth/user-not-found'
+      );
     assert.equal(
       (await new MysqlCanonicalIdentities(accountSource).requestDeletion(owner))
         .cleanup,

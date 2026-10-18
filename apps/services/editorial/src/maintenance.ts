@@ -1,41 +1,14 @@
-import { ContentClassification1791886000000 } from './app/content-classification/content-classification.migration';
-import { HealthObservations1791840018000 } from './app/application-health/health-observations.migration';
-import { EditorialContentUpdates1791840017000 } from './app/infrastructure/content-update-cursors.migration';
-import {
-  IdentityWriteBarrier1791840000000,
-  AccountErasureRequests1791840001000,
-} from '@wapps/account-mysql';
+import { EDITORIAL_MIGRATIONS } from './app/editorial-migrations';
 import { MysqlArticleCoverCleanup } from './app/article-covers/mysql-article-cover-cleanup';
 import { ConfiguredArticleCoverObjects } from './app/article-covers/article-cover-storage';
-import { ArticleCoverCleanup1791676821000 } from './app/article-covers/article-cover-cleanup.migration';
-import { ArticleCoverReferences1791676820000 } from './app/article-covers/article-cover-references.migration';
-import { ArticleCovers1791676819000 } from './app/article-covers/article-covers.migration';
-import { ArticleWorkspace1791676818000 } from './app/articles/article-workspace.migration';
-import { ReleaseWorkspace1791676817000 } from './app/releases/release-workspace.migration';
-import { ApplicationPublication1791676811000 } from './app/application-publication/application-publication.migration';
-import { ApplicationOwnership1791676812000 } from './app/application-ownership/application-ownership.migration';
-import { ApplicationEditing1791676813000 } from './app/application-drafts/application-editing.migration';
-import { ApplicationImages1791676814000 } from './app/application-media/application-images.migration';
-import { ApplicationImageBindings1791676815000 } from './app/application-media/application-image-bindings.migration';
-import { ApplicationImageCleanup1791676816000 } from './app/application-media/application-image-cleanup.migration';
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { applicationImageId } from '@domains/catalog/media';
 import { ApplicationImageCleanup } from './app/application-media/application-image-cleanup';
 import { MysqlApplicationImageCleanup } from './app/application-media/mysql-application-image-cleanup';
 import { ConfiguredApplicationImageObjects } from './app/application-media/configured-application-image-objects';
-import { SuiteWorkspace1791676808000 } from './app/suites/suite-workspace.migration';
-import { SuitePublication1791676809000 } from './app/suites/suite-publication.migration';
-import { SuitePublicationSnapshots1791840009000 } from './app/suites/suite-publication-snapshots.migration';
-import { EditorialAuthorErasure1791840010000 } from './app/account-erasure/editorial-author-erasure.migration';
-import { EditorialMediaAssets1791840011000 } from './app/application-media/editorial-media-assets.migration';
-import { EditorialWorkspaceErasure1791840012000 } from './app/account-erasure/editorial-workspace-erasure.migration';
-import { EditorialAuditErasure1791840013000 } from './app/account-erasure/editorial-audit-erasure.migration';
-import { EditorialErasureCompletion1791840014000 } from './app/account-erasure/editorial-erasure-completion.migration';
-import { ApplicationDrafts1791676810000 } from './app/application-drafts/application-drafts.migration';
 import { open } from 'node:fs/promises';
 import { MysqlEditorialOutbox } from './app/infrastructure/mysql-editorial-outbox';
-import { EditorialOwnership1791676802000 } from './app/infrastructure/editorial-schema.migration';
 import { MysqlEditorialProjectionRecovery } from './app/infrastructure/mysql-editorial-projection-recovery';
 import { rebuildEditorialProjections } from './app/application/editorial-projection-recovery';
 import {
@@ -43,7 +16,6 @@ import {
   parseEditorialOwnershipManifest,
 } from './app/application/editorial-backfill';
 import { MysqlEditorialBackfill } from './app/infrastructure/mysql-editorial-backfill';
-import { EditorialBackfill1791676803000 } from './app/infrastructure/editorial-backfill.migration';
 
 type MaintenanceCommand =
   | { mode: 'migrate' }
@@ -209,35 +181,7 @@ export function editorialMaintenanceSource(
     synchronize: false,
     migrationsRun: false,
     migrationsTransactionMode: 'none',
-    migrations: [
-      EditorialOwnership1791676802000,
-      EditorialBackfill1791676803000,
-      SuiteWorkspace1791676808000,
-      SuitePublication1791676809000,
-      ApplicationDrafts1791676810000,
-      ApplicationPublication1791676811000,
-      ApplicationOwnership1791676812000,
-      ApplicationEditing1791676813000,
-      ApplicationImages1791676814000,
-      ApplicationImageBindings1791676815000,
-      ApplicationImageCleanup1791676816000,
-      ReleaseWorkspace1791676817000,
-      ArticleWorkspace1791676818000,
-      ArticleCovers1791676819000,
-      ArticleCoverReferences1791676820000,
-      ArticleCoverCleanup1791676821000,
-      IdentityWriteBarrier1791840000000,
-      AccountErasureRequests1791840001000,
-      SuitePublicationSnapshots1791840009000,
-      EditorialAuthorErasure1791840010000,
-      EditorialMediaAssets1791840011000,
-      EditorialWorkspaceErasure1791840012000,
-      EditorialAuditErasure1791840013000,
-      EditorialErasureCompletion1791840014000,
-      EditorialContentUpdates1791840017000,
-      HealthObservations1791840018000,
-      ContentClassification1791886000000,
-    ],
+    migrations: EDITORIAL_MIGRATIONS,
     migrationsTableName: 'editorial_migrations',
   });
 }

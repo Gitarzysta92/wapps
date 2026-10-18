@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { randomUUID, randomBytes, createHash } = require('node:crypto');
-const { createSocket } = require('node:dgram');
+const { ownershipDnsFixture } = require('./ownership-dns-fixture.cjs');
 const { Resolver } = require('node:dns/promises');
 const { DataSource } = require('typeorm');
 const base = '../../apps/services/editorial/src/app/';
@@ -27,44 +27,7 @@ async function applicationOwnershipChecks({
   stopPolicy,
   qualifyHttp,
 }) {
-  const records = new Map();
-  const queries = [];
-  const server = createSocket('udp4');
-  server.on('message', (query, address) => {
-    let offset = 12;
-    const labels = [];
-    while (query[offset]) {
-      const size = query[offset++];
-      labels.push(query.subarray(offset, offset + size).toString());
-      offset += size;
-    }
-    offset += 5;
-    const name = labels.join('.');
-    queries.push(name);
-    const value = records.get(name);
-    const header = Buffer.alloc(12);
-    header.writeUInt16BE(query.readUInt16BE(0), 0);
-    header.writeUInt16BE(0x8180, 2);
-    header.writeUInt16BE(1, 4);
-    header.writeUInt16BE(value === undefined ? 0 : 1, 6);
-    const parts = [header, query.subarray(12, offset)];
-    if (value !== undefined) {
-      const bytes = Buffer.from(value);
-      const answer = Buffer.alloc(13);
-      answer.writeUInt16BE(0xc00c, 0);
-      answer.writeUInt16BE(16, 2);
-      answer.writeUInt16BE(1, 4);
-      answer.writeUInt32BE(1, 6);
-      answer.writeUInt16BE(bytes.length + 1, 10);
-      answer.writeUInt8(bytes.length, 12);
-      parts.push(answer, bytes);
-    }
-    server.send(Buffer.concat(parts), address.port, address.address);
-  });
-  await new Promise((resolve, reject) => {
-    server.once('error', reject);
-    server.bind(0, '127.0.0.1', resolve);
-  });
+  const { server, records, queries } = await ownershipDnsFixture();
   try {
     const dnsPort = server.address().port;
     const proof = new DnsOwnershipProof(() => {

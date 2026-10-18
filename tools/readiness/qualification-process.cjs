@@ -40,7 +40,13 @@ async function processService(command, args, options, resolveOrigin, health) {
           });
           await response.arrayBuffer();
           if (response.ok)
-            return { origin, stop, crash: () => stop('SIGKILL') };
+            return {
+              origin,
+              stop,
+              crash: () => stop('SIGKILL'),
+              isStopped: () =>
+                child.exitCode !== null || child.signalCode !== null,
+            };
         } catch {
           /* Bound the startup wait; listening is not readiness evidence. */
         }

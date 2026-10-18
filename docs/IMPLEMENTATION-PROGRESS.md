@@ -11,6 +11,278 @@ The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
 
+## Integrated erasure, applications and operational baseline (October 18, 2026)
+
+I28 reconciles the completed A28, APP18 and O01 lanes against previous baseline
+`908e60952cc4100dfcc6807978ff419a432c9dfc`. The combined source has 4,316 files and
+49 task-delta files. Each lane's original source and evidence remain preserved;
+`/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json`, the final source
+manifest and `snapshots.json` identify the combined source and local snapshot
+`codex/integrated-a28-baseline`. Main retains its original HEAD/index and dirty
+backlog. The two existing companion workspaces receive the verified baseline;
+the unrelated navigation walkthrough in `wappsB` is preserved.
+
+The shared harness retains six mutually exclusive extensions: profile, member,
+export, erasure, suite and application. Conflict resolution keeps the A28 cleanup,
+crash and 900-second timeout hooks, APP18 workflow/media fixtures and the complete
+O01 Docker stress/restart check. Alpha application/ownership routes use the same
+bounded `portal_bff` upstream as the other BFF routes. No provider roster, persisted
+representation, dependency lockfile or frontend presentation changes are added by
+the integration.
+
+A fresh Node 22.17.1 lockfile installation passes 6,879 Jest tests / 428 suites
+across 58 projects, 34 portable tests, full lint, 140 uncached builds, 49 typechecks,
+separate BFF/Editorial spec checks, 64 Angular package inspections and zero boundary
+violations across 144 projects / 1,846 production sources. Existing warnings,
+85 projects without their own behavior specs and nine separately inventoried
+external suites remain visible. All builds finish before runtime consumers start.
+
+Separate disposable Docker runs pass 31 erasure, 31 application/ownership,
+27 export, 29 suite, 25 profile and 25 member groups. Each invocation exercises
+both complete gateway configurations and their API/auth include fixtures, with
+1,600 bounded authenticated reads, invalid-token denial and independent Account/BFF
+restart recovery: 9,600 repeated reads across the six selected runs. Shared baseline
+groups overlap; the group counts are not unique-workflow totals. Operational
+foundations separately passes both nested SQL/projection recovery tests and all
+11 readiness fault/recovery groups. `WAPPS_NGINX_BINARY` is unset throughout.
+
+One member attempt fails at fresh Editorial `--migrate` initialization after its
+Docker transport group passes. The CLI reports only `Error`, so the cause is not
+established. A fresh rerun with safe database error-code observation and a subsequent
+uninstrumented full member confirmation both pass without source changes. The failed
+attempt remains in `runtime-failed-attempts.json` as a qualification reliability risk.
+The first erasure run also passes; it is repeated with `WAPPS_ERASURE_OUTPUT` to
+retain detailed fence/artifact and inventory evidence beside the final log. The
+initial Angular artifact command stalls after omitting the required Nx environment;
+its log/exit remain, and the corrected command passes with all three Nx flags.
+An intermediate merge-script anchor assertion fails before writing and is corrected
+to the application workflow anchor. These attempts are retained in the evidence
+index. Final source differs from the qualified source only in these documentation
+records; the task patch reproduces the complete final manifest.
+
+This closes the bounded integration and Docker regression gaps. Controlled DNS,
+trusted source setup/direct Editorial projection, seeded notification history and
+retry-clock fault injections retain their lane-specific limits. Application
+participant cleanup and full Account erasure are separate invocations. Readiness
+covers only `editorial-catalog`; production writer fencing/inventories, archived
+backup/object-version/log policy, broader readiness, restore/rollback/load/soak and
+original frontend acceptance remain open. Live installation remains A21. No push,
+deployment, live migration or live-worker enablement is included. The checklist
+proposes the next bounded batch; no new feature session starts automatically.
+
+## A28 full account erasure (October 18, 2026)
+
+The [amended erasure qualification](ACCOUNT-ERASURE-QUALIFICATION.md) starts from
+integrated snapshot `908e60952cc4100dfcc6807978ff419a432c9dfc` in a fresh
+unchanged-lockfile installation. It adapts the legacy Account/Discussion/completion
+checks to independent local Authentication, canonical provider mappings, current
+BFF Review routes and fresh owning-service stores. The fixed three-participant
+erasure plan and separate credential journal are unchanged. Changes are confined
+to readiness tools and A28 documentation; no production schema, service behavior,
+frontend presentation or live activation changes are introduced.
+
+Both native gateway configurations exercise self-deletion, staff combined status,
+denial/no-fallback behavior, credential outage, participant/inventory gates,
+private state and archive removal, anonymous retained contributions and media,
+SQL receipt failure, quarantine/requeue and actual Account process-crash recovery.
+Owned writers/materializers are stopped and awaited before fence activation;
+artifact hashes and inventory plans/fingerprints are retained. Independent
+Account, Discussion and Editorial erasure regressions cover large histories,
+concurrency, migration reentry, all 36 Editorial attribution checks and stale
+projections. The full erasure invocation passes 29 groups, the A27 export
+regression passes 25, and supplemental Account cleanup/coordinator, Discussion
+and Editorial runs pass 2/5/14/11 groups respectively. Baseline groups overlap
+between invocations; these are not distinct-workflow totals.
+
+The isolated gate passes 6,869 Jest tests / 426 suites, 34 portable tests, full
+lint, 140 uncached builds, 49 typechecks, 64 Angular package inspections and
+zero boundary violations across 144 projects / 1,842 production sources. The
+readiness-tool lint is repeated after harness corrections. Existing warnings,
+85 behavior gaps and eight separately qualified external suites remain explicit.
+`/tmp/wapps-a28-account-erasure-20261018/verification.json` indexes exact commands,
+results, source manifests, task-only patch, process/container cleanup and limits.
+Failed sandbox/fixture attempts and the corrected successful runs are retained.
+
+Native Nginx 1.28.3 does not qualify Docker-to-host transport. Editorial fixture
+publication/direct projection, seeded notification receipts, retry-clock changes
+and malformed-source transports are explicit substitutions. Production worker
+fencing, approved inventory, external providers, archived backups/object versions/
+logs, restore/rollback/load/soak and original frontend acceptance remain release
+work. Live installation stays A21. Main's branch, HEAD, index and dirty backlog
+are preserved; no commit, push, deployment or live migration is performed.
+
+## Application publication and ownership parity (October 18, 2026)
+
+APP18 completes the bounded BC10/BC11/BC27 lane in `wappsB`, measured against
+combined baseline `908e60952cc4100dfcc6807978ff419a432c9dfc` and the integrated
+4,298-file manifest. The accepted presentation stays `c965790e...`; no frontend,
+dependency lockfile, stored representation or provider roster changes. The preserved
+untracked navigation walkthrough is excluded from the task patch. A28 in `wapps`
+and operational foundations in `wappsA` retain their separate assignments/status.
+
+The existing explicit application BFF, domain authorization and durable owner
+implementations pass the new real-session qualifier. After its local-only preflight,
+alpha's direct Editorial alternatives are removed for the complete
+`/me/application-drafts`, `/editorial/application-reviews`, `/me/ownership-claims`
+and `/editorial/ownership-reviews` families. Matching case-insensitive rules retain
+64 KiB bodies, bounded timeouts and disabled upstream retry. Local/alpha case/slash/
+unknown-suffix and mutation matrices fail with BFF stopped and no direct fallback.
+
+`WAPPS_APPLICATION_PARITY_INTEGRATION=1` runs as a separate extension of the
+fresh-store local-auth harness. It uses independent local credential sessions,
+canonical Identity/Account, real Editorial OPA, isolated SQL/Mongo/MinIO/RabbitMQ,
+the compiled Editorial API and its broker materializer. Twenty-nine groups pass
+(19 shared authentication/settings and ten application/ownership groups). They prove:
+
+- Frozen draft submission/classification, independent content review, canonical
+  update and withdrawal; foreign-owner/tenant/spoofed-context/self-review denial,
+  revision/key conflicts, concurrent exact receipts and independent sessions.
+- Publication/grant outbox rollback, real broker projection lag and recovery,
+  object/projection/owner/policy outages, exact receipts across process restart and
+  old-event redelivery after withdrawal without resurrection.
+- Production DNS resolver against the shared controlled UDP fixture, negative/rate-
+  limited proof, cancel, unavailable proof and original-key lease recovery after
+  Editorial SIGKILL/restart. Only the disposable failed lease is advanced.
+- Proof grants no editing authority. Dedicated independent ownership review is
+  separate from content review; verified owners still submit frozen public updates.
+  Canonical revoke/release immediately deny source/open/rebase/submit/withdraw while
+  Mongo lags. Old receipts and reapproval never revive old claim-bound drafts.
+- Former-author and grant-bound private removal preserve the transferred public
+  record. A minimal real PNG/WebP/MinIO round trip preserves frozen review media,
+  owner-only previews, immutable receipts and retained referenced content.
+- Existing Editorial erasure hooks drain private ownership/draft/audit provenance
+  after canonical self-deletion, retaining anonymous approved content/media and the
+  permanent ownership-history fence. An independently approved successor receives
+  canonical content without old grants or erased private history, then withdraws it.
+
+The erasure test stops its own materializer before enabling its disposable
+participant fence. It is compatibility evidence for A28, not full Account erasure
+completion, credential-cleanup convergence, deployment fencing or archived-data
+disposition. Export's fixed four-provider roster and erasure's three participants
+plus independent credentials are untouched. Application-specific owner APIs and
+existing unbound-draft deletion behavior remain unchanged.
+
+Qualification uses a fresh `npm ci` copy, Node 22.17.1 and
+`NX_DAEMON=false NX_ISOLATE_PLUGINS=false NX_NO_CLOUD=true`. All builds finish before
+runtime consumers start. The full gate passes 6,869 Jest tests / 426 suites across
+58 projects, 34 portable tests, full lint, 140 uncached builds, 49 typechecks,
+separate BFF/Editorial spec checks, 64 Angular artifact inspections and the boundary
+audit (144 projects, 1,842 production sources, zero violations). Existing warnings,
+85 behavior-gap projects and eight separately gated external suites remain explicit.
+Separate fresh-store regressions pass 20 ownership/verified-authoring/HTTP groups
+and 11 publication/broker groups. They add competing claims/reviewers/drafts,
+stale DNS completion, explicit rebase, SQL reconnect, migration reentry/corrupt
+history rejection, lost acknowledgement, projection rebuild and event reordering.
+Those regressions use trusted setup actors/direct projection where documented;
+the 29-group gateway run supplies the real-session evidence.
+
+Evidence is in `/tmp/wappsB-application-ownership-20261018-5_ffh246/`:
+`verification.json`, baseline/final source hashes, qualification hashes, all logs,
+failed attempts, exact task-only file list/patch and patch reproduction. The first
+runtime attempt used conflict notes below the domain minimum; valid changed notes
+correctly exercise 409. Restricted-network installation and an Angular inspection
+missing Nx settings were interrupted and rerun with the required access/environment.
+The publication regression's old `/reviewer/` assertion was also corrected to the
+specific current missing-erasure-timestamp and independent-attribution errors;
+the migration guard correctly rejected both corrupt rows before and after the fix.
+Their logs remain preserved. Only task-owned resources are cleaned up.
+
+Native Nginx 1.28.3 compares both checked-in API/auth configurations; it does not
+resolve Docker-to-host transport. The complete gateway startup probe still uses
+Docker. Controlled DNS substitutes external authoritative propagation. Local media
+is included for the necessary publication round trip; alpha's independent media
+families, articles/releases and broad media remain outside this slice. No public
+DNS/TLS, external credential provider, browser/presentation acceptance, backup/
+restore/load/soak or deployment claim. Live installation remains A21; no live store,
+worker, migration, installation, commit, push or cross-workspace merge is performed.
+
+Shared-file integration points are `deploy/alpha/nginx/api.conf`, the additive
+local-auth extension/media fixture selection, the existing ownership qualifier's
+shared DNS extraction, the publication qualifier's stale error assertion,
+readiness README and the three checklist/parity/progress
+documents. Integrate only this lane's patch against the combined baseline; retain
+all integrated checkpoints and other lanes' status. This lane stops here.
+
+## O01 operational transport, migration recovery and scoped readiness (October 18, 2026)
+
+This bounded BC24/BC25/BC27 slice stays in `wappsA` on
+`codex/discovery-feed-parity`, based on integrated snapshot
+`908e60952cc4100dfcc6807978ff419a432c9dfc`. Its task-only patch, final source
+manifest, command/result index and retained failures are in
+`/tmp/wappsA-ops-foundations-20261018-ds3gld4i/verification.json` and sibling files.
+No commits, cross-workspace integration, live deployment/migration/worker changes,
+dependency lockfile changes or frontend changes are part of this slice. The
+accepted presentation remains `c965790e063139bcd5e6bacc759f289703e4ea9a`.
+
+A minimal Docker Nginx/host HTTP reproduction fails while connecting the auth
+subrequest after 1,583 requests and 3,166 short-lived upstream connections. The
+same 10,000-request probe passes with HTTP/1.1 upstream reuse and 20 connections.
+This isolates per-request connection churn as the reproducible trigger in this
+Docker Desktop environment; it does not establish a universal kernel/network
+root cause. Local and alpha now share equivalent checked-in auth/BFF pools with
+32 idle connections per worker, a three-second idle lifetime and 1,000 requests
+per connection. Auth subrequests have explicit connection/read/send deadlines
+and no upstream retry. Existing identity-header replacement and route ownership
+are preserved.
+
+The local-auth qualifier now starts both complete Docker gateway configurations
+as well as both API/auth include configurations. Each run adds 1,600 bounded
+authenticated reads, invalid-token denial and independent Account/BFF restart
+recovery without request retries or pacing. Baseline, profile, member, export and
+suite runs are separate (21 / 25 / 25 / 27 / 29 passing groups respectively);
+their shared baseline groups overlap. Both local and
+alpha use Docker Nginx for these runs, including the previously native-only
+profile/member/export/suite workflows. All extension callbacks and their mutual
+exclusion remain in place. The complete alpha fixture substitutes absent unrelated
+domains with an unavailable test endpoint; the local complete gateway retains
+runtime DNS failure for missing domains. API fixtures retain accelerated rate
+limits and the existing controlled alternate-authentication scenario.
+
+Editorial API, maintenance and the two historical recovery qualifiers now share
+one ordered 27-migration roster and the `editorial_migrations` receipt table.
+Both qualifiers pass on fresh disposable real stores. Evidence covers an empty
+installation, pre-classification upgrade, interrupted additive DDL, re-entry,
+incompatible/missing/invalid classification refusal, non-destructive migration
+rollback, transactional write/backfill rollback, concurrent replay, retained
+tombstones, duplicate/reordered events, confirmed dead-letter transfer and rebuild
+after projection loss. The historical SQL adapter qualifier retains its explicit
+allowing policy fixture; the new HTTP readiness journey uses real OPA.
+
+Editorial and BFF expose dependency-aware `/api/health/ready` for the explicit
+`editorial-catalog` scope. Liveness stays independent. Read-only bounded probes
+distinguish owner, SQL, schema (including malformed classification and authoritative
+revision types despite retained migration receipts), Mongo, policy and broker failures; absent and frozen
+materializers; retained poison; and SQL backlog/expired leases. BFF consumes only
+the safe owner contract. Transition alerts carry fixed codes, aggregate counts
+and the [operator runbook](EDITORIAL-CATALOG-READINESS.md), with recovery events.
+The disposable runtime proves concurrent bounded failure responses, real catalog
+materialization, independent process restart and restoration after each fault.
+
+Qualification uses a fresh own `npm ci`, Node 22.17.1,
+`NX_DAEMON=false NX_ISOLATE_PLUGINS=false`, and completed uncached builds before
+runtime consumes `dist`. Gates pass: 6,879 Jest tests / 428 suites across 58
+projects, 34 portable checks, full production/tool lint, 140 builds, 49 declared
+typechecks, separate BFF spec typechecking, 64 Angular package inspections and
+zero architecture violations across 144 projects / 1,846 production sources.
+Final readiness refinements have separate affected build/test/typecheck and
+runtime evidence. Existing lint/build warnings remain visible in the logs.
+
+Retained non-qualifying attempts include the deliberate minimal transport failure,
+the initial sandboxed unit run (`listen EPERM`, resolved by enabling localhost
+listeners for the full rerun), and an initial runtime wrapper that inherited
+Node's test context and emitted no nested qualifier results. The wrapper now
+clears that context and rejects empty/skipped/non-passing TAP results; both
+historical qualifiers have explicit passing reruns. Earlier native comparisons
+and nine Docker failures remain historical evidence, not current passing results.
+
+Registry/other-journey readiness, deployed probe and alert delivery, whole-history
+projection integrity, identity-event consumer/retention disposition, general
+crash/backup/restore, load/soak, external identity providers and original frontend
+acceptance remain open. Bounded SQL counts are lower bounds; Mongo availability
+is not a full reconciliation. No current live installation or alpha rollout is
+claimed. Other lanes' A28 erasure and application publication/ownership work is
+outside this task delta.
+
 ## Integrated export, suites and discovery baseline (October 18, 2026)
 
 The three A26 parallel lanes are integrated into the preserved `wapps` source:

@@ -17,11 +17,16 @@ require('tsconfig-paths').register({
     .paths,
 });
 require('reflect-metadata');
-const {
-  IdentityWriteBarrier1791840000000,
-  AccountErasureRequests1791840001000,
-} = require('../../libs/adapters/account-mysql/src');
 const { DataSource } = require('typeorm');
+const {
+  EDITORIAL_MIGRATIONS,
+} = require('../../apps/services/editorial/src/app/editorial-migrations');
+const {
+  ContentClassification1791886000000,
+} = require('../../apps/services/editorial/src/app/content-classification/content-classification.migration');
+const {
+  CLASSIFICATION_TABLES,
+} = require('../../apps/services/editorial/src/app/content-classification/content-classification-schema');
 const { createConnection } = require('mysql2/promise');
 const { v7: uuidv7 } = require('uuid');
 const service = path.join(root, 'apps/services/editorial/src/app');
@@ -111,16 +116,108 @@ test(
           ...Object.values(referenceEntities),
         ],
         synchronize: false,
-        migrations: [
-          EditorialOwnership1791676802000,
-          EditorialBackfill1791676803000,
-          IdentityWriteBarrier1791840000000,
-          AccountErasureRequests1791840001000,
-        ],
+        migrations: EDITORIAL_MIGRATIONS,
+        migrationsTableName: 'editorial_migrations',
         migrationsRun: true,
         migrationsTransactionMode: 'none',
       };
+      source = await new DataSource({
+        ...configuration,
+        migrations: EDITORIAL_MIGRATIONS.slice(0, -1),
+      }).initialize();
+      const legacyApp = uuidv7();
+      await source.query(
+        'INSERT INTO app_records (id, name, slug) VALUES (?, ?, ?)',
+        [legacyApp, 'Pre-classification legacy app', 'pre-classification']
+      );
+      // Simulate interrupted additive DDL and reject an incompatible later column
+      // before adding any of the remaining columns.
+      await source.query(
+        'ALTER TABLE app_records ADD classification varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL'
+      );
+      await source.query(
+        'ALTER TABLE suite_publications ADD classification varchar(8) NULL'
+      );
+      let runner = source.createQueryRunner();
+      try {
+        await assert.rejects(
+          new ContentClassification1791886000000().up(runner),
+          /Incompatible classification/
+        );
+        assert.equal(
+          (await runner.getTable('application_drafts')).findColumnByName(
+            'classification'
+          ),
+          undefined
+        );
+      } finally {
+        await runner.release();
+      }
+      await source.query(
+        'ALTER TABLE suite_publications DROP COLUMN classification'
+      );
+      await source.destroy();
       source = await new DataSource(configuration).initialize();
+      assert.deepEqual(
+        await source.runMigrations(),
+        [],
+        'Re-entry must not replay recorded migrations'
+      );
+      assert.equal(
+        (
+          await source.query(
+            'SELECT classification FROM app_records WHERE id=?',
+            [legacyApp]
+          )
+        )[0].classification,
+        null
+      );
+      assert.equal(
+        (await source.query('SELECT name FROM editorial_migrations')).length,
+        EDITORIAL_MIGRATIONS.length
+      );
+      runner = source.createQueryRunner();
+      try {
+        await new ContentClassification1791886000000().up(runner);
+        await assert.rejects(
+          new ContentClassification1791886000000().down(),
+          /retain the additive schema/
+        );
+        await source.query(
+          'ALTER TABLE suite_publications DROP COLUMN classification'
+        );
+        await assert.rejects(
+          new ContentClassification1791886000000().up(runner),
+          /Applied classification column is missing/
+        );
+        await source.query(
+          'ALTER TABLE suite_publications ADD classification varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL'
+        );
+        await source.query(
+          "UPDATE app_records SET classification='invalid' WHERE id=?",
+          [legacyApp]
+        );
+        await assert.rejects(
+          new ContentClassification1791886000000().up(runner),
+          /Invalid stored content classification/
+        );
+        await source.query(
+          'UPDATE app_records SET classification=NULL WHERE id=?',
+          [legacyApp]
+        );
+        await new ContentClassification1791886000000().up(runner);
+        for (const table of CLASSIFICATION_TABLES)
+          assert.equal(
+            (await runner.getTable(table)).findColumnByName('classification')
+              .length,
+            '7'
+          );
+      } finally {
+        await runner.release();
+      }
+      console.log(
+        'PASS current Editorial migration roster: pre-classification upgrade, partial DDL, exact re-entry, incompatible/missing/invalid classification rejection and non-destructive rollback'
+      );
       const preflight = source.createQueryRunner();
       try {
         await new EditorialOwnership1791676802000().up(preflight);

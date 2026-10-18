@@ -36,7 +36,7 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
     'SELECT * FROM editorial_resource_states WHERE ownerIdentityId=? ORDER BY resourceKind,resourceId',
     [input.identityId]
   );
-  assert.ok(owned.length >= 8);
+  assert.ok(owned.length >= (options.minimumOwnedResources ?? 8));
   const foreign = await editorialSource.query(
     'SELECT * FROM editorial_resource_states WHERE ownerIdentityId<>? ORDER BY resourceKind,resourceId',
     [input.identityId]
@@ -45,6 +45,7 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
     "CREATE TRIGGER qualification_global_erasure_completion BEFORE UPDATE ON identity_erasure_jobs FOR EACH ROW BEGIN IF NEW.completedAt IS NOT NULL THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Injected coordinator completion failure'; END IF; END"
   );
   try {
+    await options.fenceWorkers?.();
     await restartEditorial({
       EDITORIAL_ERASURE_WORKERS_FENCED: 'true',
       EDITORIAL_MEDIA_CLEANUP_ENABLED: 'true',
@@ -94,6 +95,7 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
     pass(
       'All compiled participants complete through the real Account pump; an injected final coordinator journal failure still prevents global completion'
     );
+    await options.afterCompletionFailure?.();
   } finally {
     await accountSource.query(
       'DROP TRIGGER qualification_global_erasure_completion'
@@ -108,10 +110,12 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
   const completed = await identities.requestDeletion(input.identityId);
   assert.equal(completed.cleanup, 'completed');
   assert.equal(completed.revision, input.revision);
-  await assert.rejects(
-    credentialApp.auth().getUser(input.identityId),
-    (error) => error.code === 'auth/user-not-found'
-  );
+  if (options.assertCredentialRemoved) await options.assertCredentialRemoved();
+  else
+    await assert.rejects(
+      credentialApp.auth().getUser(input.identityId),
+      (error) => error.code === 'auth/user-not-found'
+    );
   for (const [table, column] of EDITORIAL_ERASURE_IDENTITY_COLUMNS)
     assert.deepEqual(
       await editorialSource.query(
@@ -127,14 +131,18 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
     ),
     foreign
   );
-  const mongo = await MongoClient.connect(
-    `mongodb://wapps:${encodeURIComponent(
-      password
-    )}@127.0.0.1:${mongoPort}/suites?authSource=admin`
-  );
+  const mongo =
+    options.mongo ??
+    (await MongoClient.connect(
+      `mongodb://wapps:${encodeURIComponent(
+        password
+      )}@127.0.0.1:${mongoPort}/suites?authSource=admin`
+    ));
   try {
     const projections = new MongoEditorialProjections(
-      mongo.db('suites').collection('editorial_projections_v1')
+      mongo
+        .db(options.editorialDatabase ?? 'suites')
+        .collection('editorial_projections_v1')
     );
     const reader = new MysqlEditorialSnapshotReader(editorialSource, 'default');
     for (const previous of owned) {
@@ -149,7 +157,7 @@ module.exports = async function qualifyAccountErasureCompletion(options) {
       );
     }
   } finally {
-    await mongo.close();
+    if (!options.mongo) await mongo.close();
   }
   const journals = await Promise.all(
     [accountSource, editorialSource, discussionSource].map((source) =>

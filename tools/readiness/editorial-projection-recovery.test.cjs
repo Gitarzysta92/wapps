@@ -17,11 +17,10 @@ require('tsconfig-paths').register({
     .paths,
 });
 require('reflect-metadata');
-const {
-  IdentityWriteBarrier1791840000000,
-  AccountErasureRequests1791840001000,
-} = require('../../libs/adapters/account-mysql/src');
 const { DataSource } = require('typeorm');
+const {
+  EDITORIAL_MIGRATIONS,
+} = require('../../apps/services/editorial/src/app/editorial-migrations');
 const { createConnection } = require('mysql2/promise');
 const { MongoClient } = require('mongodb');
 const amqp = require('amqplib');
@@ -43,12 +42,6 @@ const { projectEditorialSnapshot } = load(
 );
 const { rebuildEditorialProjections, reconcileEditorialProjections } = load(
   'application/editorial-projection-recovery'
-);
-const { EditorialOwnership1791676802000 } = load(
-  'infrastructure/editorial-schema.migration'
-);
-const { EditorialBackfill1791676803000 } = load(
-  'infrastructure/editorial-backfill.migration'
 );
 const { EditorialLegacyBackfill } = load('application/editorial-backfill');
 const { MysqlEditorialBackfill } = load(
@@ -114,12 +107,8 @@ test(
         password: sql.password,
         database,
         synchronize: false,
-        migrations: [
-          EditorialOwnership1791676802000,
-          EditorialBackfill1791676803000,
-          IdentityWriteBarrier1791840000000,
-          AccountErasureRequests1791840001000,
-        ],
+        migrations: EDITORIAL_MIGRATIONS,
+        migrationsTableName: 'editorial_migrations',
         migrationsRun: true,
         migrationsTransactionMode: 'none',
       };
