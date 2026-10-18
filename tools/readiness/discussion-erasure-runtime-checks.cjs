@@ -182,7 +182,7 @@ module.exports = async function prepareDiscussionErasure(options) {
               heads.findOne({
                 _id: row.id,
                 revision: Number(row.revision),
-                schemaVersion: 3,
+                schemaVersion: 4,
               })
             )
           );
@@ -345,7 +345,7 @@ module.exports = async function prepareDiscussionErasure(options) {
         );
         assert.equal(await legacy.countDocuments({}), 0);
         assert.equal(
-          await nodes.countDocuments({ schemaVersion: { $ne: 3 } }),
+          await nodes.countDocuments({ schemaVersion: { $ne: 4 } }),
           0
         );
       } finally {

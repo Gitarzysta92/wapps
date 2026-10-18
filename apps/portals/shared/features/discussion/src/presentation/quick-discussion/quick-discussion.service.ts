@@ -4,7 +4,7 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { NavigationStart, Router } from '@angular/router';
 import { filter, firstValueFrom, Subject, take, takeUntil } from 'rxjs';
 import { LOCAL_APPLICATION_DATA } from '@portals/shared/features/application-overview';
-import { publicCommentId } from '@domains/discussion';
+import { publicCommentId } from '@domains/community';
 import { catalogSlug } from '@domains/catalog/record';
 
 export interface QuickDiscussionData {

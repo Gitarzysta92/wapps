@@ -12,7 +12,7 @@ const {
   MysqlProfileAvatars,
   MysqlProfileBadges,
   MysqlPublicProfiles,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 async function collect(iterable) {
   const values = [];

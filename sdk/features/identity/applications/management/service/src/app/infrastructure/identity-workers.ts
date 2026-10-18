@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   Injectable,
+  Inject,
   Logger,
   OnModuleInit,
   OnModuleDestroy,
@@ -11,10 +12,11 @@ import {
   CompleteAccountErasure,
   CleanAccountErasureParticipant,
   CompleteIdentityDeletion,
-  RequestAccountErasure,
 } from '@sdk/features/identity/libs/management';
+import { RequestAccountErasure } from '@wapps/account';
 import { RemoteAccountErasureParticipant } from './remote-account-erasure-participant';
-import { FirebaseAdminUserAdminPort } from '@sdk/extras/identity-firebase';
+import type { IUserAdminPort } from '@sdk/features/identity/libs/management';
+import { CREDENTIAL_ADMIN } from '../services/identity-state.tokens';
 import {
   IdentityEventPump,
   IdentityDeletionPump,
@@ -23,7 +25,7 @@ import {
   MysqlAccountErasureJobs,
   MysqlAccountErasureParticipant,
   MysqlAccountErasureCleanup,
-} from '@sdk/extras/identity-mysql';
+} from '@wapps/account-mysql';
 import { RabbitMqQueueClient } from '@sdk/extras/queue-rabbitmq';
 import { IDENTITY_EVENTS_QUEUE_NAME } from '@apps/shared';
 
@@ -36,7 +38,7 @@ export class IdentityWorkers implements OnModuleInit, OnModuleDestroy {
   constructor(
     config: ConfigService,
     source: DataSource,
-    credentials: FirebaseAdminUserAdminPort
+    @Inject(CREDENTIAL_ADMIN) credentials: IUserAdminPort
   ) {
     const logger = new Logger('IdentityWorkers');
     this.events = new IdentityEventPump(

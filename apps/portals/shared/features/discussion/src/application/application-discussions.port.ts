@@ -1,13 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
-import type {
-  PublicCommentContent,
-  PublicDiscussionTopic,
-  PublicApplicationDiscussionPage,
-  PublicApplicationDiscussion,
-  DiscussionVote,
-} from '@domains/discussion';
+import type { PublicCommentContent, PublicDiscussionTopic, PublicApplicationDiscussionPage, PublicApplicationDiscussion, DiscussionVote } from '@domains/community';
 
 export type ApplicationDiscussionCommand = { applicationId: string } & (
   | { type: 'create'; content: PublicDiscussionTopic }

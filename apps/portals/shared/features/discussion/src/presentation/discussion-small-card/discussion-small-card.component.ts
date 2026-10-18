@@ -23,7 +23,6 @@ import { RelativeTimePipe } from '../relative-time.pipe';
   styleUrls: ['./discussion-small-card.component.scss'],
 })
 export class DiscussionSmallCardComponent {
-  public readonly data = input.required<DiscussionPreviewDto>();
+  public readonly data = input.required<Omit<DiscussionPreviewDto, 'viewsCount' | 'createdAt'> & { viewsCount?: number; createdAt: Date | null }>();
   public readonly appearance = input<string>();
 }
-

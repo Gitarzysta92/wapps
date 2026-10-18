@@ -5,9 +5,9 @@ import {
   mentionNotificationLease,
   mentionNotificationTarget,
   MENTION_NOTIFICATION_PAGE_SIZE,
-} from '@sdk/features/discussion/core';
+} from '@domains/community';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { MentionNotificationSource } from '@sdk/features/identity/libs/management';
+import type { MentionNotificationSource } from '@wapps/account';
 
 export class RemoteMentionNotifications implements MentionNotificationSource {
   private readonly endpoint: string;

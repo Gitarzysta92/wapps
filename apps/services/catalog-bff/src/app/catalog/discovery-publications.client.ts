@@ -8,6 +8,7 @@ import {
 } from '@domains/publication/article';
 import {
   parsePublicSuitePage,
+  parsePublicSuiteSelection,
   type PublicSuiteQuery,
 } from '@domains/publication/suite';
 import { DiscoveryUnavailableError } from '@domains/discovery';
@@ -25,9 +26,12 @@ export class DiscoveryPublicationsClient implements DiscoveryPublications {
   async suites(query: PublicSuiteQuery) {
     return parsePublicSuitePage(await this.get('suites', query));
   }
+  async suiteSelection(ids: string[]) {
+    return parsePublicSuiteSelection(await this.get('suite-selection', { ids: ids.join(',') }), ids);
+  }
   private async get(
     kind: string,
-    params: ArticleBrowseQuery | PublicSuiteQuery
+    params: ArticleBrowseQuery | PublicSuiteQuery | { ids: string }
   ) {
     const origin = this.config.get<string>('EDITORIAL_URL');
     if (!origin)

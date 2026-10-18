@@ -7,6 +7,7 @@ export interface Tag {
   slug: string;
   name: string;
   link?: string;
+  queryParams?: Record<string, string>;
 }
 
 @Component({

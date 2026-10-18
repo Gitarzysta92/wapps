@@ -31,7 +31,7 @@ export type ReviewChange =
 
 export interface MemberReview extends ReviewState {
   id: string;
-  applicationId: string;
+  bindingKey: string;
   content: ReviewContent;
   createdAt: number;
   updatedAt: number;
@@ -115,9 +115,14 @@ export function reviewId(value: unknown): string {
       value
     )
   )
-    throw new ReviewInputError(
-      'A canonical review or application ID is required'
-    );
+    throw new ReviewInputError('A canonical review ID is required');
+  return value;
+}
+
+/** The consumer owns the namespace and meaning; the engine only compares exact keys. */
+export function reviewBindingKey(value: unknown): string {
+  if (typeof value !== 'string' || !/^[\x21-\x7e]{1,256}$/.test(value))
+    throw new ReviewInputError('Invalid review binding key');
   return value;
 }
 

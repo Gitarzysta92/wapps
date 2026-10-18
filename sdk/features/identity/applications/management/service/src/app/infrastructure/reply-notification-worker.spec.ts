@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeliverReplyNotifications } from '@sdk/features/identity/libs/management';
+import { DeliverReplyNotifications } from '@wapps/account';
 import { ReplyNotificationWorker } from './reply-notification-worker';
 
 describe('reply delivery runtime worker', () => {

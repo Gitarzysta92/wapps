@@ -5,7 +5,7 @@ import {
   parseProfileDirectory,
   parsePublicProfileView,
 } from '@domains/customer/profiles';
-import { publicCommentId } from '@domains/discussion/contracts';
+import { publicCommentId } from '@domains/community';
 import { err, ok } from '@sdk/kernel/standard';
 import {
   MENTION_MEMBERS_URL,

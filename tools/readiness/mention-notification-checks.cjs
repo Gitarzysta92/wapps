@@ -1,8 +1,7 @@
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
 const { DataSource } = require('typeorm');
-const root =
-  '../../sdk/features/discussion/applications/management/service/src/app/discussions/';
+const root = '../../apps/services/community/src/app/discussions/';
 const {
   MysqlDiscussionWrites,
 } = require(`${root}infrastructure/mysql-discussion-writes`);
@@ -45,11 +44,11 @@ const {
   MysqlAccountErasureCleanup,
   MysqlAccountErasureParticipant,
   AccountMentions1791864017000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   DeliverMentionNotifications,
   MentionInboxService,
-} = require('../../sdk/features/identity/libs/management/src');
+} = require('../../libs/usecases/account/src');
 const {
   AuthorityValidationService,
 } = require('../../sdk/kernel/ontology/authority/src');

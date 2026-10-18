@@ -4,7 +4,7 @@ import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
 import type { PublicProfileFavoritesPage } from '@domains/customer/favorites';
 import type { ProfileSuitesPage } from '@domains/publication/suite';
-import type { ProfileDiscussionsPage } from '@domains/discussion/contracts';
+import type { ProfileDiscussionsPage } from '@domains/community';
 import type {
   CustomerProfileDto,
   ProfileActivityPage,

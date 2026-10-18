@@ -9,7 +9,7 @@ import {
   profileActivityPosition,
   type ProfileActivityPosition,
 } from '@domains/customer/profiles';
-import type { ProfileActivityCursors } from '@sdk/features/identity/libs/management';
+import type { ProfileActivityCursors } from '@wapps/account';
 
 export class EncryptedProfileActivityCursors implements ProfileActivityCursors {
   private readonly key: Buffer;

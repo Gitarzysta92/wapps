@@ -625,6 +625,7 @@ module.exports = async function qualifyHealth(options) {
     );
     assert.equal((await call(managerRoute)).monitors.length, 8);
     pass('Real-store eight-monitor capacity remains bounded');
+    await require('./bff-health-monitors-runtime-checks.cjs')(options);
   } finally {
     await bff?.stop();
     await new Promise((resolve) => fixture.close(resolve));

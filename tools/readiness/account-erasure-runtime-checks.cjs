@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { DataSource } = require('typeorm');
 const {
   MysqlCanonicalIdentities,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 // Shares only the disposable services created by account-export-runtime-checks.
 module.exports = async function qualifyAccountErasureRuntime(options) {

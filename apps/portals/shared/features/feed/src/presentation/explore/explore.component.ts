@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map } from 'rxjs';
-import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
-import { TuiCardLarge } from '@taiga-ui/layout';
-import { ContentStateComponent } from '@ui/layout';
-import { PreferredDatePipe } from '@portals/shared/features/preferences';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
+import { ActivityCardComponent } from './activity-card.component';
+import { ContentStateComponent, MediumCardComponent } from '@ui/layout';
 import { ExploreService } from '../../application/explore.service';
-import { EXPLORE_LINK } from '../../application/explore.port';
 
 @Component({
   selector: 'explore-feed',
@@ -16,23 +14,17 @@ import { EXPLORE_LINK } from '../../application/explore.port';
   styleUrl: './explore.component.scss',
   providers: [ExploreService],
   imports: [
-    RouterLink,
     TuiAppearance,
     TuiButton,
-    TuiLink,
-    TuiCardLarge,
+    ActivityCardComponent,
     ContentStateComponent,
-    PreferredDatePipe,
+    MediumCardComponent,
   ],
 })
 export class ExploreComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  timestamp(at: number) {
-    return new Date(at).toISOString();
-  }
   readonly feed = inject(ExploreService);
-  readonly link = inject(EXPLORE_LINK);
   constructor() {
     this.route.queryParamMap
       .pipe(
@@ -59,12 +51,4 @@ export class ExploreComponent {
       fragment: 'explore',
     });
   }
-  readonly labels = {
-    application: 'Application update',
-    suite: 'Suite publication',
-    article: 'Article publication',
-    release: 'Release',
-    discussion: 'Discussion',
-    review: 'Member review',
-  };
 }

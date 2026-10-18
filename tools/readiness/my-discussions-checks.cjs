@@ -219,7 +219,7 @@ async function myDiscussionsChecks(options) {
 
   const {
     DiscussionParticipation1791676824000,
-  } = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-participation.migration');
+  } = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-participation.migration');
   const migration = new DiscussionParticipation1791676824000(),
     runner = source.createQueryRunner();
   try {

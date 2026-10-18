@@ -30,7 +30,12 @@ export class MongoGenerationInspector implements DiscussionProjectionInspector {
       return 'conflict';
     if (head.revision > authority.revision) return 'ahead';
     if (head.revision < authority.revision) return 'stale';
-    if (Number(head.schemaVersion) === 2) return 'stale';
+    if (
+      Number.isInteger(head.schemaVersion) &&
+      Number(head.schemaVersion) >= 2 &&
+      Number(head.schemaVersion) < DISCUSSION_PROJECTION_SCHEMA
+    )
+      return 'stale';
     if (
       head.schemaVersion !== DISCUSSION_PROJECTION_SCHEMA ||
       head.tenantId !== authority.tenantId ||

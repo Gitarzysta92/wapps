@@ -1,123 +1,58 @@
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
-  <h1 uiPageTitle slot="title">
-    {{
-      favoriteKind() === 'all' ? 'My favorites' : 'Favorite ' + favoriteKind()
-    }}
-  </h1>
-  <p slot="meta" class="page-description">
-    {{
-      service.mode === 'api'
-        ? 'Your saved applications, suites, articles and discussions, available across sessions.'
-        : 'Your saved applications, collections, articles, and discussions in this demo browser.'
-    }}
-  </p>
+  <h1 uiPageTitle slot="title">{{ favoriteKind() === 'all' ? 'My favorites' : 'Favorite ' + favoriteKind() }}</h1>
+  <p slot="meta" class="page-description">Your saved applications, collections, articles, and discussions.</p>
   <div slot="actions">
-    <button
-      tuiButton
-      appearance="secondary"
-      size="s"
-      type="button"
-      (click)="reload()"
-    >
-      Reload favorites
-    </button>
-    <a tuiButton appearance="secondary" size="s" routerLink="/discover"
-      >Discover</a
-    >
+    <button tuiButton appearance="secondary" size="s" type="button" (click)="reload()">Reload favorites</button>
+    <a tuiButton appearance="secondary" size="s" routerLink="/discover">Discover</a>
   </div>
 </ui-page-header>
 <section class="favorites-page">
-  @if (groups(); as state) { @if (state.isLoading) {
-  <ui-content-state
-    role="status"
-    title="Loading favorites"
-    description="Reading your saved items."
-  />
-  } @else if (state.isError) {
-  <ui-content-state
-    [error]="true"
-    title="Favorites could not be loaded"
-    description="Try again. Your saved favorites have not been changed."
-    icon="@tui.circle-alert"
-  >
-    <button tuiButton size="m" type="button" (click)="reload()">Retry</button>
-  </ui-content-state>
-  } @else if (!state.signedIn) {
-  <ui-content-state
-    title="Sign in to view favorites"
-    description="Your favorites belong to your account."
-    icon="@tui.star"
-  />
-  } @else if (!state.hasItems) {
-  <ui-content-state
-    title="No favorites yet"
-    description="Use the favorite button on content you want to keep."
-    icon="@tui.star"
-  >
-    <a tuiButton appearance="secondary" size="m" routerLink="/discover"
-      >Discover content</a
-    >
-  </ui-content-state>
-  } @else { @if (state.preferencesLoading) {
-  <ui-content-state
-    role="status"
-    title="Loading content preferences"
-    description="Saved references remain removable while your content choices load."
-  />
-  } @else if (state.preferencesError) {
-  <ui-content-state
-    [error]="true"
-    title="Content preferences could not be loaded"
-    description="Details stay hidden. You can still remove saved references."
-    icon="@tui.circle-alert"
-  >
-    <button tuiButton size="m" type="button" (click)="reload()">Retry preferences</button>
-  </ui-content-state>
-  } @else if (state.contentError) {
-  <ui-content-state
-    [error]="true"
-    title="Saved item details could not be loaded"
-    description="You can still remove saved references. Retry to load their current details."
-    icon="@tui.circle-alert"
-  >
-    <button tuiButton size="m" type="button" (click)="reload()">
-      Retry details
-    </button>
-  </ui-content-state>
-  } @if (state.hidden) {
-  <p role="status">{{ state.hidden }} saved {{ state.hidden === 1 ? 'item is' : 'items are' }} hidden by your content preferences. You can still remove them or <a routerLink="/me/settings/preferences">change your preferences</a>.</p>
-  } @for (group of state.groups; track group.type) {
-  <ui-medium-card tuiAppearance="card-panel" class="favorites-page__card">
-    <h2 slot="header">
-      {{ group.title }} <span>({{ group.items.length }})</span>
-    </h2>
-    @for (item of group.items; track item.id) {
-    <div class="favorites-page__item" [attr.data-kind]="group.type" [attr.data-id]="item.id">
-      <div class="favorites-page__target">
-        @if (item.path) { <a [routerLink]="item.path">{{ item.name }}</a> }
-        @else {
-        <span>{{ item.name }}</span>
-        <small>{{ item.id }}</small>
-        }
-      </div>
-      <favorite-toggle-button
-        [type]="group.type"
-        [slug]="item.slug ?? item.id"
-        [targetId]="item.id"
-      />
-    </div>
-    } @empty {
-    <ui-content-state
-      title="No saved {{ group.type }} yet"
-      description="Use the favorite button on content you want to keep."
-      icon="@tui.star"
-    >
-      <a tuiButton appearance="secondary" size="m" [routerLink]="group.browse"
-        >Browse {{ group.type }}</a
-      >
-    </ui-content-state>
+  @let state = groups();
+    @if (state.isLoading) {
+      <p role="status">Loading favorites...</p>
+    } @else if (!state.signedIn && service.mode === 'api') {
+      <ui-content-state title="Sign in to view favorites" description="Your saved content is linked to your account." icon="@tui.star" />
+    } @else if (state.isError) {
+      <ui-content-state [error]="true" title="Favorites could not be loaded" description="Please try again. Your saved favorites have not been changed." icon="@tui.circle-alert">
+        <button tuiButton size="m" type="button" (click)="reload()">Retry</button>
+        <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+      </ui-content-state>
+    } @else if (!state.hasItems) {
+      <ui-content-state title="No favorites yet" description="Save applications, articles, suites and discussions with the favorite button. Find them all here." icon="@tui.star">
+        <a tuiButton appearance="secondary" size="m" routerLink="/discover">Discover content</a>
+      </ui-content-state>
+    } @else {
+      @if (state.preferencesLoading) {
+        <ui-content-state role="status" title="Loading content preferences" description="Saved references remain removable while your content choices load." />
+      } @else if (state.preferencesError) {
+        <ui-content-state [error]="true" title="Content preferences could not be loaded" description="Details stay hidden. You can still remove saved references." icon="@tui.circle-alert">
+          <button tuiButton size="m" type="button" (click)="reload()">Retry preferences</button>
+        </ui-content-state>
+      } @else if (state.contentError) {
+        <ui-content-state [error]="true" title="Saved item details could not be loaded" description="You can still remove saved references. Retry to load their current details." icon="@tui.circle-alert">
+          <button tuiButton size="m" type="button" (click)="reload()">Retry details</button>
+        </ui-content-state>
+      } @else if (state.contentLoading) { <p role="status">Loading saved content...</p> }
+      @if (state.hidden) {
+        <p role="status">{{ state.hidden }} saved {{ state.hidden === 1 ? 'item is' : 'items are' }} hidden by your content preferences. You can still remove them or <a routerLink="/me/settings/preferences">change your preferences</a>.</p>
+      }
+      @for (group of state.groups; track group.type) {
+        <ui-medium-card tuiAppearance="card-panel" class="favorites-page__card">
+          <h2 slot="header">{{ group.title }} <span>({{ group.items.length }})</span></h2>
+          @for (item of group.items; track item.id) {
+            <div class="favorites-page__item" [attr.data-kind]="group.type" [attr.data-id]="item.id">
+              @if (item.status === 'available' && item.path) {
+                <a [routerLink]="item.path">{{ item.name }}</a>
+              } @else { <span>{{ item.name }}</span> }
+              <favorite-toggle-button [type]="group.type" [slug]="item.slug ?? item.id" [targetId]="item.id" />
+            </div>
+          } @empty {
+            <ui-content-state title="No saved {{ group.type }} yet" description="Use the favorite button on content you want to keep." icon="@tui.star">
+              <a tuiButton appearance="secondary" size="m" [routerLink]="group.browse">Browse {{ group.type }}</a>
+            </ui-content-state>
+          }
+        </ui-medium-card>
+      }
     }
-  </ui-medium-card>
-  } } }
 </section>

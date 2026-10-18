@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
 const {
   beginIdentityErasure,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 module.exports = async function editorialErasureBarriers({
   source,

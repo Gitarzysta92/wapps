@@ -134,12 +134,12 @@ module.exports = async function qualifyFavoritesContentPreferences(options) {
               row.getAttribute('data-kind') + ':' + row.getAttribute('data-id'),
             title: row
               .querySelector(
-                '.favorites-page__target > a, .favorites-page__target > span'
+                ':scope > a, :scope > span'
               )
               ?.textContent.trim(),
             link:
               row
-                .querySelector('.favorites-page__target > a')
+                .querySelector(':scope > a')
                 ?.getAttribute('href') ?? null,
           }))
           .sort((a, b) => a.key.localeCompare(b.key));
@@ -154,7 +154,7 @@ module.exports = async function qualifyFavoritesContentPreferences(options) {
         rows.map((row) => ({
           key:
             row.getAttribute('data-kind') + ':' + row.getAttribute('data-id'),
-          images: row.querySelectorAll('.favorites-page__target img').length,
+          images: row.querySelectorAll('img').length,
           removable: !!row.querySelector(
             'button[aria-label="Remove from Favorites"]:not(:disabled)'
           ),

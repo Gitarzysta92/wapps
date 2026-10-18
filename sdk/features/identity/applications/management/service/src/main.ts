@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as admin from 'firebase-admin';
-import { runIdentityMaintenance } from '@sdk/extras/identity-mysql';
+import { runIdentityMaintenance } from '@wapps/account-mysql';
 import { AccountErrorFilter } from './app/controllers/account-error.filter';
 
 async function bootstrap() {
@@ -16,11 +15,6 @@ async function bootstrap() {
     return;
   }
   const { AppModule } = await import('./app/app.module');
-  // Firebase Admin (used for account admin operations)
-  admin.initializeApp({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-  });
-
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks();
   app.useGlobalFilters(new AccountErrorFilter());
@@ -45,7 +39,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Account Management API')
     .setDescription(
-      'Internal admin service for identity account operations (Firebase Admin).'
+      'Internal admin service for identity account operations (configured credential provider).'
     )
     .setVersion('1.0')
     .addTag('admin', 'Admin account operations')

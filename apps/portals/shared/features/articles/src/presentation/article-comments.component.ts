@@ -16,7 +16,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TuiAppearance, TuiButton } from '@taiga-ui/core';
-import type { PublicComment, PublicCommentThread } from '@domains/discussion';
+import type { PublicComment, PublicCommentThread } from '@domains/community';
 import { ArticleCommentsService } from '../application/article-comments.service';
 import { provideArticleComments } from '../article-comments.providers';
 

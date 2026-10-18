@@ -2,8 +2,8 @@ import { Component, computed, effect, inject, untracked } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TuiAppearance, TuiButton } from '@taiga-ui/core';
-import { ApplicationHealthService } from '@apps/portals/shared/features/health-status';
+import { TuiAppearance, TuiButton, TuiIcon } from '@taiga-ui/core';
+import { ApplicationHealthService, StatusBannerComponent } from '@apps/portals/shared/features/health-status';
 import {
   ApplicationContentStateComponent,
   readApplicationContent,
@@ -14,6 +14,7 @@ import {
   ContentStateComponent,
   PageHeaderComponent,
   PageTitleComponent,
+  MediumCardComponent,
 } from '@ui/layout';
 import { NAVIGATION } from '../../navigation';
 
@@ -25,6 +26,9 @@ import { NAVIGATION } from '../../navigation';
     RouterLink,
     TuiAppearance,
     TuiButton,
+    TuiIcon,
+    StatusBannerComponent,
+    MediumCardComponent,
     BreadcrumbsComponent,
     ContentStateComponent,
     PageHeaderComponent,
@@ -37,6 +41,7 @@ import { NAVIGATION } from '../../navigation';
 })
 export class ApplicationHealthApiPageComponent {
   readonly health = inject(ApplicationHealthService);
+  readonly observedAt = computed(() => new Date(this.health.report()?.asOf ?? 0));
   private readonly route = inject(ActivatedRoute);
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,

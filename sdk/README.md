@@ -3,53 +3,83 @@
 The SDK groups reusable backend capabilities by responsibility:
 
 - `features/identity`: identity model, authentication and account-management libraries, applications, and Firebase/OPA integrations.
-- `features/discussion`: discussion core, management service, and materializer.
+- `features/discussion`: reusable discussion core, key-based management library, and materializer.
+- `features/review`: reusable review core, key-based management library and generic HTTP adapter; consumers supply authority and canonical repositories.
+- `apps/services/community` (outside the SDK): the Wapps consumer application, including application topics, article comments, reviews, profile and notification composition.
+- `libs/usecases/account` (outside the SDK): Wapps profile composition, favorites, notifications, provider rosters and service-access policies; public alias `@wapps/account`.
+- `libs/adapters/account-mysql` (outside the SDK): Wapps canonical account persistence and migrations; public alias `@wapps/account-mysql`.
 - `kernel`: common result/types, primitives, event envelopes, and foundational domain models.
 - `platform/queue`: transport-independent queue interfaces.
 - `extras`: database, object-storage, and RabbitMQ implementations.
 
 Applications own dependency injection and provisioning. Feature code depends on platform interfaces; application bootstrap supplies concrete adapters. Legacy `@foundation`, `@domains`, and `@infrastructure` aliases remain available during migration. The older `platform-queue` convenience API is retained for media ingestion, the editor, and the scraper.
 
+## Discussion consumer keys
+
+Discussion stores and compares an opaque `bindingKey`; it has no application/article
+type registry or consumer key-version rules. Wapps owns its keys and public payload
+contracts in `libs/domains/community` and supplies authorization, visibility and
+payload adapters from `apps/services/community`. The public implementation entrypoint
+is `@sdk/features/discussion/libs/management`. Another consumer can supply any valid
+key and payload without editing the SDK. Aggregate revisions and projection schema
+metadata are internal storage guarantees, independent of the consumer key.
+
+The Wapps runtime keeps its existing Nx target and deployment service name for
+compatibility. Its source moved out of the reusable SDK. Read the
+[consumer application migration notes](../apps/services/community/README.md) before
+upgrading existing data; this change needs a fenced forward migration and projection
+rebuild, with historical command identities preserved by the Wapps adapter.
+
+## Review and account consumers
+
+Review management and HTTP accept an opaque `bindingKey`. Public entrypoints are
+`@sdk/features/review/libs/management` and `@sdk/features/review/http`. Wapps BFF maps
+its application-specific routes to `/api/reviews`, constructing keys and adapting
+responses through `libs/domains/community`. Consumer authority and repository
+adapters in Community retain the canonical SQL scopes and historical command
+fingerprints. The generic packages do not interpret target kinds or role names.
+
+Identity management provides generic saved-association/watch and notification
+engines, and export/erasure coordinators with explicit required provider plans.
+Wapps supplies target parsing, key construction, profile activity composition,
+source access and fixed provider rosters through `@wapps/account`. Reusable core
+and use-case code contains no Wapps content kinds or export/erasure service registry.
+SDK application entrypoints remain the composition roots for the deployed account
+and authenticator services. Account migrations, table names, outbox semantics and
+deployment identities do not change in this extraction. Existing jobs keep the
+fixed Wapps plan; changing that plan requires a separate durable-job migration.
+
 ## Authentication
 
-The authenticator uses Firebase for credentials and sessions, and MySQL for application identity state. Firebase UID is the stable identity claim for all providers. On first sign-in, it inserts an active identity; returning users reuse their identity without resetting suspension/deletion flags. Concurrent first sign-ins converge using the unique claim constraint.
+Authentication is a separately running, swappable credential process. The local
+implementation owns its MySQL schema, passwords and opaque sessions, and exposes
+an authenticated `/credentials/*` contract. It does not access canonical Identity
+persistence or run Account's broker workers. Identity/Account consumes that contract
+through a bounded HTTP adapter for sign-in, registration, token verification,
+credential administration, export and durable deletion. No provider adapter is
+instantiated in Account.
 
-The service emits `identity.created` for new rows and `identity.authenticated` for successful sign-ins. Both events are retained in the shared SQL outbox. A reconnecting dispatcher waits for broker confirmation before marking delivery; retries are bounded and failed work remains available for explicit recovery. Broker availability is not required to commit an identity. Confirmed transport does not prove downstream materialization.
+Identity owns stable Wapps IDs and exact issuer/subject bindings. Registration
+requires credential proof and a durable enrollment retry receipt; identity, binding
+and creation outbox commit together. Existing subjects are not adopted by email.
+Canonical lifecycle, consumer authorization, ownership, receipts and materialization
+remain authoritative. Replacing an authentication implementation preserves mappings;
+changing an issuer/subject requires a verified migration that preserves Wapps IDs.
 
-Token validation checks Firebase token revocation and application identity state. Refresh also requires an available application identity. Sign-out revokes the user's Firebase refresh tokens (all sessions for that Firebase user). Optional validation permits requests without a token as anonymous; a supplied invalid token is rejected.
+BFF preserves the original browser authentication API and calls Identity's auth
+facade. Ingress resolves tokens through private Identity validation before forwarding
+trusted Wapps identity headers. Both local and alpha browser authentication routes
+cross BFF. Authentication itself receives no browser identity headers.
 
-Google and GitHub OAuth require a verified provider email. Existing Firebase accounts are reused only when enabled and email-verified; otherwise linking is rejected. New accounts are created through Firebase Admin. Email/password and anonymous sign-in use Firebase REST.
-
-The portals explicitly choose API or demo identity mode. API mode requires configured authenticator/account origins; an empty origin deliberately selects the same-origin gateway. Missing configuration never silently selects a demo. The interceptor sends tokens only to trusted configured origins, shares in-flight refreshes and retries with the new access token. Registration, recovery, reset consumption and account retrieval now use real API adapters. The explicit demo mode remains separate.
-
-`POST /auth/register` requires `Idempotency-Key`, creates or credential-verifies the Firebase account, enrolls the initial canonical SQL profile and records authentication intent before returning a session. Firebase and SQL do not share a transaction; retries recover partial enrollment without overwriting later profile changes. Public `POST /auth/password-reset/verify` checks an action code; `POST /auth/password-reset/complete` consumes it. Both use bounded provider requests and grant no application lifecycle access. These endpoints respect `ENABLE_EMAIL_PASSWORD` and return `Cache-Control: no-store`.
-
-The aggregator handles reset and verification actions at `/auth/action`, with
-`mode=resetPassword` or `mode=verifyEmail` and one `oobCode`. It removes the code
-from browser history and requires explicit completion. Configure both Firebase
-email templates' action-handler URL to this route; `continueUrl` alone does not
-select the handler. Signup directs the user to sign in and verify in Profile
-Settings. No sign-in or publication policy is silently changed to require a
-verified email.
-
-`GET /auth/email-verification/status` reads the signed-in credential's current
-email and verification status. `POST /auth/email-verification/request` accepts no
-target identity and returns `requested` or `already-verified`. Both require
-revocation-aware token validation and a current canonical SQL identity.
-Public `POST /auth/email-verification/verify` and `/complete` accept `{code}`;
-they require the exact verification action type and grant no session or SQL
-lifecycle change. Password reset similarly checks its action type before mutation.
-Responses are no-store; invalid codes are 400, rejected sessions 401, throttling
-429 and unavailable/uncertain operations 503. Refresh live status after an uncertain
-completion; there is no synthetic replay success or automatic email resend.
-
-No migration or new projection is required. Deploy the updated authenticator,
-portal and ingress routes together. The dedicated portal action ingress suppresses
-access logging; static configurations omit action secrets and prevent referrer
-propagation/caching. Verify upstream logs and both template handlers in the target
-environment. Local qualification uses real compiled APIs, OPA, disposable MySQL,
-the Firebase Auth emulator and independent browsers; it sends no external email.
-Real delivery, provider expiry, deployed ingress and operational gates stay open.
+Local authentication is explicitly selected, persistent and development-only.
+Firebase integration is deferred. OAuth, anonymous credentials and email actions
+remain unavailable in this local implementation, with truthful failures. The
+[contract, configuration and migration guide](../docs/LOCAL-AUTHENTICATION.md)
+describes independent migration jobs, legacy mapping blockers, single-issuer limits,
+operator provisioning and the disposable real-process qualification. Existing alpha
+configuration generation and Kubernetes deployment wiring remain unqualified for
+the new contract. This change does not qualify frontend presentation or activate
+any existing installation.
 
 ## In-app discussion mentions
 
@@ -644,13 +674,17 @@ visibility and exact projection revisions. The portal and account favorites are
 locally qualified; operational/deployment gates remain open.
 See the article checkpoint and materialization contract for recovery limits.
 
-Article comments use the Discussion service at `/api/article-comments/:articleId`
+Article comments use the portal BFF at `/api/article-comments/:articleId`
 for public listing and member creation, `/:id` for thread read/author edit/removal,
 and `/:id/replies` for member replies. Supply `Idempotency-Key` for all writes and
 `expectedRevision` for edits/removals. Bodies contain a chosen public `displayName`
 and plain `text`; edits wrap them in `content`. Responses expose no private account
 IDs. Authors edit their own text; tenant-scoped admins can remove another member's
-comment but cannot edit it. Generic Discussion routes refuse article bindings.
+comment but cannot edit it. BFF constructs the consumer-owned `article:<UUID>` key
+and maps requests/responses to the owner's generic `/api/discussions` API.
+Keyless `/api/discussions` requests retain the legacy unbound contract and refuse
+bound resources. The single reusable controller validates scope explicitly; there
+is no separate binding-resource API.
 
 Run Discussion `--migrate` explicitly for `DiscussionArticleTargets1791676822000`
 before API startup. Configure `EDITORIAL_URL` and `DISCUSSION_PUBLIC_TENANT`;
@@ -664,13 +698,16 @@ route changes and is cleared on account changes/full reload. See the article
 comments materialization contract and checkpoint for evidence and limits;
 Kubernetes provisioning, cross-service erasure and operational gates remain open.
 
-Application discussions use `/api/application-discussions/:applicationId` for
+Application discussions use BFF `/api/application-discussions/:applicationId` for
 public list/member creation, `/:id` for read/author edit/removal, and
 `/:id/replies` for replies. Bind to the canonical application UUID. Topics carry
 `title`, `displayName`, `text` and optional `tags`; replies carry only name/text.
 All writes require `Idempotency-Key`; edits/removals need `expectedRevision`.
 Authors edit their own content; tenant admins can remove but cannot rewrite it.
-Generic and article-comment routes cannot bypass the application binding.
+BFF maps these operations to `/api/discussions` with `application:<UUID>`.
+The owner enforces exact keys through consumer ports; unbound and article-comment
+routes cannot bypass the application binding. Reusable HTTP handlers live in
+`@sdk/features/discussion/http` and never parse these Wapps namespaces.
 
 Run `DiscussionApplicationTargets1791676823000` through explicit `--migrate`,
 then upgrade materializers before enabling these writes. The marker validates the
@@ -681,7 +718,7 @@ The API-mode aggregator selects the real discussion list/detail workflow;
 application slugs resolve through the catalog to UUIDs. Full-service community,
 erasure, Kubernetes provisioning and deployment gates remain open.
 
-Private `GET /api/me/discussions` lists application topics with a live post owned
+Private BFF `GET /api/me/discussions` lists application topics with a live post owned
 by the signed-in member. The explicit self-read OPA action checks account/tenant
 scope; SQL ownership and lifecycle define participation, and existing exact
 Discussion generations supply titles. Ten-candidate keyset pages accept an
@@ -699,13 +736,13 @@ session memory across closing/reopening; account changes and full reload clear
 that local retry. No new migration, policy action or materialization pipeline is
 introduced. Demo mode selects the separate browser-local dialog explicitly.
 
-Application topics and replies now support signed votes through
+Application topics and replies now support signed votes through BFF
 `PUT /api/application-discussions/:applicationId/:id/vote`, with
 `{ value: -1 | 0 | 1, expectedRevision }` and `Idempotency-Key`. Zero removes the
 actor's choice. Apply `DiscussionVotes1791676825000` explicitly, update the
 Discussion OPA bundle for `discussion.application-topic.vote`, then coordinate
 the API/portal release: strict application-post responses now require vote state.
-Existing application-aware materializers remain compatible. Retain SQL vote and
+The generic materializer remains compatible. Retain SQL vote and
 receipt rows through any rollback; destructive down migration is refused.
 
 Votes, thread revision, receipt and outbox commit atomically. Totals and `mine`
@@ -719,7 +756,7 @@ conflicts while preserving unfinished composer text. See the vote section in
 limits; generic legacy likes, feed votes and review helpfulness remain separate.
 
 Tenant administrators can pin/unpin live application-topic roots with
-`PUT /api/application-discussions/:applicationId/:id/pin`,
+BFF `PUT /api/application-discussions/:applicationId/:id/pin`,
 `{ pinned, expectedRevision }` and `Idempotency-Key`. Ownership alone is
 insufficient; replies cannot be pinned. Apply `DiscussionPins1791676826000`
 explicitly and update the OPA bundle for `discussion.application-topic.pin` before
@@ -1013,16 +1050,23 @@ See the readiness evidence.
 
 Account Management now requires `DISCUSSION_URL` alongside `EDITORIAL_URL`. Use
 the Discussion service origin, without a path, query, credentials or fragment.
-Its unsigned `/api/discussion-selection?ids=...` lookup validates live application
-roots, public tenant, exact generations and current parent visibility. The endpoint
-accepts at most fifty distinct UUIDs; replies and article/generic threads are not
-favorite targets. It returns only topic/application IDs, revision, title and reply
-count. Hidden targets are omitted; pending projections and service outages fail.
+Its unsigned `/api/discussions/selection?bindingPrefix=application:&ids=...`
+lookup validates live roots, public tenant, exact generations and current parent
+visibility through the consumer binding adapter. The endpoint accepts at most fifty
+distinct UUIDs; Account checks one application-topic reference per eligibility
+request. Replies and article/unbound threads are not favorite targets. Generic
+selection returns bound roots with consumer content; the portal's separate BFF
+`/api/discussion-selection` contract maps these to topic/application IDs, revision,
+title and reply count. Hidden targets are omitted; pending projections and service
+outages fail.
 The portal resolves current parent slugs separately and retains unavailable saved
 references for removal. List, full-thread and quick-dialog favorite controls share
-canonical account state. Configure the origin and deploy the selection API/gateway
-before enabling the updated account service and portal; no new migration or
-projection is introduced. See the discussion favorites checkpoint for qualification.
+canonical account state. Apply `DiscussionBindingIndex1792150000000` after
+`CommunityDiscussionBindingKeys1792080000000`, then coordinate Community, BFF,
+Account Management and ingress versions. Dedicated internal discussion routes are
+retired; mixed old/new clients are not supported during this switch. The index
+does not change projections or historical receipts. See the Community README and
+the bound Discussion API checkpoint for rollout and qualification.
 
 Both service entrypoints expose `--migrate`, `--outbox-status`, `--cleanup-status`,
 `--outbox-requeue <event-uuid>`, and `--cleanup-requeue <uid>`. These commands start

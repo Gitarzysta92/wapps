@@ -1,6 +1,6 @@
 import type { DataSource, EntityManager } from 'typeorm';
 import type { AccountErasureRequest } from '@sdk/features/identity/core';
-import { ACCOUNT_ERASURE_WRITER } from '@sdk/features/identity/libs/management';
+import { ACCOUNT_ERASURE_WRITER } from '@wapps/account';
 import { anonymizeArticleFields } from '@domains/publication/article';
 import type { EditorialProjectionKind } from '@apps/shared';
 import {

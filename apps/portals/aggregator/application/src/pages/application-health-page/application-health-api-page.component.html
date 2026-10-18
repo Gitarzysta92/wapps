@@ -1,6 +1,6 @@
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
-  <h1 uiPageTitle slot="title">Application health</h1>
+  <h1 uiPageTitle class="page-title" slot="title"><tui-icon icon="@tui.heart-pulse" /> System Health</h1>
   <p slot="meta">{{ app.application()?.name || 'HTTP endpoint observations' }}</p>
   <button tuiButton slot="actions" type="button" size="s" appearance="secondary" [disabled]="app.isLoading() || (app.application() && health.loading())" (click)="refresh()">Refresh checks</button>
 </ui-page-header>
@@ -12,15 +12,14 @@
   @else if (health.error()) { <ui-content-state title="Observations unavailable" [description]="health.error()" icon="@tui.circle-alert" [error]="true"><button tuiButton type="button" (click)="refresh()">Retry checks</button></ui-content-state> }
   @else { @if (health.report(); as report) {
     @if (report.monitors.length) {
-      <div class="health-summary" tuiAppearance="card-elevated" role="status">
-        <h2><span class="health-state" [attr.data-status]="health.status()">{{ labels[health.status()] }}</span> across monitored endpoints</h2>
-        <p>As of {{ report.asOf | date:'medium':'UTC' }} UTC. Results older than fifteen minutes are stale.</p>
-      </div>
+      <section class="health-section">
+        <health-status-banner [status]="health.status()" [message]="labels[health.status()] + ' across monitored endpoints'" [timestamp]="observedAt()" />
+      </section>
       <section class="health-section" aria-label="Endpoint observations">
-        <h2 class="section-title">Endpoint observations</h2>
-        <div class="health-monitors">
+        <h2 class="section-title"><span tuiAppearance="accent-bar-warm"></span>Service Status</h2>
+        <div class="services-grid">
           @for (monitor of report.monitors; track monitor.id) {
-            <article class="health-monitor" tuiAppearance="card-elevated" [attr.data-monitor]="monitor.id">
+            <ui-medium-card class="service-card health-monitor" tuiAppearance="card-elevated" [attr.data-monitor]="monitor.id">
               <header><div class="health-heading"><h3>{{ monitor.name }}</h3><p class="health-url">{{ monitor.url }}</p></div><span class="health-state" [attr.data-status]="monitor.status">{{ labels[monitor.status] }}</span></header>
               <div class="health-evidence">
                 @if (monitor.latest; as latest) {
@@ -35,7 +34,7 @@
                 </div>
                 <p class="health-history-dates"><span>{{ monitor.history[0].day | date:'MMM d':'UTC' }}</span><span>Today (UTC)</span></p>
               </div>
-            </article>
+            </ui-medium-card>
           }
         </div>
         <p class="health-legend">Daily history: responding only when every interval was measured successfully; slow or failed checks show the observed issue; incomplete history remains unknown.</p>

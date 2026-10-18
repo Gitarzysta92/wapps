@@ -10,7 +10,8 @@ import {
   CanonicalIdentityConflict,
   CanonicalIdentityInputError,
 } from '@sdk/features/identity/core';
-import { CredentialInputError, PublicProfileNotFound } from '@sdk/features/identity/libs/management';
+import { CredentialInputError } from '@sdk/features/identity/libs/management';
+import { PublicProfileNotFound } from '@wapps/account';
 
 @Catch()
 export class AccountErrorFilter implements ExceptionFilter {
@@ -31,16 +32,14 @@ export class AccountErrorFilter implements ExceptionFilter {
           error instanceof CredentialInputError
         ? 400
         : 503;
-    response
-      .status(status)
-      .json({
-        statusCode: status,
-        message:
-          status === 503
-            ? 'Account service unavailable'
-            : error instanceof Error
-            ? error.message
-            : 'Invalid request',
-      });
+    response.status(status).json({
+      statusCode: status,
+      message:
+        status === 503
+          ? 'Account service unavailable'
+          : error instanceof Error
+          ? error.message
+          : 'Invalid request',
+    });
   }
 }

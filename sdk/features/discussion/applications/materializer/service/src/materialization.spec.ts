@@ -106,40 +106,40 @@ describe('revisioned discussion materialization', () => {
     expect(store.nodes.get('root')?.ownerIdentityId).toBeNull();
   });
 
-  it('converges application-bound snapshots and rejects a same-revision kind change', async () => {
+  it('converges opaque consumer keys without parsing types, IDs or version markers', async () => {
     const store = new MemoryGenerations();
     const bound = {
       ...snapshot(),
-      subjectId: 'application-id',
-      subjectKind: 'application' as const,
+      subjectId: null,
+      bindingKey: 'External-Team|anything@v789:item/42',
     };
     expect(await project(bound, store)).toBe('published');
     expect(await project(bound, store)).toBe('unchanged');
-    expect(store.head?.subjectKind).toBe('application');
+    expect(store.head?.bindingKey).toBe(bound.bindingKey);
     await expect(
-      project({ ...bound, subjectKind: 'article' }, store)
+      project(
+        { ...bound, bindingKey: 'external-team|anything@v789:item/42' },
+        store
+      )
     ).rejects.toThrow('Conflicting snapshots');
   });
-  it('includes an immutable article binding in the generation fingerprint without changing unbound snapshots', async () => {
+  it('includes the complete consumer key in the snapshot fingerprint and rejects malformed keys', async () => {
     const store = new MemoryGenerations();
-    const original = { ...snapshot(), subjectId: 'article-id' };
+    const original = snapshot();
     await project(original, store);
-    expect(store.head).not.toHaveProperty('subjectKind');
+    expect(store.head).not.toHaveProperty('bindingKey');
     await expect(
-      project({ ...original, subjectKind: 'article' }, store)
+      project({ ...original, bindingKey: 'custom' }, store)
     ).rejects.toThrow('Conflicting snapshots');
     const linked = new MemoryGenerations();
-    await project({ ...original, subjectKind: 'article' }, linked);
-    expect(linked.head?.subjectKind).toBe('article');
-    expect(await project({ ...original, subjectKind: 'article' }, linked)).toBe(
+    await project({ ...original, bindingKey: 'custom' }, linked);
+    expect(linked.head?.bindingKey).toBe('custom');
+    expect(await project({ ...original, bindingKey: 'custom' }, linked)).toBe(
       'unchanged'
     );
     await expect(
-      project(
-        { ...snapshot(), subjectKind: 'article' },
-        new MemoryGenerations()
-      )
-    ).rejects.toThrow('Invalid discussion target');
+      project({ ...snapshot(), bindingKey: ' ' }, new MemoryGenerations())
+    ).rejects.toThrow('Invalid discussion binding key');
   });
   it('converges under duplicate and reordered deliveries, independent of source row order', async () => {
     const store = new MemoryGenerations();

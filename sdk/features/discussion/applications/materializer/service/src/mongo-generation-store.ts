@@ -61,7 +61,20 @@ export class MongoGenerationStore implements DiscussionGenerationStore {
                               { $literal: node.discussionId },
                             ],
                           },
-                          { $lt: ['$revision', node.revision] },
+                          {
+                            $or: [
+                              { $lt: ['$revision', node.revision] },
+                              {
+                                $and: [
+                                  { $eq: ['$revision', node.revision] },
+                                  { $gte: ['$schemaVersion', 2] },
+                                  {
+                                    $lt: ['$schemaVersion', node.schemaVersion],
+                                  },
+                                ],
+                              },
+                            ],
+                          },
                         ],
                       },
                     ],
@@ -118,7 +131,7 @@ export class MongoGenerationStore implements DiscussionGenerationStore {
           },
         ],
       },
-      { $set: head },
+      [{ $replaceWith: { $literal: head } }],
       { writeConcern: durable }
     );
     if (updated.matchedCount === 1) return 'published';

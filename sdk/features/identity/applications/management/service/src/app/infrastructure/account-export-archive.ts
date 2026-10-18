@@ -4,7 +4,6 @@ import { pipeline } from 'node:stream/promises';
 import { createGzip } from 'node:zlib';
 import {
   ACCOUNT_EXPORT_LIMITS,
-  ACCOUNT_EXPORT_SOURCES,
   AccountExportCaptureSequence,
   AccountExportLimitExceeded,
   AccountExportSourceInvalid,
@@ -12,6 +11,7 @@ import {
   parseAccountExportArtifact,
   type AccountExportCapture,
 } from '@sdk/features/identity/core';
+import { ACCOUNT_EXPORT_SOURCES } from '@wapps/account';
 import type {
   AccountExportArchive,
   AccountExportSource,
@@ -167,12 +167,15 @@ export class GzipAccountExportArchive implements AccountExportArchive {
         { signal: controller.signal }
       );
       signal.throwIfAborted();
-      return parseAccountExportArtifact({
-        bytes,
-        sha256: hash.digest('hex'),
-        chunks,
-        captures,
-      });
+      return parseAccountExportArtifact(
+        {
+          bytes,
+          sha256: hash.digest('hex'),
+          chunks,
+          captures,
+        },
+        ACCOUNT_EXPORT_SOURCES
+      );
     } catch (error) {
       controller.abort(error);
       if (signal.aborted) throw signal.reason;

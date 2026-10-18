@@ -1,5 +1,5 @@
 import type { DataSource, EntityManager } from 'typeorm';
-import { lockIdentityWrites } from '@sdk/extras/identity-mysql';
+import { lockIdentityWrites } from '@wapps/account-mysql';
 import {
   HEALTH_INTERVAL_MS,
   HEALTH_MAX_MONITORS,

@@ -12,9 +12,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import {
   ContentStateComponent,
+  MediumCardComponent,
   PageHeaderComponent,
   PageTitleComponent,
 } from '@ui/layout';
@@ -28,13 +30,14 @@ import type { Observable } from 'rxjs';
   selector: 'private-suites-page',
   standalone: true,
   imports: [
-    FormsModule,
+    FormsModule, TuiAvatar, TuiBadge,
     RouterLink,
     TuiAppearance,
     TuiButton,
     TuiLink,
     BreadcrumbsComponent,
     ContentStateComponent,
+  MediumCardComponent,
     PageHeaderComponent,
     PageTitleComponent,
   ],

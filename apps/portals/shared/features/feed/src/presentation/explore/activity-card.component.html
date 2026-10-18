@@ -1,0 +1,117 @@
+@let articleData = article();
+@let suiteData = suite();
+@let reviewData = review();
+@let releaseData = release();
+@let discussionData = discussion();
+<article [attr.data-kind]="item().kind" [attr.data-id]="item().id" [attr.data-title]="item().title">
+@if (application(); as app) {
+  <ui-elevated-card class="elevated-card" [class.no-cover]="!app.bannerUrl">
+    <div slot="backdrop">@if (app.bannerUrl; as cover) { <ui-cover-image class="cover-image" [image]="{ url: cover, alt: item().title }" /> }</div>
+    <ui-medium-card class="application-panel activity-card">
+      <ui-card-header slot="header" class="card-header">
+        <div class="application-avatar" slot="left-side">
+          <app-avatar class="avatar-image" size="xl" [avatar]="{ url: app.logoUrl || '', alt: item().title }" />
+          @if (app.category; as category) { <app-category-chip class="avatar-category" [category]="category" size="xs" /> }
+        </div>
+        <div class="application-title">
+          <h3 uiMediumTitle class="application-name"><a [routerLink]="destination().path" [queryParams]="destination().query">{{ item().title }}</a></h3>
+          @if (app.reviews?.rating; as rating) { <app-rating [readonly]="true" [rating]="rating" /> }
+        </div>
+        <div slot="right-side" class="application-favorite">@if (favorite(); as target) { <favorite-toggle-button [iconOnly]="true" appearance="flat" [type]="target.type" [slug]="target.slug" [targetId]="item().id" /> }</div>
+      </ui-card-header>
+      <ui-tags [tags]="app.tags" />
+      @if (app.description) { <p>{{ app.description }}</p> }
+      <span slot="bottom-bar">@if (app.reviews; as reviews) { <app-reviews-chip [reviewsCount]="reviews.total" [reviewsLink]="reviewsPath()" size="xs" appearance="action-soft-flat" /> } @else { Ratings unavailable }</span>
+      <ng-template #cardActions let-iconOnly="iconOnly"><ng-container [ngTemplateOutlet]="actions" [ngTemplateOutletContext]="{ iconOnly: iconOnly, favorite: false }" /></ng-template>
+      <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone"><ng-container [ngTemplateOutlet]="sharing" [ngTemplateOutletContext]="{ iconOnly: iconOnly, activeZone: activeZone }" /></ng-template>
+    </ui-medium-card>
+  </ui-elevated-card>
+} @else {
+  <ui-medium-card class="activity-card">
+    @if (suiteData) { <tui-chip slot="top-edge" size="s" appearance="primary" class="suite-chip"><tui-icon icon="@tui.layout-grid" /> Application collection</tui-chip> }
+    <div slot="header">
+      @if (articleData) {
+        <ui-card-header>
+          <tui-avatar slot="left-side" size="m">{{ articleData.byline.slice(0, 2) }}</tui-avatar>
+          <h3 uiMediumTitle>{{ articleData.byline }} <span class="article-label">article <tui-icon icon="@tui.book-open-text" /></span></h3>
+          <article-details-badge class="article-details-badge" [article]="{ title: item().title, publicationDate: articleData.publishedAt }" />
+        </ui-card-header>
+      } @else if (reviewData) {
+        <ui-card-header>
+          <app-avatar slot="left-side" size="m" [avatar]="{ url: reviewData.logoUrl || '', alt: reviewData.applicationName }" />
+          <h3 uiMediumTitle>{{ reviewData.applicationName }} <span class="review-label">review <tui-icon icon="@tui.star" /></span></h3>
+          <review-author-badge [reviewerName]="reviewData.byline" [reviewDate]="iso(reviewData.publishedAt)" />
+        </ui-card-header>
+      } @else if (releaseData) {
+        <ui-card-header>
+          <app-avatar slot="left-side" size="m" [avatar]="{ url: releaseData.logoUrl || '', alt: releaseData.applicationName }" />
+          <h3 uiMediumTitle>{{ releaseData.applicationName }} <span class="changelog-label">changelog <tui-icon icon="@tui.git-commit" /></span></h3>
+          <div class="changelog-version"><tui-badge class="changelog-badge" size="s">ver. {{ releaseVersion() }}</tui-badge><small>{{ releaseData.releaseType }} · {{ releaseData.channel }}</small></div>
+        </ui-card-header>
+      } @else {
+        <ui-card-header>
+          <h3 uiMediumTitle><a [routerLink]="destination().path" [queryParams]="destination().query">{{ item().title }}</a></h3>
+          @if (suiteData) {
+            <p class="suite-description">{{ suiteData.description }}</p>
+            <div class="suite-meta"><tui-icon icon="@tui.box" /><span>{{ suiteData.applicationCount }} {{ suiteData.applicationCount === 1 ? 'application' : 'applications' }}</span></div>
+          } @else if (discussionData) {
+            <p>{{ discussionData.replyCount }} {{ discussionData.replyCount === 1 ? 'reply' : 'replies' }} · {{ discussionData.applicationName }}</p>
+            <small>Discussion highlights · {{ item().at | preferredDate }}</small>
+          } @else { <time [attr.datetime]="date()">{{ item().at | preferredDate }}</time> }
+        </ui-card-header>
+      }
+    </div>
+    @if (articleData) {
+      @if (articleData.cover; as cover) { <article-cover-image class="cover-image" [target]="{ kind: 'published', id: item().id, imageId: cover.imageId }" [alt]="cover.alt" /> }
+      <div class="article-summary">
+        <h3 uiMediumTitle><a [routerLink]="destination().path" [queryParams]="destination().query">{{ item().title }}</a></h3>
+        <ui-tags [tags]="articleData.tags" />
+        <ui-excerpt [excerpt]="articleData.excerpt" [maxLength]="200" />
+      </div>
+    } @else if (suiteData) {
+      <div class="apps-grid">
+        @for (app of suiteData.applications; track app.id) {
+          <div class="app-tile">
+            <tui-avatar size="l" [src]="app.logoUrl || ''">{{ app.name.slice(0, 2) }}</tui-avatar>
+            <div class="app-info"><a class="app-name" [routerLink]="memberLink(app.id, app.slug).path" [queryParams]="memberLink(app.id, app.slug).query">{{ app.name }}</a>@if (app.description) { <p class="app-description">{{ app.description }}</p> }</div>
+          </div>
+        }
+      </div>
+      @if (suiteData.applications.length < Math.min(4, suiteData.applicationCount)) { <p class="preview-notice">Some applications are hidden by your content settings or are unavailable.</p> }
+    } @else if (releaseData) {
+      <section class="changelog-info"><h3 uiMediumTitle><a [routerLink]="destination().path" [queryParams]="destination().query">{{ item().title }}</a></h3><p>Version {{ releaseVersion() }} · {{ releaseData.releasedOn }}</p><p>{{ releaseData.description }}</p></section>
+      <ui-medium-card class="changelog-details">
+        <tui-chip size="s" appearance="action-soft" slot="top-edge"><tui-icon icon="@tui.package-plus" /> What's New</tui-chip>
+        <app-changelog-details [data]="{ changes: releaseData.changes }" />
+        @if (releaseData.changeCount > releaseData.changes.length) { <p>{{ releaseData.changeCount - releaseData.changes.length }} more changes in the full release.</p> }
+      </ui-medium-card>
+    } @else if (reviewData) {
+      <review-quote-short class="review-quote-short" [quote]="reviewData.text"><app-rating [readonly]="true" [rating]="reviewData.rating" /></review-quote-short>
+    } @else if (discussionData) {
+      <ui-discussion-thread>
+        <ui-discussion-post slot="opening-post" role="article" aria-label="Opening post">
+          <ui-discussion-post-header slot="header" [authorName]="discussionData.posts[0].byline" [publishedTime]="iso(discussionData.posts[0].publishedAt)" />
+          <ui-discussion-expandable-post-content slot="content" [content]="discussionData.posts[0].text" />
+        </ui-discussion-post>
+        @for (post of discussionData.posts.slice(1); track post.id) {
+          <ui-discussion-post slot="reply" role="article" [attr.aria-label]="'Comment by ' + post.byline">
+            <ui-discussion-post-header slot="header" [authorName]="post.byline" [publishedTime]="iso(post.publishedAt)" />
+            <ui-discussion-expandable-post-content slot="content" [content]="post.text" />
+          </ui-discussion-post>
+        }
+      </ui-discussion-thread>
+    } @else { <p role="status">Preview details are unavailable. Refresh activity or open this item.</p> }
+    <span slot="bottom-bar">@if (item().engagement !== null) { {{ item().engagement }} {{ item().kind === 'review' ? 'helpful marks' : 'net votes' }} }</span>
+    <span slot="bottom-bar">@if (discussionTarget(); as target) { <discussion-quick-button [appSlug]="target.applicationSlug" [discussionSlug]="target.id" /> }</span>
+    <ng-template #cardActions let-iconOnly="iconOnly"><ng-container [ngTemplateOutlet]="actions" [ngTemplateOutletContext]="{ iconOnly: iconOnly, favorite: true }" /></ng-template>
+    <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone"><ng-container [ngTemplateOutlet]="sharing" [ngTemplateOutletContext]="{ iconOnly: iconOnly, activeZone: activeZone }" /></ng-template>
+  </ui-medium-card>
+}
+</article>
+<ng-template #sharing let-iconOnly="iconOnly" let-activeZone="activeZone">
+  @if (share(); as target) { <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null" appearance="flat" size="xs" [type]="target.type" [slug]="target.slug" [path]="path()" [title]="item().title" /> }
+</ng-template>
+<ng-template #actions let-iconOnly="iconOnly" let-showFavorite="favorite">
+  @if (showFavorite) { @if (favorite(); as target) { <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" [type]="target.type" [slug]="target.slug" [targetId]="item().id" /> } }
+  <a tuiButton appearance="primary" size="s" iconStart="@tui.arrow-right" [routerLink]="destination().path" [queryParams]="destination().query">{{ presentation().action }}</a>
+</ng-template>

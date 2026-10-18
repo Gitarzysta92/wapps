@@ -29,6 +29,15 @@ The most important principles are:
 
 ## Mental Model
 
+The aggregator's application API boundary is the BFF. Feature HTTP adapters call
+BFF-owned endpoints; the BFF composes and maps internal service contracts to the
+original frontend's requirements. Pages and browser adapters do not compose
+internal services. Owning backend services retain authorization, domain behavior,
+persistence and materialization. Ingress routing directly to a domain service,
+even on the same browser origin, bypasses this boundary. See
+[`rules/portal-bff-boundary.md`](../rules/portal-bff-boundary.md). Existing direct
+routes remain migration work; this requirement does not claim they are repaired.
+
 The frontend architecture is built around a route-driven shell application.
 
 At a high level:

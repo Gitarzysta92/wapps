@@ -4,7 +4,7 @@ const {
   IdentityWriteBarrier1791840000000,
   beginIdentityErasure,
   lockIdentityWrites,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   CanonicalIdentityAccessDenied,
   CanonicalIdentityConflict,
@@ -213,8 +213,7 @@ module.exports = async function qualifyIdentityWriteBarriers(source) {
 async function qualifyOwningServiceWrites(source) {
   const { randomUUID } = require('node:crypto');
   const editorial = '../../apps/services/editorial/src/app/';
-  const discussion =
-    '../../sdk/features/discussion/applications/management/service/src/app/';
+  const discussion = '../../apps/services/community/src/app/';
   const actor = {
     identityId: 'erased-service-actor',
     tenantId: 'default',

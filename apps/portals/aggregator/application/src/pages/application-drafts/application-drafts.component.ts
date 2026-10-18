@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiLink, TuiTextfield, TuiLabel } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import {
   ContentStateComponent,
@@ -43,6 +43,7 @@ import type { Observable } from 'rxjs';
     FormsModule,
     DatePipe,
     RouterLink,
+    TuiTextfield, TuiLabel,
     TuiAppearance,
     TuiButton,
     TuiLink,

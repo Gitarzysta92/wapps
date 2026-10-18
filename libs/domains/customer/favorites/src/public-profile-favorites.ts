@@ -1,4 +1,8 @@
 import {
+  classificationFields,
+  type ClassifiedContent,
+} from '@domains/publication/classification';
+import {
   ACCOUNT_FAVORITES_LIMIT,
   FavoritesContractError,
   parseFavoriteTarget,
@@ -7,7 +11,9 @@ import {
 
 export const PUBLIC_PROFILE_FAVORITES_PAGE_SIZE = 20;
 
-export interface PublicProfileFavorite extends FavoriteTarget {
+export interface PublicProfileFavorite
+  extends FavoriteTarget,
+    ClassifiedContent {
   title: string;
   slug: string;
   applicationSlug: string | null;
@@ -21,14 +27,19 @@ export interface PublicProfileFavoritesPage {
 function requireValue(value: unknown, message: string): asserts value {
   if (!value) throw new FavoritesContractError(message);
 }
-function object(value: unknown, keys: string[]): Record<string, unknown> {
+function object(
+  value: unknown,
+  keys: string[],
+  optional: string[] = []
+): Record<string, unknown> {
   requireValue(
     value !== null && typeof value === 'object' && !Array.isArray(value),
     'Expected public favorites object'
   );
   requireValue(
-    Object.keys(value).length === keys.length &&
-      keys.every((key) => Object.prototype.hasOwnProperty.call(value, key)),
+    Object.keys(value).every(
+      (key) => keys.includes(key) || optional.includes(key)
+    ) && keys.every((key) => Object.prototype.hasOwnProperty.call(value, key)),
     'Missing or unknown public favorites field'
   );
   return value as Record<string, unknown>;
@@ -59,7 +70,11 @@ export function parsePublicFavoritesCursor(value: unknown): string | null {
 export function parsePublicProfileFavorite(
   value: unknown
 ): PublicProfileFavorite {
-  const row = object(value, ['kind', 'id', 'title', 'slug', 'applicationSlug']);
+  const row = object(
+    value,
+    ['kind', 'id', 'title', 'slug', 'applicationSlug'],
+    ['classification']
+  );
   const target = parseFavoriteTarget({ kind: row['kind'], id: row['id'] });
   const title = row['title'];
   requireValue(
@@ -81,6 +96,7 @@ export function parsePublicProfileFavorite(
   );
   return {
     ...target,
+    ...classificationFields(row['classification']),
     title,
     slug: contentSlug,
     applicationSlug:
@@ -150,9 +166,7 @@ export function parsePublicProfileFavoritesPage(
     'Invalid public favorites ordering'
   );
   requireValue(
-    after === null ||
-      (items.length === PUBLIC_PROFILE_FAVORITES_PAGE_SIZE &&
-        after === publicFavoriteKey(items[items.length - 1])),
+    after === null || items.every((item) => publicFavoriteKey(item) <= after),
     'Invalid public favorites continuation'
   );
   return { sharing: row['sharing'], items, after };

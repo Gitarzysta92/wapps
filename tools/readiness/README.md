@@ -1,5 +1,903 @@
 # Workspace verification
 
+## Local authentication and BFF
+
+`WAPPS_LOCAL_AUTH_INTEGRATION=1 node --test tools/readiness/local-auth.test.cjs`
+qualifies the built Authenticator, Account Management and BFF with the checked-in
+local Nginx routes, fresh disposable MySQL/RabbitMQ stores, real OPA and no Firebase settings.
+Build those services and their prerequisites first. The qualifier builds the
+checked-in `deploy/local/mysql/Dockerfile` under a random test tag and runs its
+actual fresh-volume initializers, including the separate credential user/grants.
+It removes that tag during cleanup. Docker images `mysql:8.4`,
+`rabbitmq:4-management`, `openpolicyagent/opa:1.4.2-static` and `nginx:1.28-alpine` must be cached locally. Only random-
+named test containers/images are created/removed; no existing Wapps store is used.
+
+Nineteen groups cover staged legacy import, registration/replay, independent sessions, concurrent refresh,
+expiry, sign-out, process restart, canonical suspension/deletion, operator claims,
+password updates, transaction fault/retry, private export allowlists, durable
+credential cleanup and provider/database failures. The staff group exercises both
+local and alpha admin routing, global/tenant/nonstaff policy, forged headers, exact
+subjects, policy outage, SQL rollback, canonical revisions/outbox, suspension,
+re-enablement and all-session revocation. Authentication aliases also cross BFF in both route sets. Separate SQL users cannot
+read each other's databases; a misplaced migration against Identity is refused.
+An independent token-verifier process retains the same Wapps identity/profile and
+canonical suspension. The probe does not qualify a complete alternate credential
+provider. Fault triggers are enabled
+only in the disposable database. This external suite is separately inventoried;
+portable tests do not report it as a pass. Full browser fidelity, external
+email/SSO, abrupt crashes and backup/restore remain outside this qualification.
+
+The legacy group imports only a synthetic unregistered stub into the qualifier's
+fresh canonical schema. It proves exact identity/public IDs, inactive access,
+absence of credential links, atomic outbox/receipt rollback, concurrent replay,
+changed-plan denial and preservation of later state. Actual source inspection and
+the separate copied-store rehearsal are documented in
+`docs/LEGACY-IDENTITY-MIGRATION.md`; this test does not authorize live account policy.
+
+
+The A22 administration extension is in `bff-account-admin-runtime-checks.cjs`,
+called by the same local-auth qualifier. Both gateways exercise email/password
+changes, session revocation, staff/tenant/forged denial, exact identity lookup,
+rollback/retry, deletion replay and read-only cleanup state. BFF outage/recovery
+checks prove all added routes avoid direct-owner fallback. Local unlink and email
+action links fail explicitly; successful external-provider behavior is unverified.
+Credential cleanup alone must leave account erasure pending. A terminal erasure
+failure is injected only in the fresh fixture; full erasure completion remains a
+separate qualification. This extension does not activate the running installation.
+
+The A24 settings extension is in `bff-account-settings-runtime-checks.cjs`, called
+by the same suite. Eight added groups qualify private account/profile/preferences
+and avatar contracts in both gateway configurations: canonical/case/slash and
+unknown paths, forged-context/query/body rejection, shared revisions, concurrent
+and historical replay, SQL outbox rollback, isolation, real image conversion,
+process restart, removal, policy/owner failures and no direct fallback when BFF
+stops. Private missing/foreign avatar reads preserve Account's 403 contract.
+The owner outage replaces only the test BFF's Account origin with an unavailable
+loopback address; real Account remains available for ingress authentication.
+Self-deletion acceptance creates the canonical tombstone and denies access while
+reporting pending cleanup; it does not prove full erasure. Application/article
+media includes, browser fidelity and the other route families in
+`docs/BFF-ROUTE-PARITY.md` are outside this extension.
+
+### Public profile gateway parity
+
+Set both `WAPPS_LOCAL_AUTH_INTEGRATION=1` and
+`WAPPS_PUBLIC_PROFILES_INTEGRATION=1` when running `local-auth.test.cjs` to add
+`bff-profile-parity-runtime-checks.cjs`. Build Editorial, Community management and
+the Discussion materializer as well as the three Identity/BFF services. Cache
+`mongo:7` and `minio/minio:RELEASE.2025-04-22T22-12-26Z` in addition to the images
+listed above. `profile-parity-services.cjs` starts fresh source schemas, Mongo,
+claimed empty MinIO storage and separate real Editorial/Discussion OPA bundles;
+only its disposable Discussion materializer consumes the test broker.
+
+The extension exercises both checked-in API/auth gateway configurations, real
+credential sessions, public/followers/private audiences, contact/photo privacy,
+sharing switches, nonempty Editorial/Community content, truthful projection lag,
+follow approval/cancellation/removal, global badge staff policy, rollback/replay,
+independent process restart, dependency outages and BFF shutdown across complete
+route families. GET bodies, selectors, malformed IDs/cursors, unsupported methods,
+case/slash variants and unknown suffixes are included.
+
+`profile-parity-content.cjs` provisions reviewed publications through real Editorial
+HTTP APIs using trusted test identities tied to the canonical enrolled accounts.
+Those setup requests supply the reviewer claim directly; they do not qualify the
+Editorial browser authoring/administration path. Editorial projections are produced
+by direct invocation of its production snapshot reader/projector; Discussion uses
+the actual broker consumer. All shared-profile requests and Discussion commands
+use the real authenticated BFF gateway. Dependency addresses are substituted and
+the unrelated application/article media include is excluded. No live deployment,
+frontend acceptance, mature-content filtering, full author erasure, abrupt-crash
+recovery or production load/restore is established by this extension.
+
+For an explicit native gateway comparison, set `WAPPS_NGINX_BINARY` to an absolute
+Nginx executable built with the auth-request module and regular-expression support.
+`native-qualification-gateway.cjs` uses the same local/alpha API/auth includes,
+substituting temporary paths and loopback listener/dependency addresses. Docker
+remains the default and is never silently replaced. The complete local gateway
+startup check still uses its Docker image. The A25 passing run uses native Nginx
+1.28.3; repeated Docker-to-host transport stalls are retained as failed evidence,
+not claimed fixed or accepted as passing container qualification. Test listeners
+use checked free ports below the usual ephemeral range; request timeouts and
+intentional concurrent commands are unchanged. A native comparison is not Linux
+container/deployment or load acceptance.
+
+### Favorites and inbox gateway parity
+
+Run the A26 extension separately from the public-profile extension:
+
+```sh
+NX_DAEMON=false NX_ISOLATE_PLUGINS=false \
+  WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_MEMBER_PARITY_INTEGRATION=1 \
+  node --test tools/readiness/local-auth.test.cjs
+```
+
+It uses the same prerequisites, fresh stores and source setup described above.
+Finish all builds before starting either runtime suite: service restarts read
+`dist`, which a concurrent build can replace. The two extension flags are mutually
+exclusive. Set `WAPPS_NGINX_BINARY` explicitly for the native comparison; A26 retains
+A25's Docker-to-host limitation and still runs the full Docker gateway startup check.
+
+`bff-favorites-inbox-parity-checks.cjs` enables actual reply/mention/watch workers
+only in disposable Account. It covers all four favorite kinds; General/Mature/
+unclassified filtering in favorite metadata and five shared-profile sections;
+anonymous/current viewer choices; complete route variants, body/query/forged-context
+denial; concurrent/historical replay, conflicts, SQL/outbox rollback, independent
+sessions/restarts, notification privacy/read state, pagination, current suppression,
+target withdrawal, removal during source outages, watch re-add baselines and BFF
+shutdown without owner fallback. Account's real delivered/suppressed SQL receipts
+and source acknowledgements are checked.
+
+The qualifier resets acknowledged Discussion rows in the fresh test schema to
+simulate acknowledgement loss after receipt commit. It sets test watch
+`availableAt=0` to advance the scheduler without waiting for the production polling
+interval. Production resolution/delivery/receipt code is used in both cases; these
+fault substitutions do not prove an OS-process crash window. Editorial uses trusted
+canonical setup claims and direct production projection, while Discussion uses its
+actual broker materializer. No live stores or workers are changed. Quarantine/requeue
+operations, full export/erasure, external notification channels, browser acceptance,
+Docker transport stability, deployment, backup/restore and load/soak remain separate.
+
+## Generic Review owner API and BFF
+
+The October 18 Review slice uses the same disposable `--discussion-bff` qualifier
+described below. `bff-reviews-runtime-checks.cjs` adds four Review groups: historical
+SQL receipts and concurrent replay; exact key/tenant/author isolation; helpful votes,
+immutable report evidence and independent moderation/withdrawal; atomic journal
+rollback, target/policy outage, Mongo independence and owner/BFF recreation. Both
+local and alpha nginx routes must traverse BFF. Direct owner `/application-reviews`
+returns 404; the BFF constructs keys for generic `/reviews` requests.
+
+The fixture seeds a receipt with the previous SQL scope/fingerprint, injects a
+temporary failing journal trigger only in the claimed disposable database, and
+removes it before retrying. No schema migration is added. Authentication, policy
+and parent authority remain controlled fixtures. The new management/HTTP suites
+also exercise unfamiliar keys without Wapps parsing in reusable code. Arbitrary
+new consumers need their own authority/repository composition; this is not a new
+generic SQL store or qualification of real Firebase/OPA/Editorial.
+
+## Generic Discussion owner API and BFF
+
+October 18 route consolidation uses one reusable `/api/discussions` controller for
+both scoped and keyless contracts. `/api/discussion-bindings` must return 404.
+The HTTP library suite tests cross-scope denial, malformed/repeated key rejection,
+legacy list/detail shapes and likes, plus keyed replies/votes/pins/discovery.
+Community metadata tests require exactly one registered discussion controller.
+Use the same real-store qualifier below for the consolidated routes; BFF and
+Account clients must be from the same source version as Community. No additional
+database migration is introduced by the route cleanup.
+
+Run `node tools/readiness/qualify-materialization.cjs --discussion-bff` for the
+bound and unbound Discussion integration. It requires the runner's existing cached
+store images plus `nginx:1.28-alpine`, Docker access and temporary HTTP listeners.
+All stores and the nginx container are disposable; the existing fresh-object-store
+guard runs before mutations. Do not point it at shared stores. The runner exposes
+only the selected temporary container ports on host loopback; nginx reaches the
+temporary Node listeners using `host.docker.internal`.
+
+The qualifier loads production BFF and Community controllers/clients, migrations,
+SQL and object adapters, outbox dispatcher and materialization code. It exercises
+the repository's local and alpha API/auth nginx configurations with temporary
+upstreams. Unrelated media includes are excluded. Auth tokens, policy results and
+parent visibility are controlled fixtures, so this is not Firebase/OPA/Editorial
+or original-frontend acceptance. Service recreation preserves stores and replaces
+Nest instances; it is not a separate process/container restart test.
+
+The bound workflow uses the reusable `@sdk/features/discussion/http` handlers and
+canonical query/discovery engines. BFF retains the original frontend contracts;
+the four retired owner route families must return 404. The qualifier runs both
+nginx configurations, replays historical Wapps receipts through the generic owner
+API, and checks Account favorite selection/current parent authority. It applies
+`DiscussionBindingIndex1792150000000` after the binding migration in its fresh SQL
+fixture. No new projection format is involved.
+
+`bound-discussion-runtime-checks.cjs` composes a second consumer with an unfamiliar
+key/payload through the same generic HTTP and materialization implementations. It
+covers twelve-root pagination, case/exact-key/tenant/owner isolation, nested replies,
+votes/pins, discovery, revocation, service recreation, replay and tombstones.
+The October 18 qualification passes ten runtime groups. It does not qualify real
+Firebase/OPA/Editorial integration or browser presentation.
+
+Legacy application-discussion/article-comment and export fixture startup now uses
+`discussionProcessService` from `discussion-portal-fixture.cjs`. Its portal origin
+routes dedicated paths through a real BFF; `serviceOrigin` exposes the owner for
+internal generic endpoints. Supply `serviceOrigin` to Account and nested BFF clients;
+portal origins reject internal key/prefix selection. The journey options expose
+`discussionServiceOrigin` separately for these clients and their outage proxies.
+Forged identity headers remain visible for rejection.
+The wrapper is exercised by this qualifier. Full legacy browser/export/erasure
+journeys must still be run for release; wrapper coverage is not their qualification.
+
+Run BFF Jest tests with `configureGenericDiscussionBody` in bootstrap tests: Nest
+must retain its default JSON parser for other endpoint families. Follow with
+Discussion core/management/HTTP/Community/materializer regression tests, affected build,
+lint, spec typecheck and architecture checks. This bounded qualification does not
+replace the full workspace and deployment release gates.
+
+## Review and Identity consumer boundaries
+
+Wapps owns Review HTTP contracts in `libs/domains/community`, account/profile
+composition in `libs/usecases/account`, and canonical account SQL adapters in
+`libs/adapters/account-mysql`. Reusable Identity/Review core and use cases cannot
+import back into those consumers. ARCH009/010 check consumer imports, known target
+fields/content kinds and fixed provider registries; ARCH003/007 cover the new
+consumer locations too. These checks complement runtime key-isolation tests.
+
+Run `npm test`, `npm run lint`, `npm run check:boundaries`, all declared build and
+typecheck targets, and `node tools/readiness/check-angular-packages.mjs --all` in a
+clean lockfile-qualified snapshot with `NX_DAEMON=false NX_ISOLATE_PLUGINS=false`.
+HTTP unit suites need loopback listening. Wapps adapter/consumer tests preserve
+legacy HTTP, SQL and receipt contracts; SDK engine tests use previously unknown,
+case-sensitive keys and providers. Real-store checks for this boundary are:
+
+```sh
+node tools/readiness/qualify-identity-mysql.cjs
+node tools/readiness/qualify-identity-mysql.cjs --account-export-storage
+node tools/readiness/qualify-identity-mysql.cjs --account-erasure-coordinator
+node tools/readiness/qualify-materialization.cjs --reply-notifications
+node tools/readiness/qualify-materialization.cjs --mention-notifications
+node tools/readiness/qualify-materialization.cjs --favorite-updates
+```
+
+These runners create disposable stores. Keep their schema fixtures aligned with
+runtime migrations (including Account mentions); a missing table is a failed
+qualification, not a skip. Wapps provider plans remain fixed for existing durable
+jobs; changing the plan requires a separate compatibility/data-migration review.
+
+## Discussion consumer boundary and storage isolation
+
+Discussion core/management and materializer accept an opaque consumer-owned key.
+Wapps contracts and adapters live in `libs/domains/community` and
+`apps/services/community`; the existing management Nx project/output identities
+remain compatible. Run the core, management library, Community and materializer
+tests, affected builds/typechecks, BFF spec typecheck and `npm run check:boundaries`.
+ARCH007/008 detect consumer imports and known fixed target coupling in Discussion.
+Forward migration/replay and arbitrary-key qualification are included in the
+real-store Discussion recovery suite.
+
+Always run destructive inventory/erasure tests with dedicated disposable stores:
+
+```sh
+node tools/readiness/qualify-materialization.cjs
+node tools/readiness/qualify-materialization.cjs --discussion-author-erasure
+```
+
+The runner creates temporary containers without existing volumes. Do not point
+`discussion-recovery.test.cjs` at an application's MinIO endpoint: isolated SQL
+does not isolate a whole-bucket inventory. Before any fixture mutation, the harness
+rejects pre-existing buckets and claims a fresh store with a unique marker. Racing
+claims and unavailable listings fail closed. No bypass flag is provided. The
+container owner removes its temporary storage after qualification. Portable
+`fresh-object-store.test.mjs` checks rejection without mutations and marker cleanup.
+
+Activation requires fenced old writers/materializers, backups, the forward
+`CommunityDiscussionBindingKeys1792080000000` migration, new processes and
+canonical reconciliation. Refresh gateway upstream resolution when a container
+is recreated. Keep outage qualifiers sequential. The October 15 implementation
+checkpoint records the local shared-bucket test incident, complete checksum-proven
+payload recovery and safe reruns. It also records the separate Editorial fixture
+migration failures; do not report the general runner as passing until fixed.
+
+## Article comments and member reviews through the BFF
+
+Use Node from `.nvmrc` and a lockfile-qualified isolated source snapshot:
+
+```sh
+NX_DAEMON=false NX_ISOLATE_PLUGINS=false npx nx run-many -t test \
+  -p apps.services.catalog-bff,sdk-features-discussion-core,sdk-features-discussion-applications-management,sdk-features-review-core,portals-shared-features-review,portals-shared-features-articles \
+  --runInBand --skip-nx-cache
+```
+
+Build BFF and its prerequisites, run BFF lint/spec typecheck, qualifier lint/syntax
+and `npm run check:boundaries`. Save current BFF/gateway artifacts for rollback,
+then activate the two complete route families in the existing local review stack.
+Run outage qualifiers sequentially:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-comments-reviews-runtime.json \
+node tools/readiness/bff-comments-reviews-runtime-checks.cjs
+```
+
+The qualifier requires a local origin and unused evidence path. It creates two
+disposable members, two independently approved articles/applications each, eleven
+comment roots and two member reviews. Existing staff/admin permissions are reused
+without changes. All content mutations and cleanup use ordinary APIs; Mongo
+observation is read-only and restricted to this run's comment IDs. No store reset
+or reseed occurs. Private mode-0600 `.accounts.json` recovery files must not be
+published.
+
+Coverage includes all sixteen routes; optional/public identity, independent
+sessions, parent/author isolation, spoofing denial, keys/revisions, nested comment
+redaction, ten-root pagination, canonical rating totals, helpful membership,
+immutable-version reports and independent moderator/author lifecycle changes.
+Paused comment materialization must not block canonical review reads/writes.
+The qualifier stops/restores OPA, Editorial, Discussion, BFF and the comment
+materializer, and restarts the local ownership-DNS sidecar after Editorial. BFF
+outage checks include case/slash/unknown family variants. Tombstones and parent
+withdrawal must prevent stale generations or historical receipts from resurrecting
+content. Republishing restores retained associations.
+
+Cleanup restores stopped services, deletes comment roots, withdraws reviews,
+withdraws/deletes fixture parents and requests erasure of disposable identities.
+Only this run's withdrawn parents may be republished to permit authorized cleanup.
+Failures preserve recovery credentials. Background erasure/audit/payload retention
+completion is not claimed. Browser checks are read/reload integration checks against
+existing content; frontend merge/visual acceptance remains open. No migration,
+deployment, SQL crash-window, duplicate/reorder/rebuild, backup or load qualification
+is established by this bounded transport check.
+
+## Application discussions through the BFF
+
+Run the production-route HTTP specs and associated existing behavior suites in a
+lockfile-qualified isolated source snapshot using Node from `.nvmrc`:
+
+```sh
+NX_DAEMON=false NX_ISOLATE_PLUGINS=false npx nx run-many -t test \
+  -p apps.services.catalog-bff,sdk-features-discussion-core,portals-shared-features-discussion,sdk-features-discussion-applications-management \
+  --runInBand --skip-nx-cache
+```
+
+After building BFF and activating the three explicit discussion gateway families
+in the existing local review stack, retain rollback artifacts and run:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-discussions-runtime.json \
+node tools/readiness/bff-discussions-runtime-checks.cjs
+```
+
+The qualifier refuses nonlocal origins and existing report paths. It uses the
+existing independently assigned staff/admin account without changing permissions,
+and creates two disposable identities, two approved applications and twelve topics.
+Credential recovery records live in the mode-0600 `.accounts.json` report sibling;
+never publish them. No store is reset/reseeded and all mutations use ordinary APIs.
+Mongo observation is read-only and restricted to this run's topic IDs.
+
+Coverage includes all ten handlers, independent sessions, owner/parent isolation,
+spoofed moderation denial, revisions/keys, nested replies, participation and pinned
+pagination, public selection, favorites, edit/delete propagation and historical
+vote/pin replay. It stops/restores Discussion, BFF, Mongo, MinIO and the Discussion
+materializer. Run outage qualifiers sequentially. Full-thread transport tests cover
+bounded size/concurrency/deadlines, malformed trees/redaction/receipts, lost replies
+and no redirects or automatic command retries.
+
+Cleanup deletes this run's topics and withdraws/deletes its applications. A withdrawn
+fixture parent is resubmitted and independently approved only when needed to delete
+its remaining topics through their normal authorization path. It requests erasure
+of the disposable accounts after content cleanup; failures retain credentials for
+recovery. Background erasure/audit/payload retention remains with owning services,
+without claiming immediate completion. Keep failed evidence and use a fresh report
+for each subsequent attempt.
+
+Generic discussions, article comments and application reviews remain separate BFF
+migrations. Browser checks establish integration only. Original frontend merge and
+visual acceptance, full workspace/deployment/load and recovery gates remain open.
+
+## Articles and covers through the BFF
+
+Use the isolated, lockfile-qualified Node 22.17.1 environment with Nx cache
+disabled. Run BFF tests, `domains-publication-article`, `catalog-media` and
+`portals-shared-features-articles` tests, plus focused Editorial tests matching
+`(articles|article-covers)/`. Qualify the BFF build with prerequisites, BFF lint,
+separate BFF spec typechecking, readiness lint and `npm run check:boundaries`.
+Save rollback artifacts before activating the matching build and both
+`deploy/local/nginx/api.conf` and `application-media.conf`; validate `nginx -t`.
+No frontend rebuild or new migration is required by this slice.
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-articles-runtime.json \
+node tools/readiness/bff-articles-runtime-checks.cjs
+```
+
+The qualifier requires a local origin and fresh report path. It uses existing staff
+permissions, two disposable identities, private articles and actual PNG/WebP media.
+Credentials for recovery are kept in the report's `.accounts.json` sibling with
+mode 0600; never publish that file. No stores are reset/reseeded. Failed reports
+and cleanup evidence remain available rather than overwritten by later runs.
+
+Coverage includes all 24 routes, independent sign-in, identity isolation and
+spoofing denial, revisions/keys, multibyte content, cover normalization and exact
+upload replay, immutable text/classification/covers, rejection/resubmission,
+independent approval and live staff self-review denial. It checks public browse,
+selection, visibility, immutable unique slugs, current-cover replacement,
+materializer lag, withdrawal/tombstones and historical replay after restart.
+It stops and restores BFF, Editorial, Mongo, MinIO and the materializer; run outage
+qualifiers sequentially. Editorial restart reconnects the local DNS sidecar.
+
+Cleanup withdraws/deletes only this run's articles (including its staff-owned
+fixture), proves public covers inaccessible and requests disposable account
+erasure. Existing staff/content and DNS records remain intact. Account erasure,
+audit retention and object cleanup continue under owning-service lifecycle rules;
+background completion is not claimed and no direct bulk deletion occurs. If
+cleanup fails, accounts remain available for recovery.
+
+HTTP specs additionally exercise trust on every route, malformed inputs/outputs,
+bounded 100-article workspaces, upload/preview concurrency, disconnects, deadlines,
+response media/framing/length, lost replies and no automatic retry. Browser checks
+verify integration against the current frontend, not original presentation fidelity.
+Original frontend merge/acceptance and full deployment/load/recovery gates remain
+separate release work.
+
+## Releases through the BFF
+
+Run the production-route HTTP specs in a lockfile-qualified isolated install:
+
+```sh
+NX_DAEMON=false NX_ISOLATE_PLUGINS=false npx nx run-many -t test \
+  -p apps.services.catalog-bff,catalog-versioning,portals-shared-features-application-workspace \
+  --runInBand --skip-nx-cache
+```
+
+For the existing disposable local stack, after building and activating BFF plus
+the explicit release gateway families, save rollback artifacts and run:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_DNS_ZONE=/tmp/wapps-review/dns-zone/records.json \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-releases-runtime.json \
+node tools/readiness/bff-releases-runtime-checks.cjs
+```
+
+The qualifier refuses nonlocal origins. It uses the existing staff account and
+creates two disposable identities, a parent application, independently approved
+DNS ownership grants and private release drafts. Only this run's DNS records are
+changed; existing records and file mode are retained. The qualifier does not
+reset/reseed stores or change staff permissions. Recovery credentials are saved
+in the report's `.accounts.json` sibling with mode 0600; never publish that file.
+Use a fresh report path per attempt and retain failed logs and cleanup evidence.
+
+Coverage includes all 16 routes, ownership binding, isolation/spoofing denial,
+revision/key conflicts, future-date rejection, frozen review versus private edits,
+rejection/resubmission, approval, immutable/unique version URLs, anonymous filters,
+canonical open/rebase, revocation/new grants, withdrawal, service/Mongo failure,
+projection lag and tombstone convergence, restart and historical replay. It stops
+and restores BFF, Editorial, Mongo and the materializer; run other outage qualifiers
+sequentially. Editorial restart also reconnects the local DNS sidecar. Cleanup hides
+the disposable parent, deletes private drafts, releases grants, removes this run's
+DNS records and requests erasure. Background erasure completion is not claimed.
+
+HTTP specs additionally cover safe downstream errors, malformed contracts,
+verified anonymous provenance, strict input bounds, duplicate headers, total
+deadlines, lost replies without retry, full multibyte draft lists, legacy context
+and closed unknown routes. Staff self-review remains covered by owning-service
+tests; this live fixture does not create a second privileged staff identity.
+No frontend presentation changes are part of qualification. Original frontend
+merge/acceptance, deployed ingress and full load/recovery gates remain open.
+
+## Application ownership through the BFF
+
+Use the isolated Node 22.17.1 lockfile installation with Nx cache disabled. Run
+`apps.services.catalog-bff`, `catalog-ownership` and
+`portals-shared-features-application-workspace` tests, BFF build with prerequisites,
+BFF/readiness lint, separate BFF spec typecheck and `npm run check:boundaries`.
+Back up the active BFF/gateway artifacts, activate the matching build and `api.conf`,
+and validate with `nginx -t`. No frontend rebuild or schema migration is required.
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_DNS_ZONE=/tmp/wapps-review/dns-zone/records.json \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-ownership-runtime.json \
+node tools/readiness/bff-ownership-runtime-checks.cjs
+```
+
+This local-only qualifier uses the existing staff account and DNS sidecar. It
+creates two disposable members, one application, private editing drafts and claims
+(including one staff claim to prove self-review denial). It preserves existing
+accounts, permissions and content; no reset, reseed or schema change is allowed.
+Nine workflow groups cover canonical-domain binding, claimant isolation, spoofing,
+input validation, proof failure/throttling, cancellation, independent approval/
+rejection, DNS outage and original-key recovery, competing claims, grant queues,
+projection lag, future content review, mandatory BFF routing, BFF/Editorial restart,
+Mongo outage, immediate revocation and voluntary release. A tenth group records
+cleanup. Full mutation/review behavior is exercised through real HTTP.
+
+Only BFF, Editorial, Mongo, the Editorial materializer and local DNS are stopped or
+restarted. DNS rejoins Editorial's network namespace after Editorial restarts.
+Read-only observation of this run's projection proves that canonical permissions
+change while the old document remains stored. Database credentials stay inside the
+owning container. Unreachable BFF can yield gateway 502/503/504; an unavailable
+Editorial or DNS check returns the bounded BFF 503 contract. Historical receipts
+must not restore cancelled claims, revoked grants or authoring permissions.
+
+Cleanup restores services, withdraws the disposable application, deletes private
+drafts, releases/cancels claims and removes only this run's DNS records. If needed,
+cleanup obtains another independently approved disposable grant to withdraw the
+application after testing revocation/release. It requests erasure of the two new
+identities and checks subsequent access denial; background erasure completion is
+not claimed. Use a fresh report path each attempt; its mode-0600 `.accounts.json`
+recovery sibling contains credentials and must not be published.
+
+Run the application draft/image qualifier sequentially as the related regression,
+then check the existing ownership screens read/reload through BFF. Preserve the
+original presentation. SQL crash windows, broker duplicates/reordering, backup
+restoration, load and production deployment remain separate qualification gates.
+
+## Application publication through the BFF
+
+In the isolated Node 22.17.1 lockfile installation, disable Nx cache and run tests
+for `apps.services.catalog-bff`, `catalog-record` and
+`portals-shared-features-application-workspace`. Run BFF build with prerequisites,
+BFF/readiness lint, separate BFF spec typecheck and `npm run check:boundaries`.
+Save the active BFF/gateway artifacts before activating the matching build and
+`api.conf`; validate with `nginx -t` before reload. Frontend assets stay intact.
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-application-publication-runtime.json \
+node tools/readiness/bff-application-publication-runtime-checks.cjs
+```
+
+The local-only qualifier needs the existing staff credentials and creates two
+disposable members and three drafts (including one disposable staff-authored draft
+to prove self-review denial). It never changes staff permissions or reseeds data.
+Twelve groups cover frozen submissions versus later edits, rejection/resubmission,
+independent review, classification, slug collisions, original-key replay, canonical
+status versus projection lag, public response privacy, mandatory BFF routes,
+BFF/Editorial/Mongo outages, restart persistence and withdrawal without resurrection.
+Read-only observation of only this run's Mongo projection proves that withdrawal
+hides content while a live stale document still exists, then converges to a tombstone.
+Database credentials remain inside the owning service's container.
+
+Only BFF, Editorial, Mongo and the Editorial materializer are stopped/restarted.
+The local DNS sidecar is restarted when Editorial restarts so its network namespace
+remains valid. Cleanup restores services, deletes only the new drafts/publications,
+checks deletion replay and requests erasure of the two disposable identities with
+subsequent access denied. Existing staff/content remain intact. Background erasure
+completion is not claimed. Use a fresh report path per attempt; its mode-0600
+`.accounts.json` recovery sibling must not be published.
+
+Run the application draft/image qualifier sequentially as the related regression;
+it now exercises publication through BFF, including verified-owner editing and
+frozen/public image previews. Browser publication status/read/reload checks are
+separate; full mutation/review behavior is qualified through real HTTP. SQL crash
+windows, broker replay/reorder, deployment, load and backup restoration remain
+separate gates.
+
+## Application drafts and images through the BFF
+
+Use the isolated Node 22.17.1 lockfile installation, with Nx cache disabled. Run
+`apps.services.catalog-bff`, `catalog-record`, `catalog-media` and
+`portals-shared-features-application-workspace` tests, the BFF build with
+prerequisites, BFF/readiness lint, separate BFF spec typecheck and
+`npm run check:boundaries`. Back up the active BFF and gateway, activate matching
+BFF artifacts plus both `api.conf` and `application-media.conf`, and run `nginx -t`
+before reload. No frontend rebuild is required for this transport change.
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_DNS_ZONE=/tmp/wapps-review/dns-zone/records.json \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-application-workspace-runtime.json \
+node tools/readiness/bff-application-workspace-runtime-checks.cjs
+```
+
+This local-only qualifier requires an existing staff account and the review stack's
+local DNS sidecar/zone. It creates two disposable members, private drafts/images
+and one disposable publication/ownership grant. It covers strict contracts,
+independent sessions, authorization, conflicts/replay, real normalized bytes,
+slot attachment/removal, referenced cancellation, historical receipts, object-store
+outage, frozen/public previews, canonical import/rebase, mandatory BFF routes and
+BFF/Editorial restart recovery. Publication and ownership fixture commands also
+use BFF.
+
+Only MinIO, BFF and Editorial are stopped/restarted. The local ownership DNS sidecar
+is restarted to join Editorial's new network namespace after its restart. Only the
+new challenge record is merged into the DNS zone and subsequently removed; existing
+records and file permissions are preserved. Cleanup restores services, withdraws
+the new publication, deletes the new drafts, releases/cancels the new claim and
+requests erasure of the new identities with access denied afterward. Background
+erasure/object cleanup completion is not claimed. No reseed, reset or existing
+content mutation is permitted.
+
+Use a fresh report path for every attempt; recovery credentials are stored in a
+mode-0600 `.accounts.json` sibling and must not be published. Run a related suite
+qualifier sequentially, then restart the local DNS sidecar if that qualifier
+restarts Editorial. Browser draft/editor/preview checks are separate. The owning
+service's broker/crash-window proofs and full release/load/recovery gates remain
+separate checks. Older BFF qualifiers now use read-only `/api/me/articles` as their
+direct-Editorial control during a BFF outage; application drafts are no longer a
+valid bypass control.
+
+## Suite publication through the BFF
+
+Build/test/lint `apps.services.catalog-bff` with prerequisites in the isolated
+Node 22.17.1 lockfile installation with Nx cache disabled. Run
+`domains-publication-suite` and `portals-shared-features-suite` tests, the separate
+BFF spec typecheck and `npm run check:boundaries`. Activate the matching BFF and
+local gateway after saving their previous artifacts. Frontend assets stay intact.
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_ACCOUNTS=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-suite-publication-runtime.json \
+node tools/readiness/bff-suite-publication-runtime-checks.cjs
+```
+
+The local-only qualifier requires two existing public applications and a credential
+file containing an existing `staff` account's email, password and uid. It signs in
+without changing roles, creates two disposable members and two disposable suites,
+and never reseeds/resets data. Ten groups cover identity/ownership, staff denial,
+self-review denial even for staff, frozen submission versus draft edits, rejection/
+resubmission, classification/order, conflicts/replay, explicit projection lag,
+anonymous public browse/detail/selection, mandatory BFF routes, BFF/Editorial
+outages/restarts and withdrawal despite a stale live projection. Queued replacement
+and withdrawal must materialize the current tombstone; old receipts cannot restore
+the publication. A read-only observation of only this run's Mongo projection uses
+credentials inside the Editorial container, never inside BFF or the browser.
+
+Only BFF, Editorial and its materializer are stopped/restarted. Cleanup restores
+services, deletes only new suites, requests erasure of the two new members and
+verifies access denial. Existing staff/content are preserved. Erasure acceptance
+does not prove background cleanup. Recovery credentials are stored with mode 0600
+in the report's `.accounts.json` sibling; do not publish it. Use a fresh report path
+for each attempt. Run the private-suite qualifier sequentially for the related
+CRUD/search regression. Browser read/status checks are recorded separately; the
+full mutation lifecycle is qualified through HTTP. Broker duplicate/reorder and
+SQL crash-window qualification from the owning-service workflow is not rerun by
+this transport qualifier. Full deployment/recovery/load gates remain open.
+
+## Private suite workspaces through the BFF
+
+Build/test/lint `apps.services.catalog-bff` and its prerequisites with the isolated
+Node 22.17.1 installation and Nx cache disabled. Run `domains-publication-suite`
+and `portals-shared-features-suite` tests, the BFF spec typecheck and architecture
+audit. Activate the matching BFF/gateway without rebuilding or changing frontend
+assets. Then run against the existing local review stack:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-suites-runtime.json \
+node tools/readiness/bff-suites-runtime-checks.cjs
+```
+
+The local-only qualifier requires at least two existing public applications and
+registers two disposable members. Ten groups cover strict identity/selectors,
+application search and ordered metadata, suite creation/replay and an independent
+session, cross-owner denial, edit/reorder/add/remove/classification/conflicts,
+mandatory BFF paths, BFF/Editorial outages and restart persistence, Mongo projection
+failure with canonical private reads/removal still working, deletion replay without
+resurrection and cleanup. It never reseeds or resets databases, edits existing
+accounts/content or publishes a suite. Publication and public-suite catalog routes
+have their own qualifier described above.
+
+Only BFF, Editorial and MongoDB in the named Compose project are temporarily
+stopped/restarted. Cleanup restores stopped services, deletes newly created suites
+and requests erasure of the two test identities, verifying access denial. Erasure
+acceptance does not prove complete background cleanup. Recovery credentials are
+stored with mode 0600 in the report's `.accounts.json` sibling; do not publish it.
+Keep failed attempts and choose a fresh report path for another run.
+
+Run the export qualifier sequentially as a related regression. The five previous
+BFF qualifiers now use read-only `GET /api/me/application-drafts` as the unmigrated
+control during BFF outages. Browser verification is separate; tests of the existing
+frontend do not establish acceptance of its original presentation. Alpha/Kubernetes
+activation, database restore and full release
+qualification remain open.
+
+## Account exports through the BFF
+
+Use the isolated Node 22.17.1 installation to build/test/lint BFF with prerequisites,
+typecheck its specs, run the identity feature tests and architecture audit. Activate
+the matching BFF and gateway without rebuilding or changing the frontend. Then run:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-export-runtime.json \
+node tools/readiness/bff-export-runtime-checks.cjs
+```
+
+The local-only qualifier registers two disposable members and never rewrites
+existing accounts/content. Nine check groups cover strict trusted requests,
+202 acceptance and same-job replay, complete four-source gzip/type/length/digest,
+cross-account denial, mandatory BFF paths, BFF/Account restarts and outages,
+repeatable revocation with historical replay, source failure/recovery and cleanup.
+The archive must contain all four source receipts and the requesting account's
+profile/credential record, without password/token material or the other account.
+The qualifier checks a small real archive; it does not qualify the one-GiB load gate.
+
+Only BFF, Account and Discussion in the named Compose project are briefly stopped
+and restarted. Cleanup independently attempts service restoration, revocation of
+new archives and erasure of the two new identities, then verifies access denial.
+Erasure acceptance is not complete background cleanup. A sibling `.accounts.json`
+stores disposable recovery credentials with mode 0600; never publish it. Preserve
+failed logs and use a fresh report path on retry. Do not reseed or reset the stack.
+
+Run the private-profile qualifier sequentially as a related regression. All BFF
+qualifiers now use read-only `GET /api/me/application-drafts` as the unmigrated control during
+BFF outages, because exports and private suites have migrated. Browser status/polling/download checks
+are separate from HTTP qualification. No original-frontend fidelity, alpha/Kubernetes
+activation, production provider, backup/restore or full release readiness is claimed.
+
+## Public profiles, follows and badges through the BFF
+
+Build/test/lint `apps.services.catalog-bff` and its prerequisites in the isolated
+Node 22.17.1 installation; typecheck its spec sources, run the user-profile feature
+tests and architecture audit. Activate the matching BFF build and local gateway.
+No frontend build is needed for this slice. Then run:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS_FILE=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_CONTENT_FILE=/tmp/wapps-review/content.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-public-profile-runtime.json \
+node tools/readiness/bff-public-profiles-runtime-checks.cjs
+```
+
+The existing files supply a current staff token and public `atlas.id`. The qualifier
+registers three disposable members, uploads a synthetic photo, saves Atlas and
+creates one temporary topic. Eight check groups cover trusted anonymous reads,
+photo audience, shared content/hidden totals, follows and independent approval,
+staff badges/reasons/history, replay/conflicts, mandatory BFF routing, Account
+failure, restarts, revocation/private visibility and cleanup. Populated favorites
+and discussions use real records; suite/article reads include visible-empty and
+hidden responses. Contract fixtures additionally cover their populated shapes.
+
+Only the explicit local Compose project's BFF and Account are stopped/restarted.
+The staff profile is compared before/after, the temporary topic is removed, and
+erasure is accepted only for the three new accounts. All cleanup steps are attempted
+independently; failures retain recovery records. Acceptance is not completed
+background erasure. Report siblings ending `.accounts.json` contain credentials,
+are mode 0600 and must not be published. Preserve failed logs and use a fresh report
+path when retrying. Never reset or reseed the existing review stack.
+
+Run the private-profile and preferences qualifiers sequentially for shared-identity
+regression. All BFF qualifiers now use read-only `GET /api/me/application-drafts`
+as their unmigrated route during BFF outages. Browser checks
+remain separate: own totals/badges, public preview, hidden sharing states and
+follower/directory loads. No visual fidelity, original-frontend acceptance,
+alpha/Kubernetes deployment or full release/recovery readiness is established.
+
+## Favorites and notifications through the BFF
+
+Build/test/lint/typecheck the favorites domain, favorites feature and
+`apps.services.catalog-bff` in the isolated Node 22.17.1 installation. Build the
+aggregator library/CSR and inspect Angular artifacts. Activate the matching
+frontend adapter, BFF and gateway as one compatible set; presentation sources
+remain unchanged. The local OPA bundle must include the generated
+`identity-admin/profile-audience.rego`. Both local and alpha image mergers are
+checked with real OPA evaluations:
+
+```sh
+OPA_BINARY=/path/to/opa node --test tools/readiness/opa-policies.test.mjs
+
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_CONTENT_FILE=/tmp/wapps-review/content.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-member-runtime.json \
+node tools/readiness/bff-member-runtime-checks.cjs
+```
+
+The existing content file supplies public General `atlas.id`, `article.id` and
+`suite.id` references. The qualifier registers two disposable users, saves all four
+favorite kinds and creates a temporary topic with eleven replies and one mention.
+It waits for the normal favorite-watch baseline before adding updates. Seven check
+groups cover canonical metadata, replay/conflicts, trusted identity and isolation,
+mandatory BFF routing, Account outages/restarts, real notification delivery and
+pagination, durable recipient-only read receipts, opt-out, removal during metadata
+outages and historical replay after removal. The temporary topic is removed and
+only the new accounts are erased. Accepted erasure does not prove background
+cleanup complete. Existing review accounts/content are not rewritten or reseeded.
+
+Only the explicit local Compose project's BFF, Account, Discussion and Editorial
+processes are briefly stopped/restarted. The report records check names and
+cleanup status without credentials. Its sibling `.accounts.json` is mode 0600 and
+contains disposable recovery credentials; never publish it. Preserve failed logs
+and use a new report path for retries. Run the profile and preferences qualifiers
+sequentially as related regressions; all use unmigrated `GET /api/me/application-drafts` for the
+BFF-outage comparison. Browser favorites/category loading and save/remove/reload
+checks are separate. These checks do not certify original frontend fidelity,
+alpha/Kubernetes activation, production identity or release/restore readiness.
+
+## Account, private profile and photos through the BFF
+
+Build/test/lint `apps.services.catalog-bff` and its prerequisites from the isolated
+Node 22.17.1 installation, typecheck its spec sources, and run the architecture
+audit. Activate the matching local BFF build and gateway routes, allowing the
+Nginx reload to settle before starting requests. From that installation:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS_FILE=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-profile-runtime.json \
+node tools/readiness/bff-profile-runtime-checks.cjs
+```
+
+The accounts file supplies an existing `staff` test account with current `token`
+and `uid`; that account is read-only. The qualifier registers a fresh local member
+through the actual gateway and stores recovery credentials in the report's sibling
+`.account.json` with mode 0600. Do not publish that file. The report contains check
+names, the disposable identity and erasure-acceptance status, without credentials.
+
+Seven check groups cover account/profile reads and trusted email, text saves and
+conflicts, bounded photo upload/normalization/private reads, mandatory BFF routing,
+restart persistence and outage/retry, photo replacement/removal with historical
+replay, and erasure acceptance/access revocation. Only the newly registered member
+is erased during cleanup. Accepted erasure does not prove all cleanup workers have
+finished. The explicit Compose project's BFF and Account services are briefly
+stopped and restarted; no database reset or frontend rebuild occurs.
+
+Follow with `bff-preferences-runtime-checks.cjs` as the related integration
+regression. Its direct-service comparison route is now `GET /api/me/application-drafts`
+because account/favorites/badge/export routes have migrated. Browser verification is separate: save/reload
+profile text, upload/save/reload a synthetic photo, remove it and restore original
+profile values. Preserve failed attempts; an expired session may require explicit
+photo reselection after refresh. These checks do not qualify original frontend
+fidelity, public-profile audience routes, production identity or deployment/recovery.
+
+## Account preferences through the BFF
+
+Build `apps.services.catalog-bff` with its dependencies from the isolated,
+lockfile-qualified Node 22.17.1 workspace. Run its `test` and `lint` targets plus
+`tsc --noEmit -p apps/services/catalog-bff/tsconfig.spec.json` and the architecture
+audit. The BFF HTTP suite uses a contract fixture for Account; it is not a real-store
+qualification. Activate the matching local gateway route and BFF build before
+running the separate live qualifier:
+
+```sh
+WAPPS_BFF_ORIGIN=http://localhost:4203 \
+WAPPS_BFF_ACCOUNTS_FILE=/tmp/wapps-review/accounts.json \
+WAPPS_BFF_COMPOSE_FILE=/tmp/wapps-review/compose.json \
+WAPPS_BFF_COMPOSE_PROJECT=wapps-review \
+WAPPS_BFF_REPORT=/tmp/wapps-review/bff-preferences-runtime.json \
+node tools/readiness/bff-preferences-runtime-checks.cjs
+```
+
+The accounts file supplies two existing local test accounts named `member` and
+`staff`, each with a current `token` and canonical `uid`. No secrets are printed or
+written to the report. The qualifier requires a local origin and an explicit
+Compose project; it briefly stops/restarts only that project's `catalog-bff` and
+`account-management`. It changes the member's default view and restores original
+preference values through a revision-checked command in cleanup. Revisions,
+timestamps, command receipts and outbox history advance normally; this is not a
+database reset. A pre-write recovery snapshot is retained in the report. Concurrent
+preference changes cause cleanup to fail rather than overwrite another editor.
+
+Checks cover real authentication, spoofed identity-header replacement, account
+isolation, read/save/replay, stale/mismatched commands, both service outages and
+SQL persistence across process restarts. Canonical, trailing-slash and mixed-case
+preferences URLs must fail when BFF is stopped while unmigrated `GET /api/me/application-drafts` still
+works. Account outage returns BFF 503; restart recovers the saved state and permits
+same-key retry. Run after the gateway reload has settled. An immediate live reload
+can close an HTTP keep-alive connection and is not a passing check.
+
+Use the browser tool separately to verify the existing settings page loads/saves
+through this endpoint. This qualifier does not rebuild frontend assets, seed or
+reset stores, qualify the original frontend merge, exercise production identity,
+or close deployment/backup/load gates. Alpha and Kubernetes routing activation
+remain pending.
+
 ## Favorite content preferences
 
 ```sh
@@ -214,6 +1112,27 @@ Angular and its production CSR in the isolated installation first. Keep the sour
 and compiled output frozen throughout qualification. This workflow needs disposable
 MySQL/MongoDB and OPA; it does not require the Auth emulator or the notification
 qualifier. `--no-browser` deliberately omits portal qualification.
+
+For a cached, pinned Docker OPA instead of a host executable, replace `OPA_BINARY`
+with `WAPPS_SUITES_OPA_DOCKER=1`. This uses `openpolicyagent/opa:1.4.2-static` with
+the checked-in Editorial bundle. Both modes use real OPA. The staff extension also
+requires cached `nginx:1.28-alpine`. All containers/stores are fresh, randomly named
+and removed by the runner; no existing Wapps installation is used. The qualifier
+explicitly disables automatic monitoring and invokes the controlled worker itself.
+
+`bff-health-monitors-runtime-checks.cjs` adds four groups through compiled BFF and
+both actual Nginx API/auth includes. It substitutes dependency addresses and a
+controlled authentication subrequest, while preserving real OPA and SQL authority.
+It verifies member/tenant/forged denial, identity-erasure fences, bounded input,
+approved-origin/application-revision checks, exact application isolation, concurrent
+and historical replay, disabled monitors and unknown public evidence. SQL faults
+must roll back both configuration/version writes. A transport fixture drops one
+committed write reply: BFF must return 503 without retry, and the caller's identical
+replay must recover one receipt. Owner/BFF restarts preserve state; withdrawal and
+owner/policy failures deny access. Stopping BFF must break both gateway route families,
+including case variants and unknown suffixes, without fallback to Editorial.
+The separate local-auth suite verifies real credentials/Identity and the complete
+local gateway's health route returning 503 while Editorial is absent.
 
 The real-store/API checks cover same-tenant staff authorization, current approved
 website origin, expected revisions, immutable replay/conflict, atomic configuration

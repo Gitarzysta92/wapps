@@ -1,3 +1,43 @@
+@if (suiteMode() === 'public') {
+<main class="detail-page" [attr.aria-busy]="publication.loading()">
+  <a tuiLink routerLink="/suites">← All suites</a>
+  @if (publication.loading()) { <p role="status">Loading suite...</p> }
+  @else if (publication.preferencesError()) {
+    <ui-content-state title="Your content preferences could not be loaded" description="Retry to apply your saved content choices." [error]="true"><button tuiButton type="button" (click)="publication.reload()">Retry content preferences</button></ui-content-state>
+  } @else if (publication.error()) {
+    <ui-content-state title="Suite unavailable" [description]="publication.error()" [error]="true"><button tuiButton type="button" (click)="publication.reload()">Reload suite</button></ui-content-state>
+  } @else if (publication.hidden()) {
+    <ui-content-state title="Suite hidden by your content preferences" description="Mature and unclassified content is hidden when mature content is disabled."><a tuiLink routerLink="/me/settings/preferences">Content preferences</a></ui-content-state>
+  } @else { @if (publication.detail(); as suite) {
+    <header class="detail-header">
+      <h1>{{ suite.title }}</h1>
+      <favorite-toggle-button type="suites" [targetId]="suite.id" />
+      @if (suite.description) { <p class="intro">{{ suite.description }}</p> }
+      <div class="metadata"><span>{{ suite.applicationIds.length }} {{ suite.applicationIds.length === 1 ? 'application' : 'applications' }}</span></div>
+    </header>
+    <section aria-labelledby="suite-apps-heading">
+      <h2 id="suite-apps-heading">Applications in this suite</h2>
+      @if (publication.metadataError()) {
+        <p role="alert">{{ publication.metadataError() }}</p><button tuiButton type="button" size="s" (click)="publication.retryMembers()">Retry application details</button>
+      }
+      <div class="app-list">
+        @for (id of suite.applicationIds; track id) {
+          <div class="app-card">
+            @if (publication.member(id); as app) {
+              <tui-avatar [src]="app.logoUrl || '@tui.box'" size="l" />
+              <div class="app-copy"><h3>{{ app.name }}</h3><p>{{ app.description }}</p></div>
+              <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', app.slug]" [attr.aria-label]="'View ' + app.name">View app</a>
+            } @else if (publication.hiddenMemberIds().includes(id)) { <span>Application hidden by your content preferences</span> }
+            @else { <span>{{ publication.metadataLoading() ? 'Loading application...' : 'Unavailable application' }}</span> }
+          </div>
+        } @empty { <ui-content-state title="No applications yet" description="This collection does not contain any applications." icon="@tui.box" /> }
+      </div>
+    </section>
+    <div class="actions"><a tuiButton appearance="secondary" size="m" routerLink="/suites/create">Create your own suite</a></div>
+  }
+}
+</main>
+} @else {
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">{{ title() }}</h1>
@@ -306,3 +346,5 @@
   </section>
   } } }
 </section>
+
+}

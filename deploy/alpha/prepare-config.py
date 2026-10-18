@@ -74,7 +74,8 @@ def prepare(directory, bundle, origin):
     write_env("discussion-migrate", discussion_db)
     write_env("discussion", {**common, **discussion_db, **discussion_storage, **queue, **mongo, **policy, **service_auth,
         "MONGO_DATABASE": "discussion", "EDITORIAL_URL": "http://editorial:1337", "ACCOUNT_MANAGEMENT_URL": "http://account-management:1340",
-        "DISCUSSION_PUBLIC_TENANT": "default", "DISCUSSION_SEED_DEMO_DATA": "false", "EXPLORE_SERVICE_SECRET": values["explore"], "FIREBASE_PROJECT_ID": project})
+        "DISCUSSION_PUBLIC_TENANT": "default", "DISCUSSION_SEED_DEMO_DATA": "false", "DISCUSSION_ERASURE_WORKERS_FENCED": "true",
+        "EXPLORE_SERVICE_SECRET": values["explore"], "FIREBASE_PROJECT_ID": project})
     write_env("discussion-materializer", {**queue, **mongo, **discussion_storage, **identity_db,
         "NODE_ENV": "production", "MYSQL_DATABASE": "discussion", "MONGO_DATABASE": "discussion"})
     write_env("catalog-bff", {**common, "EXPLORE_SERVICE_SECRET": values["explore"], "FIREBASE_PROJECT_ID": project,

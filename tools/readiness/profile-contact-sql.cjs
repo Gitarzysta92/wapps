@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const { randomUUID, createHash } = require('node:crypto');
 const { DataSource } = require('typeorm');
-const { MysqlCanonicalIdentities, MysqlPublicProfiles, ProfileContactEmail1791676830000 } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+const { MysqlCanonicalIdentities, MysqlPublicProfiles, ProfileContactEmail1791676830000 } = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyProfileContact({ source, configuration, identities }) {
   const uid = 'ContactAlice';

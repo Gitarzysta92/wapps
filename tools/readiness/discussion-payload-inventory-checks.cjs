@@ -5,8 +5,7 @@ const { promisify } = require('node:util');
 const path = require('node:path');
 const { DataSource } = require('typeorm');
 const { S3Client, PutBucketVersioningCommand } = require('@aws-sdk/client-s3');
-const root =
-  '../../sdk/features/discussion/applications/management/service/src/app/discussions/';
+const root = '../../apps/services/community/src/app/discussions/';
 const {
   InventoryDiscussionPayloads,
 } = require(`${root}application/discussion-payload-inventory`);
@@ -42,7 +41,7 @@ const {
 } = require(`${root}infrastructure/discussion-export-payloads`);
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 module.exports = async function qualifyDiscussionPayloadInventory({
   source,

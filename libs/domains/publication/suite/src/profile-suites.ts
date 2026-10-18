@@ -1,4 +1,8 @@
 import {
+  classificationFields,
+  type ClassifiedContent,
+} from '@domains/publication/classification';
+import {
   SUITE_LIMITS,
   SuiteInputError,
   suiteId,
@@ -6,7 +10,7 @@ import {
 } from './private-suite';
 
 export const PROFILE_SUITES_PAGE_SIZE = 20;
-export interface ProfileSuiteSummary {
+export interface ProfileSuiteSummary extends ClassifiedContent {
   id: string;
   title: string;
   description: string;
@@ -22,7 +26,12 @@ export function profileSuitesCursor(value: unknown): string | null {
 }
 
 export function parseProfileSuiteSummary(input: unknown): ProfileSuiteSummary {
-  const row = suiteObject(input, ['id', 'title', 'description']);
+  const row = suiteObject(input, [
+    'id',
+    'title',
+    'description',
+    'classification',
+  ]);
   const title = row['title'],
     description = row['description'];
   if (
@@ -41,7 +50,12 @@ export function parseProfileSuiteSummary(input: unknown): ProfileSuiteSummary {
     )
   )
     throw new SuiteInputError('Invalid profile suite metadata');
-  return { id: suiteId(row['id']), title, description };
+  return {
+    id: suiteId(row['id']),
+    title,
+    description,
+    ...classificationFields(row['classification']),
+  };
 }
 
 export function parseProfileSuitesPage(input: unknown): ProfileSuitesPage {
@@ -57,9 +71,7 @@ export function parseProfileSuitesPage(input: unknown): ProfileSuitesPage {
   if (
     (row['sharing'] === 'hidden' && (items.length || after !== null)) ||
     items.some((item, index) => index > 0 && items[index - 1].id >= item.id) ||
-    (after !== null &&
-      (items.length !== PROFILE_SUITES_PAGE_SIZE ||
-        after !== items[items.length - 1].id))
+    (after !== null && items.some((item) => item.id > after))
   )
     throw new SuiteInputError('Invalid profile suites continuation');
   return { sharing: row['sharing'], items, after };

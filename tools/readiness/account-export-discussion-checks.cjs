@@ -3,31 +3,31 @@ const { createHash, randomUUID } = require('node:crypto');
 const { DataSource } = require('typeorm');
 const {
   DurableDiscussionCommands,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/durable-discussion-commands');
+} = require('../../apps/services/community/src/app/discussions/application/durable-discussion-commands');
 const {
   MysqlDiscussionWrites,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-writes');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-writes');
 const {
   MinioDiscussionPayloadObjects,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/immutable-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/immutable-discussion-payloads');
 const {
   MysqlDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-payloads');
 const {
   RegisteredDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/registered-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/application/registered-discussion-payloads');
 const {
   MinioDiscussionExportPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-export-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-export-payloads');
 const {
   MysqlDiscussionAccountExportSource,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-account-export-source');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-account-export-source');
 const {
   MysqlReviews,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/reviews/infrastructure/mysql-reviews');
+} = require('../../apps/services/community/src/app/reviews/infrastructure/mysql-reviews');
 const {
   ApplicationReviews,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/reviews/application/application-reviews');
+} = require('../../apps/services/community/src/app/reviews/application/application-reviews');
 
 async function collect(iterable) {
   const values = [];

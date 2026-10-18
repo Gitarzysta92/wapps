@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, defer, map, of, switchMap } from 'rxjs';
 import { err, ok } from '@sdk/kernel/standard';
-import { parseMyDiscussionPage, myDiscussionCursor } from '@domains/discussion';
+import { parseMyDiscussionPage, myDiscussionCursor } from '@domains/community';
 import { parseCatalogSelection } from '@domains/catalog/record';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import {

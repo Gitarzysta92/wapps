@@ -11,7 +11,7 @@ import {
   CanonicalIdentityInputError,
   CanonicalIdentityUnavailable,
 } from '@sdk/features/identity/core';
-import type { FavoriteTargetEligibility } from '@sdk/features/identity/libs/management';
+import type { FavoriteTargetEligibility } from '@wapps/account';
 
 /** Public target eligibility stays with Editorial; account authorization stays with the caller. */
 export class EditorialFavoriteTargets implements FavoriteTargetEligibility {

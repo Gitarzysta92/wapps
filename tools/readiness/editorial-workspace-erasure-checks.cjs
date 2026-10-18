@@ -10,7 +10,7 @@ const { EditorialWorkspaceErasure1791840012000 } = require(base +
   'account-erasure/editorial-workspace-erasure.migration');
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { MysqlApplicationImageCleanup } = require(base +
   'application-media/mysql-application-image-cleanup');
 const { MysqlArticleCoverCleanup } = require(base +

@@ -272,12 +272,6 @@ body.dark {
   }
 }
 
-// Activity controls and preference notices need a stable surface above the decoration.
-.section__feed > explore-feed {
-  background: var(--elevated-background);
-  color: var(--tui-text-primary);
-}
-
 // Tiles grow to their natural size using the same progress as the decoration fade.
 .section__feed.ui-decoration-faded {
   --decoration-min-opacity: 0;
@@ -595,19 +589,6 @@ common-mobile-bottom-bar .mobile-bottom-nav__item[tuiButton] {
   }
 }
 
-discover-api-page {
-  .discovery-input {
-    color: var(--tui-text-primary);
-    background: var(--tui-background-base);
-    border: 1px solid var(--tui-border-normal);
-    border-radius: $radius-sm;
-    &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
-  }
-  .discovery-note, .discovery-group-heading p, .discovery-card time, .discovery-recent span {
-    color: var(--tui-text-secondary);
-  }
-}
-
 [tuiAppearance][data-appearance='navigation-primary'] {
   padding: $space-4;
   width: $size-content-xxs;
@@ -666,7 +647,7 @@ discover-api-page {
 // Card Appearances
 // ============================================================================
 
-application-teaser-feed-item {
+application-teaser-feed-item, activity-feed-card [data-kind='application'] {
   .elevated-card,
   .application-panel { background: var(--elevated-background); }
 
@@ -676,13 +657,13 @@ application-teaser-feed-item {
   }
 }
 
-article-highlight-feed-item {
+article-highlight-feed-item, activity-feed-card [data-kind='article'] {
   .article-label,
   .article-details-badge {
     color: var(--tui-text-secondary);
   }
 
-  .cover-image {
+  ui-cover-image.cover-image, article-cover-image.cover-image img {
     color: var(--tui-text-secondary);
     border-radius: 10px;
     mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
@@ -692,12 +673,24 @@ article-highlight-feed-item {
   }
 }
 
+activity-feed-card {
+  background: var(--elevated-background);
+  border-radius: $radius-sm;
+  box-shadow: $shadow-md;
+  .app-tile { border-color: var(--tui-border-normal); background: var(--tui-background-base); }
+  .changelog-details { border-color: #8a2be2; }
+  .changelog-badge { background-color: #8a2be2; color: white; }
+  .suite-chip { background-color: var(--tui-status-primary); color: white; }
+  .changelog-label, .review-label, .app-description, .preview-notice, small { color: var(--tui-text-secondary); }
+  article-cover-image.cover-image img { height: 150px; width: 100%; object-fit: cover; }
+}
+
 favorite-toggle-button .is-favorite::before {
   color: var(--tui-status-warning);
 }
 
 favorites-page {
-  .page-description, .favorites-page h2 span, .favorites-page__target small {
+  .page-description, .favorites-page h2 span {
     color: var(--tui-text-secondary);
   }
   .favorites-page a { color: var(--tui-text-action); }
@@ -1029,4 +1022,16 @@ account-erasure-panel {
     &:focus-visible { outline: 2px solid var(--tui-border-focus); outline-offset: 2px; }
   }
   input[type='checkbox'] { accent-color: var(--tui-background-accent-1); }
+}
+
+health-status-banner {
+  .status-unknown, .status-stale { background: var(--tui-background-neutral-1); border-color: var(--tui-border-normal); color: var(--tui-text-secondary); }
+}
+.discovery-display-options select {
+  background: var(--tui-background-base); color: var(--tui-text-primary);
+  border: 1px solid var(--tui-border-normal); border-radius: $radius-sm;
+}
+digest-api-page .article-card-link:focus-visible::after {
+  outline: 2px solid var(--tui-border-focus);
+  outline-offset: 2px;
 }

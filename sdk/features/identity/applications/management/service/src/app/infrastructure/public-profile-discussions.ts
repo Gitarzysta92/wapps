@@ -1,8 +1,8 @@
 import type { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { parseProfileDiscussionsPage } from '@domains/discussion/contracts';
+import { parseProfileDiscussionsPage } from '@domains/community';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { PublicProfileDiscussionsPort } from '@sdk/features/identity/libs/management';
+import type { PublicProfileDiscussionsPort } from '@wapps/account';
 
 export class DiscussionProfileDiscussions
   implements PublicProfileDiscussionsPort

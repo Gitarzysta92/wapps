@@ -1,9 +1,170 @@
 # Materialization contract
 
+## Account lifecycle administration through BFF (October 18, 2026)
+
+BFF maps three staff commands to the existing Account owner. It does not read SQL,
+decide staff authority, create projections or retry an uncertain command. Account
+preserves verified tenant context and evaluates the generated global-resource
+policy before writes. Tenant-scoped authority cannot mutate global identity state.
+
+Suspension/re-enablement retain the existing canonical row lock, monotonically
+increasing revision and atomic lifecycle-outbox transaction. Repeating the current
+state produces no extra revision/event. A failed transaction produces no success
+receipt or lifecycle event. SQL suspension does not assert credential-provider
+disablement. Local token revocation independently deletes all existing sessions
+under its credential lock, including refresh tokens; it is not a projection write.
+Re-enabling alone does not revoke existing credentials. No cross-store transaction,
+new cleanup job or durable revocation receipt is introduced.
+
+The owner emits credential-free operational logs with actor, exact valid target,
+action and confirmed/denied/unconfirmed outcome. These logs need deployment retention
+and are not a durable command audit journal. Existing erasure/export provider plans,
+identity mappings, cleanup receipts and materialization protocols are unchanged.
+The local installation still requires verified legacy mapping migration before
+activation; its migration guard was preserved.
+
+## Local credential authority (October 18, 2026)
+
+Explicit local authentication adds authoritative credential/session tables in the
+Identity SQL database. They are not disposable projections. Credentials use random
+salts/password hashes and opaque token hashes; transactions lock the credential
+subject before issuing/rotating/revoking sessions. Refresh consumes its predecessor
+atomically and has no best-effort event or automatic BFF retry. Credential creation
+and canonical enrollment remain separate provider/use-case steps: interrupted
+registration recovers only after proving the existing credentials and replaying the
+canonical enrollment receipt. Token return still requires current canonical access.
+
+The existing canonical identity transactions, profile receipts, lifecycle outbox,
+queue delivery and deletion jobs are unchanged. No new credential materializer is
+introduced. The Account cleanup worker uses the selected credential port; local
+cleanup removes secrets/sessions and leaves a minimal retry tombstone. A subject
+from another provider cannot receive an invented local cleanup receipt. The fixed
+export/erasure provider roster and accepted jobs retain their existing meaning.
+Switching existing subjects requires verified mapping/migration, not an environment
+flag alone. See [local authentication](LOCAL-AUTHENTICATION.md) for recovery,
+configuration and the real-store rollback/concurrency/lifecycle qualification.
+
+
 Implementation branch: `codex/full-operation`. Started October 11, 2026.
 This document specifies the implementation target and invariants. Use
 [implementation progress](IMPLEMENTATION-PROGRESS.md) for completed work and
 verification; this contract alone does not claim the system already meets them.
+
+## Review generic API (October 18, 2026)
+
+Review commands/queries and HTTP handlers now accept consumer-owned opaque keys.
+Wapps maps its key to the historical `(tenantId, applicationId)` SQL scope in a
+consumer adapter; the generic capability never parses that representation. BFF
+owns application-specific route/response mapping. This extraction introduces no
+schema migration or changes to review versions, locks, receipts, fingerprints,
+erasure state or the transactional journal.
+
+Reviews retain their synchronous canonical SQL variation: a mutation and its
+journal/receipt commit atomically, and reads use repeatable snapshots followed by
+current parent and scope-revision checks. They do not require a Mongo projection
+or Discussion broker delivery. The disposable qualifier proves historical replay,
+whole-transaction rollback on an injected journal error, exact retry, independent
+staff/author lifecycle and continued Review reads/writes with Mongo unavailable.
+Owner/BFF recreation preserves receipts and current state. Providers are controlled
+fixtures and recreation replaces Nest instances; production-provider and separate
+process-crash recovery remain unverified by this slice. See the Review checkpoint
+in `IMPLEMENTATION-PROGRESS.md` for evidence and limits.
+
+## Discussion route consolidation (October 18, 2026)
+
+The single `/api/discussions` owner controller now serves unbound and explicitly
+scoped operations. `/api/discussion-bindings` is retired. This changes only HTTP
+composition and client routing: canonical rows, payload references, receipts,
+aggregate revisions, outbox intent, broker delivery and projection schema 4 retain
+their representations. No additional migration or rebuild is required for this
+route cleanup; the earlier binding/index migrations still apply where pending.
+
+Exact-key isolation remains authoritative. Invalid query scope fails validation;
+omitted or wrong keys cannot access a bound resource. Keyless likes remain isolated
+from scoped votes. The disposable real-store qualifier passes historical receipt
+replay, parent revocation, lag, nested redaction, service recreation, deletion and
+stale-generation suppression through the unified route, including a second consumer.
+Its policy/authentication/parent fixtures and Nest-instance recreation do not prove
+production-provider or independent process-crash recovery. See the October 18
+implementation checkpoint for commands, failed attempts and limits.
+
+## Bound Discussion owner API (October 16, 2026)
+
+`/api/discussion-bindings` now exposes the reusable command/read/discovery contract.
+BFF maps application-topic, article-comment, participation and selection routes
+to it. The owner still enforces exact stored keys and current canonical authority
+through consumer ports; discovery prefixes are filters, never permissions.
+
+`DiscussionBindingIndex1792150000000` follows
+`CommunityDiscussionBindingKeys1792080000000` and adds the canonical lookup index
+`(tenantId, bindingKey, pinned, createdAt, id)`. It does not rewrite rows, change
+revisions/receipts, add an event format or upgrade projection schema 4. Explicitly
+configured consumers may use opaque keys with null Wapps `subjectKind/subjectId`
+metadata. Wapps keeps validating its historical metadata and receipt fingerprints.
+
+The real-store BFF qualifier replays receipts originally accepted through Wapps
+facades through the new HTTP contract. A second consumer uses the same generic
+handlers and materializer with an unfamiliar key and payload. Tests cover exact-key
+and case isolation, parent revocation, vote/pin state, pagination, service recreation,
+removed ancestors, durable tombstones and stale-generation suppression. The existing
+SQL transaction -> immutable object reference/outbox -> RabbitMQ -> guarded Mongo
+snapshot path remains intact. No alternate best-effort publishing path is added.
+
+Deploy the index and coordinate Community, BFF, Account Management and ingress
+versions because dedicated internal routes are retired. See the Community README
+for migration/traffic-fencing order. This is verified with isolated real stores and
+controlled authority fixtures, not a production rollout or independent process-crash
+qualification.
+
+## Unbound Discussion through the BFF (October 16, 2026)
+
+Generic list/detail, create/reply, edit/delete and like/unlike APIs now cross the
+BFF. Their existing JSON and receipt contracts are preserved. BFF validation is
+transport validation; canonical tenant, ownership, lifecycle and exact binding
+checks remain in Community and its reusable Discussion engine. Unbound APIs cannot
+read or change a consumer-bound resource. No schema, event, worker or storage
+representation change is introduced.
+
+The isolated `qualify-materialization.cjs --discussion-bff` runner exercises both
+nginx configurations, BFF and owning HTTP handlers against fresh stores. It verifies
+that command receipts survive service recreation, current authority denies private
+or deleted content before projection convergence, removed ancestors retain only
+structural placeholders, and older snapshots cannot resurrect a deleted root.
+The production outbox dispatcher and materialization function participate via real
+RabbitMQ. Authentication, policy and parent visibility are controlled fixtures;
+full-stack provider and crash-window qualification remain separate gates.
+
+## Opaque Discussion bindings (October 15, 2026)
+
+Discussion stores and compares the consumer's opaque `bindingKey`; it does not
+parse target kinds, identifiers, namespaces or consumer schema versions. Wapps
+interpretation lives in Community. Generic reads/mutations require exact binding
+equality and current canonical tenant/owner/parent authority. Unbound APIs cannot
+access bound resources. Aggregate revisions, immutable object references and
+projection schema markers remain storage guarantees.
+
+`CommunityDiscussionBindingKeys1792080000000` backfills consumer-owned keys without
+changing revisions, receipts, payload references or tombstones. Each aggregate's
+key update and current-revision outbox requeue commit together; interrupted
+migrations resume. Existing revision intents are reused. The materializer reads
+only the opaque key, includes it in snapshot identity and emits projection schema
+4. Guarded writes replace schema-3 stable records at the same revision and remove
+obsolete consumer fields. Stale snapshots cannot replace newer authority. Erasure
+waits for older stable guards to upgrade and never treats them as disposable
+historical cache.
+
+Fence old writers and materializers before migration; preserve SQL, immutable
+objects and projection/artifact snapshots, apply migrations, start both new
+processes, refresh gateway upstream resolution after container recreation, then
+verify authoritative reconciliation and BFF reads. A binary-only rollback is
+unsafe: use a coordinated fenced snapshot restore or reviewed forward fix.
+Historical consumer receipt fingerprints remain unchanged and are tested.
+
+Destructive inventory/erasure qualification requires a dedicated fresh object
+store as well as isolated SQL/Mongo/queue state. The runner creates disposable
+containers and the Discussion harness rejects pre-existing buckets before fixture
+mutations. See the October 15 implementation checkpoint for the shared-bucket
+test incident, checksum-proven recovery and subsequent isolated verification.
 
 ## Existing meaning
 
@@ -18,7 +179,457 @@ nodes/relations, MinIO payloads and MongoDB projections. Its
 materialization; it is not an event-sourced domain history. Rebuilding must not
 depend on RabbitMQ retaining every historic request.
 
+## Article comments and member reviews through the BFF (October 15, 2026)
+
+Six comment and ten review handlers now cross the portal BFF. They retain the
+owning-service protocols described in the Article comments and Member reviews
+sections of this document. No schema, owning-service or materializer changes are
+introduced. BFF verifies ingress provenance, validates bounded contracts and
+preserves keys/revisions, but neither accesses storage nor authorizes against
+projections. It forwards each command once without retry or redirect. Only
+Discussion decides whether the original durable receipt is still accessible.
+
+Comments remain SQL/immutable-object writes with atomic receipts and outbox intent,
+followed by RabbitMQ/Mongo generation materialization. Full reads require the current
+canonical revision; a stale thread or a cursor page containing it returns 503.
+Other current cursor pages remain available. Root deletion and parent withdrawal
+deny access immediately even while an older live generation exists. Deleted reply
+ancestors retain only structural placeholders. Republishing the same article
+restores access to its retained, nondeleted comments.
+
+Member reviews deliberately use canonical SQL snapshots. Review content versions,
+helpful membership, immutable-version reports, revisions, historical receipts and
+the durable event journal commit transactionally. Public rating totals derive from
+current visible reviews. Staff hiding and author withdrawal remain independent;
+editing does not clear a staff hide, and staff restoration does not republish an
+author-withdrawn review. Replaying an older moderation receipt never reverses later
+state. Parent visibility and application revision checks remain in Discussion.
+No broker-delivery or projection claim is added to the review event journal.
+
+The bounded BFF qualifier covers comment lag/tombstones, canonical review changes
+while the comment worker is paused, parent withdrawal/republishing, dependency
+outages, restarts and exact historical replay. Crash-window, duplicate/reorder,
+authoritative rebuild, backup restoration, deployment and load qualification remain
+separate release gates. See the dated implementation checkpoint for outcomes and
+limits; frontend fidelity is still unaccepted.
+
+## Application discussions through the BFF (October 15, 2026)
+
+Application topics, threaded replies, edits/deletion, votes, pins, participation
+pages and public selection cross explicit BFF handlers. Discussion retains
+canonical identity/tenant/owner/policy and parent visibility decisions, immutable
+MinIO payload references, SQL revisions/receipts and atomic materialization intent.
+The BFF has no database access and introduces no schema, event or worker changes.
+
+The portal preserves aggregate revisions and command keys. The BFF validates
+complete thread structures and historical receipts, forwards commands once, and
+does not use projections to pre-authorize mutations or receipt replay. Discussion
+continues to decide whether a historical command is still accessible. A replayed
+receipt is evidence of its original command, not proof of current visibility.
+
+Reads pin the exact canonical revision and recheck authority after projection and
+parent-service I/O in Discussion. Missing/stale generations remain 503. Deleted
+replies retain structural placeholders without text, votes, timestamps or edit
+rights so their children remain reachable. Root deletion and parent withdrawal
+revoke public access even while a previous live generation remains stored.
+Participation and favorite selection use current canonical visibility.
+
+The bounded transport qualifier exercises paused materialization, edit/delete
+convergence, immediate deletion/parent revocation, Mongo and object-store failure,
+BFF/Discussion restart and historical replay. SQL crash windows, broker duplicate/
+reorder, full authoritative rebuild, backup restore, load and deployment remain
+separate release checks. The dated implementation checkpoint records evidence and
+limits; the original frontend merge and visual acceptance remain outstanding.
+
+## Articles and covers through the BFF (October 15, 2026)
+
+The article portal boundary now uses explicit BFF handlers for authoring,
+submission/withdrawal, independent staff review, public content and cover media.
+Editorial still owns canonical authorization, SQL transactions, immutable submitted
+content and cover references, receipt replay, outbox and projection delivery.
+This transport slice introduces no schema or projection protocol changes.
+
+Private edits after submission do not change the reviewed text, proposed
+classification or cover. Approval publishes the frozen submission. Public article
+reads retain authority selection, exact Mongo revision matching and a second
+authority check; a missing/stale projection is 503, never an older or invented
+article. Withdrawal hides text, selections and covers immediately using canonical
+state while an older live projection can still exist.
+
+Cover normalization and immutable object writes remain in Editorial outside SQL
+locks, followed by fenced completion and durable reference management. BFF only
+validates and transports the reserved original bytes. Protected uploads re-enter
+owning-service authorization before BFF buffering. Protected and public cover reads
+retain Editorial's authority recheck after object I/O; a public image must match
+the current canonical cover. Object failure is explicit, and Mongo availability
+does not grant or deny canonical cover access. Cancellation and background cleanup
+retain their existing reference, lease and receipt rules.
+
+The BFF does not preflight publication lifecycle or reject an old command because
+its returned revision is historical. Only Editorial may replay the durable receipt.
+No transport retries or redirects are allowed after an uncertain result. The
+bounded runtime qualifier exercises replacement/withdrawal with a paused
+materializer, exact frozen covers, dependency outages, restarts and historical
+replay. SQL crash windows, broker duplicate/reorder, rebuild and backup restoration
+remain owning-service/full-release checks rather than claims of this transport
+qualification. Evidence and remaining release work are in
+`IMPLEMENTATION-PROGRESS.md` and `OPERATIONAL-READINESS.md`.
+
+## Releases through the BFF (October 15, 2026)
+
+Private release drafts, canonical source/open/rebase, publication commands,
+independent staff review and public release pages/version reads cross explicit
+BFF routes. BFF validates trusted identity, strict selectors and command/response
+contracts, preserves expected draft/publication revisions and original keys, and
+bounds requests, responses and deadlines. It performs no state preflight, storage
+access, projection writes or automatic command retries. A lost reply remains
+uncertain; a replayed receipt describes its original operation, not current rights.
+
+Editorial retains canonical identity/tenant checks and claim-bound authoring.
+Revocation blocks source/rebase/submission/approval even while an older application
+projection remains stored. Private editing/deletion and staff rejection remain
+available; a new grant does not silently rebind old drafts. Submissions freeze
+fields and target revisions. Approval atomically commits the approved fields,
+canonical release revision, decision, receipt, content-update cursor and durable
+outbox intent; withdrawal commits its tombstone and intent atomically. Public
+version URLs remain immutable and reserved even after withdrawal.
+
+Public reads still select canonical visibility, require an exact projection, and
+recheck authority after projection I/O. BFF receives either qualified public
+content, explicit 503 for unavailable/lagging data or 404 for withdrawn content.
+It cannot resurrect an old release from cached content or a historical receipt.
+No migration, event protocol, owning-service behavior or materializer change is
+introduced. SQL crash-window, broker duplicate/reorder, authoritative rebuild and
+backup-restoration qualification remain separate release checks. See the dated
+implementation checkpoint for the live transport proof and its limits.
+
+## Application ownership through the BFF (October 14, 2026)
+
+Private ownership claims, domain verification, cancellation/release and independent
+staff queues/details/decisions now use explicit local BFF routes. Pure ownership
+contracts validate inputs and complete challenge/lifecycle responses. BFF forwards
+verified identity, expected revisions and original keys once, bounds payloads and
+deadlines, and returns explicit uncertainty on missing replies. It performs no DNS
+lookup, storage access, grant calculation or transition preflight.
+
+Claims and DNS check reservations remain canonical SQL data in Editorial. Proof
+uses the canonical website host, a bounded external DNS operation and fenced check
+completion. A matched challenge does not grant ownership. Independent staff approval
+must still satisfy proof freshness, application revision and active-grant invariants.
+Grant, release and revocation commit the ownership decision, application revision,
+receipt and durable outbox intent atomically. Read projections remain disposable;
+editing, rebase and publication check the current grant in the owning service.
+Future content changes still require independent publication review.
+
+Historical create, proof, approval and import receipts are retained outcomes, not
+current authority. Replaying them after cancellation/revocation cannot recreate a
+grant or enable authoring. No schema, projection, event protocol or owning-service
+implementation changes are introduced by this transport migration. Existing SQL
+crash-window, duplicate/reorder, rebuild and backup-restoration proofs remain
+separate owning-service/release checks. See the implementation progress checkpoint
+for the local runtime evidence and its limits.
+
+## Application publication through the BFF (October 14, 2026)
+
+Application publication status/submit/withdraw and staff queue/detail/decision now
+cross explicit BFF routes. The existing frontend adapter retains its contract and
+uses no direct owning-service path for these operations. BFF validates trusted
+identity, strict input/response shapes and matching receipts, then forwards the
+original key and expected/submitted revisions once. Missing replies remain uncertain;
+only an explicit caller replay can recover the owning receipt. Legacy image snapshot
+markers and stale canonical editing bindings remain visible to the caller.
+
+Editorial still enforces canonical owner/tenant access, independent review, immutable
+submitted text/classification/images, rejection reasons, canonical source revision
+and public slug uniqueness. Approval/withdrawal retain their single SQL transaction
+for decisions, aggregate/public revisions, receipts and outbox. No new storage,
+projection, schema migration, worker or event semantics are introduced. BFF neither
+uses a projection for permission nor infers current publication from a receipt.
+
+The local HTTP qualifier demonstrates that paused materialization yields 503 until
+the approved snapshot arrives; private submission/review still operate during Mongo
+failure. Rejection preserves an older publication. Withdrawal returns public 404
+while the old live projection remains stored; queued replacement/withdrawal converge
+to the current tombstone. Old submit/approve receipts and process restart cannot
+restore visibility. Existing SQL crash-window, broker duplicate/reorder and backup
+restoration proofs remain separate owning-service/release checks.
+
+## Application drafts and images through the BFF (October 14, 2026)
+
+Private drafts, canonical import/rebase, upload lifecycle and all six application
+image preview variants now cross explicit local BFF routes. This is a transport
+change: Editorial still authorizes against canonical SQL, commits draft/image
+references and receipts, normalizes bytes, writes immutable objects and completes
+uploads under fenced processing leases. No BFF database access, new projection,
+worker, migration or altered outbox protocol is introduced. Private workspace reads
+do not depend on a public projection.
+
+The BFF re-enters Editorial authorization before buffering uploads, preserves the
+original source bytes, expected revision and idempotency key, and bounds body sizes,
+concurrency and deadlines. It never retries an uncertain write automatically.
+Historical ready receipts can replay after cancellation; they are not current
+lifecycle assertions and cannot restore object references. Current upload state and
+preview access are read separately. Editorial continues rechecking authorization
+and current image references after object I/O, including published image identity.
+
+Frozen submission images stay unchanged when a private draft slot changes. A
+verified owner's import/rebase uses the canonical revision and explicit image merge
+choices; it does not approve or publish content. Public previews require a current
+canonical publication reference and become unavailable immediately on withdrawal.
+The local qualifier uses submission/review and ownership commands through BFF to
+set up disposable image fixtures.
+
+Existing private-image materialization, upload lease, cleanup and crash-window
+contracts below continue to apply. The BFF qualifier tests object-store outage,
+restart persistence, byte integrity and receipt replay; it does not rerun broker
+duplicate/reorder, SQL crash-window, backup restoration or production load proofs.
+
+## Suite publication through the BFF (October 14, 2026)
+
+Owner submission/status/withdrawal, staff review/decision and public suite reads
+now cross explicit local BFF handlers. This changes the transport boundary only.
+Editorial remains the canonical authority for owner/tenant scope, independent staff
+review, immutable submitted fields/classification, aggregate and publication
+revisions, command receipts and transactional outbox. No new store, projection,
+worker or migration is introduced. Public reads still select canonical lifecycle
+and revision, validate the complete projection and repeat canonical selection after
+projection I/O. BFF never authorizes from a projection or accesses an owning store.
+
+The BFF preserves command keys and expected/submitted revisions. It validates
+receipt identity/action/revision, but a historical receipt is not a current-state
+assertion. A lost reply can follow a committed command; the BFF never retries it
+automatically. Replaying an old approval after withdrawal returns the original
+receipt without republishing. Submit/withdraw bodies contain only expectedRevision;
+review decisions carry the frozen submittedRevision and private reason. Public
+DTOs reject private owner/review fields and preserve publication classification
+and ordered application IDs.
+
+Local qualification pauses the materializer around approval and observes explicit
+503 public reads until the frozen snapshot arrives. A rejected replacement leaves
+the prior publication intact. With the worker paused again, a replacement advances
+public revision to 2, then withdrawal advances it to 3. Canonical public reads
+immediately return 404/empty selection despite the revision-1 live Mongo projection.
+Restart processes the queued work and the projection converges to the revision-3
+tombstone. Historical submit/approval replay and Editorial restart cannot restore
+the public resource. The qualifier observes only its new suite's projection,
+read-only, outside BFF. Real BFF/Editorial outages, owner/staff denial and private
+CRUD regression also pass; see `IMPLEMENTATION-PROGRESS.md` for evidence.
+
+The existing owning-service crash-window, duplicate/reorder and reconciliation
+contracts below remain unchanged. This transport qualifier does not repeat all of
+those checks or qualify backup restore, deployment/load, complete account erasure
+or the original frontend merge. Older sections retain their historical scope.
+
+## Private suite workspaces through the BFF (October 14, 2026)
+
+Private suite CRUD now crosses explicit local BFF handlers. Editorial remains the
+owner of this domain. Its canonical SQL draft, tenant/owner scope, capacity lock,
+revision, immutable command receipts and deletion tombstone retain the private
+suite protocol documented below. Creation/editing still needs no materialized
+projection; deletion retains the existing atomic public revocation/outbox when a
+publication exists. This transport change introduces no migration, database access,
+projection, worker, public revision or materialization protocol.
+
+BFF validates the portal contract and forwards only verified identity context,
+the original command key and expected revision. Editorial rechecks authorization
+and current eligibility of newly added application IDs inside its use case/
+transaction. No browser metadata or BFF projection grants access. Stored membership
+preserves application order and remains removable when metadata is unavailable.
+Application search/selection still uses the existing BFF/Editorial catalog boundary;
+these reads are separate observations, not one atomic suite/metadata snapshot.
+
+No automatic command retry occurs. A lost reply may follow a committed transaction,
+so the caller retains the command and key. Historical receipts retain their original
+revision and deletion flag; a create/update retry never restores a deleted suite.
+Current detail reads return 404 for the tombstone. JSON transport is bounded to
+64 KiB commands, 1 MiB responses and fifteen-second deadlines, with private/no-store
+responses and safe retryable uncertainty.
+
+HTTP contract tests cover malformed requests/results, scope forwarding, bounds,
+lost replies and receipt semantics. Local runtime qualification exercises canonical
+CRUD/order, independent sessions, cross-owner denial, conflicts/replay, mandatory
+BFF routing, process restarts and projection outage. Private reads and removal
+continue while catalog metadata fails explicitly. Publication approval/materializer
+crash windows, database restoration, production deployment and the original
+frontend merge remain separate qualification work.
+
+## Account exports through the BFF (October 14, 2026)
+
+The local portal now requests, inspects, revokes and downloads exports through BFF.
+Account still owns the canonical export job, durable capture intent, leases,
+immutable chunks, ready transition, expiry, cleanup and request idempotency. The
+existing four-source capture protocol below is unchanged. BFF introduces no SQL,
+broker, projection, migration, worker, artifact cache or new capture authority.
+
+A request preserves its original Idempotency-Key and 202 acceptance. Replay returns
+the same canonical job in its current state, including cancellation/expiry; it does
+not resurrect an archive. Cancellation remains naturally repeatable by owner/job.
+No automatic retry occurs. An unavailable response can follow a committed request
+or revocation, so clients retry the same request/key or inspect current state.
+
+Downloads inspect canonical metadata, then ask Account for bytes under the same
+verified identity. Account rechecks current lifecycle, ownership and ready state
+per stored chunk. BFF performs no permission caching, forwards no internal source
+credential and never directs the browser to storage. Its bounded stream checks
+length and digest against inspected metadata and withholds final bytes until EOF;
+a failed stream cannot become a complete successful attachment. Already-sent bytes
+cannot be recalled after revocation. Disconnect/deadline aborts the HTTP read;
+Account's existing pending-query cleanup and permit rules still apply.
+
+All responses are private/no-store. Four BFF download permits, backpressure, a
+fifteen-minute deadline and the canonical one-GiB limit bound this transport.
+Nginx archive buffering and temporary-file spill are disabled. Local qualification
+covers real four-source completion, ownership isolation, replay, revocation,
+mandatory BFF routing, source recovery and process restart persistence. Stream
+fixture tests cover corruption, truncation, backpressure, cancellation and limits.
+These checks do not requalify transaction crash windows, one-GiB device performance,
+complete background erasure, backup restore or deployment. Frontend presentation
+and the existing frontend adapter's download orchestration are unchanged in this slice.
+
+## Public profiles, follows and badges through the BFF (October 14, 2026)
+
+Public profiles/photos, shared content, totals, follows and staff badge operations
+now cross the local BFF. Account retains canonical identity lifecycle, audience and
+sharing decisions, follow and badge revisions, audit reasons, command receipts and
+existing transactional outbox/materialization. Public content still uses its owning
+service's visibility, revision and tombstone checks. No database access, migration,
+projection, worker or materialization protocol is added to BFF.
+
+Every profile and photo read re-enters Account authorization, including anonymous
+requests with verified ingress provenance. Prior follow approval and a previously
+available photo never become cached permission grants. Hidden content stays an
+explicit hidden page and hidden totals remain null. These composed reads are
+current observations, not an atomic snapshot across services.
+
+Follow and badge commands preserve the original key and expected revision. Neither
+BFF nor the migrated gateway automatically retries a mutation. Lost replies remain
+uncertain; callers may retry the identical command/key or reload canonical state.
+Historical approval/award retries return their original receipts without undoing
+later follow removal or badge revocation. All responses are private/no-store.
+
+The real local qualifier verifies privacy changes, independent follower approval,
+staff award/revoke reasons, replay/conflicts, protected photos, shared content and
+totals, mandatory BFF routing, dependency failure and restart persistence. It removes
+its temporary topic and requests erasure only for its three disposable accounts.
+This does not requalify transaction crash windows, broker recovery, complete
+background erasure, backup restoration or production deployment.
+
+## Favorites and notifications through the BFF (October 14, 2026)
+
+Account retains canonical favorites, shared account revisions, command receipts,
+transactional outbox intent and recipient-scoped notification/read state. The BFF
+does not access SQL, publish events or introduce a projection, migration or worker.
+Discussion delivery intent and Account's existing watch/delivery machinery remain
+authoritative. BFF transport preserves favorite command keys and revisions;
+mark-read retains natural idempotency by recipient and notification ID. A replay
+returns the first read timestamp. Historical favorite-add retries return their
+original receipt without resurrecting subsequently removed references.
+
+Favorite metadata is a bounded composition of the member's canonical references
+and current public Editorial/Discussion selections, including the discussion's
+parent application classification. Services retain visibility, exact-projection
+revision and tombstone enforcement. The BFF rechecks the Account revision and
+reference set after composition and rejects a change with 409. It does not claim
+an atomic cross-service snapshot or cache a permission grant. Absent targets stay
+removable; source outages fail metadata reads explicitly while canonical removal
+remains possible. Existing portal preference masking stays in the feature layer.
+
+No automatic mutation retries occur. Uncertain transport outcomes require the
+caller to retry the identical favorite command/key or reload; repeated mark-read
+uses the same notification ID. All private responses are no-store. Local tests
+exercise real reply, mention and favorite-update delivery, recipient isolation,
+pagination, read persistence across Account restarts, opt-out and dependency
+outages. They do not requalify SQL crash windows, broker recovery or backup restore.
+The policy packaging repair includes the existing profile-audience Rego module;
+it changes neither audience rules nor materialization semantics.
+
+## Account and private profile through the BFF (October 14, 2026)
+
+Account summary, private-profile text and private-photo transport now cross the
+portal BFF. Account Management remains authoritative for identity lifecycle,
+profile state, shared revisions, normalized photo bytes, idempotency receipts and
+transactional outbox intent. The BFF neither reads their SQL tables nor creates a
+projection, worker, outbox or migration. Existing erasure/backup protocols apply.
+
+Text saves preserve `expectedRevision` and command identity. Photo replacement and
+removal preserve the quoted revision, command key and immutable source descriptor;
+the BFF checks incoming bytes before forwarding them. An original command replay
+returns its historical receipt without restoring a replaced or removed photo.
+Private photo reads re-enter Account's current identity/ownership checks on every
+request. The BFF does not cache a prior grant or use projection availability for
+permission. Normalization and photo persistence stay inside Account.
+
+All private responses are no-store. Bounded transport can still lose a reply after
+the owner commits, so neither BFF nor migrated ingress automatically retries a
+mutation. The client retains the original command identity and revision or reloads
+canonical state. `DELETE /api/me` retains the existing bodyless 202 erasure contract
+when the shared account route migrates. Its acceptance does not establish completed
+credential or cross-service cleanup; tombstoned identities cannot use the BFF to
+regain access. This does not introduce a new deletion or retry protocol.
+
+Local real-service qualification covers profile/photo persistence across BFF and
+Account restarts, replacement/removal, historical retries, cross-account denial,
+dependency failure and erasure of a newly created test identity. It does not
+requalify transaction crash windows, broker delivery, backup restore, production
+identity or deployment. Original presentation reintegration remains separate:
+the original form stages a photo with text until Save Changes, so its feature
+orchestration must handle the existing separate revision-bound commands and partial
+failure truthfully. The BFF does not make those commands one atomic transaction.
+
+## Account preferences through the portal BFF (October 14, 2026)
+
+The BFF adds an explicit authenticated transport boundary for canonical preference
+reads and replacements. It does not read a projection or database. Account remains
+the authority for current identity/lifecycle, self-access policy, preferences,
+shared account revisions, idempotency receipts and the transactional outbox.
+Existing account materialization, erasure and replay protocols are unchanged.
+
+The BFF preserves `expectedRevision` and the caller's `Idempotency-Key`, checks
+returned identity/revision and rejects malformed responses. No automatic mutation
+retry occurs in the BFF or migrated local gateway route. A timeout or invalid
+receipt does not imply rollback: a same-key identical retry returns Account's
+original receipt, while a fresh stale command retains its 409 conflict semantics.
+Private responses are no-store. Missing Account configuration and dependency
+failures are explicit unavailable responses rather than defaults or empty success.
+
+No migration, new projection, outbox, database access or reconciliation job is
+introduced. Local qualification covers actual Account/SQL persistence across
+service restarts, independent-account isolation and outage/retry through the BFF;
+the lost-response-after-commit window is separately covered by the BFF HTTP
+contract fixture. This does not requalify SQL transaction crash windows, broker
+delivery, database restoration or deployed ingress. The original frontend merge
+and the remaining portal BFF routes are still outstanding.
+
 ## Grouped Discover: bounded composition of current public catalogs
+
+### Rich discovery tile reads (October 14, 2026)
+
+Discover adds optional, strictly validated `displayTags` and discriminated
+`details` fields. Filter `tags` retain canonical ID/slug aliases; display tags
+contain one actual name and destination per tag. Application details contain the
+real logo and anonymous public review summary/preview. Articles carry the approved
+byline and protected cover reference. Suites retain their authoritative member
+count and preview at most the first six authored members selected from the public
+catalog, with batches of at most 50 IDs. Saved mature-content choices mask nested
+member metadata without rewriting source counts or publications.
+
+Review reads use the configured Discussion origin, forward no user identity,
+disable redirects, enforce a five-second timeout and 128 KiB response limit, and
+run in batches of five. After enrichment the BFF reconfirms application and suite
+publication identity/revision/classification through the canonical selection
+ports. Owning services continue enforcing visibility, erasure, exact projection
+revision and tombstone rules. A selected dependency failure or changed publication
+fails the search with a retryable unavailable response. It never substitutes demo
+data, invented ratings or success-shaped empty metadata. These independent bounded
+reads do not provide a global cross-service snapshot.
+
+This adds no storage, projection, migration, outbox intent or materialization
+worker. Existing rebuild and retry protocols remain authoritative. New consumers
+accept older responses without the optional fields; older strict consumers reject
+the new fields. Upgrade compatible portal consumers before the enriched BFF, or
+activate them together, and retain compatible versions during rollback. Home quick
+search consumes the same contract and protected article-cover reader. Qualification
+is recorded in the Home/search checkpoint of `IMPLEMENTATION-PROGRESS.md`.
 
 ### Reviewed content classification
 
@@ -285,16 +896,33 @@ current endpoint. Roll back serving binaries only with probing disabled and the
 new tables retained. Production restore/rollback and egress qualification remain
 mandatory deployment gates, separate from local workflow evidence.
 
-Staff can read the current configuration and application revision through
+Staff can read the current configuration and application revision through BFF
 `GET /api/editorial/health-monitors/:applicationId`, then submit
 `PUT /api/editorial/health-monitors/:applicationId/:monitorId` with exactly
 `{expectedRevision, expectedApplicationRevision, name, url, enabled}`. New UUIDs use
 `expectedRevision: 0`; edits use the returned monitor revision. Retry an uncertain
 write with the identical ID and payload. Reload after 409 before making another
-change. Disabled definitions remain reusable within the limit. These routes use
-the established authenticated Editorial ingress; local gateway routing includes
-`health-monitors`. Apply the migration and updated OPA/binaries before enabling
-probing. Configuration/observations require no new external credential.
+change. Disabled definitions remain reusable within the limit. Both local and alpha
+gateways route the entire `health-monitors` family through explicit BFF handlers.
+Ingress supplies authenticated identity; BFF verifies provenance and forwards only
+the identity, roles and tenant to Editorial. Editorial retains OPA, canonical
+parent/tenant checks, the identity-erasure write fence and transactional SQL authority.
+
+The BFF rejects query selectors and extra/missing body fields. Commands are limited
+to 8 KiB, owner responses to 32 KiB, and owner calls to ten seconds without redirects
+or automatic retries. Configuration reads contain the current application revision,
+approved website and at most eight unique monitors belonging to the requested
+application. Historical monitor URLs remain visible if the approved website changes;
+Editorial enforces the current origin on writes and probes. PUT receipts must match
+the requested monitor/application, normalized fields and expected next revision.
+Responses, including BFF validation errors, are private/no-store. Owner 400/401/403/
+404/409/429 semantics are preserved with sanitized messages; unavailable dependencies,
+malformed receipts and uncertain writes return 503. Identical historical replay can
+return the original accepted revision without overwriting a later configuration.
+
+Apply the migration and compatible OPA/Editorial/BFF/gateway versions before enabling
+probing. Configuration/observations require no new external credential. The A23
+staff BFF change adds no schema, worker, frontend or live activation change.
 
 ## Application timeline: current scoped public activity
 
@@ -388,6 +1016,46 @@ See the Digest qualification command and dated implementation checkpoint for pro
 and exclusions. No deployment qualification is implied by this contract.
 
 ## Explore: current public activity without a new projection
+
+### Rich card read contract (October 14, 2026)
+
+Explore and application timeline items carry optional, strictly parsed `details`
+discriminated by the existing item kind. Current producers populate it from the
+owning public readers: application descriptions, images and named taxonomy;
+reviewed article bylines, excerpts and immutable cover references; approved suite
+descriptions and current public member previews; published release descriptions
+and changes; public review attribution, text and rating; and discussion opening
+posts/reply excerpts. No private owner ID, profile audience data, moderation flag
+or mention association enters this preview. Erased authors retain the owning
+service's anonymized public byline. Missing images remain absent.
+
+Preview work is bounded to four suite members, five release changes and three
+discussion posts; totals retain their authoritative meaning. Suite member
+selection and release/community parent metadata are reconfirmed before returning
+the source page. Canonical publication revisions, visibility, tombstones and
+projection-lag failures remain enforced by the existing public readers and index
+confirmation. The BFF reads actual public review summaries for selected application
+cards, then rechecks application identity, revision and classification. An unavailable
+summary or changed application fails the page instead of supplying zero ratings.
+Cross-service observations remain separate reads, not a distributed snapshot.
+
+The portal uses the original content-specific card compositions and host-owned
+navigation. Published article covers use the existing protected blob reader,
+retry and object-URL cleanup. Suite previews apply the current account's mature
+content choice to each member without changing the collection count or refilling
+the preview. Explore, Digest and timeline selection preserve account/choice
+cancellation. There is no demo metadata fallback or local vote substitute.
+
+This is read composition only: no write-model, materializer, migration, outbox,
+queue, new secret or backup dataset is added. Existing rebuild and replay rules
+remain unchanged. New consumers accept older responses without details and show
+an explicit unavailable preview; older strict consumers reject the new field.
+Upgrade compatible portal/BFF consumers before enabling Editorial/Discussion
+producers, or activate them together. Rollback must retain compatible contracts.
+The BFF uses its existing `DISCUSSION_URL` for public review summaries. Local
+qualification and deployment limits are recorded in the implementation tracker.
+
+### Existing selection and recovery protocol
 
 Explore composes existing public facts from Editorial and Discussion. The owning
 services select canonical SQL candidates in their configured public tenant, then
@@ -3352,19 +4020,19 @@ substitute fixtures to conceal this state.
 
 ## Acceptance evidence
 
-| Scenario                                                 | Required result                                                           |
-| -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Explicit deny / unavailable policy                       | Zero node, payload, outbox or projection mutations.                       |
-| Crash before SQL commit                                  | No visible mutation; any uploaded object is unreferenced.                 |
-| Crash after commit / before publish                      | Retained outbox eventually schedules projection.                          |
-| Publish confirmed / process dies before delivery marking | Duplicate delivery produces the same view.                                |
-| Two concurrent writers                                   | Serialized revisions or explicit conflict; no lost accepted update.       |
-| Duplicate / reordered events                             | No inflated counts or revision regression.                                |
+| Scenario                                                 | Required result                                                            |
+| -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Explicit deny / unavailable policy                       | Zero node, payload, outbox or projection mutations.                        |
+| Crash before SQL commit                                  | No visible mutation; any uploaded object is unreferenced.                  |
+| Crash after commit / before publish                      | Retained outbox eventually schedules projection.                           |
+| Publish confirmed / process dies before delivery marking | Duplicate delivery produces the same view.                                 |
+| Two concurrent writers                                   | Serialized revisions or explicit conflict; no lost accepted update.        |
+| Duplicate / reordered events                             | No inflated counts or revision regression.                                 |
 | Failure during generation write                          | Reads return pending for incomplete generations; retry completes the next. |
-| Edit / delete / privacy change                           | Current access is enforced and projections converge without resurrection. |
-| Missing payload / corrupt graph / poison event           | Visible failure with bounded retries and recovery, no fake content.       |
-| Drop all read collections and rebuild                    | Equivalent permitted content/counts from authoritative stores.            |
-| Restart broker, materializer and database                | No accepted write lost and no silent acknowledgement of unfinished work.  |
+| Edit / delete / privacy change                           | Current access is enforced and projections converge without resurrection.  |
+| Missing payload / corrupt graph / poison event           | Visible failure with bounded retries and recovery, no fake content.        |
+| Drop all read collections and rebuild                    | Equivalent permitted content/counts from authoritative stores.             |
+| Restart broker, materializer and database                | No accepted write lost and no silent acknowledgement of unfinished work.   |
 
 Reference semantics: RabbitMQ's consumer acknowledgements and publisher confirms
 are distinct, and recovery can duplicate publication. MongoDB provides atomic

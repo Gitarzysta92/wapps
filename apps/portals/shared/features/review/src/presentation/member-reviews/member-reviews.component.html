@@ -32,7 +32,7 @@
   } @if (reviews.error()) {
   <p role="alert">{{ reviews.error() }}</p>
   } @if (reviews.pending()) {
-  <aside tuiAppearance="neutral" class="card">
+  <aside tuiAppearance="card-elevated" class="card">
     <h2>Unconfirmed review change</h2>
     <p>
       Retry the original request on its application page. Dismissing a retry
@@ -64,35 +64,28 @@
   } @if (reviews.loading()) {
   <p role="status">Loading reviews...</p>
   } @if (reviews.summary(); as summary) {
-  <section tuiAppearance="neutral" class="card" aria-label="Rating summary">
-    <h2>Member ratings</h2>
-    <p class="rating-summary">
-      {{
-        summary.average === null
-          ? 'No ratings yet'
-          : (summary.average | number : '1.1-1') + ' out of 5'
-      }}
-      <span>({{ summary.total }} reviews)</span>
-    </p>
-    <div class="distribution">
-      @for (stars of stars; track stars) {
-      <span>{{ stars }} stars</span
-      ><meter
-        min="0"
-        [max]="summary.total || 1"
-        [value]="summary.distribution[stars - 1]"
-        [attr.aria-label]="stars + ' star ratings'"
-      ></meter
-      ><span>{{ summary.distribution[stars - 1] }}</span>
-      }
+  <ui-medium-card class="rating-summary-card" tuiAppearance="card-elevated" aria-label="Rating summary">
+    <div class="rating-overview">
+      <div class="rating-score">
+        <span class="score-value">{{ summary.average === null ? '—' : (summary.average | number:'1.1-1') }}</span>
+        @if (summary.average !== null) { <tui-rating [ngModel]="summary.average" [readOnly]="true" /> }
+        <span class="score-label">{{ summary.total }} reviews</span>
+      </div>
+      <div class="rating-distribution">
+        @for (stars of stars; track stars) {
+          <div class="distribution-row">
+            <span class="star-label">{{ stars }} stars</span>
+            <div class="distribution-bar" role="meter" [attr.aria-label]="stars + ' star ratings'" aria-valuemin="0" [attr.aria-valuemax]="summary.total || 1" [attr.aria-valuenow]="summary.distribution[stars - 1]">
+              <div class="distribution-fill" [style.width.%]="summary.total ? 100 * summary.distribution[stars - 1] / summary.total : 0"></div>
+            </div>
+            <span class="distribution-count">{{ summary.distribution[stars - 1] }}</span>
+          </div>
+        }
+      </div>
     </div>
-    <p>
-      Ratings count currently public member reviews. Imported editorial ratings
-      are separate.
-    </p>
-  </section>
+  </ui-medium-card>
   } @if (reviews.signedIn() && (!detail() || reviews.mine())) {
-  <section tuiAppearance="neutral" class="card" aria-label="Your review">
+  <section tuiAppearance="card-elevated" class="card" aria-label="Your review">
     <h2>Your review</h2>
     @if (reviews.mine(); as mine) {
     <p>
@@ -197,29 +190,22 @@
   } @if (!reviews.loading() && !reviews.error() && !reviews.items().length) {
   <p>No reviews on this page.</p>
   } @for (review of reviews.items(); track review.id) {
-  <article
-    tuiAppearance="neutral"
-    class="card"
-    [attr.data-review-id]="review.id"
-  >
-    <header>
-      <h2>
-        <a [routerLink]="reviewLink()(review.id)">{{
-          review.content.displayName
-        }}</a>
-      </h2>
-      <p>{{ review.content.rating }} out of 5</p>
-    </header>
-    <p>
-      {{ review.createdAt | date : 'mediumDate' }}@if (review.updatedAt !==
-      review.createdAt) {
-      <span> - Edited {{ review.updatedAt | date : 'mediumDate' }}</span> }
-    </p>
+  <ui-medium-card tuiAppearance="card-elevated" class="review-card" [attr.data-review-id]="review.id">
+    <div class="review-header">
+      <div class="reviewer-info">
+        <tui-avatar src="@tui.user-round" size="l" />
+        <div class="reviewer-details">
+          <a class="reviewer-name" [routerLink]="reviewLink()(review.id)">{{ review.content.displayName }}</a>
+          <span class="review-date">{{ review.createdAt | date:'mediumDate' }}@if (review.updatedAt !== review.createdAt) { · Edited {{ review.updatedAt | date:'mediumDate' }} }</span>
+        </div>
+      </div>
+      <div class="review-rating"><tui-rating [ngModel]="review.content.rating" [readOnly]="true" /><span class="rating-value">{{ review.content.rating | number:'1.1-1' }}</span></div>
+    </div>
     @if (review.withdrawn || review.hidden) {
     <p>{{ review.withdrawn ? 'Withdrawn' : 'Hidden by staff' }}</p>
     }
-    <p class="review-text">{{ review.content.text }}</p>
-    <div class="actions">
+    <p class="review-content review-text">"{{ review.content.text }}"</p>
+    <div slot="footer" class="actions review-footer">
       <span>{{ review.helpfulCount }} found this helpful</span>
       @if (reviews.signedIn() && !review.mine && !review.hidden &&
       !review.withdrawn) {
@@ -345,7 +331,7 @@
       More reports
     </button>
     } } }
-  </article>
+  </ui-medium-card>
   } @if (reviews.next()) {
   <button
     tuiButton

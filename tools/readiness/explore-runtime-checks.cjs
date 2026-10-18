@@ -28,6 +28,7 @@ module.exports = async function qualifyExplore(options) {
     editorialSource,
     discussionEnv,
     discussionOrigin,
+    discussionServiceOrigin,
     editorialOrigin,
     headers,
     owner,
@@ -75,7 +76,7 @@ module.exports = async function qualifyExplore(options) {
           HOST: '127.0.0.1',
           PORT: '0',
           EDITORIAL_URL: editorialOrigin(),
-          DISCUSSION_URL: discussionOrigin(),
+          DISCUSSION_URL: discussionServiceOrigin(),
           EXPLORE_SERVICE_SECRET: secret,
         },
       },
@@ -243,6 +244,42 @@ module.exports = async function qualifyExplore(options) {
         'Missing Explore kind: ' + kind
       );
     assert.ok(initial.items.some((item) => item.id === review.id));
+    for (const item of initial.items) {
+      assert.equal(
+        item.details?.kind,
+        item.kind,
+        `Missing live metadata for ${item.kind}`
+      );
+      assert.equal(
+        JSON.stringify(item.details).includes('ownerIdentityId'),
+        false
+      );
+      if (item.kind === 'application')
+        assert.ok(
+          item.details.reviews,
+          'Application ratings must come from Discussion'
+        );
+      if (item.kind === 'article')
+        assert.ok(
+          item.details.cover,
+          'The reviewed article cover must reach the feed'
+        );
+      if (item.kind === 'review') {
+        assert.equal(item.details.byline, 'Explore reviewer');
+        assert.equal(
+          item.details.text,
+          'A real public review in the activity feed.'
+        );
+        assert.ok(item.details.rating >= 1 && item.details.rating <= 5);
+      }
+      if (item.kind === 'discussion') {
+        assert.equal(item.details.posts[0].id, item.id);
+        assert.equal(
+          item.details.posts[0].text,
+          'A current public discussion for the Explore feed.'
+        );
+      }
+    }
     assert.equal(
       initial.items.filter((item) => item.kind === 'discussion').length,
       topics.length

@@ -25,11 +25,14 @@
             </a>
             <ul class="result-entries">
               @for (entry of group.entries; track entry.id) {
-                <li>
+                <li class="preview-entry" [class.has-cover]="entry.articleCover">
+                  @if (entry.articleCover; as cover) {
+                    <article-cover-image class="preview-cover" [target]="{ kind: 'published', id: cover.articleId, imageId: cover.imageId }" [alt]="cover.alt" />
+                  }
                   <a class="result-entry" tuiButton size="s" appearance="flat"
                     [routerLink]="entry.link" iconEnd="@tui.chevron-right">
                     <div class="custom-content">
-                      <tui-avatar size="s" [src]="entry.coverImageUrl.url || '@tui.box'" />
+                      @if (!entry.articleCover) { <tui-avatar size="s" [src]="entry.coverImageUrl.url || '@tui.box'" /> }
                       <div class="entry-info">
                         <div class="entry-name">{{ entry.name }}</div>
                         @if (entry.tags && entry.tags.length > 0) {

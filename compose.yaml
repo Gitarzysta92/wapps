@@ -2,15 +2,17 @@
 name: wapps-local
 services:
   mysql:
-    image: mysql:8.4
+    image: wapps-local-mysql
+    build:
+      context: ./deploy/local/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
       MYSQL_DATABASE: editorial
+      AUTHENTICATION_DB_PASSWORD: ${LOCAL_AUTH_DATABASE_PASSWORD:-wapps-local-authentication-password}
       MYSQL_USER: wapps
       MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./deploy/local/mysql/init.sql:/docker-entrypoint-initdb.d/10-wapps.sql:ro
     ports:
       - 127.0.0.1:3306:3306
     healthcheck:
@@ -92,6 +94,7 @@ services:
       - 127.0.0.1:8181:8181
     restart: unless-stopped
   firebase-auth:
+    profiles: [firebase-emulator]
     build:
       context: ./deploy/local/firebase
     volumes:
@@ -260,8 +263,6 @@ services:
       ACCOUNT_EXPORT_SOURCE_SECRET: ${LOCAL_EXPORT_SECRET:-wapps-local-export-service-secret-2026}
       ACCOUNT_ERASURE_SECRET: ${LOCAL_ERASURE_SECRET:-wapps-local-erasure-service-secret-2026}
       NOTIFICATION_SERVICE_SECRET: ${LOCAL_NOTIFICATION_SECRET:-wapps-local-notification-service-secret-2026}
-      FIREBASE_PROJECT_ID: demo-wapps
-      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
       OPA_URL: http://opa:8181
       DISCUSSION_SEED_DEMO_DATA: "true"
     depends_on:
@@ -304,11 +305,10 @@ services:
       NODE_ENV: development
       EXPLORE_SERVICE_SECRET: ${LOCAL_EXPLORE_SERVICE_SECRET:-}
       INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
-      FIREBASE_PROJECT_ID: demo-wapps
-      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
       EDITORIAL_URL: http://editorial:1337
       DISCUSSION_URL: http://discussion:1338
       PORT: "3000"
+      ACCOUNT_MANAGEMENT_URL: http://account-management:1340
     depends_on:
       editorial:
         condition: service_healthy
@@ -329,15 +329,15 @@ services:
       dockerfile: deploy/local/Dockerfile
       target: backend
       args:
-        NX_PROJECT: sdk-features-identity-applications-authenticator
-        OUTPUT_PATH: dist/sdk/features/identity/applications/authenticator
+        NX_PROJECT: sdk-features-identity-applications-management
+        OUTPUT_PATH: dist/sdk/features/identity/applications/management
     command: ["node", "main.js", "--migrate"]
     environment:
       MYSQL_HOST: mysql
       MYSQL_PORT: "3306"
       MYSQL_USERNAME: wapps
       MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
-      MYSQL_DATABASE: identity
+      MYSQL_DATABASE: ${LOCAL_IDENTITY_DATABASE:-identity}
     depends_on:
       mysql:
         condition: service_healthy
@@ -352,6 +352,9 @@ services:
         NX_PROJECT: sdk-features-identity-applications-management
         OUTPUT_PATH: dist/sdk/features/identity/applications/management
     environment:
+      AUTHENTICATION_URL: http://authenticator:8080
+      AUTH_ISSUER: wapps-local
+      AUTH_SERVICE_SECRET: ${LOCAL_AUTH_SERVICE_SECRET:-wapps-local-credential-service-secret-2026}
       NODE_ENV: development
       INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
       ACCOUNT_EXPORT_SOURCE_SECRET: ${LOCAL_EXPORT_SECRET:-wapps-local-export-service-secret-2026}
@@ -360,9 +363,6 @@ services:
       MENTION_NOTIFICATION_WORKER_ENABLED: ${MENTION_NOTIFICATION_WORKER_ENABLED:-false}
       FAVORITE_UPDATE_WORKER_ENABLED: ${FAVORITE_UPDATE_WORKER_ENABLED:-false}
       NOTIFICATION_SERVICE_SECRET: ${LOCAL_NOTIFICATION_SECRET:-wapps-local-notification-service-secret-2026}
-      FIREBASE_PROJECT_ID: demo-wapps
-      FIREBASE_WEB_API_KEY: local-emulator-key
-      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
       ACCOUNT_MANAGEMENT_PORT: "1340"
       DISCUSSION_URL: http://discussion:1338
       EDITORIAL_URL: http://editorial:1337
@@ -375,13 +375,10 @@ services:
       MYSQL_PORT: "3306"
       MYSQL_USERNAME: wapps
       MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
-      MYSQL_DATABASE: identity
+      MYSQL_DATABASE: ${LOCAL_IDENTITY_DATABASE:-identity}
     depends_on:
       identity-migrate:
         condition: service_completed_successfully
-      firebase-auth:
-        condition: service_healthy
-        restart: true
       opa:
         condition: service_started
         restart: true
@@ -401,7 +398,27 @@ services:
       retries: 30
       start_period: 20s
     restart: unless-stopped
-  firebase-auth-validator:
+  authentication-migrate:
+    build:
+      context: .
+      dockerfile: deploy/local/Dockerfile
+      target: backend
+      args:
+        NX_PROJECT: sdk-features-identity-applications-authenticator
+        OUTPUT_PATH: dist/sdk/features/identity/applications/authenticator
+    command: ["node", "main.js", "--migrate"]
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USERNAME: authentication
+      MYSQL_PASSWORD: ${LOCAL_AUTH_DATABASE_PASSWORD:-wapps-local-authentication-password}
+      MYSQL_DATABASE: authentication
+    depends_on:
+      mysql:
+        condition: service_healthy
+    init: true
+    restart: "no"
+  authenticator:
     build:
       context: .
       dockerfile: deploy/local/Dockerfile
@@ -410,34 +427,23 @@ services:
         NX_PROJECT: sdk-features-identity-applications-authenticator
         OUTPUT_PATH: dist/sdk/features/identity/applications/authenticator
     environment:
+      AUTH_PROVIDER: local
       NODE_ENV: development
-      INGRESS_AUTH_SECRET: ${LOCAL_INGRESS_SECRET:-wapps-local-ingress-secret}
-      FIREBASE_PROJECT_ID: demo-wapps
-      FIREBASE_AUTH_EMULATOR_HOST: firebase-auth:9099
-      FIREBASE_WEB_API_KEY: local-emulator-key
+      AUTH_ISSUER: wapps-local
+      AUTH_SERVICE_SECRET: ${LOCAL_AUTH_SERVICE_SECRET:-wapps-local-credential-service-secret-2026}
       ENABLE_GOOGLE: "false"
       ENABLE_GITHUB: "false"
-      ENABLE_ANONYMOUS: "true"
+      ENABLE_ANONYMOUS: "false"
       PORT: "8080"
-      QUEUE_HOST: rabbitmq
-      QUEUE_PORT: "5672"
-      QUEUE_USERNAME: wapps
-      QUEUE_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
       MYSQL_HOST: mysql
       MYSQL_PORT: "3306"
-      MYSQL_USERNAME: wapps
-      MYSQL_PASSWORD: ${LOCAL_PASSWORD:-wapps-local-password}
-      MYSQL_DATABASE: identity
+      MYSQL_USERNAME: authentication
+      MYSQL_PASSWORD: ${LOCAL_AUTH_DATABASE_PASSWORD:-wapps-local-authentication-password}
+      MYSQL_DATABASE: authentication
     depends_on:
-      identity-migrate:
+      authentication-migrate:
         condition: service_completed_successfully
-      firebase-auth:
-        condition: service_healthy
-        restart: true
       mysql:
-        condition: service_healthy
-        restart: true
-      rabbitmq:
         condition: service_healthy
         restart: true
     init: true
@@ -605,7 +611,7 @@ services:
       account-management:
         condition: service_healthy
         restart: true
-      firebase-auth-validator:
+      authenticator:
         condition: service_healthy
         restart: true
       content-node-registry:

@@ -27,7 +27,7 @@ describe('account erasure contracts', () => {
       CanonicalIdentityInputError
     )
   );
-  it.each(['account', 'editorial', 'discussion'])(
+  it.each(['alpha', 'Vendor:Export/v9', 'OTHER'])(
     'accepts pending and completed receipts from %s',
     (participant) => {
       for (const state of ['pending', 'completed']) {
@@ -37,7 +37,7 @@ describe('account erasure contracts', () => {
     }
   );
   it.each([
-    { participant: 'other', state: 'pending' },
+    { participant: '', state: 'pending' },
     { participant: 'account', state: 'accepted' },
     { participant: 'editorial', state: 'completed', revision: '7' },
     { participant: 'discussion', state: 'completed', extra: true },

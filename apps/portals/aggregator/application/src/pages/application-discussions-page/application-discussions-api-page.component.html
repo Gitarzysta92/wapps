@@ -1,6 +1,6 @@
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
-  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <h1 uiPageTitle slot="title">@if (!discussionSlug()) { <tui-icon icon="@tui.message-circle" /> }{{ title() }}</h1>
   <p slot="meta">
     Community conversations{{
       application() ? ' about ' + application()!.name : ''

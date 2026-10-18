@@ -100,9 +100,17 @@ export function selectDigest(
       hidden: previews.length - ordered.length,
     };
   }
+  function selectedActivity(source: DigestGroup<ExploreItem>, size: number) {
+    const items = selectExplorePage(source.items, choices);
+    return {
+      items: items.slice(0, size),
+      more: source.more || items.length > size,
+      hidden: source.items.length - items.length,
+    };
+  }
   return {
-    latest: selected(content.latest, content.latest.items, 3),
-    discussions: selected(content.discussions, content.discussions.items, 1),
+    latest: selectedActivity(content.latest, 3),
+    discussions: selectedActivity(content.discussions, 1),
     applications: selected(
       content.applications,
       content.applications.items.map((app) => ({

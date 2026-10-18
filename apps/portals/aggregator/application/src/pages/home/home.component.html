@@ -18,12 +18,12 @@
 </section>
 
 <section class="section__feed-heading">
-  <h2 id="explore">Explore</h2>
+  <h2>Explore</h2>
 </section>
 
 <section class="section__feed" uiWobbleOutline uiDecorationFade>
   @if (apiMode) {
-    <explore-feed class="section__feed-container" />
+    <explore-feed class="section__feed-container" id="explore" />
   } @else {
   <feed-container class="section__feed-container">
     <ng-template #itemTemplate let-item>

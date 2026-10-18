@@ -1,5 +1,6 @@
 import {
   reviewBoolean,
+  reviewBindingKey,
   reviewContent,
   reviewCursor,
   reviewId,
@@ -14,13 +15,10 @@ import {
   type ReviewReportPage,
 } from './review';
 
-export function memberReview(
-  input: unknown,
-  applicationId: string
-): MemberReview {
+export function memberReview(input: unknown, bindingKey: string): MemberReview {
   const row = reviewObject(input, [
     'id',
-    'applicationId',
+    'bindingKey',
     'revision',
     'contentRevision',
     'content',
@@ -38,7 +36,7 @@ export function memberReview(
   ]);
   const value: MemberReview = {
     id: reviewId(row['id']),
-    applicationId: reviewId(row['applicationId']),
+    bindingKey: reviewBindingKey(row['bindingKey']),
     revision: reviewRevision(row['revision']),
     contentRevision: reviewRevision(row['contentRevision']),
     content: reviewContent(row['content']),
@@ -61,7 +59,7 @@ export function memberReview(
         : reviewRevision(row['openReports'], 0),
   };
   if (
-    value.applicationId !== applicationId ||
+    value.bindingKey !== reviewBindingKey(bindingKey) ||
     value.contentRevision > value.revision ||
     value.updatedAt < value.createdAt ||
     (value.helpful && value.helpfulCount === 0) ||
@@ -88,9 +86,10 @@ function pageRows(input: unknown): { rows: unknown[]; next: string | null } {
 
 export function reviewPage(
   input: unknown,
-  applicationId: string,
+  bindingKey: string,
   moderation = false
 ): ReviewPage {
+  bindingKey = reviewBindingKey(bindingKey);
   const row = reviewObject(input, [
     'items',
     'next',
@@ -99,9 +98,9 @@ export function reviewPage(
     'canModerate',
   ]);
   const { rows, next } = pageRows({ items: row['items'], next: row['next'] });
-  const items = rows.map((value) => memberReview(value, applicationId));
+  const items = rows.map((value) => memberReview(value, bindingKey));
   const mine =
-    row['mine'] === null ? null : memberReview(row['mine'], applicationId);
+    row['mine'] === null ? null : memberReview(row['mine'], bindingKey);
   const summary = reviewSummary(row['summary']);
   const canModerate = reviewBoolean(row['canModerate']);
   if (

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FavoritesContractError } from '@domains/customer/favorites';
 import { PermissionDeniedError } from '@sdk/kernel/ontology/authority';
-import { FavoriteUpdateSourceAccess } from '@sdk/features/identity/libs/management';
+import { FavoriteUpdateSourceAccess } from '@wapps/account';
 import { EditorialUser } from './editorial-auth';
 import type { EditorialActor } from '../application/editorial.ports';
 

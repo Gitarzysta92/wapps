@@ -28,6 +28,8 @@ export interface CatalogEntry extends ClassifiedContent {
   name: string;
   description: string;
   image?: string;
+  articleCover?: { articleId: string; imageId: string; alt: string };
+  applicationCount?: number;
   categories: CatalogFacet[];
   tags: CatalogFacet[];
   platforms?: CatalogFacet[];

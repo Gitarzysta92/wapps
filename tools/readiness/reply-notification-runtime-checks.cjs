@@ -32,6 +32,7 @@ module.exports = async function qualifyReplyNotificationRuntime(options) {
     other,
     accountOrigin,
     discussionOrigin,
+    discussionServiceOrigin,
     headers,
     until,
     restartAccount,
@@ -179,7 +180,7 @@ module.exports = async function qualifyReplyNotificationRuntime(options) {
     assert.deepEqual(await reply(other, key), first);
     const {
       EditorialProfileDiscussionParents,
-    } = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/editorial-profile-discussion-parents');
+    } = require('../../apps/services/community/src/app/discussions/infrastructure/editorial-profile-discussion-parents');
     assert.equal(
       (
         await new EditorialProfileDiscussionParents(
@@ -338,7 +339,7 @@ module.exports = async function qualifyReplyNotificationRuntime(options) {
           response.end('{}');
           return;
         }
-        const upstream = await fetch(discussionOrigin() + request.url, {
+        const upstream = await fetch(discussionServiceOrigin() + request.url, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -374,7 +375,7 @@ module.exports = async function qualifyReplyNotificationRuntime(options) {
       'UPDATE discussion_reply_notifications SET leasedUntil=? WHERE id=? AND deliveredAt IS NULL',
       [Date.now() - 1, interrupted.id]
     );
-    accountEnv.DISCUSSION_URL = discussionOrigin();
+    accountEnv.DISCUSSION_URL = discussionServiceOrigin();
     await restartAccount();
     await settled(interrupted.id);
     assert.equal(

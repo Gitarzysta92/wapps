@@ -26,7 +26,7 @@
   ],
   "references": [
     {
-      "path": "../../../sdk/features/identity/packages/infrastructure/mysql/tsconfig.lib.json"
+      "path": "../../../libs/adapters/account-mysql/tsconfig.lib.json"
     },
     {
       "path": "../../../sdk/extras/mysql/tsconfig.lib.json"
@@ -93,6 +93,12 @@
     },
     {
       "path": "../../../libs/domains/reliability/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/usecases/account/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/community/tsconfig.lib.json"
     }
   ]
 }

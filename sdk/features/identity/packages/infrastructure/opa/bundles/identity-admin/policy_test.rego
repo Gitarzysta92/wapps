@@ -38,6 +38,21 @@ administrator := {
 
 test_identity_admin_can_disable if allow with input as administrator
 
+test_global_lifecycle_actions_allow_global_staff if {
+	every action in ["identity.user.disable", "identity.user.enable", "identity.user.revoke_tokens", "identity.user.delete", "identity.user.update_email", "identity.user.update_password", "identity.user.unlink_provider", "identity.user.generate_password_reset_link", "identity.user.generate_email_verification_link", "identity.graph.read"] {
+		allow with input as administrator with input.actionName as action
+	}
+}
+
+test_tenant_staff_cannot_change_global_lifecycle if {
+	every action in ["identity.user.disable", "identity.user.enable", "identity.user.revoke_tokens", "identity.user.delete", "identity.user.update_email", "identity.user.update_password", "identity.user.unlink_provider", "identity.user.generate_password_reset_link", "identity.user.generate_email_verification_link", "identity.graph.read"] {
+		every tenant in ["tenant-a", "", null] {
+			not allow with input as administrator with input.actionName as action with input.tenantId as tenant
+			not allow with input as administrator with input.actionName as action with input.tenantId as tenant with input.subject.roles as ["admin"]
+		}
+	}
+}
+
 test_example_identity_has_no_implicit_permissions if {
 	not allow with input as {"identityId": "example-admin", "actionName": "identity.user.disable", "resource": {"type": "user", "id": "target"}}
 }
@@ -125,6 +140,14 @@ badge_staff := {"identityId": "StaffUid", "actionName": "identity.profile-badges
 test_badge_staff_awards_and_revokes if allow with input as badge_staff
 test_badge_staff_reads_history if allow with input as badge_staff with input.actionName as "identity.profile-badges.read"
 test_badge_global_admin if allow with input as badge_staff with input.subject.roles as ["admin"]
+test_badge_tenant_scoped_staff_denied if {
+  every action in ["identity.profile-badges.read", "identity.profile-badges.update"] {
+    every role in ["admin", "identity:badge-manager"] {
+      not allow with input as badge_staff with input.actionName as action with input.subject.roles as [role] with input.tenantId as "default"
+      not allow with input as badge_staff with input.actionName as action with input.subject.roles as [role] with input.tenantId as "other"
+    }
+  }
+}
 test_badge_owner_cannot_award_itself if not allow with input as badge_staff with input.subject.roles as [] with input.resource.id as "StaffUid"
 test_badge_unassigned_admin_denied if not allow with input as badge_staff with input.subject.roles as ["identity:admin"]
 test_badge_wrong_resource_denied if not allow with input as badge_staff with input.resource.type as "user"

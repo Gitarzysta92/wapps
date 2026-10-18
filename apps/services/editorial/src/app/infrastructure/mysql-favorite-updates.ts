@@ -1,10 +1,11 @@
+import { classificationFields } from '@domains/publication/classification';
 import type { DataSource } from 'typeorm';
 import {
   parseFavoriteTarget,
   parseFavoriteUpdateState,
   type FavoriteTarget,
 } from '@domains/customer/favorites';
-import type { FavoriteUpdateSource } from '@sdk/features/identity/libs/management';
+import type { FavoriteUpdateSource } from '@wapps/account';
 import { canonicalArticle } from '../articles/mysql-article-state';
 import { applicationPublicState } from '../application-publication/application-public-state';
 import { suitePublicState } from '../suites/suite-publication-state';
@@ -33,12 +34,13 @@ export class MysqlEditorialFavoriteUpdates implements FavoriteUpdateSource {
           state.isSuspended === 0
         ) {
           const [app]: Record<string, unknown>[] = await tx.query(
-            'SELECT name,slug FROM app_records WHERE id=?',
+            'SELECT name,slug,classification FROM app_records WHERE id=?',
             [target.id]
           );
           if (!app) throw new Error('Application authority is incomplete');
           content = {
             title: app.name,
+            ...classificationFields(app.classification ?? undefined),
             destination: { kind: target.kind, slug: app.slug },
           };
         }
@@ -51,6 +53,7 @@ export class MysqlEditorialFavoriteUpdates implements FavoriteUpdateSource {
         )
           content = {
             title: article.fields.title,
+            ...classificationFields(article.fields.classification),
             destination: { kind: target.kind, slug: article.fields.slug },
           };
       } else {
@@ -61,11 +64,15 @@ export class MysqlEditorialFavoriteUpdates implements FavoriteUpdateSource {
           state.deletedAt === null
         ) {
           const [suite]: Record<string, unknown>[] = await tx.query(
-            'SELECT title FROM suite_publications WHERE suiteId=?',
+            'SELECT title,classification FROM suite_publications WHERE suiteId=?',
             [target.id]
           );
           if (!suite) throw new Error('Suite authority is incomplete');
-          content = { title: suite.title, destination: { kind: target.kind } };
+          content = {
+            title: suite.title,
+            ...classificationFields(suite.classification ?? undefined),
+            destination: { kind: target.kind },
+          };
         }
       }
       return parseFavoriteUpdateState({

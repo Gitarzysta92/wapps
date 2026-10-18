@@ -37,6 +37,7 @@ export type DiscoveryPreviewEntry = Pick<
   | 'image'
   | 'rating'
   | 'author'
+  | 'articleCover'
 > & { tags: { name: string; slug?: string }[] };
 
 export interface DiscoveryPreview {
@@ -158,7 +159,11 @@ export class DiscoveryPreviewService {
                   slug: item.slug ?? item.id,
                   name: item.title,
                   description: item.summary,
-                  tags: (item.tagNames ?? []).map((name) => ({ name })),
+                  tags: item.displayTags ?? [],
+                  ...(item.details?.kind === 'application' ? { image: item.details.logoUrl ?? undefined, rating: item.details.reviews.rating ?? undefined } : {}),
+                  ...(item.details?.kind === 'article' ? { author: item.details.byline,
+                    ...(item.details.cover ? { articleCover: { articleId: item.id, ...item.details.cover } } : {}),
+                  } : {}),
                 })),
               }));
             return {

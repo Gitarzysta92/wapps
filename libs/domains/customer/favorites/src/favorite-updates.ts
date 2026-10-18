@@ -1,4 +1,8 @@
 import {
+  classificationFields,
+  type ClassifiedContent,
+} from '@domains/publication/classification';
+import {
   FavoritesContractError,
   parseFavoriteTarget,
   type FavoriteTarget,
@@ -23,10 +27,15 @@ export type FavoriteUpdateDestination =
 /** The version measures public content changes, independently of projection delivery. */
 export interface FavoriteUpdateState extends FavoriteUpdateVersion {
   target: FavoriteTarget;
-  content: { title: string; destination: FavoriteUpdateDestination } | null;
+  content:
+    | (ClassifiedContent & {
+        title: string;
+        destination: FavoriteUpdateDestination;
+      })
+    | null;
 }
 
-export interface FavoriteUpdateItem {
+export interface FavoriteUpdateItem extends ClassifiedContent {
   id: string;
   target: FavoriteTarget;
   title: string;
@@ -43,13 +52,16 @@ export interface FavoriteUpdatePage {
 
 export function favoriteUpdateObject(
   value: unknown,
-  keys: string[]
+  keys: string[],
+  optional: string[] = []
 ): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new FavoritesContractError('Expected update object');
   const row = Object.fromEntries(Object.entries(value));
   if (
-    Object.keys(row).length !== keys.length ||
+    Object.keys(row).some(
+      (key) => !keys.includes(key) && !optional.includes(key)
+    ) ||
     keys.some((key) => !Object.prototype.hasOwnProperty.call(row, key))
   )
     throw new FavoritesContractError('Missing or unknown update field');
@@ -138,7 +150,11 @@ export function parseFavoriteUpdateState(value: unknown): FavoriteUpdateState {
   const content =
     row['content'] === null
       ? null
-      : favoriteUpdateObject(row['content'], ['title', 'destination']);
+      : favoriteUpdateObject(
+          row['content'],
+          ['title', 'destination'],
+          ['classification']
+        );
   return {
     target,
     ...version,
@@ -146,6 +162,7 @@ export function parseFavoriteUpdateState(value: unknown): FavoriteUpdateState {
       content === null
         ? null
         : {
+            ...classificationFields(content['classification']),
             title: title(content['title']),
             destination: destination(content['destination'], target),
           },
@@ -179,14 +196,11 @@ export function parseFavoriteUpdatePage(value: unknown): FavoriteUpdatePage {
     throw new FavoritesContractError('Invalid update page');
   const next = favoriteUpdateCursor(row['next']);
   const items = row['items'].map((input): FavoriteUpdateItem => {
-    const item = favoriteUpdateObject(input, [
-      'id',
-      'target',
-      'title',
-      'destination',
-      'at',
-      'readAt',
-    ]);
+    const item = favoriteUpdateObject(
+      input,
+      ['id', 'target', 'title', 'destination', 'at', 'readAt'],
+      ['classification']
+    );
     const target = parseFavoriteTarget(item['target']),
       at = favoriteUpdateTime(item['at']);
     const readAt =
@@ -196,6 +210,7 @@ export function parseFavoriteUpdatePage(value: unknown): FavoriteUpdatePage {
     return {
       id: favoriteUpdateId(item['id']),
       target,
+      ...classificationFields(item['classification']),
       title: title(item['title']),
       destination: destination(item['destination'], target),
       at,

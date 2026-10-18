@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { MultiSearchPreviewState } from '@portals/shared/features/multi-search';
+import { ArticleCoverImageComponent, provideArticleCovers } from '@portals/shared/features/articles';
 import {
   FullSearchRedirectComponent,
   SearchResultListSkeleton,
@@ -30,7 +31,9 @@ import {
     SearchResultListSkeleton,
     TuiBadge,
     TuiAvatar,
+    ArticleCoverImageComponent,
   ],
+  providers: [provideArticleCovers()],
   styleUrl: './home-search-results.component.scss',
   templateUrl: './home-search-results.component.html',
 })

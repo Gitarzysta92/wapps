@@ -7,7 +7,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { ProfileTotalsService } from '@sdk/features/identity/libs/management';
+import { ProfileTotalsService } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedRequest,

@@ -1,12 +1,20 @@
-import type { ExploreTarget } from '@domains/feed';
+import type { ExploreLinkTarget } from '@portals/shared/features/feed';
 import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { NAVIGATION } from './navigation';
 
-export function exploreLink(target: ExploreTarget): {
+export function exploreLink(target: ExploreLinkTarget): {
   path: string | string[];
   query?: Record<string, string>;
 } {
   switch (target.kind) {
+    case 'application-reviews':
+      return {
+        path: buildRoutePath(
+          NAVIGATION.applicationReviews.path,
+          { appSlug: target.applicationSlug },
+          { absolute: true }
+        ),
+      };
     case 'application':
       return {
         path: buildRoutePath(

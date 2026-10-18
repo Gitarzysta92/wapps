@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
 const { DataSource } = require('typeorm');
-const { MysqlProfileBadges, MysqlPublicProfiles, ProfileBadges1791676831000 } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+const { MysqlProfileBadges, MysqlPublicProfiles, ProfileBadges1791676831000 } = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyProfileBadges({ source, configuration, identities }) {
   const actor = 'BadgeStaff', recipient = 'BadgeMember';

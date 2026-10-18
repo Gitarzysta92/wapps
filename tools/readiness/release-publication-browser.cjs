@@ -421,7 +421,7 @@ async function releasePublicationBrowser(options) {
       await capture('public-page-one', publicReader);
       assert.equal(
         await publicReader.$$eval(
-          'app-release-devlog article',
+          'app-release-devlog .changelog-card',
           (items) => items.length
         ),
         20
@@ -431,7 +431,7 @@ async function releasePublicationBrowser(options) {
       await capture('public-page-two', publicReader);
       assert.equal(
         await publicReader.$$eval(
-          'app-release-devlog article',
+          'app-release-devlog .changelog-card',
           (items) => items.length
         ),
         1
@@ -443,7 +443,7 @@ async function releasePublicationBrowser(options) {
       await text('20 releases', publicReader);
       assert.equal(
         await publicReader.$$eval(
-          'app-release-devlog article',
+          'app-release-devlog .changelog-card',
           (items) => items.length
         ),
         20
@@ -457,7 +457,7 @@ async function releasePublicationBrowser(options) {
       await text('Previous releases', publicReader);
       await publicReader.waitForFunction(
         () =>
-          document.querySelectorAll('.release-history article').length === 20
+          document.querySelectorAll('.release-history .changelog-card').length === 20
       );
       await capture('previous-releases', publicReader);
       assert(

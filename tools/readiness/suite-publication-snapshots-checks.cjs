@@ -135,6 +135,13 @@ module.exports = async function suitePublicationSnapshotsChecks({
     runner = source.createQueryRunner();
     await migration.up(runner);
     await new SuitePublication1791676809000().up(runner);
+    // Current readers require later additive columns after the legacy upgrade proof.
+    await runner.release();
+    runner = null;
+    await source.destroy();
+    source = await connect(host.options.migrations);
+    await source.runMigrations();
+    runner = source.createQueryRunner();
     const reader = new MysqlEditorialSnapshotReader(source, 'default');
     const before = await reader.read('suite', ids[0]);
     assert.deepEqual(before, {

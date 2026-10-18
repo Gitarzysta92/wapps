@@ -2,6 +2,7 @@ import {
   classificationFields,
   type ClassifiedContent,
 } from '@domains/publication/classification';
+import { parseActivityDetails, type ActivityDetails } from './explore-details';
 
 export const EXPLORE_PAGE_SIZE = 10;
 export const EXPLORE_KINDS = [
@@ -41,6 +42,7 @@ export type ExploreTarget =
       version: string;
     };
 export interface ExploreItem extends ClassifiedContent {
+  details?: ActivityDetails;
   kind: ExploreKind;
   id: string;
   at: number;
@@ -175,6 +177,9 @@ export function parseExploreItem(input: unknown): ExploreItem {
     'categories',
     'tags',
     'engagement',
+    ...(input !== null && typeof input === 'object' && 'details' in input
+      ? ['details']
+      : []),
     ...(input !== null && typeof input === 'object' && 'classification' in input
       ? ['classification']
       : []),
@@ -209,6 +214,15 @@ export function parseExploreItem(input: unknown): ExploreItem {
     name === 'discussion' || name === 'review' || engagement === null
   );
   requireValue(name !== 'review' || engagement === null || engagement >= 0);
+  let details: ActivityDetails | undefined;
+  if ('details' in row) {
+    try {
+      details = parseActivityDetails(row['details'], name);
+    } catch {
+      throw new ExploreInputError('Invalid activity details');
+    }
+    requireValue(details.kind !== 'discussion' || details.posts[0].id === id);
+  }
   return {
     kind: name,
     id,
@@ -218,6 +232,7 @@ export function parseExploreItem(input: unknown): ExploreItem {
     categories: identifiers(row['categories']),
     tags: identifiers(row['tags']),
     engagement,
+    ...(details ? { details } : {}),
     ...classificationFields(row['classification'], ExploreInputError),
   };
 }

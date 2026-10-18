@@ -452,10 +452,23 @@ module.exports = async function qualifyDiscovery({
           await text('Team article 00', one);
           await text('Team suite 00', one);
           assert.equal(
-            await one.$$eval('.discovery-card', (cards) => cards.length),
+            await one.$$eval('discover-api-page .item-card', (cards) => cards.length),
             6
           );
           await capture('grouped-discovery', one);
+          await click('Display options', one);
+          await one.waitForSelector('select[aria-label="Order"]', { visible: true });
+          await one.select('select[aria-label="Order"]', 'name-desc');
+          await text('Team article 22', one);
+          assert.equal(new URL(one.url()).searchParams.get('sort'), 'name-desc');
+          await one.keyboard.press('Escape');
+          await go(route, one);
+          await text('Team article 00', one);
+          const taxonomyResponse = one.waitForResponse(response => new URL(response.url()).pathname === '/api/catalog/apps' && response.status() === 200);
+          await click('Manage filters', one);
+          await taxonomyResponse;
+          await one.keyboard.press('Escape');
+
           await go(route, two);
           await text('Team article 00', two);
           const next = await one.$('button[aria-label="Next Articles page"]');
@@ -467,7 +480,7 @@ module.exports = async function qualifyDiscovery({
           await one.goBack({ waitUntil: 'networkidle0' });
           await text('Team article 00', one);
           for (const kind of ['article', 'suite', 'application']) {
-            const link = await one.$eval('#' + kind + ' article a', (element) =>
+            const link = await one.$eval('#' + kind + ' .result-link', (element) =>
               element.getAttribute('href')
             );
             await go(link, two);
@@ -478,23 +491,23 @@ module.exports = async function qualifyDiscovery({
             );
           }
           await fill(
-            'discover-api-page input[type=search]',
+            'discover-api-page search-bar input',
             'missing-query',
             one
           );
           await click('Search', one);
-          await text('No matching results on this page', one);
+          await text('No results found', one);
           await one.goBack({ waitUntil: 'networkidle0' });
           await text('Team article 00', one);
           assert.equal(
-            await one.$eval('input[type=search]', (input) => input.value),
+            await one.$eval('discover-api-page search-bar input', (input) => input.value),
             'team'
           );
           setOffline((path) => path === '/api/catalog/discover');
           await click('Refresh results', one);
           await text('Discover unavailable', one);
           assert.equal(
-            await one.$$eval('.discovery-card', (cards) => cards.length),
+            await one.$$eval('discover-api-page .item-card', (cards) => cards.length),
             0
           );
           setOffline(false);
@@ -509,7 +522,7 @@ module.exports = async function qualifyDiscovery({
           await go('/discover?social=github', one);
           await text('Adjust your search', one);
           assert.equal(
-            await one.$$eval('.discovery-card', (cards) => cards.length),
+            await one.$$eval('discover-api-page .item-card', (cards) => cards.length),
             0
           );
           return [

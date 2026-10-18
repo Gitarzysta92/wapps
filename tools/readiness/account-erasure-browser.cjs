@@ -7,7 +7,7 @@ const { setTimeout: delay } = require('node:timers/promises');
 const puppeteer = require('puppeteer');
 const {
   MysqlCanonicalIdentities,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 module.exports = async function qualifyAccountErasureBrowser(options) {
   const {

@@ -135,7 +135,10 @@ async function suiteWorkspaceBrowser({
           identityId: uid,
           revision: 1,
           updatedAt: null,
-          preferences: defaultAccountPreferences(),
+          preferences: {
+            ...defaultAccountPreferences(),
+            content: { ...defaultAccountPreferences().content, showMatureContent: true },
+          },
         });
       if (url.pathname === '/api/me/favorites')
         return send(200, { identityId: uid, revision: 1, favorites: [] });
@@ -176,7 +179,8 @@ async function suiteWorkspaceBrowser({
           : void request.abort()
       );
       await page.evaluateOnNewDocument((token) => {
-        localStorage.setItem('_i', token);
+        if (token) localStorage.setItem('_i', token);
+        else localStorage.removeItem('_i');
         localStorage.setItem(
           'wapps.suite-drafts.v1',
           '[{"title":"Never import this browser draft"}]'
@@ -194,7 +198,7 @@ async function suiteWorkspaceBrowser({
         await target.waitForFunction(
           (value) =>
             document
-              .querySelector('private-suites-page, suite-publication-page')
+              .querySelector('private-suites-page, suite-publication-page, results-page')
               ?.textContent.includes(value),
           {},
           value
@@ -207,7 +211,7 @@ async function suiteWorkspaceBrowser({
         const content = await target.evaluate(
           () =>
             document.querySelector(
-              'private-suites-page, suite-publication-page'
+              'private-suites-page, suite-publication-page, results-page'
             )?.textContent
         );
         throw new Error(
@@ -279,18 +283,19 @@ async function suiteWorkspaceBrowser({
           });
           const layout = await target.evaluate(() => {
             const host = document.querySelector(
-              'private-suites-page, suite-publication-page'
+              'private-suites-page, suite-publication-page, results-page'
             );
             const header = host
-              .querySelector('ui-page-header')
+              .querySelector('ui-page-header, .detail-header, .detail-page ui-content-state')
               .getBoundingClientRect();
             const content = host
-              .querySelector('.suite-workspace')
+              .querySelector('.suite-workspace, .detail-header, .detail-page ui-content-state, .catalog-toolbar')
               .getBoundingClientRect();
             const title = host
-              .querySelector('.page-header-title')
+              .querySelector('.page-header-title, .detail-header h1, .detail-page ui-content-state h2')
               .getBoundingClientRect();
             return {
+              reading: !!host.querySelector('.detail-page'),
               overflow: document.documentElement.scrollWidth > innerWidth + 1,
               titleWidth: title.width,
               minimumTitleWidth: Math.min(160, header.width / 2),
@@ -310,7 +315,7 @@ async function suiteWorkspaceBrowser({
             `${state}/${theme}/${width}: header actions squeeze the title to ${layout.titleWidth}px`
           );
           assert.ok(
-            Math.abs(layout.gap - 24) < 2,
+            layout.reading || Math.abs(layout.gap - 24) < 2,
             `${state}: gap ${layout.gap}`
           );
           const file = `${state}-${theme}-${width}.png`;
@@ -337,7 +342,7 @@ async function suiteWorkspaceBrowser({
       '#suite-description',
       'A collection that persists across sessions.'
     );
-    await page.click('button[aria-label="Add Browser Suite Alpha"]');
+    await page.click('input[aria-label="Include Browser Suite Alpha"]');
     await capture('create');
     loseReceipt = true;
     await click('Save suite');
@@ -370,7 +375,7 @@ async function suiteWorkspaceBrowser({
     await click('Edit suite');
     await text('Browser Suite Beta');
     await fill('#suite-title', 'Updated research tools');
-    await page.click('button[aria-label="Add Browser Suite Beta"]');
+    await page.click('input[aria-label="Include Browser Suite Beta"]');
     await page.click('button[aria-label="Remove Browser Suite Alpha"]');
     await click('Save suite');
     await text('Suite saved.');

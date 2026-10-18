@@ -1,6 +1,6 @@
 import {
   ACCOUNT_EXPORT_LIMITS,
-  ACCOUNT_EXPORT_SOURCES,
+  consumerProviderPlan,
   AccountExportLeaseLost,
   AccountExportLimitExceeded,
   AccountExportSourceInvalid,
@@ -14,18 +14,27 @@ import type {
 } from './ports/account-export.port';
 
 export class CompleteAccountExport {
+  private readonly required: readonly string[];
   constructor(
     private readonly jobs: AccountExportJobs,
     private readonly sources: readonly AccountExportSource[],
     private readonly archive: AccountExportArchive,
     private readonly token: () => string,
-    private readonly now = Date.now
+    private readonly now: () => number,
+    required: readonly string[]
   ) {
-    if (
-      sources.length !== ACCOUNT_EXPORT_SOURCES.length ||
-      sources.some(
-        (source, index) => source.name !== ACCOUNT_EXPORT_SOURCES[index]
+    this.required = consumerProviderPlan(required);
+    this.sources = Object.freeze(
+      sources.map((source) =>
+        Object.freeze({
+          name: source.name,
+          capture: source.capture.bind(source),
+        })
       )
+    );
+    if (
+      sources.length !== this.required.length ||
+      sources.some((source, index) => source.name !== this.required[index])
     )
       throw new Error(
         'Every canonical account export source is required in order'
@@ -99,7 +108,8 @@ export class CompleteAccountExport {
             signal
           ),
           aborted,
-        ])
+        ]),
+        this.required
       );
       await Promise.race([heartbeat(), aborted]);
       signal.throwIfAborted();

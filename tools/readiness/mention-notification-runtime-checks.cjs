@@ -32,6 +32,7 @@ module.exports = async function qualifyMentionNotificationRuntime(options) {
     other,
     accountOrigin,
     discussionOrigin,
+    discussionServiceOrigin,
     headers,
     until,
     restartAccount,
@@ -42,7 +43,7 @@ module.exports = async function qualifyMentionNotificationRuntime(options) {
   } = options;
   const {
     MysqlCanonicalIdentities,
-  } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+  } = require('../../libs/adapters/account-mysql/src');
   const identities = new MysqlCanonicalIdentities(accountSource);
   const profileIds = {};
   const pool = createPool({
@@ -219,7 +220,7 @@ module.exports = async function qualifyMentionNotificationRuntime(options) {
     assert.deepEqual(await reply(other, key), first);
     const {
       EditorialProfileDiscussionParents,
-    } = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/editorial-profile-discussion-parents');
+    } = require('../../apps/services/community/src/app/discussions/infrastructure/editorial-profile-discussion-parents');
     assert.equal(
       (
         await new EditorialProfileDiscussionParents(
@@ -394,7 +395,7 @@ module.exports = async function qualifyMentionNotificationRuntime(options) {
           response.end('{}');
           return;
         }
-        const upstream = await fetch(discussionOrigin() + request.url, {
+        const upstream = await fetch(discussionServiceOrigin() + request.url, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -430,7 +431,7 @@ module.exports = async function qualifyMentionNotificationRuntime(options) {
       'UPDATE discussion_mention_notifications SET leasedUntil=? WHERE id=? AND deliveredAt IS NULL',
       [Date.now() - 1, interrupted.eventId]
     );
-    accountEnv.DISCUSSION_URL = discussionOrigin();
+    accountEnv.DISCUSSION_URL = discussionServiceOrigin();
     await restartAccount();
     await settled(interrupted.eventId);
     assert.equal(

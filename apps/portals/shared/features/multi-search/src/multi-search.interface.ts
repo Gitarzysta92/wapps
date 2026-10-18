@@ -19,7 +19,10 @@ export interface IMultiSearchResultsProvider {
 }
 
 export type MultiSearchResultVM = Omit<SearchResultVM, 'groups'> & {
-  groups: (SearchResultVM['groups'][number] & {
+  groups: (Omit<SearchResultVM['groups'][number], 'entries'> & {
+    entries: (SearchResultVM['groups'][number]['entries'][number] & {
+      articleCover?: { articleId: string; imageId: string; alt: string };
+    })[];
     total?: number;
     hiddenCount?: number;
   })[];

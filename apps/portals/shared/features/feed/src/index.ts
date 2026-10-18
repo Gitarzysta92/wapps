@@ -27,3 +27,5 @@ export * from './digest.providers';
 export * from './timeline.providers';
 export * from './application/application-timeline.service';
 export * from './application/digest.service';
+
+export * from './presentation/explore/activity-card.component';

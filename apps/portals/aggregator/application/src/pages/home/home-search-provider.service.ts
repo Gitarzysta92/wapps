@@ -64,6 +64,7 @@ export class HomeSearchProviderService implements IMultiSearchResultsProvider {
               name: entry.name,
               description: entry.description,
               coverImageUrl: { url: entry.image ?? '', alt: entry.name },
+              articleCover: entry.articleCover,
               rating: entry.rating,
               authorName: entry.author,
               tags: entry.tags,

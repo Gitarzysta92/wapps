@@ -11,7 +11,10 @@
 img {
   display: block;
   max-width: 100%;
-  height: auto;
+  width: var(--article-cover-width, auto);
+  height: var(--article-cover-height, auto);
+  object-fit: cover;
+  border-radius: inherit;
 }
 .cover-editor,
 .cover-upload {

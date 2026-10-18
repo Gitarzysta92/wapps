@@ -5,9 +5,20 @@
     "declaration": true,
     "types": []
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
   "angularCompilerOptions": {
     "compilationMode": "partial"
-  }
+  },
+  "references": [
+    {
+      "path": "../../../../../libs/domains/community/tsconfig.lib.json"
+    }
+  ]
 }

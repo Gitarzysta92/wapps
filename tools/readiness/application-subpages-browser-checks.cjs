@@ -50,7 +50,7 @@ module.exports = async function applicationSubpagesBrowserChecks({
     await text('Application hidden', page);
     assert.equal(
       await page.$(
-        `${host} application-discussions, ${host} member-reviews, ${host} .application-draft-card, ${host} .health-monitor, ${host} .timeline-card`
+        `${host} application-discussions, ${host} member-reviews, ${host} .application-draft-card, ${host} .changelog-card, ${host} .release-details, ${host} .health-monitor, ${host} activity-feed-card`
       ),
       null
     );

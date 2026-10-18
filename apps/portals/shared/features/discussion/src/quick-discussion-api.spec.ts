@@ -9,7 +9,7 @@ import { provideRouter } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { ok, err, type Result } from '@sdk/kernel/standard';
-import type { PublicApplicationDiscussion } from '@domains/discussion';
+import type { PublicApplicationDiscussion } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { MENTION_MEMBERS } from '@portals/shared/features/user-profile';
 import {

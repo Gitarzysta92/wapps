@@ -1,3 +1,7 @@
+import {
+  classificationFields,
+  type ClassifiedContent,
+} from '@domains/publication/classification';
 import { ProfileContractError } from './private-profile';
 import { isPublicProfileId } from './public-profile';
 
@@ -23,7 +27,7 @@ export type ProfileActivityTarget =
   | { kind: 'discussion' | 'review'; id: string; applicationSlug: string }
   | { kind: 'comment'; id: string; articleSlug: string }
   | { kind: 'release'; id: string; applicationSlug: string; version: string };
-export interface ProfileActivity {
+export interface ProfileActivity extends ClassifiedContent {
   kind: ProfileActivityKind;
   id: string;
   at: number;
@@ -58,7 +62,7 @@ export function profileActivityRequest(input: unknown) {
       ownerIdentityId.length > 0 &&
       ownerIdentityId.length <= 128 &&
       ownerIdentityId.trim() === ownerIdentityId &&
-    !hasControlCharacters(ownerIdentityId)
+      !hasControlCharacters(ownerIdentityId)
   );
   return {
     ownerIdentityId,
@@ -71,18 +75,23 @@ function requireValue(value: unknown): asserts value {
   if (!value) throw new ProfileContractError('Invalid profile activity');
 }
 function hasControlCharacters(value: string): boolean {
-  return [...value].some((character) => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127);
+  return [...value].some(
+    (character) =>
+      character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127
+  );
 }
 export function activityObject(
   input: unknown,
-  keys: readonly string[]
+  keys: readonly string[],
+  optional: readonly string[] = []
 ): Record<string, unknown> {
   requireValue(
     input !== null && typeof input === 'object' && !Array.isArray(input)
   );
   requireValue(
-    Object.keys(input).length === keys.length &&
-      keys.every((key) => Object.prototype.hasOwnProperty.call(input, key))
+    Object.keys(input).every(
+      (key) => keys.includes(key) || optional.includes(key)
+    ) && keys.every((key) => Object.prototype.hasOwnProperty.call(input, key))
   );
   return input as Record<string, unknown>;
 }
@@ -135,7 +144,11 @@ export function compareActivity(
   return b.at - a.at || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
 }
 export function parseProfileActivity(input: unknown): ProfileActivity {
-  const row = activityObject(input, ['kind', 'id', 'at', 'title', 'target']);
+  const row = activityObject(
+    input,
+    ['kind', 'id', 'at', 'title', 'target'],
+    ['classification']
+  );
   const name = kind(row['kind']);
   const targetKind =
     name === 'reply'
@@ -175,7 +188,7 @@ export function parseProfileActivity(input: unknown): ProfileActivity {
       title.trim() === title &&
       title.length > 0 &&
       title.length <= 255 &&
-    !hasControlCharacters(title)
+      !hasControlCharacters(title)
   );
   const itemId = id(row['id']);
   requireValue(
@@ -183,6 +196,7 @@ export function parseProfileActivity(input: unknown): ProfileActivity {
   );
   return {
     kind: name,
+    ...classificationFields(row['classification']),
     id: itemId,
     at: timestamp(row['at']),
     title,

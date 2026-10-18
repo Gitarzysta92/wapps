@@ -28,6 +28,26 @@ import { MY_FAVORITES_PROVIDER } from './application/my-favorites-provider.token
 import { FavoriteToggleButtonComponent } from './presentation/favorite-toggle-button/favorite-toggle-button.component';
 
 const url = '/api/me/favorites';
+const contentUrl = url + '/content';
+const content = (items: unknown[]) => ({
+  identityId: 'Alice',
+  revision: 2,
+  items,
+});
+const unavailable = (kind: string, id: string) => ({
+  kind,
+  id,
+  name:
+    'Unavailable ' +
+    {
+      applications: 'application',
+      suites: 'suite',
+      articles: 'article',
+      discussions: 'discussion',
+    }[kind],
+  slug: null,
+  status: 'unavailable',
+});
 const id = '10000000-0000-4000-8000-000000000001';
 const second = '10000000-0000-4000-8000-000000000002';
 const app: CatalogApp = {
@@ -71,11 +91,24 @@ describe('canonical portal favorites', () => {
     const data = defaultAccountPreferences();
     data.content.showMatureContent = true;
     const state = signal<PreferencesState>({
-      isLoading: false, isError: false, data, scope: 'account',
-      sessionKey: 'alice-token', sessionVersion: 0,
+      isLoading: false,
+      isError: false,
+      data,
+      scope: 'account',
+      sessionKey: 'alice-token',
+      sessionVersion: 0,
       context: {
-        sessionKey: 'alice-token', sessionVersion: 0,
-        read: { data, account: { identityId: 'Alice', revision: 1, updatedAt: null, preferences: data } },
+        sessionKey: 'alice-token',
+        sessionVersion: 0,
+        read: {
+          data,
+          account: {
+            identityId: 'Alice',
+            revision: 1,
+            updatedAt: null,
+            preferences: data,
+          },
+        },
       },
     });
     const preferences$ = new BehaviorSubject(state());
@@ -87,8 +120,14 @@ describe('canonical portal favorites', () => {
           provide: AUTHENTICATION_SESSION,
           useValue: { token$: token, getToken: () => token.value },
         },
-        { provide: PREFERENCES_SESSION, useValue: { key$: token, currentKey: () => token.value } },
-        { provide: PreferencesService, useValue: { state, preferences$, reload: jest.fn() } },
+        {
+          provide: PREFERENCES_SESSION,
+          useValue: { key$: token, currentKey: () => token.value },
+        },
+        {
+          provide: PreferencesService,
+          useValue: { state, preferences$, reload: jest.fn() },
+        },
         ...provideMyFavoritesFeature({ mode: 'api', apiBaseUrl: '' }).providers,
         { provide: FAVORITE_CONTENT, useExisting: FavoriteContentApiService },
         { provide: MY_FAVORITES_PROVIDER, useExisting: MyFavoritesApiService },
@@ -177,24 +216,19 @@ describe('canonical portal favorites', () => {
       (value) => (view = value)
     );
     http
-      .expectOne('/api/catalog/article-selection?ids=' + id + ',' + second)
-      .flush({
-        items: [
+      .expectOne(contentUrl)
+      .flush(
+        content([
           {
+            kind: 'articles',
             id,
-            revision: 1,
-            submittedRevision: 2,
-            title: 'Reviewed article',
+            name: 'Reviewed article',
             slug: 'reviewed-article',
-            excerpt: 'Summary.',
-            byline: 'Public name',
-            category: 'Guides',
-            tags: [],
-            publishedAt: 100,
-            updatedAt: 100,
+            status: 'available',
           },
-        ],
-      });
+          unavailable('articles', second),
+        ])
+      );
     expect(view).toMatchObject({
       contentError: false,
       items: [
@@ -232,21 +266,20 @@ describe('canonical portal favorites', () => {
       (value) => (view = value)
     );
     http
-      .expectOne(`/api/discussion-selection?ids=${id},${second}`)
-      .flush({
-        items: [
+      .expectOne(contentUrl)
+      .flush(
+        content([
           {
+            kind: 'discussions',
             id,
-            applicationId: app.id,
-            revision: 3,
-            title: 'Current topic',
-            replyCount: 2,
+            name: 'Current topic',
+            slug: id,
+            appSlug: app.slug,
+            status: 'available',
           },
-        ],
-      });
-    http
-      .expectOne('/api/catalog/app-selection?ids=' + app.id)
-      .flush({ items: [app] });
+          unavailable('discussions', second),
+        ])
+      );
     expect(view).toMatchObject({
       contentError: false,
       items: [
@@ -269,34 +302,19 @@ describe('canonical portal favorites', () => {
     });
     subscription.unsubscribe();
   });
-  it('clears old discussion metadata when changing accounts and cancels the dependent parent lookup', () => {
+  it('clears old discussion metadata when changing accounts and cancels BFF composition', () => {
     loaded();
     const service = TestBed.inject(MyFavoritesService);
     service.reload();
-    http
-      .expectOne(url)
-      .flush({
-        ...snapshot(),
-        favorites: [{ kind: 'discussions', id, addedAt: 10 }],
-      });
+    http.expectOne(url).flush({
+      ...snapshot(),
+      favorites: [{ kind: 'discussions', id, addedAt: 10 }],
+    });
     let view: unknown;
     const subscription = TestBed.inject(FavoriteContentService).view$.subscribe(
       (value) => (view = value)
     );
-    http
-      .expectOne('/api/discussion-selection?ids=' + id)
-      .flush({
-        items: [
-          {
-            id,
-            applicationId: app.id,
-            revision: 3,
-            title: 'Current topic',
-            replyCount: 2,
-          },
-        ],
-      });
-    const parent = http.expectOne('/api/catalog/app-selection?ids=' + app.id);
+    const parent = http.expectOne(contentUrl);
     token.next('bob-token');
     expect(parent.cancelled).toBe(true);
     http.expectOne(url).flush(snapshot('Bob', 1));
@@ -321,12 +339,10 @@ describe('canonical portal favorites', () => {
     expect(second.request.headers.get('Idempotency-Key')).toBe(key);
     second.flush({ identityId: 'Alice', revision: 3 });
     expect((await retry).ok).toBe(true);
-    http
-      .expectOne(url)
-      .flush({
-        ...snapshot('Alice', 3),
-        favorites: [{ kind: 'discussions', id, addedAt: 10 }],
-      });
+    http.expectOne(url).flush({
+      ...snapshot('Alice', 3),
+      favorites: [{ kind: 'discussions', id, addedAt: 10 }],
+    });
     expect(service.getState().data.discussions).toEqual([id]);
   });
   it('reads canonical IDs without importing browser favorites', () => {
@@ -549,23 +565,26 @@ describe('canonical portal favorites', () => {
       (value) => (view = value)
     );
     http
-      .expectOne('/api/catalog/app-selection?ids=' + id)
-      .flush({ items: [app] });
-    http
-      .expectOne('/api/catalog/suite-selection?ids=' + id + ',' + second)
-      .flush({
-        items: [
+      .expectOne(contentUrl)
+      .flush(
+        content([
           {
+            kind: 'applications',
             id,
-            title: 'Approved suite',
-            description: '',
-            applicationIds: [id],
-            revision: 1,
-            submittedRevision: 1,
-            publishedAt: 10,
+            name: app.name,
+            slug: app.slug,
+            status: 'available',
           },
-        ],
-      });
+          {
+            kind: 'suites',
+            id,
+            name: 'Approved suite',
+            slug: id,
+            status: 'available',
+          },
+          unavailable('suites', second),
+        ])
+      );
     expect(view).toMatchObject({
       contentError: false,
       items: [
@@ -594,8 +613,19 @@ describe('canonical portal favorites', () => {
     let view: unknown;
     const subscription = views.view$.subscribe((value) => (view = value));
     http
-      .expectOne('/api/catalog/app-selection?ids=' + id + ',' + second)
-      .flush({ items: [app] });
+      .expectOne(contentUrl)
+      .flush(
+        content([
+          {
+            kind: 'applications',
+            id,
+            name: app.name,
+            slug: app.slug,
+            status: 'available',
+          },
+          unavailable('applications', second),
+        ])
+      );
     expect(view).toMatchObject({
       contentError: false,
       items: [
@@ -606,7 +636,7 @@ describe('canonical portal favorites', () => {
     subscription.unsubscribe();
   });
   it.each(['applications', 'suites', 'articles', 'discussions'] as const)(
-    'bounds %s resolution to batches of fifty with all-or-error metadata',
+    'resolves 200 %s references through one BFF request with all-or-error metadata',
     (kind) => {
       const ids = Array.from(
         { length: 200 },
@@ -621,25 +651,9 @@ describe('canonical portal favorites', () => {
       const subscription = TestBed.inject(
         FavoriteContentService
       ).view$.subscribe((view) => (value = view));
-      const requests = http.match(
-        (r) =>
-          r.url ===
-          (kind === 'discussions'
-            ? '/api/discussion-selection'
-            : `/api/catalog/${
-                kind === 'articles'
-                  ? 'article-selection'
-                  : kind === 'suites'
-                  ? 'suite-selection'
-                  : 'app-selection'
-              }`)
-      );
-      expect(requests).toHaveLength(4);
-      for (const [index, request] of requests.entries()) {
-        expect(request.request.params.get('ids')?.split(',')).toHaveLength(50);
-        if (index < 3) request.flush({ items: [] });
-        else request.flush({}, { status: 503, statusText: 'Projection lag' });
-      }
+      const request = http.expectOne(contentUrl);
+      expect(request.request.params.keys()).toEqual([]);
+      request.flush({}, { status: 503, statusText: 'Projection lag' });
       expect(value).toMatchObject({
         contentError: true,
         items: expect.arrayContaining([
@@ -661,7 +675,7 @@ describe('canonical portal favorites', () => {
       FavoriteContentService
     ).view$.subscribe();
     http
-      .expectOne('/api/catalog/app-selection?ids=' + id)
+      .expectOne(contentUrl)
       .flush({}, { status: 503, statusText: 'Unavailable' });
     const pending = firstValueFrom(
       service.removeFromFavorites('applications', id)
@@ -669,7 +683,7 @@ describe('canonical portal favorites', () => {
     http.expectOne(url).flush({ identityId: 'Alice', revision: 3 });
     await pending;
     http.expectOne(url).flush(snapshot('Alice', 3));
-    http.expectNone((r) => r.url === '/api/catalog/app-selection');
+    http.expectNone((r) => r.url === contentUrl);
     subscription.unsubscribe();
   });
   it('cancels target metadata on session change', () => {
@@ -677,7 +691,7 @@ describe('canonical portal favorites', () => {
     const subscription = TestBed.inject(
       FavoriteContentService
     ).view$.subscribe();
-    const old = http.expectOne('/api/catalog/app-selection?ids=' + id);
+    const old = http.expectOne(contentUrl);
     token.next('bob-token');
     expect(old.cancelled).toBe(true);
     http.expectOne(url).flush(snapshot('Bob'));

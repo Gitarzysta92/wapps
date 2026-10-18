@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
-import type { MyDiscussion } from '@domains/discussion';
+import type { MyDiscussion } from '@domains/community';
 
 export interface MyDiscussionView extends MyDiscussion {
   applicationName: string;

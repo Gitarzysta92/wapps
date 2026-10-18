@@ -1,0 +1,269 @@
+import { TokenValidationService } from '../services/token-validation.service';
+import {
+  Body,
+  Headers,
+  Header,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
+import type { Response } from 'express';
+import {
+  IAuthenticationStrategy,
+  IdentityAuthenticationService,
+  IdentityAuthenticationUnavailable,
+  AuthenticationStrategyFactory,
+  CredentialSessionRevoker,
+} from '@sdk/features/identity/libs/authentication';
+import { ConfigService } from '@nestjs/config';
+import {
+  ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
+  EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
+  GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
+  GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
+  IDENTITY_AUTH_SERVICE,
+  CREDENTIAL_SESSION_REVOKER,
+} from '../tokens';
+import { SignInOAuthDto } from './models/sign-in-oauth.dto';
+import {
+  buildGoogleAuthorizeUrl,
+  buildGithubAuthorizeUrl,
+} from '../oauth/authorize-url';
+import { SignInCredentialsDto } from './models/sign-in-credentials.dto';
+import { TokenRefreshDto } from './models/token-refresh.dto';
+
+@Controller()
+export class AuthController {
+  constructor(
+    @Inject(IDENTITY_AUTH_SERVICE)
+    private readonly authenticationService: IdentityAuthenticationService,
+    private readonly config: ConfigService,
+    private readonly validation: TokenValidationService,
+    @Inject(GOOGLE_AUTHENTICATION_STRATEGY_FACTORY)
+    private readonly googleAuthenticationStrategyFactory: AuthenticationStrategyFactory<
+      [string, string, string]
+    >,
+    @Inject(GITHUB_AUTHENTICATION_STRATEGY_FACTORY)
+    private readonly githubAuthenticationStrategyFactory: AuthenticationStrategyFactory<
+      [string, string]
+    >,
+    @Inject(EMAIL_AUTHENTICATION_STRATEGY_FACTORY)
+    private readonly emailAuthenticationStrategyFactory: AuthenticationStrategyFactory<
+      [string, string]
+    >,
+    @Inject(ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY)
+    private readonly anonymousAuthenticationStrategyFactory: AuthenticationStrategyFactory<
+      []
+    >,
+    @Inject(CREDENTIAL_SESSION_REVOKER)
+    private readonly revoker: CredentialSessionRevoker
+  ) {}
+
+  @Post('/auth/signin')
+  @Header('Cache-Control', 'no-store')
+  async signIn(@Body() body: SignInCredentialsDto, @Res() res: Response) {
+    if (this.config.get<string>('ENABLE_EMAIL_PASSWORD') === 'false')
+      return res.status(403).json({ error: 'Email sign-in disabled' });
+    const { email, password } = body ?? {};
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const strategy = this.emailAuthenticationStrategyFactory.create(
+      email,
+      password
+    );
+    const result = await this.authenticationService.authenticate(strategy);
+    if (!result.ok) {
+      return this.authenticationError(res, result.error);
+    }
+
+    return res.status(200).json(result.value);
+  }
+
+  @Post('/auth/signin/anonymous')
+  @Header('Cache-Control', 'no-store')
+  async signInAnonymous(@Res() res: Response) {
+    if (this.config.get<string>('ENABLE_ANONYMOUS') !== 'true')
+      return res.status(403).json({ error: 'Anonymous sign-in disabled' });
+    const strategy = this.anonymousAuthenticationStrategyFactory.create();
+    const result = await this.authenticationService.authenticate(strategy);
+    if (!result.ok) {
+      return this.authenticationError(res, result.error);
+    }
+
+    return res.status(200).json(result.value);
+  }
+
+  @Post('/auth/signin/oauth')
+  @Header('Cache-Control', 'no-store')
+  async signInOAuth(@Body() body: SignInOAuthDto, @Res() res: Response) {
+    const { provider, code, redirectUri, codeVerifier } = body;
+
+    if (this.config.get<string>(`ENABLE_${provider.toUpperCase()}`) !== 'true')
+      return res.status(403).json({ error: 'Provider disabled' });
+    let strategy: IAuthenticationStrategy;
+    if (provider.toLowerCase() === 'google') {
+      strategy = this.googleAuthenticationStrategyFactory.create(
+        code,
+        redirectUri,
+        codeVerifier ?? ''
+      );
+    } else if (provider.toLowerCase() === 'github') {
+      strategy = this.githubAuthenticationStrategyFactory.create(
+        code,
+        redirectUri
+      );
+    } else {
+      return res.status(400).json({ error: 'Invalid provider' });
+    }
+
+    const result = await this.authenticationService.authenticate(strategy);
+
+    if (!result.ok && result.error.message.includes('incomplete')) {
+      return res
+        .status(500)
+        .json({ error: result.error.message || 'OAuth authentication failed' });
+    }
+
+    if (!result.ok) {
+      return this.authenticationError(res, result.error);
+    }
+
+    console.log(`✅ OAuth sign in successful for: ${result.value.uid}`);
+    return res.status(200).json(result.value);
+  }
+
+  @Post('/auth/refresh')
+  @Header('Cache-Control', 'no-store')
+  async refresh(@Body() body: TokenRefreshDto, @Res() res: Response) {
+    const { refreshToken } = body ?? {};
+
+    if (!refreshToken) {
+      return res.status(400).json({ error: 'Refresh token is required' });
+    }
+
+    const result = await this.authenticationService.refresh(refreshToken);
+    if (!result.ok) {
+      if (result.error instanceof IdentityAuthenticationUnavailable)
+        return this.authenticationError(res, result.error);
+      const status = result.error.message.includes('not configured')
+        ? 500
+        : 401;
+      return res.status(status).json({
+        error: status === 401 ? 'Invalid refresh token' : result.error.message,
+      });
+    }
+
+    return res.status(200).json(result.value);
+  }
+
+  private authenticationError(res: Response, error: Error) {
+    return error instanceof IdentityAuthenticationUnavailable
+      ? res.status(503).json({ error: 'Authentication service unavailable' })
+      : res.status(401).json({ error: error.message });
+  }
+
+  @Post('/auth/signout')
+  @Header('Cache-Control', 'no-store')
+  async signOut(
+    @Headers('authorization') authorization: string | undefined,
+    @Res() res: Response
+  ) {
+    const result = await this.validation.validateRequired(authorization);
+    if (!result.ok) return this.authenticationError(res, result.error);
+    const revoked = await this.revoker.revokeRefreshTokens(result.value.uid);
+    if (!revoked.ok)
+      return res.status(503).json({ error: 'Sign-out unavailable' });
+    return res.status(200).json({ message: 'Signed out successfully' });
+  }
+
+  @Get('/auth/methods')
+  @Header('Cache-Control', 'no-store')
+  methods() {
+    return {
+      methods: [
+        {
+          provider: 'EMAIL_PASSWORD',
+          displayName: 'Email & Password',
+          enabled: this.config.get<string>('ENABLE_EMAIL_PASSWORD') !== 'false',
+        },
+        {
+          provider: 'GOOGLE',
+          displayName: 'Google',
+          enabled: this.config.get<string>('ENABLE_GOOGLE') === 'true',
+        },
+        {
+          provider: 'GITHUB',
+          displayName: 'GitHub',
+          enabled: this.config.get<string>('ENABLE_GITHUB') === 'true',
+        },
+        {
+          provider: 'ANONYMOUS',
+          displayName: 'Continue as guest',
+          enabled: this.config.get<string>('ENABLE_ANONYMOUS') === 'true',
+        },
+      ].filter((method) => method.enabled),
+    };
+  }
+
+  @Get('/auth/oauth/google/authorize')
+  @Header('Cache-Control', 'no-store')
+  authorizeGoogle(
+    @Query('redirect_uri') redirectUri: string | undefined,
+    @Query('state') state: string | undefined,
+    @Query('code_challenge') codeChallenge: string | undefined,
+    @Query('code_challenge_method') codeChallengeMethod: string | undefined,
+    @Res() res: Response
+  ) {
+    if (!redirectUri) {
+      return res.status(400).json({ error: 'redirect_uri is required' });
+    }
+    const enableGoogle = this.config.get<string>('ENABLE_GOOGLE') === 'true';
+    const googleClientId = this.config.get<string>('GOOGLE_CLIENT_ID');
+    if (!enableGoogle) {
+      return res.status(400).json({ error: 'Google OAuth not enabled' });
+    }
+    if (!googleClientId) {
+      return res.status(500).json({ error: 'Google OAuth misconfigured' });
+    }
+    const authUrl = buildGoogleAuthorizeUrl({
+      clientId: googleClientId,
+      redirectUri,
+      state,
+      codeChallenge,
+      codeChallengeMethod,
+    });
+    return res.redirect(authUrl);
+  }
+
+  @Get('/auth/oauth/github/authorize')
+  @Header('Cache-Control', 'no-store')
+  authorizeGithub(
+    @Query('redirect_uri') redirectUri: string | undefined,
+    @Query('state') state: string | undefined,
+    @Res() res: Response
+  ) {
+    if (!redirectUri) {
+      return res.status(400).json({ error: 'redirect_uri is required' });
+    }
+    const enableGithub = this.config.get<string>('ENABLE_GITHUB') === 'true';
+    const githubClientId = this.config.get<string>('GITHUB_CLIENT_ID');
+    if (!enableGithub) {
+      return res.status(400).json({ error: 'GitHub OAuth not enabled' });
+    }
+    if (!githubClientId) {
+      return res.status(500).json({ error: 'GitHub OAuth misconfigured' });
+    }
+    const authUrl = buildGithubAuthorizeUrl({
+      clientId: githubClientId,
+      redirectUri,
+      state,
+    });
+    return res.redirect(authUrl);
+  }
+}

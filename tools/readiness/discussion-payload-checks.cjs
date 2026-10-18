@@ -3,26 +3,26 @@ const { randomUUID, createHash } = require('node:crypto');
 const { DataSource } = require('typeorm');
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   DurableDiscussionCommands,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/durable-discussion-commands');
+} = require('../../apps/services/community/src/app/discussions/application/durable-discussion-commands');
 const {
   RegisteredDiscussionPayloads,
   RetireDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/registered-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/application/registered-discussion-payloads');
 const {
   MysqlDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-payloads');
 const {
   MysqlDiscussionWrites,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-writes');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-writes');
 const {
   MinioDiscussionPayloadObjects,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/immutable-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/immutable-discussion-payloads');
 const {
   DiscussionPayloads1791840004000,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-payloads.migration');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-payloads.migration');
 
 module.exports = async function qualifyDiscussionPayloads({
   source,

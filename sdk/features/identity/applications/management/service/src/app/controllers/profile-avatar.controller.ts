@@ -17,10 +17,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { raw, type Request, type Response } from 'express';
 import { PROFILE_AVATAR_SOURCE_LIMIT } from '@domains/customer/profiles';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import {
-  ProfileAvatarService,
-  type IdentityManagementContext,
-} from '@sdk/features/identity/libs/management';
+import { type IdentityManagementContext } from '@sdk/features/identity/libs/management';
+import { ProfileAvatarService } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedUser,

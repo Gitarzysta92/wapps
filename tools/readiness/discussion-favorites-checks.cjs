@@ -124,7 +124,7 @@ async function discussionFavoritesChecks(options) {
     root,
     sql,
     editorialOrigin: options.origin(),
-    discussionOrigin: options.discussionOrigin(),
+    discussionOrigin: options.discussionServiceOrigin(),
     catalogOrigin: options.origin(),
     ingressSecret: options.headers('ProfileReader')['x-ingress-auth'],
     createTarget: (slug) =>
@@ -170,9 +170,16 @@ async function discussionFavoritesChecks(options) {
       restartAccount,
     }) => {
       if (process.env.WAPPS_PUBLIC_PROFILE_ACTIVITY === '1') {
-        await require('./public-profile-activity-checks.cjs').publicProfileActivityChecks({
-          ...options, accountOrigin, accountHeaders: headers, identities, identitySource, restartAccount,
-        });
+        await require('./public-profile-activity-checks.cjs').publicProfileActivityChecks(
+          {
+            ...options,
+            accountOrigin,
+            accountHeaders: headers,
+            identities,
+            identitySource,
+            restartAccount,
+          }
+        );
       }
       if (process.env.WAPPS_PUBLIC_PROFILE_DISCUSSIONS === '1') {
         await require('./public-profile-discussions-checks.cjs').publicProfileDiscussionsChecks(
@@ -293,7 +300,7 @@ async function discussionFavoritesChecks(options) {
       assert.deepEqual(accepted(await account(alice)).favorites, []);
       options.startWorker();
       await waitThread(application.id, topic.id, edit.revision);
-      await restartAccount(undefined, options.discussionOrigin());
+      await restartAccount(undefined, options.discussionServiceOrigin());
       assert.equal(
         accepted(await select([topic.id])).items[0].title,
         'Updated saved topic'
@@ -333,7 +340,7 @@ async function discussionFavoritesChecks(options) {
           favorites,
           restart: async () => {
             await options.restart();
-            await restartAccount(undefined, options.discussionOrigin());
+            await restartAccount(undefined, options.discussionServiceOrigin());
           },
         }
       );

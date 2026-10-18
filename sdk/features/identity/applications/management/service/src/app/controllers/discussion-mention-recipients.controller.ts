@@ -7,7 +7,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CanonicalIdentityInputError } from '@sdk/features/identity/core';
-import { DiscussionMentionRecipients } from '@sdk/features/identity/libs/management';
+import { DiscussionMentionRecipients } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedUser,

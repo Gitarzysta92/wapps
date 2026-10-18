@@ -3,7 +3,7 @@ import {
   accountErasureRequest,
   type AccountErasureRequest,
 } from '@sdk/features/identity/core';
-import { identityErasureBarrier } from '@sdk/extras/identity-mysql';
+import { identityErasureBarrier } from '@wapps/account-mysql';
 import { editorialSqlInteger } from '../infrastructure/mysql-editorial-snapshot';
 
 export async function lockEditorialErasureState(

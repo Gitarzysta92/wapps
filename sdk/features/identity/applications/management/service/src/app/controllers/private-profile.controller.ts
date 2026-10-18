@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Header, Headers, Put } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  PrivateProfileService,
-  type IdentityManagementContext,
-} from '@sdk/features/identity/libs/management';
+import { type IdentityManagementContext } from '@sdk/features/identity/libs/management';
+import { PrivateProfileService } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedUser,

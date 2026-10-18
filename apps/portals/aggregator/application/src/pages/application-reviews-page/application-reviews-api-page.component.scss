@@ -1,21 +1,3 @@
+@use './application-reviews-page.component';
 @use '../page-layout' as page;
-@use 'ui/design-system/src/styles' as *;
-@include page.page();
-.review-page {
-  @include page.content();
-  display: grid;
-  gap: $space-6;
-  min-width: 0;
-}
-nav {
-  display: flex;
-  gap: $space-4;
-  white-space: nowrap;
-  overflow-x: auto;
-}
-h1,
-h2,
-p {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
+.review-page { @include page.content; }

@@ -5,7 +5,7 @@ import {
   type OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeliverReplyNotifications } from '@sdk/features/identity/libs/management';
+import { DeliverReplyNotifications } from '@wapps/account';
 
 @Injectable()
 export class ReplyNotificationWorker implements OnModuleInit, OnModuleDestroy {

@@ -3,7 +3,7 @@ const { setTimeout: delay } = require('node:timers/promises');
 const { MongoClient } = require('mongodb');
 const {
   MysqlCanonicalIdentities,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const base = '../../apps/services/editorial/src/app/';
 const { EDITORIAL_ERASURE_IDENTITY_COLUMNS } = require(base +
   'account-erasure/mysql-editorial-erasure-completion');

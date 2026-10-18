@@ -4,9 +4,9 @@ import {
   parseFavoriteTarget,
   type FavoriteTarget,
 } from '@domains/customer/favorites';
-import { parseDiscussionSelection } from '@domains/discussion/contracts';
+import { commentObject, publicCommentId } from '@domains/community';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { FavoriteTargetEligibility } from '@sdk/features/identity/libs/management';
+import type { FavoriteTargetEligibility } from '@wapps/account';
 import { EditorialFavoriteTargets } from './editorial-favorite-targets';
 
 export class PublicFavoriteTargets implements FavoriteTargetEligibility {
@@ -38,9 +38,9 @@ export class PublicFavoriteTargets implements FavoriteTargetEligibility {
     try {
       const response = await firstValueFrom(
         this.http.get<unknown>(
-          `${this.discussionOrigin}/api/discussion-selection`,
+          `${this.discussionOrigin}/api/discussions/selection`,
           {
-            params: { ids: target.id },
+            params: { ids: target.id, bindingPrefix: 'application:' },
             timeout: 5000,
             maxRedirects: 0,
             maxContentLength: 1024 * 1024,
@@ -48,9 +48,32 @@ export class PublicFavoriteTargets implements FavoriteTargetEligibility {
           }
         )
       );
-      return (
-        parseDiscussionSelection(response.data, [target.id]).items.length === 1
-      );
+      const page = commentObject(response.data, ['items']);
+      if (!Array.isArray(page.items) || page.items.length > 1)
+        throw new Error('Invalid discussion eligibility');
+      if (!page.items.length) return false;
+      const row = commentObject(page.items[0], [
+        'id',
+        'bindingKey',
+        'revision',
+        'replyCount',
+        'comments',
+        'pinned',
+        'canPin',
+      ]);
+      if (
+        row.id !== target.id ||
+        typeof row.bindingKey !== 'string' ||
+        !row.bindingKey.startsWith('application:') ||
+        row.bindingKey !==
+          `application:${publicCommentId(
+            row.bindingKey.slice('application:'.length)
+          )}` ||
+        !Number.isSafeInteger(row.revision) ||
+        Number(row.revision) < 1
+      )
+        throw new Error('Invalid discussion eligibility');
+      return true;
     } catch {
       throw new CanonicalIdentityUnavailable(
         'Favorite target lookup unavailable'

@@ -7,7 +7,7 @@ import {
 import { Test } from '@nestjs/testing';
 import { err, ok } from '@sdk/kernel/standard';
 import type { AccountExportEntry } from '@sdk/features/identity/core';
-import { AccountExportSourceAccess } from '@sdk/features/identity/libs/management';
+import { AccountExportSourceAccess } from '@wapps/account';
 import { ConfigService } from '@nestjs/config';
 import { EditorialAuthMiddleware } from '../http/editorial-auth';
 import { AccountExportController } from './account-export.controller';

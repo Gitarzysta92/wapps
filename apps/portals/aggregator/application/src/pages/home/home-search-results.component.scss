@@ -28,6 +28,14 @@ ul {
 .result-entry {
   font-size: $font-size-sm;
 }
+.preview-entry.has-cover {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding-inline-start: $space-5;
+  .preview-cover { width: $space-8; aspect-ratio: 1; flex-shrink: 0; --article-cover-width: 100%; --article-cover-height: 100%; }
+  .result-entry { flex: 1; min-width: 0; padding-inline-start: 0; }
+}
 .result-entries {
   padding-bottom: $space-2;
 }

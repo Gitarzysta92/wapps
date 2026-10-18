@@ -185,6 +185,9 @@
           size="l"
           aria-hidden="true"
         />
+        } @else if (item.articleCover) {
+        @let cover = item.articleCover;
+        <article-cover-image class="item-image" [target]="{ kind: 'published', id: cover.articleId, imageId: cover.imageId }" [alt]="cover.alt" />
         } @else if (item.image) {
         <ui-cover-image
           class="item-image"
@@ -212,7 +215,9 @@
             <time [attr.datetime]="item.date.toISOString()">{{
               item.date | preferredDate
             }}</time>
-            } @if (item.applications) {
+            } @if (item.applicationCount !== undefined) {
+            <span>{{ item.applicationCount }} applications</span>
+            } @else if (item.applications) {
             <span>{{ item.applications.length }} applications</span> }
           </div>
         </div>

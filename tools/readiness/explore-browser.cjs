@@ -317,14 +317,31 @@ module.exports = async function qualifyExploreBrowser(options) {
       const entries = await a.$$eval('explore-feed article', (nodes) =>
         nodes.map((n) => ({
           kind: n.getAttribute('data-kind'),
-          href: n.querySelector('a').getAttribute('href'),
-          title: n.querySelector('a').textContent.trim(),
+          href: n.querySelector('.card-actions a').getAttribute('href'),
+          title: n.getAttribute('data-title'),
         }))
       );
       for (const entry of entries)
         if (!kinds.has(entry.kind)) {
           kinds.add(entry.kind);
           links.push(entry);
+          layouts.push(...await require('./rich-activity-browser-checks.cjs')(a, entry.kind, directory));
+          if (entry.kind === 'article') {
+            coverOffline = true;
+            await a.reload({ waitUntil: 'networkidle0' });
+            await text(a, 'Retry article cover');
+            await text(a, 'Article summary.');
+            const article = 'article[data-kind="article"]';
+            assert.ok(await a.$(`${article} .card-actions a`));
+            coverOffline = false;
+            await click(a, 'Retry article cover');
+            await a.waitForFunction(() => {
+              const img = document.querySelector(
+                'explore-feed article[data-kind="article"] article-cover-image img'
+              );
+              return img && img.complete && img.naturalWidth > 0;
+            });
+          }
         }
       const older = await a.$$eval('explore-feed button', (nodes) =>
         nodes.some((n) => n.textContent.trim() === 'Older activity')
@@ -354,6 +371,12 @@ module.exports = async function qualifyExploreBrowser(options) {
       'review',
       'suite',
     ]);
+    await a.evaluate(() => window.scrollTo(0, 0));
+    await a.waitForFunction(() => {
+      const canvas = document.querySelector('.section__feed canvas.ui-wobble-outline');
+      const bounds = canvas?.getBoundingClientRect();
+      return bounds && bounds.width > 0 && bounds.right <= innerWidth + 1;
+    });
     for (const entry of links) {
       await go(b, entry.href);
       assert.equal(
@@ -376,11 +399,11 @@ module.exports = async function qualifyExploreBrowser(options) {
           'application-discussions'
         );
       if (entry.kind === 'article')
-        await text(b, 'Retained article body.', '.article-reading');
+        await text(b, 'Retained article body.', 'app-article-catalog .article-body');
       if (entry.kind === 'suite')
-        await text(b, 'Reviewed application', '.suite-members');
+        await text(b, 'Reviewed application', 'suite-publication-page .app-list');
       if (entry.kind === 'release')
-        await text(b, 'fix: Fixed issue.', '.application-workspace article');
+        await text(b, 'fix: Fixed issue.', '.release-content');
     }
     await accepted(
       await fetch(
@@ -487,18 +510,17 @@ module.exports = async function qualifyExploreBrowser(options) {
           node.scrollIntoView({ block: 'start' })
         );
         const layout = await b.$eval('explore-feed', (element) => {
-          const card = element.querySelector('article'),
-            head = card.querySelector('header'),
+          const card = element.querySelector('article[data-kind="discussion"]'),
+            head = card.querySelector('ui-card-header'),
             title = card.querySelector('h3');
           return {
             overflow: document.documentElement.scrollWidth > innerWidth + 1,
             width: element.getBoundingClientRect().width,
             gap: Math.round(
-              title.getBoundingClientRect().top -
-                head.getBoundingClientRect().bottom
+              card.querySelector('ui-discussion-thread').getBoundingClientRect().top - head.getBoundingClientRect().bottom
             ),
-            descriptionGap: Math.round(
-              card.querySelector('p').getBoundingClientRect().top -
+            metadataGap: Math.round(
+              head.querySelector('p').getBoundingClientRect().top -
                 title.getBoundingClientRect().bottom
             ),
             controlsFit: [...element.querySelectorAll('button')].every(
@@ -516,7 +538,7 @@ module.exports = async function qualifyExploreBrowser(options) {
         assert.equal(layout.overflow, false);
         assert.equal(layout.controlsFit, true);
         assert.equal(layout.gap, 16);
-        assert.equal(layout.descriptionGap, 8);
+        assert.equal(layout.metadataGap, 4);
         layouts.push({ theme, viewport: width, ...layout });
         await b.screenshot({
           path: path.join(directory, `explore-${theme}-${width}.png`),
@@ -595,6 +617,9 @@ module.exports = async function qualifyExploreBrowser(options) {
             'Saved category exclusions, favorites and personalization opt-out survive restart',
             'Held activity response is cancelled after session switch',
             'Real content links for six kinds',
+            'Original rich card sections use live metadata for all six kinds',
+            'Protected article cover failure/retry preserves excerpt and navigation',
+            'Faded decoration does not overflow on resize and returns when scrolled back',
             'Bounded replacing pages and refresh',
             'Paging, refresh and retry controls respond to keyboard activation',
             'Unavailable/retry states',
@@ -611,7 +636,7 @@ module.exports = async function qualifyExploreBrowser(options) {
       )
     );
     pass(
-      'Explore independent browsers: six content links, paging, persistent preferences/favorite order, personalization off, category exclusions, session cancellation and six responsive theme layouts'
+      'Explore independent browsers: six rich card kinds and content links, protected cover failure/retry, paging, persistent preferences/favorite order, personalization off, category exclusions, session cancellation and 42 responsive theme layouts'
     );
   } catch (error) {
     const diagnostics = [];

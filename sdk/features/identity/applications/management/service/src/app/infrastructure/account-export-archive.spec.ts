@@ -2,11 +2,11 @@ import { createHash, randomBytes } from 'node:crypto';
 import { gunzipSync } from 'node:zlib';
 import {
   ACCOUNT_EXPORT_LIMITS,
-  ACCOUNT_EXPORT_SOURCES,
   AccountExportLimitExceeded,
   AccountExportSourceInvalid,
   type AccountExportEntry,
 } from '@sdk/features/identity/core';
+import { ACCOUNT_EXPORT_SOURCES } from '@wapps/account';
 import type { AccountExportSource } from '@sdk/features/identity/libs/management';
 import { GzipAccountExportArchive } from './account-export-archive';
 

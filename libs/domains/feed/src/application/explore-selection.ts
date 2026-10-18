@@ -39,6 +39,19 @@ export function selectExplorePage(
           options.excludedCategories.includes(value)
         )
     )
+    .map((item) =>
+      item.details?.kind === 'suite'
+        ? {
+            ...item,
+            details: {
+              ...item.details,
+              applications: item.details.applications.filter((app) =>
+                permitsContent(app, options.showMatureContent)
+              ),
+            },
+          }
+        : item
+    )
     .sort((a, b) => {
       if (options.order === 'popular') {
         const score = (b.engagement ?? 0) - (a.engagement ?? 0);

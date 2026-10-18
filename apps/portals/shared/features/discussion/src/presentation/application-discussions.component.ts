@@ -1,3 +1,7 @@
+import { NoticeCardComponent } from '@ui/layout';
+import { DiscussionPostComponent, DiscussionPostHeaderComponent } from '@ui/discussion';
+import { DiscussionMediumCardComponent } from './discussion-medium-card/discussion-medium-card.component';
+import { DiscussionSmallCardComponent } from './discussion-small-card/discussion-small-card.component';
 import {
   MentionMemberPickerComponent,
   MentionedMembersComponent,
@@ -5,6 +9,7 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   effect,
   inject,
@@ -16,12 +21,8 @@ import {
 import { DatePipe, SlicePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
-import type {
-  PublicComment,
-  PublicApplicationDiscussion,
-  DiscussionVote,
-} from '@domains/discussion';
+import { TuiAppearance, TuiButton, TuiLink, TuiIcon } from '@taiga-ui/core';
+import type { PublicComment, PublicApplicationDiscussion, DiscussionVote } from '@domains/community';
 import { ApplicationDiscussionsService } from '../application/application-discussions.service';
 import { QuickDiscussionButtonComponent } from './quick-discussion/quick-discussion-button.component';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
@@ -40,7 +41,7 @@ type EditingPost = {
   imports: [
     MentionMemberPickerComponent,
     MentionedMembersComponent,
-    DatePipe,
+    DatePipe, TuiIcon, NoticeCardComponent, DiscussionPostComponent, DiscussionPostHeaderComponent, DiscussionMediumCardComponent, DiscussionSmallCardComponent,
     SlicePipe,
     FormsModule,
     RouterLink,
@@ -61,6 +62,22 @@ export class ApplicationDiscussionsComponent {
   readonly applicationSlug = input<string | null>(null);
   readonly idPrefix = input('application-discussion');
   readonly discussions = inject(ApplicationDiscussionsService);
+  readonly groups = computed(() => [
+    { pinned: true, title: 'Pinned Discussions', items: this.discussions.items().filter(thread => thread.pinned) },
+    { pinned: false, title: 'Recent Discussions', items: this.discussions.items().filter(thread => !thread.pinned) },
+  ]);
+  preview(thread: PublicApplicationDiscussion) {
+    const root = thread.comments.find(comment => comment.depth === 0);
+    return { id: thread.id, slug: thread.id, associationId: this.applicationId(), associationSlug: this.applicationSlug() ?? '',
+      title: thread.title, author: root?.content?.displayName ?? 'Removed author', authorAvatar: '@tui.user',
+      createdAt: this.date(root?.createdAt ?? null), repliesCount: thread.replyCount, isPinned: thread.pinned,
+      tags: thread.tags, excerpt: root?.content?.text ?? 'Post removed. Replies remain in the conversation.' };
+  }
+  date(at: number | null) { return at === null ? null : new Date(at); }
+  startDiscussion() {
+    this.body()?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.body()?.nativeElement.focus({ preventScroll: true });
+  }
   readonly name = signal('');
   readonly title = signal('');
   readonly tags = signal('');

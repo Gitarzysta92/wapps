@@ -8,6 +8,7 @@ import {
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TuiAvatar } from '@taiga-ui/kit';
 import { Router, RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
@@ -28,6 +29,7 @@ import {
   standalone: true,
   imports: [
     FormsModule,
+    TuiAvatar,
     RouterLink,
     TuiAppearance,
     TuiButton,
@@ -39,7 +41,7 @@ import {
     FavoriteToggleButtonComponent,
   ],
   templateUrl: './suite-publication.component.html',
-  styleUrl: '../private-suites/private-suites.component.scss',
+  styleUrls: ['../private-suites/private-suites.component.scss', '../entry-details-page/entry-details-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuitePublicationPageComponent {

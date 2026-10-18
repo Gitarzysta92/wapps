@@ -14,16 +14,17 @@ import { ExplorePublications } from './application/explore-publications';
 import { MysqlExplorePublications } from './infrastructure/mysql-explore-publications';
 import { CatalogExplorePublicationReader } from './infrastructure/explore-publication-reader';
 import { ExploreController } from './http/explore.controller';
-import { FavoriteUpdateSourceAccess } from '@sdk/features/identity/libs/management';
+import {
+  FavoriteUpdateSourceAccess,
+  AccountErasureAccess,
+  AccountExportSourceAccess,
+} from '@wapps/account';
 import { MysqlEditorialFavoriteUpdates } from './infrastructure/mysql-favorite-updates';
 import { FavoriteUpdateSourceController } from './http/favorite-updates.controller';
 import { ProfileArticles } from './articles/profile-articles';
-import {
-  AccountErasureAccess,
-  CleanAccountErasureParticipant,
-  AccountExportSourceAccess,
-} from '@sdk/features/identity/libs/management';
-import { MysqlAccountErasureParticipant } from '@sdk/extras/identity-mysql';
+import { CleanAccountErasureParticipant } from '@sdk/features/identity/libs/management';
+
+import { MysqlAccountErasureParticipant } from '@wapps/account-mysql';
 import { AccountErasureController } from './account-erasure/account-erasure.controller';
 import { CleanEditorialAccount } from './account-erasure/clean-editorial-account';
 import { MysqlEditorialContributionErasure } from './account-erasure/mysql-editorial-contribution-erasure';

@@ -1,3 +1,4 @@
+import { discussionKey } from '@sdk/features/discussion/core';
 import type { Pool, RowDataPacket } from 'mysql2/promise';
 import {
   DISCUSSION_MAX_NODES,
@@ -45,11 +46,11 @@ export class MysqlDiscussionSnapshotReader implements DiscussionSnapshotReader {
             tenantId: string;
             revision: SqlNumber;
             subjectId: string | null;
-            subjectKind: string | null;
+            bindingKey: string | null;
           }
         >
       >(
-        'SELECT tenantId, revision, subjectId, subjectKind FROM discussion_write_aggregates WHERE id = ?',
+        'SELECT tenantId, revision, subjectId, bindingKey FROM discussion_write_aggregates WHERE id = ?',
         [discussionId]
       );
       if (aggregates.length !== 1)
@@ -57,14 +58,13 @@ export class MysqlDiscussionSnapshotReader implements DiscussionSnapshotReader {
           'Missing versioned discussion aggregate'
         );
       const aggregate = aggregates[0];
-      if (
-        aggregate.subjectKind !== null &&
-        aggregate.subjectKind !== 'article' &&
-        aggregate.subjectKind !== 'application'
-      )
-        throw new InvalidSnapshotError('Invalid discussion target kind');
-      if (aggregate.subjectKind !== null && !aggregate.subjectId)
-        throw new InvalidSnapshotError('Missing discussion target');
+      if (aggregate.bindingKey !== null) {
+        try {
+          discussionKey(aggregate.bindingKey);
+        } catch {
+          throw new InvalidSnapshotError('Invalid discussion binding key');
+        }
+      }
       const [rows] = await connection.query<Array<RowDataPacket & NodeRow>>(
         `SELECT m.nodeId id, n.id foundId,
         n.referenceKey, n.kind, n.state, n.visibility, n.createdAt, n.updatedAt, n.deletedAt,
@@ -162,8 +162,8 @@ export class MysqlDiscussionSnapshotReader implements DiscussionSnapshotReader {
         tenantId: aggregate.tenantId,
         revision: integer(aggregate.revision),
         subjectId: aggregate.subjectId,
-        ...(aggregate.subjectKind !== null
-          ? { subjectKind: aggregate.subjectKind }
+        ...(aggregate.bindingKey !== null
+          ? { bindingKey: aggregate.bindingKey }
           : {}),
         subjectReferenceKey: null,
         nodes,

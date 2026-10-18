@@ -1,9 +1,13 @@
-import { EXPLORE_READER, EXPLORE_READER_ROLE, EXPLORE_READER_SCOPE } from '@domains/feed';
+import {
+  EXPLORE_READER,
+  EXPLORE_READER_ROLE,
+  EXPLORE_READER_SCOPE,
+} from '@domains/feed';
 import {
   NOTIFICATION_WORKER_ID,
   NOTIFICATION_WORKER_ROLE,
   NOTIFICATION_WORKER_SCOPE,
-} from '@sdk/features/discussion/core';
+} from '@domains/community';
 import { timingSafeEqual } from 'node:crypto';
 import {
   BadRequestException,
@@ -26,7 +30,7 @@ import {
   ACCOUNT_EXPORT_READER,
   ACCOUNT_EXPORT_READER_ROLE,
   ACCOUNT_EXPORT_READER_SCOPE,
-} from '@sdk/features/identity/libs/management';
+} from '@wapps/account';
 
 export interface EditorialRequest extends Request {
   editorialActor?: EditorialActor | null;
@@ -61,16 +65,46 @@ export class EditorialAuthMiddleware implements NestMiddleware {
       return value;
     };
     const secret = this.config.get<string>('INGRESS_AUTH_SECRET');
-    const exploreRoute = /^\/api\/internal\/explore\/?$/i.test((request.originalUrl ?? '').split('?')[0]);
+    const exploreRoute = /^\/api\/internal\/explore\/?$/i.test(
+      (request.originalUrl ?? '').split('?')[0]
+    );
     if (exploreRoute || request.headers['x-explore-reader'] !== undefined) {
-      const credential = header('x-explore-reader', 128), exploreSecret = this.config.get<string>('EXPLORE_SERVICE_SECRET');
-      if (!exploreRoute || request.method !== 'POST' || !credential || !exploreSecret ||
-          !/^[A-Za-z0-9_-]{32,128}$/.test(exploreSecret) ||
-          [secret, this.config.get<string>('NOTIFICATION_SERVICE_SECRET'), this.config.get<string>('ACCOUNT_EXPORT_SOURCE_SECRET'), this.config.get<string>('ACCOUNT_ERASURE_SECRET')].includes(exploreSecret) ||
-          [...names, 'authorization', 'x-ingress-auth', 'x-profile-reader', 'x-notification-worker', 'x-account-export-reader', 'x-account-erasure-writer', 'x-tenant-id', 'x-roles'].some(name => request.headers[name] !== undefined) ||
-          Buffer.byteLength(credential) !== Buffer.byteLength(exploreSecret) || !timingSafeEqual(Buffer.from(credential), Buffer.from(exploreSecret)))
-        throw new UnauthorizedException('Explore service authentication required');
-      request.editorialActor = { identityId: EXPLORE_READER, tenantId: EXPLORE_READER_SCOPE, roles: [EXPLORE_READER_ROLE] };
+      const credential = header('x-explore-reader', 128),
+        exploreSecret = this.config.get<string>('EXPLORE_SERVICE_SECRET');
+      if (
+        !exploreRoute ||
+        request.method !== 'POST' ||
+        !credential ||
+        !exploreSecret ||
+        !/^[A-Za-z0-9_-]{32,128}$/.test(exploreSecret) ||
+        [
+          secret,
+          this.config.get<string>('NOTIFICATION_SERVICE_SECRET'),
+          this.config.get<string>('ACCOUNT_EXPORT_SOURCE_SECRET'),
+          this.config.get<string>('ACCOUNT_ERASURE_SECRET'),
+        ].includes(exploreSecret) ||
+        [
+          ...names,
+          'authorization',
+          'x-ingress-auth',
+          'x-profile-reader',
+          'x-notification-worker',
+          'x-account-export-reader',
+          'x-account-erasure-writer',
+          'x-tenant-id',
+          'x-roles',
+        ].some((name) => request.headers[name] !== undefined) ||
+        Buffer.byteLength(credential) !== Buffer.byteLength(exploreSecret) ||
+        !timingSafeEqual(Buffer.from(credential), Buffer.from(exploreSecret))
+      )
+        throw new UnauthorizedException(
+          'Explore service authentication required'
+        );
+      request.editorialActor = {
+        identityId: EXPLORE_READER,
+        tenantId: EXPLORE_READER_SCOPE,
+        roles: [EXPLORE_READER_ROLE],
+      };
       return next();
     }
     const notificationRoute = /^\/api\/internal\/favorite-updates\/?$/i.test(

@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance } from 'axios';
-import type { ProfileAudiencePolicy } from '@sdk/features/identity/libs/management';
+import type { ProfileAudiencePolicy } from '@wapps/account';
 import { err, ok, type Result } from '@sdk/kernel/standard';
 
 export class OpaProfileAudience implements ProfileAudiencePolicy {

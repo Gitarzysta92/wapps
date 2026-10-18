@@ -2,9 +2,9 @@ const assert = require('node:assert/strict');
 const { createHash, randomBytes, randomUUID } = require('node:crypto');
 const { gunzipSync } = require('node:zlib');
 const { DataSource } = require('typeorm');
-const { MysqlAccountExports, AccountExports1791676832000 } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
-const { CompleteAccountExport } = require('../../sdk/features/identity/libs/management/src');
-const { ACCOUNT_EXPORT_LIMITS, ACCOUNT_EXPORT_SOURCES } = require('../../sdk/features/identity/core/src');
+const { MysqlAccountExports, AccountExports1791676832000 } = require('../../libs/adapters/account-mysql/src');
+const { CompleteAccountExport, ACCOUNT_EXPORT_SOURCES } = require('../../libs/usecases/account/src');
+const { ACCOUNT_EXPORT_LIMITS } = require('../../sdk/features/identity/core/src');
 const { GzipAccountExportArchive } = require('../../sdk/features/identity/applications/management/service/src/app/infrastructure/account-export-archive');
 
 async function collect(stream) {

@@ -1,7 +1,30 @@
 export function validateManagementEnv(
   env: Record<string, unknown>
 ): Record<string, unknown> {
+  if (!/^[\x21-\x7e]{1,128}$/.test(String(env['AUTH_ISSUER'] ?? '')))
+    throw new Error('AUTH_ISSUER must be an exact issuer key');
+  if (
+    !/^[A-Za-z0-9_-]{32,128}$/.test(String(env['AUTH_SERVICE_SECRET'] ?? '')) ||
+    [
+      'INGRESS_AUTH_SECRET',
+      'ACCOUNT_EXPORT_SOURCE_SECRET',
+      'ACCOUNT_ERASURE_SECRET',
+      'NOTIFICATION_SERVICE_SECRET',
+    ].some((key) => env[key] === env['AUTH_SERVICE_SECRET'])
+  )
+    throw new Error(
+      'AUTH_SERVICE_SECRET must be a distinct service credential'
+    );
+  if (
+    ['ENABLE_GOOGLE', 'ENABLE_GITHUB', 'ENABLE_ANONYMOUS'].some(
+      (key) => env[key] === 'true'
+    )
+  )
+    throw new Error(
+      'Only the password-session authentication contract is currently enabled'
+    );
   for (const key of [
+    'AUTHENTICATION_URL',
     'MYSQL_HOST',
     'MYSQL_PORT',
     'MYSQL_DATABASE',
@@ -10,8 +33,6 @@ export function validateManagementEnv(
     'QUEUE_HOST',
     'QUEUE_USERNAME',
     'QUEUE_PASSWORD',
-    'FIREBASE_PROJECT_ID',
-    'FIREBASE_WEB_API_KEY',
     'INGRESS_AUTH_SECRET',
     'ACCOUNT_EXPORT_SOURCE_SECRET',
     'ACCOUNT_ERASURE_SECRET',
@@ -90,7 +111,7 @@ export function validateManagementEnv(
     opa.password
   )
     throw new Error('OPA_URL must be an HTTP(S) service URL');
-  for (const key of ['EDITORIAL_URL', 'DISCUSSION_URL']) {
+  for (const key of ['EDITORIAL_URL', 'DISCUSSION_URL', 'AUTHENTICATION_URL']) {
     const origin = new URL(String(env[key]));
     if (
       !['http:', 'https:'].includes(origin.protocol) ||

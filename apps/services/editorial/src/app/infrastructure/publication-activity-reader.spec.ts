@@ -12,7 +12,11 @@ const candidate: PublicationActivityCandidate = {
   version: 'v'.repeat(80),
 };
 function fixture() {
-  const applications = { find: jest.fn() },
+  const applications = {
+      find: jest
+        .fn()
+        .mockResolvedValue({ id: 'parent-id', slug: 'public-app' }),
+    },
     suites = { find: jest.fn() },
     articles = { find: jest.fn() };
   const releases = {
@@ -20,6 +24,7 @@ function fixture() {
       id,
       revision: 3,
       title: 'Published release title',
+      applicationId: 'parent-id',
       applicationName: 'A'.repeat(255),
       applicationSlug: 'public-app',
       version: candidate.version,

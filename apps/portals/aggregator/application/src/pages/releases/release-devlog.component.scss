@@ -1,7 +1,7 @@
 @use 'ui/design-system/src/styles' as *;
 @use '../page-layout' as page;
 
-.application-workspace > .release-history {
+.release-content > .release-history {
   @include page.section;
   > h2 {
     margin: 0 0 $space-6;
@@ -11,3 +11,13 @@
     margin-top: $space-4;
   }
 }
+
+.release-content {
+  @include page.content;
+  min-width: 0;
+  display: flow-root;
+}
+.release-content > .release-list:first-child,
+.release-content > .release-details:first-child { margin-top: 0; }
+.release-title { margin: 0; font-size: $font-size-md; }
+.application-draft-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.5rem; }

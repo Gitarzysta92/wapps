@@ -36,6 +36,7 @@ function fixture() {
     ensure: jest.fn(),
     recordAuthentication: jest.fn(),
     setSuspended: jest.fn().mockResolvedValue(state),
+    findDeletion: jest.fn(),
     requestDeletion: jest
       .fn()
       .mockResolvedValue({

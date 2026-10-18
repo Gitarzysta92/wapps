@@ -273,7 +273,7 @@ async function discussionVotesChecks(options) {
 
   const {
     DiscussionVotes1791676825000,
-  } = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-votes.migration');
+  } = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-votes.migration');
   const migration = new DiscussionVotes1791676825000(),
     runner = source.createQueryRunner();
   try {

@@ -258,7 +258,7 @@ services:
     restart: no
     env_file:
       - /data/wapps-alpha/secrets/identity-migrate.env
-    image: ghcr.io/gitarzysta92/wapps-alpha-authenticator:${WAPPS_IMAGE_TAG:?Set the
+    image: ghcr.io/gitarzysta92/wapps-alpha-account-management:${WAPPS_IMAGE_TAG:?Set the
       full tested source SHA}
     logging:
       driver: json-file
@@ -293,26 +293,26 @@ services:
       - /data/wapps-alpha/secrets/account-management.env
     image: ghcr.io/gitarzysta92/wapps-alpha-account-management:${WAPPS_IMAGE_TAG:?Set
       the full tested source SHA}
-    volumes:
-      - type: bind
-        source: /data/wapps-alpha/secrets/firebase-service-account.json
-        target: /run/secrets/firebase.json
-        read_only: true
-        bind:
-          create_host_path: false
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: "3"
-  firebase-auth-validator:
+  authentication-migrate:
+    command: [node, main.js, --migrate]
     depends_on:
-      identity-migrate:
-        condition: service_completed_successfully
       mysql:
         condition: service_healthy
-        restart: true
-      rabbitmq:
+    init: true
+    restart: no
+    env_file:
+      - /data/wapps-alpha/secrets/authentication-migrate.env
+    image: ghcr.io/gitarzysta92/wapps-alpha-authenticator:${WAPPS_IMAGE_TAG:?Set the full tested source SHA}
+  firebase-auth-validator:
+    depends_on:
+      authentication-migrate:
+        condition: service_completed_successfully
+      mysql:
         condition: service_healthy
         restart: true
     init: true

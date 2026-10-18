@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type { ReplyInboxPage } from '@domains/discussion';
+import type { ReplyInboxPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from './authentication-session.port';
 import { REPLY_INBOX } from './reply-inbox.port';
 import { ReplyInboxService } from './reply-inbox.service';

@@ -6,12 +6,14 @@ import {
   type ExploreCursors,
   type ExploreSource,
 } from '@domains/feed';
+import type { ExploreRatings } from './explore-ratings';
 
 export class ExploreService {
   constructor(
     private readonly publications: ExploreSource,
     private readonly community: ExploreSource,
-    private readonly cursors: ExploreCursors
+    private readonly cursors: ExploreCursors,
+    private readonly ratings?: ExploreRatings
   ) {}
   async read(input: unknown) {
     if (
@@ -31,8 +33,15 @@ export class ExploreService {
         ]),
         after
       );
+      if (
+        !this.ratings &&
+        batch.items.some((item) => item.details?.kind === 'application')
+      )
+        throw new ExploreUnavailableError('Activity ratings unconfigured');
       return {
-        items: batch.items,
+        items: this.ratings
+          ? await this.ratings.enrich(batch.items)
+          : batch.items,
         after: batch.through ? this.cursors.seal(batch.through) : null,
       };
     } catch {

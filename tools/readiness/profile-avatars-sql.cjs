@@ -6,7 +6,7 @@ const {
   MysqlProfileAvatars,
   MysqlCanonicalIdentities,
   ProfileAvatars1791676828000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyProfileAvatars({ source, configuration, identities }) {
   const uid = 'PhotoOwner';

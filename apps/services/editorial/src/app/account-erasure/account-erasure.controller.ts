@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { AccountErasureAccess } from '@sdk/features/identity/libs/management';
+import { AccountErasureAccess } from '@wapps/account';
 import {
   accountExportObject,
   CanonicalIdentityAccessDenied,

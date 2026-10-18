@@ -1,89 +1,56 @@
 import {
+  ClassifiedNotifications,
+  type ReplyNotificationSource,
+  type MentionNotificationSource,
+} from '@wapps/account';
+import { authenticationProviders } from './authentication/providers';
+import { RemoteCredentials } from './authentication/remote-credentials';
+import { AuthController } from './authentication/controllers/auth.controller';
+import { EnrollmentController } from './authentication/controllers/enrollment.controller';
+import { ValidationController } from './authentication/controllers/validation.controller';
+import { EmailVerificationController } from './authentication/controllers/email-verification.controller';
+import {
+  CREDENTIAL_ADMIN,
+  CREDENTIAL_EXPORT,
+} from './services/identity-state.tokens';
+import type {
+  IUserAdminPort,
+  AccountExportSource,
+} from '@sdk/features/identity/libs/management';
+import {
   DeliverMentionNotifications,
   MentionInboxService,
-} from '@sdk/features/identity/libs/management';
-import { MysqlMentionInbox } from '@sdk/extras/identity-mysql';
-import { RemoteMentionNotifications } from './infrastructure/remote-mention-notifications';
-import { MentionNotificationWorker } from './infrastructure/mention-notification-worker';
-import { MentionInboxController } from './controllers/mention-inbox.controller';
-import {
   DiscussionMentionRecipients,
   DeliverFavoriteUpdates,
   FavoriteUpdatesService,
-} from '@sdk/features/identity/libs/management';
-import { MysqlFavoriteUpdates } from '@sdk/extras/identity-mysql';
-import { RemoteFavoriteUpdates } from './infrastructure/remote-favorite-updates';
-import { FavoriteUpdateWorker } from './infrastructure/favorite-update-worker';
-import { FavoriteUpdatesController } from './controllers/favorite-updates.controller';
-import { DiscussionMentionRecipientsController } from './controllers/discussion-mention-recipients.controller';
-import { AccountFavoriteUpdates1791840019000 } from '@sdk/extras/identity-mysql';
-import {
   DeliverReplyNotifications,
   ReplyInboxService,
-} from '@sdk/features/identity/libs/management';
-import {
-  AccountNotifications1791840016000,
-  MysqlReplyInbox,
-} from '@sdk/extras/identity-mysql';
-import { RemoteReplyNotifications } from './infrastructure/remote-reply-notifications';
-import { ReplyNotificationWorker } from './infrastructure/reply-notification-worker';
-import { ReplyInboxController } from './controllers/reply-inbox.controller';
-import { PublicProfileArticlesService } from '@sdk/features/identity/libs/management';
-import { randomUUID } from 'node:crypto';
-import {
-  AccountExportService,
+  PublicProfileArticlesService,
   CompleteAccountExport,
-} from '@sdk/features/identity/libs/management';
-import {
-  MysqlAccountExports,
-  MysqlAccountExportSource,
-} from '@sdk/extras/identity-mysql';
-import { FirebaseAccountExportSource } from '@sdk/extras/identity-firebase';
-import { AccountExportController } from './controllers/account-export.controller';
-import { AccountExportWorker } from './infrastructure/account-export-worker';
-import { GzipAccountExportArchive } from './infrastructure/account-export-archive';
-import { RemoteAccountExportSource } from './infrastructure/remote-account-export-source';
-import { EditorialProfileArticles } from './infrastructure/public-profile-articles';
-import { ProfileTotalsService } from '@sdk/features/identity/libs/management';
-import { RemoteProfileTotals } from './infrastructure/profile-totals';
-import {
-  MyProfileTotalsController,
-  PublicProfileTotalsController,
-} from './controllers/profile-totals.controller';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { AccountFavoritesService } from '@sdk/features/identity/libs/management';
-import { MysqlAccountFavorites } from '@sdk/extras/identity-mysql';
-import { PublicFavoriteTargets } from './infrastructure/public-favorite-targets';
-import { PublicProfileFavoriteSelections } from './infrastructure/public-profile-favorite-selections';
-import { PublicProfileFavoritesService } from '@sdk/features/identity/libs/management';
-import { PublicProfileSuitesService } from '@sdk/features/identity/libs/management';
-import { EditorialProfileSuites } from './infrastructure/public-profile-suites';
-import { PublicProfileDiscussionsService } from '@sdk/features/identity/libs/management';
-import { DiscussionProfileDiscussions } from './infrastructure/public-profile-discussions';
-import { PublicProfileActivityService } from '@sdk/features/identity/libs/management';
-import { RemoteProfileActivity } from './infrastructure/public-profile-activity';
-import { EncryptedProfileActivityCursors } from './infrastructure/profile-activity-cursors';
-import { AccountFavoritesController } from './controllers/account-favorites.controller';
-import { AuthorityValidationService } from '@sdk/kernel/ontology/authority';
-import {
-  IdentityManagementService,
+  ProfileTotalsService,
+  AccountFavoritesService,
+  PublicProfileFavoritesService,
+  PublicProfileSuitesService,
+  PublicProfileDiscussionsService,
+  PublicProfileActivityService,
   PrivateProfileService,
   PublicProfileService,
   ProfileAvatarService,
   AccountPreferencesService,
   type AccountPreferencesStore,
   type PrivateProfileStore,
-} from '@sdk/features/identity/libs/management';
-import { CanonicalIdentityStore } from '@sdk/features/identity/core';
+  ProfileBadgesService,
+} from '@wapps/account';
 import {
-  FirebaseAdminUserAdminPort,
-  FirebasePasswordRecovery,
-} from '@sdk/extras/identity-firebase';
-import {
+  CredentialBindings1792281601000,
+  MysqlMentionInbox,
+  MysqlFavoriteUpdates,
+  AccountFavoriteUpdates1791840019000,
+  AccountNotifications1791840016000,
+  MysqlReplyInbox,
+  MysqlAccountExports,
+  MysqlAccountExportSource,
+  MysqlAccountFavorites,
   CanonicalIdentity1791676804000,
   PrivateProfile1791676805000,
   AccountPreferences1791676806000,
@@ -96,7 +63,64 @@ import {
   MysqlCanonicalIdentities,
   MysqlProfileAvatars,
   MysqlPublicProfiles,
-} from '@sdk/extras/identity-mysql';
+  MysqlProfileBadges,
+  ProfileBadges1791676831000,
+  AccountExports1791676832000,
+  IdentityWriteBarrier1791840000000,
+  AccountErasureRequests1791840001000,
+  AccountErasureCoordination1791840002000,
+  ProfileBadgeErasure1791840003000,
+} from '@wapps/account-mysql';
+import { RemoteMentionNotifications } from './infrastructure/remote-mention-notifications';
+import { MentionNotificationWorker } from './infrastructure/mention-notification-worker';
+import { MentionInboxController } from './controllers/mention-inbox.controller';
+
+import { RemoteFavoriteUpdates } from './infrastructure/remote-favorite-updates';
+import { FavoriteUpdateWorker } from './infrastructure/favorite-update-worker';
+import { FavoriteUpdatesController } from './controllers/favorite-updates.controller';
+import { DiscussionMentionRecipientsController } from './controllers/discussion-mention-recipients.controller';
+
+import { RemoteReplyNotifications } from './infrastructure/remote-reply-notifications';
+import { ReplyNotificationWorker } from './infrastructure/reply-notification-worker';
+import { ReplyInboxController } from './controllers/reply-inbox.controller';
+
+import { randomUUID } from 'node:crypto';
+import {
+  AccountExportService,
+  IdentityManagementService,
+} from '@sdk/features/identity/libs/management';
+
+import { AccountExportController } from './controllers/account-export.controller';
+import { AccountExportWorker } from './infrastructure/account-export-worker';
+import { GzipAccountExportArchive } from './infrastructure/account-export-archive';
+import { RemoteAccountExportSource } from './infrastructure/remote-account-export-source';
+import { EditorialProfileArticles } from './infrastructure/public-profile-articles';
+
+import { RemoteProfileTotals } from './infrastructure/profile-totals';
+import {
+  MyProfileTotalsController,
+  PublicProfileTotalsController,
+} from './controllers/profile-totals.controller';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { HttpModule, HttpService } from '@nestjs/axios';
+
+import { PublicFavoriteTargets } from './infrastructure/public-favorite-targets';
+import { PublicProfileFavoriteSelections } from './infrastructure/public-profile-favorite-selections';
+
+import { EditorialProfileSuites } from './infrastructure/public-profile-suites';
+
+import { DiscussionProfileDiscussions } from './infrastructure/public-profile-discussions';
+
+import { RemoteProfileActivity } from './infrastructure/public-profile-activity';
+import { EncryptedProfileActivityCursors } from './infrastructure/profile-activity-cursors';
+import { AccountFavoritesController } from './controllers/account-favorites.controller';
+import { AuthorityValidationService } from '@sdk/kernel/ontology/authority';
+
+import { CanonicalIdentityStore } from '@sdk/features/identity/core';
+
 import { HealthController } from './health/health.controller';
 import { AuthValidationMiddleware } from './middleware/auth-validation.middleware';
 import { AccountManagementController } from './controllers/account-management.controller';
@@ -123,16 +147,7 @@ import {
 import { OpaPolicyEvaluator } from './infrastructure/opa-policy-evaluator';
 import { IdentityWorkers } from './infrastructure/identity-workers';
 import { validateManagementEnv } from './config/env.validation';
-import { ProfileBadgesService } from '@sdk/features/identity/libs/management';
-import {
-  MysqlProfileBadges,
-  ProfileBadges1791676831000,
-  AccountExports1791676832000,
-  IdentityWriteBarrier1791840000000,
-  AccountErasureRequests1791840001000,
-  AccountErasureCoordination1791840002000,
-  ProfileBadgeErasure1791840003000,
-} from '@sdk/extras/identity-mysql';
+
 import {
   ProfileBadgeAdministrationController,
   MyProfileBadgesController,
@@ -173,12 +188,17 @@ import {
           ProfileBadgeErasure1791840003000,
           AccountNotifications1791840016000,
           AccountFavoriteUpdates1791840019000,
+          CredentialBindings1792281601000,
         ],
         logging: false,
       }),
     }),
   ],
   controllers: [
+    AuthController,
+    EnrollmentController,
+    ValidationController,
+    EmailVerificationController,
     DiscussionMentionRecipientsController,
     FavoriteUpdatesController,
     ReplyInboxController,
@@ -203,6 +223,7 @@ import {
     PasswordRecoveryController,
   ],
   providers: [
+    ...authenticationProviders,
     {
       provide: DiscussionMentionRecipients,
       inject: [
@@ -275,18 +296,24 @@ import {
     },
     {
       provide: RemoteReplyNotifications,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) =>
-        new RemoteReplyNotifications(
-          config.getOrThrow<string>('DISCUSSION_URL'),
-          config.getOrThrow<string>('NOTIFICATION_SERVICE_SECRET'),
-          config.get<string>('REPLY_NOTIFICATION_WORKER_ENABLED') === 'true'
+      inject: [ConfigService, CANONICAL_IDENTITIES],
+      useFactory: (
+        config: ConfigService,
+        preferences: AccountPreferencesStore
+      ) =>
+        new ClassifiedNotifications(
+          new RemoteReplyNotifications(
+            config.getOrThrow<string>('DISCUSSION_URL'),
+            config.getOrThrow<string>('NOTIFICATION_SERVICE_SECRET'),
+            config.get<string>('REPLY_NOTIFICATION_WORKER_ENABLED') === 'true'
+          ),
+          preferences
         ),
     },
     {
       provide: DeliverReplyNotifications,
       inject: [RemoteReplyNotifications, MysqlReplyInbox],
-      useFactory: (source: RemoteReplyNotifications, store: MysqlReplyInbox) =>
+      useFactory: (source: ReplyNotificationSource, store: MysqlReplyInbox) =>
         new DeliverReplyNotifications(source, store),
     },
     {
@@ -299,7 +326,7 @@ import {
       useFactory: (
         authority: AuthorityValidationService,
         store: MysqlReplyInbox,
-        source: RemoteReplyNotifications
+        source: ReplyNotificationSource
       ) => new ReplyInboxService(authority, store, source),
     },
     ReplyNotificationWorker,
@@ -310,19 +337,25 @@ import {
     },
     {
       provide: RemoteMentionNotifications,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) =>
-        new RemoteMentionNotifications(
-          config.getOrThrow<string>('DISCUSSION_URL'),
-          config.getOrThrow<string>('NOTIFICATION_SERVICE_SECRET'),
-          config.get<string>('MENTION_NOTIFICATION_WORKER_ENABLED') === 'true'
+      inject: [ConfigService, CANONICAL_IDENTITIES],
+      useFactory: (
+        config: ConfigService,
+        preferences: AccountPreferencesStore
+      ) =>
+        new ClassifiedNotifications(
+          new RemoteMentionNotifications(
+            config.getOrThrow<string>('DISCUSSION_URL'),
+            config.getOrThrow<string>('NOTIFICATION_SERVICE_SECRET'),
+            config.get<string>('MENTION_NOTIFICATION_WORKER_ENABLED') === 'true'
+          ),
+          preferences
         ),
     },
     {
       provide: DeliverMentionNotifications,
       inject: [RemoteMentionNotifications, MysqlMentionInbox],
       useFactory: (
-        source: RemoteMentionNotifications,
+        source: MentionNotificationSource,
         store: MysqlMentionInbox
       ) => new DeliverMentionNotifications(source, store),
     },
@@ -336,7 +369,7 @@ import {
       useFactory: (
         authority: AuthorityValidationService,
         store: MysqlMentionInbox,
-        source: RemoteMentionNotifications
+        source: MentionNotificationSource
       ) => new MentionInboxService(authority, store, source),
     },
     MentionNotificationWorker,
@@ -355,11 +388,17 @@ import {
     },
     {
       provide: CompleteAccountExport,
-      inject: [MysqlAccountExports, DataSource, ConfigService],
+      inject: [
+        MysqlAccountExports,
+        DataSource,
+        ConfigService,
+        CREDENTIAL_EXPORT,
+      ],
       useFactory: (
         jobs: MysqlAccountExports,
         source: DataSource,
-        config: ConfigService
+        config: ConfigService,
+        credentials: AccountExportSource
       ) => {
         const credential = config.getOrThrow<string>(
           'ACCOUNT_EXPORT_SOURCE_SECRET'
@@ -368,7 +407,7 @@ import {
           jobs,
           [
             new MysqlAccountExportSource(source),
-            new FirebaseAccountExportSource(),
+            credentials,
             new RemoteAccountExportSource(
               'editorial',
               config.getOrThrow<string>('EDITORIAL_URL'),
@@ -630,17 +669,12 @@ import {
       },
     },
     { provide: ACCOUNT_STATE, useExisting: CANONICAL_IDENTITIES },
-    {
-      provide: FirebaseAdminUserAdminPort,
-      useFactory: () => new FirebaseAdminUserAdminPort(),
-    },
+    { provide: CREDENTIAL_ADMIN, useExisting: RemoteCredentials },
+    { provide: CREDENTIAL_EXPORT, useExisting: RemoteCredentials },
     {
       provide: PASSWORD_RECOVERY,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) =>
-        new FirebasePasswordRecovery(
-          config.getOrThrow<string>('FIREBASE_WEB_API_KEY')
-        ),
+      inject: [RemoteCredentials],
+      useFactory: (credentials: RemoteCredentials) => credentials.recovery,
     },
     {
       provide: AuthorityValidationService,
@@ -656,12 +690,12 @@ import {
       provide: IdentityManagementService,
       inject: [
         AuthorityValidationService,
-        FirebaseAdminUserAdminPort,
+        CREDENTIAL_ADMIN,
         CANONICAL_IDENTITIES,
       ],
       useFactory: (
         authority: AuthorityValidationService,
-        credentials: FirebaseAdminUserAdminPort,
+        credentials: IUserAdminPort,
         identities: CanonicalIdentityStore
       ) => new IdentityManagementService(authority, credentials, identities),
     },

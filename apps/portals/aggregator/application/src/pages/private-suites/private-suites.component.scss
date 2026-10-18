@@ -1,7 +1,17 @@
 @use 'ui/design-system/src/styles' as *;
 @use '../page-layout' as page;
+@use '../entry-details-page/entry-details-page.component';
 
 @include page.page;
+.detail-page {
+  // The shell owns width; retain the original collection reading composition.
+  padding-inline: 0;
+  width: 100%;
+  max-width: none;
+}
+.detail-page .suite-workspace { margin-top: 0; }
+.detail-header .intro { margin-bottom: $space-3; }
+.detail-header .notice { margin-top: $space-4; }
 .suite-workspace {
   @include page.content;
   display: flow-root;
@@ -18,7 +28,6 @@
   gap: $space-4;
 }
 .suite-card {
-  padding: $space-6;
   display: flex;
   flex-direction: column;
   gap: $space-4;
@@ -103,3 +112,7 @@ textarea {
 .suite-search label {
   grid-column: 1 / -1;
 }
+
+.member-heading { display: flex; align-items: center; gap: $space-4; }
+ui-medium-card.suite-card { display: block; }
+.suite-workspace .suite-form { max-width: none; }

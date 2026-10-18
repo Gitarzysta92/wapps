@@ -9,7 +9,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { err } from '@sdk/kernel/standard';
-import type { MentionInboxItem } from '@domains/discussion';
+import type { MentionInboxItem } from '@domains/community';
 import { AUTHENTICATION_SESSION } from './authentication-session.port';
 import { MENTION_INBOX } from './mention-inbox.port';
 

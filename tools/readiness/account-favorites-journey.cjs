@@ -8,7 +8,7 @@ const {
   identityDataSource,
   MysqlCanonicalIdentities,
   MysqlAccountFavorites,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { processService } = require('./qualification-process.cjs');
 
 async function listen(server) {

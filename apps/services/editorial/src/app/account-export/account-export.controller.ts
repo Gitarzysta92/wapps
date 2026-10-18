@@ -9,7 +9,7 @@ import {
   CanonicalIdentityAccessDenied,
   CanonicalIdentityInputError,
 } from '@sdk/features/identity/core';
-import { AccountExportSourceAccess } from '@sdk/features/identity/libs/management';
+import { AccountExportSourceAccess } from '@wapps/account';
 import { EditorialUser } from '../http/editorial-auth';
 import type { EditorialActor } from '../application/editorial.ports';
 

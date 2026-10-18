@@ -9,13 +9,15 @@ import {
   type ExploreCursors,
   type ExploreSource,
 } from '@domains/feed';
+import type { ExploreRatings } from './explore-ratings';
 
 export class TimelineService {
   constructor(
     private readonly applications: Pick<CatalogReadPort, 'find'>,
     private readonly publications: ExploreSource,
     private readonly community: ExploreSource,
-    private readonly cursors: (applicationId: string) => ExploreCursors
+    private readonly cursors: (applicationId: string) => ExploreCursors,
+    private readonly ratings?: ExploreRatings
   ) {}
   async read(inputSlug: unknown, input: unknown) {
     let slug: string;
@@ -51,6 +53,14 @@ export class TimelineService {
         ]),
         after
       );
+      if (
+        !this.ratings &&
+        batch.items.some((item) => item.details?.kind === 'application')
+      )
+        throw new ExploreUnavailableError('Activity ratings unconfigured');
+      const items = this.ratings
+        ? await this.ratings.enrich(batch.items)
+        : batch.items;
       const current = await this.applications.find(slug);
       if (!current) throw new TimelineMissingError('Application not found');
       if (JSON.stringify(current) !== JSON.stringify(app))
@@ -65,7 +75,7 @@ export class TimelineService {
       const tags = app.tags.flatMap((value) => [value.id, value.slug]);
       return parseTimelinePage({
         application: { id: app.id, slug: app.slug, name: app.name },
-        items: batch.items.map((item) => ({
+        items: items.map((item) => ({
           ...item,
           categories: [...new Set([...item.categories, ...categories])],
           tags: [...new Set([...item.tags, ...tags])],

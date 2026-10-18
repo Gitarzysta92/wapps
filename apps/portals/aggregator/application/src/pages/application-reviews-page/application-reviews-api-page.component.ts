@@ -8,7 +8,7 @@ import {
   untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiButton, TuiLink, TuiIcon } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
 import {
@@ -34,6 +34,7 @@ import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
     RouterLink,
     TuiButton,
     TuiLink,
+    TuiIcon,
     BreadcrumbsComponent,
     PageHeaderComponent,
     PageTitleComponent,

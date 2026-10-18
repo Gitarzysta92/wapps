@@ -1,7 +1,6 @@
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
-const root =
-  '../../sdk/features/discussion/applications/management/service/src/app/discussions/';
+const root = '../../apps/services/community/src/app/discussions/';
 const materializer =
   '../../sdk/features/discussion/applications/materializer/service/src/';
 const {
@@ -51,7 +50,7 @@ const { DiscussionQueries } = require(`${root}application/discussion-queries`);
 const { ArticleComments } = require(`${root}application/article-comments`);
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   MongoGenerationStore,
 } = require(`${materializer}mongo-generation-store`);

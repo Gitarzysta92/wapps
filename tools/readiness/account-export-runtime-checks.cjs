@@ -7,11 +7,12 @@ const path = require('node:path');
 const net = require('node:net');
 const admin = require('firebase-admin');
 const { processService } = require('./qualification-process.cjs');
+const { discussionProcessService } = require('./discussion-portal-fixture.cjs');
 const {
   identityDataSource,
   MysqlCanonicalIdentities,
   MysqlAccountExports,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyAccountExportRuntime(options) {
   const {
@@ -139,7 +140,7 @@ async function qualifyAccountExportRuntime(options) {
   async function restartDiscussion() {
     await discussion?.stop();
     discussionEnv.EDITORIAL_URL = editorialOrigin();
-    discussion = await processService(
+    discussion = await discussionProcessService(
       process.execPath,
       [discussionBinary],
       { cwd: root, env: discussionEnv },
@@ -147,7 +148,7 @@ async function qualifyAccountExportRuntime(options) {
         log.match(/Discussion API is running on: (http:\/\/[^\s]+)\/api/)?.[1],
       '/api/health'
     );
-    accountEnv.DISCUSSION_URL = discussion.origin;
+    accountEnv.DISCUSSION_URL = discussion.serviceOrigin;
   }
   async function restartAccount() {
     await account?.stop();
@@ -369,8 +370,36 @@ async function qualifyAccountExportRuntime(options) {
         );
     }
     await restartAccount();
-    if (options.explore || options.digest || options.timeline || options.favoritesContentPreferences) {
-      await require('./explore-runtime-checks.cjs')({ root, accountSource, editorialSource: source, discussionEnv, accountEnv, accountOrigin: () => account.origin, discussionOrigin: () => discussion.origin, editorialOrigin, restartDiscussion, restartAccount, stopDiscussion: () => discussion.stop(), headers, owner, other, until, browser: options.browser, digest: options.digest || options.timeline, timeline: options.timeline, favoritesContentPreferences: options.favoritesContentPreferences, output: options.output, pass });
+    if (
+      options.explore ||
+      options.digest ||
+      options.timeline ||
+      options.favoritesContentPreferences
+    ) {
+      await require('./explore-runtime-checks.cjs')({
+        root,
+        accountSource,
+        editorialSource: source,
+        discussionEnv,
+        accountEnv,
+        accountOrigin: () => account.origin,
+        discussionOrigin: () => discussion.origin,
+        discussionServiceOrigin: () => discussion.serviceOrigin,
+        editorialOrigin,
+        restartDiscussion,
+        restartAccount,
+        stopDiscussion: () => discussion.stop(),
+        headers,
+        owner,
+        other,
+        until,
+        browser: options.browser,
+        digest: options.digest || options.timeline,
+        timeline: options.timeline,
+        favoritesContentPreferences: options.favoritesContentPreferences,
+        output: options.output,
+        pass,
+      });
       return { erased: false };
     }
     if (options.notifications || options.favoriteUpdates || options.mentions) {
@@ -386,6 +415,7 @@ async function qualifyAccountExportRuntime(options) {
         accountEnv,
         accountOrigin: () => account.origin,
         discussionOrigin: () => discussion.origin,
+        discussionServiceOrigin: () => discussion.serviceOrigin,
         editorialOrigin,
         restartAccount,
         stopAccount: () => account.stop(),

@@ -76,9 +76,9 @@
     description="Create a private draft and reopen it from any signed-in session."
   />
   }
-  <div class="application-draft-grid">
+  <div class="draft-list">
     @for (draft of workspace.items(); track draft.id) {
-    <article class="application-draft-card" tuiAppearance="card-panel">
+    <article class="draft-panel" tuiAppearance="card-panel">
       <div class="application-draft-heading">
         <h2>{{ draft.name }}</h2>
         <p class="application-draft-meta">
@@ -135,7 +135,7 @@
   </div>
   } @else if (!draftId() || workspace.detail()) {
   <form
-    class="application-draft-card application-draft-form"
+    class="draft-panel draft-form"
     tuiAppearance="card-panel"
     (ngSubmit)="save()"
   >
@@ -148,43 +148,40 @@
         !!media.pending()
       "
     >
-      <label for="application-draft-name">Application name</label>
-      <input
+      <div class="draft-field"><tui-textfield><label tuiLabel for="application-draft-name">Application name</label><input tuiTextfield
         id="application-draft-name"
         name="name"
-        class="application-draft-input"
+
         minlength="2"
         maxlength="100"
         required
         [ngModel]="workspace.fields().name"
         (ngModelChange)="workspace.setField('name', $event)"
-      />
-      <label for="application-draft-slug">Draft slug</label>
-      <input
+      /></tui-textfield></div>
+      <div class="draft-field"><tui-textfield><label tuiLabel for="application-draft-slug">Draft slug</label><input tuiTextfield
         id="application-draft-slug"
         name="slug"
-        class="application-draft-input"
+
         maxlength="80"
         required
         [ngModel]="workspace.fields().slug"
         (ngModelChange)="workspace.setField('slug', $event)"
         aria-describedby="application-slug-help"
-      />
+      /></tui-textfield></div>
       <p id="application-slug-help" class="application-draft-meta">
         Lowercase letters, numbers and single hyphens. Saving does not reserve a
         public address.
       </p>
-      <label for="application-draft-website">Website</label>
-      <input
+      <div class="draft-field"><tui-textfield><label tuiLabel for="application-draft-website">Website</label><input tuiTextfield
         id="application-draft-website"
         name="website"
         type="url"
-        class="application-draft-input"
+
         maxlength="2048"
         required
         [ngModel]="workspace.fields().website"
         (ngModelChange)="workspace.setField('website', $event)"
-      />
+      /></tui-textfield></div>
       <label for="application-draft-classification">Proposed content classification</label>
       <select id="application-draft-classification" name="classification" class="application-draft-input" [ngModel]="workspace.fields().classification" (ngModelChange)="workspace.setField('classification', $event)">
         <option [ngValue]="undefined">Unclassified</option>
@@ -258,7 +255,7 @@
   <p>Save this draft before uploading application images.</p>
   } } @if (pendingDelete(); as draft) {
   <section
-    class="application-draft-card"
+    class="draft-panel"
     tuiAppearance="card-panel"
     aria-label="Confirm draft deletion"
   >

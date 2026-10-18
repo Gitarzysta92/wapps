@@ -1,0 +1,53 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/libs/usecases/account",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../dist/libs/usecases/account/tsconfig.lib.tsbuildinfo"
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../sdk/features/discussion/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/publication/suite/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/ontology/authority/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/profiles/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/preferences/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/favorites/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/publication/article/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/community/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/libs/management/tsconfig.lib.json"
+    }
+  ]
+}

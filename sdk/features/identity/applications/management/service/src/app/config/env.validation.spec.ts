@@ -9,8 +9,9 @@ const valid = {
   QUEUE_HOST: 'queue',
   QUEUE_USERNAME: 'test',
   QUEUE_PASSWORD: 'test',
-  FIREBASE_PROJECT_ID: 'test',
-  FIREBASE_WEB_API_KEY: 'test',
+  AUTHENTICATION_URL: 'http://credentials.test',
+  AUTH_ISSUER: 'issuer-A',
+  AUTH_SERVICE_SECRET: 'secret-'.repeat(8),
   INGRESS_AUTH_SECRET: 'test',
   ACCOUNT_EXPORT_SOURCE_SECRET: 'export-test-'.repeat(4),
   ACCOUNT_ERASURE_SECRET: 'qualification-erasure-secret-2026-only',
@@ -20,6 +21,26 @@ const valid = {
   DISCUSSION_URL: 'http://discussion:1338',
 };
 describe('management configuration', () => {
+  it('accepts explicit local credentials without Firebase configuration', () => {
+    const local = {
+      ...valid,
+      AUTH_PROVIDER: 'local',
+      FIREBASE_PROJECT_ID: undefined,
+      FIREBASE_WEB_API_KEY: undefined,
+    };
+    expect(validateManagementEnv(local)).toEqual(local);
+  });
+  it('rejects weak or reused authentication-service credentials', () => {
+    expect(() =>
+      validateManagementEnv({ ...valid, AUTH_SERVICE_SECRET: 'short' })
+    ).toThrow('AUTH_SERVICE_SECRET');
+    expect(() =>
+      validateManagementEnv({
+        ...valid,
+        AUTH_SERVICE_SECRET: valid.ACCOUNT_EXPORT_SOURCE_SECRET,
+      })
+    ).toThrow('AUTH_SERVICE_SECRET');
+  });
   it.each([
     'short',
     'x'.repeat(129),

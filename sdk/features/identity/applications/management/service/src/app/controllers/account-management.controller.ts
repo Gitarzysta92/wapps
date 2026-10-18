@@ -8,7 +8,10 @@ import {
   Post,
   ForbiddenException,
   HttpCode,
+  Header,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { isErr } from '@sdk/kernel/standard';
 import { AuthUser, AuthenticatedUser } from '../decorators/auth-user.decorator';
@@ -36,8 +39,9 @@ export class AccountManagementController {
   }
 
   @Post(':uid/disable')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Disable user account' })
-  @ApiParam({ name: 'uid', description: 'Target Firebase uid' })
+  @ApiParam({ name: 'uid', description: 'Stable application identity ID' })
   async disable(
     @Param('uid') uid: string,
     @AuthUser() user: AuthenticatedUser
@@ -47,6 +51,7 @@ export class AccountManagementController {
   }
 
   @Post(':uid/enable')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Enable user account' })
   async enable(@Param('uid') uid: string, @AuthUser() user: AuthenticatedUser) {
     const r = await this.svc.enableUser(uid, user);
@@ -54,6 +59,7 @@ export class AccountManagementController {
   }
 
   @Post(':uid/revoke-tokens')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Revoke refresh tokens (logout everywhere)' })
   async revokeTokens(
     @Param('uid') uid: string,
@@ -64,6 +70,7 @@ export class AccountManagementController {
   }
 
   @Delete(':uid')
+  @Header('Cache-Control', 'private, no-store')
   @HttpCode(202)
   @ApiOperation({
     summary: 'Tombstone user account and schedule credential cleanup',
@@ -74,6 +81,7 @@ export class AccountManagementController {
   }
 
   @Patch(':uid/email')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Update user email' })
   async updateEmail(
     @Param('uid') uid: string,
@@ -85,6 +93,7 @@ export class AccountManagementController {
   }
 
   @Patch(':uid/password')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Update user password' })
   async updatePassword(
     @Param('uid') uid: string,
@@ -96,6 +105,7 @@ export class AccountManagementController {
   }
 
   @Post(':uid/unlink-providers')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Unlink providers from user account' })
   async unlinkProviders(
     @Param('uid') uid: string,
@@ -107,6 +117,7 @@ export class AccountManagementController {
   }
 
   @Post(':uid/generate-password-reset-link')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Generate password reset link for email' })
   async generatePasswordResetLink(
     @Param('uid') uid: string,
@@ -118,6 +129,7 @@ export class AccountManagementController {
   }
 
   @Post(':uid/generate-email-verification-link')
+  @Header('Cache-Control', 'private, no-store')
   @ApiOperation({ summary: 'Generate email verification link for email' })
   async generateEmailVerificationLink(
     @Param('uid') uid: string,
@@ -133,12 +145,30 @@ export class AccountManagementController {
   }
 
   @Get(':uid/identity')
-  @ApiOperation({ summary: 'Get identity graph mapping for Firebase uid' })
+  @Header('Cache-Control', 'private, no-store')
+  @ApiOperation({
+    summary: 'Get canonical application identity',
+  })
   async getIdentityMapping(
     @Param('uid') uid: string,
-    @AuthUser() user: AuthenticatedUser
+    @AuthUser() user: AuthenticatedUser,
+    @Res() response: Response
   ) {
     const r = await this.svc.getIdentityMapping(uid, user);
-    return this.ensureOk(r);
+    response.json(this.ensureOk(r));
+  }
+
+  @Get(':uid/deletion-status')
+  @Header('Cache-Control', 'private, no-store')
+  @ApiOperation({
+    summary:
+      'Read credential and account erasure completion without changing state',
+  })
+  async deletionStatus(
+    @Param('uid') uid: string,
+    @AuthUser() user: AuthenticatedUser,
+    @Res() response: Response
+  ) {
+    response.json(this.ensureOk(await this.svc.getDeletionStatus(uid, user)));
   }
 }

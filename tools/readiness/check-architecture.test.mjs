@@ -83,6 +83,49 @@ test('detects forbidden dependency directions while allowing composition and pur
   }
 });
 
+test('enforces independent authentication and Identity composition roots', () => {
+  const auth =
+    'sdk/features/identity/applications/authenticator/service/src/app.module.ts';
+  const identity =
+    'sdk/features/identity/applications/management/service/src/app/app.module.ts';
+  assert.deepEqual(
+    dependencyRules(
+      auth,
+      'libs/adapters/account-mysql/src/index.ts',
+      '@wapps/account-mysql'
+    ),
+    ['ARCH011']
+  );
+  assert.deepEqual(
+    dependencyRules(
+      identity,
+      'sdk/features/identity/packages/infrastructure/local/src/index.ts',
+      '@sdk/extras/identity-local'
+    ),
+    ['ARCH011']
+  );
+  assert.deepEqual(
+    dependencyRules(
+      identity,
+      'sdk/features/identity/packages/infrastructure/firebase/src/index.ts',
+      '@sdk/extras/identity-firebase'
+    ),
+    ['ARCH011']
+  );
+  assert.deepEqual(
+    dependencyRules(identity, 'firebase-admin', 'firebase-admin'),
+    ['ARCH011']
+  );
+  assert.deepEqual(
+    dependencyRules(
+      identity,
+      'sdk/features/identity/libs/authentication/src/index.ts',
+      '@sdk/features/identity/libs/authentication'
+    ),
+    []
+  );
+});
+
 test('resolves alias and relative imports, re-exports, dynamic imports, and renamed barrel symbols', () => {
   const root = mkdtempSync(path.join(tmpdir(), 'wapps-architecture-'));
   const write = (name, content) => {
@@ -148,6 +191,11 @@ test('resolves alias and relative imports, re-exports, dynamic imports, and rena
       ARCH004: 0,
       ARCH005: 1,
       ARCH006: 1,
+      ARCH007: 0,
+      ARCH008: 0,
+      ARCH009: 0,
+      ARCH010: 0,
+      ARCH011: 0,
     });
     const pageViolation = result.violations.find(
       (finding) => finding.rule === 'ARCH006'
@@ -168,6 +216,93 @@ test('fails explicitly for an invalid or empty workspace', () => {
     assert.throws(() => auditArchitecture(root));
     writeFileSync(path.join(root, 'tsconfig.base.json'), '{}');
     assert.throws(() => auditArchitecture(root), /No .* source files/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('Discussion cannot depend on its Wapps consumer or define product target types', () => {
+  const root = mkdtempSync(path.join(tmpdir(), 'wapps-discussion-boundary-'));
+  try {
+    writeFileSync(path.join(root, 'tsconfig.base.json'), '{}');
+    const dir = path.join(root, 'sdk/features/discussion/core/src');
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      path.join(dir, 'key.ts'),
+      'export type Kind = "article" | "application"; export interface DiscussionTarget { subjectKind: Kind; }'
+    );
+    const result = auditArchitecture(root);
+    assert.equal(result.counts.ARCH008, 4);
+    assert.deepEqual(
+      dependencyRules(
+        'sdk/features/discussion/libs/management/src/usecase.ts',
+        'libs/domains/community/src/index.ts',
+        '@domains/community'
+      ),
+      ['ARCH007']
+    );
+    assert.deepEqual(
+      dependencyRules(
+        'apps/services/community/src/app/module.ts',
+        'sdk/features/discussion/libs/management/src/index.ts',
+        '@sdk/features/discussion/libs/management'
+      ),
+      []
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('Identity and Review engines reject consumer contracts, registries and target-specific fields', () => {
+  const root = mkdtempSync(path.join(tmpdir(), 'wapps-consumer-boundary-'));
+  try {
+    writeFileSync(path.join(root, 'tsconfig.base.json'), '{}');
+    for (const source of [
+      'sdk/features/identity/libs/management/src/usecase.ts',
+      'sdk/features/review/core/src/review.ts',
+      'sdk/features/review/libs/management/src/reviews.ts',
+      'sdk/features/review/packages/infrastructure/http/src/reviews.controller.ts',
+    ]) {
+      mkdirSync(path.dirname(path.join(root, source)), { recursive: true });
+      writeFileSync(
+        path.join(root, source),
+        'export const ACCOUNT_EXPORT_SOURCES = ["editorial"]; export interface Target { applicationId: string; }'
+      );
+      for (const target of [
+        'libs/domains/community/src/index.ts',
+        'libs/usecases/account/src/index.ts',
+        'libs/adapters/account-mysql/src/index.ts',
+        'apps/services/community/src/index.ts',
+      ]) {
+        assert.ok(
+          dependencyRules(source, target, '@consumer').includes('ARCH009')
+        );
+        assert.ok(
+          dependencyRules(
+            'sdk/kernel/standard/src/key.ts',
+            target,
+            '@consumer'
+          ).includes('ARCH003')
+        );
+        assert.ok(
+          dependencyRules(
+            'sdk/features/discussion/core/src/key.ts',
+            target,
+            '@consumer'
+          ).includes('ARCH007')
+        );
+      }
+    }
+    assert.equal(auditArchitecture(root).counts.ARCH010, 12);
+    assert.deepEqual(
+      dependencyRules(
+        'libs/usecases/account/src/application/notifications.ts',
+        'sdk/features/identity/libs/management/src/index.ts',
+        '@sdk/features/identity/libs/management'
+      ),
+      []
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

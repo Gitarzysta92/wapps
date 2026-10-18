@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeliverMentionNotifications } from '@sdk/features/identity/libs/management';
+import { DeliverMentionNotifications } from '@wapps/account';
 import { MentionNotificationWorker } from './mention-notification-worker';
 
 describe('mention delivery runtime worker', () => {

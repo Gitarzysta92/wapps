@@ -11,7 +11,7 @@ const { MysqlEditorialContributionErasure } = require(base +
   'account-erasure/mysql-editorial-contribution-erasure');
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { EditorialMediaAssets1791840011000 } = require(base +
   'application-media/editorial-media-assets.migration');
 const { ApplicationImageBindings1791676815000 } = require(base +

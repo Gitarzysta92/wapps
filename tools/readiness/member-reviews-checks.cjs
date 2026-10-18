@@ -351,7 +351,7 @@ async function memberReviewsChecks(options) {
   await options.republish();
   const { MemberReviews1791676827000 } = require(path.join(
     options.root,
-    'sdk/features/discussion/applications/management/service/src/app/reviews/infrastructure/member-reviews.migration'
+    'apps/services/community/src/app/reviews/infrastructure/member-reviews.migration'
   ));
   const migration = new MemberReviews1791676827000(),
     runner = source.createQueryRunner();

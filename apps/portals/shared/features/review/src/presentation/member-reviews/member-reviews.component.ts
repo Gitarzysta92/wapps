@@ -10,7 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton } from '@taiga-ui/core';
-import type { MemberReview } from '@sdk/features/review/core';
+import { TuiAvatar, TuiRating } from '@taiga-ui/kit';
+import { MediumCardComponent } from '@ui/layout';
+import type { MemberReview } from '@domains/community';
 import { ReviewsService } from '../../application/reviews.service';
 
 @Component({
@@ -23,6 +25,9 @@ import { ReviewsService } from '../../application/reviews.service';
     RouterLink,
     TuiButton,
     TuiAppearance,
+    TuiAvatar,
+    TuiRating,
+    MediumCardComponent,
   ],
   templateUrl: './member-reviews.component.html',
   styleUrl: './member-reviews.component.scss',

@@ -4,7 +4,7 @@ import { EditorialContentUpdates1791840017000 } from './app/infrastructure/conte
 import {
   IdentityWriteBarrier1791840000000,
   AccountErasureRequests1791840001000,
-} from '@sdk/extras/identity-mysql';
+} from '@wapps/account-mysql';
 import { MysqlArticleCoverCleanup } from './app/article-covers/mysql-article-cover-cleanup';
 import { ConfiguredArticleCoverObjects } from './app/article-covers/article-cover-storage';
 import { ArticleCoverCleanup1791676821000 } from './app/article-covers/article-cover-cleanup.migration';

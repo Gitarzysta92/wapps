@@ -150,7 +150,7 @@ describe('catalog API page composition', () => {
     await settle(harness);
     const root = () => harness.routeNativeElement!;
     expect(
-      root().querySelector('.discovery-card a')!.getAttribute('href')
+      root().querySelector('.item-card .result-link')!.getAttribute('href')
     ).toBe('/apps/api-app');
     expect(root().textContent).toContain('A real catalog record.');
     expect(root().textContent).not.toContain('Photo Snap');
@@ -162,14 +162,14 @@ describe('catalog API page composition', () => {
     await settle(harness);
     expect(root().textContent).toContain('Discover unavailable');
     expect(root().textContent).not.toContain('No results found');
-    expect(root().querySelector('.discovery-card')).toBeNull();
+    expect(root().querySelector('.item-card')).toBeNull();
     root().querySelector<HTMLButtonElement>('ui-content-state button')!.click();
     harness.detectChanges();
     http
       .expectOne((request) => request.url === '/api/catalog/discover')
       .flush({ groups: [{ ...discoveryPage.groups[0], items: [], total: 0 }] });
     await settle(harness);
-    expect(root().textContent).toContain('No matching results on this page');
+    expect(root().textContent).toContain('No results found');
   });
 
   it('renders the service directory without invented app counts, and retries taxonomy failure', async () => {
@@ -313,7 +313,7 @@ describe('catalog API page composition', () => {
       });
     await settle(harness);
     expect(
-      harness.routeNativeElement!.querySelector('.discovery-card a')
+      harness.routeNativeElement!.querySelector('.item-card .result-link')
         ?.textContent
     ).toContain(app.name);
   });

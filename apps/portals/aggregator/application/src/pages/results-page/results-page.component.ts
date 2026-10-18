@@ -43,6 +43,7 @@ import {
 } from '../../partials/filters-bar/src';
 import { NAVIGATION } from '../../navigation';
 import { map } from 'rxjs';
+import { ArticleCoverImageComponent, provideArticleCovers } from '@portals/shared/features/articles';
 
 @Component({
   selector: 'results-page',
@@ -50,6 +51,7 @@ import { map } from 'rxjs';
   templateUrl: './results-page.component.html',
   styleUrl: './results-page.component.scss',
   host: { class: 'fluid-container' },
+  providers: [provideArticleCovers()],
   imports: [
     FiltersBarComponent,
     FiltersMultiselectComponent,
@@ -62,6 +64,7 @@ import { map } from 'rxjs';
     TuiLink,
     TuiAvatar,
     CoverImageComponent,
+    ArticleCoverImageComponent,
     HeaderPartialComponent,
     TuiDropdownOpen,
     TuiDropdownDirective,
@@ -144,7 +147,7 @@ export class ResultsPageComponent {
       sort: ([
         'name',
         'name-desc',
-        ...(kind === 'suites' ? [] : ['newest']),
+        ...(kind === 'suites' && this.catalog.mode !== 'api' ? [] : ['newest']),
       ].includes(sort ?? '')
         ? sort
         : 'name') as CatalogSort,
@@ -275,8 +278,10 @@ export class ResultsPageComponent {
           },
         ]
       : []),
-    { key: 'category', name: 'Category', options: this.categories() },
-    { key: 'tag', name: 'Tag', options: this.tags() },
+    ...(this.query().kind === 'suites' ? [] : [
+      { key: 'category', name: 'Category', options: this.categories(), singleSelection: this.query().kind === 'articles' },
+      { key: 'tag', name: 'Tag', options: this.tags(), singleSelection: this.query().kind === 'articles' },
+    ]),
     ...this.applicationFilters()
       .filter(
         (control) =>
@@ -348,7 +353,7 @@ export class ResultsPageComponent {
     });
   }
 
-  readonly hasDatedEntries = computed(() => this.query().kind !== 'suites');
+  readonly hasDatedEntries = computed(() => this.catalog.mode === 'api' || this.query().kind !== 'suites');
 
   private facetName(key: 'categories' | 'tags', slug: string): string {
     if (!slug) return '';

@@ -16,6 +16,9 @@
     },
     {
       "path": "../../catalog/ownership/tsconfig.lib.json"
+    },
+    {
+      "path": "../../publication/classification/tsconfig.lib.json"
     }
   ]
 }

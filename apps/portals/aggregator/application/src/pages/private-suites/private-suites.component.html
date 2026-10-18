@@ -1,3 +1,4 @@
+@if (suiteView() === 'list') {
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
   <h1 uiPageTitle slot="title">
@@ -25,6 +26,23 @@
   >
   }
 </ui-page-header>
+}
+<div [class.detail-page]="suiteView() !== 'list'">
+@if (suiteView() !== 'list') {
+  <a tuiLink routerLink="/my/suites">← My suites</a>
+  <header class="detail-header">
+    <tui-badge>Personal collection</tui-badge>
+    <h1>{{ suiteView() === 'create' ? 'Create a suite' : workspace.detail()?.title || 'Private suite' }}</h1>
+    @if (suiteView() === 'create') {
+      <p class="intro">Bring the applications you use together into one collection.</p>
+    } @else { @if (workspace.detail(); as suite) {
+      @if (suite.description) { <p class="intro">{{ suite.description }}</p> }
+      <div class="metadata"><span>{{ suite.applicationIds.length }} {{ suite.applicationIds.length === 1 ? 'application' : 'applications' }}</span></div>
+    }
+    }
+    <p class="notice">Your private draft is saved to your account. Publication requires a separate review.</p>
+  </header>
+}
 <section
   class="suite-workspace"
   [attr.aria-busy]="workspace.loading() || workspace.saving()"
@@ -75,9 +93,9 @@
   } @if (workspace.suites().length) {
   <div class="suite-grid">
     @for (suite of workspace.suites(); track suite.id) {
-    <article tuiAppearance="card-panel" class="suite-card">
-      <p class="suite-label">Saved draft</p>
-      <h2>
+    <ui-medium-card tuiAppearance="card-panel" class="suite-card">
+      <tui-badge>Saved draft</tui-badge>
+      <h2 slot="header">
         <a tuiLink [routerLink]="['/my/suites', suite.id]">{{ suite.title }}</a>
       </h2>
       @if (suite.description) {
@@ -88,16 +106,17 @@
         {{ suite.applicationIds.length === 1 ? 'application' : 'applications' }}
       </p>
       <a tuiLink [routerLink]="['/my/suites', suite.id]">Open suite</a>
-    </article>
+    </ui-medium-card>
     }
   </div>
   } } @else if (suiteView() === 'create' || workspace.detail()) { @if
   (editing()) {
   <form class="suite-form" (ngSubmit)="save()">
     <fieldset [disabled]="workspace.saving() || workspace.uncertain()">
-      <label for="suite-title">Title</label>
+      <label for="suite-title">Suite name <span>(required)</span></label>
       <input
         id="suite-title"
+        placeholder="e.g. My creative workspace"
         class="suite-input"
         name="title"
         required
@@ -108,6 +127,7 @@
       <label for="suite-description">Description <span>(optional)</span></label>
       <textarea
         id="suite-description"
+        placeholder="What will you use this suite for?"
         class="suite-input"
         name="description"
         rows="4"
@@ -147,9 +167,7 @@
       }
     </div>
   </form>
-  } @else { @if (workspace.description()) {
-  <p class="suite-description">{{ workspace.description() }}</p>
-  }
+  } @else {
   <div class="suite-actions">
     @if (!workspace.saving() && !workspace.uncertain()) {
     <a tuiButton appearance="secondary" size="m" [routerLink]="['/my/suites', workspace.detail()?.id, 'publication']">Manage publication</a>
@@ -223,10 +241,10 @@
     }
     <ul class="suite-members">
       @for (id of workspace.selected(); track id) {
-      <li tuiAppearance="card-panel" class="suite-member">
+      <li class="app-card suite-member">
         <div>
           @if (workspace.member(id); as app) {
-          <a tuiLink [routerLink]="['/apps', app.slug]">{{ app.name }}</a> }
+          <div class="member-heading"><tui-avatar [src]="app.logoUrl || '@tui.box'" size="l" /><a tuiLink [routerLink]="['/apps', app.slug]">{{ app.name }}</a></div> }
           @else {
           <span>{{
             workspace.metadataLoading()
@@ -284,26 +302,12 @@
     }
     <ul class="suite-members">
       @for (app of workspace.results(); track app.id) {
-      <li tuiAppearance="card-panel" class="suite-member">
-        <div>
-          <a tuiLink [routerLink]="['/apps', app.slug]">{{ app.name }}</a>
-          <p>{{ app.description }}</p>
-        </div>
-        <button
-          tuiButton
-          appearance="secondary"
-          size="s"
-          type="button"
-          [disabled]="
-            workspace.saving() ||
-            workspace.uncertain() ||
-            workspace.selected().includes(app.id)
-          "
-          [attr.aria-label]="'Add ' + app.name"
-          (click)="workspace.select(app)"
-        >
-          {{ workspace.selected().includes(app.id) ? 'Selected' : 'Add' }}
-        </button>
+      <li>
+        <label class="app-card selectable">
+          <input type="checkbox" [checked]="workspace.selected().includes(app.id)" [disabled]="workspace.saving() || workspace.uncertain()" (change)="workspace.selected().includes(app.id) ? workspace.remove(app.id) : workspace.select(app)" [attr.aria-label]="'Include ' + app.name" />
+          <tui-avatar [src]="app.logoUrl || '@tui.box'" size="m" />
+          <span class="app-copy"><strong>{{ app.name }}</strong><span class="muted">{{ app.description }}</span></span>
+        </label>
       </li>
       } @empty { @if (!workspace.searching() && !workspace.searchError()) {
       <li>No matching applications.</li>
@@ -347,3 +351,4 @@
   </section>
   } } }
 </section>
+</div>

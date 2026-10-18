@@ -1,5 +1,5 @@
 import { advanceContentUpdateCursor } from '@sdk/extras/mysql';
-import { lockIdentityWrites } from '@sdk/extras/identity-mysql';
+import { lockIdentityWrites } from '@wapps/account-mysql';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { assertEditorialOwnership } from '../application/editorial-commands';

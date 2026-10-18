@@ -227,7 +227,7 @@ async function profileBadgesBrowser({
     MysqlProfileBadges,
     MysqlAccountErasureParticipant,
     MysqlAccountErasureCleanup,
-  } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+  } = require('../../libs/adapters/account-mysql/src');
   const {
     CleanAccountErasureParticipant,
   } = require('../../sdk/features/identity/libs/management/src');

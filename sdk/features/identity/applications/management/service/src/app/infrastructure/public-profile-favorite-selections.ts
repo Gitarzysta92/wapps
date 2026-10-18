@@ -1,9 +1,10 @@
+import { classificationFields } from '@domains/publication/classification';
 import type { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { parseCatalogSelection } from '@domains/catalog/record';
 import { parsePublicSuiteSelection } from '@domains/publication/suite';
 import { parseArticleSelection } from '@domains/publication/article';
-import { parseDiscussionSelection } from '@domains/discussion/contracts';
+import { profileFavoriteDiscussions } from './profile-favorite-discussions';
 import {
   ACCOUNT_FAVORITES_LIMIT,
   parseFavoriteTarget,
@@ -13,7 +14,7 @@ import {
   type PublicProfileFavorite,
 } from '@domains/customer/favorites';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { PublicProfileFavoriteTargets } from '@sdk/features/identity/libs/management';
+import type { PublicProfileFavoriteTargets } from '@wapps/account';
 
 export class PublicProfileFavoriteSelections
   implements PublicProfileFavoriteTargets
@@ -62,9 +63,9 @@ export class PublicProfileFavoriteSelections
         ),
         this.selectBatches(
           this.discussion,
-          'discussion-selection',
+          'discussions/selection?bindingPrefix=application%3A',
           ids('discussions'),
-          parseDiscussionSelection
+          profileFavoriteDiscussions
         ),
       ]);
       const parents = await this.selectBatches(
@@ -79,6 +80,7 @@ export class PublicProfileFavoriteSelections
           kind: 'applications',
           id: app.id,
           title: app.name,
+          ...classificationFields(app.classification),
           slug: app.slug,
           applicationSlug: null,
         })),
@@ -86,6 +88,7 @@ export class PublicProfileFavoriteSelections
           kind: 'suites',
           id: suite.id,
           title: suite.title,
+          ...classificationFields(suite.classification),
           slug: suite.id,
           applicationSlug: null,
         })),
@@ -93,6 +96,7 @@ export class PublicProfileFavoriteSelections
           kind: 'articles',
           id: article.id,
           title: article.title,
+          ...classificationFields(article.classification),
           slug: article.slug,
           applicationSlug: null,
         })),
@@ -104,6 +108,10 @@ export class PublicProfileFavoriteSelections
                   kind: 'discussions',
                   id: topic.id,
                   title: topic.title,
+                  ...classificationFields(
+                    parents.find((app) => app.id === topic.applicationId)
+                      ?.classification
+                  ),
                   slug: topic.id,
                   applicationSlug,
                 },

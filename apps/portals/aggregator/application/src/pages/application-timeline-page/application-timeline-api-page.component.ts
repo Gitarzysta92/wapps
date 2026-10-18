@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
-import { ApplicationTimelineService } from '@portals/shared/features/feed';
+import { ApplicationTimelineService, ActivityCardComponent } from '@portals/shared/features/feed';
 import {
   ApplicationContentStateComponent,
   readApplicationContent,
@@ -21,7 +21,7 @@ import { exploreLink } from '../../explore-links';
 @Component({
   selector: 'application-timeline-api-page',
   imports: [
-    RouterLink,
+    RouterLink, ActivityCardComponent,
     TuiAppearance,
     TuiButton,
     TuiLink,

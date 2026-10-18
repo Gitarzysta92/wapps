@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
-import type { ReplyInboxPage } from '@domains/discussion';
+import type { ReplyInboxPage } from '@domains/community';
 
 export interface ReplyInboxPort {
   list(cursor: string | null): Observable<Result<ReplyInboxPage, Error>>;

@@ -2,11 +2,7 @@ import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, distinctUntilChanged, of, Subject, takeUntil } from 'rxjs';
 import { err } from '@sdk/kernel/standard';
-import {
-  publicCommentContent,
-  publicCommentId,
-  type PublicCommentThread,
-} from '@domains/discussion';
+import { publicCommentContent, publicCommentId, type PublicCommentThread } from '@domains/community';
 import { ARTICLE_SESSION, ArticleRequestError } from './article-workspace.port';
 import {
   ARTICLE_COMMENTS,

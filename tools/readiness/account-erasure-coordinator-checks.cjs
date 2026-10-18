@@ -1,3 +1,4 @@
+const { RequestAccountErasure } = require('../../libs/usecases/account/src');
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
 const { DataSource } = require('typeorm');
@@ -11,11 +12,10 @@ const {
   AccountErasureCoordination1791840002000,
   lockIdentityWrites,
   runIdentityMaintenance,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   CompleteIdentityDeletion,
   CompleteAccountErasure,
-  RequestAccountErasure,
 } = require('../../sdk/features/identity/libs/management/src');
 const {
   CanonicalIdentityAccessDenied,

@@ -5,6 +5,7 @@ import {
 } from '@domains/publication/classification';
 import { parseCatalogQuery } from '@domains/catalog/record';
 import { parseArticleBrowseQuery } from '@domains/publication/article';
+import { parseDiscoveryDetails, parseDiscoveryTags, type DiscoveryDetails, type DiscoveryTag } from './discovery-details';
 
 export const DISCOVERY_KINDS = ['application', 'article', 'suite'] as const;
 export type DiscoveryKind = (typeof DISCOVERY_KINDS)[number];
@@ -32,6 +33,9 @@ export interface PublicDiscoveryItem extends ClassifiedContent {
   tags: string[];
   /** Canonical names, separate from matching IDs/slugs in tags. */
   tagNames?: string[];
+  /** Display labels and destinations; matching aliases remain in tags. */
+  displayTags?: DiscoveryTag[];
+  details?: DiscoveryDetails;
 }
 export interface PublicDiscoveryGroup {
   kind: DiscoveryKind;
@@ -275,6 +279,8 @@ function item(input: unknown, kind: DiscoveryKind): PublicDiscoveryItem {
     'categories',
     'tags',
     'tagNames',
+    'displayTags',
+    'details',
   ]);
   const id = text(value['id'], 36, false);
   if (
@@ -292,7 +298,17 @@ function item(input: unknown, kind: DiscoveryKind): PublicDiscoveryItem {
         !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)
   )
     throw new DiscoveryInputError('Invalid Discover destination');
+  let preview: Pick<PublicDiscoveryItem, 'details' | 'displayTags'>;
+  try {
+    preview = {
+      ...(value['details'] === undefined ? {} : { details: parseDiscoveryDetails(value['details'], kind) }),
+      ...(value['displayTags'] === undefined ? {} : { displayTags: parseDiscoveryTags(value['displayTags']) }),
+    };
+  } catch {
+    throw new DiscoveryInputError('Invalid Discover preview');
+  }
   return {
+    ...preview,
     id,
     revision: number(value['revision'], 1),
     slug: slug as string | null,
@@ -369,6 +385,8 @@ export function selectPublicDiscovery(
           excluded.has(category.toLowerCase())
         )
     );
-    return { ...group, items, hidden: group.items.length - items.length };
+    return { ...group, items: items.map(item => item.details?.kind === 'suite' ? {
+      ...item, details: { ...item.details, applications: item.details.applications.filter(app => permitsContent(app, showMatureContent)) },
+    } : item), hidden: group.items.length - items.length };
   });
 }

@@ -60,10 +60,41 @@
   <p role="status">Loading discussions...</p>
   } @else if (!discussions.items().length && !discussions.error()) {
   <p>No discussions yet. Start a conversation about this application.</p>
-  } @for (thread of discussions.items(); track thread.id) {
+  }
+  @if (!threadId()) {
+    <ui-notice-card>
+      <p slot="left">Join the community discussion about this application.</p>
+      <button slot="right" tuiButton type="button" [disabled]="!discussions.signedIn() || discussions.saving() || !!discussions.pending()" (click)="startDiscussion()"><tui-icon icon="@tui.plus" />Start Discussion</button>
+    </ui-notice-card>
+    @for (group of groups(); track group.pinned) {
+      @if (group.items.length) {
+        <section class="discussion-list-section">
+          <h2 class="section-title"><tui-icon [icon]="group.pinned ? '@tui.pin' : '@tui.messages-square'" />{{ group.title }}</h2>
+          <div class="discussion-list" [class.pinned-discussions]="group.pinned">
+            @for (thread of group.items; track thread.id) {
+              <div>
+                <a class="discussion-preview-link" [routerLink]="threadLink()(thread.id)">
+                  @if (group.pinned) { <discussion-small-card appearance="card-elevated" [data]="preview(thread)" /> }
+                  @else { <discussion-medium-card appearance="card-elevated" [data]="preview(thread)" /> }
+                </a>
+                <div class="discussion-actions preview-actions">
+                  <favorite-toggle-button type="discussions" [targetId]="thread.id" [slug]="thread.id" />
+                  @if (thread.canPin) { <button tuiButton type="button" size="s" appearance="flat" [attr.aria-pressed]="thread.pinned" [disabled]="discussions.saving() || !!discussions.pending()" (click)="pin(thread)">{{ thread.pinned ? 'Unpin topic' : 'Pin topic' }}</button> }
+                  @if (applicationSlug(); as slug) { <discussion-quick-button [appSlug]="slug" [discussionSlug]="thread.id" [topicTitle]="thread.title" [replyCount]="thread.replyCount" (closed)="discussions.reload()" /> }
+                  @for (comment of thread.comments; track comment.id) { @if (comment.depth === 0 && comment.votes; as votes) {
+                    <button tuiButton type="button" size="s" [appearance]="votes.mine === 1 ? 'primary' : 'flat'" [attr.aria-pressed]="votes.mine === 1" [disabled]="!discussions.signedIn() || discussions.saving() || !!discussions.pending()" (click)="vote(comment, thread, 1)">Upvote ({{ votes.upvotes }})</button>
+                    <button tuiButton type="button" size="s" [appearance]="votes.mine === -1 ? 'primary' : 'flat'" [attr.aria-pressed]="votes.mine === -1" [disabled]="!discussions.signedIn() || discussions.saving() || !!discussions.pending()" (click)="vote(comment, thread, -1)">Downvote ({{ votes.downvotes }})</button>
+                  } }
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    }
+  } @else { @for (thread of discussions.items(); track thread.id) {
   <article
-    class="discussion-card"
-    tuiAppearance="card-panel"
+    class="discussion-thread"
     aria-label="Discussion topic"
   >
     <div class="discussion-heading">
@@ -103,27 +134,22 @@
       }
     </div>
     @for (comment of thread.comments; track comment.id) {
-    <div
+    @if (comment.content; as content) {
+    <ui-discussion-post
       class="discussion-entry"
       [class.discussion-reply]="comment.depth > 0"
       [attr.data-post-id]="comment.id"
     >
-      @if (comment.content; as content) {
-      <div class="discussion-heading">
-        <h3>{{ content.displayName }}</h3>
-        <p>
-          {{ comment.createdAt | date : 'medium' }} @if (comment.updatedAt) { /
-          Edited {{ comment.updatedAt | date : 'medium' }} }
-        </p>
-        @if (comment.depth > 0) {
-        <p>Reply to {{ parentLabel(comment, thread) }}</p>
-        }
-      </div>
+      <ui-discussion-post-header slot="header" [authorName]="content.displayName" [publishedTime]="date(comment.createdAt)" [replyToName]="comment.depth > 0 ? parentLabel(comment, thread) : null" />
+      <div slot="content">
+        @if (comment.updatedAt) { <p>Edited {{ comment.updatedAt | date:'medium' }}</p> }
+
       <p class="discussion-text">
         {{ threadId() ? content.text : (content.text | slice : 0 : 320)
         }}{{ !threadId() && content.text.length > 320 ? '...' : '' }}
       </p>
       @if (content.mentions?.length) { <profile-mentioned-members [ids]="content.mentions || []" /> }
+      </div><div slot="bottom-bar">
       @if (comment.votes; as votes) {
       <div class="discussion-actions" aria-label="Post votes">
         <button
@@ -207,10 +233,11 @@
         </button>
         }
       </div>
-      } } @else {
-      <p>Post removed. Replies remain in the conversation.</p>
-      }
-    </div>
+      } </div>
+    </ui-discussion-post>
+    } @else {
+      <ui-discussion-post class="discussion-entry" [class.discussion-reply]="comment.depth > 0" [attr.data-post-id]="comment.id"><p slot="content">Post removed. Replies remain in the conversation.</p></ui-discussion-post>
+    }
     } @if (!threadId()) {
     <div class="discussion-actions">
       <a
@@ -232,7 +259,7 @@
     </div>
     }
   </article>
-  } @if (discussions.next()) {
+  } } @if (discussions.next()) {
   <button
     tuiButton
     size="s"

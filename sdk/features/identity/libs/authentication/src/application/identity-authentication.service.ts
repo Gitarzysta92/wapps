@@ -28,18 +28,11 @@ export class IdentityAuthenticationService {
     }
     const session = strategyResult.value;
 
-    let result = await this.identityProvider.obtainIdentity(session.uid);
+    const result = await this.identityProvider.obtainIdentity(session.uid);
     if (isErr(result)) {
       return err(result.error);
     }
 
-    if (!result.value) {
-      result = await this.identityProvider.createIdentity(
-        { ...session, claim: session.uid },
-        { activate: true }
-      );
-      if (isErr(result)) return err(result.error);
-    }
     if (!result.value || !result.value.canBeObtained()) {
       return err(new Error('Identity is inactive, suspended, or deleted'));
     }
@@ -74,7 +67,7 @@ export class IdentityAuthenticationService {
     if (!identity.ok) return err(identity.error);
     if (!identity.value?.canBeObtained())
       return err(new Error('Identity is unavailable'));
-    return refreshed;
+    return ok(this._toAuthSessionDto(identity.value, refreshed.value));
   }
 
   private _toAuthSessionDto(
@@ -85,7 +78,7 @@ export class IdentityAuthenticationService {
       token: session.token,
       refreshToken: session.refreshToken,
       expiresIn: session.expiresIn,
-      uid: session.uid,
+      uid: identity.identityId,
     };
   }
 }

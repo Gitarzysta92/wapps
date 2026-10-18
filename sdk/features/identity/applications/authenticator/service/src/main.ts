@@ -1,108 +1,48 @@
 import 'reflect-metadata';
-import * as admin from 'firebase-admin';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
-import swaggerUi from 'swagger-ui-express';
-import { runIdentityMaintenance } from '@sdk/extras/identity-mysql';
-import { swaggerDocument } from './swagger.document';
+import { json } from 'express';
+import {
+  credentialDataSource,
+  assertCredentialDatabase,
+} from './credential-data-source';
+import { provisionLocalUser } from './local-user';
 
 async function bootstrap() {
-  const maintenance = await runIdentityMaintenance(
-    process.argv.slice(2),
-    process.env,
-    (value) => console.log(JSON.stringify(value))
-  );
-  if (maintenance !== null) {
-    process.exitCode = maintenance;
+  if (process.argv.length === 3 && process.argv[2] === '--local-user') {
+    console.log(JSON.stringify(await provisionLocalUser(process.env)));
     return;
   }
+  if (process.argv.length === 3 && process.argv[2] === '--migrate') {
+    const source = credentialDataSource(process.env);
+    await source.initialize();
+    try {
+      await assertCredentialDatabase(source);
+      await source.runMigrations();
+    } finally {
+      await source.destroy();
+    }
+    console.log('Authentication migrations completed');
+    return;
+  }
+  if (process.argv.length !== 2)
+    throw new Error('Unknown authentication maintenance command');
   const { AppModule } = await import('./app.module');
-  if (!admin.apps.length)
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  app.enableShutdownHooks();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      transform: true,
-      validationError: { target: false, value: false },
-    })
-  );
-
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .filter(Boolean);
-  app.enableCors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin))
-        return cb(null, true);
-      return cb(null, false);
-    },
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
-    credentials: true,
+  if (process.env.AUTH_PROVIDER === 'firebase') {
+    const admin = await import('firebase-admin');
+    if (!admin.apps.length)
+      admin.initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID });
+  }
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
   });
-
-  // Swagger UI (same URL as before)
-  app.use(
-    '/api-docs',
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocument, {
-      customSiteTitle: 'Authenticator API',
-      customCss: '.swagger-ui .topbar { display: none }',
-    })
-  );
-
-  const port = parseInt(String(process.env.PORT ?? 8080), 10);
-  await app.listen(port);
-
-  const ingressSecret = process.env.INGRESS_AUTH_SECRET;
-  const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
-  const firebaseWebApiKey = process.env.FIREBASE_WEB_API_KEY;
-
-  if (!ingressSecret) {
-    console.warn(
-      '⚠️  WARNING: INGRESS_AUTH_SECRET not set - backend services cannot validate auth headers!'
-    );
-  }
-
-  if (!firebaseWebApiKey) {
-    console.warn(
-      '⚠️  WARNING: FIREBASE_WEB_API_KEY not set - email/password authentication will not work!'
-    );
-  }
-
-  const enableEmailPassword = process.env.ENABLE_EMAIL_PASSWORD !== 'false';
-  const enableGoogle = process.env.ENABLE_GOOGLE === 'true';
-  const enableGithub = process.env.ENABLE_GITHUB === 'true';
-  const enableAnonymous = process.env.ENABLE_ANONYMOUS === 'true';
-
-  const googleClientId = process.env.GOOGLE_CLIENT_ID;
-  const githubClientId = process.env.GITHUB_CLIENT_ID;
-
-  console.log(`🔐 Authenticator running on port ${port}`);
-  console.log(`📋 Firebase Project ID: ${firebaseProjectId || 'NOT SET'}`);
-  console.log(
-    `📋 Firebase Web API Key: ${firebaseWebApiKey ? '✓ SET' : '✗ NOT SET'}`
-  );
-  console.log(`📋 Enabled providers:`);
-  console.log(`   - Email/Password: ${enableEmailPassword ? '✓' : '✗'}`);
-  console.log(`   - Google: ${enableGoogle && googleClientId ? '✓' : '✗'}`);
-  console.log(`   - GitHub: ${enableGithub && githubClientId ? '✓' : '✗'}`);
-  console.log(`   - Anonymous: ${enableAnonymous ? '✓' : '✗'}`);
+  app.enableShutdownHooks();
+  app.use(json({ limit: '32kb', strict: true }));
+  await app.listen(Number(process.env.PORT ?? 8080));
 }
-
 void bootstrap().catch(() => {
   console.error(
-    'Authenticator startup/maintenance failed; check configuration, migrations and service dependencies'
+    'Authentication startup/maintenance failed; check configuration and credential database migrations'
   );
   process.exitCode = 1;
 });

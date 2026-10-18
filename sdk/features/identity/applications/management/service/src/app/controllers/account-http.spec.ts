@@ -1,25 +1,27 @@
-import { MysqlFavoriteUpdates } from '@sdk/extras/identity-mysql';
-import { RemoteFavoriteUpdates } from '../infrastructure/remote-favorite-updates';
-import { FavoriteUpdateWorker } from '../infrastructure/favorite-update-worker';
-import type { INestApplication } from '@nestjs/common';
-import { createHash } from 'node:crypto';
-import { gzipSync } from 'node:zlib';
 import {
+  MysqlFavoriteUpdates,
   MysqlAccountExports,
   MysqlReplyInbox,
-} from '@sdk/extras/identity-mysql';
+  MysqlAccountFavorites,
+} from '@wapps/account-mysql';
+import { RemoteFavoriteUpdates } from '../infrastructure/remote-favorite-updates';
+import { FavoriteUpdateWorker } from '../infrastructure/favorite-update-worker';
+import { type INestApplication, ValidationPipe, Logger } from '@nestjs/common';
+import { createHash } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
+
 import { RemoteReplyNotifications } from '../infrastructure/remote-reply-notifications';
 import { ReplyNotificationWorker } from '../infrastructure/reply-notification-worker';
 import { AccountExportWorker } from '../infrastructure/account-export-worker';
-import { ValidationPipe } from '@nestjs/common';
+
 import { Test } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { AuthorityValidationService } from '@sdk/kernel/ontology/authority';
 import { defaultAccountPreferences } from '@domains/customer/preferences';
-import { MysqlAccountFavorites } from '@sdk/extras/identity-mysql';
+
 import { PublicFavoriteTargets } from '../infrastructure/public-favorite-targets';
 import { CanonicalIdentityConflict } from '@sdk/features/identity/core';
-import { FirebaseAdminUserAdminPort } from '@sdk/extras/identity-firebase';
+import { CREDENTIAL_ADMIN } from '../services/identity-state.tokens';
 import { ok, err } from '@sdk/kernel/standard';
 import {
   ACCOUNT_STATE,
@@ -35,7 +37,7 @@ import {
   PublicProfileDiscussionsService,
   ProfileBadgesService,
   ProfileTotalsService,
-} from '@sdk/features/identity/libs/management';
+} from '@wapps/account';
 
 describe('account production HTTP composition', () => {
   const state = {
@@ -50,6 +52,7 @@ describe('account production HTTP composition', () => {
     find: jest.fn(),
     ensure: jest.fn(),
     setSuspended: jest.fn(),
+    findDeletion: jest.fn(),
     requestDeletion: jest.fn(),
     getProfile: jest.fn(),
     updateProfile: jest.fn(),
@@ -124,6 +127,9 @@ describe('account production HTTP composition', () => {
   let app: INestApplication;
   let origin: string;
   const env = {
+    AUTHENTICATION_URL: 'http://credentials.test',
+    AUTH_SERVICE_SECRET: 'secret-'.repeat(8),
+    AUTH_ISSUER: 'issuer-A',
     MYSQL_HOST: 'unused',
     MYSQL_PORT: '3306',
     MYSQL_DATABASE: 'test',
@@ -194,7 +200,7 @@ describe('account production HTTP composition', () => {
       .useValue({})
       .overrideProvider(MysqlAccountExports)
       .useValue(exports)
-      .overrideProvider(FirebaseAdminUserAdminPort)
+      .overrideProvider(CREDENTIAL_ADMIN)
       .useValue(credentials)
       .overrideProvider(AuthorityValidationService)
       .useValue({ validate })
@@ -600,6 +606,54 @@ describe('account production HTTP composition', () => {
     preferences: defaultAccountPreferences(),
   };
   const publicProfileId = '00000000-0000-4000-8000-000000000001';
+  it.each(['capabilities', 'administer', 'change'] as const)(
+    'preserves tenant context for badge %s policy',
+    async (operation) => {
+      const path =
+        operation === 'capabilities'
+          ? 'admin/profile-badges'
+          : `admin/profile-badges/${publicProfileId}`;
+      const input = {
+        expectedRevision: 0,
+        kind: 'verified',
+        action: 'award',
+        reason: 'Evidence reviewed',
+      };
+      const response = await request(
+        path,
+        operation === 'change' ? 'PUT' : 'GET',
+        operation === 'change' ? input : undefined,
+        {
+          ...trusted,
+          'idempotency-key': 'tenant-badge',
+          'x-user-claims': JSON.stringify({
+            roles: ['admin'],
+            tenantId: 'Tenant-A',
+          }),
+        }
+      );
+      expect(response.status).toBe(200);
+      const args = badges[operation].mock.calls[0];
+      expect(args[args.length - 1]).toEqual(
+        expect.objectContaining({
+          tenantId: 'Tenant-A',
+          subject: { roles: ['admin'] },
+        })
+      );
+    }
+  );
+  it.each([null, '', [], 7])(
+    'rejects malformed badge tenant %p before the use case',
+    async (tenantId) => {
+      const response = await request('admin/profile-badges', 'GET', undefined, {
+        ...trusted,
+        'x-user-claims': JSON.stringify({ roles: ['admin'], tenantId }),
+      });
+      expect(response.status).toBe(400);
+      expect(badges.capabilities).not.toHaveBeenCalled();
+    }
+  );
+
   it('routes canonical badge reads and commands with trusted actor claims and no caching', async () => {
     const capabilities = await request('admin/profile-badges');
     expect(capabilities.status).toBe(200);
@@ -1313,6 +1367,61 @@ describe('account production HTTP composition', () => {
     expect((await request('admin/users/target', 'DELETE')).status).toBe(503);
     expect(identities.requestDeletion).not.toHaveBeenCalled();
   });
+  it.each(['disable', 'enable', 'revoke-tokens'])(
+    'preserves tenant context and exact target when authorizing %s',
+    async (action) => {
+      validate.mockResolvedValue(ok(false));
+      const response = await request(
+        `admin/users/Case-Sensitive/${action}`,
+        'POST',
+        undefined,
+        {
+          ...trusted,
+          'x-user-claims': JSON.stringify({
+            roles: ['identity:admin'],
+            tenantId: 'Tenant-A',
+          }),
+        }
+      );
+      expect(response.status).toBe(403);
+      expect(validate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identityId: 'Uid',
+          tenantId: 'Tenant-A',
+          subject: { roles: ['identity:admin'] },
+          resource: { type: 'user', id: 'Case-Sensitive' },
+        })
+      );
+      expect(identities.setSuspended).not.toHaveBeenCalled();
+      expect(credentials.revokeRefreshTokens).not.toHaveBeenCalled();
+    }
+  );
+  it.each(['disable', 'enable', 'revoke-tokens'])(
+    'performs no mutation when policy is unavailable for %s',
+    async (action) => {
+      validate.mockResolvedValue(err(new Error('policy unavailable')));
+      expect(
+        (await request(`admin/users/target/${action}`, 'POST')).status
+      ).toBe(503);
+      expect(identities.setSuspended).not.toHaveBeenCalled();
+      expect(credentials.revokeRefreshTokens).not.toHaveBeenCalled();
+    }
+  );
+  it.each([null, '', [], 7])(
+    'rejects malformed admin tenant %p before policy',
+    async (tenantId) => {
+      expect(
+        (
+          await request('admin/users/target/disable', 'POST', undefined, {
+            ...trusted,
+            'x-user-claims': JSON.stringify({ roles: ['admin'], tenantId }),
+          })
+        ).status
+      ).toBe(400);
+      expect(validate).not.toHaveBeenCalled();
+      expect(identities.setSuspended).not.toHaveBeenCalled();
+    }
+  );
   it('suspends canonical application access without provisioning a target', async () => {
     expect((await request('admin/users/target/disable', 'POST')).status).toBe(
       201
@@ -1320,6 +1429,45 @@ describe('account production HTTP composition', () => {
     expect(identities.setSuspended).toHaveBeenCalledWith('target', true);
     expect(credentials.updateUser).not.toHaveBeenCalled();
     expect(identities.ensure).not.toHaveBeenCalled();
+  });
+  it('records actor, target and confirmed/denied/unconfirmed outcomes without credential data', async () => {
+    const log = jest
+      .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
+    try {
+      await request('admin/users/target/disable', 'POST');
+      expect(log).toHaveBeenLastCalledWith({
+        event: 'identity.administration',
+        action: 'identity.user.disable',
+        actorId: 'Uid',
+        targetId: 'target',
+        outcome: 'confirmed',
+      });
+      validate.mockResolvedValue(ok(false));
+      await request('admin/users/target/enable', 'POST');
+      expect(log).toHaveBeenLastCalledWith(
+        expect.objectContaining({ outcome: 'denied' })
+      );
+      validate.mockResolvedValue(ok(true));
+      credentials.revokeRefreshTokens.mockResolvedValue(
+        err(new Error('private provider credentials'))
+      );
+      expect(
+        (await request('admin/users/target/revoke-tokens', 'POST')).status
+      ).toBe(503);
+      expect(log).toHaveBeenLastCalledWith({
+        event: 'identity.administration',
+        action: 'identity.user.revoke_tokens',
+        actorId: 'Uid',
+        targetId: 'target',
+        outcome: 'unconfirmed',
+      });
+      expect(JSON.stringify(log.mock.calls)).not.toContain(
+        'private provider credentials'
+      );
+    } finally {
+      log.mockRestore();
+    }
   });
   it('admin deletion uses the same accepted cleanup contract', async () => {
     const result = await request('admin/users/Uid', 'DELETE');
@@ -1329,6 +1477,120 @@ describe('account production HTTP composition', () => {
       cleanup: 'pending',
     });
     expect(credentials.deleteUser).not.toHaveBeenCalled();
+  });
+  const adminOperations = [
+    { path: 'email', method: 'PATCH', body: { email: 'updated@example.test' } },
+    {
+      path: 'password',
+      method: 'PATCH',
+      body: { password: 'updated-password' },
+    },
+    {
+      path: 'unlink-providers',
+      method: 'POST',
+      body: { providersToUnlink: ['google.com'] },
+    },
+    {
+      path: 'generate-password-reset-link',
+      method: 'POST',
+      body: { email: 'user@example.test' },
+    },
+    {
+      path: 'generate-email-verification-link',
+      method: 'POST',
+      body: { email: 'user@example.test' },
+    },
+    { path: '', method: 'DELETE', body: undefined },
+    { path: 'identity', method: 'GET', body: undefined },
+    { path: 'deletion-status', method: 'GET', body: undefined },
+  ];
+  it.each(adminOperations)(
+    'enforces explicit policy and preserves tenant for $method $path',
+    async ({ path, method, body }) => {
+      for (const policy of [ok(false), err(new Error('policy unavailable'))]) {
+        validate.mockResolvedValue(policy);
+        const response = await request(
+          `admin/users/Case-Sensitive/${path}`,
+          method,
+          body,
+          {
+            ...trusted,
+            'x-user-claims': JSON.stringify({
+              roles: ['identity:admin'],
+              tenantId: 'Tenant-A',
+            }),
+          }
+        );
+        expect(response.status).toBe(policy.ok ? 403 : 503);
+        expect(validate).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            tenantId: 'Tenant-A',
+            resource: { type: 'user', id: 'Case-Sensitive' },
+          })
+        );
+      }
+      expect(identities.requestDeletion).not.toHaveBeenCalled();
+      expect(identities.findDeletion).not.toHaveBeenCalled();
+      expect(credentials.updateUser).not.toHaveBeenCalled();
+      expect(credentials.generatePasswordResetLink).not.toHaveBeenCalled();
+      expect(credentials.generateEmailVerificationLink).not.toHaveBeenCalled();
+    }
+  );
+  it.each(['pending', 'completed', 'failed'])(
+    'reads %s deletion status without repeating a command',
+    async (cleanup) => {
+      identities.findDeletion.mockResolvedValue({
+        ...state,
+        isDeleted: true,
+        cleanup,
+      });
+      const response = await request('admin/users/Uid/deletion-status');
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('private, no-store');
+      expect(await response.json()).toEqual({
+        identityId: 'Uid',
+        revision: 1,
+        status: 'accepted',
+        cleanup,
+      });
+      expect(identities.findDeletion).toHaveBeenCalledWith('Uid');
+      expect(identities.requestDeletion).not.toHaveBeenCalled();
+    }
+  );
+  it('returns JSON null when no deletion has been accepted', async () => {
+    identities.findDeletion.mockResolvedValue(null);
+    const response = await request('admin/users/Uid/deletion-status');
+    expect(response.status).toBe(200);
+    expect(await response.json()).toBeNull();
+  });
+  it('does not report unavailable cleanup as completed', async () => {
+    identities.findDeletion.mockRejectedValue(new Error('journal unavailable'));
+    expect((await request('admin/users/Uid/deletion-status')).status).toBe(503);
+  });
+  it('audits credential changes without password or email values', async () => {
+    const log = jest
+      .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
+    credentials.updateUser.mockResolvedValue(ok(true));
+    try {
+      expect(
+        (
+          await request('admin/users/target/password', 'PATCH', {
+            password: 'private-password',
+          })
+        ).status
+      ).toBe(200);
+      expect(log).toHaveBeenLastCalledWith({
+        event: 'identity.administration',
+        action: 'identity.user.update_password',
+        actorId: 'Uid',
+        targetId: 'target',
+        outcome: 'confirmed',
+      });
+      expect(JSON.stringify(log.mock.calls)).not.toContain('private-password');
+    } finally {
+      log.mockRestore();
+    }
   });
   it('allows password recovery without requiring a session', async () => {
     const result = await request(

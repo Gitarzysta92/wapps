@@ -4,6 +4,7 @@ import {
   CanonicalIdentityConflict,
   CanonicalIdentityInputError,
   CanonicalIdentityStore,
+  CredentialIdentityBindings,
 } from '@sdk/features/identity/core';
 import { AuthSessionDto } from './models/auth-session.dto';
 import { RegistrationDto } from './models/registration.dto';
@@ -13,8 +14,9 @@ export interface RegistrationCredentials {
   /** Existing credentials must be verified before recovering an interrupted signup. */
   registerOrAuthenticate(
     email: string,
-    password: string
-  ): Promise<Result<AuthSessionDto, Error>>;
+    password: string,
+    key?: string
+  ): Promise<Result<AuthSessionDto & { enrollmentEligible?: boolean }, Error>>;
 }
 
 export interface InitialAccountEnrollment {
@@ -35,8 +37,10 @@ export class CredentialRegistrationRejected extends Error {}
 export class CredentialRegistrationService {
   constructor(
     private readonly credentials: RegistrationCredentials,
-    private readonly identities: CanonicalIdentityStore,
-    private readonly enrollment: InitialAccountEnrollment
+    private readonly identities: CanonicalIdentityStore &
+      CredentialIdentityBindings,
+    private readonly enrollment: InitialAccountEnrollment,
+    private readonly issuer: string
   ) {}
 
   async register(
@@ -68,27 +72,37 @@ export class CredentialRegistrationService {
     try {
       const session = await this.credentials.registerOrAuthenticate(
         input.email,
-        input.password
+        input.password,
+        key
       );
       if (!session.ok) return session;
-      const { state } = await this.identities.ensure({
-        uid: session.value.uid,
-        provider: 'email',
-        kind: 'user',
-        activate: true,
-      });
+      const state = await this.identities.enrollCredential(
+        {
+          issuer: this.issuer,
+          subject: session.value.uid,
+        },
+        session.value.enrollmentEligible === true
+      );
       if (!state.isActive || state.isSuspended || state.isDeleted)
         return err(
           new CanonicalIdentityAccessDenied('Identity is unavailable')
         );
       await this.enrollment.enrollAccount(
-        session.value.uid,
+        state.identityId,
         input.nickname,
         key
       );
       // A credential session is returned only after the authority rechecks access and records it.
-      await this.identities.recordAuthentication(session.value.uid, 'email');
-      return ok(session.value);
+      await this.identities.recordAuthentication(
+        state.identityId,
+        'credentials'
+      );
+      return ok({
+        token: session.value.token,
+        refreshToken: session.value.refreshToken,
+        expiresIn: session.value.expiresIn,
+        uid: state.identityId,
+      });
     } catch (error) {
       return err(
         error instanceof CanonicalIdentityAccessDenied ||

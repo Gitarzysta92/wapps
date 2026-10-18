@@ -95,10 +95,15 @@ export const identityAdminPolicy: DiscussionPolicyDefinition = {
       requireId: true,
       identityMustMatchInput: true,
     },
-    'identity.profile-badges.read': { type: 'profile-badges', requireId: true },
+    'identity.profile-badges.read': {
+      type: 'profile-badges',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
     'identity.profile-badges.update': {
       type: 'profile-badges',
       requireId: true,
+      tenantMustBeAbsent: true,
     },
     'identity.profile-follows.read': {
       type: 'user',
@@ -140,21 +145,55 @@ export const identityAdminPolicy: DiscussionPolicyDefinition = {
       requireId: true,
       identityMustMatchInput: true,
     },
-    'identity.graph.read': { type: 'user', requireId: true },
-    'identity.user.disable': { type: 'user', requireId: true },
-    'identity.user.enable': { type: 'user', requireId: true },
-    'identity.user.revoke_tokens': { type: 'user', requireId: true },
-    'identity.user.delete': { type: 'user', requireId: true },
-    'identity.user.update_email': { type: 'user', requireId: true },
-    'identity.user.update_password': { type: 'user', requireId: true },
-    'identity.user.unlink_provider': { type: 'user', requireId: true },
+    'identity.graph.read': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.disable': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.enable': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.revoke_tokens': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.delete': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.update_email': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.update_password': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
+    'identity.user.unlink_provider': {
+      type: 'user',
+      requireId: true,
+      tenantMustBeAbsent: true,
+    },
     'identity.user.generate_password_reset_link': {
       type: 'user',
       requireId: true,
+      tenantMustBeAbsent: true,
     },
     'identity.user.generate_email_verification_link': {
       type: 'user',
       requireId: true,
+      tenantMustBeAbsent: true,
     },
   },
 };

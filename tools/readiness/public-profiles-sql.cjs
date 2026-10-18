@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
 const { DataSource } = require('typeorm');
 const { changeProfileFollow } = require('../../libs/domains/customer/profiles/src');
-const { MysqlPublicProfiles, ProfileFollows1791676829000 } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+const { MysqlPublicProfiles, ProfileFollows1791676829000 } = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyPublicProfilesSql({ source, configuration, identities }) {
   const store = new MysqlPublicProfiles(source);

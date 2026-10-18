@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
-import type { MentionInboxPage } from '@domains/discussion';
+import type { MentionInboxPage } from '@domains/community';
 
 export interface MentionInboxPort {
   list(cursor: string | null): Observable<Result<MentionInboxPage, Error>>;

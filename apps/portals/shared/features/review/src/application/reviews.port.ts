@@ -2,12 +2,11 @@ import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Result } from '@sdk/kernel/standard';
 import type {
-  MemberReview,
   ReviewChange,
-  ReviewPage,
   ReviewReceipt,
   ReviewReportPage,
 } from '@sdk/features/review/core';
+import type { MemberReview, ReviewPage } from '@domains/community';
 
 export interface ReviewAttempt {
   applicationId: string;

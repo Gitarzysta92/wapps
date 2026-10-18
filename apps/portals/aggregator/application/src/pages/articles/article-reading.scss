@@ -30,7 +30,7 @@
   display: grid;
   gap: $space-4;
 }
-.application-workspace > article-comments.article-comments-section {
+.detail-page > article-comments.article-comments-section {
   @include page.section;
 }
 .article-filter-field {

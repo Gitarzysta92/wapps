@@ -26,3 +26,5 @@ export * from './application/identity-event-delivery';
 export * from './application/credential-registration';
 export * from './application/credential-password-reset';
 export * from './application/credential-email-verification';
+export * from './application/ports/credential-session.port';
+export * from './application/credential-service-contract';

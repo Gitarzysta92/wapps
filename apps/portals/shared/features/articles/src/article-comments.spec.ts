@@ -2,10 +2,7 @@ import { EnvironmentInjector, createEnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type {
-  PublicCommentPage,
-  PublicCommentThread,
-} from '@domains/discussion';
+import type { PublicCommentPage, PublicCommentThread } from '@domains/community';
 import { ArticleCommentsService } from './application/article-comments.service';
 import {
   ARTICLE_COMMENTS,

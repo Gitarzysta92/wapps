@@ -40,6 +40,7 @@ function page(total = 3): PublicDiscoveryResult {
         categories: ['Work'],
         tags: ['team'],
         tagNames: ['Team collaboration'],
+        displayTags: [{ slug: 'team', name: 'Team collaboration' }],
         ...(entry === 0
           ? { classification: 'general' as const }
           : entry === 1
@@ -139,18 +140,18 @@ describe('API discovery previews', () => {
     });
     expect(preview.groups[0].entries[0].rating).toBeUndefined();
     expect(preview.groups[0].entries[0].tags).toEqual([
-      { name: 'Team collaboration' },
+      { slug: 'team', name: 'Team collaboration' },
     ]);
     expect(preview.groups[2].entries[0].slug).toBe(
       page().groups[2].items[0].id
     );
     http.expectNone(() => true);
   });
-  it('never presents matching IDs or slugs as labels when an older source omits tag names', async () => {
+  it('never presents matching IDs or slugs as labels when an older source omits display tags', async () => {
     const result = firstValueFrom(service.preview('Remote'));
     const legacy = page();
     for (const group of legacy.groups)
-      for (const item of group.items) delete item.tagNames;
+      for (const item of group.items) { delete item.tagNames; delete item.displayTags; }
     request().flush(legacy);
     expect(
       (await result).groups.every((group) =>

@@ -11,6 +11,7 @@
   "include": ["**/*.ts"],
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
   "references": [
+    { "path": "../../publication/classification/tsconfig.lib.json" },
     {
       "path": "../../../../sdk/kernel/standard/tsconfig.lib.json"
     }

@@ -1,6 +1,6 @@
+const ACCOUNT_EXPORT_SOURCES = ['alpha', 'beta', 'Gamma/v42'] as const;
 import {
   ACCOUNT_EXPORT_LIMITS,
-  ACCOUNT_EXPORT_SOURCES,
   AccountExportCaptureSequence,
   AccountExportSourceInvalid,
   AccountExportLimitExceeded,
@@ -47,7 +47,9 @@ describe('account export completeness', () => {
     ).toThrow(AccountExportLimitExceeded);
   });
   it('accepts a complete ordered set of canonical captures', () => {
-    expect(parseAccountExportArtifact(artifact)).toEqual(artifact);
+    expect(
+      parseAccountExportArtifact(artifact, ACCOUNT_EXPORT_SOURCES)
+    ).toEqual(artifact);
     expect(parseAccountExportJob(job)).toEqual(job);
     expect(
       parseAccountExportJob({
@@ -95,7 +97,10 @@ describe('account export completeness', () => {
     { extra: true },
   ])('refuses invalid artifacts without a retryable error: %j', (invalid) => {
     expect(() =>
-      parseAccountExportArtifact({ ...artifact, ...invalid })
+      parseAccountExportArtifact(
+        { ...artifact, ...invalid },
+        ACCOUNT_EXPORT_SOURCES
+      )
     ).toThrow(AccountExportSourceInvalid);
   });
   it.each([

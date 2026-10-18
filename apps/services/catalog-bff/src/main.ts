@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { configureGenericDiscussionBody } from './app/discussions/portal-generic-discussions.body';
+import { configureHealthMonitorBody } from './app/health-monitors/portal-health-monitors.body';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  configureGenericDiscussionBody(app);
+  configureHealthMonitorBody(app);
   app.enableShutdownHooks();
   const logger = new Logger('Bootstrap');
 

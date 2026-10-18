@@ -2,7 +2,7 @@ import type { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { parseProfileSuitesPage } from '@domains/publication/suite';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { PublicProfileSuitesPort } from '@sdk/features/identity/libs/management';
+import type { PublicProfileSuitesPort } from '@wapps/account';
 
 export class EditorialProfileSuites implements PublicProfileSuitesPort {
   private readonly origin: string;

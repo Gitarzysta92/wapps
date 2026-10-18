@@ -31,6 +31,8 @@ import {
 } from '@portals/shared/features/articles';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { APPLICATION_WORKSPACE_PATHS } from '../../navigation';
+import { TuiBadge } from '@taiga-ui/kit';
+import { ResultsPageComponent } from '../results-page/results-page.component';
 
 @Component({
   selector: 'app-article-catalog',
@@ -49,11 +51,13 @@ import { APPLICATION_WORKSPACE_PATHS } from '../../navigation';
     PageHeaderComponent,
     PageTitleComponent,
     FavoriteToggleButtonComponent,
+    TuiBadge,
+    ResultsPageComponent,
   ],
   providers: [ArticleCatalogService, provideArticleCovers()],
   templateUrl: './article-catalog.component.html',
   styleUrls: [
-    '../application-drafts/application-drafts.component.scss',
+    '../entry-details-page/entry-details-page.component.scss',
     './article-reading.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

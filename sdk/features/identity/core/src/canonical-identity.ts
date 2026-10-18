@@ -1,4 +1,4 @@
-/** The Firebase UID is the canonical actor ID; the SQL row ID identifies its credential subject. */
+/** Stable application identity. Credential subjects are resolved through separate issuer-qualified bindings. */
 export interface CanonicalIdentityState {
   identityId: string;
   subjectId: string;
@@ -43,6 +43,7 @@ export interface CanonicalIdentityStore {
     uid: string,
     suspended: boolean
   ): Promise<CanonicalIdentityState>;
+  findDeletion(uid: string): Promise<CanonicalIdentityDeletion | null>;
   requestDeletion(uid: string): Promise<CanonicalIdentityDeletion>;
 }
 

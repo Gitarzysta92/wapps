@@ -1,5 +1,5 @@
 import { CanonicalIdentityAccessDenied } from '@sdk/features/identity/core';
-import { lockIdentityWrites } from '@sdk/extras/identity-mysql';
+import { lockIdentityWrites } from '@wapps/account-mysql';
 import type { EntityManager } from 'typeorm';
 import { PermissionDeniedError } from '@sdk/kernel/ontology/authority';
 import {

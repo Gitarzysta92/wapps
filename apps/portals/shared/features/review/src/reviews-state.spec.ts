@@ -2,11 +2,8 @@ import { createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type {
-  MemberReview,
-  ReviewPage,
-  ReviewReceipt,
-} from '@sdk/features/review/core';
+import type { ReviewReceipt } from '@sdk/features/review/core';
+import type { MemberReview, ReviewPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { ReviewsService } from './application/reviews.service';
 import {

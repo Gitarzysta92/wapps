@@ -9,10 +9,10 @@ const { EditorialAuthorErasure1791840010000 } = require(base +
   'account-erasure/editorial-author-erasure.migration');
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   ACCOUNT_ERASURE_WRITER,
-} = require('../../sdk/features/identity/libs/management/src');
+} = require('../../libs/usecases/account/src');
 const { EditorialCommands } = require(base + 'application/editorial-commands');
 const { MysqlEditorialWrites } = require(base +
   'infrastructure/mysql-editorial-writes');

@@ -4,7 +4,7 @@ const {
   MysqlCanonicalIdentities,
   MysqlAccountFavorites,
   AccountFavorites1791676807000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyAccountFavorites({ source, configuration, identities }) {
   const alice = 'FavoritesAlice';

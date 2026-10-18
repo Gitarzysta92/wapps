@@ -6,7 +6,7 @@ const {
 const {
   MysqlCanonicalIdentities,
   AccountPreferences1791676806000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 async function qualifyAccountPreferences({
   source,

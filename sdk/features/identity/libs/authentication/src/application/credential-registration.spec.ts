@@ -1,5 +1,6 @@
 import {
   CanonicalIdentityStore,
+  CredentialIdentityBindings,
   CanonicalIdentityAccessDenied,
   CanonicalIdentityConflict,
   CanonicalIdentityInputError,
@@ -26,7 +27,8 @@ describe('credential registration', () => {
     deletedAt: 0,
   };
   const session = {
-    uid: 'Uid',
+    uid: 'credential-subject',
+    enrollmentEligible: true,
     token: 'token',
     refreshToken: 'refresh',
     expiresIn: '3600',
@@ -41,21 +43,25 @@ describe('credential registration', () => {
     const credentials = {
       registerOrAuthenticate: jest.fn().mockResolvedValue(ok(session)),
     };
-    const identities: jest.Mocked<CanonicalIdentityStore> = {
+    const identities: jest.Mocked<
+      CanonicalIdentityStore & CredentialIdentityBindings
+    > = {
       find: jest.fn(),
+      findCredential: jest.fn(),
+      credentialSubjects: jest.fn(),
+      enrollCredential: jest.fn().mockResolvedValue(state),
       setSuspended: jest.fn(),
-      requestDeletion: jest.fn(),
+      findDeletion: jest.fn(),
+    requestDeletion: jest.fn(),
       ensure: jest.fn().mockResolvedValue({ state, created: false }),
       recordAuthentication: jest.fn().mockResolvedValue(undefined),
     };
     const enrollment = {
-      enrollAccount: jest
-        .fn()
-        .mockResolvedValue({
-          identityId: 'Uid',
-          revision: 2,
-          registered: true,
-        }),
+      enrollAccount: jest.fn().mockResolvedValue({
+        identityId: 'Uid',
+        revision: 2,
+        registered: true,
+      }),
     };
     return {
       credentials,
@@ -64,19 +70,25 @@ describe('credential registration', () => {
       service: new CredentialRegistrationService(
         credentials,
         identities,
-        enrollment
+        enrollment,
+        'issuer-A'
       ),
     };
   }
-  it('uses only the credential-verified UID and returns a session after durable authentication', async () => {
+  it('resolves a verified credential subject to an independent stable Wapps ID and returns a session after durable authentication', async () => {
     const f = fixture();
-    expect(await f.service.register(input, 'key')).toEqual(ok(session));
-    expect(f.identities.ensure).toHaveBeenCalledWith({
-      uid: 'Uid',
-      provider: 'email',
-      kind: 'user',
-      activate: true,
-    });
+    expect(await f.service.register(input, 'key')).toEqual(
+      ok({
+        token: session.token,
+        refreshToken: session.refreshToken,
+        expiresIn: session.expiresIn,
+        uid: 'Uid',
+      })
+    );
+    expect(f.identities.enrollCredential).toHaveBeenCalledWith(
+      { issuer: 'issuer-A', subject: 'credential-subject' },
+      true
+    );
     expect(f.enrollment.enrollAccount).toHaveBeenCalledWith(
       'Uid',
       'Alice',
@@ -84,7 +96,7 @@ describe('credential registration', () => {
     );
     expect(f.identities.recordAuthentication).toHaveBeenCalledWith(
       'Uid',
-      'email'
+      'credentials'
     );
     expect(
       f.identities.recordAuthentication.mock.invocationCallOrder[0]
@@ -119,16 +131,13 @@ describe('credential registration', () => {
       err(new CredentialRegistrationRejected('Rejected'))
     );
     expect((await f.service.register(input, 'key')).ok).toBe(false);
-    expect(f.identities.ensure).not.toHaveBeenCalled();
+    expect(f.identities.enrollCredential).not.toHaveBeenCalled();
   });
   it.each([{ isSuspended: true }, { isDeleted: true }, { isActive: false }])(
     'preserves lifecycle restrictions: %j',
     async (patch) => {
       const f = fixture();
-      f.identities.ensure.mockResolvedValue({
-        state: { ...state, ...patch },
-        created: false,
-      });
+      f.identities.enrollCredential.mockResolvedValue({ ...state, ...patch });
       expect(await f.service.register(input, 'key')).toMatchObject({
         ok: false,
         error: expect.any(CanonicalIdentityAccessDenied),
@@ -157,7 +166,14 @@ describe('credential registration', () => {
       error: expect.any(IdentityAuthenticationUnavailable),
     });
     expect(f.identities.recordAuthentication).not.toHaveBeenCalled();
-    expect(await f.service.register(input, 'key')).toEqual(ok(session));
+    expect(await f.service.register(input, 'key')).toEqual(
+      ok({
+        token: session.token,
+        refreshToken: session.refreshToken,
+        expiresIn: session.expiresIn,
+        uid: 'Uid',
+      })
+    );
     expect(f.credentials.registerOrAuthenticate).toHaveBeenCalledTimes(2);
   });
   it('withholds tokens if access changes or durable authentication fails after enrollment', async () => {

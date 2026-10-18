@@ -107,16 +107,12 @@ module.exports = async function publicContentBrowserChecks({
     await go(route, restricted);
     await text(
       '2 ' +
-        (spec.kind === 'app'
-          ? 'results'
-          : spec.kind === 'article'
-          ? 'articles'
-          : 'suites') +
+        'results' +
         ' on this page are hidden',
       restricted
     );
     await capture('public-' + spec.kind + '-listing', restricted);
-    const root = spec.kind === 'app' ? 'results-page' : host(spec.kind);
+    const root = 'results-page';
     assert(
       !(
         await restricted.$eval(root, (element) => element.textContent)
@@ -127,11 +123,7 @@ module.exports = async function publicContentBrowserChecks({
     await switchAccount(unrestricted, 'draft-alice');
     await text(
       '2 ' +
-        (spec.kind === 'app'
-          ? 'results'
-          : spec.kind === 'article'
-          ? 'articles'
-          : 'suites') +
+        'results' +
         ' on this page are hidden',
       unrestricted
     );
@@ -141,12 +133,12 @@ module.exports = async function publicContentBrowserChecks({
   await go('/suites/' + suite.id, restricted);
   await text('Application hidden by your content preferences', restricted);
   assert.equal(
-    await restricted.$$eval('.suite-member a', (links) => links.length),
+    await restricted.$$eval('.app-list .app-card a', (links) => links.length),
     1
   );
   assert.equal(
     await restricted.$$eval(
-      '.suite-member',
+      '.app-list .app-card',
       (rows) =>
         rows.filter((row) =>
           row.textContent.includes('hidden by your content preferences')
@@ -157,7 +149,7 @@ module.exports = async function publicContentBrowserChecks({
   await capture('public-suite-mixed-members', restricted);
   await go('/suites/' + suite.id, unrestricted);
   await unrestricted.waitForFunction(
-    () => document.querySelectorAll('.suite-member a').length === 3
+    () => document.querySelectorAll('.app-list .app-card a').length === 3
   );
   return [
     'Reviewed classifications govern application listings/overviews, article lists/details and public suite lists/details',

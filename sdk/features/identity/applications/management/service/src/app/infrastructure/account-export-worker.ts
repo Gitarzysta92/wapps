@@ -4,7 +4,7 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from '@nestjs/common';
-import { CompleteAccountExport } from '@sdk/features/identity/libs/management';
+import { CompleteAccountExport } from '@wapps/account';
 
 /** One capture per process. SQL leases arbitrate other replicas and recover interrupted attempts. */
 @Injectable()

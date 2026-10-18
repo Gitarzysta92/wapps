@@ -1,38 +1,32 @@
 <div class="explore-controls">
-  <p>Recent public applications, suites, articles, releases, discussions and reviews.</p>
-  <button tuiButton type="button" appearance="secondary" size="s" [disabled]="feed.loading()" (click)="latest()">Refresh activity</button>
+  <button tuiButton type="button" appearance="primary" size="s" iconStart="@tui.refresh-cw" [disabled]="feed.loading()" (click)="latest()">Refresh activity</button>
 </div>
-<p class="explore-description">Each page selects up to ten recent items. Popular order uses helpful marks and discussion votes within that page. Recommendations use your favorites and preferred categories and tags.</p>
 @if (feed.order() === 'recommended' && feed.personalizationDisabled()) {
   <p role="status">Personalization is off, so this page uses recent order.</p>
 }
 @if (feed.loading()) {
+  <ui-medium-card tuiAppearance="card-elevated">
   <p role="status">Loading activity and your saved choices...</p>
+  </ui-medium-card>
 } @else if (feed.error()) {
+  <ui-medium-card tuiAppearance="card-elevated">
   <ui-content-state title="Could not load activity" [description]="feed.error()" icon="@tui.circle-alert" [error]="true">
     <button tuiButton type="button" size="m" (click)="feed.retry()">Retry</button>
     <button tuiButton type="button" size="m" appearance="secondary" (click)="latest()">Latest activity</button>
   </ui-content-state>
+  </ui-medium-card>
 } @else if (feed.loaded()) {
   <div class="explore-items">
     @for (item of feed.items(); track item.kind + ':' + item.id) {
-      @let destination = link(item.target);
-      <article tuiAppearance="card-panel" tuiCardLarge class="explore-card" [attr.data-kind]="item.kind" [attr.data-id]="item.id">
-        <header>
-          <span>{{ labels[item.kind] }}</span>
-          <time [attr.datetime]="timestamp(item.at)">{{ item.at | preferredDate }}</time>
-        </header>
-        <h3><a tuiLink [routerLink]="destination.path" [queryParams]="destination.query">{{ item.title }}</a></h3>
-        @if (item.engagement !== null) {
-          <p>{{ item.engagement }} {{ item.kind === 'review' ? 'helpful marks' : 'net votes' }}</p>
-        }
-      </article>
+      <activity-feed-card class="feed-item" [item]="item" />
     }
   </div>
   @if (!feed.items().length) {
+    <ui-medium-card tuiAppearance="card-elevated">
     <ui-content-state [title]="feed.after() ? 'No visible activity on this page' : 'No activity to show'" description="Your content preferences, category exclusions and current publication visibility are respected." icon="@tui.clock" />
+    </ui-medium-card>
   }
-  @if (feed.excluded()) { <p role="status">{{ feed.excluded() }} items hidden on this page by your saved content choices.</p> }
+  @if (feed.excluded()) { <ui-medium-card tuiAppearance="card-elevated" class="explore-notice"><p role="status">{{ feed.excluded() }} items hidden on this page by your saved content choices.</p></ui-medium-card> }
   @if (feed.after()) {
     <button tuiButton type="button" appearance="secondary" size="m" (click)="older()">Older activity</button>
   }

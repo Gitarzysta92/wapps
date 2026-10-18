@@ -211,11 +211,11 @@ module.exports = async function qualifyFeedContentPreferences(options) {
         );
         const measured = await page.$eval(route.host, (node) => ({
           overflow: document.documentElement.scrollWidth > innerWidth + 1,
-          feedSurface: node.matches('explore-feed')
-            ? {
-                color: getComputedStyle(node).backgroundColor,
-                image: getComputedStyle(node).backgroundImage,
-              }
+          feedSurfaces: node.matches('explore-feed')
+            ? [...node.querySelectorAll(':scope > ui-medium-card')].map(card => ({
+                color: getComputedStyle(card).backgroundColor,
+                image: getComputedStyle(card).backgroundImage,
+              }))
             : null,
           headerGap: node.querySelector('ui-page-header')
             ? Math.round(
@@ -240,10 +240,9 @@ module.exports = async function qualifyFeedContentPreferences(options) {
         assert.equal(measured.controlsFit, true, `${name}/${theme}/${width}`);
         if (measured.headerGap !== null)
           assert.equal(measured.headerGap, 24, `${name}/${theme}/${width}`);
-        if (measured.feedSurface !== null)
+        if (measured.feedSurfaces !== null)
           assert.ok(
-            measured.feedSurface.color !== 'rgba(0, 0, 0, 0)' ||
-              measured.feedSurface.image !== 'none',
+            measured.feedSurfaces.length > 0 && measured.feedSurfaces.every(surface => surface.color !== 'rgba(0, 0, 0, 0)' || surface.image !== 'none'),
             'Feed controls and notices must have a themed surface above the decoration'
           );
         layouts.push({ name, theme, viewport: width, ...measured });

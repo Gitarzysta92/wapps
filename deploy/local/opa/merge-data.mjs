@@ -1,4 +1,9 @@
-import { readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  readdirSync,
+} from 'node:fs';
 import { join } from 'node:path';
 
 const bundleDirectory = process.env.OPA_BUNDLE_DIRECTORY ?? '/bundles';
@@ -17,10 +22,13 @@ for (const name of ['discussion', 'identity-admin', 'editorial']) {
       ];
     }
   }
-  copyFileSync(
-    join(bundleDirectory, name, 'policy.rego'),
-    join(policyDirectory, `${name}.rego`)
-  );
+  for (const file of readdirSync(join(bundleDirectory, name))) {
+    if (!file.endsWith('.rego') || file.endsWith('_test.rego')) continue;
+    copyFileSync(
+      join(bundleDirectory, name, file),
+      join(policyDirectory, `${name}-${file}`)
+    );
+  }
 }
 writeFileSync(
   join(policyDirectory, 'data.json'),

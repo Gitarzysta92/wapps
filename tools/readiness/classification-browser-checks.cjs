@@ -18,7 +18,7 @@ module.exports = async function classificationBrowserChecks({
   const guest = await session('');
   const route = '/discover?search=Classification&pageSize=100';
   const cards = (page) =>
-    page.$$eval('.discovery-card', (items) =>
+    page.$$eval('discover-api-page .item-card', (items) =>
       items.map((item) => item.textContent)
     );
   for (const page of [author, matureReader, guest]) {
@@ -44,7 +44,7 @@ module.exports = async function classificationBrowserChecks({
     );
   });
   await matureReader.waitForFunction(
-    () => document.querySelectorAll('.discovery-card').length === 3
+    () => document.querySelectorAll('discover-api-page .item-card').length === 3
   );
   assert(
     (await cards(matureReader)).every(

@@ -8,7 +8,7 @@ import {
   untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiButton, TuiLink, TuiIcon } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { PageHeaderComponent, PageTitleComponent } from '@ui/layout';
 import {
@@ -33,7 +33,7 @@ import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
   standalone: true,
   imports: [
     RouterLink,
-    TuiButton,
+    TuiIcon, TuiButton,
     TuiLink,
     BreadcrumbsComponent,
     PageHeaderComponent,
@@ -59,7 +59,7 @@ export class ApplicationDiscussionsApiPageComponent {
       ? this.application()
         ? this.discussions.items()[0]?.title ?? 'Discussion'
         : 'Discussion'
-      : 'Discussions'
+      : 'Community Discussions'
   );
   readonly breadcrumbs = computed(() =>
     this.breadcrumb().map((entry) => ({

@@ -5,7 +5,7 @@ import {
   type OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeliverFavoriteUpdates } from '@sdk/features/identity/libs/management';
+import { DeliverFavoriteUpdates } from '@wapps/account';
 
 @Injectable()
 export class FavoriteUpdateWorker implements OnModuleInit, OnModuleDestroy {

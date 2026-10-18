@@ -28,7 +28,7 @@ import { ProfileDetailsComponent } from './profile-details.component';
 import { API_BASE_URL } from '../../environment';
 import { NAVIGATION } from '../../navigation';
 import type { PublicProfileFavorite } from '@domains/customer/favorites';
-import type { ProfileDiscussion } from '@domains/discussion/contracts';
+import type { ProfileDiscussion } from '@domains/community';
 import type {
   ProfileActivity,
   ProfileActivityKind,

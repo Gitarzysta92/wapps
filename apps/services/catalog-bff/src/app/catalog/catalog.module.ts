@@ -8,6 +8,7 @@ import { ApplicationHealthController } from './application-health.controller';
 import { PublicDiscoveryController } from './discovery.controller';
 import { PublicDiscoveryService } from './discovery.service';
 import { DiscoveryPublicationsClient } from './discovery-publications.client';
+import { DiscoveryReviewsClient } from './discovery-reviews.client';
 
 @Module({
   imports: [HttpModule],
@@ -21,13 +22,15 @@ import { DiscoveryPublicationsClient } from './discovery-publications.client';
     EditorialClient,
     ApplicationHealthClient,
     DiscoveryPublicationsClient,
+    DiscoveryReviewsClient,
     {
       provide: PublicDiscoveryService,
-      inject: [EditorialClient, DiscoveryPublicationsClient],
+      inject: [EditorialClient, DiscoveryPublicationsClient, DiscoveryReviewsClient],
       useFactory: (
         applications: EditorialClient,
-        publications: DiscoveryPublicationsClient
-      ) => new PublicDiscoveryService(applications, publications),
+        publications: DiscoveryPublicationsClient,
+        reviews: DiscoveryReviewsClient
+      ) => new PublicDiscoveryService(applications, publications, reviews),
     },
     {
       provide: CatalogService,

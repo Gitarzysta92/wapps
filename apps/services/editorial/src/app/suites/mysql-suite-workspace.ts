@@ -1,5 +1,5 @@
 import { CanonicalIdentityAccessDenied } from '@sdk/features/identity/core';
-import { lockIdentityWrites } from '@sdk/extras/identity-mysql';
+import { lockIdentityWrites } from '@wapps/account-mysql';
 import type { DataSource, EntityManager } from 'typeorm';
 import {
   parsePrivateSuite,

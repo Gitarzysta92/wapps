@@ -22,8 +22,8 @@ export function architectureForRoot(root) {
   if (root.startsWith('sdk/kernel/')) return 'kernel';
   if (root.startsWith('sdk/platform/')) return 'platform';
   if (root.startsWith('libs/domains/') || /^sdk\/features\/[^/]+\/core$/.test(root)) return 'domain';
-  if (/^sdk\/features\/[^/]+\/libs\//.test(root)) return 'usecase';
-  if (root.startsWith('sdk/extras/') || /^sdk\/features\/[^/]+\/packages\/infrastructure\//.test(root)) return 'adapter';
+  if (root.startsWith('libs/usecases/') || /^sdk\/features\/[^/]+\/libs\//.test(root)) return 'usecase';
+  if (root.startsWith('libs/adapters/') || root.startsWith('sdk/extras/') || /^sdk\/features\/[^/]+\/packages\/infrastructure\//.test(root)) return 'adapter';
   if (root === 'apps/shared') return 'contracts';
   if (root === 'data') return 'data';
   if (/^apps\/(services|agents|scrappers)\//.test(root) || /^sdk\/features\/[^/]+\/applications\//.test(root)) return 'service';

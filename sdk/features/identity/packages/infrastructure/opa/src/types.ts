@@ -24,6 +24,8 @@ export interface ResourceConstraint {
   exactId?: string;
   /** If true, require a non-empty resource.tenantId equal to input.tenantId. */
   tenantMustMatchInput?: boolean;
+  /** Global resources cannot be administered using tenant-scoped authority. */
+  tenantMustBeAbsent?: boolean;
   /** Restricts the resource to the authenticated actor, including administrators. */
   identityMustMatchInput?: boolean;
   /** Exact internal service identity/scope/role; an administrator role cannot override this. */

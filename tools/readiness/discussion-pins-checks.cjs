@@ -250,7 +250,7 @@ async function discussionPinsChecks(options) {
   assert.equal((await read()).pinned, true);
   const {
     DiscussionPins1791676826000,
-  } = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-pins.migration');
+  } = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-pins.migration');
   const migration = new DiscussionPins1791676826000(),
     runner = source.createQueryRunner();
   const snapshot = () =>

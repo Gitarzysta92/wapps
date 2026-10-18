@@ -2,18 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, defer, map, of, type Observable } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import {
-  commentObject,
-  publicDiscussionReply,
-  publicDiscussionTopic,
-  discussionVoteState,
-  discussionVoteChange,
-  discussionPinChange,
-  applicationDiscussionCursor,
-  publicCommentId,
-  type PublicComment,
-  type PublicApplicationDiscussion,
-} from '@domains/discussion';
+import { commentObject, publicDiscussionReply, publicDiscussionTopic, discussionVoteState, discussionVoteChange, discussionPinChange, applicationDiscussionCursor, publicCommentId, type PublicComment, type PublicApplicationDiscussion } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import {
   APPLICATION_DISCUSSION_ORIGIN,

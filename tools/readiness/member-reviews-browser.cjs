@@ -57,7 +57,7 @@ async function memberReviewsBrowser(options) {
       await text('An experience saved through real services.', publicPage);
       assert.equal(
         await publicPage.$$eval(
-          'member-reviews article',
+          'member-reviews [data-review-id]',
           (items) => items.length
         ),
         1
@@ -189,7 +189,7 @@ async function memberReviewsBrowser(options) {
       await click('Reload reviews', bob);
       await text('Reviews are unavailable.', bob);
       assert.equal(
-        await bob.$$eval('member-reviews article', (items) => items.length),
+        await bob.$$eval('member-reviews [data-review-id]', (items) => items.length),
         0
       );
       await capture('reviews-unavailable', bob);

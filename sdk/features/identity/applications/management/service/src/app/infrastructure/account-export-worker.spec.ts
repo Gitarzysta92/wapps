@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { CompleteAccountExport } from '@sdk/features/identity/libs/management';
+import { CompleteAccountExport } from '@wapps/account';
 import { AccountExportWorker } from './account-export-worker';
 
 describe('account export runtime pump', () => {

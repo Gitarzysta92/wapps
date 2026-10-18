@@ -9,7 +9,7 @@ import {
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import type { PublicProfileFavoritesPage } from '@domains/customer/favorites';
 import type { ProfileSuitesPage } from '@domains/publication/suite';
-import type { ProfileDiscussionsPage } from '@domains/discussion/contracts';
+import type { ProfileDiscussionsPage } from '@domains/community';
 import type {
   ProfileDirectory,
   ProfileActivityPage,

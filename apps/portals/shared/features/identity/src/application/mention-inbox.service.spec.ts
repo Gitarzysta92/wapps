@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type { MentionInboxPage } from '@domains/discussion';
+import type { MentionInboxPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from './authentication-session.port';
 import { MENTION_INBOX } from './mention-inbox.port';
 import { MentionInboxService } from './mention-inbox.service';

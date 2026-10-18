@@ -9,15 +9,7 @@ import {
   type Observable,
 } from 'rxjs';
 import { err, type Result } from '@sdk/kernel/standard';
-import {
-  publicCommentId,
-  publicDiscussionReply,
-  publicDiscussionTopic,
-  discussionVote,
-  discussionPinChange,
-  type PublicApplicationDiscussion,
-  type PublicApplicationDiscussionPage,
-} from '@domains/discussion';
+import { publicCommentId, publicDiscussionReply, publicDiscussionTopic, discussionVote, discussionPinChange, type PublicApplicationDiscussion, type PublicApplicationDiscussionPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import {
   APPLICATION_DISCUSSIONS,

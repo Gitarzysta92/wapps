@@ -743,12 +743,23 @@ describe('public profile HTTP adapter', () => {
     request.flush(favoritesPage);
     expect(result).toHaveBeenCalledWith(ok(favoritesPage));
   });
+  it('accepts an empty filtered page with a continuation without exposing metadata', () => {
+    const result = jest.fn();
+    const page = {
+      sharing: 'visible',
+      items: [],
+      after: `applications:${requesterId}`,
+    };
+    adapter.favorites(ownerId, null).subscribe(result);
+    http.expectOne(`/api/profiles/${ownerId}/favorites`).flush(page);
+    expect(result).toHaveBeenCalledWith(ok(page));
+  });
   it.each([
     { ...favoritesPage, identityId: 'CredentialUid' },
     { ...favoritesPage, sharing: 'hidden' },
     { ...favoritesPage, items: [{ ...favorite, slug: '../private' }] },
     { ...favoritesPage, items: [{ ...favorite, savedAt: 100 }] },
-    { ...favoritesPage, after: `applications:${requesterId}` },
+    { ...favoritesPage, after: `applications:${ownerId}` },
   ])('fails closed on malformed public favorite payloads: %j', (value) => {
     const result = jest.fn();
     adapter.favorites(ownerId, null).subscribe(result);

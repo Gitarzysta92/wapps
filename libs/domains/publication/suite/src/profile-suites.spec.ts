@@ -23,6 +23,13 @@ describe('public profile suites contract', () => {
       after: null,
     });
   });
+  it('retains continuation after classification removes some or all scanned items', () => {
+    for (const items of [[], [{ ...item(1), classification: 'general' }]])
+      expect(
+        parseProfileSuitesPage({ sharing: 'visible', items, after: item(2).id })
+          .after
+      ).toBe(item(2).id);
+  });
   it('distinguishes hidden from an empty shared collection', () => {
     for (const sharing of ['hidden', 'visible'])
       expect(
@@ -43,7 +50,7 @@ describe('public profile suites contract', () => {
     },
     { sharing: 'visible', items: [item(1), item(1)], after: null },
     { sharing: 'visible', items: [item(2), item(1)], after: null },
-    { sharing: 'visible', items: [item(1)], after: item(1).id },
+    { sharing: 'visible', items: [item(2)], after: item(1).id },
     {
       sharing: 'visible',
       items: [{ ...item(1), title: 'x'.repeat(101) }],

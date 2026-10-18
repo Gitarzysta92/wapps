@@ -5,7 +5,7 @@ import {
   type ProfileContentCategory,
 } from '@domains/customer/profiles';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { ProfileTotalsSource } from '@sdk/features/identity/libs/management';
+import type { ProfileTotalsSource } from '@wapps/account';
 
 export class RemoteProfileTotals implements ProfileTotalsSource {
   private readonly origin: string;

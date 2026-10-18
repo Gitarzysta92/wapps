@@ -1,6 +1,11 @@
 @use 'ui/design-system/src/styles' as *;
 @use '../page-layout' as page;
 
+.article-card { position: relative; }
+.article-card-link { color: inherit; text-decoration: none; }
+.article-card-link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+article-cover-image:has(button) { position: relative; z-index: 1; }
+
 @include page.page(page.$content-gap);
 :host {
   container: digest / inline-size;

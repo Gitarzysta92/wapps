@@ -10,10 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TuiButton } from '@taiga-ui/core';
-import {
-  DISCUSSION_MENTION_LIMIT,
-  discussionMentionProfiles,
-} from '@domains/discussion/contracts';
+import { DISCUSSION_MENTION_LIMIT, discussionMentionProfiles } from '@domains/community';
 import { MentionMembersService } from '../../application/mention-members.service';
 
 @Component({

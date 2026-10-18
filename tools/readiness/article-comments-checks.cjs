@@ -8,6 +8,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { DataSource } = require('typeorm');
 const { processService } = require('./qualification-process.cjs');
+const { discussionProcessService } = require('./discussion-portal-fixture.cjs');
 
 async function articleCommentsChecks(options) {
   const {
@@ -26,7 +27,7 @@ async function articleCommentsChecks(options) {
   } = options;
   const management = path.join(
     root,
-    'sdk/features/discussion/applications/management/service/src/app/discussions'
+    'apps/services/community/src/app/discussions'
   );
   const load = (name) => require(path.join(management, name));
   const { DiscussionArticleTargets1791676822000 } = load(
@@ -182,7 +183,7 @@ async function articleCommentsChecks(options) {
   };
   const restart = async () => {
     await api?.stop();
-    api = await processService(
+    api = await discussionProcessService(
       process.execPath,
       [
         path.join(

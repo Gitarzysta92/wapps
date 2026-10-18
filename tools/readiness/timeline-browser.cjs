@@ -85,8 +85,8 @@ module.exports = async function qualifyTimelineBrowser(options) {
       (nodes) =>
         nodes.map((n) => ({
           kind: n.getAttribute('data-kind'),
-          href: n.querySelector('a').getAttribute('href'),
-          title: n.querySelector('a').textContent.trim(),
+          href: n.querySelector('.card-actions a').getAttribute('href'),
+          title: n.getAttribute('data-title'),
         }))
     );
     for (const entry of entries)
@@ -133,9 +133,9 @@ module.exports = async function qualifyTimelineBrowser(options) {
         'member-reviews'
       );
     if (entry.kind === 'suite')
-      await text(b, 'Reviewed application', '.suite-members');
+      await text(b, 'Reviewed application', 'suite-publication-page .app-list');
     if (entry.kind === 'release')
-      await text(b, 'fix: Fixed issue.', '.application-workspace article');
+      await text(b, 'fix: Fixed issue.', '.release-content');
   }
   // Saved exclusions apply to suite activity through the selected application context too.
   await click(stranger, 'Older activity');
@@ -228,9 +228,7 @@ module.exports = async function qualifyTimelineBrowser(options) {
       const layout = await b.$eval(
         'application-timeline-api-page',
         (element) => {
-          const card = [...element.querySelectorAll('article')].find((node) =>
-            node.querySelector('p')
-          );
+          const card = element.querySelector('article[data-kind="discussion"]');
           const gap = (before, after) =>
             Math.round(
               after.getBoundingClientRect().top -
@@ -239,12 +237,12 @@ module.exports = async function qualifyTimelineBrowser(options) {
           return {
             overflow: document.documentElement.scrollWidth > innerWidth + 1,
             headerGap: gap(
-              card.querySelector('header'),
-              card.querySelector('h3')
+              card.querySelector('ui-card-header'),
+              card.querySelector('ui-discussion-thread')
             ),
-            descriptionGap: gap(
+            metadataGap: gap(
               card.querySelector('h3'),
-              card.querySelector('p')
+              card.querySelector('ui-card-header p')
             ),
             controlsFit: [...element.querySelectorAll('button')].every(
               (button) => {
@@ -262,7 +260,7 @@ module.exports = async function qualifyTimelineBrowser(options) {
       assert.equal(layout.overflow, false);
       assert.equal(layout.controlsFit, true);
       assert.equal(layout.headerGap, 16);
-      assert.equal(layout.descriptionGap, 8);
+      assert.equal(layout.metadataGap, 4);
       layouts.push({ theme, viewport: width, ...layout });
       await b.screenshot({
         path: path.join(directory, `timeline-${theme}-${width}.png`),

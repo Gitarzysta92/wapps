@@ -2,16 +2,14 @@ import * as admin from 'firebase-admin';
 import { err, ok, Result } from '@sdk/kernel/standard';
 import { firebaseErrorCode, firebaseErrorMessage } from './firebase-errors';
 
-export type VerifiedIdTokenDto = {
-  uid: string;
-  email?: string;
-  authTime?: number;
-  claims?: unknown;
-};
+import {
+  IdentityAuthenticationUnavailable,
+  type CredentialTokenVerifier,
+  type VerifiedCredentialPrincipal,
+} from '@sdk/features/identity/libs/authentication';
 
-export interface IIdTokenVerifier {
-  verifyIdToken(token: string): Promise<Result<VerifiedIdTokenDto, Error>>;
-}
+export type VerifiedIdTokenDto = VerifiedCredentialPrincipal;
+export type IIdTokenVerifier = CredentialTokenVerifier;
 
 export class TokenValidationError extends Error {
   override name = 'TokenValidationError';
@@ -61,7 +59,21 @@ export class FirebaseAdminIdTokenVerifier implements IIdTokenVerifier {
     } catch (e) {
       const message = firebaseErrorMessage(e, 'Token validation failed');
       const code = firebaseErrorCode(e);
-      return err(new TokenValidationError(message, code));
+      return err(
+        code &&
+          [
+            'auth/id-token-expired',
+            'auth/id-token-revoked',
+            'auth/invalid-id-token',
+            'auth/argument-error',
+            'auth/user-disabled',
+            'auth/user-not-found',
+          ].includes(code)
+          ? new TokenValidationError(message, code)
+          : new IdentityAuthenticationUnavailable(
+              'Credential validation unavailable'
+            )
+      );
     }
   }
 }

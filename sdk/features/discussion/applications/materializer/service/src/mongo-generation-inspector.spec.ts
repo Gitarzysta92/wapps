@@ -13,7 +13,7 @@ function fixture() {
     nodeCount: 2,
     fingerprint: 'a'.repeat(64),
     generation: `root:3:${'a'.repeat(64)}`,
-    schemaVersion: 3,
+    schemaVersion: 4,
     subjectId: null,
     subjectReferenceKey: null,
     visibility: 'private',
@@ -30,7 +30,7 @@ function fixture() {
       referenceKey: id,
       generation: head.generation,
       revision: 3,
-      schemaVersion: 3,
+      schemaVersion: 4,
       discussionId: 'root',
       parentId: index ? 'root' : null,
       kind: index ? 'comment' : 'discussion',
@@ -61,12 +61,15 @@ function fixture() {
 }
 
 describe('published discussion generation inspection', () => {
-  it('requeues a schema-2 generation for authoritative upgrade at the same revision', async () => {
-    const f = fixture();
-    Object.assign(f.head, { schemaVersion: 2 });
-    expect(await f.inspector.inspect(authority)).toBe('stale');
-    expect(f.find).not.toHaveBeenCalled();
-  });
+  it.each([2, 3])(
+    'requeues schema-%i for authoritative upgrade at the same revision',
+    async (schemaVersion) => {
+      const f = fixture();
+      Object.assign(f.head, { schemaVersion });
+      expect(await f.inspector.inspect(authority)).toBe('stale');
+      expect(f.find).not.toHaveBeenCalled();
+    }
+  );
   it('pins a complete generation and bounds the metadata query', async () => {
     const f = fixture();
     expect(await f.inspector.inspect(authority)).toBe('current');

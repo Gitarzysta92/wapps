@@ -1,7 +1,7 @@
 <ui-page-header class="page-header">
   <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
   <h1 uiPageTitle slot="title">
-    {{ reviewSlug() ? 'Member review' : 'Reviews' }}
+    <tui-icon icon="@tui.star" /> {{ reviewSlug() ? 'Member review' : 'Reviews & Testimonials' }}
   </h1>
   <p slot="meta">
     Member experiences{{ application() ? ' with ' + application()!.name : '' }}.

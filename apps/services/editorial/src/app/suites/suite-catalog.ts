@@ -1,3 +1,4 @@
+import { classificationFields } from '@domains/publication/classification';
 import {
   parsePublicSuite,
   parsePublicSuiteQuery,
@@ -72,7 +73,12 @@ export class SuiteCatalog {
       after: profileSuitesCursor(after),
     });
     return profileSuitesPage(
-      items.map(({ id, title, description }) => ({ id, title, description })),
+      items.map(({ id, title, description, classification }) => ({
+        id,
+        title,
+        description,
+        ...classificationFields(classification),
+      })),
       after
     );
   }

@@ -14,6 +14,9 @@
     },
     {
       "path": "../../libs/domains/publication/classification/tsconfig.lib.json"
+    },
+    {
+      "path": "../../sdk/features/discussion/core/tsconfig.lib.json"
     }
   ],
   "include": ["src/**/*.ts"],

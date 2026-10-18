@@ -23,7 +23,7 @@ require('reflect-metadata');
 const {
   IdentityWriteBarrier1791840000000,
   AccountErasureRequests1791840001000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { DataSource } = require('typeorm');
 const { createConnection } = require('mysql2/promise');
 const { MongoClient } = require('mongodb');
@@ -155,7 +155,14 @@ async function main() {
     checks.push(name);
     console.log('PASS:', name);
   };
-  function start(name, image, port, environment, args = []) {
+  function start(
+    name,
+    image,
+    port,
+    environment,
+    args = [],
+    dockerOptions = []
+  ) {
     const container = `wapps-suites-${name}-${run}`;
     execFileSync(
       'docker',
@@ -170,6 +177,7 @@ async function main() {
         '-p',
         `127.0.0.1::${port}`,
         ...Object.keys(environment).flatMap((key) => ['-e', key]),
+        ...dockerOptions,
         image,
         ...args,
       ],
@@ -293,29 +301,51 @@ async function main() {
       migrationsTransactionMode: 'none',
       migrationsTableName: 'editorial_migrations',
     }).initialize();
+    const policyBundle = path.join(
+      root,
+      'sdk/features/identity/packages/infrastructure/opa/bundles/editorial'
+    );
     const reservation = net.createServer();
     await new Promise((resolve) => reservation.listen(0, '127.0.0.1', resolve));
-    const opaPort = reservation.address().port;
+    let opaPort = reservation.address().port;
     await new Promise((resolve) => reservation.close(resolve));
+    if (process.env.WAPPS_SUITES_OPA_DOCKER === '1') {
+      opaPort = start(
+        'opa',
+        'openpolicyagent/opa:1.4.2-static',
+        8181,
+        {},
+        ['run', '--server', '--addr', '0.0.0.0:8181', '/policy'],
+        ['--mount', `type=bind,source=${policyBundle},target=/policy,readonly`]
+      );
+      const container = containers[containers.length - 1];
+      opa = {
+        stop: async () => {
+          execFileSync('docker', ['stop', container], {
+            stdio: 'pipe',
+            timeout: 20000,
+          });
+        },
+      };
+      await ready(async () => {
+        const response = await fetch(`http://127.0.0.1:${opaPort}/health`, {
+          signal: AbortSignal.timeout(1000),
+        });
+        assert.equal(response.status, 200);
+        await response.arrayBuffer();
+      });
+    }
     const opaOrigin = `http://127.0.0.1:${opaPort}`;
     const opaBinary =
       process.env.OPA_BINARY ?? '/tmp/wapps-readiness/opa-1.4.2';
-    opa = await processService(
-      opaBinary,
-      [
-        'run',
-        '--server',
-        '--addr',
-        `127.0.0.1:${opaPort}`,
-        path.join(
-          root,
-          'sdk/features/identity/packages/infrastructure/opa/bundles/editorial'
-        ),
-      ],
-      { cwd: root },
-      () => opaOrigin,
-      '/health'
-    );
+    if (!opa)
+      opa = await processService(
+        opaBinary,
+        ['run', '--server', '--addr', `127.0.0.1:${opaPort}`, policyBundle],
+        { cwd: root },
+        () => opaOrigin,
+        '/health'
+      );
     const secret = randomUUID();
     const erasureSecret = randomUUID();
     const environment = {
@@ -346,6 +376,7 @@ async function main() {
         'qualification-notification-secret-2026-only',
       EDITORIAL_ERASURE_WORKERS_FENCED: 'false',
       EDITORIAL_MEDIA_CLEANUP_ENABLED: 'false',
+      EDITORIAL_HEALTH_MONITOR_ENABLED: 'false',
       OPA_URL: opaOrigin,
     };
     const restart = async () => {
@@ -407,6 +438,7 @@ async function main() {
         secret,
         restart,
         stop: () => editorial.stop(),
+        stopPolicy: () => opa.stop(),
         pass,
         output,
         policy: new OpaEditorialPolicy(opaOrigin),
@@ -424,14 +456,15 @@ async function main() {
             checks,
             node: process.version,
             authority:
-              'Real MySQL/Mongo/OPA, HTTP transport and compiled Editorial/BFF/portal',
+              'Real MySQL/Mongo/OPA, HTTP transport, compiled Editorial/BFF and both Nginx API route sets',
+            browser: !process.argv.includes('--no-browser'),
             substitutions: [
               'Logical public DNS and pinned HTTP transport route to a local endpoint fixture; production private-address rejection stays enabled',
               'Elapsed stale/retry times are controlled in disposable SQL fixtures',
-              'Browser shell profile/preferences and trusted staff ingress are local fixtures',
+              'Trusted staff authentication subrequests are controlled fixtures; optional browser shell profile/preferences are fixtures',
             ],
             exclusions: [
-              'Deployed egress, real public DNS/TLS endpoints and ingress',
+              'Deployed egress, real public DNS/TLS endpoints and deployed authentication/ingress',
               'Production restart/restore/rollback/load/soak',
             ],
           },
@@ -921,7 +954,9 @@ async function main() {
                     explore: process.argv.includes('--explore'),
                     digest: process.argv.includes('--digest'),
                     timeline: process.argv.includes('--timeline'),
-                    favoritesContentPreferences: process.argv.includes('--favorites-content-preferences'),
+                    favoritesContentPreferences: process.argv.includes(
+                      '--favorites-content-preferences'
+                    ),
                     notifications: process.argv.includes(
                       '--reply-notifications'
                     ),

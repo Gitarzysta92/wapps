@@ -1,5 +1,12 @@
 import { PublicProfileArticlesQueryDto } from './dto/public-profile-articles.query.dto';
-import { PublicProfileArticlesService } from '@sdk/features/identity/libs/management';
+import {
+  PublicProfileArticlesService,
+  PublicProfileService,
+  PublicProfileFavoritesService,
+  PublicProfileSuitesService,
+  PublicProfileDiscussionsService,
+  PublicProfileActivityService,
+} from '@wapps/account';
 import {
   Body,
   Controller,
@@ -17,13 +24,7 @@ import { PublicProfileFavoritesQueryDto } from './dto/public-profile-favorites.q
 import { PublicProfileSuitesQueryDto } from './dto/public-profile-suites.query.dto';
 import { PublicProfileDiscussionsQueryDto } from './dto/public-profile-discussions.query.dto';
 import { PublicProfileActivityQueryDto } from './dto/public-profile-activity.query.dto';
-import {
-  PublicProfileService,
-  PublicProfileFavoritesService,
-  PublicProfileSuitesService,
-  PublicProfileDiscussionsService,
-  PublicProfileActivityService,
-} from '@sdk/features/identity/libs/management';
+
 import {
   AuthUser,
   type AuthenticatedRequest,

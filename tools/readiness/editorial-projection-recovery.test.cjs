@@ -20,7 +20,7 @@ require('reflect-metadata');
 const {
   IdentityWriteBarrier1791840000000,
   AccountErasureRequests1791840001000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { DataSource } = require('typeorm');
 const { createConnection } = require('mysql2/promise');
 const { MongoClient } = require('mongodb');

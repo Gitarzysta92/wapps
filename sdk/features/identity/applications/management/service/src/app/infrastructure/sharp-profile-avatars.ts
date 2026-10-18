@@ -11,7 +11,7 @@ import {
   CanonicalIdentityInputError,
   CanonicalIdentityUnavailable,
 } from '@sdk/features/identity/core';
-import type { ProfileAvatarNormalizer } from '@sdk/features/identity/libs/management';
+import type { ProfileAvatarNormalizer } from '@wapps/account';
 
 export class SharpProfileAvatars implements ProfileAvatarNormalizer {
   private active = 0;

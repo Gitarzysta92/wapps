@@ -2,29 +2,29 @@ const assert = require('node:assert/strict');
 const { createHash, randomUUID } = require('node:crypto');
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   DurableDiscussionCommands,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/durable-discussion-commands');
+} = require('../../apps/services/community/src/app/discussions/application/durable-discussion-commands');
 const {
   RegisteredDiscussionPayloads,
   RetireDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/application/registered-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/application/registered-discussion-payloads');
 const {
   MysqlDiscussionWrites,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-writes');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-writes');
 const {
   MysqlDiscussionPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-payloads');
 const {
   MinioDiscussionPayloadObjects,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/immutable-discussion-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/immutable-discussion-payloads');
 const {
   MinioDiscussionExportPayloads,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/discussion-export-payloads');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/discussion-export-payloads');
 const {
   MysqlDiscussionAccountExportSource,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/mysql-discussion-account-export-source');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/mysql-discussion-account-export-source');
 
 async function collect(values) {
   const rows = [];

@@ -13,7 +13,10 @@ const isPage = (value) =>
   /^apps\/portals\/[^/]+\/application\/src\/pages\//.test(value);
 const isFeatureApplication = (value) =>
   /^apps\/portals\/shared\/features\/[^/]+\/src\/application\//.test(value);
-const isAdapter = (value) => value.includes('/infrastructure/');
+const isAdapter = (value) =>
+  value.includes('/infrastructure/') || value.startsWith('libs/adapters/');
+const isReusableAccountOrReview = (value) =>
+  /^sdk\/features\/(identity\/(core|libs)|review)\//.test(value);
 const isDomain = (value) =>
   value.startsWith('libs/domains/') ||
   /^sdk\/features\/[^/]+\/core\//.test(value);
@@ -46,6 +49,8 @@ export function dependencyRules(source, target, specifier) {
     (target.startsWith('apps/') ||
       target.startsWith('libs/domains/') ||
       target.startsWith('libs/ui/') ||
+      target.startsWith('libs/usecases/') ||
+      target.startsWith('libs/adapters/') ||
       target.startsWith('sdk/features/') ||
       target.startsWith('sdk/extras/'))
   )
@@ -54,6 +59,31 @@ export function dependencyRules(source, target, specifier) {
     rules.push('ARCH004');
   if (isFeatureApplication(source) && isAdapter(target)) rules.push('ARCH005');
   if (isPage(source) && isAdapter(target)) rules.push('ARCH006');
+  if (
+    source.startsWith('sdk/features/discussion/') &&
+    (/^libs\/(domains|usecases|adapters)\//.test(target) ||
+      target.startsWith('apps/services/'))
+  )
+    rules.push('ARCH007');
+  if (
+    isReusableAccountOrReview(source) &&
+    /^(libs\/(domains|usecases|adapters)\/|apps\/)/.test(target)
+  )
+    rules.push('ARCH009');
+  if (
+    (source.startsWith('sdk/features/identity/applications/authenticator/') &&
+      (/^libs\/(adapters\/account-mysql|usecases\/account)\//.test(target) ||
+        target.startsWith('sdk/features/identity/applications/management/'))) ||
+    (source.startsWith('sdk/features/identity/applications/management/') &&
+      (/^sdk\/features\/identity\/packages\/infrastructure\/(local|firebase)\//.test(
+        target
+      ) ||
+        target.startsWith(
+          'sdk/features/identity/applications/authenticator/'
+        ) ||
+        /^firebase-admin(?:\/|$)/.test(specifier)))
+  )
+    rules.push('ARCH011');
   return rules;
 }
 
@@ -69,6 +99,16 @@ export const ruleDescriptions = {
     'Feature application code must use ports instead of concrete infrastructure.',
   ARCH006:
     'Pages must use feature services/ports instead of infrastructure adapters.',
+  ARCH007:
+    'Reusable Discussion must not depend on consumer domains or application implementations.',
+  ARCH008:
+    'Reusable Discussion must not define consumer target types or interpret their keys.',
+  ARCH009:
+    'Reusable Identity and Review must not import Wapps contracts, orchestration or adapters.',
+  ARCH010:
+    'Reusable Identity and Review must not define consumer content kinds, binding fields or provider rosters.',
+  ARCH011:
+    "Authentication and Identity must cross their service contract, never import each other or access each other's persistence adapters.",
 };
 
 function sourceFiles(directory) {
@@ -197,6 +237,64 @@ export function auditArchitecture(root = workspaceRoot) {
       }
     };
     const visit = (node) => {
+      if (
+        isReusableAccountOrReview(source) &&
+        ((ts.isStringLiteralLike(node) &&
+          [
+            'application',
+            'article',
+            'suite',
+            'applications',
+            'articles',
+            'suites',
+            'discussions',
+            'editorial',
+            'discussion',
+            'applicationId',
+            'discussionId',
+            'targetKind',
+          ].includes(node.text)) ||
+          (ts.isIdentifier(node) &&
+            [
+              'applicationId',
+              'discussionId',
+              'targetKind',
+              'FAVORITE_KINDS',
+              'ACCOUNT_EXPORT_SOURCES',
+              'ACCOUNT_ERASURE_PARTICIPANTS',
+            ].includes(node.text)))
+      ) {
+        const position = sourceFile.getLineAndCharacterOfPosition(
+          node.getStart(sourceFile)
+        );
+        findings.set(`ARCH010:${source}:${position.line}:${node.text}`, {
+          rule: 'ARCH010',
+          file: source,
+          line: position.line + 1,
+          specifier: node.text,
+          target: 'consumer-owned binding or provider plan',
+        });
+      }
+      if (
+        source.startsWith('sdk/features/discussion/') &&
+        ((ts.isStringLiteralLike(node) &&
+          ['article', 'application'].includes(node.text)) ||
+          (ts.isIdentifier(node) &&
+            ['subjectKind', 'targetKind', 'DiscussionTarget'].includes(
+              node.text
+            )))
+      ) {
+        const position = sourceFile.getLineAndCharacterOfPosition(
+          node.getStart(sourceFile)
+        );
+        findings.set(`ARCH008:${source}:${position.line}:${node.text}`, {
+          rule: 'ARCH008',
+          file: source,
+          line: position.line + 1,
+          specifier: node.text,
+          target: 'consumer-owned binding key',
+        });
+      }
       if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
         inspectModule(node, node.moduleSpecifier);
       } else if (

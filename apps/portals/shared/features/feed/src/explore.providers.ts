@@ -3,14 +3,14 @@ import {
   EXPLORE_LINK,
   EXPLORE_PORT,
   EXPLORE_URL,
+  type ExploreLinkTarget,
 } from './application/explore.port';
-import type { ExploreTarget } from '@domains/feed';
 import { ExploreApiService } from './infrastructure/explore-api.service';
 
 /** API composition requires the host's preferences, favorites and authentication providers. */
 export function provideExplore(
   origin: string,
-  link: (target: ExploreTarget) => {
+  link: (target: ExploreLinkTarget) => {
     path: string | string[];
     query?: Record<string, string>;
   }

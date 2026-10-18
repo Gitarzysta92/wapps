@@ -3,13 +3,8 @@ import {
   isCanonicalIdentityId,
 } from './canonical-identity';
 
-export const ACCOUNT_ERASURE_PARTICIPANTS = [
-  'account',
-  'editorial',
-  'discussion',
-] as const;
-export type AccountErasureParticipantName =
-  (typeof ACCOUNT_ERASURE_PARTICIPANTS)[number];
+import { consumerBindingKey } from './consumer-binding';
+export type AccountErasureParticipantName = string;
 export interface AccountErasureRequest {
   identityId: string;
   revision: number;
@@ -53,19 +48,14 @@ export function accountErasureReceipt(input: unknown): AccountErasureReceipt {
     'revision',
     'state',
   ]);
-  if (
-    (value['participant'] !== 'account' &&
-      value['participant'] !== 'editorial' &&
-      value['participant'] !== 'discussion') ||
-    (value['state'] !== 'pending' && value['state'] !== 'completed')
-  )
+  if (value['state'] !== 'pending' && value['state'] !== 'completed')
     throw new CanonicalIdentityInputError('Invalid account erasure receipt');
   return {
     ...accountErasureRequest({
       identityId: value['identityId'],
       revision: value['revision'],
     }),
-    participant: value['participant'],
+    participant: consumerBindingKey(value['participant']),
     state: value['state'],
   };
 }

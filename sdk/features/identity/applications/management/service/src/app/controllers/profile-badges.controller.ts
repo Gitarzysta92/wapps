@@ -10,10 +10,9 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import {
-  ProfileBadgesService,
-  type IdentityManagementContext,
-} from '@sdk/features/identity/libs/management';
+import { type IdentityManagementContext } from '@sdk/features/identity/libs/management';
+import { isCanonicalIdentityId } from '@sdk/features/identity/core';
+import { ProfileBadgesService } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedRequest,
@@ -22,8 +21,12 @@ import {
 
 function context(user: AuthenticatedUser): IdentityManagementContext {
   const roles = user.userClaims?.roles;
+  const tenantId = user.userClaims?.tenantId;
+  if (tenantId !== undefined && !isCanonicalIdentityId(tenantId))
+    throw new BadRequestException('Invalid badge actor tenant');
   return {
     identityId: user.userId,
+    ...(tenantId === undefined ? {} : { tenantId }),
     timestamp: Date.now(),
     subject: { roles: Array.isArray(roles) ? roles : [] },
   };

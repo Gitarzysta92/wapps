@@ -1,190 +1,46 @@
-<ui-page-header class="page-header">
-  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
-  <h1 uiPageTitle slot="title">
-    {{ catalog.article()?.title ?? (slug() ? 'Article' : 'Articles') }}
-  </h1>
-  <p slot="meta">
-    {{
-      catalog.article()?.excerpt ??
-        (slug()
-          ? 'Read an independently reviewed article.'
-          : 'Guides and perspectives from the Wapps community.')
-    }}
-  </p>
-  <a
-    slot="actions"
-    tuiButton
-    size="s"
-    appearance="secondary"
-    [routerLink]="'/' + paths.articles"
-    >My articles</a
-  >
-  <nav slot="navigation" aria-label="Article sections">
-    <a tuiLink routerLink="/articles">All articles</a
-    ><a tuiLink routerLink="/my/favourites/articles">Favorite articles</a
-    ><a tuiLink [routerLink]="['/' + paths.articles, 'new']"
-      >Write an article</a
-    >
-  </nav>
-</ui-page-header>
-<section class="application-workspace" [attr.aria-busy]="catalog.loading()">
-  @let article = catalog.article(); @if (!slug()) {
-  <form
-    class="article-filters application-draft-card"
-    tuiAppearance="card-panel"
-    (ngSubmit)="browse()"
-  >
-    <div class="article-filter-field">
-      <label for="article-search">Search titles</label
-      ><input
-        class="application-draft-input"
-        id="article-search"
-        name="q"
-        maxlength="100"
-        [ngModel]="q()"
-        (ngModelChange)="q.set($event)"
-      />
-    </div>
-    <div class="article-filter-field">
-      <label for="article-category-filter">Category</label
-      ><input
-        class="application-draft-input"
-        id="article-category-filter"
-        name="category"
-        maxlength="80"
-        [ngModel]="category()"
-        (ngModelChange)="category.set($event)"
-      />
-    </div>
-    <div class="article-filter-field">
-      <label for="article-tag-filter">Tag</label
-      ><input
-        class="application-draft-input"
-        id="article-tag-filter"
-        name="tag"
-        maxlength="40"
-        [ngModel]="tag()"
-        (ngModelChange)="tag.set($event)"
-      />
-    </div>
-    <button tuiButton type="submit" size="s" [disabled]="catalog.loading()">
-      Filter articles
-    </button>
-  </form>
-  } @if (catalog.loading()) {
-  <p role="status">{{ catalog.preferencesLoading() ? 'Loading content preferences...' : 'Loading articles...' }}</p>
-  } @else if (catalog.preferencesError()) {
-  <p role="alert">Your content preferences could not be loaded.</p>
-  <button tuiButton size="s" type="button" (click)="catalog.retry()">Retry content preferences</button>
+@if (!slug()) {
+  <results-page kind="articles" />
+} @else {
+<main class="detail-page" [attr.aria-busy]="catalog.loading()">
+  <a tuiLink routerLink="/articles">← All articles</a>
+  @if (catalog.loading()) { <p role="status">Loading article...</p> }
+  @else if (catalog.preferencesError()) {
+    <ui-content-state title="Your content preferences could not be loaded" description="Retry to apply your saved content choices." [error]="true"><button tuiButton type="button" (click)="catalog.retry()">Retry content preferences</button></ui-content-state>
   } @else if (catalog.error()) {
-  <p role="alert">{{ catalog.error() }}</p>
-  <button tuiButton size="s" type="button" (click)="reload()">
-    Retry loading articles
-  </button>
+    <ui-content-state title="Article unavailable" [description]="catalog.error()" [error]="true"><button tuiButton type="button" (click)="reload()">Retry loading article</button></ui-content-state>
   } @else if (catalog.hidden()) {
-  <ui-content-state title="Article hidden by your content preferences" description="Mature and unclassified content is hidden when mature content is disabled." />
-  <a tuiLink routerLink="/me/settings/preferences">Content preferences</a>
-  } @else if (article) {
-  <div class="application-draft-actions">
-    <p>{{ article.byline }} / {{ article.category }}</p>
-    <favorite-toggle-button
-      type="articles"
-      [targetId]="article.id"
-      [slug]="article.slug"
-    />
-  </div>
-  <p>
-    Published {{ article.publishedAt | date : 'mediumDate' }} @if
-    (article.updatedAt > article.publishedAt) { / Updated
-    {{ article.updatedAt | date : 'mediumDate' }} }
-  </p>
-  @if (article.tags.length) {
-  <nav class="application-draft-actions" aria-label="Article tags">
-    @for (tag of article.tags; track tag) {
-    <a tuiLink routerLink="/articles" [queryParams]="{ tag: tag }">{{ tag }}</a>
-    }
-  </nav>
-  } @if (article.cover; as cover) {
-  <article-cover-image
-    [target]="{ kind: 'published', id: article.id, imageId: cover.imageId }"
-    [alt]="cover.alt"
-  />
-  }
-  <article class="article-reading" aria-label="Article content">
-    @for (section of article.sections; track $index) {
-    <section>
-      @if (section.heading) {
-      <h2>{{ section.heading }}</h2>
-      } @for (paragraph of section.paragraphs; track $index) {
-      <p>{{ paragraph }}</p>
-      }
-    </section>
-    }
-  </article>
-  @if (thread() !== null) {
-    <p><a tuiLink [routerLink]="[]" [queryParams]="{ thread: null }" queryParamsHandling="merge">View all comment threads</a></p>
-  }
-  <article-comments class="article-comments-section" [articleId]="article.id" [threadId]="thread()" />
-  } @else if (!slug()) { @if (catalog.hiddenCount()) {
-  <p role="status">{{ catalog.hiddenCount() }} articles on this page are hidden by your content preferences. Totals include hidden articles.</p>
-  } @if (!catalog.items().length) {
-  <ui-content-state
-    [title]="catalog.hiddenCount() ? 'No visible articles on this page' : 'No published articles found'"
-    [description]="catalog.hiddenCount() ? 'Try another page or change your content preferences.' : 'Try another title, category or tag. Only approved articles appear here.'"
-  />
-  }
-  <div class="application-draft-grid">
-    @for (article of catalog.items(); track article.id) {
-    <article class="application-draft-card" tuiAppearance="card-panel">
-      <div class="application-draft-heading">
-        <h2>
-          <a tuiLink [routerLink]="['/articles', article.slug]">{{
-            article.title
-          }}</a>
-        </h2>
-        <p>{{ article.byline }} / {{ article.category }}</p>
-      </div>
+    <ui-content-state title="Article hidden by your content preferences" description="Mature and unclassified content is hidden when mature content is disabled."><a tuiLink routerLink="/me/settings/preferences">Content preferences</a></ui-content-state>
+  } @else { @if (catalog.article(); as article) {
+    <article>
+      <header class="detail-header">
+        <tui-badge>{{ article.category }}</tui-badge>
+        <h1>{{ article.title }}</h1>
+        <favorite-toggle-button type="articles" [targetId]="article.id" [slug]="article.slug" />
+        <p class="intro">{{ article.excerpt }}</p>
+        <div class="metadata">
+          <span>By {{ article.byline }}</span>
+          <span>Published {{ article.publishedAt | date:'longDate' }}</span>
+          @if (article.updatedAt > article.publishedAt) { <span>Updated {{ article.updatedAt | date:'longDate' }}</span> }
+        </div>
+      </header>
       @if (article.cover; as cover) {
-      <article-cover-image
-        [target]="{ kind: 'published', id: article.id, imageId: cover.imageId }"
-        [alt]="cover.alt"
-      />
+        <article-cover-image class="cover" [target]="{ kind: 'published', id: article.id, imageId: cover.imageId }" [alt]="cover.alt" />
       }
-      <p>{{ article.excerpt }}</p>
-      <p>Published {{ article.publishedAt | date : 'mediumDate' }}</p>
-      <div class="application-draft-actions">
-        <a tuiButton size="s" [routerLink]="['/articles', article.slug]"
-          >Read article</a
-        ><favorite-toggle-button
-          type="articles"
-          [targetId]="article.id"
-          [slug]="article.slug"
-        />
+      <div class="article-body">
+        @for (section of article.sections; track $index) {
+          <section>
+            @if (section.heading) { <h2>{{ section.heading }}</h2> }
+            @for (paragraph of section.paragraphs; track $index) { <p>{{ paragraph }}</p> }
+          </section>
+        }
       </div>
+      @if (article.tags.length) {
+        <nav class="actions" aria-label="Article tags">@for (tag of article.tags; track tag) { <a tuiLink routerLink="/articles" [queryParams]="{ tag }">{{ tag }}</a> }</nav>
+      }
     </article>
-    }
-  </div>
-  <nav class="application-draft-actions" aria-label="Article pages">
-    <button
-      tuiButton
-      size="s"
-      type="button"
-      appearance="secondary"
-      [disabled]="page() <= 1"
-      (click)="browse(page() - 1)"
-    >
-      Previous page</button
-    ><span>Page {{ page() }} / {{ catalog.total() }} articles</span>
-    <button
-      tuiButton
-      size="s"
-      type="button"
-      appearance="secondary"
-      [disabled]="page() * 20 >= catalog.total()"
-      (click)="browse(page() + 1)"
-    >
-      Next page
-    </button>
-  </nav>
+    @if (thread() !== null) { <p><a tuiLink [routerLink]="[]" [queryParams]="{ thread: null }" queryParamsHandling="merge">View all comment threads</a></p> }
+    <article-comments class="article-comments-section" [articleId]="article.id" [threadId]="thread()" />
   }
-</section>
+}
+</main>
+}

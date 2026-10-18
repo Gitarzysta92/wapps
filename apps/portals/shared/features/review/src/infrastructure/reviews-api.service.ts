@@ -3,15 +3,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, defer, map, of, type Observable } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
 import {
-  memberReview,
   reviewChange,
   reviewId,
   reviewObject,
-  reviewPage,
   reviewReportPage,
   reviewRevision,
   reviewSummary,
 } from '@sdk/features/review/core';
+import { memberReview, reviewPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import {
   REVIEWS_ORIGIN,

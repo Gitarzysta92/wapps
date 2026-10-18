@@ -70,17 +70,17 @@ module.exports = async function qualifyDigestBrowser(options) {
   );
   const first = await ids(a, latest);
   for (const [selector, kind] of [
-    ['.articles-grid h3 a', 'article'],
+    ['.articles-grid .article-card-link', 'article'],
     ['.app-card[href="/apps/export-application/overview"]', 'application'],
-    ['[aria-labelledby="discussions-title"] h3 a', 'discussion'],
-    ['.latest-grid h3 a', 'activity'],
+    ['[aria-labelledby="discussions-title"] a.discussion-card', 'discussion'],
+    ['.latest-grid a.activity-card', 'activity'],
   ]) {
     const entry = await a.$eval(
       selector,
       (node, kind) => ({
         kind,
         href: node.getAttribute('href'),
-        title: node.textContent.trim(),
+        title: (node.querySelector('h3') ?? node).textContent.trim(),
       }),
       kind
     );
@@ -93,7 +93,7 @@ module.exports = async function qualifyDigestBrowser(options) {
       false
     );
     if (kind === 'article')
-      await text(b, 'Retained article body.', '.article-reading');
+      await text(b, 'Retained article body.', 'app-article-catalog .article-body');
     if (kind === 'discussion')
       await text(
         b,
@@ -198,7 +198,7 @@ module.exports = async function qualifyDigestBrowser(options) {
       );
       await delay(300);
       const layout = await b.$eval('digest-api-page', (element) => {
-        const card = element.querySelector('.latest-grid article'),
+        const card = element.querySelector('.latest-grid .activity-card'),
           header = card.querySelector('header'),
           title = card.querySelector('h3');
         const article = element.querySelector('.article-copy'),

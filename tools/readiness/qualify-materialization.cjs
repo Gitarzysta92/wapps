@@ -21,6 +21,7 @@ async function main() {
           '--favorites-browser',
           '--account-export-sources',
           '--discussion-payloads',
+          '--discussion-bff',
           '--discussion-author-erasure',
           '--reply-notifications',
           '--mention-notifications',
@@ -40,6 +41,9 @@ async function main() {
     );
   const exportSources = args.includes('--account-export-sources');
   const payloads = args.includes('--discussion-payloads');
+  const discussionBff = args.includes('--discussion-bff');
+  if (discussionBff && args.length !== 1)
+    throw new Error('Discussion BFF qualification runs independently');
   const authorErasure = args.includes('--discussion-author-erasure');
   if (authorErasure && args.length !== 1)
     throw new Error(
@@ -217,7 +221,7 @@ async function main() {
             MONGO_INITDB_ROOT_USERNAME: 'wapps',
             MONGO_INITDB_ROOT_PASSWORD: password,
           },
-          ['mongod', '--wiredTigerCacheSizeGB', '0.25']
+          ['mongod', '--bind_ip', '0.0.0.0', '--wiredTigerCacheSizeGB', '0.25']
         );
     const queuePort = objectStoresOnly
       ? 0
@@ -301,6 +305,7 @@ async function main() {
       WAPPS_DISCUSSION_INTEGRATION: '1',
       WAPPS_ACCOUNT_EXPORT_DISCUSSION: exportSources ? '1' : '0',
       WAPPS_DISCUSSION_PAYLOADS: payloads ? '1' : '0',
+      WAPPS_DISCUSSION_BFF: discussionBff ? '1' : '0',
       WAPPS_FAVORITE_UPDATES: favoriteUpdates ? '1' : '0',
       WAPPS_REPLY_NOTIFICATIONS: replyNotifications ? '1' : '0',
       WAPPS_MENTION_NOTIFICATIONS: mentionNotifications ? '1' : '0',
@@ -329,7 +334,7 @@ async function main() {
     let failed = false;
     for (const file of catalogOnly
       ? ['catalog-journey.test.cjs']
-      : objectStoresOnly || authorErasure
+      : objectStoresOnly || authorErasure || discussionBff
       ? ['discussion-recovery.test.cjs']
       : [
           'discussion-recovery.test.cjs',

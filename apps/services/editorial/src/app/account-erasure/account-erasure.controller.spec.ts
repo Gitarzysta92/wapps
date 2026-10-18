@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { err, ok } from '@sdk/kernel/standard';
 import { CanonicalIdentityConflict } from '@sdk/features/identity/core';
-import { AccountErasureAccess } from '@sdk/features/identity/libs/management';
+import { AccountErasureAccess } from '@wapps/account';
 import { EditorialAuthMiddleware } from '../http/editorial-auth';
 import { AccountErasureController } from './account-erasure.controller';
 

@@ -1,3 +1,4 @@
+import { discussionKey } from '@sdk/features/discussion/core';
 import { createHash } from 'node:crypto';
 import {
   DISCUSSION_MAX_DEPTH,
@@ -42,12 +43,13 @@ function timestamp(value: number | null): boolean {
 }
 
 function validate(snapshot: DiscussionSnapshot): Map<string, number> {
-  requireSnapshot(
-    snapshot.subjectKind === undefined ||
-      (['article', 'application'].includes(snapshot.subjectKind) &&
-        !!snapshot.subjectId),
-    'Invalid discussion target'
-  );
+  if (snapshot.bindingKey !== undefined) {
+    try {
+      discussionKey(snapshot.bindingKey);
+    } catch {
+      throw new InvalidSnapshotError('Invalid discussion binding key');
+    }
+  }
   requireSnapshot(
     Number.isSafeInteger(snapshot.revision) && snapshot.revision > 0,
     'Invalid aggregate revision'
@@ -202,7 +204,7 @@ export async function materializeDiscussion(
         tenantId: snapshot.tenantId,
         revision: snapshot.revision,
         subjectId: snapshot.subjectId,
-        ...(snapshot.subjectKind ? { subjectKind: snapshot.subjectKind } : {}),
+        ...(snapshot.bindingKey ? { bindingKey: snapshot.bindingKey } : {}),
         subjectReferenceKey: snapshot.subjectReferenceKey,
         nodes: sourceNodes,
       })
@@ -259,7 +261,7 @@ export async function materializeDiscussion(
     fingerprint,
     revision: snapshot.revision,
     subjectId: snapshot.subjectId,
-    ...(snapshot.subjectKind ? { subjectKind: snapshot.subjectKind } : {}),
+    ...(snapshot.bindingKey ? { bindingKey: snapshot.bindingKey } : {}),
     subjectReferenceKey: snapshot.subjectReferenceKey,
     visibility: root.visibility,
     state: root.state,

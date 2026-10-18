@@ -2,13 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, defer, map, of, type Observable } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import {
-  commentObject,
-  publicCommentContent,
-  publicCommentId,
-  type PublicComment,
-  type PublicCommentThread,
-} from '@domains/discussion';
+import { commentObject, publicCommentContent, publicCommentId, type PublicComment, type PublicCommentThread } from '@domains/community';
 import {
   ARTICLE_ORIGIN,
   ARTICLE_SESSION,

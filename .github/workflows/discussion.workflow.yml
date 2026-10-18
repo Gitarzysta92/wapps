@@ -4,7 +4,7 @@ on:
   push:
     branches: [develop, main]
     paths:
-      - 'sdk/features/discussion/applications/management/service/**'
+      - 'apps/services/community/**'
       - 'sdk/features/discussion/**'
       - 'sdk/kernel/**'
       - 'sdk/platform/**'
@@ -33,7 +33,7 @@ env:
   SERVICE_NAME: discussion
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/wapps/discussion
-  NAMESPACE_MANIFEST: sdk/features/discussion/applications/management/provisioning/k8s/discussion.namespace.yaml
+  NAMESPACE_MANIFEST: apps/services/community/provisioning/k8s/discussion.namespace.yaml
 
 jobs:
   quality:
@@ -92,7 +92,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: dist/sdk/features/discussion/applications/management
-          file: sdk/features/discussion/applications/management/service/Dockerfile
+          file: apps/services/community/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           no-cache: true

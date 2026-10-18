@@ -5,9 +5,9 @@ import {
   replyNotificationLease,
   replyNotificationTarget,
   REPLY_NOTIFICATION_PAGE_SIZE,
-} from '@sdk/features/discussion/core';
+} from '@domains/community';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { ReplyNotificationSource } from '@sdk/features/identity/libs/management';
+import type { ReplyNotificationSource } from '@wapps/account';
 
 export class RemoteReplyNotifications implements ReplyNotificationSource {
   private readonly endpoint: string;

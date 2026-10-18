@@ -1,9 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { distinctUntilChanged, forkJoin, Subscription } from 'rxjs';
-import {
-  discussionMentionProfiles,
-  publicCommentId,
-} from '@domains/discussion/contracts';
+import { discussionMentionProfiles, publicCommentId } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { MENTION_MEMBERS, type MentionMember } from './mention-members.port';
 

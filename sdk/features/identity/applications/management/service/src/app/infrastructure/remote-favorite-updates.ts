@@ -6,7 +6,7 @@ import {
   type FavoriteTarget,
 } from '@domains/customer/favorites';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { FavoriteUpdateSource } from '@sdk/features/identity/libs/management';
+import type { FavoriteUpdateSource } from '@wapps/account';
 
 export class RemoteFavoriteUpdates implements FavoriteUpdateSource {
   private readonly editorial: string;

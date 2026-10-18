@@ -28,7 +28,7 @@ import { MyFavoritesApiService } from './infrastructure/my-favorites-api.service
 const id = '10000000-0000-4000-8000-000000000001';
 const favoritesUrl = '/api/me/favorites';
 const preferencesUrl = '/api/me/preferences';
-const appsUrl = '/api/catalog/app-selection?ids=' + id;
+const contentUrl = '/api/me/favorites/content';
 
 function favorites(identityId = 'Alice', revision = 1, empty = false) {
   return {
@@ -48,30 +48,6 @@ function preferences(
   data.content.showMatureContent = showMatureContent;
   return { identityId, revision, updatedAt: null, preferences: data };
 }
-function application(classification?: ContentClassification) {
-  return {
-    id,
-    revision: 1,
-    slug: 'saved-application',
-    name: 'Saved application',
-    description: 'Public description',
-    website: null,
-    logoUrl: 'https://example.test/secret-logo.png',
-    bannerUrl: null,
-    isPwa: false,
-    estimatedNumberOfUsers: null,
-    createdAt: '2026-10-13T10:00:00.000Z',
-    updatedAt: '2026-10-13T10:00:00.000Z',
-    categories: [],
-    tags: [],
-    platforms: [],
-    devices: [],
-    monetizations: [],
-    reviews: null,
-    ...(classification === undefined ? {} : { classification }),
-  };
-}
-
 describe('favorites saved content preferences', () => {
   let http: HttpTestingController;
   let token: BehaviorSubject<string | null>;
@@ -110,51 +86,27 @@ describe('favorites saved content preferences', () => {
     parent = classification
   ) {
     const fields = classification === undefined ? {} : { classification };
-    http.expectOne('/api/catalog/article-selection?ids=' + id).flush({
-      items: [
-        {
-          id,
-          revision: 1,
-          submittedRevision: 1,
-          title: 'Saved article',
-          slug: 'saved-article',
-          excerpt: 'Excerpt',
-          byline: 'Author',
-          category: 'Guides',
-          tags: [],
-          publishedAt: 10,
-          updatedAt: 10,
-          ...fields,
-        },
-      ],
+    http.expectOne(contentUrl).flush({
+      identityId: 'Alice',
+      revision: 1,
+      items: FAVORITE_KINDS.map((kind) => ({
+        kind,
+        id,
+        name: 'Saved ' + kind,
+        status: 'available',
+        slug:
+          kind === 'suites' || kind === 'discussions' ? id : 'saved-' + kind,
+        ...(kind === 'discussions'
+          ? {
+              appSlug: 'saved-application',
+              ...(parent === undefined ? {} : { classification: parent }),
+            }
+          : fields),
+        ...(kind === 'applications'
+          ? { image: 'https://example.test/secret-logo.png' }
+          : {}),
+      })),
     });
-    http.expectOne('/api/catalog/suite-selection?ids=' + id).flush({
-      items: [
-        {
-          id,
-          revision: 1,
-          submittedRevision: 1,
-          title: 'Saved suite',
-          description: '',
-          applicationIds: [id],
-          publishedAt: 10,
-          ...fields,
-        },
-      ],
-    });
-    http.expectOne(appsUrl).flush({ items: [application(classification)] });
-    http.expectOne('/api/discussion-selection?ids=' + id).flush({
-      items: [
-        {
-          id,
-          revision: 1,
-          applicationId: id,
-          title: 'Saved discussion',
-          replyCount: 0,
-        },
-      ],
-    });
-    http.expectOne(appsUrl).flush({ items: [application(parent)] });
   }
 
   it.each([
@@ -214,7 +166,7 @@ describe('favorites saved content preferences', () => {
       preferencesLoading: true,
       hidden: 0,
     });
-    http.expectNone((request) => request.url.includes('selection'));
+    http.expectNone((request) => request.url === contentUrl);
     http
       .expectOne(preferencesUrl)
       .flush({}, { status: 503, statusText: 'Unavailable' });
@@ -242,7 +194,7 @@ describe('favorites saved content preferences', () => {
     expect(await pending).toEqual(ok(true));
     http.expectOne(favoritesUrl).flush(favorites('Alice', 2, true));
     expect(service.view().items).toEqual([]);
-    http.expectNone((request) => request.url.includes('selection'));
+    http.expectNone((request) => request.url === contentUrl);
   });
 
   it('retries failed preferences and reloads metadata under the resulting choice', () => {
@@ -289,10 +241,8 @@ describe('favorites saved content preferences', () => {
 
   it('applies a same-document saved choice, cancels pending metadata and preserves hidden removal', async () => {
     const service = load(true);
-    const pendingRequests = http.match((request) =>
-      request.url.includes('selection')
-    );
-    expect(pendingRequests).toHaveLength(4);
+    const pendingRequests = http.match((request) => request.url === contentUrl);
+    expect(pendingRequests).toHaveLength(1);
     const pending = firstValueFrom(
       TestBed.inject(PreferencesService).updateContentPreferences({
         showMatureContent: false,
@@ -321,7 +271,7 @@ describe('favorites saved content preferences', () => {
     expect(service.view().items).toEqual([]);
     http.expectOne(favoritesUrl).flush(favorites('Bob'));
     expect(service.view().preferencesLoading).toBe(true);
-    http.expectNone((request) => request.url.includes('selection'));
+    http.expectNone((request) => request.url === contentUrl);
     http.expectOne(preferencesUrl).flush(preferences(false, 'Bob'));
     metadata('mature');
     expect(service.view().hidden).toBe(4);
@@ -374,24 +324,29 @@ describe('favorites saved content preferences', () => {
     http.expectOne(preferencesUrl).flush(preferences(true, 'Bob'));
     expect(service.view().preferencesError).toBe(true);
     expect(service.view().items.every((item) => item.slug === null)).toBe(true);
-    http.expectNone((request) => request.url.includes('selection'));
+    http.expectNone((request) => request.url === contentUrl);
   });
 
   it('rejects malformed classification instead of presenting success or an empty collection', () => {
     const service = load(true);
-    const requests = http.match((request) => request.url.includes('selection'));
-    const apps = requests.find(
-      (request) => request.request.url === '/api/catalog/app-selection'
-    );
-    expect(apps).toBeDefined();
-    apps?.flush({ items: [{ ...application(), classification: 'safe' }] });
+    const requests = http.match((request) => request.url === contentUrl);
+    expect(requests).toHaveLength(1);
+    requests[0].flush({
+      identityId: 'Alice',
+      revision: 1,
+      items: [
+        {
+          kind: 'applications',
+          id,
+          name: 'Invalid',
+          slug: 'invalid',
+          status: 'available',
+          classification: 'safe',
+        },
+      ],
+    });
     expect(service.view()).toMatchObject({ contentError: true, hidden: 0 });
     expect(service.view().items).toHaveLength(4);
-    expect(
-      requests
-        .filter((request) => request !== apps)
-        .every((request) => request.cancelled)
-    ).toBe(true);
   });
 
   it('ignores late metadata after switching to a new saved choice', () => {

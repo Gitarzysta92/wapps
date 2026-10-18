@@ -1,0 +1,58 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/libs/adapters/account-mysql",
+    "declaration": true,
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../../dist/libs/adapters/account-mysql/tsconfig.lib.tsbuildinfo",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../sdk/features/discussion/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/libs/authentication/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/platform/queue/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/identity/libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/profiles/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/preferences/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/customer/favorites/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/extras/mysql/tsconfig.lib.json"
+    },
+    {
+      "path": "../../domains/community/tsconfig.lib.json"
+    },
+    {
+      "path": "../../usecases/account/tsconfig.lib.json"
+    }
+  ]
+}

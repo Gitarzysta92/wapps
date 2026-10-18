@@ -18,5 +18,13 @@
   ],
   "angularCompilerOptions": {
     "compilationMode": "partial"
-  }
+  },
+  "references": [
+    {
+      "path": "../../../../../libs/domains/community/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../sdk/features/review/core/tsconfig.lib.json"
+    }
+  ]
 }

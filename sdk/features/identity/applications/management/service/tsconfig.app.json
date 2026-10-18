@@ -38,9 +38,6 @@
       "path": "../../../../../kernel/standard/tsconfig.lib.json"
     },
     {
-      "path": "../../../packages/infrastructure/firebase/tsconfig.lib.json"
-    },
-    {
       "path": "../../../../../extras/queue-rabbitmq/tsconfig.lib.json"
     },
     {
@@ -50,7 +47,7 @@
       "path": "../../../../../../apps/shared/tsconfig.lib.json"
     },
     {
-      "path": "../../../packages/infrastructure/mysql/tsconfig.lib.json"
+      "path": "../../../../../../libs/adapters/account-mysql/tsconfig.lib.json"
     },
     {
       "path": "../../../core/tsconfig.lib.json"
@@ -69,6 +66,15 @@
     },
     {
       "path": "../../../../../../libs/domains/publication/article/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/usecases/account/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../../libs/domains/community/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/authentication/tsconfig.lib.json"
     }
   ]
 }

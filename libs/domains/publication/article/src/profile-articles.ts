@@ -1,4 +1,8 @@
 import {
+  classificationFields,
+  type ClassifiedContent,
+} from '@domains/publication/classification';
+import {
   ARTICLE_LIMITS,
   ArticleInputError,
   articleId,
@@ -8,7 +12,7 @@ import {
 } from './article-workspace';
 
 export const PROFILE_ARTICLES_PAGE_SIZE = 20;
-export interface ProfileArticleSummary {
+export interface ProfileArticleSummary extends ClassifiedContent {
   id: string;
   title: string;
   excerpt: string;
@@ -34,6 +38,7 @@ export function parseProfileArticleSummary(
     'excerpt',
     'slug',
     'publishedAt',
+    'classification',
   ]);
   const title = row['title'],
     excerpt = row['excerpt'];
@@ -56,6 +61,7 @@ export function parseProfileArticleSummary(
   )
     throw new ArticleInputError('Invalid profile article metadata');
   return {
+    ...classificationFields(row['classification']),
     id: articleId(row['id']),
     title,
     excerpt,
@@ -77,9 +83,7 @@ export function parseProfileArticlesPage(input: unknown): ProfileArticlesPage {
   if (
     (row['sharing'] === 'hidden' && (items.length || after !== null)) ||
     items.some((item, index) => index > 0 && items[index - 1].id >= item.id) ||
-    (after !== null &&
-      (items.length !== PROFILE_ARTICLES_PAGE_SIZE ||
-        after !== items[items.length - 1].id))
+    (after !== null && items.some((item) => item.id > after))
   )
     throw new ArticleInputError('Invalid profile articles continuation');
   return { sharing: row['sharing'], items, after };

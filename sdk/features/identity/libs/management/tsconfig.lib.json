@@ -7,15 +7,15 @@
     "composite": true,
     "tsBuildInfoFile": "../../../../../dist/sdk/features/identity/libs/management/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
   "references": [
-    {
-      "path": "../../../discussion/core/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../libs/domains/publication/suite/tsconfig.lib.json"
-    },
     {
       "path": "../../core/tsconfig.lib.json"
     },
@@ -24,18 +24,6 @@
     },
     {
       "path": "../../../../kernel/ontology/authority/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../libs/domains/customer/profiles/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../libs/domains/customer/preferences/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../libs/domains/customer/favorites/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../libs/domains/publication/article/tsconfig.lib.json"
     }
   ]
 }

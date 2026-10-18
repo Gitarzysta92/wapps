@@ -564,9 +564,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.suites.path,
-        loadComponent: () => USE_CATALOG_BFF
-          ? import('./pages/suite-publication/suite-publication.component').then(m => m.SuitePublicationPageComponent)
-          : import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
+        loadComponent: () => import('./pages/suites/suites.component').then(m => m.SuitesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.suites],
           bottomBar: {
@@ -692,9 +690,7 @@ export const routes: Routes = [
       },
       {
         path: NAVIGATION.articles.path,
-        loadComponent: () => USE_CATALOG_BFF
-          ? import('./pages/articles/article-catalog.component').then(m => m.ArticleCatalogPageComponent)
-          : import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+        loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
         data: {
           breadcrumb: [NAVIGATION.home, NAVIGATION.articles],
           bottomBar: {
@@ -731,15 +727,11 @@ export const routes: Routes = [
         children: [
           {
             path: `:${FILTERS.category}/page/:page`,
-            loadComponent: () => USE_CATALOG_BFF
-          ? import('./pages/articles/article-catalog.component').then(m => m.ArticleCatalogPageComponent)
-          : import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+            loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
           },
           {
             path: 'page/:page',
-            loadComponent: () => USE_CATALOG_BFF
-          ? import('./pages/articles/article-catalog.component').then(m => m.ArticleCatalogPageComponent)
-          : import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
+            loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesPageComponent),
           }
         ]
       },

@@ -5,9 +5,8 @@ import { PublicFavoriteTargets } from './public-favorite-targets';
 const id = '10000000-0000-4000-8000-000000000001';
 const item = {
   id,
-  applicationId: id,
+  bindingKey: 'application:' + id,
   revision: 2,
-  title: 'Current topic',
   replyCount: 3,
 };
 describe('owning-service favorite eligibility', () => {
@@ -22,9 +21,9 @@ describe('owning-service favorite eligibility', () => {
     get.mockReturnValue(of({ data: { items: [item] } }));
     expect(await targets.available({ kind: 'discussions', id })).toBe(true);
     expect(get).toHaveBeenCalledWith(
-      'http://discussion.test/api/discussion-selection',
+      'http://discussion.test/api/discussions/selection',
       {
-        params: { ids: id },
+        params: { ids: id, bindingPrefix: 'application:' },
         timeout: 5000,
         maxRedirects: 0,
         maxContentLength: 1024 * 1024,

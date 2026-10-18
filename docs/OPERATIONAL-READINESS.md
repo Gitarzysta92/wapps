@@ -1,5 +1,729 @@
 # Wapps operational readiness
 
+**Current completion index (October 18, 2026):** use
+[the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for current workflow
+status, evidence limits, dependencies and bounded next actions. The checkpoints
+and original OP01-OP10 findings below remain historical evidence and release
+criteria; superseded missing-feature statements are not the current backlog.
+
+Favorites/inbox gateway parity (October 18, 2026): A26 aligns both complete families
+through explicit BFF handlers in local and alpha configurations. Current approved
+classification and viewer/recipient choices govern four-kind favorite metadata,
+five shared-profile content sections, reply/mention/watch delivery and inbox reads.
+Mature and unclassified content require opt-in; anonymous profile viewers see
+General only. Hidden metadata is removed, filtered cursors retain progress and
+suppressed delivery receipts stay suppressed. Twenty-three disposable real-service
+groups pass, including actual workers, replay, private read-state, persistence,
+rollback, removal/re-add, outages and withdrawal. Full tests, lint, 140 builds,
+49 typechecks, 64 Angular artifacts and boundary checks pass. Native Nginx/source
+setup/fault-injection limits and failed attempts are recorded in implementation
+progress. One frontend parser spec changes; runtime presentation is unchanged.
+The current source checkpoint is A26; live activation remains A21. Next is full
+export/privacy qualification and alpha export parity. Quarantine operations,
+remaining settings/channels, Docker transport stability, deployment, full cleanup,
+crash/restore and original frontend acceptance remain open.
+
+Public-profile gateway parity (October 18, 2026): A25 aligns public profiles,
+photos, follows, totals and badge routes in both configurations. BFF rejects read
+bodies; Account retains tenant scope and OPA denies tenant-scoped global badge
+administration. Twenty-three disposable real-service groups pass, including real
+Editorial/Community content, audience/contact/photo privacy, follow and badge
+rollback/replay/revocation, persistence, source withdrawal and dependency/BFF outages.
+The final API/auth gateway run uses native Nginx 1.28.3 after repeated Docker-to-host
+transport stalls; this explicit substitution and failed attempts are recorded in
+implementation progress. A26 subsequently adds the shared-content classification
+and favorites/inbox behavior described above. Docker workflow stability, full
+erasure, frontend acceptance and deployment remain open; live activation remains A21.
+
+Account/settings gateway parity (October 18, 2026): A24 routes private account,
+profile/photo, preferences and deletion acceptance through BFF in both local and
+alpha configurations. Unknown `/me` suffixes no longer reach a broad Account
+fallback. The [route/caller inventory](BFF-ROUTE-PARITY.md) records remaining
+bypasses, existing BFF support and two legacy routes with no discovered current
+portal caller. Nineteen disposable local-auth groups pass, including eight new
+settings groups with real credential/Identity processes, OPA, SQL, avatars,
+rollback/replay, persistence and dependency/BFF outage behavior. Full cleanup,
+preference consumers and public-profile/source composition remain separate work.
+A25 subsequently qualifies public profiles/follows/badges as described above.
+No live activation, frontend changes or live worker enablement are included.
+
+Staff health monitor BFF (October 18, 2026): A23 implements explicit configuration
+reads and revisioned PUT commands, with both local and alpha gateways routing the
+entire family through BFF. Editorial retains OPA/tenant/current-parent authorization,
+approved-origin checks, SQL authority and immutable replay. Ten disposable health
+groups qualify the worker protections plus BFF/gateway denial, rollback/retry,
+uncertain-write recovery, persistence and failure handling. Authentication and
+public probe DNS/transport remain controlled fixtures; real public DNS/TLS/egress
+must pass before enabling probing. No frontend or live installation changes are
+included. A24 subsequently completes the route/caller inventory and private
+account/settings parity; coordinated candidate work remains open.
+
+Complete administration BFF contract (October 18, 2026): A22 implements the
+remaining credential edits/unlink, action links, deletion acceptance, identity
+lookup and read-only cleanup status. Both gateway configurations route all
+admin-users paths through BFF. Account policy denies tenant-scoped global staff
+for every operation. Eleven real-stack groups pass, including rollback/retry,
+credential-edit session revocation, deletion replay, pending/failed combined
+cleanup and BFF outage/recovery without owner fallback. Unsupported local unlink
+and email links fail explicitly. No live rollout, frontend change, external-provider
+qualification or full erasure-saga completion is claimed. Source/test evidence and
+workspace gate outcomes are recorded in A22 in implementation progress; the live
+local installation retains A21 until a coordinated Account/BFF/OPA/gateway rollout.
+A23 subsequently implements BC20 staff monitoring and A24 records the remaining
+route audit. Further parity and coordinated domain-service qualification/activation
+stay open.
+
+Legacy Identity/local activation (October 18, 2026): A21 imports the approved
+restricted legacy stub into a separate canonical schema, preserving its UUID,
+creation time and original SQL/Mongo records without a credential binding. Local
+Authentication, Identity/Account, BFF and ingress are active with separate database
+permissions. Fresh signup, retry, sessions, container restarts, refresh/revocation,
+and source-backup restoration pass. Nine real-stack qualification groups pass,
+including the complete local gateway with domain services absent. No frontend source
+changes or legacy login restoration are included. Domain services remain stopped;
+full-stack activation, remaining BFF administration/monitoring, privacy/provider
+journeys, alpha/Kubernetes and original-frontend/release acceptance remain open.
+See [the migration runbook](LEGACY-IDENTITY-MIGRATION.md) and A21 in implementation
+progress. A20 and earlier activation blockers below are historical checkpoints.
+
+Independent authentication process (October 18, 2026): A20 supersedes A18/A19's
+shared persistence composition. Authentication owns an isolated credential database
+and service-only HTTP contract; Identity owns stable Wapps IDs and exact verified
+issuer/subject bindings. Credential administration/export/cleanup use bounded HTTP
+clients while canonical lifecycle, outboxes and accepted provider plans are retained.
+The isolated qualification proves separate database grants and replacement of the
+token-verification process without changing the Wapps identity/profile. Existing
+legacy mapping migration/local activation, alpha/Kubernetes configuration, external
+provider qualification and full release journeys remain open. No live data or
+frontend presentation changed. See [the migration guide](LOCAL-AUTHENTICATION.md).
+
+Account lifecycle BFF (October 18, 2026): disable/enable/revoke-tokens now use explicit
+BFF contracts and both gateway configurations. Account retains canonical lifecycle,
+policy and provider authority; tenant-scoped credentials cannot administer global
+identities. A19 records affected regression/policy tests, builds/typechecks/lint and
+real OPA/SQL/ingress qualification, including rollback and session invalidation.
+Existing lifecycle outbox and cleanup semantics are preserved; operational audit
+logs are not durable command receipts. Remaining credential administration stays open.
+Local activation was attempted with a retained backup, but the existing Identity
+database has one legacy subject mapping and the guarded migration refused it.
+No mapping was erased or rebound, no provider was switched, and the dependencies
+started for inspection were returned to their prior stopped state. Verify/migrate
+that mapping before activation. Frontend files and acceptance remain unchanged.
+
+Local authentication/BFF (October 18, 2026): the user deferred Firebase integration.
+Local Compose selects an explicit SQL credential provider behind reusable auth
+ports; canonical Identity/Account lifecycle, authorization, receipts, outbox and
+cleanup remain real. Local session/registration/credential routes now cross BFF.
+2,641 affected tests / 87 suites, affected builds/typechecks/lint, architecture and
+inventory pass. Five disposable real-store groups qualify production bundles
+through local ingress without Firebase, including rotation/replay, lifecycle,
+restart, rollback/retry, credential cleanup and failures. The additive credential
+migration and setup are in [local authentication](LOCAL-AUTHENTICATION.md).
+Unsupported OAuth/anonymous credential/email actions remain unavailable. Existing
+provider subjects/jobs are not silently migrated. Alpha/deployment, frontend
+acceptance and full release recovery remain open; running services were not changed.
+
+Generic Review API (October 18, 2026): Community now exposes `/api/reviews` through
+reusable management/HTTP packages with opaque key and explicit authority/repository
+ports. BFF owns application routes/key construction/response mapping, including
+Discovery and feed rating clients. Both ingress configurations route reviews to
+BFF; dedicated owner Review routes are removed. Existing SQL scopes, fingerprints,
+receipts and synchronous snapshot/journal semantics remain unchanged; no migration
+is introduced. 2,559 distinct affected Jest tests / 82 suites, affected builds,
+five typechecks, lint, inventory and architecture checks pass. The real-store
+qualifier passes 14 groups, including four new Review groups. Details and the
+corrected test-fixture typecheck failure are in `IMPLEMENTATION-PROGRESS.md`.
+No deployment, full real-provider qualification or frontend acceptance is claimed.
+
+Discussion resource consolidation (October 18, 2026): one reusable owner controller
+now serves `/api/discussions`. Empty queries retain unbound behavior; explicit opaque
+keys select scoped behavior. The former `/api/discussion-bindings` family returns
+404, and BFF/Account clients use the consolidated routes. Invalid selectors cannot
+fall back to unbound access. The frontend and materialization protocol are unchanged;
+no additional database migration is introduced.
+
+Affected qualification passes 2,390 tests / 67 suites, uncached service builds and
+44 prerequisites, four spec/source typechecks, affected lint and the architecture
+audit (141 projects / 1,804 sources, zero violations). Ten real-store groups pass
+through both ingress configurations, including historical receipts, the second
+consumer and Account favorite eligibility. A fixture's portal/service origin mix-up
+was caught and corrected; failed evidence is retained. Provider fixtures, Nest
+instance recreation and incomplete legacy journey reruns limit this qualification
+as documented in implementation progress. No deployment has occurred.
+
+The October 16 binding-route names below are historical and superseded. Activation
+requires coordinated Community/BFF/Account versions and any previously pending
+binding/index migrations. The Review API work is recorded above; remaining BFF
+coverage/alpha alignment, real-provider integration, original frontend merge/visual
+acceptance and operational release gates remain open.
+
+Owning-service API clarification (October 16, 2026): the required boundary applies
+to deployed APIs as well as SDK interfaces. Dedicated frontend routes and consumer
+key/request/response mapping belong in BFF; owning services expose their capability
+APIs and retain canonical authorization and durability. See
+`rules/capability-api-boundary.md`.
+
+Bound Discussion API checkpoint (October 16, 2026): the missing generic owning
+HTTP contract is implemented in `@sdk/features/discussion/http`. Application topics,
+article comments, participation and public selection now map through BFF to
+`/api/discussion-bindings`. Their dedicated owner routes are retired; both ingress
+configurations and Account favorite checks use the new boundary. Existing frontend
+contracts, current parent access, historical receipts and materialization remain
+preserved. No frontend files are changed in this slice.
+
+Qualification passes the full BFF regression (1,776 tests / 25 suites), Discussion
+core/management/HTTP/Community/materializer regression and the Account favorite
+client tests. Uncached Community/BFF/Account builds, affected typechecks/lint and
+the 141-project/1,806-source architecture audit pass. Ten runtime groups pass on
+fresh SQL/Mongo/RabbitMQ/MinIO and both real nginx configurations, including a second
+consumer with an unfamiliar key/payload through the same generic handlers and
+materializer. Authority providers remain controlled fixtures; this is not real
+Firebase/OPA/Editorial, browser or process-crash qualification. The implementation
+checkpoint records exact commands, failures and scope.
+
+Before activation, run the additive `DiscussionBindingIndex1792150000000` after
+the existing binding migration and coordinate Community, BFF, Account Management
+and ingress versions. No deployment has occurred. Full legacy browser/export/erasure
+journeys were not rerun; their updated BFF fixture wrapper was exercised separately.
+Other capabilities, including application reviews, still expose dedicated owning
+APIs and require their own migration. Authentication/session, account administration
+and staff health-monitor BFF work also remain open. Original frontend merge/visual
+acceptance and production/recovery/release gates remain outstanding.
+
+Generic Discussion BFF checkpoint (October 16, 2026): all eight generic discussion
+handlers now cross explicit BFF contracts, with local and alpha ingress routing
+for `/api/discussions` updated. Arbitrary content, revisions, receipts and redacted
+structure retain their existing shape. Generic endpoints cannot bypass a bound
+consumer's authority. Community retains writes, authorization and materialization;
+there is no schema, SDK or presentation change.
+
+Affected qualification passes 1,766 BFF tests / 24 suites and 626 Discussion tests /
+45 suites, the uncached BFF build and 24 prerequisites, spec/source typecheck,
+affected lint and the 140-project/1,798-source architecture audit. Seven real-store
+groups pass through both nginx configurations, BFF and owner HTTP handlers with
+fresh SQL/Mongo/broker/object stores. Bootstrap parser interference was reproduced
+and fixed with a dedicated regression. Authentication/policy/parent authority are
+controlled fixtures in this qualifier; Firebase/OPA/Editorial and browser acceptance
+are not newly qualified. No live-stack deployment is performed. Exact commands,
+failures, isolation and evidence are in the implementation checkpoint.
+
+The generic-discussion BFF item below is superseded. Next is authentication/session
+integration, then remaining account administration and staff health-monitor routes.
+Other alpha direct-service routes still require rollout alignment. Original frontend
+merge/visual acceptance and production/recovery/release gates remain outstanding.
+
+Consumer capability boundary checkpoint (October 16, 2026): Review and Identity
+core/use cases now accept consumer-owned keys/provider plans. Wapps contracts,
+profile/favorite/notification composition and fixed completeness rosters live in
+`libs/domains/community` and `libs/usecases/account`; account SQL adapters live in
+`libs/adapters/account-mysql`. Existing HTTP contracts, canonical authorization,
+SQL layouts, fingerprints, leases/outboxes and suppression/erasure receipts are
+preserved. No new data migration or projection format; no presentation changes.
+
+Verification passes 6,256 Jest tests / 406 suites, 33 portable checks, workspace lint
+with existing warnings, 136 build projects, 45 typecheck projects, 64 Angular
+artifact inspections and the 140-project/1,794-source architecture audit. Six
+isolated real-store qualifiers pass for account recovery, export, erasure, replies,
+mentions and watches. An omitted mentions migration in the export test fixture was
+corrected and the affected qualifiers rerun successfully. The unrelated scraper
+build still falls back to the root lockfile when pruning
+`@domains/catalog/media@0.0.1`; that deploy artifact remains unqualified. See the
+implementation checkpoint for commands, environment, retained failures and evidence.
+These checks do not complete production or original-frontend acceptance.
+
+Consumer-owned Discussion binding checkpoint (October 15, 2026): the reusable SDK
+and materializer accept opaque keys without consumer content kinds or consumer
+version conventions. Wapps contracts/policies live in `libs/domains/community`
+and `apps/services/community`. Exact-key/canonical access and historical receipt
+compatibility remain enforced. The additive local migration and projection-schema
+upgrade preserve revisions, immutable references, outbox intent and tombstones.
+Frontend changes are contract imports only; presentation acceptance remains open.
+
+Full Jest/portable tests and workspace lint pass; affected builds/typechecks,
+Angular artifacts and the 139-project architecture audit pass. Real-store
+Discussion migration/recovery and fresh-container erasure pass. Nine discussion
+and nine comment/review BFF groups pass; all 75 local aggregates reconcile as
+current. All fifteen local services run and configured health checks pass. The broader
+materialization command is not green: two Editorial qualifiers omit the current
+classification migration in their fixtures and fail with an unknown-column error.
+Those checks must be repaired and rerun before release. See the implementation
+checkpoint for exact counts, commands and retained failure evidence.
+
+An incorrectly isolated local erasure test retired 95 existing payloads. All 95
+were restored with unchanged canonical SQL hashes/references, and all 112 committed
+objects plus 29 current references verified. No incident retirement markers remain.
+The harness now refuses pre-existing object stores; safe isolated reruns pass.
+This incident and recovery are recorded explicitly in implementation progress.
+Production migration/rollback, backup restoration, load, remaining BFF integration
+and original frontend merge/visual acceptance are still outstanding.
+
+Article-comment/member-review BFF checkpoint (October 15, 2026): sixteen explicit
+handlers cover comments and nested replies, owner editing/deletion, canonical
+review slots and ratings, helpful membership, immutable-version reports and staff
+moderation. Both complete route families require BFF. Frontend files are unchanged;
+Discussion retains canonical authorization, parent visibility and all writes.
+Comments keep durable outbox/generation materialization; reviews retain their
+documented canonical SQL variation. No migration or owning-service change.
+
+Qualification passes 2,480 tests / 82 suites, including 184 new BFF HTTP tests.
+BFF build/prerequisites, lint/spec typecheck, qualifier lint and architecture
+checks pass (137 projects / 1,774 production sources; seven existing warnings).
+Nine live groups pass, including independent sessions, authorization/conflicts/
+replay, nested redaction/pagination, review ratings/helpful/reports/moderation,
+projection lag, dependency outages/restarts, deletion/tombstones and canonical
+parent withdrawal/republishing. The first runtime attempt had an incorrect page
+expectation during projection lag; its disposable data was cleaned and the corrected
+fresh run passed. Nine application-discussion runtime regression groups also pass.
+Browser review list/detail/ratings and article comment empty state/form/reload
+pass without saving content or settings. All fifteen services run with configured
+health checks passing. Source audit confirms 2,078 portal/UI files unchanged.
+Six disposable erasures were accepted without claiming background completion.
+Failed evidence, commands and preservation details remain in the implementation
+checkpoint.
+
+Next bounded integration: generic discussion routes through BFF. Remaining account/
+authentication and health routes, original frontend merge/visual acceptance and
+full workspace/deployment/load/recovery/backup-restoration gates remain outstanding.
+This checkpoint qualifies these local workflows, not full-product readiness.
+
+Application discussion BFF checkpoint (October 15, 2026): ten explicit handlers
+now cover topic lists, full threads, creation/replies, edits/deletion, voting,
+moderator pins, private participation pages and public selection. Complete route
+families require BFF. Frontend source remains unchanged; Discussion retains
+canonical authorization, parent visibility, immutable payloads, SQL revisions/
+receipts, atomic outbox and generation materialization. No new migration or
+owning-service behavior change is introduced.
+
+Qualification passes 2,230 tests / 77 suites, including 145 new BFF HTTP tests.
+Build/prerequisites, lint/spec typecheck, qualifier lint and boundary checks pass
+(137 projects / 1,766 production sources; seven existing BFF lint warnings).
+Nine live discussion groups and seven favorites/inbox regression groups pass:
+authorization/conflicts/replay, nested replies, voting/pins, pagination/selection,
+favorites and notification delivery, projection lag, dependency failure/recovery,
+restart persistence, deletion/tombstones and canonical parent withdrawal. Browser
+reload, topic list, quick-thread dialog and participation workspace also pass.
+
+The initial runtime attempt had an incorrect catalog URL in its fixture checks;
+content was deleted and account cleanup completed through the correct endpoints.
+The fresh run passed; failed evidence is preserved. Six disposable erasures across
+the initial cleanup, successful run and regression were accepted, without claiming
+background completion. All fifteen local services run with health checks passing.
+Commands, evidence, source preservation and limitations are recorded in
+`IMPLEMENTATION-PROGRESS.md`.
+
+Next bounded integration: article comments and application reviews through BFF.
+Generic discussion and remaining account/authentication/health routes still require
+migration. Original frontend merge/visual acceptance and full workspace, deployment,
+load, crash/replay/rebuild and backup-restoration gates remain outstanding. This
+checkpoint qualifies the local workflow, not the whole product.
+
+Article BFF checkpoint (October 15, 2026): 24 explicit handlers now cover private
+authoring, submission/withdrawal, independent staff review, public browse/detail/
+selection/visibility and private/frozen/public cover media. Complete route families
+require BFF. Existing frontend adapters remain unchanged. Editorial keeps canonical
+authorization, immutable submissions, classification review, SQL revisions/receipts,
+atomic outbox/materialization and media normalization/reference/cleanup authority.
+No frontend source/assets, owning-service behavior, migration or projection protocol
+changes are part of this slice.
+
+Qualification passes 1,608 tests / 40 suites, including 261 new production-AppModule
+BFF HTTP tests. Build/prerequisites, lint/spec typecheck, readiness lint and
+architecture audit pass (137 projects / 1,760 production sources, zero violations;
+existing warnings remain). Eight live article groups and ten application media
+regression groups pass: authoring/isolation, revisions/keys, frozen review versus
+later edits, independent approval/self-review denial, covers, public filters,
+projection lag, dependency failure/recovery, withdrawal/tombstones and restart/
+historical replay. Browser saved draft, cover, public article/reload and member
+denial at staff review pass with no saved browser changes.
+
+Earlier runtime attempts exposed two fixture expectations (empty cancelled-cover
+status and case-sensitive category matching) and an older regression's assumption
+that articles bypass BFF. Fixtures were cleaned, the expectations corrected and
+fresh runs passed; failed evidence is retained. Nine earlier qualifiers now expect
+article unavailability during a BFF outage. Ten disposable erasures across the runs
+were accepted, without claiming background completion. Commands, evidence and
+preservation/health checks are recorded in `IMPLEMENTATION-PROGRESS.md`.
+
+This supersedes pending article authoring/publication/review/cover BFF work below.
+Discussions/reviews (including article comments) and remaining account/authentication/
+health routes still need migration. Original frontend merge/visual acceptance and
+full deployment, load, workspace and recovery release gates remain outstanding.
+This checkpoint establishes the bounded local workflow, not full-product readiness.
+
+Release BFF checkpoint (October 15, 2026): sixteen explicit handlers now cover
+private authoring, canonical source/open/rebase, publication, independent staff
+review and public release pages/version reads. All three complete release route
+families require BFF. The existing frontend adapter remains unchanged. Editorial
+retains canonical authorization, immutable submissions, version uniqueness,
+revisions, receipts, atomic outbox and materialization. No frontend source/assets,
+owning-service behavior, migration or projection protocol changes.
+
+Qualification passes 1,315 tests / 31 suites, including 167 new BFF HTTP tests.
+BFF build/prerequisites, lint/spec typecheck, readiness lint and architecture audit
+pass (137 projects / 1,753 production sources, zero violations; existing warnings
+remain). Eight live release groups and ten related ownership regression groups
+pass. Coverage includes revision/key conflicts, frozen review versus private
+edits, independent approval, public filters/immutable versions, ownership
+revocation during Mongo failure, new grant binding, rebase, projection lag,
+withdrawal with an old live projection, tombstone convergence and restart/replay.
+Browser workspace/public reads and reload pass; member access to staff review is
+denied. No browser content or session changes.
+
+The first live run passed behavior checks but encountered a fixture cleanup slug
+conflict. Targeted cleanup recovery completed, the qualifier was corrected, and
+the fresh full run passes. Failed reports remain preserved. Disposable content,
+grants and DNS fixtures are cleaned; seven account erasures across both attempts,
+recovery and regression were accepted, without claiming background completion.
+All fifteen services run. Source/runtime preservation evidence, commands, warnings
+and limits are recorded in `IMPLEMENTATION-PROGRESS.md`.
+
+This supersedes pending release BFF work in earlier checkpoints. Next bounded
+integration is article authoring/publication/review and covers. Discussions/reviews
+and remaining account/authentication routes still require BFF migration. Original
+frontend merge/acceptance, deployed ingress, load and full release/recovery gates
+remain outstanding; this does not establish full-product readiness.
+
+Application ownership BFF checkpoint (October 14, 2026): claimant list/detail/
+creation, DNS verification, cancellation/release and staff pending/grant queues,
+detail and approval/rejection/revocation now use nine explicit BFF handlers. Both
+complete ownership route families require BFF. Editorial retains canonical website
+binding, identity/tenant access, fenced DNS checks, proof freshness/throttling,
+independent staff decisions, current-grant authorization, revisions, receipts and
+atomic outbox. No frontend source/assets, owning-service behavior, migration or
+projection protocol changes.
+
+Qualification passes 1,097 tests / 29 suites, including 129 new production-route
+BFF HTTP tests. BFF build/prerequisites, lint/spec typechecking, readiness lint and
+architecture checks pass (137 projects / 1,748 sources, zero violations; seven
+existing BFF lint warnings). Ten live ownership groups pass: proof alone grants
+no editing rights, self-review fails, competing grants conflict, owner content
+still requires review, and revocation/release block canonical access before old
+projections catch up. DNS/Mongo/BFF/Editorial outage recovery and historical
+receipt replay preserve those permissions. Browser claimant list/detail/reload and
+member denial at staff review pass without saved changes.
+
+The related draft/image runtime regression passes ten groups with ownership also
+through BFF. Disposable content/grants/DNS records are cleaned; six disposable
+identities across both ownership attempts and the regression have erasure accepted
+and subsequent access denied. Background erasure completion is not claimed. All
+fifteen services run and original DNS records/mode remain intact.
+
+The first live attempt stopped on nginx 504 during BFF shutdown; the qualifier
+had expected only 502/503. Cleanup completed, the gateway expectation was corrected,
+and the fresh second attempt passed. Full evidence and limitations are recorded in
+`IMPLEMENTATION-PROGRESS.md`. This supersedes pending ownership BFF work in earlier
+checkpoints; it does not establish full-product readiness.
+
+Next bounded integration: release authoring/publication and independent staff
+release review through BFF. Article authoring/covers, discussions/reviews and
+remaining account/authentication routes remain, followed by the original frontend
+merge/acceptance and full deployment, load and recovery qualification.
+
+Application publication BFF checkpoint (October 14, 2026): owner publication
+status/submission/withdrawal and staff queue/detail/decision now traverse explicit
+BFF handlers. The entire application-draft and application-review route families,
+including case/slash variants and unknown suffixes, require BFF. Editorial retains
+canonical ownership/tenant checks, independent staff review, immutable submitted
+fields/classification/images, revisions, receipts, atomic outbox and materialization.
+No frontend source/assets, owning-service behavior, migration or projection changes.
+
+Qualification passes 1,048 tests / 30 suites, including 97 new publication HTTP
+tests; BFF build with prerequisites, lint/spec typechecking, readiness lint and
+architecture checks pass (137 projects / 1,746 sources, zero violations). Twelve
+live publication groups and ten draft/image regression groups pass. Evidence covers
+self-review denial, frozen submissions, rejection/resubmission, public slug conflict,
+canonical versus projected state, BFF/Editorial/Mongo outages, restart/replay and
+withdrawal while a stale live projection remains stored. Queued changes converge
+to a tombstone; historical receipts cannot restore publication. Browser owner status,
+frozen-image previews, reload and public application reads pass without saved changes.
+Full command/review behavior is qualified through real HTTP.
+
+Both live qualifiers pass on their first attempt. Their disposable content/grants/
+DNS fixtures are cleaned and erasure is accepted for four disposable identities
+with access denied afterward. Completion of background erasure is not claimed.
+All fifteen local services run. Exact evidence and rollback artifacts are recorded
+in `IMPLEMENTATION-PROGRESS.md`. This supersedes the pending application-publication
+BFF entries in earlier checkpoints; it does not establish full-product readiness.
+
+Next bounded integration: ownership claim/proof/status/release and staff ownership
+review through BFF, preserving domain proof plus independent approval and review of
+future content changes. Release/article authoring, article covers, discussion/reviews
+and remaining authentication/account administration still need BFF migration.
+Original frontend merge/acceptance, alpha/Kubernetes activation and full release,
+load, deployment and recovery qualification remain open.
+
+Application drafts/images BFF checkpoint (October 14, 2026): local private draft
+CRUD, canonical import/rebase, upload reservation/content/cancellation, slot
+attachment/removal and all six preview variants now cross explicit BFF handlers.
+These include owner, staff, frozen-submission and canonical public-image reads.
+Editorial retains canonical authorization, domain decisions, SQL revisions and
+receipts, normalization, immutable objects, fenced leases, outbox and materialization.
+No frontend source/assets, owning-service behavior, migration or projection changed.
+
+Qualification passes 1,005 tests / 33 suites, including 124 new BFF HTTP cases;
+BFF build with prerequisites, lint/spec typecheck, readiness lint and the architecture
+audit pass (137 projects / 1,744 sources, zero violations). Ten live application
+groups and ten related suite-publication regression groups pass. They cover actual
+image bytes, owner isolation, canonical grant/rebase, frozen/public references,
+conflicts, historical replay after cancellation, MinIO/BFF/Editorial outages,
+restart persistence and mandatory BFF routing. Browser draft list/editor, logo,
+banner, retained-upload preview and reload pass without saved changes.
+
+Two earlier live attempts failed on a cancelled-preview status expectation and an
+unreachable local DNS sidecar after prior Editorial restarts. The expectation was
+corrected to preserve Editorial's 400 contract; the local qualifier now rejoins
+the DNS sidecar after Editorial restarts. All disposable drafts/publications/grants
+and DNS records are cleaned; erasure is accepted with access denied for eight test
+identities across all attempts and the regression. Full background erasure is not
+claimed. All fifteen services are running and DNS reachability is verified.
+Evidence, rollback artifacts and source/runtime hashes are in
+`IMPLEMENTATION-PROGRESS.md`.
+
+Next bounded BFF slice: application publication status/submission/withdrawal and
+staff review/decision. Those commands still route directly to Editorial; this
+checkpoint only migrated their image previews. Ownership, article/release authoring,
+article covers, discussion/review and remaining authentication/account administration
+routes also remain. Original frontend merge/acceptance, alpha/Kubernetes activation
+and full release/load/deployment/recovery gates are still open. This is a local
+transport-workflow checkpoint, not full-product readiness.
+
+Suite publication BFF checkpoint (October 14, 2026): local owner publication status,
+submission/withdrawal, staff review queue/detail/decision, and public suite browse/
+detail/selection now pass through explicit BFF handlers. The complete suite route
+families, including case/slash variants and unknown suffixes, stay behind BFF.
+Editorial retains authorization, frozen submissions, SQL transactions/receipts,
+public revisions, outbox and materialization. No frontend source/assets,
+owning-service behavior, migration or projection protocol changed.
+
+Qualification passes 622 tests / 21 suites, BFF build/lint/spec typechecking,
+readiness-tool lint and an architecture audit of 137 projects / 1,737 sources with
+zero violations. Ten live publication groups and ten private-suite regression
+groups pass. They include staff self-review denial, immutable submissions versus
+draft edits, rejection/resubmission, independent approval, conflicts/replay,
+projection lag, BFF/Editorial outages/restarts and withdrawal while an old live
+projection remains stored. The queued changes converge to a tombstone; old receipts
+cannot restore publication. Browser public list/detail and owner status/reload pass
+without saved changes; the full mutation lifecycle is qualified through real HTTP.
+Four disposable identities have erasure accepted with access denied; test suites
+are removed and all fifteen local services run. Evidence and source/runtime hashes
+are recorded in `IMPLEMENTATION-PROGRESS.md`.
+
+This completes the local suite-publication BFF slice, superseding its pending
+entries below. Other authoring/publication/media, discussion/review and
+authentication/account-administration BFF routes remain. Original frontend merge/
+acceptance, alpha/Kubernetes activation and full release/load/deployment/recovery
+gates remain open. Broker duplicate/reorder, SQL crash-window and backup-restore
+proofs are not rerun in this transport slice. The original frontend remains the
+presentation source of truth; this is not a full-product readiness claim.
+
+Private suites BFF checkpoint (October 14, 2026): the local gateway now routes
+private suite list/detail/create/update/delete through BFF. Existing application
+search/selection already uses BFF and now has explicit bounded gateway timeouts.
+Editorial retains canonical ownership/tenant checks, SQL drafts, eligibility,
+revisions, receipts, tombstones and deletion's publication revocation/outbox.
+Account is not the owner of private suites. No frontend source/assets, migration,
+projection or owning-service behavior changed.
+
+Qualification passes 518 tests / 20 suites, affected build/lint/spec typechecking
+and zero architecture violations across 137 projects / 1,735 production sources.
+Ten real suite groups and nine export regression groups pass, including independent
+sessions, ownership, membership order, conflicts/replay, BFF/Editorial restarts,
+projection outage with canonical editing intact and deletion without resurrection.
+Browser suite list/detail/editor/search/reload passes without saved changes; full
+CRUD is tested through HTTP. The first live attempt found a catalog gateway timeout
+gap, which was corrected and requalified. Test suites/archives are removed and
+erasure accepted for six disposable identities across both suite attempts and the
+export regression. All fifteen local services are running. Evidence, failed
+attempts and source/runtime hashes are recorded in `IMPLEMENTATION-PROGRESS.md`.
+
+Next BFF scope is suite publication/submission/withdrawal and public suite catalog
+reads. Other authoring/media, discussion/review and authentication/account
+administration routes remain. The original frontend merge/acceptance, alpha/
+Kubernetes activation and full release/load/deployment/recovery gates remain open.
+Older checkpoints retain their historical scope; this supersedes their pending
+private-suite migration entries.
+
+Account exports BFF checkpoint (October 14, 2026): the local gateway now routes
+request, latest/status, cancellation/revocation and archive download through BFF.
+Account retains authorization, canonical jobs/leases, four-source capture,
+immutable archive chunks, expiry and cleanup. BFF preserves request keys/current
+lifecycle replay, bounds downloads, verifies exact size/hash and aborts incomplete
+streams. No frontend source/assets, owning-service behavior, migration or projection
+changed. The original frontend merge and visual acceptance remain outstanding.
+
+Qualification passes 541 tests / 31 suites, affected build/lint/typechecks and the
+architecture audit with zero violations across 137 projects / 1,732 production
+sources. Nine live export groups and seven related private-profile regression
+groups pass, covering real archives, owner isolation, mandatory BFF routing,
+revocation, outages/restarts/replay and retry after a capture-source outage without
+partial success. Browser status refresh/reload passes; the full export lifecycle
+was qualified through HTTP, not repeated in the browser in this slice. Test archives
+are revoked and erasure accepted for the three disposable identities; existing
+accounts/content are preserved. All fifteen local services are running. Exact
+commands, evidence, failed attempts and source/runtime hashes are in
+`IMPLEMENTATION-PROGRESS.md`.
+
+Remaining BFF work includes authentication/account administration, private suite
+workspaces, discussion/reviews and publication/authoring/media routes. Large-archive
+browser memory/load, alpha/Kubernetes activation and full release, deployment and
+recovery qualification remain open. Older checkpoints below describe their
+historical state; this checkpoint supersedes their pending export migration.
+
+Public profiles/follows/badges BFF checkpoint (October 14, 2026): the local gateway
+now routes directory/profile/photo/shared-content reads, public/private totals and
+badges, follow lists/commands and staff badge history/award/revoke through BFF.
+Account retains canonical authorization, privacy, storage, revisions/receipts,
+outbox and materialization. No frontend source/assets, owning-service behavior,
+migration or projection changed. Anonymous access requires trusted ingress;
+signed-in operations preserve their identity requirements.
+
+Eight real profile check groups and thirteen related private-profile/preferences
+regression groups pass, including privacy/approval/revocation, photos, mandatory
+BFF routes, outages, restarts and replay. Browser own/public profile reads and
+hidden/follower/directory states pass. Builds, lint/typechecks and the architecture
+audit pass with zero violations across 137 projects / 1,728 production sources.
+See `IMPLEMENTATION-PROGRESS.md` for exact automated results, evidence and limits.
+
+Remaining BFF work: account exports, other authentication/account administration,
+discussion/review and publication/authoring/media routes. Remaining profile
+frontend work: original presentation merge/acceptance, combined text/photo saving,
+pending-photo handling after token refresh and an authoritative source for the
+original optional last-active value. Alpha/Kubernetes activation and full release,
+deployment and recovery qualification remain open. Older checkpoint inventories
+below describe their historical state; this checkpoint supersedes their pending
+public-profile/follow/badge migration entries.
+
+Favorites/notifications BFF checkpoint (October 14, 2026): the local gateway now
+routes canonical favorite reads/commands, composed favorite metadata and all three
+inbox/read families through BFF. Browser cross-service metadata joins move into
+bounded BFF composition; Account retains authorization, SQL, revisions/receipts,
+outbox and notification state. No migration, projection or presentation source
+change occurs. The local/alpha OPA mergers now include the existing profile-audience
+module; its omission had caused mention recipient resolution to fail closed.
+
+Qualification passes 690 tests / 69 suites, affected builds/lint/typechecks, 57
+Angular package inspections and zero architecture findings across 137 projects /
+1,723 sources. Both merged policy packages pass 285 real OPA cases each. Seven live
+favorites/notification groups, seven profile regressions and six preferences
+regressions pass, including service outages, restarts, real delivery/pagination,
+recipient isolation and read receipts. Browser save/remove/reload and all inbox
+category reads pass; original member favorites/preferences and existing unread
+notification state are restored/preserved. See `IMPLEMENTATION-PROGRESS.md` for
+evidence and failed attempts. No full-workspace or production qualification is
+claimed by this focused checkpoint.
+
+Remaining BFF work includes public profiles/photos, follows/totals/badges, other
+account/authentication flows, discussion/review and publication/authoring routes.
+The next bounded workflow is public profiles and related social reads/commands.
+Alpha/Kubernetes activation, the original frontend merge and acceptance, and
+release/deployment/recovery gates remain open. The profile token-refresh/pending
+photo issue and separate text/photo save orchestration remain unresolved.
+
+Account/profile BFF checkpoint (October 14, 2026): local account summary/erasure,
+private-profile reads/writes and private-photo upload/read/removal now traverse
+frontend -> gateway -> BFF -> Account and return through BFF. Account keeps
+authorization, normalization, authoritative transactions, receipts and outbox
+ownership. Erasure still returns 202 acceptance, not completed cleanup. No frontend
+source/assets, migration or projection changed. Qualification passes 168 BFF tests
+/ nine suites (70 new checks), build/prerequisites, lint/typechecking, zero
+architecture violations across 137 projects / 1,718 sources, seven real profile
+check groups and six preferences regression groups. Browser save/reload/photo
+checks pass and the original test-member profile is restored. Evidence and failed
+attempts are recorded in `IMPLEMENTATION-PROGRESS.md`.
+
+One observed frontend issue remains: token refresh clears a pending photo
+selection after a 401; explicit reselection succeeds. The original frontend's
+single Save Changes interaction also needs deliberate orchestration of separate
+text/photo commands during its merge. Public profiles/photos, follows/totals/
+badges, favorites/notifications and other direct service routes remain BFF work.
+Alpha/Kubernetes activation, original-frontend acceptance and operational release/
+deployment/recovery gates stay open.
+
+Preferences BFF checkpoint (October 14, 2026): local `GET/PUT /api/me/preferences`
+now uses frontend -> gateway -> BFF -> Account and returns through BFF. Identity
+provenance, strict contracts, self identity, revisions/idempotency, denial/conflict
+and uncertainty semantics are preserved; Account retains authorization and atomic
+SQL/outbox ownership. No frontend source/assets, migration or projection changed.
+Qualification passes 98 BFF tests / eight suites, uncached build/prerequisites,
+lint/typechecking, zero architecture violations, six real local integration check
+groups, and browser save/reload/restoration. Evidence and failed attempts are in
+`IMPLEMENTATION-PROGRESS.md`. Other portal routes still bypass BFF, alpha/Kubernetes
+activation is pending and the original frontend merge remains outstanding. This
+checkpoint does not close operational/deployment/recovery gates.
+
+BFF requirement (October 14, 2026): the original frontend must access application
+APIs through the BFF. Existing gateway routes directly to Editorial, Discussion,
+Account and Authenticator remain integration gaps, even when they share the portal
+origin. Implement and qualify BFF contracts for those workflows while preserving
+owning-service authorization and materialization. See `rules/portal-bff-boundary.md`
+and the corresponding implementation checkpoints. Preferences, current-account,
+private-profile, private-photo, favorites, notifications, public profiles/photos,
+shared profile content, follows, totals, badges, account exports and private suite
+CRUD are migrated locally; the remaining
+direct routes still require integration.
+
+User direction (October 14, 2026): the frontend restoration is not accepted.
+The original frontend at `c965790e063139bcd5e6bacc759f289703e4ea9a` is the
+presentation source of truth; current work focuses on backend and integration.
+Merge the original presentation after supporting its contracts, preserving real
+providers and authorization/materialization behavior. Passing tests or screenshots
+from the later implementation do not establish frontend acceptance. This supersedes
+completion claims in the historical UI checkpoints below. The first original-UI
+contract gaps and a stale Discover qualification dependency are recorded in
+`IMPLEMENTATION-PROGRESS.md`; follow `rules/frontend-source-of-truth.md`.
+
+Home/search tile correction (October 14, 2026): Home restores original card
+surfaces, spacing and scroll scaling. Discover restores original per-kind tile
+composition using real application reviews/images, article bylines/covers and
+suite members; Home quick search also uses real media. Canonical display tags fix
+duplicate labels and incorrect tag destinations (REVIEW-1). Bounded read joins,
+strict contracts, canonical publication rechecks and nested classification masking
+preserve the owning services' visibility rules. No migration or projection is
+added. Verification passes 593 tests / 83 suites, affected builds/lint/typechecks,
+57 Angular package inspections and zero architecture violations, plus live API
+and browser checks at 390/768/1440 in both themes. Details and retained failed
+attempts are in `IMPLEMENTATION-PROGRESS.md`. Original Home hero clipping at 390px
+(REVIEW-2) remains open. Changes are uncommitted; the broader goal stays paused
+and production/deployment/recovery gates remain open.
+
+Rich feed and collection header update (October 14, 2026): both remaining UI
+restoration gaps are implemented. Private collection create/detail/edit pages
+restore the original detail header composition. Explore/timeline cards restore
+the six original content-specific layouts with real descriptions, images,
+reviewed article bylines/excerpts/covers, collection members, release changes,
+review quotes/ratings and discussion excerpts. Editorial and Discussion supply
+bounded public metadata; the BFF composes real application review summaries and
+reconfirms publication identity/revision/classification. Canonical visibility,
+erasure, classification masking and retry behavior remain active. A faded
+decorative canvas no longer retains its desktop width after a mobile resize.
+No migration, new projection or materialization protocol is introduced. See the
+October 14 checkpoint in `IMPLEMENTATION-PROGRESS.md` and the rich read contract
+in `MATERIALIZATION.md`. Verification passes 1,813 affected tests / 175 suites,
+affected lint/typechecks/builds, 57 Angular package inspections, zero architecture
+violations, and two real-service browser runs with 186 measured responsive/theme
+layouts. Later frontend fixes were rechecked. The broader goal stays paused and
+deployment/recovery gates remain open.
+
+UI restoration checkpoint (October 13, 2026): recovery commit `95e3bfd3` preserves
+the full-operation implementation before restoring the presentation from
+`c965790e063139bcd5e6bacc759f289703e4ea9a`. The restoration on
+`codex/full-operation` remains uncommitted for review. It reconnects the original
+search/filter controls, catalog cards, reading layouts, collection selection,
+draft controls, ratings, discussion components, release cards and health banner
+to the real feature providers. Classification masking, durable IDs, account
+isolation, mutation retries and publication controls remain active. No backend
+write model, migration or materialization protocol is changed.
+
+Historical limits of the October 13 checkpoint (the header and rich-card gaps
+are resolved by the October 14 update): private collection editing retained its
+newer page header, and live Explore/timeline cards used original primitives with
+a reduced contract that lacked covers, bylines, excerpts and ratings. Those rich
+card designs remained unfinished; demo payloads were not substituted. New
+operational controls were retained. Verification for that checkpoint is recorded
+in the October 13 UI restoration section of `IMPLEMENTATION-PROGRESS.md`; earlier
+test totals do not certify later changes. The broader operational goal and all
+deployment/recovery gates remain paused/open.
+
 Favorite content preferences update (October 13, 2026): the favorites page,
 type-filtered routes and sidebar now enforce current-account approved General/Mature
 classification, including parent inheritance for discussions. Hidden/unavailable
@@ -640,7 +1364,7 @@ Priority: P0, before exposing mutation endpoints to real users.
   writes and projection requests. No active Editorial caller was found, so this
   is a domain-service defect to fix before integration, not an additional claim
   about current HTTP exposure.
-- `sdk/features/discussion/applications/management/service/src/app/discussions/discussions.controller.ts`
+- `apps/services/community/src/app/discussions/discussions.controller.ts`
   exposes update/delete without an actor context. Its service performs storage
   mutations without ownership/policy checks. The middleware permits requests with
   no identity headers; it validates header provenance, not permission to mutate.

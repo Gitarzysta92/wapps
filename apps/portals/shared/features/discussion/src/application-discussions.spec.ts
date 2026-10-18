@@ -2,10 +2,7 @@ import { createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type {
-  PublicApplicationDiscussion,
-  PublicApplicationDiscussionPage,
-} from '@domains/discussion';
+import type { PublicApplicationDiscussion, PublicApplicationDiscussionPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { ApplicationDiscussionsService } from './application/application-discussions.service';
 import {

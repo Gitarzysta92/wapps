@@ -2,21 +2,39 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  signal,
+  viewChild,
   effect,
   inject,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
-import type { DiscoveryKind, PublicDiscoveryItem } from '@domains/discovery';
+import { TuiAppearance, TuiButton, TuiLink, TuiDropdown } from '@taiga-ui/core';
+import type { DiscoveryKind, PublicDiscoveryItem, DiscoveryDetails, DiscoveryReviews } from '@domains/discovery';
 import { DiscoveryResultsService } from '@portals/shared/features/search';
-import { PreferredDatePipe } from '@portals/shared/features/preferences';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
+import { SearchBarComponent } from '@ui/search-bar';
+import { FiltersMultiselectComponent } from '@ui/filters';
+import { TagsComponent } from '@ui/tags';
+import { MediumTitleComponent, ExcerptComponent } from '@ui/content';
+import { AppAvatarComponent, AppRatingComponent, AppReviewsChipComponent } from '@portals/shared/features/application-overview';
+import { ArticleAuthorInfoComponent } from '@ui/article-author-info';
+import { ArticleCoverImageComponent, provideArticleCovers } from '@portals/shared/features/articles';
+import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';
+import { TopReviewCardComponent } from '@portals/shared/features/review';
+import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
+import { PreferredDatePipe } from '@portals/shared/features/preferences';
+import { CatalogBrowserService } from '@portals/shared/features/listing';
+import { FilterDefinition, FiltersBarComponent, FilterSelectionDialogResult } from '../../partials/filters-bar/src';
 import {
   ContentStateComponent,
   PageHeaderComponent,
   PageTitleComponent,
+  CommonSectionComponent,
+  MediumCardComponent,
+  CardHeaderComponent,
+  MediumCardSkeletonComponent,
 } from '@ui/layout';
 import { NAVIGATION } from '../../navigation';
 
@@ -24,53 +42,82 @@ import { NAVIGATION } from '../../navigation';
   selector: 'discover-api-page',
   imports: [
     AsyncPipe,
-    ReactiveFormsModule,
     RouterLink,
     TuiAppearance,
     TuiButton,
     TuiLink,
-    PreferredDatePipe,
     BreadcrumbsComponent,
     ContentStateComponent,
     PageHeaderComponent,
     PageTitleComponent,
+    SearchBarComponent,
+    FiltersBarComponent,
+    FiltersMultiselectComponent,
+    TuiDropdown,
+    CommonSectionComponent,
+    MediumCardComponent,
+    CardHeaderComponent,
+    MediumTitleComponent,
+    MediumCardSkeletonComponent,
+    ExcerptComponent,
+    AppAvatarComponent,
+    TagsComponent,
+    AppRatingComponent, AppReviewsChipComponent, ArticleAuthorInfoComponent,
+    ArticleCoverImageComponent, SuiteAppAvatarsComponent, TopReviewCardComponent, FavoriteToggleButtonComponent,
+    PreferredDatePipe,
   ],
-  providers: [DiscoveryResultsService],
+  providers: [DiscoveryResultsService, provideArticleCovers()],
   templateUrl: './discover-api-page.component.html',
   styleUrl: './discover-api-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DiscoverApiPageComponent {
+  readonly Math = Math;
   readonly results = inject(DiscoveryResultsService);
+  readonly searchBar = viewChild(SearchBarComponent);
+  displayOptionsOpen = false;
+  readonly filtersRequested = signal(false);
+  private readonly catalog = inject(CatalogBrowserService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  readonly params = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  readonly initialSearch = computed(() => this.params().get('search') ?? this.params().get('q') ?? '');
+  readonly taxonomy = rxResource({
+    request: () => this.filtersRequested() ? this.catalog.contentChoice() : undefined,
+    loader: () => this.catalog.browse({ kind: 'applications', search: '', category: '', tags: [], sort: 'name', page: 1, pageSize: 1 }),
+  });
+  readonly filterDefinitions = computed<FilterDefinition[]>(() => {
+    const facets = this.taxonomy.hasValue() ? this.taxonomy.value().facets : undefined;
+    const type = this.params().get('type')?.replace(/s$/, '') ?? 'all';
+    const articles = this.results.groups()?.find(group => group.kind === 'article')?.items ?? [];
+    const articleOptions = (key: 'categories' | 'tags') => [...new Set(articles.flatMap(item => item[key]))].map(slug => ({ slug, name: slug }));
+    return [
+      { key: 'type', name: 'Content type', singleSelection: true, options: Object.entries(this.labels).map(([slug, name]) => ({ slug, name })) },
+      ...(type === 'suite' ? [] : [
+        { key: 'category', name: 'Category', singleSelection: type === 'article', options: type === 'article' ? articleOptions('categories') : facets?.categories ?? [] },
+        { key: 'tag', name: 'Tag', singleSelection: type === 'article', options: type === 'article' ? articleOptions('tags') : facets?.tags ?? [] },
+      ]),
+      ...(type === 'article' || type === 'suite' ? [] : [
+        { key: 'platform', name: 'Platform', options: facets?.platforms ?? [] },
+        { key: 'device', name: 'Device', options: facets?.devices ?? [] },
+        { key: 'monetization', name: 'Monetization', options: facets?.monetizations ?? [] },
+      ]),
+      { key: 'search', name: 'Search', options: [] },
+    ];
+  });
+  readonly filterSelections = computed(() => Object.fromEntries(this.filterDefinitions().map(({ key }) => [key,
+    key === 'search' ? (this.initialSearch() ? [this.initialSearch()] : [])
+      : (key === 'tag' ? [...this.params().getAll('tag'), ...this.params().getAll('tags')] : this.params().getAll(key)).flatMap(value => value.split(',')).filter(Boolean).map(value => key === 'type' ? value.replace(/s$/, '') : value),
+  ])));
   readonly breadcrumbs = [NAVIGATION.home, NAVIGATION.discover];
   readonly labels = {
     application: 'Applications',
     article: 'Articles',
     suite: 'Suites',
   };
-  readonly form = new FormGroup({
-    search: new FormControl('', { nonNullable: true }),
-    type: new FormControl('all', { nonNullable: true }),
-    category: new FormControl('', { nonNullable: true }),
-    tag: new FormControl('', { nonNullable: true }),
-    platform: new FormControl('', { nonNullable: true }),
-    device: new FormControl('', { nonNullable: true }),
-    monetization: new FormControl('', { nonNullable: true }),
-  });
-  readonly selectedType = new FormControl('all', { nonNullable: true });
   constructor() {
+    effect(() => this.searchBar()?.form.controls.search.setValue(this.initialSearch(), { emitEvent: false }));
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
-      this.form.setValue({
-        search: params.get('search') ?? params.get('q') ?? '',
-        type: params.get('type')?.replace(/s$/, '') ?? 'all',
-        category: params.getAll('category').join(','),
-        tag: [...params.getAll('tag'), ...params.getAll('tags')].join(','),
-        platform: params.getAll('platform').join(','),
-        device: params.getAll('device').join(','),
-        monetization: params.getAll('monetization').join(','),
-      });
       this.results.search(
         Object.fromEntries(
           params.keys.map((key) => [
@@ -82,23 +129,29 @@ export class DiscoverApiPageComponent {
         )
       );
     });
-    effect(() => {
-      const query = this.results.query();
-      const type =
-        query && query.kinds.length < 3 ? query.kinds.join(',') : 'all';
-      this.selectedType.setValue(type);
-      if (query) this.form.controls.type.setValue(type);
+  }
+  submitSearch(event?: Event) {
+    event?.preventDefault();
+    this.searchRecent(this.searchBar()?.form.controls.search.value?.trim() ?? '');
+  }
+  onFilterSelectionChange({ filterId, selected }: FilterSelectionDialogResult) {
+    const value = selected.map(option => option.value).join(',') || null;
+    if (filterId === 'type') { this.changeType(value ?? 'all'); return; }
+    this.change({ [filterId]: value, ...(filterId === 'tag' ? { tags: null } : {}),
+      ...(filterId === 'search' ? { q: null } : {}),
+      ...(filterId !== 'search' && !this.params().get('type') ? { type: 'application' } : {}),
     });
   }
-  submit() {
-    const values = this.form.getRawValue();
-    this.change({
-      ...values,
-      type: values.type === 'all' ? null : values.type,
-      search: values.search || null,
-      q: null,
-      tags: null,
-    });
+  tags(item: PublicDiscoveryItem, kind: DiscoveryKind) {
+    return (item.displayTags ?? []).map(({ slug, name }) => ({ slug, name,
+      link: kind === 'article' ? '/articles' : `/tags/${encodeURIComponent(slug)}`,
+      ...(kind === 'article' ? { queryParams: { tags: slug } } : {}) }));
+  }
+  suiteApps(details: Extract<DiscoveryDetails, { kind: 'suite' }>) {
+    return details.applications.map(app => ({ slug: app.slug, name: app.name, avatarUrl: app.logoUrl ?? '' }));
+  }
+  reviewPreview(review: NonNullable<DiscoveryReviews['preview']>, date: string) {
+    return { authorName: review.byline, authorAvatarUrl: '', rating: review.rating, content: review.text, date };
   }
   searchRecent(search: string) {
     this.change({ search, q: null });

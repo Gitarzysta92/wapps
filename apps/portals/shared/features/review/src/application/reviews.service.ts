@@ -11,13 +11,12 @@ import {
 import { err, type Result } from '@sdk/kernel/standard';
 import {
   reviewChange,
-  type MemberReview,
   type ReviewChange,
   type ReviewContent,
-  type ReviewPage,
   type ReviewReportPage,
   type ReviewSummary,
 } from '@sdk/features/review/core';
+import { type MemberReview, type ReviewPage } from '@domains/community';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { REVIEWS, ReviewRequestError } from './reviews.port';
 import { ReviewRecoveryService } from './review-recovery.service';

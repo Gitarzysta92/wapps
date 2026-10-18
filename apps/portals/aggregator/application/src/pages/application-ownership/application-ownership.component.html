@@ -76,7 +76,7 @@
   } @else if (ownershipMode() === 'create') { @if (ownership.application(); as
   application) {
   <form
-    class="application-draft-card"
+    class="draft-panel"
     tuiAppearance="card-panel"
     (ngSubmit)="create()"
   >
@@ -88,9 +88,8 @@
       </p>
     </div>
     <fieldset [disabled]="ownership.saving() || ownership.uncertain()">
-      <label for="ownership-evidence">Public evidence URL</label>
-      <input
-        class="application-draft-input"
+      <div class="draft-field"><tui-textfield><label tuiLabel for="ownership-evidence">Public evidence URL</label><input tuiTextfield
+
         id="ownership-evidence"
         name="evidence"
         type="url"
@@ -98,7 +97,7 @@
         required
         [ngModel]="evidenceUrl()"
         (ngModelChange)="evidenceUrl.set($event)"
-      />
+      /></tui-textfield></div>
       <p>
         A company or project page explaining your relationship to the
         application.
@@ -145,9 +144,9 @@
     description="Open a public application and choose Claim ownership to start."
   />
   }
-  <div class="application-draft-grid">
+  <div class="draft-list">
     @for (claim of ownership.items(); track claim.id) {
-    <article class="application-draft-card" tuiAppearance="card-panel">
+    <article class="draft-panel" tuiAppearance="card-panel">
       <div class="application-draft-heading">
         <h2>{{ claim.applicationName }}</h2>
         <p>Claim {{ claim.status }} / Revision {{ claim.revision }}</p>
@@ -192,7 +191,7 @@
     </button>
   </div>
   } } @else { @if (ownership.claim(); as claim) {
-  <article class="application-draft-card" tuiAppearance="card-panel">
+  <article class="draft-panel" tuiAppearance="card-panel">
     <div class="application-draft-heading">
       <h2>{{ claim.applicationName }}</h2>
       <p>Claim {{ claim.status }} / Revision {{ claim.revision }}</p>
@@ -221,7 +220,7 @@
   </article>
   @if (claim.status === 'awaiting-proof' || claim.status === 'awaiting-review')
   {
-  <section class="application-draft-card" tuiAppearance="card-panel">
+  <section class="draft-panel" tuiAppearance="card-panel">
     <div class="application-draft-heading">
       <h2>Verify website control</h2>
       <p>
@@ -269,7 +268,7 @@
   </section>
   } @if (ownershipMode() === 'review' && (claim.status === 'awaiting-review' ||
   claim.status === 'approved')) {
-  <section class="application-draft-card" tuiAppearance="card-panel">
+  <section class="draft-panel" tuiAppearance="card-panel">
     <div class="application-draft-heading">
       <h2>Independent staff decision</h2>
       <p>
@@ -325,7 +324,7 @@
     </div>
   </section>
   } @if (claim.status === 'approved' && ownershipMode() === 'owner') {
-  <section class="application-draft-card" tuiAppearance="card-panel">
+  <section class="draft-panel" tuiAppearance="card-panel">
     <a tuiButton size="m" [routerLink]="['/' + workspacePaths.releases, 'new']" [queryParams]="{ applicationId: claim.applicationId }">Write release notes</a>
     <div class="application-draft-heading">
       <h2>Verified-owner editing</h2>
@@ -360,7 +359,7 @@
   </p>
   } @if (confirmation(); as action) {
   <section
-    class="application-draft-card"
+    class="draft-panel"
     tuiAppearance="card-panel"
     aria-label="Confirm ownership change"
   >

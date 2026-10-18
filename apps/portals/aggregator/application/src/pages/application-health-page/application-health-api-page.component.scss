@@ -1,3 +1,4 @@
+@use './application-health-page.component';
 @use 'ui/design-system/src/styles' as *;
 @use '../page-layout' as page;
 @include page.page;
@@ -23,3 +24,5 @@
 .health-day { height: $space-8; border-radius: $radius-sm; }
 .health-history-dates { display: flex; justify-content: space-between; gap: $space-2; }
 .health-legend { margin: $space-6 0 0; }
+
+.services-grid .health-monitor { padding: 0; }

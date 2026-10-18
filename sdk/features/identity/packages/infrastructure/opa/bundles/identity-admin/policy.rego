@@ -152,12 +152,14 @@ resource_constraints_ok("identity.profile-badges.read") if {
   input.resource.type == "profile-badges"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.profile-badges.update") if {
   input.resource.type == "profile-badges"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.profile-follows.read") if {
@@ -220,59 +222,69 @@ resource_constraints_ok("identity.graph.read") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.disable") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.enable") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.revoke_tokens") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.delete") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.update_email") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.update_password") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.unlink_provider") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.generate_password_reset_link") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 
 resource_constraints_ok("identity.user.generate_email_verification_link") if {
   input.resource.type == "user"
   is_string(input.resource.id)
   input.resource.id != ""
+  not "tenantId" in object.keys(input)
 }
 

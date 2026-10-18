@@ -9,7 +9,7 @@ const {
   MysqlAccountErasureParticipant,
   ProfileBadges1791676831000,
   ProfileBadgeErasure1791840003000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const {
   CleanAccountErasureParticipant,
 } = require('../../sdk/features/identity/libs/management/src');

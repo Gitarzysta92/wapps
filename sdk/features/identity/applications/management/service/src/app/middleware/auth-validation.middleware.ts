@@ -18,7 +18,7 @@ import {
   NOTIFICATION_WORKER_ID,
   NOTIFICATION_WORKER_ROLE,
   NOTIFICATION_WORKER_SCOPE,
-} from '@sdk/features/discussion/core';
+} from '@domains/community';
 
 @Injectable()
 export class AuthValidationMiddleware implements NestMiddleware {
@@ -37,6 +37,32 @@ export class AuthValidationMiddleware implements NestMiddleware {
   ): Promise<void> {
     delete req.authUser;
     const path = (req.originalUrl || req.path).split('?')[0].replace(/\/$/, '');
+    if (
+      (req.method === 'GET' &&
+        [
+          '/api/internal/authentication/validate',
+          '/api/internal/authentication/validate-optional',
+          '/api/auth/methods',
+          '/api/auth/email-verification/status',
+          '/api/auth/oauth/google/authorize',
+          '/api/auth/oauth/github/authorize',
+        ].includes(path)) ||
+      (req.method === 'POST' &&
+        [
+          '/api/auth/signin',
+          '/api/auth/signin/anonymous',
+          '/api/auth/signin/oauth',
+          '/api/auth/register',
+          '/api/auth/refresh',
+          '/api/auth/signout',
+          '/api/auth/password-reset/verify',
+          '/api/auth/password-reset/complete',
+          '/api/auth/email-verification/request',
+          '/api/auth/email-verification/verify',
+          '/api/auth/email-verification/complete',
+        ].includes(path))
+    )
+      return next();
     if (
       (req.method === 'POST' && path === '/api/password-recovery') ||
       (req.method === 'GET' &&

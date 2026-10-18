@@ -169,6 +169,8 @@ function renderPolicyBundle(def, sourceFileForHeader) {
       rego += `  input.resource.id == ${JSON.stringify(c.exactId)}\n`;
     if (c.identityMustMatchInput)
       rego += '  input.resource.id == input.identityId\n';
+    if (c.tenantMustBeAbsent)
+      rego += '  not "tenantId" in object.keys(input)\n';
     if (c.serviceOnly) {
       rego += `  input.identityId == ${JSON.stringify(
         c.serviceOnly.identityId

@@ -1,7 +1,6 @@
 const assert = require('node:assert/strict');
 const { createHash, randomUUID } = require('node:crypto');
-const root =
-  '../../sdk/features/discussion/applications/management/service/src/app/reviews/';
+const root = '../../apps/services/community/src/app/reviews/';
 const {
   ApplicationReviews,
 } = require(`${root}application/application-reviews`);
@@ -17,7 +16,7 @@ const {
 } = require(`${root}infrastructure/member-reviews.migration`);
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 module.exports = async function reviewErasureChecks({ source }) {
   assert.match(source.options.database, /^wapps_readiness_[0-9a-f]{32}$/);

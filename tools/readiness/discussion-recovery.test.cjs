@@ -1,4 +1,4 @@
-/* Real-store qualification; uses isolated databases and queue names on localhost. */
+/* Real-store qualification; requires dedicated temporary stores from qualify-materialization.cjs. */
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const { randomUUID } = require('node:crypto');
@@ -20,17 +20,24 @@ require('tsconfig-paths').register({
 const {
   IdentityWriteBarrier1791840000000,
   AccountErasureRequests1791840001000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 const { DataSource } = require('typeorm');
 const { createPool } = require('mysql2/promise');
 const { MongoClient } = require('mongodb');
 const { ConfigService } = require('@nestjs/config');
 const amqp = require('amqplib');
 const { MinioClient } = require('@sdk/extras/minio');
+const {
+  S3Client,
+  ListBucketsCommand,
+  CreateBucketCommand,
+  DeleteBucketCommand,
+} = require('@aws-sdk/client-s3');
+const { claimFreshObjectStore } = require('./fresh-object-store.cjs');
 const { RabbitMqQueueClient } = require('@sdk/extras/queue-rabbitmq');
 const management = path.join(
   root,
-  'sdk/features/discussion/applications/management/service/src/app/discussions'
+  'apps/services/community/src/app/discussions'
 );
 const materializer = path.join(
   root,
@@ -59,6 +66,14 @@ const { DiscussionParticipation1791676824000 } = require(path.join(
 const { DiscussionVotes1791676825000 } = require(path.join(
   management,
   'infrastructure/discussion-votes.migration.ts'
+));
+const { DiscussionBindingIndex1792150000000 } = require(path.join(
+  root,
+  'apps/services/community/src/app/discussions/infrastructure/discussion-binding-index.migration.ts'
+));
+const { CommunityDiscussionBindingKeys1792080000000 } = require(path.join(
+  management,
+  'infrastructure/discussion-binding-keys.migration.ts'
 ));
 const { DiscussionPins1791676826000 } = require(path.join(
   management,
@@ -110,7 +125,7 @@ const { ReviewErasure1791840008000 } = require(path.join(
 ));
 const {
   DiscussionContentUpdates1791840018000,
-} = require('../../sdk/features/discussion/applications/management/service/src/app/discussions/infrastructure/content-update-cursors.migration');
+} = require('../../apps/services/community/src/app/discussions/infrastructure/content-update-cursors.migration');
 const { ReplyNotifications1791840015000 } = require(path.join(
   management,
   'infrastructure/reply-notifications.migration.ts'
@@ -185,8 +200,38 @@ test(
     const database = `wapps_readiness_${suffix}`;
     const queueName = `wapps.readiness.${suffix}`;
     const password = process.env.LOCAL_PASSWORD ?? 'wapps-local-password';
+    const storageHost = `http://${
+      process.env.DISCUSSION_TEST_MINIO_HOST ?? '127.0.0.1'
+    }:${Number(process.env.DISCUSSION_TEST_MINIO_PORT ?? 9000)}`;
+    const storageGuard = new S3Client({
+      endpoint: storageHost,
+      region: 'us-east-1',
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: process.env.DISCUSSION_TEST_MINIO_USERNAME ?? 'wapps',
+        secretAccessKey: password,
+      },
+    });
+    let releaseStore;
+    try {
+      releaseStore = await claimFreshObjectStore({
+        listBuckets: async () => {
+          const result = await storageGuard.send(new ListBucketsCommand({}));
+          if (!Array.isArray(result.Buckets))
+            throw new Error('Cannot establish object-store isolation');
+          return result.Buckets.map((bucket) => bucket.Name);
+        },
+        createBucket: (Bucket) =>
+          storageGuard.send(new CreateBucketCommand({ Bucket })),
+        deleteBucket: (Bucket) =>
+          storageGuard.send(new DeleteBucketCommand({ Bucket })),
+      });
+    } catch (error) {
+      storageGuard.destroy();
+      throw error;
+    }
     const mysqlOptions = {
-      host: '127.0.0.1',
+      host: process.env.DISCUSSION_TEST_MYSQL_HOST ?? '127.0.0.1',
       port: Number(process.env.DISCUSSION_TEST_MYSQL_PORT ?? 3306),
       user: process.env.DISCUSSION_TEST_MYSQL_USERNAME ?? 'root',
       password,
@@ -202,15 +247,15 @@ test(
       process.env.WAPPS_DISCUSSION_PAYLOADS === '1'
         ? null
         : new MongoClient(
-            `mongodb://wapps:${encodeURIComponent(password)}@127.0.0.1:${Number(
+            `mongodb://wapps:${encodeURIComponent(password)}@${
+              process.env.DISCUSSION_TEST_MONGO_HOST ?? '127.0.0.1'
+            }:${Number(
               process.env.DISCUSSION_TEST_MONGO_PORT ?? 27017
             )}/?authSource=admin`,
             { serverSelectionTimeoutMS: 5000 }
           );
     const minio = new MinioClient({
-      host: `http://127.0.0.1:${Number(
-        process.env.DISCUSSION_TEST_MINIO_PORT ?? 9000
-      )}`,
+      host: storageHost,
       accessKey: process.env.DISCUSSION_TEST_MINIO_USERNAME ?? 'wapps',
       secretKey: password,
     });
@@ -238,6 +283,8 @@ test(
         ReplyNotifications1791840015000,
         MentionNotifications1791864016000,
         DiscussionContentUpdates1791840018000,
+        CommunityDiscussionBindingKeys1792080000000,
+        DiscussionBindingIndex1792150000000,
       ],
       synchronize: false,
     });
@@ -348,6 +395,17 @@ test(
         },
       };
       const writes = new MysqlDiscussionWrites(db);
+      if (process.env.WAPPS_DISCUSSION_BFF === '1') {
+        await require('./bff-generic-discussions-runtime-checks.cjs')({
+          source: db,
+          pool,
+          mongo,
+          minio,
+          payloads,
+          password,
+        });
+        return;
+      }
       const policy = { evaluate: async () => ({ ok: true, value: true }) };
       const commands = new DurableDiscussionCommands(
         writes,
@@ -453,7 +511,7 @@ test(
         edit.revision
       );
       assert.equal(
-        await nodes.countDocuments({ schemaVersion: 3 }),
+        await nodes.countDocuments({ schemaVersion: 4 }),
         2,
         'Reordered snapshots must not retain historical node payload copies'
       );
@@ -570,7 +628,7 @@ test(
         null,
         'A worker paused before its first write cannot restore removed bytes'
       );
-      assert.equal(await nodes.countDocuments({ schemaVersion: 3 }), 2);
+      assert.equal(await nodes.countDocuments({ schemaVersion: 4 }), 2);
       await nodes.drop();
       await heads.drop();
       await store.ensureIndexes();
@@ -599,7 +657,7 @@ test(
       );
 
       const queue = await broker.connect({
-        host: '127.0.0.1',
+        host: process.env.DISCUSSION_TEST_QUEUE_HOST ?? '127.0.0.1',
         port: process.env.DISCUSSION_TEST_QUEUE_PORT ?? '5672',
         username: 'wapps',
         password,
@@ -835,9 +893,9 @@ test(
         /unroutable/
       );
       brokerAdmin = await amqp.connect(
-        `amqp://wapps:${encodeURIComponent(password)}@127.0.0.1:${Number(
-          process.env.DISCUSSION_TEST_QUEUE_PORT ?? 5672
-        )}`
+        `amqp://wapps:${encodeURIComponent(password)}@${
+          process.env.DISCUSSION_TEST_QUEUE_HOST ?? '127.0.0.1'
+        }:${Number(process.env.DISCUSSION_TEST_QUEUE_PORT ?? 5672)}`
       );
       const channel = await brokerAdmin.createChannel();
       const received = await channel.get(queueName, { noAck: false });
@@ -851,14 +909,29 @@ test(
       channel.ack(redelivered);
       await channel.deleteQueue(queueName);
       queueCreated = false;
+      await dispatcher?.onModuleDestroy();
+      dispatcher = undefined;
+      await require('./discussion-binding-checks.cjs')({
+        source: db,
+        writes,
+        payloads,
+        policy,
+        ids: new CryptoDiscussionIdentificatorGenerator(),
+        actor,
+        reader,
+        loader,
+        store,
+        nodes,
+        heads,
+      });
       console.log('Discussion assertions passed; closing test clients.');
     } finally {
       await dispatcher?.onModuleDestroy();
       if (queueCreated) {
         brokerAdmin ??= await amqp.connect(
-          `amqp://wapps:${encodeURIComponent(password)}@127.0.0.1:${Number(
-            process.env.DISCUSSION_TEST_QUEUE_PORT ?? 5672
-          )}`
+          `amqp://wapps:${encodeURIComponent(password)}@${
+            process.env.DISCUSSION_TEST_QUEUE_HOST ?? '127.0.0.1'
+          }:${Number(process.env.DISCUSSION_TEST_QUEUE_PORT ?? 5672)}`
         );
         const cleanup = await brokerAdmin.createChannel();
         await cleanup.deleteQueue(queueName);
@@ -874,6 +947,11 @@ test(
       await pool.end();
       if (createdDatabase) await admin.query(`DROP DATABASE ${database}`);
       await admin.end();
+      try {
+        await releaseStore();
+      } finally {
+        storageGuard.destroy();
+      }
     }
   }
 );

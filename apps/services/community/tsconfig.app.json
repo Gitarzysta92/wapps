@@ -1,0 +1,44 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/sdk/features/discussion/applications/management",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmitOnError": false,
+    "module": "commonjs",
+    "target": "es2020",
+    "strictPropertyInitialization": false
+  },
+  "include": ["**/*.ts"],
+  "exclude": [
+    "node_modules",
+    ".keystone",
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../sdk/features/review/libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/review/packages/infrastructure/http/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/usecases/account/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/adapters/account-mysql/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/domains/community/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/review/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../sdk/features/discussion/packages/infrastructure/http/tsconfig.lib.json"
+    }
+  ]
+}

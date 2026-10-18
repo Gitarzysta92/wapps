@@ -370,7 +370,11 @@ async function applicationDraftBrowser({
             { name: 'prefers-color-scheme', value: theme },
           ]);
           await target.waitForFunction(
-            (theme) => document.body.getAttribute('tuiTheme') === theme,
+            (theme) => {
+              const scopes = [...document.querySelectorAll('[tuiTheme]')];
+              const sheets = [...document.querySelectorAll('link[rel="stylesheet"]')].filter(link => new URL(link.href).pathname.split('/').pop().startsWith('styles.'));
+              return document.body.getAttribute('tuiTheme') === theme && scopes.every(scope => scope.getAttribute('tuiTheme') === theme) && sheets.every(link => link.sheet && link.media !== 'print') && getComputedStyle(document.documentElement).getPropertyValue('--body-background-color').trim() !== '';
+            },
             {},
             theme
           );
@@ -390,21 +394,24 @@ async function applicationDraftBrowser({
               'private-suites-page, suite-publication-page, application-drafts-page, application-publication-page, application-ownership-page, application-editing-page, app-release-workspace, app-release-devlog, app-article-workspace, app-article-catalog, favorites-page, app-application-discussions-api-page, app-application-reviews-api-page, app-my-discussions-api-page, app-application-overview-page, application-health-api-page, application-timeline-api-page, discover-api-page, results-page, home-page'
             );
             const home = host.matches('home-page');
+            const reading = !!host.querySelector('.detail-page');
             const header = host
               .querySelector(
                 home
                   ? '.search-container'
-                  : 'ui-page-header, ui-content-state.page-header'
+                  : 'ui-page-header, ui-content-state.page-header, .detail-header, .detail-page ui-content-state'
               )
               .getBoundingClientRect();
             const contentElement = host.querySelector(
               home
                 ? '.dropdown'
-                : '.suite-workspace, .application-workspace, .favorites-page, .discussion-page, .review-page, .discussions-content, .hero-section, .health-content, .timeline-content, .discovery-content, .catalog-toolbar'
+                : '.suite-workspace, .application-workspace, .favorites-page, .discussion-page, .review-page, .discussions-content, .hero-section, .health-content, .timeline-content, .release-content, .section__filters, .discovery-content, .catalog-toolbar'
             );
             const content = contentElement?.getBoundingClientRect() ?? header;
             return {
               home,
+              reading,
+              readingFits: !reading || (header.left >= host.getBoundingClientRect().left - 1 && header.right <= host.getBoundingClientRect().right + 1),
               inputBorders: [
                 ...host.querySelectorAll(
                   '.suite-input, .application-draft-input, .review-field, .discovery-input'
@@ -420,7 +427,8 @@ async function applicationDraftBrowser({
                   '.application-draft-card, .health-monitor, .discovery-card'
                 ),
               ].map((card) => {
-                const [heading, content] = card.children;
+                const heading = card.querySelector(':scope > .card-header') ?? card.children[0];
+                const content = card.querySelector(':scope > .card-body') ?? card.children[1];
                 return (
                   content.getBoundingClientRect().top -
                   heading.getBoundingClientRect().bottom
@@ -471,7 +479,8 @@ async function applicationDraftBrowser({
             false,
             `${state}/${theme}/${width} overflow`
           );
-          assert.ok(layout.alignment < 2);
+          assert.ok(layout.readingFits, `${state}: reading layout exceeds its column`);
+          assert.ok(layout.reading || layout.alignment < 2);
           if (layout.resultsGap !== null)
             assert.ok(
               Math.abs(layout.resultsGap - 24) < 2,

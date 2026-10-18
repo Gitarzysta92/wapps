@@ -40,7 +40,8 @@ const {
   ProfileBadgeErasure1791840003000,
   AccountNotifications1791840016000,
   AccountFavoriteUpdates1791840019000,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+  AccountMentions1791864017000,
+} = require('../../libs/adapters/account-mysql/src');
 const {
   CompleteIdentityDeletion,
 } = require('../../sdk/features/identity/libs/management/src');
@@ -112,6 +113,7 @@ test(
           ProfileBadgeErasure1791840003000,
           AccountNotifications1791840016000,
           AccountFavoriteUpdates1791840019000,
+          AccountMentions1791864017000,
         ],
         migrationsTransactionMode: 'none',
       };

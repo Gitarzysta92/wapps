@@ -1,3 +1,4 @@
+import { classificationFields } from '@domains/publication/classification';
 import {
   articleId,
   profileArticlesCursor,
@@ -55,13 +56,16 @@ export class ArticleCatalog {
     const after = profileArticlesCursor(input);
     const result = await this.read({ ownerIdentityId, after });
     return profileArticlesPage(
-      result.items.map(({ id, slug, title, excerpt, publishedAt }) => ({
-        id,
-        slug,
-        title,
-        excerpt,
-        publishedAt,
-      })),
+      result.items.map(
+        ({ id, slug, title, excerpt, publishedAt, classification }) => ({
+          id,
+          slug,
+          title,
+          excerpt,
+          publishedAt,
+          ...classificationFields(classification),
+        })
+      ),
       after
     );
   }

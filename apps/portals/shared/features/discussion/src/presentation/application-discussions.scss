@@ -57,3 +57,14 @@ p {
   margin: 0;
   overflow-wrap: anywhere;
 }
+
+.discussion-list-section { min-width: 0; padding-top: $space-6; border-top: 1px solid var(--tui-border-normal); }
+.section-title { display: flex; align-items: center; gap: $space-2; margin-bottom: $space-6; }
+.discussion-list { display: grid; gap: $space-4; }
+.pinned-discussions { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: $space-6; }
+.discussion-preview-link { display: block; color: inherit; text-decoration: none; }
+.preview-actions { margin-top: $space-3; }
+ui-discussion-post.discussion-entry { display: block; }
+ui-discussion-post [slot='bottom-bar'] { display: grid; gap: $space-3; }
+
+.discussion-thread { display: grid; gap: $space-4; min-width: 0; }

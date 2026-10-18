@@ -17,6 +17,7 @@ export const qualificationSuites = {
   'editorial-projection-recovery.test.cjs': 'Isolated MySQL, MongoDB and RabbitMQ',
   'editorial-recovery.test.cjs': 'Isolated MySQL',
   'identity-credentials.test.cjs': 'Local Firebase Auth emulator',
+  'local-auth.test.cjs': 'Built Authenticator/Account/BFF, disposable MySQL/RabbitMQ and local Nginx; no Firebase',
   'identity-recovery.test.cjs': 'Isolated MySQL and local Firebase Auth emulator',
   'opa-policies.test.mjs': 'Pinned OPA binary',
 };

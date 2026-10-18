@@ -2,13 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, defer, map, of, timeout } from 'rxjs';
 import { err, ok } from '@sdk/kernel/standard';
-import {
-  commentObject,
-  notificationTimestamp,
-  publicCommentId,
-  replyInboxCursor,
-  replyInboxPage,
-} from '@domains/discussion';
+import { commentObject, notificationTimestamp, publicCommentId, replyInboxCursor, replyInboxPage } from '@domains/community';
 import {
   REPLY_INBOX_URL,
   type ReplyInboxPort,

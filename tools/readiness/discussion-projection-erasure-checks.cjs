@@ -1,7 +1,6 @@
 const assert = require('node:assert/strict');
 const { randomUUID } = require('node:crypto');
-const root =
-  '../../sdk/features/discussion/applications/management/service/src/app/discussions/';
+const root = '../../apps/services/community/src/app/discussions/';
 const materializer =
   '../../sdk/features/discussion/applications/materializer/service/src/';
 const {
@@ -25,7 +24,7 @@ const {
 const { materializeDiscussion } = require(`${materializer}materialization`);
 const {
   MysqlAccountErasureParticipant,
-} = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+} = require('../../libs/adapters/account-mysql/src');
 
 module.exports = async function qualifyDiscussionProjectionErasure({
   source,
@@ -171,7 +170,7 @@ module.exports = async function qualifyDiscussionProjectionErasure({
     ...stable,
     _id: unknown,
     id: unknown,
-    schemaVersion: 4,
+    schemaVersion: 999,
   });
   await assert.rejects(cleanup.advance(request), /Unrecognized.*schema/);
   assert.ok(

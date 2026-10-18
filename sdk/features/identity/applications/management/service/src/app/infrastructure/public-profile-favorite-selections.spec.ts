@@ -6,10 +6,28 @@ const id = '10000000-0000-4000-8000-000000000001';
 const parentId = '10000000-0000-4000-8000-000000000002';
 const topic = {
   id,
-  applicationId: parentId,
+  bindingKey: 'application:' + parentId,
   revision: 2,
-  title: 'Topic',
   replyCount: 0,
+  pinned: false,
+  canPin: false,
+  comments: [
+    {
+      id,
+      parentId: null,
+      depth: 0,
+      content: {
+        title: 'Topic',
+        tags: [],
+        displayName: 'Member',
+        text: 'Topic text',
+      },
+      createdAt: 10,
+      updatedAt: 10,
+      editable: false,
+      removable: false,
+    },
+  ],
 };
 const app = {
   id: parentId,

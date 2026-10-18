@@ -1,1 +1,1 @@
-export { parseProfileDiscussionsPage } from '@domains/discussion/contracts';
+export { parseProfileDiscussionsPage } from '@domains/community';

@@ -10,6 +10,7 @@ import { DiscoveryPublicationsClient } from './discovery-publications.client';
 
 function setup() {
   const applications = {
+    select: jest.fn().mockResolvedValue({ items: [] }),
     browse: jest.fn().mockResolvedValue({
       items: [],
       total: 0,
@@ -19,6 +20,7 @@ function setup() {
     }),
   };
   const publications = {
+    suiteSelection: jest.fn().mockResolvedValue({ items: [] }),
     articles: jest.fn().mockImplementation(async (q) => ({
       items: [],
       total: 0,
@@ -32,10 +34,12 @@ function setup() {
       pageSize: q.pageSize,
     })),
   };
+  const reviews = { read: jest.fn().mockResolvedValue({ total: 0, rating: null, preview: null }) };
   return {
     applications,
     publications,
-    service: new PublicDiscoveryService(applications, publications),
+    reviews,
+    service: new PublicDiscoveryService(applications, publications, reviews),
   };
 }
 describe('public discovery source composition', () => {
@@ -53,6 +57,7 @@ describe('public discovery source composition', () => {
           slug: 'work',
           name: 'Work',
           description: 'A tool',
+          logoUrl: 'https://example.test/logo.png',
           createdAt: '2026-10-13T00:00:00.000Z',
           categories: [],
           tags: [
@@ -65,6 +70,7 @@ describe('public discovery source composition', () => {
         },
       ],
     });
+    h.applications.select.mockResolvedValueOnce({ items: [{ id: '10000000-0000-4000-8000-000000000001', revision: 1 }] });
     const value = await h.service.search({
       type: 'application',
       pageSize: '10',
@@ -72,6 +78,8 @@ describe('public discovery source composition', () => {
     expect(value.groups[0].items[0]).toMatchObject({
       tags: ['10000000-0000-4000-8000-000000000002', 'work-tools'],
       tagNames: ['Work tools'],
+      displayTags: [{ slug: 'work-tools', name: 'Work tools' }],
+      details: { kind: 'application', logoUrl: 'https://example.test/logo.png', reviews: { total: 0, rating: null, preview: null } },
     });
   });
   it('queries all three sources once with bounded independent pages', async () => {
@@ -101,6 +109,47 @@ describe('public discovery source composition', () => {
       pageSize: 10,
       sort: 'newest',
     });
+  });
+  it('carries reviewed article media and attribution without private payload fields', async () => {
+    const h = setup();
+    h.publications.articles.mockResolvedValueOnce({ page: 1, pageSize: 20, total: 1, items: [{
+      id: '10000000-0000-4000-8000-000000000001', revision: 4, slug: 'guide', title: 'Guide',
+      excerpt: 'An excerpt', byline: 'Writer', category: 'Guides', tags: ['web'], publishedAt: 1000,
+      cover: { imageId: '10000000-0000-4000-8000-000000000002', alt: 'Cover' }, classification: 'general',
+      ownerIdentityId: 'never expose',
+    }] });
+    const response = await h.service.search({ type: 'article' });
+    expect(response.groups[0].items[0]).toMatchObject({ details: {
+      kind: 'article', byline: 'Writer', cover: { imageId: '10000000-0000-4000-8000-000000000002', alt: 'Cover' },
+    } });
+    expect(JSON.stringify(response)).not.toContain('never expose');
+  });
+  it('loads bounded public suite members in authored order and rechecks publication after enrichment', async () => {
+    const h = setup(), id = '10000000-0000-4000-8000-000000000001';
+    const ids = Array.from({ length: 8 }, (_, i) => id.slice(0, -1) + (i + 2));
+    const suite = { id, revision: 3, title: 'Tools', description: 'A suite', publishedAt: 1000, applicationIds: ids, classification: 'general' };
+    const members = ids.slice(0, 5).map((id, i) => ({ id, revision: 1, slug: 'app-' + i, name: 'App ' + i, logoUrl: null, classification: i === 0 ? 'general' : 'mature' }));
+    h.publications.suites.mockResolvedValue({ page: 1, pageSize: 20, total: 1, items: [suite] });
+    h.applications.select.mockResolvedValue({ items: [...members].reverse() });
+    h.publications.suiteSelection.mockResolvedValue({ items: [suite] });
+    const response = await h.service.search({ type: 'suite' });
+    expect(h.applications.select).toHaveBeenCalledWith(ids.slice(0, 6));
+    expect(response.groups[0].items[0].details).toMatchObject({ applicationCount: 8, applications: members.map(({ id, slug, name, logoUrl, classification }) => ({ id, slug, name, logoUrl, classification })) });
+    h.publications.suiteSelection.mockResolvedValueOnce({ items: [] });
+    await expect(h.service.search({ type: 'suite' })).rejects.toThrow(DiscoveryUnavailableError);
+    h.publications.suiteSelection.mockResolvedValueOnce({ items: [{ ...suite, revision: 4 }] });
+    await expect(h.service.search({ type: 'suite' })).rejects.toThrow(DiscoveryUnavailableError);
+  });
+  it('rejects stale application previews and fails truthfully when reviews are unavailable', async () => {
+    const h = setup(), app = { id: '10000000-0000-4000-8000-000000000001', revision: 1, slug: 'work', name: 'Work',
+      description: '', logoUrl: null, categories: [], tags: [], createdAt: '2026-10-13T00:00:00Z', classification: 'general' };
+    h.applications.browse.mockResolvedValue({ page: 1, pageSize: 20, total: 1, totalPages: 1, items: [app] });
+    for (const current of [[], [{ ...app, revision: 2 }], [{ ...app, classification: 'mature' }]]) {
+      h.applications.select.mockResolvedValueOnce({ items: current });
+      await expect(h.service.search({ type: 'application' })).rejects.toThrow(DiscoveryUnavailableError);
+    }
+    h.reviews.read.mockRejectedValueOnce(new Error('unavailable'));
+    await expect(h.service.search({ type: 'application' })).rejects.toThrow(DiscoveryUnavailableError);
   });
   it('does not fetch unselected sources and retains article filters', async () => {
     const h = setup();

@@ -16,21 +16,21 @@
     </ui-content-state>
   } @else if (content) {
     <section class="digest-section digest-section--first" aria-labelledby="latest-title">
-      <div class="section-heading"><h2 id="latest-title">{{ digest.order() === 'recent' || (digest.order() === 'recommended' && digest.personalizationDisabled()) ? 'Latest' : 'Selected activity' }}</h2><a tuiLink routerLink="/" fragment="explore">Open Explore</a></div>
+      <div class="section-heading"><h2 class="section-title" id="latest-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>{{ digest.order() === 'recent' || (digest.order() === 'recommended' && digest.personalizationDisabled()) ? 'Latest' : 'Selected activity' }}</h2><a tuiLink routerLink="/" fragment="explore">Open Explore</a></div>
       @if (content.latest.hidden) { <p role="status">{{ content.latest.hidden }} items hidden in this selection by your saved content choices.</p> }
       <div class="latest-grid">
         @for (item of content.latest.items; track item.kind + ':' + item.id) {
           @let destination = link(item.target);
-          <article tuiAppearance="card-elevated" class="digest-card api-digest-card" [attr.data-id]="item.id">
+          <a tuiAppearance="card-elevated" class="digest-card activity-card" [attr.data-id]="item.id" [routerLink]="destination.path" [queryParams]="destination.query">
             <header class="card-meta">{{ labels[item.kind] }}</header>
-            <h3><a tuiLink [routerLink]="destination.path" [queryParams]="destination.query">{{ item.title }}</a></h3>
+            <h3>{{ item.title }}</h3>
             <time class="card-date" [attr.datetime]="timestamp(item.at)">{{ item.at | preferredDate }}</time>
-          </article>
+          </a>
         } @empty { <ui-content-state title="No matching recent activity" description="No visible items in this selection match your saved choices. Browse Explore for more activity." icon="@tui.clock" /> }
       </div>
     </section>
     <section class="digest-section" aria-labelledby="articles-title">
-      <div class="section-heading"><h2 id="articles-title">Articles</h2><a tuiLink routerLink="/articles">All articles</a></div>
+      <div class="section-heading"><h2 class="section-title" id="articles-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Articles</h2><a tuiLink routerLink="/articles">All articles</a></div>
       @if (content.articles.hidden) { <p role="status">{{ content.articles.hidden }} items hidden in this selection by your saved content choices.</p> }
       <div class="articles-grid">
         @for (article of content.articles.items; track article.id) {
@@ -41,7 +41,7 @@
             } @else { <div class="article-cover article-cover--fallback" aria-hidden="true"><tui-icon icon="@tui.newspaper" /></div> }
             <div class="article-body">
               <header class="card-meta">{{ article.category }}</header>
-              <div class="article-copy"><h3><a tuiLink [routerLink]="['/articles', article.slug]">{{ article.title }}</a></h3><p class="card-summary">{{ article.excerpt }}</p></div>
+              <div class="article-copy"><h3><a class="article-card-link" [routerLink]="['/articles', article.slug]">{{ article.title }}</a></h3><p class="card-summary">{{ article.excerpt }}</p></div>
               <div class="card-meta card-byline"><span>{{ article.byline }}</span><time [attr.datetime]="timestamp(article.publishedAt)">{{ article.publishedAt | preferredDate }}</time></div>
             </div>
           </article>
@@ -50,7 +50,7 @@
     </section>
     <div class="portal-grid">
       <section class="digest-section" aria-labelledby="applications-title">
-        <div class="section-heading"><h2 id="applications-title">Applications</h2><a tuiLink routerLink="/discover" [queryParams]="{type: 'application'}">Browse</a></div>
+        <div class="section-heading"><h2 class="section-title" id="applications-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Applications</h2><a tuiLink routerLink="/discover" [queryParams]="{type: 'application'}">Browse</a></div>
         @if (content.applications.hidden) { <p role="status">{{ content.applications.hidden }} items hidden in this selection by your saved content choices.</p> }
         <div class="compact-grid">
           @for (app of content.applications.items; track app.id) {
@@ -64,17 +64,17 @@
         </div>
       </section>
       <section class="digest-section" aria-labelledby="discussions-title">
-        <div class="section-heading"><h2 id="discussions-title">Discussions</h2><a tuiLink routerLink="/" fragment="explore">Open Explore</a></div>
+        <div class="section-heading"><h2 class="section-title" id="discussions-title"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>Discussions</h2><a tuiLink routerLink="/" fragment="explore">Open Explore</a></div>
         @if (content.discussions.hidden) { <p role="status">{{ content.discussions.hidden }} items hidden in this selection by your saved content choices.</p> }
         <div class="compact-grid">
           @for (item of content.discussions.items; track item.id) {
             @let destination = link(item.target);
-            <article tuiAppearance="card-elevated" class="digest-card api-digest-card" [attr.data-id]="item.id">
+            <a tuiAppearance="card-elevated" class="digest-card discussion-card" [attr.data-id]="item.id" [routerLink]="destination.path" [queryParams]="destination.query">
               <header class="card-meta">Public application discussion</header>
-              <h3><a tuiLink [routerLink]="destination.path">{{ item.title }}</a></h3>
+              <h3>{{ item.title }}</h3>
               @if (item.engagement !== null) { <p class="card-summary">{{ item.engagement }} net votes</p> }
               <time class="card-date" [attr.datetime]="timestamp(item.at)">{{ item.at | preferredDate }}</time>
-            </article>
+            </a>
           } @empty { <ui-content-state title="No matching recent discussions" description="No visible discussions in this selection match your saved choices. Older conversations may be available in Explore." icon="@tui.messages-square" /> }
         </div>
       </section>

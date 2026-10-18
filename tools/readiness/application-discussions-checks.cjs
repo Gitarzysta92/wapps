@@ -8,6 +8,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { DataSource } = require('typeorm');
 const { processService } = require('./qualification-process.cjs');
+const { discussionProcessService } = require('./discussion-portal-fixture.cjs');
 
 async function applicationDiscussionsChecks(options) {
   const {
@@ -26,7 +27,7 @@ async function applicationDiscussionsChecks(options) {
   } = options;
   const management = path.join(
     root,
-    'sdk/features/discussion/applications/management/service/src/app/discussions'
+    'apps/services/community/src/app/discussions'
   );
   const load = (name) => require(path.join(management, name));
   const { DiscussionApplicationTargets1791676823000 } = load(
@@ -174,7 +175,7 @@ async function applicationDiscussionsChecks(options) {
   };
   const restart = async (configuration = {}) => {
     await api?.stop();
-    api = await processService(
+    api = await discussionProcessService(
       process.execPath,
       [
         path.join(
@@ -818,10 +819,10 @@ async function applicationDiscussionsChecks(options) {
           }
           const {
             MysqlAccountErasureParticipant,
-          } = require('../../sdk/features/identity/packages/infrastructure/mysql/src');
+          } = require('../../libs/adapters/account-mysql/src');
           const {
             MysqlReviewErasure,
-          } = require('../../sdk/features/discussion/applications/management/service/src/app/reviews/infrastructure/mysql-review-erasure');
+          } = require('../../apps/services/community/src/app/reviews/infrastructure/mysql-review-erasure');
           const request = { identityId, revision: 1 };
           await new MysqlAccountErasureParticipant(
             'discussion',
@@ -861,6 +862,7 @@ async function applicationDiscussionsChecks(options) {
         application: { ...browserDraft, slug: browserFields.slug },
         origin: editorialOrigin,
         discussionOrigin: () => api.origin,
+        discussionServiceOrigin: () => api.serviceOrigin,
         headers: (uid, tenantId = 'default', roles = []) =>
           headers(uid ? { identityId: uid, tenantId, roles } : null),
         discussionHeaders: (uid, roles = []) =>

@@ -7,11 +7,14 @@ import {
   input,
   untracked,
 } from '@angular/core';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { TuiChip } from '@taiga-ui/kit';
 import { Router, RouterLink } from '@angular/router';
-import { TuiAppearance, TuiButton, TuiLink } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiLink, TuiIcon } from '@taiga-ui/core';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import {
   ContentStateComponent,
+  MediumCardComponent,
   PageHeaderComponent,
   PageTitleComponent,
 } from '@ui/layout';
@@ -30,12 +33,13 @@ import {
   selector: 'app-release-devlog',
   standalone: true,
   imports: [
-    RouterLink,
+    RouterLink, DatePipe, NgTemplateOutlet, TuiChip, TuiIcon,
     TuiAppearance,
     TuiButton,
     TuiLink,
     BreadcrumbsComponent,
     ContentStateComponent,
+  MediumCardComponent,
     PageHeaderComponent,
     PageTitleComponent,
     ApplicationContentStateComponent,
@@ -43,7 +47,7 @@ import {
   providers: [ReleaseCatalogService],
   templateUrl: './release-devlog.component.html',
   styleUrls: [
-    '../application-drafts/application-drafts.component.scss',
+    '../application-devlog-page/application-devlog-page.component.scss',
     './release-devlog.component.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -549,7 +549,7 @@
     },
     {
       "service": "discussion-management",
-      "file": "sdk/features/discussion/applications/management/service/src/app/discussions/discussions.controller.ts",
+      "file": "apps/services/community/src/app/discussions/discussions.controller.ts",
       "class": "DiscussionsController",
       "endpoints": [
         {
@@ -598,7 +598,7 @@
     },
     {
       "service": "discussion-management",
-      "file": "sdk/features/discussion/applications/management/service/src/app/health/health.controller.ts",
+      "file": "apps/services/community/src/app/health/health.controller.ts",
       "class": "HealthController",
       "endpoints": [
         {
@@ -611,7 +611,7 @@
     },
     {
       "service": "discussion-management",
-      "file": "sdk/features/discussion/applications/management/service/src/app/platform/platform.controller.ts",
+      "file": "apps/services/community/src/app/platform/platform.controller.ts",
       "class": "PlatformController",
       "endpoints": [
         {

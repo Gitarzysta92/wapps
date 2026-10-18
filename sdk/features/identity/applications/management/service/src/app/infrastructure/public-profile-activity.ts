@@ -6,7 +6,7 @@ import {
   type ProfileActivitySharing,
 } from '@domains/customer/profiles';
 import { CanonicalIdentityUnavailable } from '@sdk/features/identity/core';
-import type { PublicProfileActivitySource } from '@sdk/features/identity/libs/management';
+import type { PublicProfileActivitySource } from '@wapps/account';
 
 export class RemoteProfileActivity implements PublicProfileActivitySource {
   private readonly origin: string;

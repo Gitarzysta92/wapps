@@ -11,6 +11,5 @@
   &__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: $space-4; padding: $space-4 0; }
   &__item:first-child { padding-top: 0; }
   &__item:last-child { padding-bottom: 0; }
-  &__target { min-width: 0; display: grid; gap: $space-2; overflow-wrap: anywhere; }
   a { overflow-wrap: anywhere; }
 }

@@ -1,12 +1,7 @@
 import { CanonicalIdentityInputError } from './canonical-identity';
 
-export const ACCOUNT_EXPORT_SOURCES = [
-  'account',
-  'credentials',
-  'editorial',
-  'discussion',
-] as const;
-export type AccountExportSourceName = (typeof ACCOUNT_EXPORT_SOURCES)[number];
+import { consumerBindingKey, consumerProviderPlan } from './consumer-binding';
+export type AccountExportSourceName = string;
 export const ACCOUNT_EXPORT_LIMITS = {
   chunkBytes: 256 * 1024,
   recordBytes: 1024 * 1024,
@@ -180,16 +175,20 @@ export function parseAccountExportJob(input: unknown): AccountExportJob {
   };
 }
 export function parseAccountExportArtifact(
-  input: unknown
+  input: unknown,
+  required: readonly string[]
 ): AccountExportArtifact {
   try {
-    return readAccountExportArtifact(input);
+    return readAccountExportArtifact(input, consumerProviderPlan(required));
   } catch (error) {
     if (error instanceof AccountExportSourceInvalid) throw error;
     throw new AccountExportSourceInvalid('Invalid account export artifact');
   }
 }
-function readAccountExportArtifact(input: unknown): AccountExportArtifact {
+function readAccountExportArtifact(
+  input: unknown,
+  required: readonly string[]
+): AccountExportArtifact {
   const row = accountExportObject(input, [
     'bytes',
     'sha256',
@@ -202,7 +201,7 @@ function readAccountExportArtifact(input: unknown): AccountExportArtifact {
     bytes > ACCOUNT_EXPORT_LIMITS.archiveBytes ||
     chunks !== Math.ceil(bytes / ACCOUNT_EXPORT_LIMITS.chunkBytes) ||
     !Array.isArray(row['captures']) ||
-    row['captures'].length !== ACCOUNT_EXPORT_SOURCES.length
+    row['captures'].length !== required.length
   )
     throw new AccountExportSourceInvalid('Incomplete account export artifact');
   const captures = row['captures'].map((input, index) => {
@@ -214,13 +213,10 @@ function readAccountExportArtifact(input: unknown): AccountExportArtifact {
     ]);
     const startedAt = accountExportInteger(capture['startedAt'], 1),
       completedAt = accountExportInteger(capture['completedAt'], 1);
-    if (
-      capture['source'] !== ACCOUNT_EXPORT_SOURCES[index] ||
-      completedAt < startedAt
-    )
+    if (capture['source'] !== required[index] || completedAt < startedAt)
       throw new AccountExportSourceInvalid('Invalid account export capture');
     return {
-      source: ACCOUNT_EXPORT_SOURCES[index],
+      source: required[index],
       startedAt,
       completedAt,
       records: accountExportInteger(capture['records']),
@@ -289,7 +285,9 @@ export class AccountExportCaptureSequence {
   private startedAt: number | undefined;
   private completedAt: number | undefined;
   private records = 0;
-  constructor(private readonly source: AccountExportSourceName) {}
+  constructor(private readonly source: AccountExportSourceName) {
+    consumerBindingKey(source);
+  }
   accept(input: unknown): AccountExportEntry {
     try {
       const row = accountExportObject(input, [

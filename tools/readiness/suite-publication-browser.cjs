@@ -17,6 +17,7 @@ async function suitePublicationBrowser({
   const owner = await session('suite-bob');
   const reviewer = await session('suite-reviewer');
   const reader = await session('');
+  const member = await session('suite-alice');
   await go('/suites/create', owner);
   await text('Browser Suite Beta', owner);
   await fill('#suite-title', 'Published research suite', owner);
@@ -25,7 +26,8 @@ async function suitePublicationBrowser({
     'Tools selected for a reviewed public collection.',
     owner
   );
-  await owner.click('button[aria-label="Add Browser Suite Beta"]');
+  await owner.click('input[aria-label="Include Browser Suite Beta"]');
+  await owner.select('#suite-classification', 'general');
   await click('Save suite', owner);
   await text('Manage publication', owner);
   const id = new URL(owner.url()).pathname.split('/').at(-1);
@@ -79,15 +81,17 @@ async function suitePublicationBrowser({
   await text('unavailable or updating', reader);
   await capture('publication-pending', reader);
   await projectSuite(id);
-  await click('Reload suite publication', reader);
+  await click('Reload suite', reader);
   await text('Published research suite', reader);
-  await text('Browser Suite Beta', reader);
+  await text('Application hidden by your content preferences', reader);
+  await go('/suites/' + id, member);
+  await text('Browser Suite Beta', member);
   await capture('publication-detail', reader);
   metadataOutage(true);
   await reader.reload({ waitUntil: 'networkidle0' });
   await text('unavailable or updating', reader);
   metadataOutage(false);
-  await click('Reload suite publication', reader);
+  await click('Reload suite', reader);
   await text('Published research suite', reader);
   await go('/suites?q=Published', reader);
   await text('Published research suite', reader);

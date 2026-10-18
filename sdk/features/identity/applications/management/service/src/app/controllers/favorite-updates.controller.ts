@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Header, Put, Query } from '@nestjs/common';
 import { CanonicalIdentityInputError } from '@sdk/features/identity/core';
-import {
-  FavoriteUpdatesService,
-  type IdentityManagementContext,
-} from '@sdk/features/identity/libs/management';
+import { type IdentityManagementContext } from '@sdk/features/identity/libs/management';
+import { FavoriteUpdatesService } from '@wapps/account';
 import {
   AuthUser,
   type AuthenticatedUser,

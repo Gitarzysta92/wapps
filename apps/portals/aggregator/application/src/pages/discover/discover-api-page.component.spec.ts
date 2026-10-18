@@ -1,3 +1,4 @@
+import { CatalogBrowserService } from '@portals/shared/features/listing';
 import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -13,6 +14,7 @@ import {
 } from '@portals/shared/features/preferences';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { PUBLIC_DISCOVERY } from '@portals/shared/features/search';
+import { MyFavoritesService } from '@portals/shared/features/my-favorites';
 import { ok } from '@sdk/kernel/standard';
 import { DiscoverApiPageComponent } from './discover-api-page.component';
 import { DISCOVER_REDIRECT_ROUTES } from './discover-redirect.routes';
@@ -52,7 +54,13 @@ function setup() {
               revision: 1,
               at: Date.UTC(2026, 9, 13),
               categories: [],
-              tags: [],
+              tags: ['tag-id', 'work'],
+              displayTags: [{ slug: 'work', name: 'Work tools' }],
+              details: kind === 'application' ? { kind: 'application' as const, logoUrl: 'https://example.test/logo.png',
+                reviews: { total: 1, rating: 4, preview: { id: '10000000-0000-4000-8000-000000000004', byline: 'Reviewer', rating: 4, text: 'A useful tool', publishedAt: 1000 } },
+              } : kind === 'article' ? { kind: 'article' as const, byline: 'Article writer', cover: null } : {
+                kind: 'suite' as const, applicationCount: 1, applications: [{ id: '10000000-0000-4000-8000-000000000005', slug: 'member-app', name: 'Member app', logoUrl: null, classification: 'general' as const }],
+              },
             },
           ],
         })),
@@ -61,7 +69,9 @@ function setup() {
   );
   TestBed.configureTestingModule({
     providers: [
+      { provide: MyFavoritesService, useValue: { mode: 'api', myFavorites$: of({ sessionVersion: 0 }), supports: () => true, isFavorite$: () => of(false) } },
       provideNoopAnimations(),
+      { provide: CatalogBrowserService, useValue: { contentChoice: signal({ status: 'ready' }), browse: () => of({ facets: { categories: [], tags: [], platforms: [], devices: [], monetizations: [] } }) } },
       { provide: TUI_DARK_MODE, useValue: signal(false) },
       provideRouter([
         { path: 'discover', component: DiscoverApiPageComponent },
@@ -106,16 +116,22 @@ describe('real-provider Discover page', () => {
       h.routeNativeElement?.querySelectorAll('.discovery-group')
     ).toHaveLength(3);
     expect(
-      h.routeNativeElement?.querySelectorAll('.discovery-grid--list')
+      h.routeNativeElement?.querySelectorAll('.results-list--list')
     ).toHaveLength(3);
     expect(
-      h.routeNativeElement?.querySelector('article a')?.getAttribute('href')
+      h.routeNativeElement?.querySelector('.result-link')?.getAttribute('href')
     ).toBe('/apps/application-result');
     expect(
       h.routeNativeElement
-        ?.querySelector('#suite article a')
+        ?.querySelector('#suite .result-link')
         ?.getAttribute('href')
     ).toBe('/suites/10000000-0000-4000-8000-000000000003');
+    expect(h.routeNativeElement?.querySelectorAll('#application ui-tags a')).toHaveLength(1);
+    expect(h.routeNativeElement?.querySelector('#application ui-tags a')?.getAttribute('href')).toBe('/tags/work');
+    expect(h.routeNativeElement?.querySelector('#application top-review-card')?.textContent).toContain('A useful tool');
+    expect(h.routeNativeElement?.querySelector('#article article-author-info')?.textContent).toContain('Article writer');
+    expect(h.routeNativeElement?.querySelector('#article .card-actions-toggle')).toBeNull();
+    expect(h.routeNativeElement?.querySelector('#suite suite-app-avatars')).not.toBeNull();
   });
   it('restores legacy queries and submits current edits without the old q alias', async () => {
     const { search } = setup();
@@ -123,15 +139,16 @@ describe('real-provider Discover page', () => {
       '/search?q=guide&type=articles'
     );
     await settle(h);
+    expect(h.routeDebugElement!.componentInstance.filterSelections().type).toEqual(['article']);
     const input =
       h.routeNativeElement!.querySelector<HTMLInputElement>(
-        'input[type=search]'
+        'search-bar input'
       )!;
     expect(input.value).toBe('guide');
     input.value = 'team';
     input.dispatchEvent(new Event('input'));
     h.routeNativeElement!.querySelector<HTMLFormElement>('form')!.dispatchEvent(
-      new Event('submit')
+      new Event('submit', { bubbles: true, cancelable: true })
     );
     await settle(h);
     expect(TestBed.inject(Router).url).toContain('search=team');
@@ -154,9 +171,8 @@ describe('real-provider Discover page', () => {
       article: 2,
       suite: 1,
     });
-    const select = h.routeNativeElement!.querySelectorAll('select')[1];
-    select.value = 'newest';
-    select.dispatchEvent(new Event('change'));
+    const component = h.routeDebugElement!.componentInstance as DiscoverApiPageComponent;
+    component.change({ sort: 'newest' });
     await settle(h);
     expect(search.mock.calls.at(-1)?.[0].pages).toEqual({
       application: 1,

@@ -15,11 +15,7 @@
   } @else if (timeline.loaded()) {
     <div class="timeline-items">
       @for (item of timeline.items(); track item.kind + ':' + item.id) {
-        @let destination = link(item.target);
-        <article class="timeline-card" tuiAppearance="card-elevated" [attr.data-id]="item.id" [attr.data-kind]="item.kind">
-          <header><span>{{ labels[item.kind] }}</span><time [attr.datetime]="timestamp(item.at)">{{ item.at | preferredDate }}</time></header>
-          <div class="timeline-copy"><h3><a tuiLink [routerLink]="destination.path" [queryParams]="destination.query">{{ item.title }}</a></h3>@if (item.engagement !== null) { <p>{{ item.engagement }} {{ item.kind === 'review' ? 'helpful marks' : 'net votes' }}</p> }</div>
-        </article>
+        <activity-feed-card [item]="item" />
       } @empty { <ui-content-state title="No matching activity on this page" [description]="timeline.excluded() ? 'Items on this page were hidden by your saved content choices.' : 'No visible activity was found in this selection.'" icon="@tui.list-ordered" /> }
     </div>
     @if (timeline.excluded()) { <p role="status">{{ timeline.excluded() }} items hidden on this page by your saved content choices.</p> }

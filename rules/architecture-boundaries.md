@@ -4,6 +4,10 @@ Follow `architecture-abstract.md`, `docs/FRONTEND-APPLICATION-ARCHITECTURE.md`,
 and `sdk/README.md`. The SDK paths are the current backend layout; legacy aliases
 do not change a dependency's responsibility.
 
+The portal connects to backend capabilities through the BFF, as specified in
+`portal-bff-boundary.md`. Same-origin gateway routes directly to domain services
+are not a substitute for this application boundary.
+
 - Keep domain contracts and business rules independent of Angular, NestJS, ORM
   entities, storage configuration, UI, and portal applications. Put Angular tokens
   in the consuming feature/application layer and infrastructure in adapters.
@@ -35,8 +39,14 @@ and build targets. The audit fails on existing violations; do not suppress them
 or interpret the baseline as an exemption. Fix boundary violations within the
 changed slice and record remaining blockers in `docs/OPERATIONAL-READINESS.md`.
 
-The source audit checks six dependency directions, including named adapter
-imports through barrels. It does not prove authorization, domain purity inside
+Consumer use-case libraries live in `libs/usecases`; consumer adapters live in
+`libs/adapters`. Their responsibilities use the existing usecase/adapter dependency
+matrix. A reusable SDK capability cannot depend back on its consumer.
+
+The source audit checks dependency directions, including named adapter imports
+through barrels, plus known Discussion, Review and Identity consumer coupling.
+Follow `discussion-consumer-boundary.md` and `consumer-capability-boundaries.md`
+for opaque-key and provider-plan contracts. It does not prove authorization, domain purity inside
 methods, all deep-import rules, runtime composition, or visual conventions.
 Review these explicitly. Keep graph cycles and unresolved imports covered by
 Nx lint and compiler checks.

@@ -5,7 +5,7 @@ import {
   type OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeliverMentionNotifications } from '@sdk/features/identity/libs/management';
+import { DeliverMentionNotifications } from '@wapps/account';
 
 @Injectable()
 export class MentionNotificationWorker
