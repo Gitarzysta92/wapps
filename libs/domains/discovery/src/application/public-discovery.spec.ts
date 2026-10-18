@@ -74,7 +74,8 @@ describe('public grouped discovery', () => {
     { category: 'work' },
     { type: 'suite', tags: 'work' },
     { type: 'article', platform: 'web' },
-    { type: 'article', tags: 'one,two' },
+    { type: 'article', tags: Array.from({ length: 13 }, (_, i) => `tag-${i}`) },
+    { type: 'article', tags: 'one,Invalid' },
     { type: 'application', category: '../private' },
     { social: 'github' },
   ])('rejects unsupported query %j', (input) =>
@@ -88,6 +89,13 @@ describe('public grouped discovery', () => {
         tag: 'web',
       })
     ).toMatchObject({ categories: ['Developer guides'], tags: ['web'] });
+  });
+  it('preserves all article tags across legacy aliases and query serialization', () => {
+    const query = parsePublicDiscoveryQuery({
+      type: 'articles', category: 'Guides', tag: ['web', 'offline'], tags: 'web,privacy',
+    });
+    expect(query.tags).toEqual(['offline', 'privacy', 'web']);
+    expect(parsePublicDiscoveryQuery(publicDiscoveryParameters(query))).toEqual(query);
   });
   it('validates optional canonical tag names without treating matching keys as labels', () => {
     const response = {

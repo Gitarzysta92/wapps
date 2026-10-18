@@ -653,6 +653,24 @@ async function main() {
           () => call(base, { user: suite.user }),
           'Suite services did not recover for cleanup'
         );
+        const publication = await call(`${base}/${suite.id}/publication`, {
+          user: suite.user,
+          status: [200, 404],
+        });
+        if (
+          publication.response.status === 200 &&
+          (publication.value.publishedSubmissionRevision !== null ||
+            publication.value.latestSubmission?.status === 'submitted')
+        )
+          await change(
+            suite.id,
+            'withdraw',
+            {
+              expectedRevision: publication.value.revision,
+            },
+            randomUUID(),
+            suite.user
+          );
         const current = await call(base + '/' + suite.id, {
           user: suite.user,
           status: [200, 404],

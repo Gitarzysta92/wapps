@@ -31,6 +31,8 @@ describe('public discovery HTTP adapter', () => {
           q: 'Guide',
           articlePage: '2',
           pageSize: '10',
+          tag: 'offline',
+          tags: ['privacy', 'web'],
         })
       )
       .subscribe(next);
@@ -39,6 +41,7 @@ describe('public discovery HTTP adapter', () => {
     );
     expect(request.request.params.get('articlePage')).toBe('2');
     expect(request.request.params.get('pageSize')).toBe('10');
+    expect(request.request.params.get('tags')).toBe('offline,privacy,web');
     request.flush({
       groups: [
         {

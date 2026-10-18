@@ -208,18 +208,17 @@ export function parsePublicDiscoveryQuery(
     if (selected.length === 1 && selected[0] === 'article') {
       if (
         query.categories.length > 1 ||
-        query.tags.length > 1 ||
         query.platforms.length ||
         query.devices.length ||
         query.monetizations.length
       )
         throw new DiscoveryInputError(
-          'Articles support one category and one tag; platform, device and pricing filters apply to Applications.'
+          'Articles support one category and up to 12 tags; platform, device and pricing filters apply to Applications.'
         );
       const article = parseArticleBrowseQuery({
         q: search,
         category: query.categories[0] ?? '',
-        tag: query.tags[0] ?? '',
+        tags: query.tags,
       });
       query.categories = article.category ? [article.category] : [];
     } else {

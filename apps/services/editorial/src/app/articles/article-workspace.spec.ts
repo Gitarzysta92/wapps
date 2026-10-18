@@ -278,6 +278,18 @@ describe('article public authority and materialization', () => {
     expect(f.authority.select).toHaveBeenLastCalledWith(query);
     expect(f.authority.select).toHaveBeenCalledTimes(6);
   });
+  it('retains every tag through current authority rechecks and fails a changed selection', async () => {
+    const f = catalog();
+    f.projections.find.mockResolvedValue(projectEditorialSnapshot({ ...snapshot, content: { ...snapshot.content, tags: ['offline', 'web'] } }));
+    const query = { q: '', category: '', tag: '', tags: ['offline', 'web'], page: 1 };
+    await f.service.browse(query);
+    expect(f.authority.select).toHaveBeenNthCalledWith(1, query);
+    expect(f.authority.select).toHaveBeenNthCalledWith(2, query);
+    f.authority.select.mockResolvedValueOnce(selection).mockResolvedValueOnce({ ...selection, total: 0, items: [] });
+    await expect(f.service.browse(query)).rejects.toThrow('changed while loading');
+    f.projections.find.mockResolvedValueOnce(null);
+    await expect(f.service.browse(query)).rejects.toThrow(ArticleUnavailableError);
+  });
   it('exposes current public eligibility directly from authority without Mongo or private fields', async () => {
     const f = catalog();
     f.projections.find.mockRejectedValue(new Error('Mongo offline'));

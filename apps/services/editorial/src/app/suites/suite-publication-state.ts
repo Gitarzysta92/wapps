@@ -70,21 +70,3 @@ export async function advanceSuitePublication(
   if (visible) await advanceContentUpdateCursor(manager, 'suites', id, at);
   return revision;
 }
-
-export async function deleteSuitePublication(
-  manager: EntityManager,
-  id: string,
-  actor: EditorialActor,
-  at: number
-): Promise<void> {
-  await advanceSuitePublication(
-    manager,
-    id,
-    actor.identityId,
-    actor,
-    at,
-    false
-  );
-  await manager.query('DELETE FROM suite_publications WHERE suiteId = ?', [id]);
-  await manager.query('DELETE FROM suite_submissions WHERE suiteId = ?', [id]);
-}

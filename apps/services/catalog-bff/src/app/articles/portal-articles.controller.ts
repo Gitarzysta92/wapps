@@ -129,6 +129,7 @@ export class PortalArticlesController {
       'q',
       'category',
       'tag',
+      'tags',
       'page',
       'pageSize',
       'sort',

@@ -206,7 +206,7 @@ describe('API discovery state', () => {
                   summary: '',
                   at: 0,
                   categories: [],
-                  tags: [],
+                  tags: ['offline', 'web'],
                   ...(classification === 'general' ||
                   classification === 'mature'
                     ? { classification }
@@ -218,7 +218,8 @@ describe('API discovery state', () => {
         })
       )
     );
-    h.service.search({ type: 'article' });
+    h.service.search({ type: 'article', tags: 'web,offline' });
+    expect(h.port.search).toHaveBeenLastCalledWith(expect.objectContaining({ tags: ['offline', 'web'] }));
     expect(h.service.groups()?.[0].items.map((item) => item.id)).toEqual(['1']);
     expect(h.service.groups()?.[0].hidden).toBe(2);
     const data = defaultAccountPreferences();
@@ -229,5 +230,6 @@ describe('API discovery state', () => {
     expect(h.service.groups()).toBeNull();
     h.update({ isLoading: false, data: defaultAccountPreferences() });
     expect(h.service.groups()?.[0].items.map((item) => item.id)).toEqual(['1']);
+    expect(h.port.search).toHaveBeenLastCalledWith(expect.objectContaining({ tags: ['offline', 'web'] }));
   });
 });

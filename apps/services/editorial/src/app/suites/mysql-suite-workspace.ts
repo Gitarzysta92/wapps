@@ -14,7 +14,6 @@ import {
 } from '@domains/publication/suite';
 import type { EditorialActor } from '../application/editorial.ports';
 import type { SuiteCommand, SuiteWorkspaceStore } from './suite-workspace';
-import { deleteSuitePublication } from './suite-publication-state';
 
 interface SuiteRow {
   id: string;
@@ -194,8 +193,13 @@ export class MysqlSuiteWorkspace implements SuiteWorkspaceStore {
               ]
             );
           }
+          // Private removal clears review history, but the approved snapshot has
+          // an independent lifecycle and is removed only by explicit withdrawal.
           if (type === 'delete')
-            await deleteSuitePublication(manager, id, actor, at);
+            await manager.query(
+              'DELETE FROM suite_submissions WHERE suiteId = ?',
+              [id]
+            );
           await manager.query(
             'INSERT INTO suite_commands (tenantId, ownerIdentityId, commandKey, fingerprint, suiteId, revision, deleted, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [

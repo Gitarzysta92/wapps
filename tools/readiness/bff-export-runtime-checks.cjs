@@ -270,7 +270,15 @@ async function main() {
         line.source === 'credentials' &&
         line.collection === 'credential-user'
     );
-    assert.equal(credential.data.uid, owner.uid);
+    const bindings = lines.filter(
+      (line) =>
+        line.type === 'record' &&
+        line.source === 'account' &&
+        line.collection === 'credential-binding'
+    );
+    assert.ok(
+      bindings.some((line) => line.data.subject === credential.data.uid)
+    );
     const text = JSON.stringify(lines);
     for (const secret of [owner.token, owner.password, other.uid, other.email])
       assert.ok(!text.includes(secret));
@@ -415,7 +423,7 @@ async function main() {
         : 'Export qualification failed'
     );
   pass(
-    'test archives revoked and both disposable accounts erased with access denied; existing accounts and content untouched'
+    'test archives revoked and deletion accepted for both disposable accounts with access denied; full cross-service erasure completion remains unqualified'
   );
 }
 main().catch((error) => {

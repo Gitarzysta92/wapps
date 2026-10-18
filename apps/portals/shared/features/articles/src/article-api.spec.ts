@@ -159,6 +159,15 @@ describe('article HTTP contract', () => {
       .flush({ items: [articlePreview(published)], page: 1, total: 1 });
     expect((await page).ok).toBe(false);
   });
+  it('sends every selected tag to BFF and rejects partial tag matches', async () => {
+    for (const tags of [['offline', 'web'], ['offline']]) {
+      const pending = firstValueFrom(api.browse({ q: '', category: '', tag: '', tags: ['offline', 'web'], page: 1 }));
+      const request = http.expectOne(r => r.url === '/api/catalog/articles');
+      expect(request.request.params.get('tags')).toBe('offline,web');
+      request.flush({ items: [articlePreview({ ...published, tags })], page: 1, total: 1 });
+      expect((await pending).ok).toBe(tags.length === 2);
+    }
+  });
 });
 describe('article catalog navigation state', () => {
   it('prevents late detail reads from replacing a different route and surfaces real errors', () => {

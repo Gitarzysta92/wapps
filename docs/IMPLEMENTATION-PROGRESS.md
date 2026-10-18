@@ -11,6 +11,315 @@ The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
 
+## Integrated export, suites and discovery baseline (October 18, 2026)
+
+The three A26 parallel lanes are integrated into the preserved `wapps` source:
+A27 account export, suite lifecycle/publication and discovery article all-tags
+filtering. The combined baseline is recorded by local snapshot branch
+`codex/integrated-a27-baseline` and the 4,298-file final manifest in
+`/tmp/wapps-integration-20261018-a7_k2sw8/`. `verification.json` indexes commands,
+results, source hashes and limitations; `snapshots.json` identifies the exact local
+commits and `workspace-refresh.json` records the subsequent workspace refresh.
+The original main HEAD/index and dirty backlog are preserved. Individual lane
+source copies/manifests remain available, including the unrelated `wappsB`
+navigation walkthrough. The accepted frontend reference remains `c965790e...`.
+
+Task-only three-way integration uses the preserved A26 source manifest, rather
+than treating main's untracked backlog as deletions. Shared documentation retains
+all three checkpoints. Alpha includes both export and suite BFF families. The
+local-auth harness retains both extensions and all A27 crash/authentication
+callbacks, and rejects simultaneous profile/member/export/suite extensions.
+No dependency lockfile, provider roster or presentation changes are introduced
+by integration. The suite lane's temporary service error interrupted only its
+final report; the coordinator recovered its logs/manifests and verified matching
+qualification source before merging.
+
+Combined qualification uses a new source copy and fresh `npm ci`, Node 22.17.1,
+`NX_DAEMON=false NX_ISOLATE_PLUGINS=false NX_NO_CLOUD=true`. All gates pass:
+
+- 6,869 Jest tests / 426 suites across 58 projects and 34 portable readiness tests,
+  with no skips/todos; 85 behavior-gap projects and eight external suites remain
+  separately identified, not counted as tested behavior.
+- Full production/tool lint, 140 uncached builds, 49 typechecks, separate BFF and
+  Editorial spec typechecks, all 64 Angular package inspections and the boundary
+  audit: 144 projects, 1,842 production sources, zero violations. Existing lint
+  warnings remain recorded debt.
+- Separate runtime invocations against the same completed builds: 25 export,
+  27 suite, six discovery-tag and 23 member/favorites/inbox groups. Each run owns
+  fresh isolated dependencies and completes its required resource cleanup. The
+  shared baseline groups overlap; these counts are not distinct workflow totals.
+
+Native Nginx qualifies both checked-in API/auth configurations for export, suites
+and member regressions; the unrelated complete-gateway startup check still uses
+Docker. Discovery uses compiled BFF/Editorial with real MySQL/Mongo/OPA and trusted
+setup claims/direct projection. These substitutions do not resolve Docker-to-host
+transport, full account erasure, external providers, original frontend/browser
+acceptance, archived-data retention, backup/restore, load/soak or deployment. Live
+installation remains A21. No live stores or workers are changed.
+
+After this gate, the user-authorized next parallel assignments are A28 full account
+erasure in `wapps`, application publication/ownership in `wappsB`, and Docker
+transport, migration qualifiers and dependency-aware readiness in `wappsA`.
+All start from this combined source manifest; their implementation and completion
+need new evidence. Subsequent integration must preserve each lane's task delta.
+
+## Account export gateway parity (October 18, 2026)
+
+A27 completes the bounded BC21/BC27 export slice in the preserved `wapps` working
+copy on `codex/full-operation`, without switching, staging or committing its
+backlog. Task deltas are measured against A26 snapshot
+`3d54604d8b4f85f1fed826601f76948885b78f0c` and its 4,290-file source manifest,
+not against the branch's older HEAD `95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb`.
+The accepted presentation reference remains `c965790e...`; no frontend files,
+dependency lockfile, stored representation or provider roster changes.
+
+Alpha's `/api/me/exports/*` direct Account bypass is removed. Both checked-in
+API/auth configurations require explicit BFF request/latest/status/cancel/download
+handlers for canonical, case/slash and unknown-suffix paths. The family has bounded
+64 KiB requests/timeouts and no upstream retry. Download routes disable buffering,
+caching, temporary-file spooling and recompression. BFF preserves private/no-store
+attachment headers and validates declared length/digest while retaining the final
+chunk until validation. Account retains current authorization, canonical jobs,
+immutable chunks, exact command receipts, leases, cancellation and retention.
+The durable plan remains exactly `account`, `credentials`, `editorial`, `discussion`.
+
+The new `WAPPS_EXPORT_PARITY_INTEGRATION=1` extension runs with independent
+Authentication, Account, BFF, Editorial and Community processes plus fresh
+MySQL/RabbitMQ/Mongo/MinIO and real OPA. Both local and alpha configurations use
+explicit native Nginx 1.28.3. `export-runtime-attempt4.log` passes all 25 groups
+(19 shared authentication/settings groups and six export groups) in about 87 seconds.
+They prove nonempty exact-provider capture, current and historical private payloads,
+issuer/subject isolation, safe credential allowlists, independent sessions,
+concurrent/replayed commands, conflicts, request/stream bounds, private attachment
+integrity, foreign-account and suspended-account denial, corruption rejection,
+all route families during BFF shutdown, owner/source/credential/policy failures,
+retry after recovery, cancellation and expiry purge. An actual Account SIGKILL
+while Editorial capture is blocked leaves a durable lease; restart produces a
+complete second-attempt archive. In-flight cancellation cannot resurrect chunks.
+Malformed missing/foreign/duplicate/oversized source streams fail without a ready
+artifact, and durable SQL completion separately rejects invalid provider receipts.
+
+Fresh-store regressions additionally pass:
+
+- Account source/storage: 140-item canonical history, snapshot edits, exact owner/case,
+  reconnect, avatar integrity, missing/corrupt chunks, concurrent claims, immutable
+  writes, rollback, expiry/cancellation/erasure during downloads and completion bounds.
+- Discussion source: 134 contributions, 135 registered payload versions and 131 review
+  versions, consistent snapshots, relationships/tombstones, foreign-data exclusion,
+  reconnect/cancel and invalid structure/object history. Registered uncommitted,
+  lost-confirmation, absent, corrupt, retiring and retired payload cases also pass.
+- Editorial source: 140 retained submissions across content families, exact ownership,
+  historical media, snapshot/cancel/reconnect, corruption/retirement and compiled
+  internal HTTP with real OPA, including mixed-credential and policy-outage denial.
+
+Qualification uses a new task-owned `npm ci` installation, Node 22.17.1, the
+unchanged lockfile, `NX_DAEMON=false NX_ISOLATE_PLUGINS=false`, and uncached builds
+completed before runtime tests. `npm test` passes 6,842 Jest tests / 424 suites
+across 58 projects and 34 portable tests; 85 behavior gaps and eight external suites
+remain separately reported. Full lint, all 140 builds and 49 typechecks, the separate
+BFF spec typecheck, all 64 Angular artifact inspections and boundaries (144 projects,
+1,842 production sources, zero violations) pass. Final readiness lint covers the
+changed harnesses. All exact logs, manifests and the task-only patch are in
+`/tmp/wapps-a27-account-export-20261018/`; `verification.json` is the evidence index.
+
+Failures are retained. The first runtime lacked the required Discussion writer
+role; fixture claims now use the real local credential provider. Attempt 2 expected
+503 for authentication outage, but Nginx correctly denies an unavailable auth
+subrequest as 500. Attempt 3 used an asynchronous assertion on synchronous receipt
+validation; the corrected callback preserves the rejected-input assertion. The
+storage fixture omitted credential-binding/legacy-import migrations; adding them
+restored the current source/storage regression. The older Compose probe now compares
+credential subjects to exported verified bindings rather than application IDs, and
+its cleanup message distinguishes deletion acceptance from erasure completion.
+
+Substitutions remain explicit: native gateway runs do not resolve A25/A26 Docker-to-
+host stalls; the full local gateway startup check still uses Docker. Editorial
+content setup uses canonical fixture claims/direct production projection, while
+Discussion commands use real authenticated BFF. Negative source streams are loopback
+fault probes; credential-outage work is submitted directly to the durable store
+because ingress is unavailable. Only disposable lease/expiry timestamps are advanced.
+Source regressions use fixture authority and the storage regression uses fixture
+records. One-GiB load, external Firebase/SSO, original frontend/browser acceptance,
+backup/restore and coordinated deployment are not qualified. Live remains A21.
+
+A28 is the next privacy slice. Editorial/Discussion cleanup must remain pending
+until reviewed inventories and old-writer/materializer fencing are established;
+this export fixture deliberately leaves both erasure fence settings false. Qualify
+private SQL/audit/payload cleanup, retained-public authorship anonymization and
+referenced-media survival, projection confirmation, exact `account`, `editorial`,
+`discussion` receipts, independent credential cleanup, interruption/retry and
+non-resurrection. The legacy combined Firebase/browser/erasure harness still assumes
+pre-A20 Account credential composition and provider subject equals account ID; it
+needs independent Authentication wiring and subject-aware assertions before its
+full A28 rerun. It is not evidence for current erasure. Archived backups, old object
+versions and logs retain a separate retention/disposition gate. No erasure policy,
+live worker, store, migration or deployment is changed by A27.
+
+Shared integration points are `deploy/alpha/nginx/api.conf`, the local-auth and
+qualification-process helpers, readiness README and the three checklist/parity/
+progress documents. Reconcile only A27 hunks with the parallel suites/publication
+and discovery/feed lanes; do not import the pre-existing backlog as this task's work.
+
+## Discovery article tag parity (October 18, 2026)
+
+The bounded discovery lane on `codex/discovery-feed-parity` starts from preserved
+A26 snapshot `3d54604d8b4f85f1fed826601f76948885b78f0c`. The accepted presentation
+reference remains `c965790e063139bcd5e6bacc759f289703e4ea9a`; no component, template,
+stylesheet or product action changes. The [contract inventory](DISCOVERY-FEED-CONTRACT-INVENTORY.md)
+maps original filters, legacy URLs, cards and overview fields to current owners,
+separating implemented behavior, missing composition and undecided metrics/taxonomy.
+
+Article multi-tag filtering now follows the original all-tags semantics. The
+Article owner accepts optional bounded `tags`, preserving legacy `tag`; canonical
+SQL applies every selected tag to count and page queries before pagination.
+Approved publication tags choose eligibility, with unchanged tenant/lifecycle,
+exact-revision projection and post-I/O current-authority checks. Discovery maps
+the complete tag set through its explicit BFF contract. Both BFF article clients
+and the article feature adapter serialize and validate every selected tag. No
+schema, stored payload, receipt, outbox, generic capability key, provider roster,
+bootstrap or gateway configuration changes.
+
+Verification in `/tmp/wappsA-discovery-parity-20261018-vqcziq5l/` uses its own fresh
+lockfile installation, Node 22.17.1, `NX_DAEMON=false NX_ISOLATE_PLUGINS=false`:
+
+- Full `npm test`: 6,860 Jest tests / 425 suites across 58 projects and 34 portable
+  readiness tests pass. The 85 behavior gaps and eight separately gated external
+  suites remain explicit. Final additional anonymous/member tag-route tests and
+  owner authority regression pass in the focused 808-test Editorial and
+  2,007-test BFF rerun; these overlap the full gate and are not additive totals.
+- Full lint, all 140 uncached builds and 49 typechecks, and the boundary audit
+  (144 projects, 1,842 production files, zero violations) pass. Final separate
+  owner/BFF spec typechecks and all 64 emitted Angular packages pass;
+  `verification.json` records the commands. Existing lint warnings remain debt.
+- `qualify-suites.cjs --discovery-tags --no-browser` passes six groups with fresh
+  randomly named MySQL/Mongo/OPA containers and compiled Editorial/BFF processes.
+  It verifies all-tags totals/pages, duplicate/legacy selectors, bounds/errors,
+  empty results, private edits/drafts and other-tenant exclusion, classification,
+  missing projections, current withdrawal before materialization, old-snapshot
+  replay, process restarts and unavailable dependencies. Builds finish before
+  runtime starts; no other checkout or retained qualification install is used.
+
+Trusted author/reviewer identity claims and direct production materializer calls
+are explicit substitutions. Current-choice classification checks use the production
+selector with real source results and fixture preferences; Angular service tests
+cover preference reload/session fencing. Real Account preference persistence,
+browser/accepted-presentation fidelity, broker delivery, authenticated gateway
+transport, abrupt crash/restore and deployment are not qualified by this slice.
+A25/A26 Docker-to-host Nginx stalls remain unresolved; this run uses neither
+native nor container Nginx. Existing A26 behavior is retained without claiming
+its BFF preference filtering also applies to Discover.
+
+Initial failures are retained: the sandbox install stalled before dependency
+resolution and was stopped; a network-authorized clean install passed. The first
+targeted run exposed the new `tags` key missing from the explicit article BFF
+allowlist, fixed with positive/negative route coverage. A final spec typecheck
+found an optional test URL, corrected without changing behavior. The first
+artifact-inspection invocation omitted the required Nx flags and stalled
+in daemon setup; it was stopped and rerun with both flags disabled. The final source
+manifest/diff and exact commands/results are in the evidence directory. There is
+no commit, push, merge, deployment, live migration or worker enablement.
+
+Remaining BC01/BC02 work includes mixed-kind taxonomy, multi-category articles,
+suite taxonomy/legacy slugs, social-reference publication, estimate provenance,
+broader search fields, author/badge/comment composition, general feed votes,
+top-author/views and full timeline history. This lane shares only the article
+query/client contract and the `qualify-suites.cjs` entry hook with potential future
+publication work; checklist/progress documentation needs reconciliation with the
+parallel account and suite lanes. See the inventory and final manifest for exact files.
+
+## Suite lifecycle and publication parity (October 18, 2026)
+
+The bounded suite lane runs in `wappsB` on `codex/suites-publication-parity`, based
+on preserved A26 snapshot `3d54604d8b4f85f1fed826601f76948885b78f0c`. Evidence is
+`/tmp/wappsB-suites-publication-20261018-9gw_04jl/`; `verification.json`, the
+baseline/final source hashes and `task-only.patch` identify the uncommitted delta.
+No other lane's checkout/install/stores are used. The user-owned navigation
+walkthrough is preserved. The accepted presentation reference remains
+`c965790e063139bcd5e6bacc759f289703e4ea9a`; runtime frontend files are unchanged.
+
+Private suite deletion previously withdrew and deleted the independently approved
+publication. It now scrubs the private workspace/submission history while retaining
+the approved snapshot and its public revision. The owner can read publication
+status and explicitly withdraw the retained snapshot using the current tombstone
+revision. Removed drafts cannot be edited, submitted or newly reviewed. Withdrawal
+preserves tombstone timestamp consistency and commits public revision/outbox changes
+atomically. Historical command receipts retain their representation and cannot
+reapply mutations. Historical deleted suites without a retained snapshot keep
+their former 404 behavior; the new path cannot restore old deleted publications.
+No schema, provider roster or opaque-key representation changes
+are introduced. Alpha's suite alternatives are removed from direct Editorial routes;
+all suite families use the existing explicit BFF contract in both configurations.
+
+The new `WAPPS_SUITE_PARITY_INTEGRATION=1` local-auth extension runs real
+Authentication, Account, Editorial and BFF processes with canonical enrolled
+identities, independent credential sessions, real reviewer claims, OPA and disposable
+MySQL/Mongo/RabbitMQ. Application prerequisites and all suite authoring/review
+commands cross the local BFF. Public suite projections use the compiled Editorial
+broker materializer, with no manual snapshot/projector substitution. Twenty-seven
+combined groups pass, including eight suite groups and nineteen shared baseline
+groups. Coverage includes foreign owner/tenant and self-review denial, ordered
+membership, unavailable members, exact/concurrent replay and revision/key conflicts,
+frozen classification, rejection/resubmission, approval/deletion rollback, projection
+lag, process restart, broker duplicate delivery, independent private removal,
+withdrawal and full route-family BFF-outage denial in both gateways.
+
+The existing Editorial export endpoint produces a complete bounded source stream
+containing owner-private suites and independent approved content after private
+removal. Canonical Account self-deletion reports accepted/pending and denies the
+old session. The disposable Editorial participant is then explicitly fenced and
+driven to completion: private owner/reviewer provenance drains, exact receipts
+survive restart, and anonymous approved content remains available at the next
+publication revision. This is suite-only participant evidence. The full Account
+archive/export delivery and fixed cross-service erasure roster still depend on
+the parallel A27/A28 work; no successful full privacy completion is inferred.
+
+Verification uses a newly copied 4,290-file A26 source tree and a fresh unchanged-
+lockfile `npm ci` in `/tmp/wappsB-suite-qualification-lzgxhvlo`, Node 22.17.1,
+`NX_DAEMON=false NX_ISOLATE_PLUGINS=false`. All builds finish before runtime tests:
+
+- `npm test`: 6,849 Jest tests / 425 suites across 58 projects, plus 34 portable
+  tests, with no skips/todos. The 85 behavior-gap projects and eight separately
+  gated external suites remain explicit.
+- Full production/tool lint and `npm run check:boundaries` pass, with 144 projects,
+  1,842 production sources and zero boundary violations. Existing warnings remain.
+- Uncached full build/typecheck passes 140 builds and 49 typechecks; all 64 Angular
+  packages pass artifact inspection. The added Editorial spec and BFF specs also
+  pass explicit typechecks.
+- Both deployed policy mergers pass strict OPA checks and 288/288 policy cases each
+  using the lane's checksum-verified OPA 1.4.2 binary.
+- `suite-runtime-compatible.log` records the final 27 combined groups, including
+  the historical deletion compatibility guard.
+  `suite-store-regression-configured.log` adds 19 owning-store/migration/delivery/
+  favorites groups plus the existing favorites HTTP journey, including 131-row
+  snapshot migration interruption/reentry, rebuild and old-event suppression.
+
+The historical store/favorites regression uses trusted ingress fixtures and explicit
+test-only Account authentication settings with an unavailable authentication origin;
+it does not qualify Authentication. Real credentials are covered by the new suite
+extension. The native gateway run uses both checked-in API/auth configurations with
+temporary paths/addresses and excludes unrelated media includes. The complete
+gateway startup check still uses Docker. Re-exposing an acknowledged outbox row is
+a declared replay fault injection, not a crash. Another explicit SQL fixture
+removes an already-withdrawn suite snapshot to reproduce historical private
+deletion, qualifying its 404 behavior and receipt non-resurrection. A25/A26 container-to-host transport
+stalls remain unresolved and no native run is counted as container qualification.
+
+Failed attempts are retained: an interrupted restricted install, an unavailable
+historical OPA executable, missing historical Account authentication configuration,
+and harness expectations for application-selection cache headers, generic unknown-
+route 404 headers, Mongo reconnection delay and the erasure revision advance.
+Corrections preserve the production contracts rather than weakening them.
+
+This lane changes suite-specific Editorial code/tests, suite qualification tools,
+the alpha suite locations and documentation. Shared integration points are
+`deploy/alpha/nginx/api.conf`, `tools/readiness/local-auth.test.cjs`,
+`tools/readiness/README.md`, `apps/services/catalog-bff/README.md`, and the three
+checklist/parity/progress documents. Reconcile those explicitly with the other
+lanes; no automatic merge, commit, push, live migration, worker enablement or
+deployment was performed. BC09/BC12 source and bounded native-gateway behavior
+are qualified; full privacy, archived-data privacy, deployed routing, crash/restore,
+container transport and original frontend acceptance remain open.
+
 ## Favorites and inbox gateway parity (October 18, 2026)
 
 A26 completes the approved bounded favorites/inbox slice on `codex/full-operation`,

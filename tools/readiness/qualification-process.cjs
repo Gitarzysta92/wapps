@@ -16,11 +16,11 @@ async function processService(command, args, options, resolveOrigin, health) {
     stream.on('data', (data) => {
       diagnostic = (diagnostic + data).slice(-8000);
     });
-  async function stop() {
+  async function stop(signal = 'SIGTERM') {
     if (child.exitCode !== null || child.signalCode !== null || spawnError)
       return;
     const exited = once(child, 'exit');
-    child.kill('SIGTERM');
+    child.kill(signal);
     const deadline = setTimeout(() => child.kill('SIGKILL'), 5000);
     try {
       await exited;
@@ -39,7 +39,8 @@ async function processService(command, args, options, resolveOrigin, health) {
             signal: AbortSignal.timeout(500),
           });
           await response.arrayBuffer();
-          if (response.ok) return { origin, stop };
+          if (response.ok)
+            return { origin, stop, crash: () => stop('SIGKILL') };
         } catch {
           /* Bound the startup wait; listening is not readiness evidence. */
         }

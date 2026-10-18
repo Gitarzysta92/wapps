@@ -111,7 +111,8 @@ export class PublicDiscoveryService {
                   ...sourceQuery,
                   page: p,
                   category: query.categories[0] ?? '',
-                  tag: query.tags[0] ?? '',
+                  tag: '',
+                  ...(query.tags.length ? { tags: query.tags } : {}),
                 }),
               page,
               pageSize

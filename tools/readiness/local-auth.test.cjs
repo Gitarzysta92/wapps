@@ -61,7 +61,9 @@ test(
   {
     timeout:
       process.env.WAPPS_PUBLIC_PROFILES_INTEGRATION === '1' ||
-      process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1'
+      process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1'
         ? 480000
         : 240000,
   },
@@ -72,11 +74,13 @@ test(
       'Set WAPPS_LOCAL_AUTH_INTEGRATION=1; this check requires Docker and built services'
     );
     assert.ok(
-      !(
-        process.env.WAPPS_PUBLIC_PROFILES_INTEGRATION === '1' &&
-        process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1'
-      ),
-      'Run profile and member extensions separately'
+      [
+        'WAPPS_PUBLIC_PROFILES_INTEGRATION',
+        'WAPPS_MEMBER_PARITY_INTEGRATION',
+        'WAPPS_EXPORT_PARITY_INTEGRATION',
+        'WAPPS_SUITE_PARITY_INTEGRATION',
+      ].filter((name) => process.env[name] === '1').length <= 1,
+      'Run profile, member, export and suite extensions separately'
     );
     const id = randomUUID().replaceAll('-', ''),
       password = randomUUID();
@@ -1231,9 +1235,56 @@ test(
         ingressSecret: env.INGRESS_AUTH_SECRET,
         ...serviceLifecycle,
       });
+      if (process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1') {
+        const { suiteParityServices } = require('./suite-parity-services.cjs');
+        const { qualifySuiteParity } = require('./bff-suite-parity-checks.cjs');
+        const services = await suiteParityServices({
+          root,
+          env,
+          password,
+          container,
+          names,
+          start,
+          freePort,
+          execute,
+          processes,
+        });
+        console.log(
+          'SUITE qualification resources ' +
+            JSON.stringify({
+              root,
+              node: process.version,
+              containers: [...names],
+              endpoints: services.endpoints,
+              gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+            })
+        );
+        try {
+          await restartAccount(services.endpoints);
+          await restartBff(services.endpoints);
+          await qualifySuiteParity({
+            call,
+            origins: [origin, alphaOrigin],
+            input,
+            source,
+            identities,
+            credentials,
+            subjectFor,
+            services,
+            ...serviceLifecycle,
+            restartAccount: () => restartAccount(services.endpoints),
+            restartBff: () => restartBff(services.endpoints),
+          });
+        } finally {
+          await services.close();
+          await restartAccount();
+          await restartBff();
+        }
+      }
       if (
         process.env.WAPPS_PUBLIC_PROFILES_INTEGRATION === '1' ||
-        process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1'
+        process.env.WAPPS_MEMBER_PARITY_INTEGRATION === '1' ||
+        process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1'
       ) {
         const {
           profileParityServices,
@@ -1267,6 +1318,9 @@ test(
           const qualify = memberParity
             ? require('./bff-favorites-inbox-parity-checks.cjs')
                 .qualifyFavoritesInboxes
+            : process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1'
+            ? require('./bff-export-parity-runtime-checks.cjs')
+                .qualifyExportParity
             : qualifyPublicProfiles;
           await restartAccount(accountEndpoints);
           await restartBff(services.endpoints);
@@ -1283,8 +1337,22 @@ test(
             subjectFor,
             ingressSecret: env.INGRESS_AUTH_SECRET,
             ...serviceLifecycle,
-            restartAccount: () => restartAccount(accountEndpoints),
-            restartBff: () => restartBff(services.endpoints),
+            restartAccount: (overrides = {}) =>
+              restartAccount({ ...accountEndpoints, ...overrides }),
+            restartBff: (overrides = {}) =>
+              restartBff({ ...services.endpoints, ...overrides }),
+            crashAccount: () => account.crash(),
+            stopAccount: () => account.stop(),
+            stopAuth: () => auth.stop(),
+            restartAuth: async () => {
+              await auth.stop();
+              auth = await start(
+                authBundle,
+                { ...credentialEnv, PORT: String(authPort) },
+                authPort,
+                '/health'
+              );
+            },
           });
         } finally {
           await services.close();

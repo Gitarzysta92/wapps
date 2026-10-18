@@ -442,14 +442,18 @@ Editorial retains SQL transactions, immutable submissions and receipts, public
 revisions, canonical visibility checks, outbox and materialization. Draft edits
 cannot change submitted content. Missing/stale public projections return 503;
 withdrawal returns 404 immediately even while an old projection remains present.
-Receipt replay does not reapply approval or resurrect a withdrawn suite. BFF has
-no database access or new materialization protocol. No frontend source/assets,
-owning-service implementation or migration changes are required.
+Receipt replay does not reapply approval or resurrect a withdrawn suite. Private
+removal clears the workspace and submissions but preserves the independently
+approved publication. Its owner can still read publication status and explicitly
+withdraw it using the tombstone's current revision; new edits, submissions and
+review decisions remain unavailable. BFF has no database access or new
+materialization protocol. Stored representations and migration versions are unchanged.
 
 See `portal-suite-publication.spec.ts` and
-`tools/readiness/bff-suite-publication-runtime-checks.cjs`. This activates only the
-local gateway; other ingress deployments and original-frontend visual acceptance
-remain open.
+`tools/readiness/bff-suite-publication-runtime-checks.cjs` and the disposable
+`WAPPS_SUITE_PARITY_INTEGRATION=1` extension of `local-auth.test.cjs`. Both local
+and alpha gateway configurations route these families through BFF. Configuration
+parity does not activate a deployment; original-frontend visual acceptance remains open.
 
 ## Private suite workspaces
 
@@ -476,8 +480,9 @@ to fifteen seconds, with no redirects or automatic retries. Safe errors preserve
 400/401/403/404/409/413/429; uncertainty is 503 with Retry-After. Responses are
 private/no-store. Retries preserve the original key/revision; historical receipts
 do not assert that a suite still exists. Editorial retains canonical SQL, owner/
-tenant authorization, transactional receipts, tombstones and the existing atomic
-publication revocation/outbox on deletion. BFF adds no storage or materialization.
+tenant authorization, transactional receipts and tombstones. Private deletion
+preserves an approved public snapshot; explicit withdrawal advances its canonical
+publication revision and commits the outbox atomically. BFF adds no storage or materialization.
 
 Application search and selection use the existing BFF `/api/catalog/apps` and
 `/api/catalog/app-selection` contracts. Stored membership is ordered canonical
@@ -485,12 +490,12 @@ IDs; metadata is a separate current observation. Missing/ineligible records are
 omitted by the catalog without altering membership. Metadata failure does not
 replace private suite authority or prevent editing/removing existing references.
 
-The local gateway routes the complete suite path families, including case/slash
+Both gateway configurations route the complete suite path families, including case/slash
 variants, to BFF with bounded timeouts, 64 KiB bodies and upstream retries disabled.
 The existing application search/selection gateway routes receive the same bounds.
 Nested publication/submission/withdrawal and public suite catalog routes use the
-publication handlers described above. No frontend source/assets, migration or owning
-service changes are required. See `portal-suites.spec.ts` and
+publication handlers described above. No frontend source/assets or migration changes
+are included in this lifecycle correction. See `portal-suites.spec.ts` and
 `bff-suites-runtime-checks.cjs`; the original frontend merge and deployed activation
 are still pending.
 

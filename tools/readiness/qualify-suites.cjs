@@ -390,9 +390,12 @@ async function main() {
         '/api/health'
       );
     };
-    if (process.argv.includes('--discovery')) {
+    const discoveryTags = process.argv.includes('--discovery-tags');
+    if (process.argv.includes('--discovery') || discoveryTags) {
       await restart();
-      await require('./discovery-runtime-checks.cjs')({
+      await require(discoveryTags
+        ? './discovery-tags-runtime-checks.cjs'
+        : './discovery-runtime-checks.cjs')({
         root,
         source,
         origin: () => editorial.origin,
@@ -412,12 +415,16 @@ async function main() {
         path.join(output, 'qualification.json'),
         JSON.stringify(
           {
-            workflow: 'grouped-discovery',
+            workflow: discoveryTags ? 'article-tag-discovery' : 'grouped-discovery',
             checks,
             node: process.version,
-            authority: 'Real MySQL/Mongo/OPA and compiled Editorial/BFF/portal',
+            authority: discoveryTags
+              ? 'Real MySQL/Mongo/OPA and compiled Editorial/BFF'
+              : 'Real MySQL/Mongo/OPA and compiled Editorial/BFF/portal',
             substitutions: [
-              'Trusted ingress identities and browser shell/profile/preferences fixtures',
+              discoveryTags
+                ? 'Trusted author/reviewer identity claims; pure production preference selector with fixture choices, no Account persistence or browser'
+                : 'Trusted ingress identities and browser shell/profile/preferences fixtures',
               'Direct production materializer invocation without broker delivery',
             ],
             exclusions: [

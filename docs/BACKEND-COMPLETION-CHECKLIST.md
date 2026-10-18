@@ -3,7 +3,8 @@
 Current assessment: **October 18, 2026**, after Discussion route consolidation,
 the generic Review owner API/BFF slice, independent local Authentication,
 complete administration BFF, staff health-monitor BFF, account/profile gateway
-parity and A26 favorites/inbox classification and gateway parity.
+parity, A26 favorites/inbox classification, A27 account-export gateway parity,
+suite lifecycle/publication parity and discovery article tag intersection.
 Branch: `codex/full-operation`; base HEAD:
 `95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb`. The assessed implementation includes
 extensive uncommitted and untracked work; HEAD alone does not identify it.
@@ -46,6 +47,13 @@ Frontend merge and visual acceptance are tracked separately as **FE01**.
 
 ## Evidence and reconciliation
 
+The three parallel lanes share the [integrated source checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-export-suites-and-discovery-baseline-october-18-2026).
+Combined verification in `/tmp/wapps-integration-20261018-a7_k2sw8/` passes 6,869
+Jest tests / 426 suites, 34 portable tests, full lint, 140 builds, 49 typechecks,
+64 Angular package inspections and zero boundary violations, plus separate export,
+suite, discovery and member runtime regressions. The 4,298-file manifest and local
+snapshot identify the dirty source; this does not change deployment status.
+
 | Evidence | What it establishes | Limits / current interpretation |
 | --- | --- | --- |
 | E01: source/configuration inspection, October 18 | [BFF registration][bff-module], controller/client sources, [local ingress][local-api], [alpha ingress][alpha-api], media includes, owning modules and workers | Read-only assessment; no live routing probe, service restart, store mutation or new integration run. |
@@ -60,6 +68,8 @@ Frontend merge and visual acceptance are tracked separately as **FE01**.
 | A24: [private account/settings gateway parity](IMPLEMENTATION-PROGRESS.md#private-account-and-settings-gateway-parity-october-18-2026) and `/tmp/wapps-account-routes-20261018/` | 6,786 Jest tests / 422 suites and 34 portable tests; production/tool lint, 140 builds, 49 typechecks, 64 Angular artifacts, BFF spec typecheck and zero boundary violations; nineteen local-auth real-stack groups, eight added for settings | Private account/profile/preferences/avatar and deletion acceptance cross BFF in both configurations. Real credentials/OPA/SQL prove isolation, rollback/replay, persistence, photo bounds/removal and BFF outage without owner fallback. Remaining callers/routes are inventoried; public-profile/source qualification, full erasure, activation and frontend acceptance remain open. Initial timeout attempts and corrected private-avatar denial expectation are recorded. |
 | A25: [public-profile/follow/badge parity](IMPLEMENTATION-PROGRESS.md#public-profile-follow-and-badge-gateway-parity-october-18-2026) and `/tmp/wapps-public-profile-parity-20261018/` | 6,825 Jest tests / 422 suites and 34 portable tests; 288 OPA cases per merged bundle; full lint, 140 builds, 49 typechecks, 64 Angular artifacts and zero boundary violations; twenty-three combined runtime groups | Both API/auth gateway configurations use native Nginx 1.28.3 with real credentials/OPA/SQL/Editorial/Community/Mongo/MinIO and test-owned Discussion materialization. Audiences, contacts/photos, sharing, follow/badge rollback/replay/revocation, persistence, withdrawal and outages pass. Docker-to-host stalls remain unresolved; deployment, mature filtering, full erasure and frontend acceptance remain open. Source setup/projector substitutions are recorded. |
 | A26: [favorites/inbox parity](IMPLEMENTATION-PROGRESS.md#favorites-and-inbox-gateway-parity-october-18-2026) and `/tmp/wapps-favorites-inbox-parity-20261018/` | 6,842 Jest tests / 424 suites and 34 portable tests; full lint, 140 builds, 49 typechecks, BFF spec typecheck, 64 Angular artifacts and zero boundary violations; twenty-three combined runtime groups | Both native gateway configurations exercise real credentials/OPA/source stores and actual reply/mention/watch workers. Four-kind favorites, current classification, private read-state, replay/suppression, persistence, removal/re-add and outages pass. Source setup, scheduler/acknowledgement fault substitutions and Docker transport limits remain explicit. Full privacy/quarantine/deployment/frontend acceptance remain open; runtime presentation is unchanged. |
+| A27: [account export parity](IMPLEMENTATION-PROGRESS.md#account-export-gateway-parity-october-18-2026) and `/tmp/wapps-a27-account-export-20261018/` | Clean Node 22.17.1 install; full portable/test/lint/build/typecheck/artifact/boundary gates; independent real-provider export through both native gateways plus Account/Editorial/Discussion source/storage regressions | Exact unchanged four-provider roster, historical capture, integrity, replay, current authority, outages, cancellation, expiry and Account SIGKILL/restart. Explicit fixture/clock/source-fault substitutions; Docker transport, full erasure, external providers, browser/frontend acceptance and deployment remain open. |
+| Suite lane after A26: [suite lifecycle/publication parity](IMPLEMENTATION-PROGRESS.md#suite-lifecycle-and-publication-parity-october-18-2026) and `/tmp/wappsB-suites-publication-20261018-9gw_04jl/` | New isolated lockfile installation; 6,849 Jest tests / 425 suites and 34 portable tests; full lint, 140 builds, 49 typechecks, BFF spec typecheck, 64 Angular packages and zero boundary violations; 27 combined real-session runtime groups | Real Authentication/Account/Editorial/OPA/SQL/Mongo/RabbitMQ and both native gateways qualify private suites, independent frozen publication, withdrawal, replay/restart, failures, owner export and suite-only Editorial erasure. Private removal preserves approved publication. Historical store/delivery/favorites regression uses declared ingress fixtures. Full Account export/archive/erasure remains dependent on A27/A28; no deployment, container-transport or frontend acceptance. |
 | E03: [October 16 consumer-boundary checkpoint][consumer-evidence] | 6,256 Jest tests / 406 suites, 33 portable checks, 136 builds, 45 typecheck projects, 64 Angular artifacts; six isolated store qualifiers reported | Historical full-workspace result; subsequent Discussion changes prevent treating it as a current full gate. Optional scraper lockfile-pruning fallback remains unqualified. |
 | E04: October 12-15 workflow checkpoints in [progress][progress] and [readiness JSON][readiness-json] | Detailed commands, providers, source snapshots, failures and local/browser results for individual workflows | JSON filename is October 11 but entries have their own dates. Many older paths/statuses are historical; use current source references below. Browser fixtures and emulator evidence are not deployed-provider acceptance. |
 | E05: [alpha runbook][alpha-readme], `compose.alpha.yaml`, release workflow | Reports October 13 backend rollout, real Firebase email/password configuration, in-app workers and immutable alpha image tags; describes activation/rollback | Current deployed SHA/digests, runtime ingress and per-workflow results were not inspected. Alpha disables HTTP monitoring and optional integrations; Google/GitHub/anonymous providers are disabled there. |
@@ -94,7 +104,7 @@ Every deployment cell remains U for the currently assessed implementation.
 
 | ID / workflow | Implemented | BFF / local / alpha | Real dependencies | Deployment |
 | --- | --- | --- | --- | --- |
-| [BC01 Discovery and taxonomy](#bc01-discovery-and-taxonomy) | partial parity | yes / yes / mixed | H13-14; current U | U |
+| [BC01 Discovery and taxonomy](#bc01-discovery-and-taxonomy) | partial parity; article multi-tag query complete | yes / yes / mixed | H13-14; October 18 article-tag slice real MySQL/Mongo/OPA/BFF; remaining U | U |
 | [BC02 Home, activity and metadata](#bc02-home-activity-and-metadata) | partial parity | yes / yes / yes | H13-14; current U | U |
 | [BC03 Authentication and sessions](#bc03-authentication-and-sessions) | independent local auth + Identity/BFF implemented | yes / yes / yes | A20/A21 local SQL/processes/ingress; external provider deferred | local auth active; alpha/K8s U |
 | [BC04 Account administration](#bc04-account-administration) | all admin BFF contracts present | yes / yes / yes | A22 local SQL/processes/OPA/ingress; unavailable local actions fail explicitly | local A21 lifecycle active; A22 rollout pending |
@@ -102,10 +112,10 @@ Every deployment cell remains U for the currently assessed implementation.
 | [BC06 Follows and badges](#bc06-follows-and-badges) | present | yes / yes / yes | A25 real Account/OPA/native-Nginx rollback/replay/revocation | U |
 | [BC07 Preferences and classification](#bc07-preferences-and-classification) | partial consumers | yes / yes / yes | A24 persistence; A26 favorites/profile/inbox and delivery classification; remaining settings U | U |
 | [BC08 Favorites](#bc08-favorites) | present | yes / yes / yes | A26 four-kind real-source/native-Nginx replay, removal, persistence and outages | U |
-| [BC09 Private suites](#bc09-private-suites) | present | yes / yes / bypass | H14; current U | U |
+| [BC09 Private suites](#bc09-private-suites) | present; lifecycle qualified | yes / yes / yes | suite lane: real sessions/OPA/stores, native gateways; full privacy pending | U |
 | [BC10 Application drafting/publication](#bc10-application-drafting-and-publication) | present | yes / yes / bypass | H14; current U | U |
 | [BC11 Ownership](#bc11-ownership) | present | yes / yes / bypass | H13-14; current U | U |
-| [BC12 Suite publication](#bc12-suite-publication) | present | yes / yes / bypass | H12, H14; current U | U |
+| [BC12 Suite publication](#bc12-suite-publication) | present; independent removal/withdrawal | yes / yes / yes | suite lane: frozen review, broker replay, retained anonymous publication | U |
 | [BC13 Articles](#bc13-articles) | present | yes / yes / bypass | H15; current U | U |
 | [BC14 Releases](#bc14-releases) | present | yes / yes / bypass | H15; current U | U |
 | [BC15 Media](#bc15-media) | present | yes / yes / bypass | H14-15; current U | U |
@@ -114,13 +124,13 @@ Every deployment cell remains U for the currently assessed implementation.
 | [BC18 In-app notifications](#bc18-in-app-notifications) | present; classification enforced | yes / yes / yes | A26 real reply/mention/watch workers, SQL receipts, private read-state/replay and current authority | U |
 | [BC19 Advertised channels/alerts](#bc19-advertised-channels-and-alerts) | preferences only / incomplete | preferences only / mixed / bypass | delivery U | U |
 | [BC20 HTTP application health](#bc20-http-application-health) | public and staff BFF present | yes / yes / yes | A23 real SQL/Mongo/OPA and both gateways; authentication and probe DNS/transport fixtures | U; probing remains disabled |
-| [BC21 Account export](#bc21-account-export) | present | yes / yes / bypass | H12, H14, H16; amended journey U | U |
+| [BC21 Account export](#bc21-account-export) | present | yes / yes / yes | A27 independent real providers, native gateways and historical source/storage regressions | U |
 | [BC22 Account erasure](#bc22-account-erasure) | present | yes / yes / bypass | H13, H15-16; amended journey U | U |
 | [BC23 Authorization and privacy](#bc23-authorization-and-privacy) | partial qualification | mixed / mixed / mixed | historical + R18 subset | U |
 | [BC24 Migrations/materialization](#bc24-migrations-and-materialization) | present; residual gaps | via workflows / mixed / mixed | H15 failed Editorial groups; R18 subset | U |
 | [BC25 Readiness/observability](#bc25-readiness-and-observability) | partial | service endpoints / configured / configured | dependency/alert U | U |
 | [BC26 CI/build artifacts](#bc26-ci-and-build-artifacts) | partial release qualification | n/a | A26 workspace gate; external suites separate | U |
-| [BC27 Deployment/ingress](#bc27-deployment-and-ingress) | partial alignment; caller inventory recorded | mixed / mixed / mixed | R18/V18/A22-A26 selected nginx families | U |
+| [BC27 Deployment/ingress](#bc27-deployment-and-ingress) | partial alignment; caller inventory recorded | mixed / mixed / mixed | R18/V18/A22-A27 and suite-lane selected nginx families | U |
 | [BC28 Crash/restore/rollback](#bc28-crash-restore-and-rollback) | tools/runbooks; proof incomplete | n/a | historical limited recovery; restore U | U |
 | [BC29 Load/soak](#bc29-load-and-soak) | unverified | all released contracts | U | U |
 | [BC30 Content Node Registry](#bc30-content-node-registry) | scaffold; disposition open | none / local dependency / absent | no behavior qualification | U |
@@ -143,7 +153,11 @@ BFF has no database transaction or materializer of its own.
   No BFF search index. H13 [grouped discovery][discovery-evidence] and H14 rich-tile
   evidence cover bounded pages, filters, lag and real metadata, with stated fixtures.
 - **Remaining/next (P1; BC07, BC17):** Close original filter parity one family at a
-  time. [The discovery query contract][discovery-query] rejects mixed-kind facets, suite taxonomy and unsupported
+  time. The [discovery-lane contract inventory](DISCOVERY-FEED-CONTRACT-INVENTORY.md)
+  maps the original controls/cards to owners and records the completed article
+  multi-tag intersection slice: domain/query, owner SQL, BFF/adapter validation,
+  portable checks and six real MySQL/Mongo/OPA/compiled-service groups. Legacy
+  single-tag behavior is retained; no storage or gateway changes. [The discovery query contract][discovery-query] still rejects mixed-kind facets, suite taxonomy and unsupported
   social/estimated-user filters; the original `filters.ts` advertises the latter two.
   Acceptance: map every original reachable filter/directory/legacy query to an owner
   contract, then qualify the first missing facet through BFF with accurate totals,
@@ -164,6 +178,9 @@ BFF has no database transaction or materializer of its own.
   completion evidence. Acceptance: a field/action-to-authority matrix and one missing
   BFF composition with canonical counts, revoked-access handling and truthful unknowns.
   No fabricated metrics or new recommendation algorithm; presentation work is FE01.
+  The [discovery-lane inventory](DISCOVERY-FEED-CONTRACT-INVENTORY.md) now provides
+  the field/action-to-authority matrix. It completes the article multi-tag query
+  gap under BC01, not the remaining card metadata compositions or BC02 acceptance.
 
 ### BC03 Authentication and sessions
 
@@ -312,10 +329,15 @@ BFF has no database transaction or materializer of its own.
 - **Authority/work:** Canonical owner-scoped SQL drafts/membership UUIDs, revisions,
   command receipts and tombstones; current catalog resolves member metadata.
   H14 [private-suite BFF evidence][suites-evidence]; export/erasure are BC21-22.
-- **Remaining/next (P1; BC01, BC21-22, BC27):** Qualify candidate private collection
-  lifecycle and alpha routing. Acceptance: two-session persistence, foreign-user/tenant
-  denial, exact retry/conflict, unavailable/deleted members, deletion and export/erasure
-  all work without publishing private edits. Collaborative curation is not added scope.
+  The suite lane after A26 qualifies both gateways, real canonical sessions/OPA,
+  two-session persistence, ownership/tenant denial, membership changes, exact
+  retry/conflict, unavailable members and atomic private removal. Removed drafts
+  leave approved snapshots intact and retain owner status/withdrawal access.
+  Existing Editorial export and suite-only erasure hooks pass against real stores.
+- **Remaining/next (P1; BC21-22, BC27):** A27/A28 must qualify complete Account
+  export archives, the fixed cross-service privacy provider plan and cleanup
+  convergence. Current deployment, Docker-to-host gateway transport and original
+  frontend acceptance remain unverified. Collaborative curation is not added scope.
 
 ### BC10 Application drafting and publication
 
@@ -353,10 +375,17 @@ BFF has no database transaction or materializer of its own.
 - **Authority/work:** SQL private workspace and independent immutable publication
   snapshots, reviews/receipts/outbox and public Mongo projections. H12 independent
   snapshots and H14 BFF checkpoints supersede the earlier private-only status.
-- **Remaining/next (P1; BC07, BC09, BC24, BC27):** Qualify publication independence
-  through the candidate edge. Acceptance: private edits/deletion cannot silently
-  mutate the approved snapshot; reviewer independence, hidden members, withdrawal,
-  historical replay and anonymous retained publications survive erasure.
+  The suite lane qualifies independent review/self-review denial, frozen content
+  and classification, rejection/resubmission, private deletion preserving approval,
+  hidden-member denial, truthful lag, broker replay/rebuild, atomic outbox failure,
+  restart and explicit withdrawal despite retained projections. Both native
+  gateways deny every tested suite family when BFF is stopped. The Editorial
+  participant removes private provenance while retaining anonymous approved
+  content at a new canonical publication revision.
+- **Remaining/next (P1; BC21-22, BC24, BC27):** Retained publication is qualified
+  for the suite-only Editorial participant, not the full A27/A28 account privacy
+  saga. Archive/backup privacy, container transport, deployment/migration activation
+  and original frontend acceptance remain open.
 
 ### BC13 Articles
 
@@ -497,17 +526,24 @@ BFF has no database transaction or materializer of its own.
   Editorial/Community `/internal/account-export` and credential provider capture.
 - **Authority/work:** SQL jobs/leases, immutable private artifacts and exact provider
   receipts. Wapps fixed roster: `account`, `credentials`, `editorial`, `discussion`.
-  H12 full local, H14 BFF and H16 storage/coordinator evidence; latest harness edits unrun.
-- **Remaining/next (P0 privacy acceptance; BC03, BC16, BC27):** Rerun full export
-  with current services and download transport. Acceptance: all required providers
-  exactly once, no incomplete success, bounded historical payload capture, cancellation/
-  restart/reconnect, account isolation and private download semantics; alpha uses BFF.
-  Plan changes require durable-job migration, never a roster inferred from availability.
+  H12/H14/H16 are historical; A27 qualifies the current independent-provider path.
+- **A27 evidence:** Both native gateway configurations pass the independent real-provider
+  journey: exact roster/receipts, historical payloads, input/stream bounds, concurrent
+  and historical commands, private digest-checked downloads, isolation/current lifecycle,
+  source and credential outages, cancellation, expiry and actual Account SIGKILL/restart.
+  Fresh Account/Editorial/Discussion source and storage regressions pass larger histories,
+  corruption, SQL snapshots/reconnect and receipt rejection. See the A27 checkpoint and
+  `/tmp/wapps-a27-account-export-20261018/verification.json`.
+- **Remaining/next (BC22, BC27-28):** A28 full erasure, external Firebase/SSO acceptance,
+  Docker-to-host gateway transport, maximum-size/load, browser/frontend acceptance,
+  backup/restore and coordinated deployment remain separate. Plan changes still require
+  durable-job migration, never a roster inferred from availability.
 
 ### BC22 Account erasure
 
 - **Owner/contracts:** Account `DELETE /me` through BFF, durable coordinator to
-  Editorial/Community `/internal/account-erasure` and Firebase credential cleanup.
+  Editorial/Community `/internal/account-erasure` and credential cleanup through
+  independent Authentication.
   Wapps participant roster is exactly `account`, `editorial`, `discussion`.
 - **Authority/work:** Canonical lifecycle/write barriers, tombstones, participant
   leases/receipts, attribution cleanup, object inventory/retirement and projection
@@ -590,7 +626,7 @@ BFF has no database transaction or materializer of its own.
 - **Authority/work:** Versioned config/images and ordered migrations over retained
   stores. E05 documents a backend alpha; E02 and V18 test both nginx configurations
   for Discussion and Reviews. Alpha still bypasses BFF for
-  export, suites, applications/ownership, articles/releases,
+  applications/ownership, articles/releases,
   publication-review and media workflows already integrated locally. A22 administration
   and A23 staff health routes cross BFF in both configurations, including case variants
   and unknown suffixes. A24 aligns private account/profile/photo/preferences and
@@ -599,12 +635,16 @@ BFF has no database transaction or materializer of its own.
   follows, totals and badges, with real dependency qualification through both native
   Nginx configurations; Docker transport failures remain recorded. A26 aligns the
   complete favorites/inbox families with current classification and real delivery
-  workers. Authentication aliases also
+  workers. A27 aligns the complete export family and verifies all four required
+  providers, private downloads, cancellation and crash/retry through both native gateways.
+  The suite lane aligns `/me/suites`, `/editorial/suite-reviews` and
+  `/catalog/{suites,suite-selection}` through both native configurations.
+  Authentication aliases also
   cross BFF in both route sets; external-provider integration remains deferred.
   Both gateways still expose direct application-visibility and registration routes
   without a discovered current portal caller; disposition remains open.
 - **Remaining/next (P0 activation; BC03-04, BC17, BC20, BC24, BC26):** Qualify and align
-  exports/privacy with full provider capture and cleanup convergence next.
+  A28 full erasure with cleanup convergence next; export parity is A27.
   Acceptance: full path/case/slash/unknown-suffix behavior requires explicit BFF
   handlers, BFF outage cannot fall through to owners, internal routes are inaccessible,
   migration/version compatibility is recorded and observed image/config identities match.
@@ -678,22 +718,30 @@ algorithms, new providers and visual redesign are not added requirements.
 The BC17 generic owner API is implemented and qualified within V18's stated limits.
 Its remaining activation/provider checks stay in the BC17 record.
 
-1. **BC21/BC22/BC27 export and privacy parity:** A26 completes the bounded favorites/
-   inbox gateway and classification slice. Next qualify complete required-provider
-   capture, durable export jobs, authorized bounded downloads, cancellation/restart
-   and erasure convergence, then align alpha exports. Keep Docker transport stability,
+1. **A28 / BC22/BC27 full erasure:** A27 qualifies required-provider export capture,
+   durable jobs, authorized bounded downloads, cancellation/restart and alpha parity.
+   Next qualify independent credential cleanup, exact participant receipts, private
+   data removal and retained-public-content convergence. Keep Docker transport stability,
    public monitoring egress, archived-data privacy and coordinated domain activation
    open. External authentication remains deferred; this is not authorization to deploy.
-2. **BC16/BC17/BC18/BC21/BC22 qualification:** exercise generic Discussion/Review with real
-   authority providers and the amended cross-service journeys; do not repeat the
-   already-completed route implementation or call fixture-only success provider proof.
-3. **BC07 preference consumers, then BC01-BC02 parity:** audit remaining advertised
-   settings and enumerate original filter/metadata gaps before implementing them.
-4. **BC24 and BC27 release prerequisites:** repair the two unresolved Editorial
-   qualifiers, decide BC30's topology role, and prepare BFF ingress parity. Finish
-   BC25-BC29 on one frozen candidate before claiming operational completion.
+2. **BC10/BC11/BC27 application publication and ownership (`wappsB`):** qualify real
+   draft/review/publication/withdrawal, DNS proof and independent grant decisions,
+   immediate revocation and successor ownership. Align only the corresponding
+   alpha route families after explicit BFF behavior passes. Coordinate erasure
+   acceptance with A28; application media and releases retain their own scope.
+3. **BC24/BC25/BC27 operational foundations (`wappsA`):** resolve Docker gateway-to-
+   host transport, repair the two Editorial migration qualifiers, then implement
+   dependency-aware readiness for one journey. Keep liveness separate, fail closed
+   on incompatible schema and unavailable dependencies, and qualify recovery.
+   Registry topology, live activation and general crash/restore remain separate.
+4. **Remaining discovery/preferences and release work:** the article all-tags slice
+   is complete within its documented scope. Use the contract inventory for remaining
+   original filters and metadata; qualify remaining preference consumers, real-provider
+   Discussion/Review journeys, observability, restore and soak before full completion.
 
-The next slices are backlog recommendations, not implementation performed here.
+The user assigned the first three slices to parallel sessions after integration
+verification: A28 in `wapps`, publication/ownership in `wappsB`, and operational
+foundations in `wappsA`. These assignments do not establish implementation or completion.
 Each record's acceptance criteria and evidence limits take precedence over an older
 checkpoint's "next" paragraph. Publication/ownership/privacy policies remain unchanged.
 

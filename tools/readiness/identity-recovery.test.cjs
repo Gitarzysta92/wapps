@@ -41,6 +41,8 @@ const {
   AccountNotifications1791840016000,
   AccountFavoriteUpdates1791840019000,
   AccountMentions1791864017000,
+  CredentialBindings1792281601000,
+  LegacyIdentityImport1792281603000,
 } = require('../../libs/adapters/account-mysql/src');
 const {
   CompleteIdentityDeletion,
@@ -114,6 +116,8 @@ test(
           AccountNotifications1791840016000,
           AccountFavoriteUpdates1791840019000,
           AccountMentions1791864017000,
+          CredentialBindings1792281601000,
+          LegacyIdentityImport1792281603000,
         ],
         migrationsTransactionMode: 'none',
       };

@@ -246,6 +246,12 @@ async function suitePublicationChecks({
       .status,
     200
   );
+  assert.equal((await publicRead()).status, 200);
+  assert.deepEqual(await project(), live);
+  assert.equal(
+    (await change(id, 'withdraw', { expectedRevision: 12 })).status,
+    201
+  );
   assert.equal((await publicRead()).status, 404);
   assert.deepEqual(
     (await change(id, 'approve', lastInput, reviewer, 'last-approval')).value,
@@ -267,7 +273,7 @@ async function suitePublicationChecks({
     0
   );
   pass(
-    'withdrawal and deletion revoke canonical visibility immediately; old receipts/events cannot resurrect publication'
+    'private removal preserves approved publication; explicit withdrawal revokes visibility immediately and old receipts/events cannot resurrect it'
   );
   const racing = await request('POST', 'me/suites', {
     ...fields,

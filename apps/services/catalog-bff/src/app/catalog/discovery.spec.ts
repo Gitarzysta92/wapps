@@ -153,12 +153,31 @@ describe('public discovery source composition', () => {
   });
   it('does not fetch unselected sources and retains article filters', async () => {
     const h = setup();
-    await h.service.search({ type: 'article', category: 'Guides', tag: 'web' });
+    await h.service.search({ type: 'article', category: 'Guides', tag: 'web', tags: 'offline,web' });
     expect(h.applications.browse).not.toHaveBeenCalled();
     expect(h.publications.suites).not.toHaveBeenCalled();
     expect(h.publications.articles).toHaveBeenCalledWith(
-      expect.objectContaining({ category: 'Guides', tag: 'web' })
+      expect.objectContaining({ category: 'Guides', tag: '', tags: ['offline', 'web'] })
     );
+  });
+  it('serializes every article tag to the owner and rejects partial matches', async () => {
+    const preview = {
+      id: '10000000-0000-4000-8000-000000000001', revision: 1, submittedRevision: 1,
+      slug: 'guide', title: 'Guide', excerpt: 'An excerpt', byline: 'Writer', category: 'Guides',
+      tags: ['offline', 'web'], publishedAt: 1000, updatedAt: 1000, classification: 'general',
+    };
+    const get = jest.fn().mockReturnValue(of({ data: { items: [preview], total: 1, page: 1, pageSize: 10 } }));
+    const client = new DiscoveryPublicationsClient(
+      { get } as unknown as HttpService,
+      { get: () => 'http://editorial:3333' } as unknown as ConfigService
+    );
+    const query = { q: '', category: 'Guides', tag: '', tags: ['offline', 'web'], page: 1, pageSize: 10 };
+    expect((await client.articles(query)).items[0].tags).toEqual(['offline', 'web']);
+    expect(get).toHaveBeenLastCalledWith('http://editorial:3333/api/catalog/articles', expect.objectContaining({
+      params: { q: '', category: 'Guides', tag: '', tags: 'offline,web', page: '1', pageSize: '10' },
+    }));
+    get.mockReturnValueOnce(of({ data: { items: [{ ...preview, tags: ['web'] }], total: 1, page: 1, pageSize: 10 } }));
+    await expect(client.articles(query)).rejects.toThrow('Unexpected article filters');
   });
   it('corrects an out-of-range page with at most one extra source request', async () => {
     const h = setup();

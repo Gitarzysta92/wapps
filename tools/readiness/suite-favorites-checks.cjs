@@ -197,10 +197,15 @@ async function suiteFavoritesChecks({
   await editorial('DELETE', `me/suites/${suite.id}`, {
     expectedRevision: status.revision,
   });
+  assert.equal(
+    (await (await selection([suite.id])).json()).items[0].id,
+    suite.id
+  );
+  await withdraw(suite.id);
   assert.deepEqual(await (await selection([suite.id])).json(), { items: [] });
   await accepted(alice, input(suite.id, 4, false));
   pass(
-    'suite favorites: outbox failure rolls back, withdrawal/deletion revoke metadata, removal survives target loss and old receipts cannot restore membership'
+    'suite favorites: outbox failure rolls back, private deletion retains approved metadata, withdrawal revokes it, removal survives target loss and old receipts cannot restore membership'
   );
 
   const selectedIds = [];

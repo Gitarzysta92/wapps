@@ -4,6 +4,8 @@ import { catchError, defer, map, of, type Observable } from 'rxjs';
 import { err, ok, type Result } from '@sdk/kernel/standard';
 import {
   ARTICLE_LIMITS,
+  articleBrowseParameters,
+  articleBrowseTags,
   articleId,
   articleSlug,
   parseArticleDraft,
@@ -173,7 +175,7 @@ export class ArticleApiService
     return this.result(
       this.http
         .get<unknown>(`${this.origin}/api/catalog/articles`, {
-          params: { ...query, page: String(query.page) },
+          params: articleBrowseParameters(query),
         })
         .pipe(
           map((value) => {
@@ -183,7 +185,7 @@ export class ArticleApiService
               page.items.some(
                 (item) =>
                   (query.category && item.category !== query.category) ||
-                  (query.tag && !item.tags.includes(query.tag))
+                  articleBrowseTags(query).some(tag => !item.tags.includes(tag))
               )
             )
               throw new Error('Unexpected article page');

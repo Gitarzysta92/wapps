@@ -6,6 +6,22 @@ status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
 
+Integrated parallel baseline (October 18, 2026): A27 export, suite lifecycle and
+publication, and discovery article all-tags filtering now share one verified source
+snapshot. The 4,298-file manifest and exact local snapshot identity are recorded in
+`/tmp/wapps-integration-20261018-a7_k2sw8/verification.json` and `snapshots.json`.
+The combined source passes 6,869 Jest tests / 426 suites, 34 portable tests, full
+lint, 140 builds, 49 typechecks, 64 Angular artifact checks and zero boundary
+violations. Separate runtime runs pass 25 export, 27 suite, six discovery and
+23 member groups, with overlapping baseline groups counted per invocation.
+Native gateway and discovery setup/projection substitutions remain explicit;
+Docker-to-host transport and release acceptance are still open. Next parallel work
+is A28 full erasure, application publication/ownership, and operational transport,
+migration qualifiers and dependency-aware readiness. Main's dirty backlog and
+each lane's completed source are preserved. Live installation remains A21; this
+integration does not deploy, migrate live stores or enable live workers. See the
+[integrated checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-export-suites-and-discovery-baseline-october-18-2026).
+
 Favorites/inbox gateway parity (October 18, 2026): A26 aligns both complete families
 through explicit BFF handlers in local and alpha configurations. Current approved
 classification and viewer/recipient choices govern four-kind favorite metadata,
@@ -18,8 +34,8 @@ rollback, removal/re-add, outages and withdrawal. Full tests, lint, 140 builds,
 49 typechecks, 64 Angular artifacts and boundary checks pass. Native Nginx/source
 setup/fault-injection limits and failed attempts are recorded in implementation
 progress. One frontend parser spec changes; runtime presentation is unchanged.
-The current source checkpoint is A26; live activation remains A21. Next is full
-export/privacy qualification and alpha export parity. Quarantine operations,
+That source checkpoint was A26; the integrated checkpoint above supersedes its
+next-export assignment, while live activation remains A21. Quarantine operations,
 remaining settings/channels, Docker transport stability, deployment, full cleanup,
 crash/restore and original frontend acceptance remain open.
 

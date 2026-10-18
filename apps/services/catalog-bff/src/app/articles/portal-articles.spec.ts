@@ -270,6 +270,16 @@ describe('article workflow through production BFF routes', () => {
     handler = (_req, res) => json(res, draft);
     expect(await (await call(`${base}/${id}`)).json()).toEqual(draft);
   });
+  it.each([trusted, anonymous])('preserves all article tag filters for public viewer %#', async (viewer) => {
+    const result = { items: [{ ...preview, tags: ['offline', 'tools'] }], page: 1, total: 1 };
+    handler = (_req, res) => json(res, result);
+    const response = await call(catalog + '?tags=tools&tags=offline&tag=tools', undefined, 'GET', viewer);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(result);
+    const query = new URL(observed[0].url ?? '', 'http://owner.test').searchParams;
+    expect(query.get('tags')).toBe('offline,tools');
+    expect(query.get('tag')).toBe('tools');
+  });
   it.each([
     ['POST', base, fields, { id, revision: 1, deleted: false }],
     [
@@ -490,6 +500,7 @@ describe('article workflow through production BFF routes', () => {
     [catalog + '?pageSize=3', { items: [preview], page: 1, total: 1 }],
     [catalog + '?category=Other', { items: [preview], page: 1, total: 1 }],
     [catalog + '?tag=other', { items: [preview], page: 1, total: 1 }],
+    [catalog + '?tags=tools,other', { items: [preview], page: 1, total: 1 }],
     [catalog + '/other', published],
     [catalog + '/' + fields.slug, { ...published, ownerIdentityId: 'private' }],
     [`/api/catalog/article-selection?ids=${other}`, { items: [preview] }],
@@ -525,6 +536,9 @@ describe('article workflow through production BFF routes', () => {
     'pageSize[]=20',
     'sort=popular',
     'tag=Bad',
+    'tags=tools,,other',
+    'tags=tools,Bad',
+    'tags=' + Array(13).fill('tools').join(','),
     'q[]=text',
     'category=x&category=y',
   ])('rejects browse query %s', async (query) => {

@@ -2,6 +2,51 @@
 
 ## Local authentication and BFF
 
+### Suite lifecycle and publication parity
+
+Set `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_SUITE_PARITY_INTEGRATION=1` when running
+`node --test tools/readiness/local-auth.test.cjs` to exercise the suite vertical
+slice through both gateway configurations. Build Editorial, Authentication,
+Account and BFF with prerequisites before running; do not rebuild their `dist`
+while runtime qualification is active. Use a separate clean-lockfile installation
+and uniquely named disposable stores for each parallel lane.
+
+`suite-parity-services.cjs` starts test-owned MySQL schema access, Mongo, Editorial
+OPA and the compiled Editorial process, using the parent qualifier's fresh
+RabbitMQ. `bff-suite-parity-checks.cjs` uses real enrolled credentials and reviewer
+claims, the checked-in BFF handlers and the actual Editorial broker materializer.
+Application prerequisites are created and independently approved through local
+BFF; no manual projection publication is used. A withdrawn suite's retained
+snapshot is removed explicitly in the disposable SQL store to reproduce the old
+deletion representation and prove continued 404/non-resurrection behavior.
+Suite commands cover owner/tenant/self-review denial, concurrent/exact receipts,
+revision and key conflicts, SQL/outbox rollback, frozen review, rejection and
+resubmission, approved classification, missing/hidden members, process restarts,
+projection lag, dependency failures and full gateway families with BFF stopped.
+
+Private suite removal now preserves approved publication. The owner retains
+publication status and withdrawal access after private removal; edits, submission
+and review of that removed draft remain denied. Withdrawal immediately revokes
+public authority even while a previous projection remains. A confirmed outbox row
+is re-exposed to simulate lost publisher acknowledgement; this is an explicit
+fault injection, not an abrupt-process-crash qualification.
+
+`suite-parity-privacy-checks.cjs` exercises the existing bounded Editorial export
+stream and suite-only Editorial erasure participant, including canonical Account
+self-deletion, exact participant receipts, provenance cleanup and anonymous
+retained publications. Public erasure advances the publication revision while
+preserving its frozen content. Only the disposable participant is enabled and its
+materializer is fenced. This does not complete the Account export archive or
+cross-service provider saga; A27/A28 privacy qualification remains separate.
+
+Set `WAPPS_NGINX_BINARY` explicitly for native gateway comparison. Both checked-in
+API/auth configurations run with temporary listener/dependency addresses; the
+unrelated media include is excluded. Docker-to-host transport remains unqualified,
+and the complete gateway startup probe still uses Docker. No live activation,
+browser presentation acceptance, external providers or backup/restore is implied.
+
+### Authentication baseline
+
 `WAPPS_LOCAL_AUTH_INTEGRATION=1 node --test tools/readiness/local-auth.test.cjs`
 qualifies the built Authenticator, Account Management and BFF with the checked-in
 local Nginx routes, fresh disposable MySQL/RabbitMQ stores, real OPA and no Firebase settings.
@@ -700,6 +745,56 @@ activation, database restore and full release
 qualification remain open.
 
 ## Account exports through the BFF
+
+The A27 candidate qualifier is the export extension of the independent-authentication
+harness. Build all consumers before starting it; keep that checkout's `dist` fixed:
+
+```sh
+WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_EXPORT_PARITY_INTEGRATION=1 \
+  WAPPS_NGINX_BINARY=/path/to/verified/native/nginx \
+  node --test tools/readiness/local-auth.test.cjs
+node tools/readiness/qualify-identity-mysql.cjs --account-export-storage
+node tools/readiness/qualify-materialization.cjs --account-export-sources
+WAPPS_SUITES_OPA_DOCKER=1 WAPPS_SUITES_OUTPUT=/tmp/unique-export-evidence \
+  node tools/readiness/qualify-suites.cjs --account-export-editorial --no-browser
+```
+
+Run the profile, member, export and suite extensions separately. The export extension uses
+fresh test-owned SQL/RabbitMQ/Mongo/MinIO/OPA, independent Authentication/Account/BFF,
+and real Editorial/Community sources. Credential subjects differ from application
+identity IDs; the archive includes their exact verified binding. Both local and
+alpha API/auth configurations exercise request/latest/status/cancel/download,
+case/slash/unknown suffixes, input bounds, private digest-checked attachments,
+independent sessions, replay/conflict, suspension, corruption and no BFF fallback.
+Six export groups supplement the nineteen shared groups. They also check all
+three remote-provider outages, durable retries, expiry purge, actual Account
+SIGKILL/restart, in-flight cancellation, malformed source streams and rejected
+missing/foreign/duplicate completion receipts. Exactly `account`, `credentials`,
+`editorial`, `discussion` remain required; no plan/schema migration is introduced.
+
+Editorial setup uses trusted canonical fixture claims and direct production
+projection functions; Discussion commands and exports cross real authenticated
+BFF. Explicit Discussion writer claims are provisioned in the disposable local
+credential store. Invalid provider responses are deliberate loopback fault probes,
+separate from successful real capture. Credential-outage work is submitted directly
+to the durable store while ingress authentication is unavailable. Expiry/lease
+timestamps are accelerated in disposable SQL; capture cancellation blocks a real
+Editorial table. Nginx reports failed authentication subrequests as HTTP 500;
+that is a denied request, not a successful empty export. Native gateway evidence
+does not qualify the unresolved Docker-to-host transport or deployment. Browser
+acceptance, external Firebase/SSO, maximum-size load and full erasure remain separate.
+
+The source/storage regressions cover 140 Account favorites, 140 retained Editorial
+submissions and 134 Discussion contributions, 135 registered payload versions and
+131 review versions. They retain their explicit fixture authority and corruption,
+snapshot, reconnect, cancellation and object-history bounds. The identity fixture
+must run credential-binding and legacy-import migrations before current capture.
+
+The older Compose probe below is retained for existing isolated installations;
+its execution is not part of A27. The older combined `--account-export-runtime`
+Firebase/browser/erasure harness still needs independent Authentication wiring
+and issuer/subject-aware credential assertions before the A28 full-erasure rerun.
+Do not treat its historical pass as current provider or erasure qualification.
 
 Use the isolated Node 22.17.1 installation to build/test/lint BFF with prerequisites,
 typecheck its specs, run the identity feature tests and architecture audit. Activate

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
   ARTICLE_FIELD_KEYS,
   ARTICLE_LIMITS,
+  articleBrowseParameters,
+  articleBrowseTags,
   articleFieldsFrom,
   articleId,
   articleObject,
@@ -170,12 +172,7 @@ export class PortalArticlesClient {
     });
   }
   async browse(actor: TrustedPortalViewer, query: ArticleBrowseQuery) {
-    const params = new URLSearchParams(
-      Object.entries(query).map(([key, value]): [string, string] => [
-        key,
-        String(value),
-      ])
-    );
+    const params = new URLSearchParams(articleBrowseParameters(query));
     const raw = await this.transport.send(
       actor,
       `/api/catalog/articles?${params}`
@@ -188,7 +185,7 @@ export class PortalArticlesClient {
         result.items.some(
           (item) =>
             (query.category !== '' && item.category !== query.category) ||
-            (query.tag !== '' && !item.tags.includes(query.tag))
+            articleBrowseTags(query).some(tag => !item.tags.includes(tag))
         )
       )
         throw new Error('Unexpected article page');

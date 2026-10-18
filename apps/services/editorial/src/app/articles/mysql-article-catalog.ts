@@ -1,6 +1,7 @@
 import type { DataSource } from 'typeorm';
 import {
   articleId,
+  articleBrowseTags,
   PROFILE_ARTICLES_PAGE_SIZE,
   articleRevision,
   articleSlug,
@@ -64,11 +65,11 @@ export class MysqlArticleCatalog implements ArticleCatalogAuthority {
           predicates.push('p.category = ?');
           args.push(query.category);
         }
-        if (query.tag) {
+        for (const tag of articleBrowseTags(query)) {
           predicates.push(
             "JSON_CONTAINS(JSON_EXTRACT(p.fields, '$.tags'), JSON_QUOTE(?))"
           );
-          args.push(query.tag);
+          args.push(tag);
         }
       }
       const from =

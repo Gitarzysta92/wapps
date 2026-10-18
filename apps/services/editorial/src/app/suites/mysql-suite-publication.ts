@@ -74,7 +74,10 @@ export class MysqlSuitePublication implements SuitePublicationStore {
     return this.guard(() =>
       this.source.transaction('REPEATABLE READ', async (manager) => {
         const row = await this.draft(manager, actor, id, review);
-        if (row.deletedAt !== null)
+        if (
+          row.deletedAt !== null &&
+          (review || !(await this.retainedPublication(manager, id)))
+        )
           throw new SuiteNotFoundError('Suite not found');
         return this.status(manager, row);
       })
@@ -146,7 +149,11 @@ export class MysqlSuitePublication implements SuitePublicationStore {
             );
           }
         }
-        if (row.deletedAt !== null)
+        if (
+          row.deletedAt !== null &&
+          (action !== 'withdraw' ||
+            !(await this.retainedPublication(manager, id)))
+        )
           throw new SuiteNotFoundError('Suite not found');
         const status = await this.status(manager, row);
         assertSuitePublicationTransition(action, status, input);
@@ -253,8 +260,8 @@ export class MysqlSuitePublication implements SuitePublicationStore {
             );
         }
         await manager.query(
-          'UPDATE private_suites SET revision = ?, updatedAt = ? WHERE id = ?',
-          [revision, at, id]
+          'UPDATE private_suites SET revision = ?, updatedAt = ?, deletedAt = ? WHERE id = ?',
+          [revision, at, row.deletedAt === null ? null : at, id]
         );
         const result: SuitePublicationReceipt = {
           id,
@@ -297,6 +304,15 @@ export class MysqlSuitePublication implements SuitePublicationStore {
     if (!row) throw new SuiteNotFoundError('Suite not found');
     assertSuitePublicationAccess(actor, row, review);
     return row;
+  }
+
+  private async retainedPublication(manager: EntityManager, id: string) {
+    // Older private deletion removed the publication; those tombstones stay unavailable.
+    const rows = await manager.query(
+      'SELECT suiteId FROM suite_publications WHERE suiteId = ?',
+      [id]
+    );
+    return rows.length === 1;
   }
 
   private async status(

@@ -2,6 +2,8 @@ import {
   parseArticleBrowseQuery,
   parseArticlePage,
   parseArticleReviewPage,
+  articleBrowseTags,
+  articleBrowseParameters,
 } from './article-workspace';
 
 describe('article discovery pagination', () => {
@@ -28,7 +30,33 @@ describe('article discovery pagination', () => {
     { pageSize: ['20'] },
     { pageSize: '2.5' },
     { sort: 'popular' },
+    { tags: 'one,,two' },
+    { tags: 'one,Two' },
+    { tags: { tag: 'one' } },
+    { tags: [1] },
+    { tags: ['one,two'] },
+    { tags: new Array(13).fill('one') },
+    { tags: Array.from({ length: 12 }, (_, i) => `tag-${i}`), tag: 'extra' },
   ])('rejects %j', (input) =>
     expect(() => parseArticleBrowseQuery(input)).toThrow()
   );
+  it('normalizes bounded tag sets without changing the legacy single-tag shape', () => {
+    for (const tags of ['web,offline,web', ['web', 'offline', 'web']]) {
+      const query = parseArticleBrowseQuery({ tag: 'privacy', tags });
+      expect(query.tags).toEqual(['offline', 'web']);
+      expect(articleBrowseTags(query)).toEqual(['offline', 'privacy', 'web']);
+      expect(parseArticleBrowseQuery(articleBrowseParameters(query))).toEqual(
+        query
+      );
+    }
+    expect(parseArticleBrowseQuery({ tags: '' }).tags).toEqual([]);
+    expect(articleBrowseTags(parseArticleBrowseQuery({ tag: 'web' }))).toEqual([
+      'web',
+    ]);
+    expect(
+      parseArticleBrowseQuery({
+        tags: Array.from({ length: 12 }, (_, i) => `tag-${i}`),
+      }).tags
+    ).toHaveLength(12);
+  });
 });

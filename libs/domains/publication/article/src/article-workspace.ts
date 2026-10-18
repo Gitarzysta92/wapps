@@ -104,6 +104,8 @@ export interface ArticleBrowseQuery {
   q: string;
   category: string;
   tag: string;
+  /** Every selected tag must occur in the approved publication. */
+  tags?: string[];
   page: number;
   pageSize?: number;
   sort?: 'name' | 'name-desc' | 'newest';
@@ -588,6 +590,7 @@ export function parseArticleBrowseQuery(input: unknown): ArticleBrowseQuery {
     'q',
     'category',
     'tag',
+    'tags',
     'page',
     'pageSize',
     'sort',
@@ -605,6 +608,26 @@ export function parseArticleBrowseQuery(input: unknown): ArticleBrowseQuery {
       sort !== 'newest')
   )
     throw new ArticleInputError('Invalid article page size or sort');
+  const selectedTag =
+    value['tag'] === undefined || value['tag'] === '' ? '' : tag(value['tag']);
+  const selectedTags = value['tags'];
+  let tags: string[] | undefined;
+  if (selectedTags !== undefined) {
+    const entries =
+      selectedTags === ''
+        ? []
+        : typeof selectedTags === 'string'
+        ? selectedTags.split(',')
+        : selectedTags;
+    if (!Array.isArray(entries) || entries.length > ARTICLE_LIMITS.tags)
+      throw new ArticleInputError('Use at most 12 article tag filters');
+    tags = [...new Set(entries.map(tag))].sort();
+    if (
+      new Set([...tags, ...(selectedTag ? [selectedTag] : [])]).size >
+      ARTICLE_LIMITS.tags
+    )
+      throw new ArticleInputError('Use at most 12 article tag filters');
+  }
   return {
     q: text(value['q'] ?? '', 0, 100, 'Search'),
     category: text(
@@ -613,13 +636,33 @@ export function parseArticleBrowseQuery(input: unknown): ArticleBrowseQuery {
       ARTICLE_LIMITS.category,
       'Category'
     ),
-    tag:
-      value['tag'] === undefined || value['tag'] === ''
-        ? ''
-        : tag(value['tag']),
+    tag: selectedTag,
+    ...(tags === undefined ? {} : { tags }),
     page: articlePageNumber(value['page']),
     ...(pageSize === undefined ? {} : { pageSize }),
     ...(sort === undefined ? {} : { sort }),
+  };
+}
+
+export function articleBrowseTags(query: ArticleBrowseQuery): string[] {
+  return [
+    ...new Set([...(query.tag ? [query.tag] : []), ...(query.tags ?? [])]),
+  ].sort();
+}
+
+export function articleBrowseParameters(
+  query: ArticleBrowseQuery
+): Record<string, string> {
+  return {
+    q: query.q,
+    category: query.category,
+    tag: query.tag,
+    ...(query.tags === undefined ? {} : { tags: query.tags.join(',') }),
+    page: String(query.page),
+    ...(query.pageSize === undefined
+      ? {}
+      : { pageSize: String(query.pageSize) }),
+    ...(query.sort === undefined ? {} : { sort: query.sort }),
   };
 }
 function page<T extends { id: string }>(

@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import {
   parseArticlePage,
+  articleBrowseParameters,
+  articleBrowseTags,
   type ArticleBrowseQuery,
 } from '@domains/publication/article';
 import {
@@ -21,17 +23,31 @@ export class DiscoveryPublicationsClient implements DiscoveryPublications {
     private readonly config: ConfigService
   ) {}
   async articles(query: ArticleBrowseQuery) {
-    return parseArticlePage(await this.get('articles', query));
+    const result = parseArticlePage(
+      await this.get('articles', articleBrowseParameters(query))
+    );
+    if (
+      result.items.some(
+        (item) =>
+          (query.category !== '' && item.category !== query.category) ||
+          articleBrowseTags(query).some((tag) => !item.tags.includes(tag))
+      )
+    )
+      throw new DiscoveryUnavailableError('Unexpected article filters');
+    return result;
   }
   async suites(query: PublicSuiteQuery) {
     return parsePublicSuitePage(await this.get('suites', query));
   }
   async suiteSelection(ids: string[]) {
-    return parsePublicSuiteSelection(await this.get('suite-selection', { ids: ids.join(',') }), ids);
+    return parsePublicSuiteSelection(
+      await this.get('suite-selection', { ids: ids.join(',') }),
+      ids
+    );
   }
   private async get(
     kind: string,
-    params: ArticleBrowseQuery | PublicSuiteQuery | { ids: string }
+    params: Record<string, string> | PublicSuiteQuery
   ) {
     const origin = this.config.get<string>('EDITORIAL_URL');
     if (!origin)
