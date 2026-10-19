@@ -2,7 +2,8 @@
 
 Alpha runs the API-mode aggregator and real backend services at
 https://alpha.wapps.ai. Source development comes from `codex/full-operation`;
-the October 19 release candidate uses `codex/alpha-frontend-20261019`.
+the October 19 release uses `codex/alpha-frontend-20261019`, pinned to
+`65aeee3be86a77739855e04051e91fd1f8400ae7`.
 The previous full-service snapshot remains on `codex/alpha-full-operation`.
 The original demo release is
 `c965790e063139bcd5e6bacc759f289703e4ea9a` on `codex/coolify-alpha`.
@@ -24,9 +25,85 @@ credentials are deleted, so a signup retry cannot recreate them.
 Before upgrading, inventory current identities and verify any required existing
 provider bindings. Do not infer bindings from matching email addresses or reset
 the Identity database. The October 19 read-only host preflight found one deleted,
-inactive identity and no registered accounts. The release still needs its exact
-commit's quality gate, candidate verification and recorded activation result.
+inactive identity and no registered accounts. The activation guard rechecked
+that no accounts had appeared before migration. The exact commit's quality gate,
+candidate qualification and public activation passed as recorded below.
 Kubernetes wiring remains outside this alpha update.
+
+### October 19 candidate qualification
+
+The first candidate, `51a70769450cc57890a86730a79892083f919907`, passed the
+complete GitHub quality gate and all eight image publications in run
+`39315969040`. Before migration, all alpha writers and stores were stopped for
+a coordinated backup of the four persistent volumes. Archive contents and
+SHA-256 hashes were verified, then the previous `213a13ea` containers restarted
+successfully. The archives were restored into separate
+`wapps-alpha-candidate-*` volumes; candidate verification does not reuse live
+database volumes.
+
+The restored candidate completed all four migrations and storage initialization.
+Real Firebase signup and sign-in, canonical identity stability, preferences
+persistence across independent Account/Authentication restarts, and reciprocal
+database-access denial passed. Both projection consumers were active and the
+previously completed Discussion payload inventory was retained.
+
+Real Firebase returned a 268-character refresh token, exposing Account's obsolete
+255-character HTTP validation limit. The emulator's shorter token had not caught
+this. Commit `65aeee3be86a77739855e04051e91fd1f8400ae7` aligns that limit with the
+existing 16,384-character BFF and credential-service contracts. Its 453 Account
+tests in 29 suites, build, typechecks and lint pass, including actual HTTP
+validation at the accepted bounds and rejection of oversized/malformed input.
+The first local attempt was blocked by sandbox loopback permissions; the rerun
+with loopback access passed. The first attempt of full release run `39323999857`
+stopped after Discussion Materializer lint passed but Nx's SQLite cache transaction
+reported `DatabaseBusy: database is locked`. Image jobs were skipped. The failed
+report is retained. Attempt 2 on the unchanged commit passed the full quality
+gate and all eight image publications: 6,974 tests in 437 suites, 143 lint targets,
+all declared builds/typechecks, architecture and Angular artifact checks.
+The corrected candidate then passed startup, real Firebase signup/sign-in/refresh,
+restart persistence, reciprocal database isolation, projection/inventory checks
+and disposable-account cleanup. Its first startup attempt failed because copying
+staged configuration changed the mode-0400 Firebase file's owner to root. Running
+the exact source configuration preparer restored UID/GID 1000 without changing
+generated credentials. The failed attempt and successful rerun are both retained.
+
+### October 19 activation result
+
+Coolify deployment `weajoqo46jmlnofaaxdzp0zw` completed successfully at
+21:38:30 UTC on October 19, 2026 (38 seconds). It deployed the exact qualified
+source and image tag `65aeee3be86a77739855e04051e91fd1f8400ae7` through the
+existing raw Compose application. A fresh coordinated backup of all four live
+volumes, archive validation and SHA-256 manifests preceded activation; configuration,
+the previous helper and MySQL initialization file were retained for recovery.
+
+Live verification confirmed thirteen running services, all configured Docker
+health probes healthy, four migration jobs and storage initialization exited zero,
+and image IDs matching the candidate's resolved digests. Only the portal publishes
+`127.0.0.1:4203`. Both projection queues have active consumers and zero dead letters.
+Live Authentication and Account probes also confirmed reciprocal database-access
+denial. The private candidate is stopped; its restored volumes remain available.
+The known unconsumed `identity-events` queue remains an open operational issue.
+
+The public origin serves the exact revision in `/release.json`. Real Firebase
+signup, sign-in, wrong-password rejection, refresh, canonical identity, preferences
+persisted across independent sign-ins, internal-route blocking and forged-header
+rejection passed. Normal account erasure denied further access and deleted the
+disposable Firebase credential. Cloudflare rejected the initial default Python
+user agent with error 1010 before any account was created; the retained rerun uses
+the explicitly identified `WappsReleaseQualification/1.0` client and passes.
+
+Chrome smoke checks confirmed Home and Discover load their real empty-catalog
+states and the email/password sign-in dialog loads. Screenshots are retained with
+the local release evidence. An empty catalog does not qualify populated Overview
+or Health journeys or close the frontend integration and operational scope gaps.
+
+Private host evidence is retained under `/data/wapps-alpha/releases/<source SHA>/`.
+The first candidate directory contains the coordinated `backup/`, original and
+staged configuration, resolved image digests and qualification logs. The corrected
+candidate references that backup. Keep these directories private: container
+inventories and service configuration contain credentials. Local non-secret
+evidence is in `tmp/coolify-release-20261019/`, with the consolidated result in
+`release-verification.json` and the final workflow status in `quality-gate.json`.
 
 ## Release scope
 
