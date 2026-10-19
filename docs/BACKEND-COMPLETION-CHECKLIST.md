@@ -1,6 +1,6 @@
 # Backend and BFF completion checklist
 
-Current assessment: **October 18, 2026**, after Discussion route consolidation,
+Integrated baseline assessment: **October 18, 2026**, after Discussion route consolidation,
 the generic Review owner API/BFF slice, independent local Authentication,
 complete administration BFF, staff health-monitor BFF, account/profile gateway
 parity, A26 favorites/inbox classification, A27 account-export gateway parity,
@@ -23,6 +23,25 @@ The presentation requirement remains the original frontend at
 notification and privacy settings were inspected for backend requirements. Current
 frontend builds/screenshots do not establish acceptance of that presentation.
 Frontend merge and visual acceptance are tracked separately as **FE01**.
+
+## O02 bounded operational update (October 19, 2026)
+
+[O02 initialization/crash qualification](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md)
+extends I28 only in `wappsA`, from commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` on `codex/discovery-feed-parity`.
+Safe maintenance diagnostics and one generic Discussion command family's actual
+process-crash/rebuild matrix are qualified. The I28 initialization cause remains
+unresolved; one new fresh run also failed a migration schema guard, without enough
+metadata to establish its cause or connect it to I28. Later bounded campaigns pass.
+The first export regression also fails on a Docker Nginx-to-BFF connection timeout
+after BFF restart, before export-specific work; its nonzero result is retained
+separately from one fresh unchanged confirmation, which passes all 27 groups and
+1,600 Docker reads. Transport reliability remains open.
+The shared 27-migration roster and readiness bounds remain unchanged. Evidence and
+source/patch manifests are in `/tmp/wappsa-recovery-20261019-651jqvgu/`.
+Sibling article/release work is not integrated or assessed by this update. Full
+backup restoration, compatible whole-service rollback, soak, frontend acceptance
+and live activation remain open; the live installation stays A21.
 
 ## Reading and updating this checklist
 
@@ -139,7 +158,7 @@ Every deployment cell remains U for the currently assessed implementation.
 | [BC25 Readiness/observability](#bc25-readiness-and-observability) | Editorial catalog scope implemented; broader scope partial | owner + BFF readiness / activation pending / activation pending | O01 dependency, schema, backlog/poison and worker fault/recovery | U |
 | [BC26 CI/build artifacts](#bc26-ci-and-build-artifacts) | partial release qualification | n/a | I28 full workspace gate; external suites separate | U |
 | [BC27 Deployment/ingress](#bc27-deployment-and-ingress) | partial alignment; caller inventory recorded | mixed / mixed / mixed | R18/V18/A22-A28, suite and APP18 families; O01 Docker gateway regressions | U |
-| [BC28 Crash/restore/rollback](#bc28-crash-restore-and-rollback) | tools/runbooks; proof incomplete | n/a | historical limited recovery; restore U | U |
+| [BC28 Crash/restore/rollback](#bc28-crash-restore-and-rollback) | bounded Discussion crash proof; broader work open | n/a | O02 actual kills/rebuild; restore/rollback U | U |
 | [BC29 Load/soak](#bc29-load-and-soak) | unverified | all released contracts | U | U |
 | [BC30 Content Node Registry](#bc30-content-node-registry) | scaffold; disposition open | none / local dependency / absent | no behavior qualification | U |
 
@@ -614,7 +633,11 @@ BFF has no database transaction or materializer of its own.
   and migration table. Both now pass on disposable real stores: empty/upgrade/re-entry,
   interrupted DDL, incompatible/missing/invalid classification rejection, rollback,
   duplicate/reordered events, tombstones and projection-loss rebuild. Identity's
-  delivered-events queue still lacks an alpha consumer.
+  delivered-events queue still lacks an alpha consumer. O02 preserves all 27 Editorial
+  migrations, adds safe initialization diagnostics and qualifies actual Discussion
+  command/outbox/projection crash boundaries plus authoritative rebuild. Its additional
+  fresh initialization schema-guard failure remains unresolved; successful repetitions
+  do not close that reliability risk. See the [O02 proof and limits](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md).
 - **Remaining/next (P0 before data cutover; BC23):** Qualify legacy
   identity mappings/import and define identity-event consumer/retention disposition.
   Pending binding/index/classification migrations need coordinated writer fencing.
@@ -697,16 +720,20 @@ BFF has no database transaction or materializer of its own.
 - **Owner/contracts:** Operators and every durable owner/worker; maintenance/status/
   inventory/rebuild commands and [Community activation runbook][community-readme],
   not a portal API. Coordinated SQL, immutable objects and retained job state form backups.
-- **Evidence:** Several historical slices test process restart/reconnect; R18 only
-  recreates Nest instances. No complete current process-crash matrix, backup restoration
-  or compatible rollback rehearsal is evidenced. Earlier object-inventory isolation
-  incident/recovery is historical, not a general restore qualification.
-- **Remaining/next (P0 before real-data release; BC24, BC26-27):** Define recovery-time
-  and acceptable-data-loss targets, then crash one Discussion command between SQL,
-  object/outbox, broker confirm and projection acknowledgement. Acceptance: no lost
-  committed write, duplicate visible effect or resurrection; reconcile without old
-  projections/broker history. Follow with coordinated SQL/object restore and compatible
+- **Evidence:** O02 qualifies a generic Discussion command family through separate
+  compiled owner/materializer processes and fresh SQL/objects/broker/Mongo/OPA. Fourteen
+  actual kills cover upload, SQL commit, outbox claim, confirm, projection/acknowledgement,
+  durable retry and poison handoff. Zero committed mutation loss, duplicate visible
+  effect, premature acknowledgement or resurrection is observed. Natural 30-second
+  leases recover within 40 seconds; projection recovery stays within 20 seconds;
+  rebuild without projections or delivery history takes 8.331 seconds (40-second bound).
+  Tombstones, exact keys, receipts and immutable registrations survive. R18's Nest
+  recreation and earlier object-inventory recovery retain their historical scope.
+- **Remaining/next (P0 before real-data release; BC24, BC26-27):** Keep the unresolved
+  initialization guard risk visible and extend crash coverage beyond this bounded
+  Discussion slice. Rehearse coordinated SQL/object backup restoration and compatible
   all-service rollback; verify ownership, privacy, receipts and migrations before traffic.
+  O02 is not that restore/rollback proof, a 24-hour soak or live readiness activation.
 
 ### BC29 Load and soak
 
@@ -781,7 +808,9 @@ installations and disposable resources:
    write, duplicate visible effect or resurrection. Full backup/restore and compatible
    rollback remain subsequent gates; do not activate live workers or change live stores.
 
-These are proposals, not active assignments. Shared gateway/readiness/checklist edits
+The original proposal above is retained as batch context. Item 3 now has the bounded
+O02 result documented here; this lane does not assess or integrate items 1 and 2.
+Shared gateway/readiness/checklist edits
 must be reconciled and the combined candidate verified after that batch. Remaining
 original discovery filters/metadata, preference/channel consumers, real-provider
 Discussion/Review journeys, broad readiness, archived-data policy, frontend acceptance,

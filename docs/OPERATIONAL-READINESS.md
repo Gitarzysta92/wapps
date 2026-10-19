@@ -1,10 +1,31 @@
 # Wapps operational readiness
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for current workflow
 status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
+
+O02 bounded operational reliability (October 19, 2026) extends I28 in `wappsA` with
+[safe initialization diagnostics and actual Discussion crash recovery](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md).
+Fourteen actual process kills preserve committed commands, exact binding/tenant
+scope, receipts, immutable references, natural leases and tombstones; authoritative
+rebuild without projections or delivery history reproduces seven aggregates in
+8.331 seconds. Safe migration diagnostics retain operation/allowlisted error codes
+and trusted migration identities without sensitive ORM output. A new fresh run also
+fails an application-image cleanup schema guard; later bounded repetitions pass.
+Its cause and the original I28 failure remain unresolved. This is a retained release
+risk, not a claimed reliability fix. The first export regression also fails on a
+Docker Nginx-to-BFF connection timeout after restart, before export-specific work.
+Its cause remains unresolved and its failed result stays separate from one fresh
+unchanged confirmation, which passes all 27 groups and 1,600 Docker reads. The
+other requested regressions pass, but the original batch remains nonzero.
+Source/evidence and all command outcomes are in
+`/tmp/wappsa-recovery-20261019-651jqvgu/verification.json`. The 27-migration roster,
+readiness bounds and provider plan remain unchanged. Broader crash coverage,
+coordinated backup restoration, compatible whole-service rollback, soak, deployed
+readiness and live activation remain open. This lane does not integrate sibling
+article/release changes; live installation stays A21.
 
 Current integrated baseline I28 (October 18, 2026) combines full account erasure,
 application publication/ownership and operational foundations. The 4,316-file

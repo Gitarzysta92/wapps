@@ -1,5 +1,27 @@
 # Workspace verification
 
+## Bounded Discussion process crashes and initialization diagnostics
+
+`WAPPS_DISCUSSION_CRASH_INTEGRATION=1 WAPPS_RECOVERY_OBSERVE_SCHEMA=1 node --test tools/readiness/discussion-crash-recovery.test.cjs`
+requires finished production Discussion owner/materializer and Editorial builds in
+a fresh Node 22.17.1 lockfile installation. It owns fresh Docker SQL/Mongo/quorum
+RabbitMQ/MinIO/OPA stores, runs 12 fresh Editorial initializations plus re-entry and
+safe-error fault checks, then kills/restarts compiled processes at object, SQL,
+outbox/confirm, projection/acknowledgement and poison/retry boundaries. It waits for
+natural leases and rebuilds from SQL/objects after deleting projections and delivery
+history. No live store or worker is used. Set `WAPPS_RECOVERY_EVIDENCE` only to a new
+dedicated directory; the default creates and retains one. Every process log, IPC
+barrier, observation and cleanup result is retained. Unexpected initialization failure
+keeps the overall test failed while independent Discussion checks still complete.
+The optional schema observer reads selected metadata without changing migration behavior.
+
+See [the O02 scope, measured recovery and unresolved initialization/transport risks](../../docs/DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md).
+The initial Docker export regression's BFF connection timeout remains a failed
+invocation; its one unchanged confirmation passes 27 groups and is indexed separately.
+This explicit external suite never counts as a portable pass. Full backup/restore,
+compatible whole-service rollback, a 24-hour soak and deployed readiness activation
+remain separate. Leave `WAPPS_NGINX_BINARY` unset for all Docker regressions.
+
 ## Operational foundations
 
 `WAPPS_OPERATIONAL_INTEGRATION=1 node --test tools/readiness/operational-foundations.test.cjs`

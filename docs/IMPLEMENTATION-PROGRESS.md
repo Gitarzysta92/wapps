@@ -1,6 +1,6 @@
 # Full operation implementation
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for the reconciled
 backlog and separate implementation, BFF/ingress, real-dependency and deployment
 status. Dated checkpoints below preserve their own source/evidence scope; older
@@ -10,6 +10,57 @@ Branch: `codex/full-operation`, created October 11, 2026 from `c965790e`.
 The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
+
+## O02 bounded initialization diagnostics and Discussion crash recovery (October 19, 2026)
+
+This `wappsA` slice starts at verified I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` on `codex/discovery-feed-parity`.
+[The O02 qualification record](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md) defines
+its commands, fixtures, crash boundaries, measured bounds and residual risks.
+`/tmp/wappsa-recovery-20261019-651jqvgu/verification.json` indexes the source hashes,
+exact task files/patch, all failed attempts, quality gates, runtimes and cleanup.
+Changes remain uncommitted for coordinator reconciliation; sibling work is untouched.
+
+Editorial maintenance now preserves safe structured database operation/error codes
+and trusted failed-migration identities without raw ORM messages, SQL, DSNs,
+credentials or payloads. The first new fresh run fails the application-image cleanup
+schema guard; later bounded campaigns pass all 27 migrations without changing any
+migration behavior. That failure's comparison metadata was not captured before
+cleanup. Its cause and its relationship to I28's generic initialization failure
+remain unresolved. Final observation adds read-only schema metadata; it does not
+justify a root-cause or fix claim. No broad retry, delay or native gateway fallback
+is added.
+
+The final compiled owner/materializer matrix passes 14 actual SIGKILL windows in
+169.543 seconds. It preserves canonical SQL barriers, exact keys/tenants, receipts,
+immutable references, natural leases, ordered revisions and tombstones. Committed
+mutation loss, duplicate visible effects, premature source acknowledgement and
+resurrection are zero in this scope. Measured outbox recovery is 30.534/30.568 seconds
+under 40-second targets; projection recovery is 4.973-5.047 seconds under 20 seconds.
+Rebuild after deleting Mongo projections, broker queues and delivered outbox history
+reproduces seven aggregates exactly in 8.331 seconds. Durable quorum retry counts,
+retained poison, explicit confirmed requeue and historical receipt replay are observed.
+
+The fresh Node 22.17.1 lockfile installation passes 6,883 Jest tests / 429 suites,
+34 portable tests, full lint, 140 uncached builds, 49 typechecks, separate Editorial/BFF
+spec checks, 64 Angular artifact checks and zero boundary violations (144 projects /
+1,847 production sources). Existing warnings, 85 behavior gaps and ten separately
+inventoried external suites remain visible. Builds finish before runtime consumers.
+The complete regression command/result index is retained beside the crash evidence.
+The initial export invocation fails after 14 shared groups on a Docker Nginx-to-BFF
+connection timeout after BFF restart, before export-specific checks. The cause is
+unestablished. Its nonzero result remains separate from one fresh unchanged export
+confirmation, which passes all 27 groups and 1,600 Docker reads. Member/profiles/
+erasure/suite/application regressions also pass, as do operations, materialization
+and Discussion BFF, including the unknown consumer key. The successful gateway
+invocations total 9,600 reads; the initial batch retains its nonzero exit. These
+results do not close that transport risk.
+
+The shared 27-migration roster, readiness timing bounds, dependency lockfile,
+fixed export/erasure provider plan and accepted frontend reference are unchanged.
+No full backup restoration, compatible whole-service rollback, 24-hour soak,
+production probe/worker activation, live migration or deployment is claimed. Live
+installation remains A21; the article/release lanes need their own reconciliation.
 
 ## Integrated erasure, applications and operational baseline (October 18, 2026)
 
