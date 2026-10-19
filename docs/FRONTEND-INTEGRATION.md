@@ -276,7 +276,7 @@ Evidence is retained in `tmp/frontend-health-20261019/`. The isolated Node
 22.17.1 lockfile installation from the Home pass is reused; dependencies are
 unchanged. `source-changes-final.json` identifies the Health changes against
 checkpoint `bba8af3b`; `verification.json` records commands and evidence hashes.
-The Health changes remain uncommitted on `codex/full-operation`.
+This verification preceded the Health release checkpoint described below.
 
 - Full workspace tests pass: 6,922 Jest tests in 436 suites and 34 portable
   readiness tests. Full lint, affected Angular library/portal builds and
@@ -312,3 +312,13 @@ The Health changes remain uncommitted on `codex/full-operation`.
   passed unchanged migration code; its original cause is not established and
   remains a separate readiness follow-up. `runtime-4/qualification.json` and
   `runtime-4/browser.json` are the final passing records.
+
+### Coolify release preparation
+
+On October 19, 2026 the exact verified Health source manifest was committed as
+`5791648b` on `codex/full-operation`. The original `codex/coolify-alpha` and both
+preservation refs remain unchanged. Direct Coolify access confirmed that alpha
+still serves `213a13ea`; its old shared Authentication configuration cannot start
+the new service. Release preparation adds the dedicated credential configuration
+and recoverable Firebase enrollment adapter required by this branch. Deployment
+and public verification remain pending until recorded separately.

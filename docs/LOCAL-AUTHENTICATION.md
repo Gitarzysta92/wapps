@@ -236,6 +236,13 @@ do not deploy this branch using the previous shared-database configuration. The
 runtime database guard refuses that configuration. No alpha or Kubernetes services
 were changed by the local activation.
 
+The October 19 alpha release preparation adds the missing configuration generator,
+dedicated credential-schema provisioning and a Firebase enrollment receipt adapter.
+Its separate `firebase-auth.test.cjs` qualification uses disposable MySQL and a real
+Firebase emulator through the compiled Authentication service. The alpha rollout
+and real-provider checks are tracked in `deploy/alpha/README.md`; they do not change
+the historical scope of the local activation above.
+
 ## Replacing Authentication
 
 Implement the same HTTP contract in another independently running process and

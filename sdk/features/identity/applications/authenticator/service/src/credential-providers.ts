@@ -28,6 +28,7 @@ import {
   FirebaseAdminIdTokenVerifier,
   FirebaseAdminUserAdminPort,
   FirebaseRestSessionGateway,
+  FirebaseRegistrationCredentials,
   FirebaseEmailVerification,
   FirebasePasswordReset,
   FirebaseGoogleCodeExchanger,
@@ -95,7 +96,11 @@ export function createCredentialAdapters(
     recovery: new FirebasePasswordRecovery(
       config.getOrThrow<string>('FIREBASE_WEB_API_KEY')
     ),
-    sessions,
+    sessions: new FirebaseRegistrationCredentials(
+      source,
+      sessions,
+      config.getOrThrow<string>('AUTH_ISSUER')
+    ),
     verifier: new FirebaseAdminIdTokenVerifier(),
     revoker: new FirebaseAdminUserAdminPort(),
     email: new FirebaseEmailVerification(

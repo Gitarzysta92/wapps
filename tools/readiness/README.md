@@ -1,5 +1,21 @@
 # Workspace verification
 
+## Firebase Authentication release check
+
+`WAPPS_FIREBASE_AUTH_INTEGRATION=1 node --test tools/readiness/firebase-auth.test.cjs`
+uses fresh disposable MySQL and Firebase emulator containers with the compiled
+independent Authentication service. Build Authenticator and its dependencies first;
+the local emulator image is built from `deploy/local/firebase`. This checks durable
+enrollment, concurrent signup, password verification, exact-subject ownership,
+retry keys, restart persistence, refresh and deletion. It never uses production
+credentials. The external suite is reported separately from portable checks;
+deployed Firebase/BFF/Account verification remains part of release activation.
+
+`alpha-config.test.cjs` is portable and checks credential preservation, separate
+Authentication/Account configuration and BFF connectivity without live secrets.
+
+## Integrated backend qualification
+
 I29 combines article, release and bounded Discussion recovery qualification.
 Run the eight gateway extensions separately after finishing the shared build.
 The [integration checkpoint](../../docs/IMPLEMENTATION-PROGRESS.md#integrated-article-release-and-discussion-recovery-baseline-october-19-2026) and

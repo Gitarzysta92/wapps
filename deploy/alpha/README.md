@@ -2,19 +2,31 @@
 
 Alpha runs the API-mode aggregator and real backend services at
 https://alpha.wapps.ai. Source development comes from `codex/full-operation`;
-release snapshots use `codex/alpha-full-operation`. The original demo release is
+the October 19 release candidate uses `codex/alpha-frontend-20261019`.
+The previous full-service snapshot remains on `codex/alpha-full-operation`.
+The original demo release is
 `c965790e063139bcd5e6bacc759f289703e4ea9a` on `codex/coolify-alpha`.
 
-## Current branch migration gate
+## Independent Authentication upgrade
 
-The October 18 independent-authentication change requires separate credential
-storage/grants, `AUTHENTICATION_URL`, `AUTH_ISSUER`, `AUTH_SERVICE_SECRET` and the
-new `authentication-migrate.env` job. The historical config preparer and Kubernetes
-workflows below have not been migrated or qualified for this contract. Do not
-activate the new bundles using their previous shared Identity database credentials;
-Authentication now refuses a database containing foreign tables. Firebase integration
-remains deferred. See `docs/LOCAL-AUTHENTICATION.md` for local qualification and the
-verified legacy-mapping prerequisite. The deployed alpha has not been changed.
+The October 19 release preparation adds separate credential storage/grants,
+`AUTHENTICATION_URL`, `AUTH_ISSUER`, `AUTH_SERVICE_SECRET` and the
+`authentication-migrate.env` job to alpha configuration. Account no longer receives
+Firebase credentials. The BFF explicitly receives `ACCOUNT_MANAGEMENT_URL`.
+The local credential simulator remains development-only; alpha keeps Firebase.
+
+Firebase registration reserves a random provider subject and hashed retry receipt
+in Authentication's database before provider creation. Retrying a lost response
+verifies the password and exact reserved subject; existing unrelated credentials
+are not eligible for automatic enrollment. Completed receipts are retained when
+credentials are deleted, so a signup retry cannot recreate them.
+
+Before upgrading, inventory current identities and verify any required existing
+provider bindings. Do not infer bindings from matching email addresses or reset
+the Identity database. The October 19 read-only host preflight found one deleted,
+inactive identity and no registered accounts. The release still needs its exact
+commit's quality gate, candidate verification and recorded activation result.
+Kubernetes wiring remains outside this alpha update.
 
 ## Release scope
 
@@ -67,6 +79,22 @@ credential file to the container's Node user. Do not regenerate `generated.json`
 while persistent databases exist. Credential rotation requires a coordinated
 provider/database update.
 
+With alpha MySQL running, provision the dedicated credential database/user using
+the same generated configuration. The command defaults to a read-only preflight;
+`--apply` creates the missing schema/user and its schema-only grants. It refuses
+foreign tables/grants or a mismatched existing password and never rotates users.
+
+```sh
+sudo python3 deploy/alpha/provision-authentication.py \
+  --directory /data/wapps-alpha/secrets
+sudo python3 deploy/alpha/provision-authentication.py \
+  --directory /data/wapps-alpha/secrets --apply
+```
+
+Preserve the current configuration and coordinated data backup before preparing
+the upgrade. Run Authentication migrations before its API, then verify both
+directions of database isolation and the Firebase signup/sign-in/refresh journey.
+
 Create the four external volumes once: `wapps-alpha-mysql-data`,
 `wapps-alpha-mongodb-data`, `wapps-alpha-rabbitmq-data` and
 `wapps-alpha-minio-data`. These names remain stable across candidate and Coolify
@@ -85,7 +113,7 @@ Compose project names. Never run two database containers against these volumes.
 4. Stop the candidate without removing its external volumes. Preserve a backup
    before migrating an installation containing user data.
 5. Configure the existing Coolify application `f227vpox0oocgqto5ja02wuy` to use
-   branch `codex/alpha-full-operation`, the tested commit, `/compose.alpha.yaml`,
+   branch `codex/alpha-frontend-20261019`, the tested commit, `/compose.alpha.yaml`,
    `WAPPS_IMAGE_TAG=<full SHA>` and `WAPPS_GATEWAY_PORT=4203`.
    Both variables must be available at build time and runtime. Apply the raw
    Compose settings in the next section before deploying.
@@ -109,7 +137,7 @@ deployments only** and pin the Git commit as well as `WAPPS_IMAGE_TAG`.
 The ephemeral Coolify build helper cannot read host service environment files
 directly. Before activation, install the non-secret `coolify-helper.sh` from
 this directory at `/data/wapps-alpha/helper.sh`, owned by root with mode 0644.
-Its allowlist copies only the 13 service environment files into the ephemeral
+Its allowlist copies only the 14 service environment files into the ephemeral
 helper. It never exports transport keys, Firebase credential JSON, or registry
 credentials. Do not replace this allowlist with the entire secrets directory.
 The script uses a pinned image digest that must already be pulled on the host.
@@ -134,8 +162,8 @@ file at `/data/coolify/applications/f227vpox0oocgqto5ja02wuy/deploy/alpha/mysql-
 The raw parser otherwise attempts to create a directory for the bind source.
 The Firebase JSON bind source must already exist from configuration provisioning.
 
-Raw Compose keeps the `wapps-alpha` project name. Check all 17 services: thirteen
-long-running containers, three successful migration jobs and successful storage
+Raw Compose keeps the `wapps-alpha` project name. Check all 18 services: thirteen
+long-running containers, four successful migration jobs and successful storage
 initialization. OPA and the two materializers have no Docker health probes;
 inspect policy behavior and active projection queue consumers separately.
 

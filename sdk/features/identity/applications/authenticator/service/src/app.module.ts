@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { FirebaseRegistration1792454400000 } from '@sdk/extras/identity-firebase';
 import {
   LocalCredentials1792281600000,
   LocalEnrollment1792281602000,
@@ -38,6 +39,7 @@ import { assertCredentialDatabase } from './credential-data-source';
         migrations: [
           LocalCredentials1792281600000,
           LocalEnrollment1792281602000,
+          FirebaseRegistration1792454400000,
         ],
         logging: false,
       }),

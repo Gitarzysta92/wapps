@@ -5,6 +5,8 @@ export * from './lib/firebase-github-code-exchanger';
 export * from './lib/firebase-google-code-exchanger';
 export * from './lib/oauth-user-info.dto';
 export * from './lib/firebase-rest-session-gateway';
+export * from './lib/firebase-registration-credentials';
+export * from './lib/firebase-registration.migration';
 export * from './lib/firebase-token-generator';
 export * from './lib/firebase-password-recovery';
 export * from './lib/firebase-password-reset';

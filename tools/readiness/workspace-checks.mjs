@@ -19,6 +19,7 @@ export const qualificationSuites = {
   'editorial-recovery.test.cjs': 'Isolated MySQL',
   'operational-foundations.test.cjs': 'Built Editorial/BFF and disposable Docker MySQL/Mongo/RabbitMQ/OPA; separate migration and dependency-fault qualification',
   'identity-credentials.test.cjs': 'Local Firebase Auth emulator',
+  'firebase-auth.test.cjs': 'Compiled independent Authentication service and fresh disposable MySQL/Firebase emulator containers',
   'local-auth.test.cjs': 'Built Authenticator/Account/BFF, disposable MySQL/RabbitMQ and local Nginx; no Firebase',
   'identity-recovery.test.cjs': 'Isolated MySQL and local Firebase Auth emulator',
   'opa-policies.test.mjs': 'Pinned OPA binary',

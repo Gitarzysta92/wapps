@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { FirebaseRegistration1792454400000 } from '@sdk/extras/identity-firebase';
 import {
   LocalCredentials1792281600000,
   LocalEnrollment1792281602000,
@@ -14,6 +15,7 @@ export async function assertCredentialDatabase(
     'local_credential_users',
     'local_credential_sessions',
     'local_credential_enrollments',
+    'firebase_credential_enrollments',
   ]);
   if (rows.some((row) => !allowed.has(Object.values(row)[0])))
     throw new Error('Authentication requires its own credential database');
@@ -41,7 +43,11 @@ export function credentialDataSource(
     synchronize: false,
     migrationsRun: false,
     migrationsTransactionMode: 'none',
-    migrations: [LocalCredentials1792281600000, LocalEnrollment1792281602000],
+    migrations: [
+      LocalCredentials1792281600000,
+      LocalEnrollment1792281602000,
+      FirebaseRegistration1792454400000,
+    ],
     logging: false,
   });
 }

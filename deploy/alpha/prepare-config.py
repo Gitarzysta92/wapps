@@ -42,6 +42,11 @@ def prepare(directory, bundle, origin):
         )}
         write_private(secret_path, json.dumps(values))
 
+    for key in ("authenticationMysql", "authenticationService"):
+        if key not in values:
+            values[key] = secrets.token_urlsafe(48)
+    write_private(secret_path, json.dumps(values))
+
     def write_env(name, env):
         if any("\n" in str(value) or "\r" in str(value) for value in env.values()):
             raise ValueError("Environment values must be single-line")
@@ -52,6 +57,8 @@ def prepare(directory, bundle, origin):
     queue = {"QUEUE_HOST": "rabbitmq", "QUEUE_PORT": "5672", "QUEUE_USERNAME": "wapps", "QUEUE_PASSWORD": values["rabbitmq"]}
     mongo = {"MONGO_HOST": "mongodb", "MONGO_PORT": "27017", "MONGO_USERNAME": "wapps", "MONGO_PASSWORD": values["mongo"]}
     identity_db = {"MYSQL_HOST": "mysql", "MYSQL_PORT": "3306", "MYSQL_USERNAME": "wapps", "MYSQL_PASSWORD": values["mysql"], "MYSQL_DATABASE": "identity"}
+    authentication_db = {"MYSQL_HOST": "mysql", "MYSQL_PORT": "3306", "MYSQL_USERNAME": "wapps_auth", "MYSQL_PASSWORD": values["authenticationMysql"], "MYSQL_DATABASE": "authentication"}
+    authentication = {"AUTH_ISSUER": "firebase:" + project, "AUTH_SERVICE_SECRET": values["authenticationService"]}
     service_auth = {"ACCOUNT_EXPORT_SOURCE_SECRET": values["export"], "ACCOUNT_ERASURE_SECRET": values["erasure"], "NOTIFICATION_SERVICE_SECRET": values["notification"]}
     firebase = {"FIREBASE_PROJECT_ID": project, "FIREBASE_WEB_API_KEY": bundle["apiKey"], "GOOGLE_APPLICATION_CREDENTIALS": "/run/secrets/firebase.json"}
     policy = {"OPA_URL": "http://opa:8181"}
@@ -79,13 +86,16 @@ def prepare(directory, bundle, origin):
     write_env("discussion-materializer", {**queue, **mongo, **discussion_storage, **identity_db,
         "NODE_ENV": "production", "MYSQL_DATABASE": "discussion", "MONGO_DATABASE": "discussion"})
     write_env("catalog-bff", {**common, "EXPLORE_SERVICE_SECRET": values["explore"], "FIREBASE_PROJECT_ID": project,
-        "EDITORIAL_URL": "http://editorial:1337", "DISCUSSION_URL": "http://discussion:1338", "PORT": "3000"})
+        "EDITORIAL_URL": "http://editorial:1337", "DISCUSSION_URL": "http://discussion:1338", "ACCOUNT_MANAGEMENT_URL": "http://account-management:1340", "PORT": "3000"})
     write_env("identity-migrate", identity_db)
-    write_env("account-management", {**common, **identity_db, **queue, **policy, **service_auth, **firebase,
+    write_env("authentication-migrate", authentication_db)
+    write_env("account-management", {**common, **identity_db, **queue, **policy, **service_auth, **authentication,
+        "AUTHENTICATION_URL": "http://firebase-auth-validator:8080",
         "ACCOUNT_MANAGEMENT_PORT": "1340", "ACCOUNT_MANAGEMENT_CORS_ORIGIN": origin,
         "EDITORIAL_URL": "http://editorial:1337", "DISCUSSION_URL": "http://discussion:1338",
         "REPLY_NOTIFICATION_WORKER_ENABLED": "true", "MENTION_NOTIFICATION_WORKER_ENABLED": "true", "FAVORITE_UPDATE_WORKER_ENABLED": "true"})
-    write_env("firebase-auth-validator", {**common, **identity_db, **queue, **firebase,
+    write_env("firebase-auth-validator", {"NODE_ENV": "production", **authentication_db, **authentication, **firebase,
+        "AUTH_PROVIDER": "firebase",
         "PORT": "8080", "ALLOWED_ORIGINS": origin, "ENABLE_EMAIL_PASSWORD": "true",
         "ENABLE_GOOGLE": "false", "ENABLE_GITHUB": "false", "ENABLE_ANONYMOUS": "false"})
     target = directory / "firebase-service-account.json"
