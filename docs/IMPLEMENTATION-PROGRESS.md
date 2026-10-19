@@ -1,6 +1,6 @@
 # Full operation implementation
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for the reconciled
 backlog and separate implementation, BFF/ingress, real-dependency and deployment
 status. Dated checkpoints below preserve their own source/evidence scope; older
@@ -10,6 +10,252 @@ Branch: `codex/full-operation`, created October 11, 2026 from `c965790e`.
 The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
+
+## Integrated article, release and Discussion recovery baseline (October 19, 2026)
+
+I29 reconciles the article publication/cover/comment slice, REL18 release ownership
+and publication, and O02 migration diagnostics/Discussion crash recovery on
+`codex/full-operation`, from I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`. Exact original handoffs, source hashes,
+shared-file resolutions, commands/results and cleanup are retained in
+`/tmp/wapps-integration-publication-recovery-20261019-zpyw0fj8/verification.json`. The final manifest identifies
+4,333 source files and the 29-file combined delta. Earlier lane statements about
+uncommitted work, sibling integration and next assignments describe their handoffs.
+
+Alpha article and release JSON/review/catalog families both cross the explicit
+BFF; article covers and media retain their independent bounded binary routes.
+Article JSON keeps its 96 KiB bound and release JSON its 64 KiB bound. All eight
+local-auth extensions remain mutually exclusive. The only production TypeScript
+change is the safe Editorial maintenance diagnostics from O02. Owner authorization,
+domain behavior, migration/schema representations, immutable objects, receipts,
+outboxes, tombstones, provider rosters, lockfile and frontend are preserved.
+
+One fresh Node 22.17.1 lockfile installation passes 6,883 Jest tests in 429 suites
+across 58 projects, 34 portable tests, full production/tool lint, 140 uncached builds,
+49 declared typechecks, separate Editorial/BFF spec checks, 64 Angular artifact
+checks and zero architecture violations across 144 projects/1,847 production files.
+Builds finish before any runtime consumes the same dist. Existing warnings,
+85 behavior gaps and external-provider qualification limits remain visible.
+
+All eight separate Docker gateway invocations pass on the integrated source:
+article 29, release 28, export 27, member 25, public profile 25, erasure 31, suite 29
+and application 31 groups. They perform 12,800 bounded authenticated reads;
+baseline groups overlap and are not distinct product workflows. Additional passes
+cover the actual Discussion SIGKILL/rebuild matrix, 11 operational groups, all four
+materialization suites, generic Discussion BFF including an unknown consumer key,
+release storage/delivery (10 groups) and article publication/covers/comments
+(9/17/9 groups). Recovery timings and initialization observations belong to this
+run's retained evidence, rather than being copied from the earlier O02 measurement.
+
+The initial 16-invocation batch exits nonzero because the supplemental article-comment
+helper cannot start its separate Discussion OPA executable at the absent default
+path. Docker OPA configures the outer Editorial helper only. A fresh invocation
+with the handoff's verified OPA 1.4.2 binary explicitly bound through `OPA_BINARY`
+passes all nine groups without source changes. The initial failure and the separate
+passing invocation are both retained; all eight gateway runs still use Docker Nginx.
+
+Historical failures remain release risks: I28's generic initialization failure,
+O02's fresh application-image cleanup schema-guard failure, and the post-restart
+Docker Nginx-to-BFF timeout. Successful integrated runs do not establish their
+causes or prove them fixed. The article lane's stopped-BFF 504-versus-502 failure
+and its unchanged confirmation are also retained. No timeout, retry, pacing,
+migration guard or readiness bound is weakened for integration.
+
+The sibling workspaces and B's unrelated navigation walkthrough are preserved.
+Application-image alpha parity, coordinated backup restoration/rollback, broader
+readiness, archived-data policy, soak, original frontend acceptance and live
+activation remain separate gates. Live installation remains A21. This checkpoint
+does not push, deploy, run live migrations, enable workers or start new assignments.
+
+## O02 bounded initialization diagnostics and Discussion crash recovery (October 19, 2026)
+
+This `wappsA` slice starts at verified I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` on `codex/discovery-feed-parity`.
+[The O02 qualification record](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md) defines
+its commands, fixtures, crash boundaries, measured bounds and residual risks.
+`/tmp/wappsa-recovery-20261019-651jqvgu/verification.json` indexes the source hashes,
+exact task files/patch, all failed attempts, quality gates, runtimes and cleanup.
+Changes remain uncommitted for coordinator reconciliation; sibling work is untouched.
+
+Editorial maintenance now preserves safe structured database operation/error codes
+and trusted failed-migration identities without raw ORM messages, SQL, DSNs,
+credentials or payloads. The first new fresh run fails the application-image cleanup
+schema guard; later bounded campaigns pass all 27 migrations without changing any
+migration behavior. That failure's comparison metadata was not captured before
+cleanup. Its cause and its relationship to I28's generic initialization failure
+remain unresolved. Final observation adds read-only schema metadata; it does not
+justify a root-cause or fix claim. No broad retry, delay or native gateway fallback
+is added.
+
+The final compiled owner/materializer matrix passes 14 actual SIGKILL windows in
+169.543 seconds. It preserves canonical SQL barriers, exact keys/tenants, receipts,
+immutable references, natural leases, ordered revisions and tombstones. Committed
+mutation loss, duplicate visible effects, premature source acknowledgement and
+resurrection are zero in this scope. Measured outbox recovery is 30.534/30.568 seconds
+under 40-second targets; projection recovery is 4.973-5.047 seconds under 20 seconds.
+Rebuild after deleting Mongo projections, broker queues and delivered outbox history
+reproduces seven aggregates exactly in 8.331 seconds. Durable quorum retry counts,
+retained poison, explicit confirmed requeue and historical receipt replay are observed.
+
+The fresh Node 22.17.1 lockfile installation passes 6,883 Jest tests / 429 suites,
+34 portable tests, full lint, 140 uncached builds, 49 typechecks, separate Editorial/BFF
+spec checks, 64 Angular artifact checks and zero boundary violations (144 projects /
+1,847 production sources). Existing warnings, 85 behavior gaps and ten separately
+inventoried external suites remain visible. Builds finish before runtime consumers.
+The complete regression command/result index is retained beside the crash evidence.
+The initial export invocation fails after 14 shared groups on a Docker Nginx-to-BFF
+connection timeout after BFF restart, before export-specific checks. The cause is
+unestablished. Its nonzero result remains separate from one fresh unchanged export
+confirmation, which passes all 27 groups and 1,600 Docker reads. Member/profiles/
+erasure/suite/application regressions also pass, as do operations, materialization
+and Discussion BFF, including the unknown consumer key. The successful gateway
+invocations total 9,600 reads; the initial batch retains its nonzero exit. These
+results do not close that transport risk.
+
+The shared 27-migration roster, readiness timing bounds, dependency lockfile,
+fixed export/erasure provider plan and accepted frontend reference are unchanged.
+No full backup restoration, compatible whole-service rollback, 24-hour soak,
+production probe/worker activation, live migration or deployment is claimed. Live
+installation remains A21; the article/release lanes need their own reconciliation.
+
+## Article publication, covers and current comment authority (October 18-19, 2026)
+
+This slice starts from clean promoted I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`, with all 4,316 baseline file hashes
+verified. It adds a seventh mutually exclusive local-auth extension, separate
+article HTTP/service/workflow/cover/comment harness modules, and migrates only
+alpha article JSON and cover/media families to `portal_bff`. Existing BFF and
+owning-service contracts satisfy the new runtime checks without production
+TypeScript or persistence changes. Application-image alpha parity remains separate.
+
+The local journey passes before alpha is changed, then the two-gateway journey
+passes 29 groups. Both use real independently enrolled credentials, canonical
+Identity mapping, real OPA, fresh MySQL/Mongo/RabbitMQ/MinIO, compiled Editorial
+and Community APIs, and both real materializers. Reviewer/tenant claims are
+controlled operator setup followed by sign-in. SQL triggers inject atomicity
+failures; observers read retained state. The primary journey never writes a
+projection directly. Both runs retain O01's complete-gateway/include transport
+stress, 1,600 authenticated requests and independent Account/BFF restart.
+
+Coverage includes frozen text/classification/covers despite private edits,
+self-review and owner/tenant/forged-context denial, concurrent revisions and key
+conflicts, historical receipts, SQL/outbox rollback, cover type/hash/byte/size
+bounds, partial-stream cancellation, protected previews, real objects, dependency
+outages and restarts. Current canonical replacement/withdrawal overrides old
+article and comment projections; generic Discussion rechecks parent authority,
+retains redacted replies and restores the same association on republication.
+The real worker converges to the retained revision-5 article tombstone. All 90
+BFF-stopped case/slash/unknown/private/public-media requests fail without fallback.
+
+Fresh Node 22.17.1 lockfile installation and required gates pass: 6,879 Jest tests
+in 428 suites across 58 projects, 34 portable tests, 143 lint targets including
+readiness tools, 140 uncached builds, 49 typechecks, 64 Angular package inspections,
+144-project architecture tags and zero violations across 1,846 source files.
+Builds finish before their `dist` is consumed by service qualification.
+
+All six original extensions pass separately on the final runtime source: 25
+profile, 25 member, 27 export, 31 erasure, 29 suite and 31 application groups.
+Counts include overlapping baseline groups; every run retains O01's 1,600 reads.
+The first member run stops before member-specific checks because the deliberately
+stopped BFF returns a bounded two-second 504 instead of the Account matrix's exact
+502 expectation. The unchanged rerun passes; both attempts remain recorded, and
+the shared assertion and transport configuration are unchanged.
+
+Evidence is retained under `/tmp/wapps-article-parity-20261018-ow5ug443/`, including
+the baseline/final source hashes, task-only patch, commands, failed attempts and
+cleanup. `verification.json` indexes the 4,322-file final source and exact 15-file
+patch, including reproduction against a fresh baseline archive. Branch, HEAD,
+index and lockfile are preserved; the isolated source matches the checkout.
+The initial installation was immediately interrupted after a wrong working
+directory was recognized (exit 130, empty log); tracked checkout/index remained
+clean and required dependency resolution was checked before the isolated install.
+The first three local runs retain harness failures: private lookup 404 versus an
+expected 403, explicit unsupported-media 415 versus 400, and a Mongo head observer
+using `discussionId` instead of `_id`. These correct the test's contract/observer;
+they do not weaken authorization or change owner behavior. The successful rerun
+retains strict statuses. A subsequent coverage review adds an actual MinIO-paused
+upload and same-key recovery to the final two-gateway run.
+
+Supplemental publication/covers/comments pass 9/17/9 real-store groups. The
+publication suite's old `/review authority/` expectation failed against the current
+independent-review attribution guard; its assertion now requires that exact error.
+The combined article-comment/recovery invocation correctly refused to scan an
+already populated object store. The separate comment run passes, and the dedicated
+fresh-store materialization runner passes all four non-skipped Discussion,
+Editorial SQL, Editorial projection and Catalog tests, including unknown opaque
+consumer keys. Both failed attempts remain retained; neither production migrations
+nor the isolation guard changes.
+
+[The qualification contract](ARTICLE-PARITY-QUALIFICATION.md) maps original
+frontend requirements and records supplemental setup and limits. No frontend,
+lockfile, fixed provider plan, reusable SDK binding contract, live store, migration,
+erasure fence or worker activation changes. Live installation remains A21. This
+lane stays uncommitted and does not start another assignment; cross-lane integration,
+production retention, original presentation acceptance and deployment remain open.
+
+## Release publication and ownership parity (October 19, 2026)
+
+REL18 started on October 18 and finishes on October 19 in Europe/Warsaw. It
+continues I28 commit `2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` in
+`wappsB` on the existing `codex/suites-publication-parity` branch. Alpha now routes
+the complete `/api/me/releases`, `/api/editorial/release-reviews` and
+`/api/catalog/releases` families through the bounded `portal_bff` upstream after
+a passing local-only Docker workflow. Case/slash variants and unknown suffixes
+remain inside that boundary. Article/media routing remains separate work.
+No owner implementation, durable representation, privacy roster, dependency
+lockfile or frontend presentation changes are needed for this slice.
+
+The seventh local-auth extension runs independently of the six existing extensions
+and retains O01's 1,600-request Docker transport/restart group. Its 28 combined
+groups pass through both local and alpha configurations with real enrolled sessions,
+separate Authentication/Account processes, Editorial/BFF, MySQL/Mongo/RabbitMQ,
+OPA and the compiled Editorial materializer. It verifies controlled DNS ownership,
+independent frozen review, self/foreign/forged denial, source/open/rebase,
+stable/prerelease uniqueness, 22-version pagination, concurrent/historical receipt
+replay, SQL receipt/outbox rollback, revocation/successor/release, immutable reviewed
+history, withdrawal during projection lag, restart, old-projection suppression and
+truthful owner/policy/SQL/Mongo/BFF failures. Historical approval receipts remain
+valid after revocation without applying another publication or notification.
+
+The actual compiled Account favorite worker observes application update cursors.
+Approval can notify a saved application; releases between polls coalesce into one
+application update. The check proves initial-baseline/private-edit/replay silence,
+durable delivered/suppressed receipts, preference and content choices, current
+parent visibility during lag, source outage/recovery, private read-state persistence
+and removed/readded watch isolation. Only disposable scheduler timestamps are
+accelerated. This establishes in-app application-watch behavior, without a
+per-release event-feed, email or production-worker activation claim.
+
+The independent `--releases --delivery` regression passes ten groups, including
+lost-ack redelivery, reconciliation after projection loss, reordering, capacity and
+migration reentry. Its forged-reviewer assertion now expects I28's shared
+erasure-aware attribution error, and restores the fixture in `finally`. The first
+failed assertion is retained; owner validation is unchanged.
+
+Fresh Node 22.17.1 `npm ci` and full gates pass: 6,879 Jest tests / 428 suites across
+58 projects, 34 portable tests, production/tool lint, 140 uncached builds,
+49 typechecks, separate BFF/Editorial spec checks, 64 Angular artifacts and zero
+boundary violations across 1,846 production sources. All builds finish before
+runtime consumers start. Existing warnings, 85 behavior gaps and nine separately
+inventoried external suites remain visible. Source manifests, exact commands,
+failed preflight assertions, the sandbox `listen EPERM` attempt and passing
+listener-enabled rerun, task-only patch, overlap list and cleanup are recorded in
+`/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json`.
+
+All six preserved extensions also pass in fresh, separate Docker runs: 31
+application, 29 suite, 25 member, 25 profile, 27 export and 31 erasure groups.
+Together with the 28-group release run, these seven selected invocations perform
+11,200 bounded O01 authenticated reads. Shared baseline groups overlap; this is
+not a count of distinct product workflows. Erasure retains its detailed fence,
+inventory and artifact evidence in the task directory.
+
+Controlled UDP DNS substitutes public authoritative propagation; staff role/tenant
+assignment is a disposable credential fixture. The older storage regression uses
+trusted setup actors and supplied DNS proof. Whole-saga privacy remains A28/I28;
+the unrelated retained I28 migration-initialization investigation belongs to O01's
+follow-up lane. No commit, push, deployment, live migration, live fence or live
+worker is performed. Live installation remains A21. Broad restore/rollback/load/
+soak, public providers and original frontend acceptance remain open.
 
 ## Integrated erasure, applications and operational baseline (October 18, 2026)
 

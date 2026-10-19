@@ -65,7 +65,9 @@ test(
       process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1' ||
       process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1' ||
       process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1' ||
-      process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1'
+      process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_ARTICLE_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_RELEASE_PARITY_INTEGRATION === '1'
         ? process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1'
           ? 900000
           : 480000
@@ -85,8 +87,10 @@ test(
         'WAPPS_ERASURE_PARITY_INTEGRATION',
         'WAPPS_SUITE_PARITY_INTEGRATION',
         'WAPPS_APPLICATION_PARITY_INTEGRATION',
+        'WAPPS_ARTICLE_PARITY_INTEGRATION',
+        'WAPPS_RELEASE_PARITY_INTEGRATION',
       ].filter((name) => process.env[name] === '1').length <= 1,
-      'Run profile, member, export, erasure, suite and application extensions separately'
+      'Run profile, member, export, erasure, suite, application, article and release extensions separately'
     );
     const id = randomUUID().replaceAll('-', ''),
       password = randomUUID();
@@ -540,7 +544,8 @@ test(
       );
       writeFileSync(
         path.join(directory, 'application-media.conf'),
-        process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1'
+        process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1' ||
+          process.env.WAPPS_ARTICLE_PARITY_INTEGRATION === '1'
           ? readFileSync(
               path.join(root, 'deploy/local/nginx/application-media.conf'),
               'utf8'
@@ -553,7 +558,10 @@ test(
           : '# Media is outside this authentication qualification.\n'
       );
       // Alpha media remains its own migration family. Do not substitute local routing for it.
-      if (process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1') {
+      if (
+        process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1' ||
+        process.env.WAPPS_ARTICLE_PARITY_INTEGRATION === '1'
+      ) {
         const target = path.join(directory, 'alpha-api.conf');
         writeFileSync(
           target,
@@ -1414,6 +1422,58 @@ test(
       console.log(
         'PASS Docker-capable local/alpha gateway transport: 1600 repeated bounded authenticated requests through includes and complete gateways, invalid-token denial and independent Account/BFF restart recovery without request retries or pacing'
       );
+      if (process.env.WAPPS_ARTICLE_PARITY_INTEGRATION === '1') {
+        const {
+          articleParityServices,
+        } = require('./article-parity-services.cjs');
+        const {
+          qualifyArticleParity,
+        } = require('./bff-article-parity-checks.cjs');
+        const services = await articleParityServices({
+          root,
+          env,
+          password,
+          container,
+          names,
+          start,
+          freePort,
+          execute,
+          processes,
+        });
+        console.log(
+          'ARTICLE qualification resources ' +
+            JSON.stringify({
+              root,
+              node: process.version,
+              containers: [...names],
+              endpoints: services.endpoints,
+              bucket: services.bucket,
+              gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+            })
+        );
+        try {
+          await restartAccount(services.endpoints);
+          await restartBff(services.endpoints);
+          await qualifyArticleParity({
+            call,
+            origins:
+              process.env.WAPPS_ARTICLE_LOCAL_ONLY === '1'
+                ? [origin, origin]
+                : [origin, alphaOrigin],
+            input,
+            credentials,
+            subjectFor,
+            services,
+            ...serviceLifecycle,
+            restartAccount: () => restartAccount(services.endpoints),
+            restartBff: () => restartBff(services.endpoints),
+          });
+        } finally {
+          await services.close();
+          await restartAccount();
+          await restartBff();
+        }
+      }
       if (process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1') {
         const {
           applicationParityServices,
@@ -1459,6 +1519,63 @@ test(
             services,
             ...serviceLifecycle,
             restartAccount: () => restartAccount(services.endpoints),
+            restartBff: () => restartBff(services.endpoints),
+          });
+        } finally {
+          await services.close();
+          await restartAccount();
+          await restartBff();
+        }
+      }
+      if (process.env.WAPPS_RELEASE_PARITY_INTEGRATION === '1') {
+        const {
+          releaseParityServices,
+        } = require('./release-parity-services.cjs');
+        const {
+          qualifyReleaseParity,
+        } = require('./bff-release-parity-checks.cjs');
+        const services = await releaseParityServices({
+          root,
+          env,
+          password,
+          container,
+          names,
+          start,
+          freePort,
+          execute,
+          processes,
+        });
+        console.log(
+          'RELEASE qualification resources ' +
+            JSON.stringify({
+              root,
+              node: process.version,
+              containers: [...names],
+              endpoints: services.endpoints,
+              dns: services.dns.address,
+              gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+            })
+        );
+        try {
+          await restartAccount(services.endpoints);
+          await restartBff(services.endpoints);
+          await qualifyReleaseParity({
+            call,
+            origins:
+              process.env.WAPPS_RELEASE_LOCAL_ONLY === '1'
+                ? [origin, origin]
+                : [origin, alphaOrigin],
+            input,
+            source,
+            credentials,
+            subjectFor,
+            services,
+            ...serviceLifecycle,
+            restartAccount: (overrides = {}) =>
+              restartAccount({
+                ...services.endpoints,
+                ...overrides,
+              }),
             restartBff: () => restartBff(services.endpoints),
           });
         } finally {

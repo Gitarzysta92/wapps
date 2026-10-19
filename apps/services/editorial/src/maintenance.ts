@@ -16,6 +16,10 @@ import {
   parseEditorialOwnershipManifest,
 } from './app/application/editorial-backfill';
 import { MysqlEditorialBackfill } from './app/infrastructure/mysql-editorial-backfill';
+import {
+  diagnoseMaintenanceDatabase,
+  safeMaintenanceLogger,
+} from './maintenance-diagnostics';
 
 type MaintenanceCommand =
   | { mode: 'migrate' }
@@ -183,6 +187,9 @@ export function editorialMaintenanceSource(
     migrationsTransactionMode: 'none',
     migrations: EDITORIAL_MIGRATIONS,
     migrationsTableName: 'editorial_migrations',
+    logger: safeMaintenanceLogger(
+      EDITORIAL_MIGRATIONS.map((migration) => migration.name)
+    ),
   });
 }
 
@@ -193,7 +200,7 @@ export async function runEditorialMaintenance(args: string[]): Promise<void> {
       ? await readEditorialOwnershipManifest(command.manifest)
       : null;
   const source = editorialMaintenanceSource(process.env);
-  await source.initialize();
+  await diagnoseMaintenanceDatabase('initialize', () => source.initialize());
   try {
     if (
       command.mode === 'article-cover-cleanup' ||
@@ -307,7 +314,10 @@ export async function runEditorialMaintenance(args: string[]): Promise<void> {
       return;
     }
     if (command.mode === 'migrate') {
-      const migrations = await source.runMigrations({ transaction: 'none' });
+      const migrations = await diagnoseMaintenanceDatabase(
+        'runMigrations',
+        () => source.runMigrations({ transaction: 'none' })
+      );
       console.log(
         JSON.stringify({
           mode: 'migrate',
@@ -329,6 +339,6 @@ export async function runEditorialMaintenance(args: string[]): Promise<void> {
     );
     if (!requeued) process.exitCode = 2;
   } finally {
-    await source.destroy();
+    await diagnoseMaintenanceDatabase('destroy', () => source.destroy());
   }
 }

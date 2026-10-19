@@ -1,12 +1,76 @@
 # Wapps operational readiness
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for current workflow
 status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
 
-Current integrated baseline I28 (October 18, 2026) combines full account erasure,
+Current integrated baseline **I29** (October 19, 2026) combines the article,
+release and Discussion recovery handoffs. The [combined checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-article-release-and-discussion-recovery-baseline-october-19-2026)
+records a fresh install, all repository gates, eight Docker gateway extensions
+with 12,800 authenticated reads, actual Discussion crash/rebuild and operational/
+storage regressions. Exact source and outcomes: `/tmp/wapps-integration-publication-recovery-20261019-zpyw0fj8/verification.json`.
+I28/O02 initialization and post-restart transport causes remain unresolved despite
+passing repetitions. Application-image alpha parity, broad restore/rollback/soak,
+frontend acceptance and live activation remain open; live installation is still A21.
+The following lane paragraphs describe their preserved independent qualifications.
+
+O02 bounded operational reliability (October 19, 2026) extends I28 in `wappsA` with
+[safe initialization diagnostics and actual Discussion crash recovery](DISCUSSION-CRASH-RECOVERY-QUALIFICATION.md).
+Fourteen actual process kills preserve committed commands, exact binding/tenant
+scope, receipts, immutable references, natural leases and tombstones; authoritative
+rebuild without projections or delivery history reproduces seven aggregates in
+8.331 seconds. Safe migration diagnostics retain operation/allowlisted error codes
+and trusted migration identities without sensitive ORM output. A new fresh run also
+fails an application-image cleanup schema guard; later bounded repetitions pass.
+Its cause and the original I28 failure remain unresolved. This is a retained release
+risk, not a claimed reliability fix. The first export regression also fails on a
+Docker Nginx-to-BFF connection timeout after restart, before export-specific work.
+Its cause remains unresolved and its failed result stays separate from one fresh
+unchanged confirmation, which passes all 27 groups and 1,600 Docker reads. The
+other requested regressions pass, but the original batch remains nonzero.
+Source/evidence and all command outcomes are in
+`/tmp/wappsa-recovery-20261019-651jqvgu/verification.json`. The 27-migration roster,
+readiness bounds and provider plan remain unchanged. Broader crash coverage,
+coordinated backup restoration, compatible whole-service rollback, soak, deployed
+readiness and live activation remain open. This lane does not integrate sibling
+article/release changes; live installation stays A21.
+
+Article publication/cover parity (October 18-19, 2026) starts from promoted I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`. The local-first and both-Docker-gateway
+journeys each pass 29 groups with independent Authentication/Identity, Editorial,
+Community, OPA, SQL, object storage and actual broker materializers. Alpha article
+JSON, review, private/frozen covers and public media now use BFF. Frozen submissions,
+rollback/replay, current comment authority, outages, restarts and retained tombstones
+are qualified; all 90 BFF-stopped route variants fail without owner fallback.
+Full gates pass 6,879 Jest tests / 428 suites, 34 portable tests, lint, 140 builds,
+49 typechecks, 64 Angular artifact inspections and zero boundary violations.
+The six existing Docker extensions pass 25 profile, 25 member, 27 export, 31
+erasure, 29 suite and 31 application groups, including overlapping baseline checks.
+The first member run receives a bounded 504 from the deliberately stopped BFF
+where the shared matrix expects 502; an unchanged rerun passes. Both logs remain.
+See [the article qualification](ARTICLE-PARITY-QUALIFICATION.md) and
+`/tmp/wapps-article-parity-20261018-ow5ug443/verification.json` for exact evidence,
+the reproducible 15-file patch, source hashes, cleanup and controlled setup.
+Application-image alpha parity, archived-data policy, frontend acceptance and live
+deployment/worker activation remain separate. Live installation stays A21.
+
+Release ownership follow-up REL18 (October 19, 2026) qualifies the complete release
+families through both Docker gateway configurations after a passing local preflight.
+The [checkpoint](IMPLEMENTATION-PROGRESS.md#release-publication-and-ownership-parity-october-19-2026)
+records 28 combined session/runtime groups, ten isolated release storage/broker
+groups and the full fresh-install workspace gate. Actual saved-application watch
+delivery, current grants, frozen review, replay/rollback, withdrawal during lag,
+restart and dependency failures are covered. Alpha release bypasses are removed;
+owner enforcement and I28 privacy representations remain unchanged. The seventh
+extension preserves the six existing extensions and O01 Docker transport checks.
+Exact source, commands, failures and cleanup are recorded in
+`/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json`. Controlled DNS and
+disposable scheduler acceleration remain substitutions. Live A21, original frontend
+acceptance and broad deployment/restore/load/soak status are unchanged.
+
+Previous integrated baseline I28 (October 18, 2026) combines full account erasure,
 application publication/ownership and operational foundations. The 4,316-file
 source passes 6,879 Jest tests / 428 suites, 34 portable tests, full lint,
 140 builds, 49 typechecks, 64 Angular artifact checks and zero boundary violations.

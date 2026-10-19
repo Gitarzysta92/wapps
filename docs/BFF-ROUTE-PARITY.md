@@ -1,8 +1,8 @@
 # Portal gateway route parity
 
-Source inventory through I28 integrated erasure, application/ownership and operational
-foundations, October 18, 2026, on `codex/full-operation` at base
-`95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb` plus the preserved working tree.
+Source inventory at integrated I29, including article publication/cover parity and
+REL18 release ownership parity, October 19, 2026. Both slices start from I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`; their task manifests identify each delta.
 This describes checked-in routing, not the live installation (still A21).
 The [completion checklist](BACKEND-COMPLETION-CHECKLIST.md) owns release status.
 
@@ -199,6 +199,53 @@ media families remain migration work. Both API/auth comparisons use native Nginx
 1.28.3; Docker-to-host transport, original frontend acceptance, public DNS/TLS and
 deployment remain unqualified by this lane. Live installation stays A21.
 
+## Article publication and covers
+
+Both checked-in configurations now route the complete `/me/articles`,
+`/editorial/article-reviews`, `/catalog/articles`, `/catalog/article-selection`,
+`/catalog/article-visibility`, `/me/article-covers` and `/media/articles` families
+through `portal_bff`, including owner/reviewer frozen submission previews. Article
+JSON has a 96 KiB limit; raw cover content has 8 MiB and a 15-second body deadline.
+Timeouts are bounded, upstream retries disabled, and binary buffering/cache disabled.
+Application-image alpha routing remains separate.
+
+The [article qualification](ARTICLE-PARITY-QUALIFICATION.md) first passes the local
+real-session journey with alpha untouched, then passes both Docker gateways with
+their own media includes. It verifies frozen text/classification/covers, independent
+review, SQL/outbox rollback, real broker materializers, generic Discussion authority,
+outages, restart, retained tombstones and historical replay. All 90 BFF-stopped
+case/slash/unknown/private/public-media requests fail without direct-owner fallback.
+Each run preserves O01's 1,600-request transport check across both include and both
+complete gateways. Evidence and exact source/patch manifest:
+`/tmp/wapps-article-parity-20261018-ow5ug443/verification.json`.
+No direct portal caller for `article-visibility` was found; its explicit BFF handler
+remains available, while Community calls Editorial's canonical owner contract.
+
+## Release publication under current ownership
+
+REL18 routes `/api/me/releases`, `/api/editorial/release-reviews` and
+`/api/catalog/releases` through the explicit release BFF in both configurations.
+The complete case-insensitive family has a 64 KiB body limit, bounded timeouts,
+the shared `portal_bff` upstream and no upstream retry. Source/open/rebase,
+draft/publication commands, independent review and public version/list reads retain
+their existing BFF contracts. Unknown suffixes cannot fall through to Editorial.
+
+The [release checkpoint](IMPLEMENTATION-PROGRESS.md#release-publication-and-ownership-parity-october-19-2026)
+records a passing local Docker preflight followed by 28 combined local/alpha groups
+and ten isolated release storage/delivery groups. Real sessions and controlled DNS
+exercise current ownership, frozen submissions, immutable history/version URLs,
+pagination, exact replay, rollback, withdrawal/non-resurrection and dependency
+outages. The compiled Account worker also qualifies saved-application update
+delivery, preference suppression, current parent access, source recovery and read
+state. Updates coalesce at the application cursor; per-release notifications and
+external delivery are not claimed. Evidence and source identity are in
+`/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json`.
+
+The release extension runs separately from the article and six earlier extensions.
+I29 requalifies all eight and preserves the O01 transport checks. Controlled DNS, staff-claim provisioning and accelerated disposable watch
+schedules are explicit substitutions. This source/routing qualification does not
+change live A21, frontend acceptance, public DNS or broad recovery/load/soak status.
+
 ## Remaining direct routes
 
 All paths below start with `/api`. These are migration work under
@@ -208,9 +255,7 @@ both gateways, including denial, failures, case/slash variants and unknown suffi
 
 | Family | Local | Alpha | Caller and existing BFF support / next qualification |
 | --- | --- | --- | --- |
-| `/me/releases/*`, `/editorial/release-reviews/*`, `/catalog/releases/*` | BFF | Editorial | [ReleaseApiService](../apps/portals/shared/features/application-workspace/src/infrastructure/release-api.service.ts); [releases BFF](../apps/services/catalog-bff/src/app/releases/). Qualify immutable history, review/publication and parent revocation (BC14). |
-| `/me/articles/*`, `/editorial/article-reviews/*`, `/catalog/{articles,article-selection,article-visibility}` | BFF | Editorial | [Article adapters](../apps/portals/shared/features/articles/src/infrastructure/); [articles BFF](../apps/services/catalog-bff/src/app/articles/). Qualify classification, review, slug/tombstone and current Discussion authority (BC13). No direct portal caller for `article-visibility` was found; BFF retains an explicit handler/client. |
-| `/me/{application-images,article-covers}/*`, `/media/{applications,articles}/*` | BFF | Editorial | [ApplicationMediaApiService](../apps/portals/shared/features/application-workspace/src/infrastructure/application-media-api.service.ts), [ArticleCoverApiService](../apps/portals/shared/features/articles/src/infrastructure/article-cover-api.service.ts); explicit BFF media controllers. Also audit media nested under draft/review routes. Qualify byte bounds, source authorization, staging/commit/replay and object-store failures (BC15). |
+| `/me/application-images/*`, `/media/applications/*` | BFF | Editorial | [ApplicationMediaApiService](../apps/portals/shared/features/application-workspace/src/infrastructure/application-media-api.service.ts); explicit BFF media controllers. Also audit media nested under draft/review routes. Article covers are qualified separately above; application-image byte bounds, source authorization, staging/commit/replay and object-store failures still need alpha parity (BC15). |
 | `/catalog/application-visibility/:id` | Editorial | Editorial | [EditorialCatalogController](../apps/services/editorial/src/app/http/editorial-catalog.controller.ts); no explicit BFF handler and no current portal caller found. Establish whether this owner route should be exposed at ingress; do not add a blind proxy to achieve parity. |
 | `/registration/complete` | Account | Account | [RegistrationController](../sdk/features/identity/applications/management/service/src/app/controllers/registration.controller.ts); no BFF handler or current browser caller found. [IdentityRegistrationApiService](../apps/portals/shared/features/identity/src/infrastructure/identity-registration-api.service.ts) uses `/auth/register` through BFF. Decide legacy enrollment compatibility before retiring or migrating the bypass. |
 

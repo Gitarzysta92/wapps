@@ -13,6 +13,7 @@ const ignored = new Set(['node_modules', 'dist', 'coverage', '.git', '.nx', 'art
 // These suites require separately provisioned, isolated dependencies. They never count as unit passes.
 export const qualificationSuites = {
   'catalog-journey.test.cjs': 'Built Editorial/BFF services and isolated MySQL, MongoDB and RabbitMQ',
+  'discussion-crash-recovery.test.cjs': 'Compiled Discussion/Editorial and fresh disposable Docker SQL/Mongo/RabbitMQ/MinIO/OPA; actual SIGKILL qualification',
   'discussion-recovery.test.cjs': 'Isolated MySQL, MongoDB, RabbitMQ and object storage',
   'editorial-projection-recovery.test.cjs': 'Isolated MySQL, MongoDB and RabbitMQ',
   'editorial-recovery.test.cjs': 'Isolated MySQL',
