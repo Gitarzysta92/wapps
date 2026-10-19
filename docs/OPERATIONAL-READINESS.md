@@ -1,10 +1,24 @@
 # Wapps operational readiness
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for current workflow
 status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
+
+Release ownership follow-up REL18 (October 19, 2026) qualifies the complete release
+families through both Docker gateway configurations after a passing local preflight.
+The [checkpoint](IMPLEMENTATION-PROGRESS.md#release-publication-and-ownership-parity-october-19-2026)
+records 28 combined session/runtime groups, ten isolated release storage/broker
+groups and the full fresh-install workspace gate. Actual saved-application watch
+delivery, current grants, frozen review, replay/rollback, withdrawal during lag,
+restart and dependency failures are covered. Alpha release bypasses are removed;
+owner enforcement and I28 privacy representations remain unchanged. The seventh
+extension preserves the six existing extensions and O01 Docker transport checks.
+Exact source, commands, failures and cleanup are recorded in
+`/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json`. Controlled DNS and
+disposable scheduler acceleration remain substitutions. Live A21, original frontend
+acceptance and broad deployment/restore/load/soak status are unchanged.
 
 Current integrated baseline I28 (October 18, 2026) combines full account erasure,
 application publication/ownership and operational foundations. The 4,316-file

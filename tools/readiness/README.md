@@ -15,7 +15,7 @@ harness preserves the checked-in bounded upstream pools, substitutes only servic
 addresses and also starts the complete local and alpha gateway configurations.
 It adds 1,600 bounded authenticated reads through all four gateways/includes,
 invalid-token checks and independent Account/BFF restart recovery, with no request
-retry or pacing. Keep profile/member/export/erasure/suite/application extensions in
+retry or pacing. Keep profile/member/export/erasure/suite/application/release extensions in
 separate invocations. I28 qualifies all six on the combined source; its command/log
 index is `/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json`.
 Native Nginx remains an optional comparator, not a substitute for Docker evidence.
@@ -27,7 +27,7 @@ Native Nginx remains an optional comparator, not a substitute for Docker evidenc
 The current independent Authentication/Account entrypoint is
 `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_ERASURE_PARITY_INTEGRATION=1 node --test tools/readiness/local-auth.test.cjs`.
 Build the complete snapshot first. Use only the runner's fresh stores; the erasure
-extension runs separately from profile/member/export/suite/application extensions. See
+extension runs separately from profile/member/export/suite/application/release extensions. See
 [the A28 qualification contract](../../docs/ACCOUNT-ERASURE-QUALIFICATION.md) for
 commands, process fences/inventory evidence, supplemental regressions and limits.
 The historical Firebase export/erasure composition is not the current entrypoint.
@@ -36,8 +36,8 @@ The historical Firebase export/erasure composition is not the current entrypoint
 
 Run `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_APPLICATION_PARITY_INTEGRATION=1
 node --test tools/readiness/local-auth.test.cjs` in a fresh Node 22.17.1 lockfile
-installation after all builds finish. Profile, member, export, erasure, suite and
-application extensions are mutually exclusive. `WAPPS_APPLICATION_LOCAL_ONLY=1` limits the new
+installation after all builds finish. Profile, member, export, erasure, suite,
+application and release extensions are mutually exclusive. `WAPPS_APPLICATION_LOCAL_ONLY=1` limits the new
 application workflow to local ingress for qualification before an alpha route change;
 omit it for the required local/alpha comparison. Shared authentication checks still
 run against both configurations.
@@ -238,7 +238,7 @@ NX_DAEMON=false NX_ISOLATE_PLUGINS=false \
 
 It uses the same prerequisites, fresh stores and source setup described above.
 Finish all builds before starting either runtime suite: service restarts read
-`dist`, which a concurrent build can replace. All six extension flags are mutually
+`dist`, which a concurrent build can replace. All seven extension flags are mutually
 exclusive. Leave `WAPPS_NGINX_BINARY` unset for the required Docker run. A26's
 historical native-only limitation is superseded by I28's combined Docker regression;
 a native comparator still does not establish deployment acceptance.
@@ -840,7 +840,7 @@ WAPPS_SUITES_OPA_DOCKER=1 WAPPS_SUITES_OUTPUT=/tmp/unique-export-evidence \
   node tools/readiness/qualify-suites.cjs --account-export-editorial --no-browser
 ```
 
-Run the profile, member, export, suite and application extensions separately. The export extension uses
+Run the profile, member, export, erasure, suite, application and release extensions separately. The export extension uses
 fresh test-owned SQL/RabbitMQ/Mongo/MinIO/OPA, independent Authentication/Account/BFF,
 and real Editorial/Community sources. Credential subjects differ from application
 identity IDs; the archive includes their exact verified binding. Both local and
@@ -2951,6 +2951,56 @@ the browser option; public DNS, production identity/ingress, database
 restart/restore/rollback, load and soak remain unqualified. Containers/processes are removed
 on success/failure. Preserve output and its matching source manifest independently
 of previously accepted media/application/suite evidence.
+
+## Release ownership and gateway parity
+
+After a fresh lockfile installation and completion of all builds, run the seventh,
+separate local-auth extension with Node 22.17.1:
+
+```sh
+env -u WAPPS_NGINX_BINARY NX_DAEMON=false NX_ISOLATE_PLUGINS=false NX_NO_CLOUD=true \
+  WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_RELEASE_PARITY_INTEGRATION=1 \
+  node --test tools/readiness/local-auth.test.cjs
+```
+
+`WAPPS_RELEASE_LOCAL_ONLY=1` limits the release workflow to local ingress for the
+pre-alignment check. Omit it for acceptance of both local and alpha configurations.
+All seven extensions are mutually exclusive. The six existing extensions and the
+1,600-request O01 transport/restart group remain intact. Docker Nginx is the
+acceptance transport; an explicitly selected native binary is only a comparison.
+
+`release-parity-services.cjs` reuses the isolated suite Editorial lifecycle and
+adds the controlled UDP DNS fixture. It starts fresh MySQL, Mongo, RabbitMQ and
+OPA plus independently built Authentication, Account, Editorial, BFF and the
+Editorial materializer. API mutations use enrolled bearer sessions. Only staff
+role/tenant assignment uses the disposable credential adapter. The production
+resolver verifies actual TXT answers; controlled DNS substitutes public
+authoritative propagation. Media and browser presentation are outside this run.
+
+`bff-release-parity-checks.cjs` covers current grants, independent frozen review,
+source/open/rebase, self/foreign/forged denial, concurrent and historical receipts,
+receipt/outbox rollback, 22-version pagination, stable/prerelease uniqueness,
+revocation/successor/release, immutable reviewed history, withdrawal while Mongo
+lags, process restart and stale-projection suppression. Entire release families,
+including case/slash/unknown suffixes, require BFF. Real policy, owner, SQL schema
+and Mongo outages stay explicit. Trigger faults and temporary schema renaming
+affect only the disposable Editorial database and are restored in `finally`.
+
+`release-parity-notifications.cjs` enables the actual compiled Account favorite
+worker only in the disposable process. Approval advances the saved application's
+cursor; several releases between polls coalesce to one application update. This
+is an in-app application watch, not a per-release feed or email delivery claim.
+The check covers baseline/private-edit/replay silence, durable delivered/suppressed
+receipts, preference and content choices, current parent visibility during lag,
+source failure/recovery, private read state and removed/readded watch isolation.
+Only test watch scheduling is accelerated with scoped `availableAt=0` updates.
+The independent `--releases --delivery` regression above adds broker lost-ack,
+rebuild, reordering and migration checks with its declared trusted setup actors.
+
+No live worker, migration, deployment, broad restore/rollback/load/soak or frontend
+acceptance is implied. Whole-saga privacy remains the separately qualified A28/I28
+journey. Keep failed attempts, exact source hashes, substitutions and cleanup with
+the run's evidence before using it as a release checkpoint.
 
 ## Private application media qualification
 

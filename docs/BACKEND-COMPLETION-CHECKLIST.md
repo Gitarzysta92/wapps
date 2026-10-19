@@ -1,6 +1,6 @@
 # Backend and BFF completion checklist
 
-Current assessment: **October 18, 2026**, after Discussion route consolidation,
+Current assessment: **October 19, 2026**, after Discussion route consolidation,
 the generic Review owner API/BFF slice, independent local Authentication,
 complete administration BFF, staff health-monitor BFF, account/profile gateway
 parity, A26 favorites/inbox classification, A27 account-export gateway parity,
@@ -10,6 +10,10 @@ O01 operational foundations, verified together as integrated baseline I28.
 Branch: `codex/full-operation`; base HEAD:
 `95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb`. The assessed implementation includes
 extensive uncommitted and untracked work; HEAD alone does not identify it.
+
+REL18 adds release ownership/publication parity from I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` in the existing `wappsB` companion
+workspace. Its source/routing checkpoint is separate from deployment acceptance.
 
 This is the current assignment/checklist index for the full backend scope. Keep
 [functionality history](FUNCTIONALITY-MAP.md), [readiness criteria](OPERATIONAL-READINESS.md),
@@ -61,6 +65,7 @@ their own historical substitutions; I28 supersedes their Docker transport gap.
 
 | Evidence | What it establishes | Limits / current interpretation |
 | --- | --- | --- |
+| REL18: [release ownership checkpoint](IMPLEMENTATION-PROGRESS.md#release-publication-and-ownership-parity-october-19-2026), `/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json` | Fresh install and all workspace gates; 28 combined local/alpha Docker groups and ten isolated release storage/broker groups; current grants, frozen independent review, history/version uniqueness, real pagination, exact replay/rollback, withdrawal during lag, restart, outages and actual saved-application watch delivery | Controlled DNS and disposable staff claims/scheduler acceleration; application updates coalesce. Preserves all six earlier extensions and O01. No per-release feed/email, live activation, broad restore/load/soak or frontend acceptance. |
 | I28: [combined checkpoint](IMPLEMENTATION-PROGRESS.md#integrated-erasure-applications-and-operational-baseline-october-18-2026), `/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json` | All full workspace gates; 31 erasure, 31 application, 27 export, 29 suite, 25 profile and 25 member Docker groups; 9,600 bounded authenticated reads across those six runs; two SQL/projection recovery tests and 11 operational groups | Overlapping baseline groups; controlled DNS/source setup and privacy fixtures retain their stated limits. Readiness covers editorial-catalog only. No production fences/inventories, archived-data, broad recovery/load, frontend or deployment acceptance. |
 | APP18: [application/ownership checkpoint](IMPLEMENTATION-PROGRESS.md#application-publication-and-ownership-parity-october-18-2026), `/tmp/wappsB-application-ownership-20261018-5_ffh246/` | New lockfile installation; 6,869 Jest tests / 426 suites and 34 portable tests; full lint, 140 builds, 49 typechecks, separate BFF/Editorial spec checks, 64 Angular artifacts and zero boundary violations; 29 combined real-session runtime groups through both native gateway configurations | Controlled UDP DNS substitutes public authoritative propagation; actual Editorial materializer uses fresh SQL/Mongo/RabbitMQ and application media uses MinIO. Editorial ownership-erasure hooks and successor acquisition are participant compatibility, not A28 completion. No Docker transport, frontend, archived-data or deployment claim. |
 | O01: [operational foundations](IMPLEMENTATION-PROGRESS.md#o01-operational-transport-migration-recovery-and-scoped-readiness-october-18-2026) and `/tmp/wappsA-ops-foundations-20261018-ds3gld4i/verification.json` | Docker local/alpha transport and separate profile/member/export/suite regressions; current Editorial SQL/projection migration/recovery qualifiers; real dependency/schema/worker/backlog/poison readiness faults and recovery; full workspace gates | Only `editorial-catalog` readiness scope. Bounded SQL samples and Mongo availability do not establish whole-history integrity. No live deployment/probe/alert delivery, external-provider, restore/soak or frontend acceptance. |
@@ -125,7 +130,7 @@ Every deployment cell remains U for the currently assessed implementation.
 | [BC11 Ownership](#bc11-ownership) | present; grant/revoke/successor qualified | yes / yes / yes | APP18 controlled DNS, independent grants, participant erasure hooks | U |
 | [BC12 Suite publication](#bc12-suite-publication) | present; independent removal/withdrawal | yes / yes / yes | suite lane: frozen review, broker replay, retained anonymous publication | U |
 | [BC13 Articles](#bc13-articles) | present | yes / yes / bypass | H15; current U | U |
-| [BC14 Releases](#bc14-releases) | present | yes / yes / bypass | H15; current U | U |
+| [BC14 Releases](#bc14-releases) | present; current grants/publication qualified | yes / yes / yes | REL18 Docker sessions, actual watch delivery and storage/broker regression | U |
 | [BC15 Media](#bc15-media) | present | yes / yes / bypass | H14-15; current U | U |
 | [BC16 Discussions and comments](#bc16-discussions-and-comments) | present | yes / yes / yes | R18, authority substituted | U |
 | [BC17 Reviews and moderation](#bc17-reviews-and-moderation) | present, generic owner API | yes / yes / yes | V18; authority substituted | U |
@@ -138,7 +143,7 @@ Every deployment cell remains U for the currently assessed implementation.
 | [BC24 Migrations/materialization](#bc24-migrations-and-materialization) | present; residual gaps | via workflows / mixed / mixed | O01 current Editorial SQL/projection recovery passes; R18 subset | U |
 | [BC25 Readiness/observability](#bc25-readiness-and-observability) | Editorial catalog scope implemented; broader scope partial | owner + BFF readiness / activation pending / activation pending | O01 dependency, schema, backlog/poison and worker fault/recovery | U |
 | [BC26 CI/build artifacts](#bc26-ci-and-build-artifacts) | partial release qualification | n/a | I28 full workspace gate; external suites separate | U |
-| [BC27 Deployment/ingress](#bc27-deployment-and-ingress) | partial alignment; caller inventory recorded | mixed / mixed / mixed | R18/V18/A22-A28, suite and APP18 families; O01 Docker gateway regressions | U |
+| [BC27 Deployment/ingress](#bc27-deployment-and-ingress) | partial alignment; caller inventory recorded | mixed / mixed / mixed | R18/V18/A22-A28, suite, APP18 and REL18 families; O01 Docker gateway regressions | U |
 | [BC28 Crash/restore/rollback](#bc28-crash-restore-and-rollback) | tools/runbooks; proof incomplete | n/a | historical limited recovery; restore U | U |
 | [BC29 Load/soak](#bc29-load-and-soak) | unverified | all released contracts | U | U |
 | [BC30 Content Node Registry](#bc30-content-node-registry) | scaffold; disposition open | none / local dependency / absent | no behavior qualification | U |
@@ -382,6 +387,9 @@ BFF has no database transaction or materializer of its own.
   projection lag. New grants cannot revive old claim-bound drafts. DNS failure/lease
   recovery after Editorial SIGKILL, rollback/replay, existing participant erasure and
   successor acquisition without erased private history pass.
+  REL18 adds release-specific grant checks through both Docker gateways: revoked or
+  released grants cannot submit/approve new content, while exact historical receipts
+  remain stable and successor drafts use the new grant explicitly.
 - **Remaining/next (P0 for ownership activation; BC03, BC22, BC27):** A28 qualifies
   the complete privacy coordinator and cross-service journey; I28 verifies the
   combined source through Docker. Public authoritative DNS/TLS, production erasure
@@ -428,10 +436,19 @@ BFF has no database transaction or materializer of its own.
   `/catalog/releases/:slug/:version?` -> corresponding owner APIs.
 - **Authority/work:** Canonical SQL owner grants, version uniqueness, drafts/frozen
   submissions/reviews/receipts/outbox and projected public versions. [H15 evidence][releases-evidence].
-- **Remaining/next (P1; BC07, BC11, BC27):** Qualify candidate release publication and
-  withdrawal under changing ownership. Acceptance: approved stable/prerelease version
-  and pagination contracts hold, self-review is denied, revoked owners cannot publish,
-  retries do not duplicate versions, and saved-application notifications use current access.
+  REL18 qualifies the complete local/alpha Docker families with real sessions:
+  stable/prerelease uniqueness, immutable reviewed history, 22-version pagination,
+  frozen independent review, self/foreign/forged denial, current grants after
+  revoke/release, successor open/rebase, exact concurrent/historical receipts,
+  SQL/outbox rollback, actual broker/materializer lag/recovery, withdrawal and restart.
+  The compiled Account worker delivers saved-application updates with current
+  recipient choices and parent access, durable suppression, outage recovery and
+  private read state. Releases between observations coalesce at the application
+  cursor. Existing historical receipt replay never reapplies a publication.
+- **Remaining/next (P1; BC07, BC11, BC27-29, FE01):** Qualify deployment/provider
+  activation, public authoritative DNS, broad restore/rollback/load/soak and the
+  original frontend. Whole-saga privacy remains A28/I28. The current in-app watch
+  does not establish per-release event-feed or external/email delivery behavior.
 
 ### BC15 Media
 
@@ -661,8 +678,7 @@ BFF has no database transaction or materializer of its own.
 - **Authority/work:** Versioned config/images and ordered migrations over retained
   stores. E05 documents a backend alpha; E02 and V18 test both nginx configurations
   for Discussion and Reviews. Alpha still bypasses BFF for
-  articles/releases,
-  publication-review and media workflows already integrated locally. A22 administration
+  articles, article-review and media workflows already integrated locally. A22 administration
   and A23 staff health routes cross BFF in both configurations, including case variants
   and unknown suffixes. A24 aligns private account/profile/photo/preferences and
   self-deletion acceptance, removes the broad direct `/me` fallback and records the
@@ -680,6 +696,9 @@ BFF has no database transaction or materializer of its own.
   families after local BFF qualification; both native configuration outage matrices pass.
   I28 reruns erasure/application/export/suite/profile/member workflows and complete
   local/alpha gateway transport against the combined source using Docker.
+  REL18 aligns complete release workspace/review/catalog families after a local
+  preflight and qualifies both Docker route sets, current grants and real in-app
+  application-watch delivery.
   Authentication aliases also
   cross BFF in both route sets; external-provider integration remains deferred.
   Both gateways still expose direct application-visibility and registration routes
@@ -762,17 +781,19 @@ integrated as I28. Main's existing dirty backlog remains preserved, and `wappsA`
 and `wappsB` are refreshed to the verified baseline. No further feature session or
 deployment is started by the integration.
 
-The next proposed batch can use the same three workspaces with separate fresh
-installations and disposable resources:
+The follow-up batch uses the same three workspaces with separate fresh installations
+and disposable resources. REL18 completes the `wappsB` slice below; the other lanes
+are outside this checkpoint:
 
 1. **`wapps`: BC13/BC15/BC27 article publication, covers and comments.** Qualify
    frozen review/classification, cover access, withdrawal and current Discussion
    parent authority through local BFF, then align and qualify the complete alpha
    article/cover route families. Preserve the original frontend and durable owners.
-2. **`wappsB`: BC14/BC11/BC27 release publication under current ownership.** Build
-   on verified application/ownership behavior to qualify stable/prerelease history,
-   independent review, revoked/released owners, replay, withdrawal and current saved-
-   application delivery. Align alpha release routes only after the local journey passes.
+2. **`wappsB`: BC14/BC11/BC27 release publication under current ownership - qualified
+   in REL18.** Stable/prerelease history, independent review, revoked/released owners,
+   exact replay, withdrawal and actual saved-application watch delivery pass. Alpha
+   release families are aligned after the local journey passes; both Docker route
+   sets pass. The task-only patch and overlap list are ready for combined integration.
 3. **`wappsA`: BC28/BC24 operational reliability and bounded Discussion recovery.**
    First improve safe migration diagnostics and investigate the retained I28 startup
    failure under bounded repetition; its cause remains unestablished. Exercise one real
@@ -781,8 +802,8 @@ installations and disposable resources:
    write, duplicate visible effect or resurrection. Full backup/restore and compatible
    rollback remain subsequent gates; do not activate live workers or change live stores.
 
-These are proposals, not active assignments. Shared gateway/readiness/checklist edits
-must be reconciled and the combined candidate verified after that batch. Remaining
+This checkpoint creates no new assignments. Shared gateway/readiness/checklist edits
+must be reconciled and the combined candidate verified after the batch. Remaining
 original discovery filters/metadata, preference/channel consumers, real-provider
 Discussion/Review journeys, broad readiness, archived-data policy, frontend acceptance,
 coordinated deployment and load/soak retain their own acceptance criteria. Older

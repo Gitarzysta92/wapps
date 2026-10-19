@@ -1,6 +1,6 @@
 # Full operation implementation
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for the reconciled
 backlog and separate implementation, BFF/ingress, real-dependency and deployment
 status. Dated checkpoints below preserve their own source/evidence scope; older
@@ -10,6 +10,70 @@ Branch: `codex/full-operation`, created October 11, 2026 from `c965790e`.
 The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
+
+## Release publication and ownership parity (October 19, 2026)
+
+REL18 started on October 18 and finishes on October 19 in Europe/Warsaw. It
+continues I28 commit `2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a` in
+`wappsB` on the existing `codex/suites-publication-parity` branch. Alpha now routes
+the complete `/api/me/releases`, `/api/editorial/release-reviews` and
+`/api/catalog/releases` families through the bounded `portal_bff` upstream after
+a passing local-only Docker workflow. Case/slash variants and unknown suffixes
+remain inside that boundary. Article/media routing remains separate work.
+No owner implementation, durable representation, privacy roster, dependency
+lockfile or frontend presentation changes are needed for this slice.
+
+The seventh local-auth extension runs independently of the six existing extensions
+and retains O01's 1,600-request Docker transport/restart group. Its 28 combined
+groups pass through both local and alpha configurations with real enrolled sessions,
+separate Authentication/Account processes, Editorial/BFF, MySQL/Mongo/RabbitMQ,
+OPA and the compiled Editorial materializer. It verifies controlled DNS ownership,
+independent frozen review, self/foreign/forged denial, source/open/rebase,
+stable/prerelease uniqueness, 22-version pagination, concurrent/historical receipt
+replay, SQL receipt/outbox rollback, revocation/successor/release, immutable reviewed
+history, withdrawal during projection lag, restart, old-projection suppression and
+truthful owner/policy/SQL/Mongo/BFF failures. Historical approval receipts remain
+valid after revocation without applying another publication or notification.
+
+The actual compiled Account favorite worker observes application update cursors.
+Approval can notify a saved application; releases between polls coalesce into one
+application update. The check proves initial-baseline/private-edit/replay silence,
+durable delivered/suppressed receipts, preference and content choices, current
+parent visibility during lag, source outage/recovery, private read-state persistence
+and removed/readded watch isolation. Only disposable scheduler timestamps are
+accelerated. This establishes in-app application-watch behavior, without a
+per-release event-feed, email or production-worker activation claim.
+
+The independent `--releases --delivery` regression passes ten groups, including
+lost-ack redelivery, reconciliation after projection loss, reordering, capacity and
+migration reentry. Its forged-reviewer assertion now expects I28's shared
+erasure-aware attribution error, and restores the fixture in `finally`. The first
+failed assertion is retained; owner validation is unchanged.
+
+Fresh Node 22.17.1 `npm ci` and full gates pass: 6,879 Jest tests / 428 suites across
+58 projects, 34 portable tests, production/tool lint, 140 uncached builds,
+49 typechecks, separate BFF/Editorial spec checks, 64 Angular artifacts and zero
+boundary violations across 1,846 production sources. All builds finish before
+runtime consumers start. Existing warnings, 85 behavior gaps and nine separately
+inventoried external suites remain visible. Source manifests, exact commands,
+failed preflight assertions, the sandbox `listen EPERM` attempt and passing
+listener-enabled rerun, task-only patch, overlap list and cleanup are recorded in
+`/tmp/wappsB-release-parity-20261018-hy724eoz/verification.json`.
+
+All six preserved extensions also pass in fresh, separate Docker runs: 31
+application, 29 suite, 25 member, 25 profile, 27 export and 31 erasure groups.
+Together with the 28-group release run, these seven selected invocations perform
+11,200 bounded O01 authenticated reads. Shared baseline groups overlap; this is
+not a count of distinct product workflows. Erasure retains its detailed fence,
+inventory and artifact evidence in the task directory.
+
+Controlled UDP DNS substitutes public authoritative propagation; staff role/tenant
+assignment is a disposable credential fixture. The older storage regression uses
+trusted setup actors and supplied DNS proof. Whole-saga privacy remains A28/I28;
+the unrelated retained I28 migration-initialization investigation belongs to O01's
+follow-up lane. No commit, push, deployment, live migration, live fence or live
+worker is performed. Live installation remains A21. Broad restore/rollback/load/
+soak, public providers and original frontend acceptance remain open.
 
 ## Integrated erasure, applications and operational baseline (October 18, 2026)
 

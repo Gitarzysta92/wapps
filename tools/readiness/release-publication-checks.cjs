@@ -640,11 +640,17 @@ async function releasePublicationChecks({
       'UPDATE release_submissions SET reviewerIdentityId = ? WHERE draftId = ? AND status = ?',
       [newOwner.identityId, successor.id, 'approved']
     );
-    await assert.rejects(migration.up(runner), /submission authority/);
-    await source.query(
-      'UPDATE release_submissions SET reviewerIdentityId = ? WHERE draftId = ? AND status = ?',
-      [reviewer.identityId, successor.id, 'approved']
-    );
+    try {
+      await assert.rejects(
+        migration.up(runner),
+        /Invalid independent Editorial review attribution/
+      );
+    } finally {
+      await source.query(
+        'UPDATE release_submissions SET reviewerIdentityId = ? WHERE draftId = ? AND status = ?',
+        [reviewer.identityId, successor.id, 'approved']
+      );
+    }
     await source.query(
       'RENAME TABLE release_commands TO release_commands_missing'
     );

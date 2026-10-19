@@ -65,7 +65,8 @@ test(
       process.env.WAPPS_EXPORT_PARITY_INTEGRATION === '1' ||
       process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1' ||
       process.env.WAPPS_SUITE_PARITY_INTEGRATION === '1' ||
-      process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1'
+      process.env.WAPPS_APPLICATION_PARITY_INTEGRATION === '1' ||
+      process.env.WAPPS_RELEASE_PARITY_INTEGRATION === '1'
         ? process.env.WAPPS_ERASURE_PARITY_INTEGRATION === '1'
           ? 900000
           : 480000
@@ -85,8 +86,9 @@ test(
         'WAPPS_ERASURE_PARITY_INTEGRATION',
         'WAPPS_SUITE_PARITY_INTEGRATION',
         'WAPPS_APPLICATION_PARITY_INTEGRATION',
+        'WAPPS_RELEASE_PARITY_INTEGRATION',
       ].filter((name) => process.env[name] === '1').length <= 1,
-      'Run profile, member, export, erasure, suite and application extensions separately'
+      'Run profile, member, export, erasure, suite, application and release extensions separately'
     );
     const id = randomUUID().replaceAll('-', ''),
       password = randomUUID();
@@ -1459,6 +1461,63 @@ test(
             services,
             ...serviceLifecycle,
             restartAccount: () => restartAccount(services.endpoints),
+            restartBff: () => restartBff(services.endpoints),
+          });
+        } finally {
+          await services.close();
+          await restartAccount();
+          await restartBff();
+        }
+      }
+      if (process.env.WAPPS_RELEASE_PARITY_INTEGRATION === '1') {
+        const {
+          releaseParityServices,
+        } = require('./release-parity-services.cjs');
+        const {
+          qualifyReleaseParity,
+        } = require('./bff-release-parity-checks.cjs');
+        const services = await releaseParityServices({
+          root,
+          env,
+          password,
+          container,
+          names,
+          start,
+          freePort,
+          execute,
+          processes,
+        });
+        console.log(
+          'RELEASE qualification resources ' +
+            JSON.stringify({
+              root,
+              node: process.version,
+              containers: [...names],
+              endpoints: services.endpoints,
+              dns: services.dns.address,
+              gateway: process.env.WAPPS_NGINX_BINARY ?? 'docker',
+            })
+        );
+        try {
+          await restartAccount(services.endpoints);
+          await restartBff(services.endpoints);
+          await qualifyReleaseParity({
+            call,
+            origins:
+              process.env.WAPPS_RELEASE_LOCAL_ONLY === '1'
+                ? [origin, origin]
+                : [origin, alphaOrigin],
+            input,
+            source,
+            credentials,
+            subjectFor,
+            services,
+            ...serviceLifecycle,
+            restartAccount: (overrides = {}) =>
+              restartAccount({
+                ...services.endpoints,
+                ...overrides,
+              }),
             restartBff: () => restartBff(services.endpoints),
           });
         } finally {
