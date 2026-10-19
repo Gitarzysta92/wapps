@@ -291,7 +291,7 @@ NX_DAEMON=false NX_ISOLATE_PLUGINS=false \
 
 It uses the same prerequisites, fresh stores and source setup described above.
 Finish all builds before starting either runtime suite: service restarts read
-`dist`, which a concurrent build can replace. All seven extension flags are mutually
+`dist`, which a concurrent build can replace. All eight extension flags are mutually
 exclusive. Leave `WAPPS_NGINX_BINARY` unset for the required Docker run. A26's
 historical native-only limitation is superseded by I28's combined Docker regression;
 a native comparator still does not establish deployment acceptance.
