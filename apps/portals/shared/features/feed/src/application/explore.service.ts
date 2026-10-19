@@ -19,6 +19,7 @@ export class ExploreService {
   private readonly changed = new Subject<void>();
   private generation = 0;
   private cursor: string | null = null;
+  private retryAppend = false;
   private readonly snapshot = signal<{
     key: string | null;
     loading: boolean;
@@ -52,10 +53,12 @@ export class ExploreService {
   constructor() {
     this.choices.changes$
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.reload());
+      .subscribe(() => this.reload(this.retryAppend));
   }
-  reload(latest = false) {
+  reload(latest = false, append = false) {
     if (latest) this.cursor = null;
+    const previous = append ? this.current()?.page ?? null : null;
+    this.retryAppend = append;
     this.changed.next();
     const generation = ++this.generation;
     const choices = this.choices.current();
@@ -63,7 +66,7 @@ export class ExploreService {
       key: choices.key,
       loading: false,
       error: '',
-      page: null,
+      page: previous,
     });
     if (choices.status !== 'ready') return;
     this.snapshot.update((state) => ({ ...state, loading: true }));
@@ -81,7 +84,20 @@ export class ExploreService {
               key: choices.key,
               loading: false,
               error: result.error.message,
-              page: null,
+              page: previous,
+            });
+            return;
+          }
+          if (
+            append &&
+            result.value.after &&
+            result.value.after === this.cursor
+          ) {
+            this.snapshot.set({
+              key: choices.key,
+              loading: false,
+              error: 'Activity did not advance. Retry or refresh the feed.',
+              page: previous,
             });
             return;
           }
@@ -89,14 +105,23 @@ export class ExploreService {
             result.value.items,
             choices.selection
           );
+          const seen = new Set(
+            previous?.items.map((item) => `${item.kind}:${item.id}`)
+          );
+          const nextItems = items.filter(
+            (item) => !seen.has(`${item.kind}:${item.id}`)
+          );
           this.snapshot.set({
             key: choices.key,
             loading: false,
             error: '',
             page: {
               ...result.value,
-              items,
-              excluded: result.value.items.length - items.length,
+              items: [...(previous?.items ?? []), ...nextItems],
+              excluded:
+                (previous?.excluded ?? 0) +
+                result.value.items.length -
+                items.length,
             },
           });
         },
@@ -108,7 +133,7 @@ export class ExploreService {
             this.snapshot.set({
               key: choices.key,
               loading: false,
-              page: null,
+              page: previous,
               error: 'Activity could not be loaded. Please try again.',
             });
         },
@@ -119,7 +144,13 @@ export class ExploreService {
     this.reload();
   }
   retry() {
-    if (!this.choices.retry()) this.reload();
+    if (!this.choices.retry()) this.reload(false, this.retryAppend);
+  }
+  more() {
+    if (!this.loading() && !this.error() && this.after()) {
+      this.cursor = this.after();
+      this.reload(false, true);
+    }
   }
   older() {
     if (!this.loading() && this.after()) {

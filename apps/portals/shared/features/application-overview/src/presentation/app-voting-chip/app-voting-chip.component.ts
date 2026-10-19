@@ -15,6 +15,6 @@ export interface AppVotingData {
   styleUrl: './app-voting-chip.component.scss'
 })
 export class AppVotingChipComponent {
-  voting = input.required<AppVotingData>();
+  voting = input.required<AppVotingData | null>();
 }
 

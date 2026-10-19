@@ -1,9 +1,7 @@
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { Component, inject, computed, input } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { map, of } from 'rxjs';
 import { TuiIcon, TuiLink, TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 import {
@@ -29,11 +27,11 @@ import {
 } from '@portals/shared/boundary/navigation';
 import {
   PreferredDatePipe,
-  PublicContentReadError,
 } from '@portals/shared/features/preferences';
 import {
   DiscussionSmallCardComponent,
   ApplicationDiscussionPreviewsComponent,
+  mapApplicationDiscussionPreview,
 } from '@portals/shared/features/discussion';
 import { NAVIGATION, NAVIGATION_NAME_PARAMS } from '../../navigation';
 import { RoutePathPipe } from '@ui/routing';
@@ -43,7 +41,7 @@ import {
   AppRatingComponent,
   AppCategoryChipComponent,
   LocalDiscussionDraftsService,
-  ApplicationOverviewService,
+  readApplicationContent,
   LOCAL_APPLICATION_DATA,
 } from '@portals/shared/features/application-overview';
 
@@ -86,12 +84,15 @@ export class ApplicationOverviewPageComponent
   implements
     routingDataConsumerFrom<IBreadcrumbRouteData & { appSlug: string | null }>
 {
-  private readonly overview = inject(ApplicationOverviewService);
   readonly localMode = inject(LOCAL_APPLICATION_DATA);
   private readonly _discussions = inject(LocalDiscussionDraftsService);
 
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
   public readonly appSlug = input<string | null>(null);
+  readonly content = readApplicationContent(() => this.appSlug() ?? '');
+  readonly record = this.content.application;
+  readonly loading = this.content.isLoading;
+  readonly discussionPreview = mapApplicationDiscussionPreview;
 
   readonly discussionLink = (id: string) =>
     buildRoutePath('/' + NAVIGATION.applicationDiscussion.path, {
@@ -99,50 +100,18 @@ export class ApplicationOverviewPageComponent
       discussionSlug: id,
     });
 
-  public readonly app = rxResource({
-    request: () => ({
-      slug: this.appSlug(),
-      choice: this.overview.contentChoice(),
-    }),
-    loader: ({ request }) => {
-      if (!request.slug) return of(null);
-      return this.overview
-        .getOverview(request.slug)
-        .pipe(map((app) => ({ ...app, contentChoice: request.choice })));
-    },
-  });
-
-  readonly record = computed(() =>
-    this.app.hasValue() &&
-    this.app.value()?.contentChoice === this.overview.contentChoice()
-      ? this.app.value()
-      : null
-  );
   readonly preferencesLoading = computed(
-    () => this.overview.contentChoice()?.status === 'loading'
+    () => this.content.status() === 'preferences-loading'
   );
   readonly preferencesError = computed(
-    () => this.overview.contentChoice()?.status === 'unavailable'
+    () => this.content.status() === 'preferences-unavailable'
   );
-  readonly loading = computed(
-    () => this.preferencesLoading() || this.app.isLoading()
-  );
-  readonly hidden = computed(() => {
-    const error = this.app.error();
-    return error instanceof PublicContentReadError && error.reason === 'hidden';
-  });
+  readonly hidden = computed(() => this.content.status() === 'hidden');
   retry() {
-    if (this.preferencesError()) this.overview.retryPreferences();
-    else this.app.reload();
+    this.content.reload();
   }
 
-  public readonly notFound = computed(() => {
-    const error = this.app.error() as { status?: number } | undefined;
-    return (
-      error?.status === 404 ||
-      (!this.loading() && !this.preferencesError() && !error && !this.record())
-    );
-  });
+  public readonly notFound = computed(() => this.content.status() === 'missing');
   public readonly overviewData = {
     isLoading: () => this.loading(),
     value: () => (this.record() ? this._buildOverviewData() : null),
@@ -207,7 +176,7 @@ export class ApplicationOverviewPageComponent
 
   getCoverImage(): CoverImageDto {
     return {
-      url: this.record()?.banner ?? this.record()?.logo ?? '',
+      url: this.record()?.banner ?? '',
       alt: this.record()?.name ?? 'Application cover',
     };
   }

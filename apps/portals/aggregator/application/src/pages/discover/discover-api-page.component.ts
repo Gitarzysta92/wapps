@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,20 +11,23 @@ import {
 import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton, TuiLink, TuiDropdown } from '@taiga-ui/core';
-import type { DiscoveryKind, PublicDiscoveryItem, DiscoveryDetails, DiscoveryReviews } from '@domains/discovery';
-import { DiscoveryResultsService } from '@portals/shared/features/search';
+import { DiscoverySearchResultType, type DiscoveryKind } from '@domains/discovery';
+import { DiscoveryResultsService, mapDiscoveryCard, type DiscoveryCardLinkTarget } from '@portals/shared/features/search';
 import { BreadcrumbsComponent } from '@ui/breadcrumbs';
 import { SearchBarComponent } from '@ui/search-bar';
 import { FiltersMultiselectComponent } from '@ui/filters';
-import { TagsComponent } from '@ui/tags';
-import { MediumTitleComponent, ExcerptComponent } from '@ui/content';
-import { AppAvatarComponent, AppRatingComponent, AppReviewsChipComponent } from '@portals/shared/features/application-overview';
-import { ArticleAuthorInfoComponent } from '@ui/article-author-info';
+import { TagsComponent, TagsSkeletonComponent } from '@ui/tags';
+import { MediumTitleComponent, ExcerptComponent, MediumTitleSkeletonComponent, ExcerptSkeletonComponent } from '@ui/content';
+import { AppAvatarComponent, AppRatingComponent, AppReviewsChipComponent, AppVotingChipComponent } from '@portals/shared/features/application-overview';
+import { ArticleAuthorInfoComponent, ArticleAuthorInfoSkeletonComponent } from '@ui/article-author-info';
 import { ArticleCoverImageComponent, provideArticleCovers } from '@portals/shared/features/articles';
 import { SuiteAppAvatarsComponent } from '@portals/shared/features/suite';
 import { TopReviewCardComponent } from '@portals/shared/features/review';
 import { FavoriteToggleButtonComponent } from '@portals/shared/features/my-favorites';
 import { PreferredDatePipe } from '@portals/shared/features/preferences';
+import { DiscussionChipComponent } from '@portals/shared/features/discussion';
+import { IntersectDirective } from '@ui/misc';
+import { buildRoutePath } from '@portals/shared/boundary/navigation';
 import { CatalogBrowserService } from '@portals/shared/features/listing';
 import { FilterDefinition, FiltersBarComponent, FilterSelectionDialogResult } from '../../partials/filters-bar/src';
 import {
@@ -35,13 +38,17 @@ import {
   MediumCardComponent,
   CardHeaderComponent,
   MediumCardSkeletonComponent,
+  ElevatedCardSkeletonComponent,
 } from '@ui/layout';
 import { NAVIGATION } from '../../navigation';
+import { GlobalStateService } from '../../state/global-state.service';
 
 @Component({
   selector: 'discover-api-page',
   imports: [
     AsyncPipe,
+    NgTemplateOutlet,
+    IntersectDirective,
     RouterLink,
     TuiAppearance,
     TuiButton,
@@ -59,12 +66,19 @@ import { NAVIGATION } from '../../navigation';
     CardHeaderComponent,
     MediumTitleComponent,
     MediumCardSkeletonComponent,
+    ElevatedCardSkeletonComponent,
+    MediumTitleSkeletonComponent,
+    ExcerptSkeletonComponent,
+    TagsSkeletonComponent,
+    ArticleAuthorInfoSkeletonComponent,
     ExcerptComponent,
     AppAvatarComponent,
     TagsComponent,
     AppRatingComponent, AppReviewsChipComponent, ArticleAuthorInfoComponent,
     ArticleCoverImageComponent, SuiteAppAvatarsComponent, TopReviewCardComponent, FavoriteToggleButtonComponent,
     PreferredDatePipe,
+    AppVotingChipComponent,
+    DiscussionChipComponent,
   ],
   providers: [DiscoveryResultsService, provideArticleCovers()],
   templateUrl: './discover-api-page.component.html',
@@ -80,6 +94,12 @@ export class DiscoverApiPageComponent {
   private readonly catalog = inject(CatalogBrowserService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly globalState = inject(GlobalStateService);
+  readonly groups = computed(() => this.results.groups()?.map(group => ({
+    ...group,
+    entries: group.items.map(item => mapDiscoveryCard(group.kind, item, target => this.link(target))),
+  })) ?? null);
+  readonly total = computed(() => this.groups()?.reduce((sum, group) => sum + group.total, 0) ?? 0);
   readonly params = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
   readonly initialSearch = computed(() => this.params().get('search') ?? this.params().get('q') ?? '');
   readonly taxonomy = rxResource({
@@ -95,7 +115,7 @@ export class DiscoverApiPageComponent {
       { key: 'type', name: 'Content type', singleSelection: true, options: Object.entries(this.labels).map(([slug, name]) => ({ slug, name })) },
       ...(type === 'suite' ? [] : [
         { key: 'category', name: 'Category', singleSelection: type === 'article', options: type === 'article' ? articleOptions('categories') : facets?.categories ?? [] },
-        { key: 'tag', name: 'Tag', singleSelection: type === 'article', options: type === 'article' ? articleOptions('tags') : facets?.tags ?? [] },
+        { key: 'tag', name: 'Tag', options: type === 'article' ? articleOptions('tags') : facets?.tags ?? [] },
       ]),
       ...(type === 'article' || type === 'suite' ? [] : [
         { key: 'platform', name: 'Platform', options: facets?.platforms ?? [] },
@@ -118,6 +138,7 @@ export class DiscoverApiPageComponent {
   constructor() {
     effect(() => this.searchBar()?.form.controls.search.setValue(this.initialSearch(), { emitEvent: false }));
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      this.globalState.activeSection$.next(null);
       this.results.search(
         Object.fromEntries(
           params.keys.map((key) => [
@@ -142,16 +163,12 @@ export class DiscoverApiPageComponent {
       ...(filterId !== 'search' && !this.params().get('type') ? { type: 'application' } : {}),
     });
   }
-  tags(item: PublicDiscoveryItem, kind: DiscoveryKind) {
-    return (item.displayTags ?? []).map(({ slug, name }) => ({ slug, name,
-      link: kind === 'article' ? '/articles' : `/tags/${encodeURIComponent(slug)}`,
-      ...(kind === 'article' ? { queryParams: { tags: slug } } : {}) }));
-  }
-  suiteApps(details: Extract<DiscoveryDetails, { kind: 'suite' }>) {
-    return details.applications.map(app => ({ slug: app.slug, name: app.name, avatarUrl: app.logoUrl ?? '' }));
-  }
-  reviewPreview(review: NonNullable<DiscoveryReviews['preview']>, date: string) {
-    return { authorName: review.byline, authorAvatarUrl: '', rating: review.rating, content: review.text, date };
+  onVisibilityChange(visible: boolean, kind: DiscoveryKind) {
+    if (visible) this.globalState.activeSection$.next({
+      application: DiscoverySearchResultType.Application,
+      article: DiscoverySearchResultType.Article,
+      suite: DiscoverySearchResultType.Suite,
+    }[kind]);
   }
   searchRecent(search: string) {
     this.change({ search, q: null });
@@ -197,14 +214,14 @@ export class DiscoverApiPageComponent {
       fragment: kind,
     });
   }
-  link(kind: DiscoveryKind, item: PublicDiscoveryItem) {
-    return kind === 'application'
-      ? ['/apps', item.slug]
-      : kind === 'article'
-      ? ['/articles', item.slug]
-      : ['/suites', item.id];
-  }
-  timestamp(at: number) {
-    return new Date(at).toISOString();
+  private link(target: DiscoveryCardLinkTarget): string {
+    switch (target.kind) {
+      case 'application': return buildRoutePath(NAVIGATION.applicationOverview.path, { appSlug: target.slug }, { absolute: true });
+      case 'article': return buildRoutePath(NAVIGATION.article.path, { articleSlug: target.slug }, { absolute: true });
+      case 'suite': return buildRoutePath(NAVIGATION.suite.path, { suiteSlug: target.id }, { absolute: true });
+      case 'tag': return buildRoutePath(NAVIGATION.tag.path, { tagSlug: target.slug }, { absolute: true });
+      case 'application-reviews': return buildRoutePath(NAVIGATION.applicationReviews.path, { appSlug: target.applicationSlug }, { absolute: true });
+      case 'review': return buildRoutePath(NAVIGATION.applicationReview.path, { appSlug: target.applicationSlug, reviewSlug: target.id }, { absolute: true });
+    }
   }
 }

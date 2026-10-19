@@ -20,8 +20,12 @@ import { ProfileBadgesComponent } from '@portals/shared/features/user-profile';
 
 export const APPLICATION_REVIEW_FEED_ITEM_SELECTOR = 'application-review-feed-item';
 
-export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never> & {
+export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, 'helpfulCount'> & {
   appLink: string;
+  reviewLink?: string;
+  avatarUrl?: string;
+  localVoting?: boolean;
+  helpfulCount: number | null;
   contextMenu: ContextMenuItem[];
   voting?: VotingData;
   attribution?: AttributionInfoVM;
@@ -68,7 +72,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         <app-avatar
           slot="left-side"
           [size]="'m'"
-          [avatar]="{ url: 'https://picsum.photos/200', alt: item.appName }"/>
+          [avatar]="{ url: item.avatarUrl ?? '', alt: item.appName }"/>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="review-label">
@@ -86,7 +90,8 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
         <app-rating [readonly]="true" [rating]="item.rating"/>
       </review-quote-short>
 
-      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [enabled]="item.localVoting !== false" [upvotes]="item.localVoting === false ? null : item.voting?.upvotes ?? 0" [downvotes]="item.localVoting === false ? null : item.voting?.downvotes ?? 0" />
+      @if (item.helpfulCount !== null) { <span slot="bottom-bar">{{ item.helpfulCount }} found this helpful</span> }
       @if (item.discussionSlug; as discussionSlug) {
         <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
       }
@@ -112,7 +117,7 @@ export type ApplicationReviewFeedItemVM = Omit<ApplicationReviewFeedItem, never>
           size="s"
           appearance="primary"
           iconStart="@tui.arrow-right"
-          [routerLink]="ctaPath || '/apps/:appSlug/reviews' | routePath : { appSlug: item.appSlug }"
+          [routerLink]="item.reviewLink || (ctaPath || '/apps/:appSlug/reviews' | routePath : { appSlug: item.appSlug })"
           [attr.aria-label]="'View reviews: ' + item.appName"
         >
           View reviews

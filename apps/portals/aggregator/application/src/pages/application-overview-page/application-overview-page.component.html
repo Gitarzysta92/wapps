@@ -23,7 +23,7 @@
     >Back to Explore</a
   >
 </ui-content-state>
-} @else if (app.error()) {
+} @else if (content.status() === 'unavailable') {
 <ui-content-state
   class="page-header"
   [page]="true"
@@ -104,7 +104,6 @@
         <div class="app-labels">
           @if (record(); as record) {
           <favorite-toggle-button type="applications" [slug]="record.slug" [targetId]="record.id" />
-          <a tuiButton appearance="secondary" size="s" [routerLink]="CLAIM_PATH | routePath : { appSlug: record.slug } : 'string'">{{ localMode ? 'Prepare ownership notes' : 'Claim ownership' }}</a>
           } @if (record()?.isPwa) {
           <tui-badge appearance="info" size="s">PWA Ready</tui-badge> }
         </div>
@@ -272,7 +271,7 @@
     </div>
     @if (!localMode) {
       @if (record(); as application) {
-      <application-discussion-previews [applicationId]="application.id" [threadLink]="discussionLink" />
+      <application-discussion-previews [applicationId]="application.id" [threadLink]="discussionLink" [limit]="2" [contentTemplate]="discussionCards" />
       }
     } @else {
     <div class="preview-grid">
@@ -304,7 +303,7 @@
     }
   </section>
 
-  @if (includedSuites().length) {
+  @if (record()?.includedSuites === null || includedSuites().length) {
   <section class="preview-section" aria-labelledby="overview-suites-title">
     <div class="section-heading">
       <h2 class="section-title" id="overview-suites-title">
@@ -312,6 +311,9 @@
       </h2>
       <a tuiLink routerLink="/suites" iconEnd="@tui.arrow-right">All suites</a>
     </div>
+    @if (record()?.includedSuites === null) {
+    <ui-content-state title="Included suites unavailable" description="Suites containing this application are not available yet." icon="@tui.layers" />
+    }
     <div class="preview-grid">
       @for (suite of includedSuites(); track suite.slug) {
       <a
@@ -357,3 +359,25 @@
   } }
 </div>
 }
+
+<ng-template #discussionCards let-previews>
+  <div class="preview-grid" [attr.aria-busy]="previews.discussions.loading()">
+    @if (previews.discussions.loading()) {
+      @for (i of [1, 2]; track i) { <ui-medium-card-skeleton tuiAppearance="card-elevated" /> }
+    } @else if (previews.discussions.error()) {
+      <ui-content-state [error]="true" title="Discussion previews unavailable" description="Please try again to load community conversations." icon="@tui.messages-square">
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="previews.discussions.reload(true)">Retry discussions</button>
+      </ui-content-state>
+    } @else {
+      @for (thread of previews.items(); track thread.id) {
+        <a tuiAppearance="card-elevated" class="preview-link" [routerLink]="discussionLink(thread.id)" [attr.aria-label]="thread.title">
+          <discussion-small-card [data]="discussionPreview(thread)" />
+        </a>
+      } @empty {
+        <ui-content-state title="No discussions yet" description="Start a conversation about this application." icon="@tui.messages-square">
+          <a tuiButton appearance="secondary" size="m" [routerLink]="['/apps', appSlug(), 'discussions']">Open discussions</a>
+        </ui-content-state>
+      }
+    }
+  </div>
+</ng-template>

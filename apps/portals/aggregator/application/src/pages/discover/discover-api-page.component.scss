@@ -5,7 +5,6 @@
 .display-options { display: grid; gap: $space-3; padding: $space-4; }
 .display-options label { display: grid; gap: $space-2; }
 .pagination { display: flex; align-items: center; justify-content: space-between; gap: $space-3; width: 100%; }
-.results-summary { margin: 0; }
 .results-list--list .article-cover { width: $space-16; aspect-ratio: 1; }
 .article-cover { --article-cover-width: 100%; --article-cover-height: 100%; }
 .recent-searches { display: flex; flex-wrap: wrap; align-items: center; gap: $space-2; margin-top: $space-3; }

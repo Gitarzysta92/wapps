@@ -22,6 +22,7 @@ import { DiscoverPageComponent } from '../pages/discover/discover-page.component
 import { DISCOVER_REDIRECT_ROUTES } from '../pages/discover/discover-redirect.routes';
 import { CategoryResultsPageComponent } from '../pages/category-results-page/category-results-page.component';
 import { ApplicationOverviewPageComponent } from '../pages/application-overview-page/application-overview-page.component';
+import { GlobalStateService } from '../state/global-state.service';
 
 const category = {
   id: '10000000-0000-4000-8000-000000000002',
@@ -103,10 +104,13 @@ async function settle(harness: RouterTestingHarness) {
 
 describe('catalog API page composition', () => {
   let http: HttpTestingController;
+  const observer = globalThis.IntersectionObserver;
   beforeEach(() => {
     localStorage.clear();
+    globalThis.IntersectionObserver = jest.fn(() => ({ observe: jest.fn(), disconnect: jest.fn() })) as unknown as typeof IntersectionObserver;
     TestBed.configureTestingModule({
       providers: [
+        GlobalStateService,
         provideNoopAnimations(),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -138,6 +142,7 @@ describe('catalog API page composition', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  afterAll(() => { globalThis.IntersectionObserver = observer; });
 
   it('renders service search cards, retries outages and treats only successful empty pages as empty', async () => {
     const harness = await RouterTestingHarness.create('/app?search=API');
@@ -151,7 +156,7 @@ describe('catalog API page composition', () => {
     const root = () => harness.routeNativeElement!;
     expect(
       root().querySelector('.item-card .result-link')!.getAttribute('href')
-    ).toBe('/apps/api-app');
+    ).toBe('/apps/api-app/overview');
     expect(root().textContent).toContain('A real catalog record.');
     expect(root().textContent).not.toContain('Photo Snap');
     expect(root().textContent).not.toContain('0 rating');
@@ -233,6 +238,7 @@ describe('catalog API page composition', () => {
         ?.disabled
     ).toBe(true);
     expect(root.querySelector('.suite-card')).toBeNull();
+    expect(root.textContent).toContain('Included suites unavailable');
     root
       .querySelector<HTMLButtonElement>('application-review-summary button')
       ?.click();
@@ -245,10 +251,54 @@ describe('catalog API page composition', () => {
     await settle(harness);
     expect(
       root.querySelector('application-review-summary')?.textContent
-    ).toContain('4.5/5 from members');
+    ).toContain('4.5/5');
+    expect(root.querySelector('application-review-summary app-rating')).not.toBeNull();
     expect(
       root.querySelector('application-review-summary a')?.getAttribute('href')
     ).toBe('/apps/api-app/reviews');
+  });
+
+  it('uses the original two discussion cards, canonical links and a measured empty rating', async () => {
+    const harness = await RouterTestingHarness.create('/apps/api-app/overview');
+    http.expectOne('/api/catalog/apps/api-app').flush({ ...app, logoUrl: 'https://example.test/logo.png' });
+    await settle(harness);
+    const threads = [1, 2, 3].map((number) => ({
+      id: `20000000-0000-4000-8000-00000000000${number}`,
+      title: `Real topic ${number}`, tags: ['workflows'], pinned: number === 1,
+      canPin: false, revision: 1, replyCount: number,
+      comments: [{
+        id: `20000000-0000-4000-8000-00000000000${number}`,
+        parentId: null, depth: 0,
+        content: { displayName: 'Published author', text: 'Published opening post' },
+        createdAt: Date.parse('2026-10-10T10:00:00.000Z'), updatedAt: null,
+        editable: false, removable: false,
+        votes: { upvotes: 0, downvotes: 0, mine: 0 },
+      }],
+    }));
+    http.expectOne(`/api/application-discussions/${app.id}`).flush({ items: threads, next: null });
+    http.expectOne(`/api/application-reviews/${app.id}/summary`).flush({ total: 0, average: null, distribution: [0, 0, 0, 0, 0] });
+    await settle(harness);
+    const root = harness.routeNativeElement!;
+    expect(root.querySelectorAll('discussion-small-card')).toHaveLength(2);
+    expect(root.querySelector('.preview-link')?.getAttribute('href')).toBe(`/apps/api-app/discussions/${threads[0].id}`);
+    expect(root.textContent).toContain('Published author');
+    expect(root.textContent).toContain('Views unavailable');
+    expect(root.textContent).not.toContain('Real topic 3');
+    expect(root.querySelector('application-review-summary')?.textContent).toContain('No reviews yet');
+    expect(root.querySelector('application-review-summary')?.textContent).not.toContain('0.0');
+    expect(root.querySelector('.cover-image img')).toBeNull();
+    expect(root.querySelectorAll('.shortcut-card')).toHaveLength(4);
+
+    await harness.navigateByUrl('/apps/next-app/overview');
+    expect(root.textContent).not.toContain('Published author');
+    expect(root.textContent).not.toContain(app.name);
+    http.expectOne('/api/catalog/apps/next-app').flush({ ...app, id: '10000000-0000-4000-8000-000000000004', slug: 'next-app', name: 'Next application' });
+    await settle(harness);
+    http.expectOne('/api/application-discussions/10000000-0000-4000-8000-000000000004').flush({ items: [], next: null });
+    http.expectOne('/api/application-reviews/10000000-0000-4000-8000-000000000004/summary').flush({ total: 0, average: null, distribution: [0, 0, 0, 0, 0] });
+    await settle(harness);
+    expect(root.querySelectorAll('discussion-small-card')).toHaveLength(0);
+    expect(root.textContent).toContain('No discussions yet');
   });
 
   it('distinguishes missing authoritative records from projection lag or outage', async () => {

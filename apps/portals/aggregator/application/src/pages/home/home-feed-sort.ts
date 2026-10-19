@@ -11,10 +11,10 @@ export interface HomeFeedMetadata {
   suiteLink?: string;
   tags?: { slug: string }[];
   voting?: { upvotes?: number; downvotes?: number };
-  viewsCount?: number;
+  viewsCount?: number | null;
 }
 
-const numeric = (value: number | undefined): number => Number.isFinite(value) ? value! : 0;
+const numeric = (value: number | null | undefined): number => typeof value === 'number' && Number.isFinite(value) ? value : 0;
 const date = (item: HomeFeedMetadata): number => {
   const time = new Date(item.timestamp).getTime();
   return Number.isFinite(time) ? time : 0;

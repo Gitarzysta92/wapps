@@ -24,8 +24,12 @@ import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 
 export const APPLICATION_TEASER_FEED_ITEM_SELECTOR = 'application-teaser-feed-item';
 
-export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'category' | 'tags'> & {
-  category: ApplicationTeaserFeedItemDto['category'] & { link: string };
+export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'category' | 'tags' | 'coverImage' | 'aggregatedScore' | 'reviewsCount'> & {
+  category: (ApplicationTeaserFeedItemDto['category'] & { link: string }) | null;
+  coverImage: ApplicationTeaserFeedItemDto['coverImage'] | null;
+  avatarUrl?: string;
+  aggregatedScore: number | null;
+  reviewsCount: number | null;
   tags: AddTypeToArray<ApplicationTeaserFeedItemDto['tags'], { link: string }>;
   reviewsLink: string;
   appLink: string;
@@ -58,11 +62,13 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
   styleUrl: './application-teaser-feed-item.component.scss',
   template: `
     <ui-elevated-card class="elevated-card">
+      @if (item.coverImage) {
       <ui-cover-image
         class="cover-image"
         [image]="item.coverImage"
         slot="backdrop">
       </ui-cover-image>
+      }
       <ui-medium-card class="application-panel">
         <ui-card-header slot="header" class="card-header">
           <div class="application-avatar" slot="left-side">
@@ -71,13 +77,13 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
               size="xl"
               role="img"
               [attr.aria-label]="item.appName"
-              [avatar]="{ url: item.coverImage.url, alt: item.appName }"
+              [avatar]="{ url: item.avatarUrl ?? item.coverImage?.url ?? '', alt: item.appName }"
             />
-            <app-category-chip class="avatar-category" [category]="item.category" size="xs" />
+            @if (item.category) { <app-category-chip class="avatar-category" [category]="item.category" size="xs" /> }
           </div>
           <div class="application-title">
             <h3 uiMediumTitle class="application-name">{{ item.appName }}</h3>
-            <app-rating [readonly]="true" [rating]="item.aggregatedScore"/>
+            @if (item.aggregatedScore !== null) { <app-rating [readonly]="true" [rating]="item.aggregatedScore"/> }
           </div>
           <favorite-toggle-button slot="right-side" class="application-favorite"
             [iconOnly]="true" appearance="flat" type="applications" [slug]="item.appSlug" [targetId]="item.appId" />
@@ -86,12 +92,14 @@ export type ApplicationTeaserFeedItemVM = Omit<ApplicationTeaserFeedItemDto, 'ca
         <ui-tags [tags]="item.tags"></ui-tags>
         <p>{{ item.description }}</p>
 
-        <app-reviews-chip slot="bottom-bar"
+        <span slot="bottom-bar">
+        @if (item.reviewsCount !== null) { <app-reviews-chip
             [reviewsCount]="item.reviewsCount"
             [reviewsLink]="item.reviewsLink"
             size="xs"
             appearance="action-soft-flat"
-          />
+          /> } @else { Reviews unavailable }
+        </span>
         @if (item.discussionSlug; as discussionSlug) {
           <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
         }

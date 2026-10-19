@@ -22,6 +22,7 @@ export { LocalDiscussionReplyComponent } from './presentation/local-discussion-r
 export { ApplicationDiscussionsService } from './application/application-discussions.service';
 export { ApplicationDiscussionsComponent } from './presentation/application-discussions.component';
 export { ApplicationDiscussionPreviewsComponent } from './presentation/application-discussion-previews.component';
+export { mapApplicationDiscussionPreview } from './presentation/application-discussion-preview.mapper';
 export { provideApplicationDiscussions } from './application-discussions.providers';
 export { provideQuickDiscussions } from './application-discussions.providers';
 export { MyDiscussionsService } from './application/my-discussions.service';

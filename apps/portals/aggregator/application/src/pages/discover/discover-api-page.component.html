@@ -53,63 +53,39 @@
   <p role="alert">Filter options could not be loaded. <button tuiButton type="button" size="s" appearance="flat" (click)="taxonomy.reload()">Retry filters</button></p>
 }
 @if (results.loading()) {
-  <section commonSection class="section__results section__results--first" aria-label="Loading results" aria-busy="true">
-    <h2 slot="header" class="section-title">Loading</h2>
-    <div class="results-list">@for (item of [1, 2, 3]; track item) { <ui-medium-card-skeleton class="item-card-skeleton" /> }</div>
-  </section>
+  @for (kind of ['article', 'suite']; track kind) {
+    <section commonSection class="section__results" [class.section__results--first]="$first" aria-label="Loading results" aria-busy="true">
+      <h2 slot="header" class="section-title">Loading</h2>
+      <div class="results-list">
+        @for (item of [1, 2, 3]; track item) {
+          <ng-container *ngTemplateOutlet="kind === 'article' ? articleEntrySkeleton : applicationEntrySkeleton" />
+        }
+      </div>
+    </section>
+  }
 } @else if (results.error()) {
   <ui-content-state [title]="results.invalid() ? 'Adjust your search' : 'Discover unavailable'" [description]="results.error()" icon="@tui.search" [error]="true">
     @if (!results.invalid()) { <button tuiButton type="button" size="m" (click)="results.retry()">Retry search</button> }
     <a tuiButton appearance="secondary" size="m" routerLink="/discover">Start a new search</a>
   </ui-content-state>
-} @else { @if (results.groups(); as groups) {
+} @else { @if (groups(); as groups) {
+  <p class="results-summary" role="status">{{ total() }} {{ total() === 1 ? 'result' : 'results' }}@if (initialSearch()) { for “{{ initialSearch() }}” }</p>
   @if (params().get('type')) { <a tuiLink routerLink="/discover" [queryParams]="{ type: null, category: null, tag: null, tags: null, platform: null, device: null, monetization: null }" queryParamsHandling="merge">Search all types</a> }
   @for (group of groups; track group.kind) {
-    <section commonSection class="section__results discovery-group" [class.section__results--first]="$first" [id]="group.kind" [attr.aria-labelledby]="group.kind + '-title'">
+    <section commonSection class="section__results discovery-group" [class.section__results--first]="$first" [id]="group.kind" [attr.aria-labelledby]="group.kind + '-title'"
+      (appIntersect)="onVisibilityChange($event.isVisible, group.kind)">
       <h2 slot="header" class="section-title" [id]="group.kind + '-title'"><span tuiAppearance="accent-bar-indigo" aria-hidden="true"></span>{{ labels[group.kind] }}</h2>
       <div class="results-list" [class.results-list--list]="results.view() === 'list'">
-        <p class="results-summary" role="status">{{ group.total }} {{ group.total === 1 ? 'result' : 'results' }}@if (initialSearch()) { for “{{ initialSearch() }}” }@if (group.hidden) { · {{ group.hidden }} hidden on this page by saved choices }</p>
-        @for (item of group.items; track item.id) {
-          @let details = item.details;
-          <ui-medium-card class="item-card" tuiAppearance="card-elevated" [attr.data-id]="item.id">
-            <ui-card-header slot="header">
-              @if (details && details.kind === 'application') { <app-avatar slot="left-side" size="m" [avatar]="{ url: details.logoUrl || '', alt: item.title }" /> }
-              <h3 uiMediumTitle><a class="result-link" [routerLink]="link(group.kind, item)">{{ item.title }}</a>
-                @if (details && details.kind === 'application') { @if (details.reviews.rating; as rating) { <app-rating [readonly]="true" [rating]="rating" /> } }
-              </h3>
-            </ui-card-header>
-            @if (details && details.kind === 'article') {
-              <div class="article-preview">
-                @if (details.cover; as cover) { <article-cover-image class="article-cover" [target]="{ kind: 'published', id: item.id, imageId: cover.imageId }" [alt]="cover.alt" /> }
-                <div class="article-summary">
-                  @if (item.displayTags?.length) { <ui-tags [tags]="tags(item, group.kind)" /> }
-                  <ui-excerpt [excerpt]="item.summary" />
-                  <article-author-info [author]="{ name: details.byline, avatarUrl: '' }" />
-                </div>
-              </div>
-            } @else {
-              @if (item.displayTags?.length) { <ui-tags [tags]="tags(item, group.kind)" /> }
-              @if (details && details.kind === 'suite') {
-                <suite-app-avatars [apps]="suiteApps(details)" />
-                <p>{{ details.applicationCount }} {{ details.applicationCount === 1 ? 'application' : 'applications' }}</p>
-                @if (details.applications.length < Math.min(6, details.applicationCount)) { <p role="status">Some applications are hidden by your content settings or are unavailable.</p> }
-              }
-              @if (!details && item.summary) { <ui-excerpt [excerpt]="item.summary" /> }
-            }
-            @if (details && details.kind === 'application') {
-              <app-reviews-chip slot="bottom-bar" [reviewsCount]="details.reviews.total" [reviewsLink]="'/apps/' + item.slug + '/reviews'" />
-              @if (details.reviews.preview; as review) {
-                <top-review-card slot="footer" [review]="reviewPreview(review, review.publishedAt | preferredDate)" [detailsLink]="'/apps/' + item.slug + '/review/' + review.id" />
-              }
-            }
-            @if (group.kind !== 'article') {
-              <ng-template #cardActions let-iconOnly="iconOnly">
-                <favorite-toggle-button [iconOnly]="iconOnly" [type]="group.kind === 'application' ? 'applications' : 'suites'" [slug]="item.slug || item.id" [targetId]="item.id" />
-              </ng-template>
-            }
-          </ui-medium-card>
+        @if (group.hidden) { <p role="status">{{ group.hidden }} hidden on this page by saved choices</p> }
+        @for (entry of group.entries; track entry.id) {
+          @switch (entry.kind) {
+            @case ('article') { <ng-container *ngTemplateOutlet="articleEntry; context: { entry }" /> }
+            @case ('application') { <ng-container *ngTemplateOutlet="applicationEntry; context: { entry }" /> }
+            @case ('suite') { <ng-container *ngTemplateOutlet="suiteEntry; context: { entry }" /> }
+          }
         } @empty {
-          <ui-content-state title="No results found" description="Try another search or remove a filter to broaden your results." icon="@tui.search">
+          <ui-content-state [title]="group.hidden ? 'No visible results on this page' : 'No results found'"
+            [description]="group.hidden ? 'Your saved choices hide these results. You can continue to another page.' : 'Try another search or remove a filter to broaden your results.'" icon="@tui.search">
             <a tuiButton appearance="secondary" size="m" routerLink="/discover">Clear search and filters</a><a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
           </ui-content-state>
         }
@@ -123,3 +99,90 @@
   }
 }
 }
+
+<ng-template #articleEntry let-vm="entry">
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated" [attr.data-id]="vm.id">
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle><a class="result-link" [routerLink]="vm.articleLink">{{ vm.title }}</a></h3>
+    </ui-card-header>
+    <div class="article-preview">
+      @if (vm.cover; as cover) {
+        <article-cover-image class="article-cover" [target]="{ kind: 'published', id: vm.id, imageId: cover.imageId }" [alt]="cover.alt" />
+      }
+      <div class="article-summary">
+        @if (vm.tags.length) { <ui-tags [tags]="vm.tags" /> }
+        <ui-excerpt [excerpt]="vm.summary" />
+        @if (vm.author) { <article-author-info [author]="vm.author" /> }
+        @else { <span>Author unavailable</span> }
+      </div>
+    </div>
+  </ui-medium-card>
+</ng-template>
+
+<ng-template #articleEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-card-skeleton>
+      <ui-medium-title-skeleton slot="header" />
+      <ui-tags-skeleton slot="tags" />
+      <ui-excerpt-skeleton slot="excerpt" />
+      <article-author-info-skeleton slot="author" />
+    </ui-medium-card-skeleton>
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+<ng-template #applicationEntry let-vm="entry">
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated" [attr.data-id]="vm.id">
+    <ui-card-header slot="header">
+      <app-avatar slot="left-side" size="m" [avatar]="{ url: vm.avatarUrl, alt: vm.title }" />
+      <h3 uiMediumTitle>
+        <a class="result-link" [routerLink]="vm.applicationLink">{{ vm.title }}</a>
+        <app-rating [readonly]="true" [rating]="vm.rating" [unavailableLabel]="vm.reviewsCount === 0 ? 'No reviews yet' : 'Rating unavailable'" />
+      </h3>
+    </ui-card-header>
+    <ng-template #cardActions let-iconOnly="iconOnly">
+      <favorite-toggle-button [iconOnly]="iconOnly" type="applications" [slug]="vm.slug" [targetId]="vm.id" />
+    </ng-template>
+    @if (vm.tags.length) { <ui-tags [tags]="vm.tags" /> }
+    @if (!vm.detailsAvailable && vm.summary) { <ui-excerpt [excerpt]="vm.summary" /> }
+    <app-voting-chip slot="bottom-bar" [voting]="null" />
+    <discussion-chip slot="bottom-bar" [commentsCount]="null" />
+    @if (vm.reviewsCount !== null) {
+      <app-reviews-chip slot="bottom-bar" [reviewsCount]="vm.reviewsCount" [reviewsLink]="vm.reviewsLink" />
+    }
+    @if (vm.topReview; as review) {
+      <top-review-card slot="footer" [review]="{ authorName: review.authorName, authorAvatarUrl: review.authorAvatarUrl, rating: review.rating, content: review.content, date: review.publishedAt | preferredDate }" [detailsLink]="review.detailsLink" />
+    }
+  </ui-medium-card>
+</ng-template>
+
+<ng-template #applicationEntrySkeleton>
+  <ui-elevated-card-skeleton class="item-card-skeleton">
+    <ui-medium-title-skeleton slot="header" />
+    <ui-tags-skeleton />
+    <ui-excerpt-skeleton />
+    <article-author-info-skeleton />
+  </ui-elevated-card-skeleton>
+</ng-template>
+
+<ng-template #suiteEntry let-vm="entry">
+  <ui-medium-card class="item-card" tuiAppearance="card-elevated" [attr.data-id]="vm.id">
+    <ui-card-header slot="header">
+      <h3 uiMediumTitle>
+        <a class="result-link" [routerLink]="vm.suiteLink">{{ vm.title }}</a>
+        <app-rating [readonly]="true" [rating]="null" />
+      </h3>
+    </ui-card-header>
+    <ng-template #cardActions let-iconOnly="iconOnly">
+      <favorite-toggle-button [iconOnly]="iconOnly" type="suites" [slug]="vm.slug" [targetId]="vm.id" />
+    </ng-template>
+    <ui-tags [tags]="vm.tags" />
+    @if (!vm.detailsAvailable && vm.summary) { <ui-excerpt [excerpt]="vm.summary" /> }
+    <suite-app-avatars [apps]="vm.applications" />
+    @if (vm.applicationCount !== null) {
+      <p>{{ vm.applicationCount }} {{ vm.applicationCount === 1 ? 'application' : 'applications' }}</p>
+      @if (vm.applications.length < Math.min(6, vm.applicationCount)) { <p role="status">Some applications are hidden by your content settings or are unavailable.</p> }
+    } @else { <p>Applications unavailable</p> }
+    <app-voting-chip slot="bottom-bar" [voting]="null" />
+    <discussion-chip slot="bottom-bar" [commentsCount]="null" />
+  </ui-medium-card>
+</ng-template>

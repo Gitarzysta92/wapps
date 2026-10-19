@@ -146,7 +146,7 @@ async function main() {
   const output =
     process.env.WAPPS_SUITES_OUTPUT ?? '/tmp/wapps-readiness/suites';
   fs.mkdirSync(output, { recursive: true });
-  let source, mongo, editorial, opa;
+  let source, mongo, editorial, opa, discoveryCommunity;
   let failure;
   let failed = false;
   const cleanupFailures = [];
@@ -391,8 +391,15 @@ async function main() {
       );
     };
     const discoveryTags = process.argv.includes('--discovery-tags');
-    if (process.argv.includes('--discovery') || discoveryTags) {
+    const discoveryView = process.argv.includes('--discovery-view');
+    const overviewView = process.argv.includes('--overview-view');
+    if (process.argv.includes('--discovery') || discoveryTags || discoveryView || overviewView) {
       await restart();
+      if (!discoveryTags)
+        discoveryCommunity = await require('./discovery-community-fixture.cjs')({
+          root, source, environment, editorialOrigin: () => editorial.origin,
+          start, ready, opaBinary,
+        });
       await require(discoveryTags
         ? './discovery-tags-runtime-checks.cjs'
         : './discovery-runtime-checks.cjs')({
@@ -410,17 +417,20 @@ async function main() {
         ),
         collection: mongo.db('suites').collection('editorial_projections_v1'),
         browser: !process.argv.includes('--no-browser'),
+        community: discoveryCommunity,
+        viewOnly: discoveryView,
+        overviewOnly: overviewView,
       });
       fs.writeFileSync(
         path.join(output, 'qualification.json'),
         JSON.stringify(
           {
-            workflow: discoveryTags ? 'article-tag-discovery' : 'grouped-discovery',
+            workflow: overviewView ? 'application-overview-view' : discoveryTags ? 'article-tag-discovery' : discoveryView ? 'grouped-discovery-view' : 'grouped-discovery',
             checks,
             node: process.version,
             authority: discoveryTags
               ? 'Real MySQL/Mongo/OPA and compiled Editorial/BFF'
-              : 'Real MySQL/Mongo/OPA and compiled Editorial/BFF/portal',
+              : 'Real MySQL/Mongo/MinIO/RabbitMQ/OPA and compiled Editorial/Community/BFF/portal',
             substitutions: [
               discoveryTags
                 ? 'Trusted author/reviewer identity claims; pure production preference selector with fixture choices, no Account persistence or browser'
@@ -428,6 +438,8 @@ async function main() {
               'Direct production materializer invocation without broker delivery',
             ],
             exclusions: [
+              ...(discoveryView || overviewView ? ['Home search-preview and application-subpage browser journeys; run the full --discovery journey separately'] : []),
+              ...(overviewView ? ['Suite membership, discussion view totals and global newest-discussion ordering have no current overview contract', 'Application image publication and account favorite persistence are separately qualified'] : []),
               'Deployed identity/ingress',
               'Production restart/restore/rollback/load/soak',
             ],
@@ -2194,6 +2206,7 @@ async function main() {
     failed = true;
   } finally {
     const cleanup = await Promise.allSettled([
+      discoveryCommunity?.stop(),
       editorial?.stop(),
       opa?.stop(),
       source?.isInitialized ? source.destroy() : undefined,

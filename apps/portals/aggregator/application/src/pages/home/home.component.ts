@@ -151,7 +151,7 @@ type RegisteredFeedItem = Array<
                             NAVIGATION.application.path,
                             { appSlug: i.appSlug }
                           );
-                          i.category.link = buildRoutePath(
+                          if (i.category) i.category.link = buildRoutePath(
                             NAVIGATION.categories.path,
                             { categorySlug: i.category.slug }
                           );

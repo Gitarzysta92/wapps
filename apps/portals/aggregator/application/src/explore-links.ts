@@ -7,6 +7,10 @@ export function exploreLink(target: ExploreLinkTarget): {
   query?: Record<string, string>;
 } {
   switch (target.kind) {
+    case 'category':
+      return { path: buildRoutePath(NAVIGATION.category.path, { categorySlug: target.slug }, { absolute: true }) };
+    case 'tag':
+      return { path: buildRoutePath(NAVIGATION.tag.path, { tagSlug: target.slug }, { absolute: true }) };
     case 'application-reviews':
       return {
         path: buildRoutePath(

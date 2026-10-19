@@ -10,6 +10,7 @@ import { FeedLocalVoteComponent } from './feed-local-vote.component';
 import { FeedDatePipe } from './feed-date.pipe';
 import { FeedActionsMenuComponent } from './feed-actions-menu.component';
 import { DiscussionTopicFeedItemComponent } from '../feed-items/discussion-topic-feed-item.component';
+import { ApplicationDevLogFeedItemComponent } from '../feed-items/application-dev-log-feed-item.component';
 import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { SharingService } from '@portals/shared/features/sharing';
 
@@ -28,6 +29,36 @@ class AttributionHostComponent {
 
 describe('Feed actions and discussion preview', () => {
   afterEach(() => localStorage.removeItem('wapps.feed-vote.test-feed-item'));
+  it('keeps an encoded release version intact when the original card renders its route', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: SharingService, useValue: {} }] });
+    const fixture = TestBed.createComponent(ApplicationDevLogFeedItemComponent);
+    fixture.componentRef.setInput('item', {
+      id: 'release', type: 'application-dev-log-feed-item', title: 'A release', subtitle: 'major',
+      appSlug: 'example', appName: 'Example', appLink: '/apps/example/devlog/2.0%2Bstable',
+      version: '2.0+stable', description: 'Published release', releaseDate: new Date('2026-10-19'),
+      releasedOn: '2026-10-19', changes: [], localVoting: false,
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.card-actions a').getAttribute('href')).toBe('/apps/example/devlog/2.0%2Bstable');
+    expect(fixture.nativeElement.querySelector('.changelog-info').textContent).toContain('2026-10-19');
+  });
+  it('keeps unsupported API votes visible but cannot read or write browser-local votes', () => {
+    localStorage.setItem('wapps.feed-vote.test-feed-item', '1');
+    const fixture = TestBed.createComponent(FeedLocalVoteComponent);
+    fixture.componentRef.setInput('itemId', 'test-feed-item');
+    fixture.componentRef.setInput('enabled', false);
+    fixture.componentRef.setInput('upvotes', null);
+    fixture.componentRef.setInput('downvotes', null);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.vote()).toBe(0);
+    const buttons: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button'));
+    expect(buttons.every((button) => button.disabled)).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Voting unavailable');
+    buttons[0].click();
+    fixture.componentInstance.choose(-1);
+    expect(localStorage.getItem('wapps.feed-vote.test-feed-item')).toBe('1');
+    expect(fixture.componentInstance.vote()).toBe(0);
+  });
   it('persists a named local vote and supports removing it', () => {
     const fixture = TestBed.createComponent(FeedLocalVoteComponent);
     fixture.componentRef.setInput('itemId', 'test-feed-item');

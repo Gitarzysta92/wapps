@@ -7,6 +7,10 @@ import { exploreLink } from './explore-links';
 class RoutedPage {}
 describe('Explore links', () => {
   afterEach(() => TestBed.resetTestingModule());
+  it('preserves the selected category and tag in Home card links', () => {
+    expect(exploreLink({ kind: 'category', slug: 'design' }).path).toBe('/categories/design');
+    expect(exploreLink({ kind: 'tag', slug: 'drawing' }).path).toBe('/tags/drawing');
+  });
   it('opens the exact release version without double encoding', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const router = TestBed.inject(Router),

@@ -10,6 +10,7 @@ export const EXPLORE_PORT = new InjectionToken<ExplorePort>('EXPLORE_PORT');
 export const EXPLORE_URL = new InjectionToken<string>('EXPLORE_URL');
 export type ExploreLinkTarget =
   | ExploreTarget
+  | { kind: 'category' | 'tag'; slug: string }
   | { kind: 'application-reviews'; applicationSlug: string };
 export const EXPLORE_LINK = new InjectionToken<
   (target: ExploreLinkTarget) => {

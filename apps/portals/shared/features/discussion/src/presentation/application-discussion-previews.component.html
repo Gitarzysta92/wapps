@@ -1,3 +1,6 @@
+@if (contentTemplate(); as template) {
+  <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context" />
+} @else {
 <section
   class="discussion-previews"
   aria-label="Discussion previews"
@@ -65,3 +68,4 @@
   </div>
   }
 </section>
+}

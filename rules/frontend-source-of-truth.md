@@ -6,9 +6,11 @@ The accepted frontend reference is the repository state at
 `95e3bfd3d552cc2fb31753b5d059f0bcfc346bdb` is a later recovery checkpoint,
 not the accepted frontend baseline.
 
-- Focus current development on backend behavior, service contracts and integration.
-  Do not continue visual restoration or redesign. The current frontend is not an
-  accepted replacement, even where its builds and tests pass.
+- On October 19, 2026 the user authorized preserving `codex/coolify-alpha`
+  and integrating its views, one at a time, with the backend on
+  `codex/full-operation`. Restore that presentation through the existing feature
+  adapters and BFF. The later frontend is not an accepted replacement, even where
+  its builds and tests pass.
 - Treat the original templates, styles, components, page composition, interactions
   and routes as the presentation source of truth for the eventual merge.
 - Derive integration requirements from that original frontend. Implement missing

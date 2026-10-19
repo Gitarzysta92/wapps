@@ -17,6 +17,7 @@ export const SUITE_TEASER_FEED_ITEM_SELECTOR = 'suite-teaser-feed-item';
 
 export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
   suiteLink: string;
+  applicationCount?: number;
   contextMenu: ContextMenuItem[];
   attribution?: AttributionInfoVM;
 }
@@ -98,13 +99,13 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         <p class="suite-description">{{ item.suiteDescription }}</p>
         <div class="suite-meta">
           <tui-icon icon="@tui.box" />
-          <span>{{ item.apps.length }} Applications</span>
+          <span>{{ item.applicationCount ?? item.apps.length }} Applications</span>
         </div>
       </ui-card-header>
 
       <div class="apps-grid">
         <div *ngFor="let app of item.apps" class="app-tile">
-          <tui-avatar size="l">
+          <tui-avatar size="l" [src]="app.logo">
             {{ app.name.substring(0, 2) }}
           </tui-avatar>
           <div class="app-info">
@@ -116,6 +117,7 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
         </div>
       </div>
 
+      @if (item.applicationCount !== undefined && item.apps.length < item.applicationCount) { <p>Showing {{ item.apps.length }} of {{ item.applicationCount }} applications. Open the suite for more.</p> }
       @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
       <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
         <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
@@ -129,7 +131,7 @@ export type SuiteTeaserFeedItemVM = Omit<SuiteTeaserFeedItem, never> & {
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="suites" [slug]="suiteSlug" />
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="suites" [slug]="suiteSlug" [targetId]="item.id" />
         <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"

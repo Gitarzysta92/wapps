@@ -19,6 +19,9 @@ module.exports = async function qualifyDiscovery({
   pass,
   output,
   browser,
+  community,
+  viewOnly = false,
+  overviewOnly = false,
 }) {
   const headers = (
     uid = 'DiscoveryAuthor',
@@ -225,6 +228,7 @@ module.exports = async function qualifyDiscovery({
   let bff;
   const restartBff = async () => {
     await bff?.stop();
+    await community.restart();
     bff = await processService(
       process.execPath,
       [path.join(root, 'dist/apps/services/catalog-bff/main.js')],
@@ -236,7 +240,8 @@ module.exports = async function qualifyDiscovery({
           HOST: '127.0.0.1',
           PORT: '0',
           EDITORIAL_URL: origin(),
-          DISCUSSION_URL: 'http://127.0.0.1:1',
+          DISCUSSION_URL: community.origin,
+          INGRESS_AUTH_SECRET: secret,
           EXPLORE_SERVICE_SECRET: 'qualification-discovery-secret-2026',
         },
       },
@@ -256,7 +261,26 @@ module.exports = async function qualifyDiscovery({
   };
   try {
     await restartBff();
+    const reviewResponse = await fetch(bff.origin + `/api/application-reviews/${applications[0].id}/mine`, {
+      method: 'PUT',
+      headers: { ...headers('DiscoveryMember'), 'idempotency-key': randomUUID() },
+      body: JSON.stringify({ expectedRevision: 0, content: {
+        displayName: 'Discovery reviewer', rating: 4, text: 'A durable review shown in Discover.',
+      } }),
+      signal: AbortSignal.timeout(15000),
+    });
+    const publishedReview = await reviewResponse.json();
+    assert.equal(reviewResponse.status, 200, JSON.stringify(publishedReview));
     const first = await read();
+    assert.equal(first.groups[0].items[0].details.reviews.preview.id, publishedReview.id);
+    assert.equal(first.groups[0].items[0].details.reviews.rating, 4);
+    assert.equal(first.groups[0].items[0].details.reviews.total, 1);
+    assert.deepEqual(first.groups[0].items[1].details.reviews, { total: 0, rating: null, preview: null });
+    await community.pause();
+    await read(undefined, 503);
+    await restartBff();
+    assert.deepEqual(await read(), first);
+    pass('Discover composes persisted Community reviews; review outage fails truthfully and restart recovers the same rating, byline and preview');
     assert.deepEqual(
       first.groups.map((group) => [
         group.kind,
@@ -377,8 +401,12 @@ module.exports = async function qualifyDiscovery({
     if (browser)
       await require('./application-draft-browser.cjs').applicationDraftBrowser({
         root,
-        origin,
+        origin: overviewOnly ? () => bff.origin : origin,
         discoveryOrigin: () => bff.origin,
+        ...(overviewOnly ? {
+          discussionOrigin: () => bff.origin,
+          discussionHeaders: (uid, roles) => uid ? headers(uid, 'default', roles) : { 'x-ingress-auth': secret, 'x-anonymous': 'true' },
+        } : {}),
         headers,
         source,
         restart,
@@ -401,7 +429,12 @@ module.exports = async function qualifyDiscovery({
           click,
           holdNextRead,
         }) => {
-          const homeChecks = await require('./home-preview-browser-checks.cjs')(
+          if (overviewOnly) return require('./application-overview-browser-checks.cjs')({
+            session, go, text, capture, setOffline, click, holdNextRead,
+            applications, bffOrigin: () => bff.origin, headers, community,
+            restartBff, classified, output, anonymousHeaders: { 'x-ingress-auth': secret, 'x-anonymous': 'true' },
+          });
+          const homeChecks = viewOnly ? [] : await require('./home-preview-browser-checks.cjs')(
             {
               session,
               go,
@@ -413,7 +446,7 @@ module.exports = async function qualifyDiscovery({
               expected: await read('search=team&pageSize=3&sort=name'),
             }
           );
-          const publicContentChecks =
+          const publicContentChecks = viewOnly ? [] :
             await require('./public-content-browser-checks.cjs')({
               classified,
               session,
@@ -423,7 +456,7 @@ module.exports = async function qualifyDiscovery({
               click,
               setOffline,
             });
-          const subpageChecks =
+          const subpageChecks = viewOnly ? [] :
             await require('./application-subpages-browser-checks.cjs')({
               classified,
               session,
@@ -433,7 +466,7 @@ module.exports = async function qualifyDiscovery({
               click,
               setOffline,
             });
-          const classificationChecks =
+          const classificationChecks = viewOnly ? [] :
             await require('./classification-browser-checks.cjs')({
               classified,
               session,
@@ -451,11 +484,32 @@ module.exports = async function qualifyDiscovery({
           await go(route, one);
           await text('Team article 00', one);
           await text('Team suite 00', one);
+          await text('Discovery reviewer', one);
           assert.equal(
             await one.$$eval('discover-api-page .item-card', (cards) => cards.length),
             6
           );
-          await capture('grouped-discovery', one);
+          assert.equal(await one.$$eval('#application app-voting-chip, #suite app-voting-chip', cards => cards.length), 4);
+          assert.equal(await one.$eval('#application top-review-card', card => card.textContent.includes('A durable review shown in Discover.')), true);
+          assert.equal(await one.$eval('#application .result-link', link => link.getAttribute('href')), '/apps/team-application-0/overview');
+          assert.equal(await one.$eval('#article ui-tags a', link => link.getAttribute('href')), '/tags/collaboration');
+          assert.equal(await one.$$eval('discover-api-page profile-badges', badges => badges.length), 0);
+          await capture('grouped-discovery', one, async page => {
+            const viewport = page.viewport();
+            const theme = await page.evaluate(() => document.body.getAttribute('tuiTheme'));
+            const cards = [];
+            for (const kind of ['application', 'article', 'suite']) {
+              const card = await page.$(`#${kind} .item-card`);
+              await card.evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+              // Settle content-visibility before capturing an offscreen card's actual paint.
+              await new Promise(resolve => setTimeout(resolve, 500));
+              const file = `discover-${kind}-viewport-${theme}-${viewport.width}.png`;
+              await page.screenshot({ path: path.join(output, file) });
+              cards.push({ kind, file });
+            }
+            await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+            return { settledCards: cards };
+          });
           await click('Display options', one);
           await one.waitForSelector('select[aria-label="Order"]', { visible: true });
           await one.select('select[aria-label="Order"]', 'name-desc');
@@ -531,6 +585,7 @@ module.exports = async function qualifyDiscovery({
             ...subpageChecks,
             ...classificationChecks,
             'Independent browsers share durable public results',
+            'Accepted Discover card sections, canonical detail/tag links and actual persisted review previews; unavailable metrics remain explicit',
             'Keyboard paging and Back restore independent groups and search input',
             'All three result links open real detail pages',
             'Search empty, invalid filters, loading/outage and retry states',

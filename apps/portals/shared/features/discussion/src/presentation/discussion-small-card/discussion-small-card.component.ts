@@ -6,6 +6,13 @@ import { MediumCardComponent } from '@ui/layout';
 import { DiscussionPreviewDto } from '@domains/discussion';
 import { RelativeTimePipe } from '../relative-time.pipe';
 
+export type DiscussionSmallCardData = Omit<DiscussionPreviewDto, 'viewsCount' | 'createdAt' | 'associationId' | 'associationSlug'> & {
+  viewsCount?: number;
+  createdAt: Date | null;
+  repliesIncludeRemoved?: boolean;
+  viewsUnavailableLabel?: string;
+};
+
 @Component({
   selector: 'discussion-small-card',
   standalone: true,
@@ -23,6 +30,6 @@ import { RelativeTimePipe } from '../relative-time.pipe';
   styleUrls: ['./discussion-small-card.component.scss'],
 })
 export class DiscussionSmallCardComponent {
-  public readonly data = input.required<Omit<DiscussionPreviewDto, 'viewsCount' | 'createdAt'> & { viewsCount?: number; createdAt: Date | null }>();
+  public readonly data = input.required<DiscussionSmallCardData>();
   public readonly appearance = input<string>();
 }

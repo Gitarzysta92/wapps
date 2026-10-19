@@ -10,7 +10,7 @@ import {
 import { MyFavoritesService } from '@portals/shared/features/my-favorites';
 import { AUTHENTICATION_SESSION } from '@portals/shared/features/identity';
 import { err, ok, type Result } from '@sdk/kernel/standard';
-import type { ExplorePage } from '@domains/feed';
+import type { ExploreItem, ExplorePage } from '@domains/feed';
 import { EXPLORE_PORT } from './explore.port';
 import { ExploreService } from './explore.service';
 
@@ -89,6 +89,122 @@ function setup() {
 }
 describe('Explore state', () => {
   afterEach(() => TestBed.resetTestingModule());
+  const entry = (id: string): ExploreItem => ({
+    id,
+    kind: 'suite',
+    title: id,
+    at: 1,
+    target: { kind: 'suite', id },
+    categories: [],
+    tags: [],
+    engagement: null,
+    classification: 'general',
+  });
+  it('appends cursor pages without clearing visible cards or duplicating an existing identity', () => {
+    const h = setup();
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('first')], after: 'next' }))
+    );
+    h.service.reload();
+    const pending = new Subject<Result<ExplorePage, Error>>();
+    h.port.read.mockReturnValue(pending);
+    h.service.more();
+    expect(h.service.items().map((item) => item.id)).toEqual(['first']);
+    expect(h.service.loaded()).toBe(true);
+    expect(h.service.loading()).toBe(true);
+    h.service.more();
+    expect(
+      h.port.read.mock.calls.filter(([cursor]) => cursor === 'next')
+    ).toHaveLength(1);
+    pending.next(ok({ items: [entry('first'), entry('second')], after: null }));
+    expect(h.service.items().map((item) => item.id)).toEqual([
+      'first',
+      'second',
+    ]);
+    expect(h.service.loading()).toBe(false);
+    const calls = h.port.read.mock.calls.length;
+    h.service.more();
+    expect(h.port.read).toHaveBeenCalledTimes(calls);
+  });
+  it('keeps earlier cards after an append failure and retries the failed cursor once explicitly', () => {
+    const h = setup();
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('first')], after: 'next' }))
+    );
+    h.service.reload();
+    h.port.read.mockReturnValue(of(err(new Error('Temporarily unavailable'))));
+    h.service.more();
+    expect(h.service.items().map((item) => item.id)).toEqual(['first']);
+    expect(h.service.error()).toBe('Temporarily unavailable');
+    const calls = h.port.read.mock.calls.length;
+    h.service.more();
+    expect(h.port.read).toHaveBeenCalledTimes(calls);
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('second')], after: null }))
+    );
+    h.service.retry();
+    expect(h.port.read).toHaveBeenLastCalledWith('next');
+    expect(h.service.items().map((item) => item.id)).toEqual([
+      'first',
+      'second',
+    ]);
+  });
+  it('continues past a wholly hidden page and restarts accumulated activity when choices change', () => {
+    const h = setup();
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('first')], after: 'next' }))
+    );
+    h.service.reload();
+    h.port.read.mockReturnValue(
+      of(
+        ok({
+          items: [{ ...entry('hidden'), classification: 'mature' as const }],
+          after: 'third',
+        })
+      )
+    );
+    h.service.more();
+    expect(h.service.items().map((item) => item.id)).toEqual(['first']);
+    expect(h.service.excluded()).toBe(1);
+    expect(h.service.after()).toBe('third');
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('latest')], after: null }))
+    );
+    const data = defaultAccountPreferences();
+    data.content.feedSortOrder = 'popular';
+    h.update({ data });
+    expect(h.port.read).toHaveBeenLastCalledWith(null);
+    expect(h.service.items().map((item) => item.id)).toEqual(['latest']);
+    expect(h.service.excluded()).toBe(0);
+  });
+  it('cancels a pending append on account change and discards accumulated cards immediately', () => {
+    const h = setup();
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('first')], after: 'next' }))
+    );
+    h.service.reload();
+    const pending = new Subject<Result<ExplorePage, Error>>();
+    h.port.read.mockReturnValue(pending);
+    h.service.more();
+    h.tokens.next('different-account');
+    expect(pending.observed).toBe(false);
+    expect(h.service.items()).toEqual([]);
+    pending.next(ok({ items: [entry('stale')], after: null }));
+    expect(h.service.items()).toEqual([]);
+  });
+  it('stops automatic loading when a continuation fails to advance', () => {
+    const h = setup();
+    h.port.read.mockReturnValue(
+      of(ok({ items: [entry('first')], after: 'next' }))
+    );
+    h.service.reload();
+    h.service.more();
+    expect(h.service.error()).toContain('did not advance');
+    expect(h.service.items().map((item) => item.id)).toEqual(['first']);
+    const calls = h.port.read.mock.calls.length;
+    h.service.more();
+    expect(h.port.read).toHaveBeenCalledTimes(calls);
+  });
   it('filters mature and unclassified entries while keeping the original continuation and hidden count', () => {
     const h = setup();
     const page: ExplorePage = {

@@ -3,7 +3,7 @@
 <content-feed
   class="content-feed"
   [feedItems]="state.items"
-  [itemTemplate]="itemTemplate"
+  [itemTemplate]="template ?? itemTemplate"
   (scrolledToBottom)="!state.error && loadNextItems()">
 </content-feed>
 }

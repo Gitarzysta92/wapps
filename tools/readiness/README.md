@@ -1299,10 +1299,10 @@ OPA_BINARY=/path/to/opa \
   node tools/readiness/qualify-suites.cjs --discovery
 ```
 
-Build Editorial, Catalog BFF, discovery/search libraries, aggregator Angular and
+Build Editorial, Community, Catalog BFF, discovery/search libraries, aggregator Angular and
 its production CSR in the isolated installation first. Keep that installation's
 sources and outputs frozen during qualification. The workflow uses disposable
-MySQL/MongoDB and OPA; it does not require an Auth emulator or notification worker.
+MySQL/MongoDB, MinIO, RabbitMQ and OPA; it does not require an Auth emulator or notification worker.
 `--no-browser` omits portal evidence and cannot qualify the complete workflow.
 
 The qualifier publishes 23 applications, articles and suites through actual APIs
@@ -1312,6 +1312,9 @@ case-insensitive search, explicit facets and sort, independent paging, page size
 selected projections make the entire response unavailable; canonical rebuild
 recovers it. Withdrawal remains hidden before tombstone materialization and after
 old replay. Compiled Editorial/BFF restart and outage recovery are included.
+The Community fixture runs the compiled owning service with its migrations and
+isolated persistence. A review is published through BFF and read back through
+Discover; Community outage and restart must preserve its real rating and preview.
 
 Independent browser sessions exercise real detail links, keyboard pagination,
 Back/search restoration, legacy aliases and empty/invalid/unavailable/retry states.
@@ -1319,6 +1322,23 @@ Inspect all six screenshots at 390/768/1440 in both themes alongside `browser.js
 automated checks cover overflow and 24px/16px/8px page/card/description spacing.
 Saved category exclusions apply to the current page only, with hidden counts and
 unchanged source totals. Groups are independent current source reads.
+
+Use `--discovery-view` instead of `--discovery` for the focused accepted Discover
+presentation journey. It retains the same real backend qualification and checks
+the original cards, review preview, navigation, filters, paging, Back and retry
+at all six theme/viewport combinations. It omits the separate Home search-preview
+and application-subpage browser journeys; those exclusions are recorded in its
+`qualification.json`. Passing this focused mode does not pass the broader journey.
+
+Use `--overview-view` for the accepted application overview journey with the same
+disposable services. It publishes discussion topics and replies through the BFF,
+materializes their real SQL/object snapshots, and verifies the original rating
+chip, two discussion cards, canonical links, empty/unavailable/retry states,
+Community/BFF restart, independent browsers and account-preference invalidation.
+The six theme/viewport captures include settled hero/discussion/suite sections.
+Suite membership, view totals and a global newest-discussion query remain missing
+contracts. Image publication and favorite persistence have separate qualifiers;
+the overview run does not qualify those workflows or the later application views.
 
 Trusted ingress identities, shell/profile/preferences fixtures and direct production
 materializer invocation are explicit substitutions. External browser traffic is
