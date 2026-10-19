@@ -21,6 +21,7 @@ export class ApplicationHealthService {
   private readonly changed = new Subject<void>();
   private generation = 0;
   private slug = '';
+  private applicationId?: string;
   readonly report = signal<ApplicationHealthReport | null>(null);
   readonly loading = signal(false);
   readonly error = signal('');
@@ -36,8 +37,9 @@ export class ApplicationHealthService {
         if (!this.loading()) this.reload();
       });
   }
-  open(slug: string) {
+  open(slug: string, applicationId?: string) {
     this.slug = slug;
+    this.applicationId = applicationId;
     this.reload();
   }
   reload() {
@@ -55,7 +57,12 @@ export class ApplicationHealthService {
         next: (result) => {
           if (generation !== this.generation) return;
           this.loading.set(false);
-          if (result.ok) this.report.set(result.value);
+          if (result.ok) {
+            if (result.value.application.slug !== this.slug ||
+                (this.applicationId && result.value.application.id !== this.applicationId)) {
+              this.error.set('The health report does not match this application. Retry to check again.');
+            } else this.report.set(result.value);
+          }
           else if (result.error instanceof HealthNotFoundError)
             this.notFound.set(true);
           else this.error.set(result.error.message);

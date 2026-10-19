@@ -63,6 +63,19 @@ describe('HTTP health page state', () => {
     expect(f.service.error()).toBe('');
     expect(f.service.report()).toEqual(report);
   });
+  it('rejects a reused slug belonging to another canonical application and recovers on retry', () => {
+    const f = setup();
+    const currentId = '10000000-0000-4000-8000-000000000002';
+    f.service.open('example', currentId);
+    expect(f.service.report()).toBeNull();
+    expect(f.service.error()).toContain('does not match');
+    f.port.read.mockReturnValueOnce(of(ok({
+      ...report, application: { ...report.application, id: currentId },
+    })));
+    f.service.reload();
+    expect(f.service.report()?.application.id).toBe(currentId);
+    expect(f.service.error()).toBe('');
+  });
   it('refreshes periodically, removes old evidence on outage and stops on destruction', fakeAsync(() => {
     const f = setup();
     f.service.open('example');

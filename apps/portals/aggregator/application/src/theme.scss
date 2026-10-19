@@ -436,19 +436,22 @@ status-history {
   .status-dot.operational { background-color: var(--tui-status-positive); }
   .status-dot.degraded { background-color: var(--tui-status-warning); }
   .status-dot.outage { background-color: var(--tui-status-negative); }
+  .status-dot.unknown { background-color: var(--tui-background-neutral-2); }
+  .status-dot:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: 2px; }
+}
+
+health-check-badge {
+  &.operational { color: var(--tui-text-positive); background: var(--tui-status-positive-pale); }
+  &.degraded { color: var(--tui-text-warning); background: var(--tui-status-warning-pale); }
+  &.outage { color: var(--tui-text-negative); background: var(--tui-status-negative-pale); }
+  &.info, &.unknown, &.stale { color: var(--tui-text-secondary); background: var(--tui-background-neutral-1); }
 }
 
 application-health-api-page {
-  .health-url, .health-detail, .health-history-dates, .health-legend { color: var(--tui-text-secondary); }
-  .health-state { color: var(--tui-text-primary); background: var(--tui-background-neutral-1); }
-  .health-state[data-status='operational'] { color: var(--tui-text-positive); background: var(--tui-status-positive-pale); }
-  .health-state[data-status='degraded'] { color: var(--tui-text-warning); background: var(--tui-status-warning-pale); }
-  .health-state[data-status='outage'] { color: var(--tui-text-negative); background: var(--tui-status-negative-pale); }
-  .health-day { background: var(--tui-background-neutral-2); }
-  .health-day[data-status='operational'] { background: var(--tui-status-positive); }
-  .health-day[data-status='degraded'] { background: var(--tui-status-warning); }
-  .health-day[data-status='outage'] { background: var(--tui-status-negative); }
-  .health-day:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: 2px; }
+  .health-url, .health-detail, .health-coverage, .health-history-dates, .health-legend { color: var(--tui-text-secondary); }
+  .service-status.unknown, .service-status.stale { color: var(--tui-text-secondary); background: var(--tui-background-neutral-1); }
+  .service-info { --tui-primary: var(--tui-text-action); --tui-primary-hover: var(--tui-text-action-hover); }
+  .service-info:focus-visible { outline: 2px solid var(--tui-text-action); outline-offset: 2px; }
 }
 
 feed-actions-menu summary[tuiAppearance] {

@@ -93,32 +93,30 @@ module.exports = async function qualifyHealth(options) {
     );
     return value;
   }
-  const application = await call(
-    'apps',
-    'POST',
-    {
+  async function publishApplication(fields) {
+    const owner = headers('HealthPublisher', []);
+    const app = await call('me/application-drafts', 'POST', {
+      ...fields, description: 'An application used to verify persisted HTTP endpoint observations.',
+    }, owner, 201);
+    await call(`me/application-drafts/${app.id}/submit`, 'POST', { expectedRevision: 1 }, owner, 201);
+    await call(`editorial/application-reviews/${app.id}/decision`, 'POST', {
+      decision: 'approve', expectedRevision: 2, submittedRevision: 1, reason: '',
+    }, headers('HealthReviewer', ['editorial:reviewer']), 201);
+    await projections.publish(projectEditorialSnapshot(await reader.read('app', app.id)));
+    return app;
+  }
+  const application = await publishApplication({
+      classification: 'general',
       name: 'Observed application',
       slug: 'observed-application',
       website: 'https://health.example.test',
-    },
-    headers('HealthPublisher', ['editorial:publisher']),
-    201
-  );
-  const empty = await call(
-    'apps',
-    'POST',
-    {
+    });
+  await publishApplication({
+      classification: 'general',
       name: 'Unmonitored application',
       slug: 'unmonitored-application',
       website: 'https://empty.example.test',
-    },
-    headers('HealthPublisher', ['editorial:publisher']),
-    201
-  );
-  for (const app of [application, empty])
-    await projections.publish(
-      projectEditorialSnapshot(await reader.read('app', app.id))
-    );
+    });
   const read = () =>
     call(
       'catalog/application-health/observed-application',
@@ -485,91 +483,28 @@ module.exports = async function qualifyHealth(options) {
     );
     const saved = (await bffRead()).monitors;
     if (options.browser) {
+      await publishApplication({
+        classification: 'mature', name: 'Restricted health application',
+        slug: 'restricted-health-application', website: 'https://restricted.example.test',
+      });
       await require('./application-draft-browser.cjs').applicationDraftBrowser({
         root,
-        origin,
-        healthOrigin: () => bff.origin,
-        headers,
+        origin: () => bff.origin,
+        headers: (uid, tenantId, roles) => headers(uid, roles, tenantId),
         restart,
         source,
         output,
         workflowOnly: true,
-        articleWorkflow: async ({ session, go, text, capture, setOffline }) => {
-          const click = async (label, target) => {
-            await target.waitForFunction(
-              (label) =>
-                [
-                  ...document.querySelectorAll(
-                    'application-health-api-page button'
-                  ),
-                ].some(
-                  (button) =>
-                    button.textContent.trim() === label && !button.disabled
-                ),
-              {},
-              label
-            );
-            const buttons = await target.$$(
-              'application-health-api-page button'
-            );
-            for (const button of buttons)
-              if (
-                await button.evaluate(
-                  (element, value) => element.textContent.trim() === value,
-                  label
-                )
-              ) {
-                await button.focus();
-                await target.keyboard.press('Enter');
-                return;
-              }
-            throw new Error('Health action missing: ' + label);
-          };
-          const one = await session(''),
-            two = await session('');
-          const route = '/apps/observed-application/health';
-          await go(route, one);
-          await text('No recent result is available', one);
-          await text('The endpoint redirected the request', one);
-          await text('HTTP 503', one);
-          await text('No observation has been recorded', one);
-          await capture('http-health-evidence', one);
-          await go(route, two);
-          await text('HTTP 503', two);
-          assert.equal(
-            await one.$eval('application-health-api-page', (element) =>
-              /99\.9|All systems operational|Database|Storage service/.test(
-                element.textContent
-              )
-            ),
-            false
-          );
-          setOffline((value) =>
-            value.startsWith('/api/catalog/application-health/')
-          );
-          await click('Refresh checks', one);
-          await text('Observations unavailable', one);
-          assert.equal(
-            await one.$$eval('.health-monitor', (elements) => elements.length),
-            0
-          );
-          setOffline(false);
-          await click('Retry checks', one);
-          await text('HTTP 503', one);
-          await go('/apps/unmonitored-application/health', one);
-          await text('Health unknown', one);
-          await go('/apps/missing-app/health', one);
-          await text('Application not found', one);
-          return [
-            'Independent sessions read durable HTTP observations',
-            'Stale, redirect, failed and unobserved states',
-            'Retry removes stale success on outage',
-            'Unmonitored and missing application states',
-          ];
-        },
+        preferencesFixture: (uid, defaults) => ({
+          ...defaults,
+          content: { ...defaults.content, showMatureContent: uid === 'DraftBrowserBob' },
+        }),
+        articleWorkflow: controls => require('./application-health-browser-checks.cjs')({
+          ...controls, output, stop: options.stop, restart, restartBff,
+        }),
       });
       pass(
-        'Independent browsers, HTTP-only states and retry, 390/768/1440 layouts in light/dark themes'
+        'Original Health components through BFF, independent browsers, HTTP evidence and retry, 390/768/1440 layouts in light/dark themes'
       );
     }
     const pendingAt = Math.floor(Date.now() / 300000) * 300000 + 100;

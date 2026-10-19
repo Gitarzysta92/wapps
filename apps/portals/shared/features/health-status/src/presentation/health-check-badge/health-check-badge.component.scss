@@ -5,22 +5,6 @@
   border-radius: $radius-full;
   gap: $space-1;
   padding: 0 $space-2;
-  &.operational {
-    background-color: var(--status-success);
-    color: white;
-  }
-  &.degraded {
-    background-color: var(--status-warning);
-    color: white;
-  }
-  &.outage {
-    background-color: var(--status-error);
-    color: white;
-  }
-  &.info {
-    background-color: var(--status-info);
-    color: white;
-  }
 }
 
 .badge-icon {

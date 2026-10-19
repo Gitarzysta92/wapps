@@ -224,3 +224,91 @@ uncommitted change set against `1c10bc17c8d546bd2561eb9dd06404d908feb5ff`.
 
 No implementation commit, push, merge or deployment is performed in this pass.
 Both preserved refs and the original `codex/coolify-alpha` branch remain intact.
+
+## Integration checkpoint
+
+On October 19, 2026 the verified Home, Discover and Overview changes were
+committed as `bba8af3b` (`feat(portal): reconnect accepted home, discover and
+overview views`). The exact 55-file change set was checked against the final
+Overview source manifest before staging. The preceding no-commit statement
+describes the Overview pass before this checkpoint. Neither preservation ref
+nor `codex/coolify-alpha` moved. No push or deployment was performed.
+
+## Application Health: fourth integration slice
+
+The API page now uses the accepted header badge, overall banner, thirty-day
+history, service-card grid with availability bars, detailed-metrics interaction
+and Recent Notices section. Its stylesheet imports the unchanged original
+Health page stylesheet, with local adjustments for real content, disclosure
+layout and shared spacing. Explicit demo mode remains a separate route choice.
+
+- The feature mapper uses only validated endpoint observations from the existing
+  feature adapter -> Catalog BFF -> Editorial path. Service names, check reasons,
+  HTTP status, duration and observation times come from the health report.
+- The combined history uses the worst observed status across configured
+  endpoints for each UTC day. It exposes measured/expected endpoint intervals
+  without inventing an application-wide uptime percentage. Per-endpoint history
+  and sampled availability remain available in the metric disclosure.
+- Unknown sampled availability is distinct from a measured zero. Missing and
+  inconclusive intervals stay unknown; partial successful history cannot become
+  an operational day. Stale current observations remain stale even when their
+  earlier samples were successful. History dots are keyboard focusable and
+  expose UTC dates, status and coverage through their accessible labels.
+- The original detailed-metrics row is a native keyboard-operable disclosure.
+  The service cards retain the original status, availability bar and value;
+  interval coverage explains the sampling limits. No internal Database, Storage,
+  Authentication or CDN service is inferred from an HTTP endpoint.
+- Refresh clears old evidence before reading. Failure offers retry, and loading,
+  no configured checks, missing applications and preference failures retain
+  explicit states. Health is bound to both the visible catalog slug and canonical
+  application ID; route and account changes remove or cancel prior evidence.
+- Recent Notices remains visible as unavailable. There is no owning incident or
+  maintenance-notice contract; an unavailable feed is not an empty feed.
+
+Health remains partially integrated until incident/maintenance notices and user
+visual acceptance are completed. HTTP endpoint checks do not establish internal
+component health or an application-wide uptime guarantee. Earlier Home, Discover
+and Overview gaps remain open. The next view is Changelog/Releases.
+
+### Health verification
+
+Evidence is retained in `tmp/frontend-health-20261019/`. The isolated Node
+22.17.1 lockfile installation from the Home pass is reused; dependencies are
+unchanged. `source-changes-final.json` identifies the Health changes against
+checkpoint `bba8af3b`; `verification.json` records commands and evidence hashes.
+The Health changes remain uncommitted on `codex/full-operation`.
+
+- Full workspace tests pass: 6,922 Jest tests in 436 suites and 34 portable
+  readiness tests. Full lint, affected Angular library/portal builds and
+  typechecks, architecture checks and emitted Angular package inspection pass.
+  After the final theme corrections, affected tests, builds, typechecks, lint,
+  Angular artifact inspection and real-service qualification pass again.
+- `qualify-suites.cjs --health` passes through the compiled portal, BFF and
+  Editorial with disposable MySQL/Mongo/OPA, real persisted HTTP observations
+  and both Nginx route sets. Approved General applications are created through
+  the draft/publication APIs. Independent browsers read the same monitor IDs;
+  owner/BFF restarts retain evidence and service outages expose retry.
+- The browser checks cover the original components, real zero versus unknown
+  sampled availability, UTC history/coverage, stale and redirect evidence,
+  keyboard disclosure, refresh invalidation, missing/unconfigured applications,
+  navigation/Back and account/preference changes. Twelve collapsed/expanded
+  layouts pass at 390/768/1440 in light/dark, with 30 captures including 18 settled
+  section captures. Final captures were visually inspected.
+- Visual inspection caught an unpainted light-theme badge background and a
+  low-contrast dark-theme metrics link. Badge appearances now use portal theme
+  tokens; metric links use the current action color. The final browser run also
+  asserts these computed appearances. The original Health page stylesheet remains
+  unchanged; the shared badge keeps its original layout.
+- Logical public DNS/pinned transport to a local endpoint, controlled stale times,
+  trusted ingress identities and shell/profile/preferences remain explicit
+  harness fixtures. Publication projections use the production materializer
+  directly. This does not qualify deployed DNS/TLS, authentication, broker delivery,
+  a live monitoring worker, production restore/load/soak or the entire beta.
+- Failed attempts remain recorded. Page tests caught conditional slot projection
+  and a mismatched hidden-state assertion; the runtime fixture initially omitted
+  the description required by the publication API. Both are corrected. The first
+  fresh-store runtime also rejected the existing image-cleanup schema before
+  Health started. Read-only schema diagnostics and two later uninstrumented runs
+  passed unchanged migration code; its original cause is not established and
+  remains a separate readiness follow-up. `runtime-4/qualification.json` and
+  `runtime-4/browser.json` are the final passing records.
