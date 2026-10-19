@@ -600,7 +600,10 @@ async function articlePublicationChecks({
       [owner.identityId, created.id]
     );
     try {
-      await assert.rejects(migration.up(runner), /review authority/);
+      await assert.rejects(
+        migration.up(runner),
+        /^Error: Invalid independent Editorial review attribution$/
+      );
     } finally {
       await source.query(
         "UPDATE article_submissions SET reviewerIdentityId = ? WHERE articleId = ? AND status = 'approved'",

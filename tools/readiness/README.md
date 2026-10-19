@@ -15,19 +15,44 @@ harness preserves the checked-in bounded upstream pools, substitutes only servic
 addresses and also starts the complete local and alpha gateway configurations.
 It adds 1,600 bounded authenticated reads through all four gateways/includes,
 invalid-token checks and independent Account/BFF restart recovery, with no request
-retry or pacing. Keep profile/member/export/erasure/suite/application extensions in
-separate invocations. I28 qualifies all six on the combined source; its command/log
+retry or pacing. Keep profile/member/export/erasure/suite/application/article extensions in
+separate invocations. I28 qualifies the original six on its combined source; its command/log
 index is `/tmp/wapps-integration-a28-20261018-l4s2868l/verification.json`.
 Native Nginx remains an optional comparator, not a substitute for Docker evidence.
 
 ## Local authentication and BFF
+
+### Article publication, covers and current comment authority
+
+Run `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_ARTICLE_PARITY_INTEGRATION=1
+node --test tools/readiness/local-auth.test.cjs` after all builds finish in a fresh
+Node 22.17.1 lockfile installation. The article extension is the seventh mutually
+exclusive extension. `WAPPS_ARTICLE_LOCAL_ONLY=1` first qualifies local article
+routes with alpha unchanged; omit it for both checked-in Docker API/auth/media
+configurations. Keep `WAPPS_NGINX_BINARY` unset for acceptance.
+
+The [article qualification contract](../../docs/ARTICLE-PARITY-QUALIFICATION.md)
+maps accepted frontend data requirements and documents real sessions, controlled
+operator claim setup, fresh Editorial/Discussion stores, actual broker workers,
+frozen text/classification/media, rollback/replay, cover bounds/cancellation,
+dependency failures and the 90-request BFF-stopped matrix. Current withdrawal
+denies comments despite retained projections, with republication restoring the
+same association. The local and both-gateway runs each pass 29 groups, including
+the unchanged 1,600-request transport check. Application-image alpha parity and
+original presentation acceptance remain separate. The six existing extensions
+also pass separately: 25 profile, 25 member, 27 export, 31 erasure, 29 suite and
+31 application groups, including overlapping baseline checks. The first member
+run receives 504 instead of exact 502 with BFF deliberately stopped; its unchanged
+rerun passes. Both attempts are retained without changing the shared assertion.
+Exact commands, hashed logs, source/patch verification and cleanup:
+`/tmp/wapps-article-parity-20261018-ow5ug443/verification.json`.
 
 ### Full account erasure (A28)
 
 The current independent Authentication/Account entrypoint is
 `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_ERASURE_PARITY_INTEGRATION=1 node --test tools/readiness/local-auth.test.cjs`.
 Build the complete snapshot first. Use only the runner's fresh stores; the erasure
-extension runs separately from profile/member/export/suite/application extensions. See
+extension runs separately from profile/member/export/suite/application/article extensions. See
 [the A28 qualification contract](../../docs/ACCOUNT-ERASURE-QUALIFICATION.md) for
 commands, process fences/inventory evidence, supplemental regressions and limits.
 The historical Firebase export/erasure composition is not the current entrypoint.
@@ -36,8 +61,8 @@ The historical Firebase export/erasure composition is not the current entrypoint
 
 Run `WAPPS_LOCAL_AUTH_INTEGRATION=1 WAPPS_APPLICATION_PARITY_INTEGRATION=1
 node --test tools/readiness/local-auth.test.cjs` in a fresh Node 22.17.1 lockfile
-installation after all builds finish. Profile, member, export, erasure, suite and
-application extensions are mutually exclusive. `WAPPS_APPLICATION_LOCAL_ONLY=1` limits the new
+installation after all builds finish. Profile, member, export, erasure, suite,
+application and article extensions are mutually exclusive. `WAPPS_APPLICATION_LOCAL_ONLY=1` limits the new
 application workflow to local ingress for qualification before an alpha route change;
 omit it for the required local/alpha comparison. Shared authentication checks still
 run against both configurations.

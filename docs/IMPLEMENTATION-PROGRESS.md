@@ -1,6 +1,6 @@
 # Full operation implementation
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for the reconciled
 backlog and separate implementation, BFF/ingress, real-dependency and deployment
 status. Dated checkpoints below preserve their own source/evidence scope; older
@@ -10,6 +10,81 @@ Branch: `codex/full-operation`, created October 11, 2026 from `c965790e`.
 The assessment and existing recording-related working changes were carried
 forward without reverting them. Historical evidence remains in
 [the readiness assessment](OPERATIONAL-READINESS.md) and its dated JSON snapshot.
+
+## Article publication, covers and current comment authority (October 18-19, 2026)
+
+This slice starts from clean promoted I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`, with all 4,316 baseline file hashes
+verified. It adds a seventh mutually exclusive local-auth extension, separate
+article HTTP/service/workflow/cover/comment harness modules, and migrates only
+alpha article JSON and cover/media families to `portal_bff`. Existing BFF and
+owning-service contracts satisfy the new runtime checks without production
+TypeScript or persistence changes. Application-image alpha parity remains separate.
+
+The local journey passes before alpha is changed, then the two-gateway journey
+passes 29 groups. Both use real independently enrolled credentials, canonical
+Identity mapping, real OPA, fresh MySQL/Mongo/RabbitMQ/MinIO, compiled Editorial
+and Community APIs, and both real materializers. Reviewer/tenant claims are
+controlled operator setup followed by sign-in. SQL triggers inject atomicity
+failures; observers read retained state. The primary journey never writes a
+projection directly. Both runs retain O01's complete-gateway/include transport
+stress, 1,600 authenticated requests and independent Account/BFF restart.
+
+Coverage includes frozen text/classification/covers despite private edits,
+self-review and owner/tenant/forged-context denial, concurrent revisions and key
+conflicts, historical receipts, SQL/outbox rollback, cover type/hash/byte/size
+bounds, partial-stream cancellation, protected previews, real objects, dependency
+outages and restarts. Current canonical replacement/withdrawal overrides old
+article and comment projections; generic Discussion rechecks parent authority,
+retains redacted replies and restores the same association on republication.
+The real worker converges to the retained revision-5 article tombstone. All 90
+BFF-stopped case/slash/unknown/private/public-media requests fail without fallback.
+
+Fresh Node 22.17.1 lockfile installation and required gates pass: 6,879 Jest tests
+in 428 suites across 58 projects, 34 portable tests, 143 lint targets including
+readiness tools, 140 uncached builds, 49 typechecks, 64 Angular package inspections,
+144-project architecture tags and zero violations across 1,846 source files.
+Builds finish before their `dist` is consumed by service qualification.
+
+All six original extensions pass separately on the final runtime source: 25
+profile, 25 member, 27 export, 31 erasure, 29 suite and 31 application groups.
+Counts include overlapping baseline groups; every run retains O01's 1,600 reads.
+The first member run stops before member-specific checks because the deliberately
+stopped BFF returns a bounded two-second 504 instead of the Account matrix's exact
+502 expectation. The unchanged rerun passes; both attempts remain recorded, and
+the shared assertion and transport configuration are unchanged.
+
+Evidence is retained under `/tmp/wapps-article-parity-20261018-ow5ug443/`, including
+the baseline/final source hashes, task-only patch, commands, failed attempts and
+cleanup. `verification.json` indexes the 4,322-file final source and exact 15-file
+patch, including reproduction against a fresh baseline archive. Branch, HEAD,
+index and lockfile are preserved; the isolated source matches the checkout.
+The initial installation was immediately interrupted after a wrong working
+directory was recognized (exit 130, empty log); tracked checkout/index remained
+clean and required dependency resolution was checked before the isolated install.
+The first three local runs retain harness failures: private lookup 404 versus an
+expected 403, explicit unsupported-media 415 versus 400, and a Mongo head observer
+using `discussionId` instead of `_id`. These correct the test's contract/observer;
+they do not weaken authorization or change owner behavior. The successful rerun
+retains strict statuses. A subsequent coverage review adds an actual MinIO-paused
+upload and same-key recovery to the final two-gateway run.
+
+Supplemental publication/covers/comments pass 9/17/9 real-store groups. The
+publication suite's old `/review authority/` expectation failed against the current
+independent-review attribution guard; its assertion now requires that exact error.
+The combined article-comment/recovery invocation correctly refused to scan an
+already populated object store. The separate comment run passes, and the dedicated
+fresh-store materialization runner passes all four non-skipped Discussion,
+Editorial SQL, Editorial projection and Catalog tests, including unknown opaque
+consumer keys. Both failed attempts remain retained; neither production migrations
+nor the isolation guard changes.
+
+[The qualification contract](ARTICLE-PARITY-QUALIFICATION.md) maps original
+frontend requirements and records supplemental setup and limits. No frontend,
+lockfile, fixed provider plan, reusable SDK binding contract, live store, migration,
+erasure fence or worker activation changes. Live installation remains A21. This
+lane stays uncommitted and does not start another assignment; cross-lane integration,
+production retention, original presentation acceptance and deployment remain open.
 
 ## Integrated erasure, applications and operational baseline (October 18, 2026)
 

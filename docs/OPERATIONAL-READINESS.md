@@ -1,10 +1,29 @@
 # Wapps operational readiness
 
-**Current completion index (October 18, 2026):** use
+**Current completion index (October 19, 2026):** use
 [the backend and BFF checklist](BACKEND-COMPLETION-CHECKLIST.md) for current workflow
 status, evidence limits, dependencies and bounded next actions. The checkpoints
 and original OP01-OP10 findings below remain historical evidence and release
 criteria; superseded missing-feature statements are not the current backlog.
+
+Article publication/cover parity (October 18-19, 2026) starts from promoted I28 commit
+`2c4a78797bb7bf4df2d3365c3490cd0a91a4fa7a`. The local-first and both-Docker-gateway
+journeys each pass 29 groups with independent Authentication/Identity, Editorial,
+Community, OPA, SQL, object storage and actual broker materializers. Alpha article
+JSON, review, private/frozen covers and public media now use BFF. Frozen submissions,
+rollback/replay, current comment authority, outages, restarts and retained tombstones
+are qualified; all 90 BFF-stopped route variants fail without owner fallback.
+Full gates pass 6,879 Jest tests / 428 suites, 34 portable tests, lint, 140 builds,
+49 typechecks, 64 Angular artifact inspections and zero boundary violations.
+The six existing Docker extensions pass 25 profile, 25 member, 27 export, 31
+erasure, 29 suite and 31 application groups, including overlapping baseline checks.
+The first member run receives a bounded 504 from the deliberately stopped BFF
+where the shared matrix expects 502; an unchanged rerun passes. Both logs remain.
+See [the article qualification](ARTICLE-PARITY-QUALIFICATION.md) and
+`/tmp/wapps-article-parity-20261018-ow5ug443/verification.json` for exact evidence,
+the reproducible 15-file patch, source hashes, cleanup and controlled setup.
+Application-image alpha parity, archived-data policy, frontend acceptance and live
+deployment/worker activation remain separate. Live installation stays A21.
 
 Current integrated baseline I28 (October 18, 2026) combines full account erasure,
 application publication/ownership and operational foundations. The 4,316-file
