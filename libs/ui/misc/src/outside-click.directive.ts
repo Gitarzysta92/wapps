@@ -1,13 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Directive, ElementRef, EventEmitter, Inject, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, EventEmitter, Inject, OnDestroy, Output, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[outsideClick]',
   standalone: true
 })
-export class  OutsideClickDirective implements OnInit, AfterViewInit, OnDestroy {
+export class  OutsideClickDirective implements AfterViewInit, OnDestroy {
 
-  private _detachMouseclick: Function | undefined;
+  private _detachMouseclick: (() => void) | undefined;
 
   @Output() outsideClick: EventEmitter<MouseEvent> = new EventEmitter();
 
@@ -23,15 +23,12 @@ export class  OutsideClickDirective implements OnInit, AfterViewInit, OnDestroy 
     this._attachListeners();
   }
 
-  ngOnInit(): void {
-  }
-
   ngOnDestroy(): void {
     this._detachListeners();
   }
 
   private emitEvent(event: MouseEvent) {
-    if (this._checkIsInside(event as any)) return;
+    if (this._checkIsInside(event)) return;
 
     event = new MouseEvent('outsideclick', event)
 
@@ -43,10 +40,10 @@ export class  OutsideClickDirective implements OnInit, AfterViewInit, OnDestroy 
   }
 
   private _detachListeners(): void {
-    this._detachMouseclick && this._detachMouseclick();
+    this._detachMouseclick?.();
   }
 
-  private _checkIsInside(event: MouseEvent & { path: HTMLElement[] }): boolean {
+  private _checkIsInside(event: MouseEvent): boolean {
     return event.composedPath()?.some(e => e == this._elementRef.nativeElement);
   }
 

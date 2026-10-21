@@ -8,12 +8,12 @@ import { TuiButton } from '@taiga-ui/core';
   imports: [TuiButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div role="group" [attr.aria-label]="'Local votes for ' + title">
-      <button tuiButton type="button" size="xs" appearance="flat" [attr.aria-pressed]="vote() === 1" [attr.aria-label]="'Upvote ' + title + ' locally'" (click)="choose(1)">↑ {{ upvotes + (vote() === 1 ? 1 : 0) }}</button>
+    <div role="group" [attr.aria-label]="(enabled ? 'Local votes for ' : 'Voting unavailable for ') + title">
+      <button tuiButton type="button" size="xs" appearance="flat" [disabled]="!enabled" [attr.aria-pressed]="vote() === 1" [attr.aria-label]="'Upvote ' + title + (enabled ? ' locally' : ' (unavailable)')" (click)="choose(1)">↑ {{ upvotes === null ? '?' : upvotes + (vote() === 1 ? 1 : 0) }}</button>
       @if (allowDownvote) {
-        <button tuiButton type="button" size="xs" appearance="flat" [attr.aria-pressed]="vote() === -1" [attr.aria-label]="'Downvote ' + title + ' locally'" (click)="choose(-1)">↓ {{ downvotes + (vote() === -1 ? 1 : 0) }}</button>
+        <button tuiButton type="button" size="xs" appearance="flat" [disabled]="!enabled" [attr.aria-pressed]="vote() === -1" [attr.aria-label]="'Downvote ' + title + (enabled ? ' locally' : ' (unavailable)')" (click)="choose(-1)">↓ {{ downvotes === null ? '?' : downvotes + (vote() === -1 ? 1 : 0) }}</button>
       }
-      <small class="vote-scope">Local vote</small>
+      <small class="vote-scope">{{ enabled ? 'Local vote' : 'Voting unavailable' }}</small>
     </div>
     @if (message()) { <small role="status">{{ message() }}</small> }
   `,
@@ -22,20 +22,24 @@ import { TuiButton } from '@taiga-ui/core';
 export class FeedLocalVoteComponent implements OnChanges {
   @Input({ required: true }) itemId!: string;
   @Input() title = 'this item';
-  @Input() upvotes = 0;
-  @Input() downvotes = 0;
+  @Input() upvotes: number | null = 0;
+  @Input() enabled = true;
+  @Input() downvotes: number | null = 0;
   @Input() allowDownvote = true;
   private readonly document = inject(DOCUMENT);
   readonly vote = signal(0);
   readonly message = signal('');
   ngOnChanges(): void {
     this.message.set('');
+    this.vote.set(0);
+    if (!this.enabled) return;
     try {
       const value = this.document.defaultView?.localStorage.getItem(`wapps.feed-vote.${this.itemId}`);
       this.vote.set(value === '1' ? 1 : value === '-1' ? -1 : 0);
     } catch { this.vote.set(0); }
   }
   choose(value: number): void {
+    if (!this.enabled) return;
     const next = this.vote() === value ? 0 : value;
     this.vote.set(next);
     try {

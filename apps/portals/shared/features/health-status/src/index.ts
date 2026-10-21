@@ -23,3 +23,7 @@ export {
   StatusHistoryComponent,
   type StatusHistoryItem
 } from './presentation/status-history/status-history.component';
+export { provideApplicationHealth } from './health.providers';
+export { ApplicationHealthService } from './application/application-health.service';
+export { applicationHealthView } from './application/health-view';
+export { APPLICATION_HEALTH, type ApplicationHealthPort } from './application/health.port';

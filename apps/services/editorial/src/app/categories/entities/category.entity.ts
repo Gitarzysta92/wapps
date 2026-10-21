@@ -1,25 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('categories')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ length: 255, unique: true })
-  slug: string;
+  slug!: string;
 
-  @ManyToOne(() => Category, category => category.children, { nullable: true })
-  parent: Category;
+  @ManyToOne(() => Category, (category) => category.children, {
+    nullable: true,
+  })
+  parent!: Category | null;
 
-  @OneToMany(() => Category, category => category.parent)
-  children: Category[];
+  @OneToMany(() => Category, (category) => category.parent)
+  children!: Category[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

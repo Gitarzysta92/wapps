@@ -1,5 +1,5 @@
 <ui-medium-card class="discussion-card" [tuiAppearance]="appearance()">
-  
+
   <div class="discussion-header">
     <div class="author-info">
       <tui-avatar [src]="data().authorAvatar" size="s" />
@@ -13,10 +13,12 @@
         <tui-icon icon="@tui.message-circle" />
         {{ data().repliesCount }}
       </span>
+@if (data().viewsCount !== undefined) {
       <span class="discussion-stat">
         <tui-icon icon="@tui.eye" />
         {{ data().viewsCount }}
       </span>
+}
     </div>
   </div>
 
@@ -33,4 +35,3 @@
     <tui-icon icon="@tui.arrow-right" />
   </div>
 </ui-medium-card>
-

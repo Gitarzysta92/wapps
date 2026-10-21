@@ -1,11 +1,24 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { EDITORIAL_MIGRATIONS } from './editorial-migrations';
+import { DataSource } from 'typeorm';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnModuleInit,
+} from '@nestjs/common';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HealthController } from './health/health.controller';
+import { EditorialReadiness } from './health/editorial-readiness';
+import { EditorialReadinessProbes } from './health/editorial-readiness.probes';
 import { SeedService } from './seed/seed.service';
-import { CategoriesModule } from './categories/categories.module';
-import { TagsModule } from './tags/tags.module';
-import { AppsModule } from './apps/apps.module';
+import { EditorialModule } from './editorial.module';
+import {
+  EditorialAuthMiddleware,
+  EditorialMutationGuard,
+} from './http/editorial-auth';
+import { EditorialErrorFilter } from './http/editorial-error.filter';
 import { ReferenceModule } from './reference/reference.module';
 import { PlatformController } from './platform/platform.controller';
 
@@ -28,12 +41,32 @@ import { UserSpan } from './reference/entities/user-span.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      dataSourceFactory: async (options) => {
+        if (!options)
+          throw new Error('Editorial database configuration is missing');
+        const source = await new DataSource(options).initialize();
+        try {
+          if (await source.showMigrations())
+            throw new Error(
+              'Editorial schema migrations are pending. Run --migrate before API startup.'
+            );
+          return source;
+        } catch (error) {
+          await source.destroy();
+          throw error;
+        }
+      },
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
+        timezone: 'Z',
         host: configService.get('EDITORIAL_DATABASE_HOST') || 'localhost',
-        port: parseInt(configService.get('EDITORIAL_DATABASE_PORT') || '3306', 10),
+        port: parseInt(
+          configService.get('EDITORIAL_DATABASE_PORT') || '3306',
+          10
+        ),
         username: configService.get('EDITORIAL_DATABASE_USERNAME') || 'root',
-        password: configService.get('EDITORIAL_DATABASE_PASSWORD') || 'password',
+        password:
+          configService.get('EDITORIAL_DATABASE_PASSWORD') || 'password',
         database: configService.get('EDITORIAL_DATABASE_NAME') || 'editorial',
         entities: [
           Category,
@@ -46,23 +79,40 @@ import { UserSpan } from './reference/entities/user-span.entity';
           MonetizationModel,
           UserSpan,
         ],
-        synchronize: true, // Auto-create tables (disable in production)
+        synchronize: false,
+        migrations: EDITORIAL_MIGRATIONS,
+        migrationsRun: false,
+        migrationsTransactionMode: 'none',
+        migrationsTableName: 'editorial_migrations',
         logging: false,
       }),
     }),
-    CategoriesModule,
-    TagsModule,
-    AppsModule,
+    TypeOrmModule.forFeature([Category, Tag]),
+    EditorialModule,
     ReferenceModule,
   ],
   controllers: [HealthController, PlatformController],
-  providers: [SeedService],
+  providers: [
+    EditorialReadiness,
+    EditorialReadinessProbes,
+    SeedService,
+    EditorialAuthMiddleware,
+    { provide: APP_GUARD, useClass: EditorialMutationGuard },
+    { provide: APP_FILTER, useClass: EditorialErrorFilter },
+  ],
 })
-export class AppModule implements OnModuleInit {
-  constructor(private seedService: SeedService) {}
+export class AppModule implements OnModuleInit, NestModule {
+  constructor(
+    private readonly seedService: SeedService,
+    private readonly config: ConfigService
+  ) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(EditorialAuthMiddleware).forRoutes('*');
+  }
 
   async onModuleInit() {
-    // Seed data on startup
-    await this.seedService.seed();
+    if (this.config.get('EDITORIAL_SEED_DEMO_DATA') === 'true')
+      await this.seedService.seed();
   }
 }

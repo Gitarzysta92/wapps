@@ -6,7 +6,8 @@
   "tags": [
     "type:app",
     "scope:platform",
-    "layer:auth"
+    "layer:auth",
+    "arch:service"
   ],
   "targets": {
     "build": {
@@ -52,8 +53,25 @@
     "test": {
       "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "sdk/features/identity/applications/authenticator/service/jest.config.cjs"
+        "jestConfig": "sdk/features/identity/applications/authenticator/service/jest.config.cjs",
+        "passWithNoTests": false
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p sdk/features/identity/applications/authenticator/service/tsconfig.app.json",
+          "tsc --noEmit -p sdk/features/identity/applications/authenticator/service/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }

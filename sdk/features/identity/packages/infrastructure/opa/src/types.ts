@@ -20,22 +20,29 @@ export interface ResourceConstraint {
   type: string;
   /** Require resource.id to be non-empty */
   requireId?: boolean;
-  /** If true, require resource.tenantId to equal input.tenantId (only if your system uses tenancy). */
+  /** Fixed service resource; non-empty identifiers alone do not establish scope. */
+  exactId?: string;
+  /** If true, require a non-empty resource.tenantId equal to input.tenantId. */
   tenantMustMatchInput?: boolean;
+  /** Global resources cannot be administered using tenant-scoped authority. */
+  tenantMustBeAbsent?: boolean;
+  /** Restricts the resource to the authenticated actor, including administrators. */
+  identityMustMatchInput?: boolean;
+  /** Exact internal service identity/scope/role; an administrator role cannot override this. */
+  serviceOnly?: { identityId: string; tenantId: string; role: string };
 }
 
-export interface DiscussionPolicyDefinition {
+export interface AuthorizationPolicyDefinition {
   packageName: string;
   supportedActions: ActionName[];
   rolePermissions: Record<RoleName, ActionName[]>;
+  /** Authenticated actions whose resource constraint must enforce self access. */
+  selfActions?: ActionName[];
   /**
    * Per-action resource constraints, evaluated by generated Rego.
    * Only specify constraints when action requires resource facts.
    */
   resourceConstraints?: Record<ActionName, ResourceConstraint>;
-  /**
-   * Optional example assignment mapping (handy for local testing).
-   */
-  rolesByIdentityExample?: PolicyDataModel['roles_by_identity'];
 }
 
+export type DiscussionPolicyDefinition = AuthorizationPolicyDefinition;

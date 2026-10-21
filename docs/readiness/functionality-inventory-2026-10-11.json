@@ -1,0 +1,1086 @@
+{
+  "assessmentDate": "2026-10-11",
+  "baseCommit": "c965790e063139bcd5e6bacc759f289703e4ea9a",
+  "scope": "Static source declaration inventory. API paths include main.ts global prefixes, before gateway rewrites. Route expressions are not flattened; see FUNCTIONALITY-MAP.md for resolved journeys, legacy redirect spread, provider status, and gaps. This is not live integration evidence.",
+  "controllers": [
+    {
+      "service": "catalog-bff",
+      "file": "apps/services/catalog-bff/src/app/catalog/catalog.controller.ts",
+      "class": "CatalogController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/catalog/apps/:slug",
+          "handler": "getAppBySlug",
+          "line": 15
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/apps",
+          "handler": "getApps",
+          "line": 28
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/apps/:slug/preview",
+          "handler": "getAppPreview",
+          "line": 52
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/categories",
+          "handler": "getCategories",
+          "line": 65
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/categories/tree",
+          "handler": "getCategoriesTree",
+          "line": 72
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/tags",
+          "handler": "getTags",
+          "line": 79
+        },
+        {
+          "method": "GET",
+          "path": "/api/catalog/tags/:slug",
+          "handler": "getTagBySlug",
+          "line": 86
+        }
+      ]
+    },
+    {
+      "service": "catalog-bff",
+      "file": "apps/services/catalog-bff/src/app/health/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "handler": "check",
+          "line": 7
+        },
+        {
+          "method": "GET",
+          "path": "/api/health/ready",
+          "handler": "ready",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "service": "catalog-bff",
+      "file": "apps/services/catalog-bff/src/app/platform/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "get",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/apps/apps.controller.ts",
+      "class": "AppsController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/apps",
+          "handler": "findAll",
+          "line": 11
+        },
+        {
+          "method": "GET",
+          "path": "/api/apps/:id",
+          "handler": "findOne",
+          "line": 17
+        },
+        {
+          "method": "POST",
+          "path": "/api/apps",
+          "handler": "create",
+          "line": 23
+        },
+        {
+          "method": "PUT",
+          "path": "/api/apps/:id",
+          "handler": "update",
+          "line": 29
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/apps/:id",
+          "handler": "remove",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/categories/categories.controller.ts",
+      "class": "CategoriesController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/categories",
+          "handler": "findAll",
+          "line": 11
+        },
+        {
+          "method": "GET",
+          "path": "/api/categories/:id",
+          "handler": "findOne",
+          "line": 17
+        },
+        {
+          "method": "POST",
+          "path": "/api/categories",
+          "handler": "create",
+          "line": 23
+        },
+        {
+          "method": "PUT",
+          "path": "/api/categories/:id",
+          "handler": "update",
+          "line": 29
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/categories/:id",
+          "handler": "remove",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/health/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "handler": "check",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/platform/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "get",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/reference/reference.controller.ts",
+      "class": "ReferenceController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/reference/platforms",
+          "handler": "getPlatforms",
+          "line": 10
+        },
+        {
+          "method": "GET",
+          "path": "/api/reference/devices",
+          "handler": "getDevices",
+          "line": 16
+        },
+        {
+          "method": "GET",
+          "path": "/api/reference/socials",
+          "handler": "getSocials",
+          "line": 22
+        },
+        {
+          "method": "GET",
+          "path": "/api/reference/stores",
+          "handler": "getStores",
+          "line": 28
+        },
+        {
+          "method": "GET",
+          "path": "/api/reference/monetization-models",
+          "handler": "getMonetizationModels",
+          "line": 34
+        },
+        {
+          "method": "GET",
+          "path": "/api/reference/user-spans",
+          "handler": "getUserSpans",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "service": "editorial",
+      "file": "apps/services/editorial/src/app/tags/tags.controller.ts",
+      "class": "TagsController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/tags",
+          "handler": "findAll",
+          "line": 11
+        },
+        {
+          "method": "GET",
+          "path": "/api/tags/:id",
+          "handler": "findOne",
+          "line": 17
+        },
+        {
+          "method": "POST",
+          "path": "/api/tags",
+          "handler": "create",
+          "line": 23
+        },
+        {
+          "method": "PUT",
+          "path": "/api/tags/:id",
+          "handler": "update",
+          "line": 29
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/tags/:id",
+          "handler": "remove",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "service": "content-node-registry",
+      "file": "apps/services/content-node-registry/src/app/health/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "handler": "check",
+          "line": 7
+        },
+        {
+          "method": "GET",
+          "path": "/api/health/ready",
+          "handler": "ready",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "service": "content-node-registry",
+      "file": "apps/services/content-node-registry/src/app/platform/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "get",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "authenticator",
+      "file": "sdk/features/identity/applications/authenticator/service/src/controllers/auth.controller.ts",
+      "class": "AuthController",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/auth/signin",
+          "handler": "signIn",
+          "line": 37
+        },
+        {
+          "method": "POST",
+          "path": "/auth/signin/anonymous",
+          "handler": "signInAnonymous",
+          "line": 55
+        },
+        {
+          "method": "POST",
+          "path": "/auth/signin/oauth",
+          "handler": "signInOAuth",
+          "line": 67
+        },
+        {
+          "method": "POST",
+          "path": "/auth/refresh",
+          "handler": "refresh",
+          "line": 96
+        },
+        {
+          "method": "POST",
+          "path": "/auth/signout",
+          "handler": "signOut",
+          "line": 115
+        },
+        {
+          "method": "GET",
+          "path": "/auth/methods",
+          "handler": "methods",
+          "line": 123
+        },
+        {
+          "method": "GET",
+          "path": "/auth/oauth/google/authorize",
+          "handler": "authorizeGoogle",
+          "line": 133
+        },
+        {
+          "method": "GET",
+          "path": "/auth/oauth/github/authorize",
+          "handler": "authorizeGithub",
+          "line": 162
+        }
+      ]
+    },
+    {
+      "service": "authenticator",
+      "file": "sdk/features/identity/applications/authenticator/service/src/controllers/docs.controller.ts",
+      "class": "DocsController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api-docs.json",
+          "handler": "getOpenApiJson",
+          "line": 8
+        }
+      ]
+    },
+    {
+      "service": "authenticator",
+      "file": "sdk/features/identity/applications/authenticator/service/src/controllers/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "handler": "health",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "service": "authenticator",
+      "file": "sdk/features/identity/applications/authenticator/service/src/controllers/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "platform",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "service": "authenticator",
+      "file": "sdk/features/identity/applications/authenticator/service/src/controllers/validation.controller.ts",
+      "class": "ValidationController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/validate",
+          "handler": "validateRequired",
+          "line": 14
+        },
+        {
+          "method": "GET",
+          "path": "/validate-optional",
+          "handler": "validateOptional",
+          "line": 60
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/controllers/account-management.controller.ts",
+      "class": "AccountManagementController",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/disable",
+          "handler": "disable",
+          "line": 36
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/enable",
+          "handler": "enable",
+          "line": 44
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/revoke-tokens",
+          "handler": "revokeTokens",
+          "line": 51
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/admin/users/:uid",
+          "handler": "delete",
+          "line": 58
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/admin/users/:uid/email",
+          "handler": "updateEmail",
+          "line": 65
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/admin/users/:uid/password",
+          "handler": "updatePassword",
+          "line": 76
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/unlink-providers",
+          "handler": "unlinkProviders",
+          "line": 87
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/generate-password-reset-link",
+          "handler": "generatePasswordResetLink",
+          "line": 98
+        },
+        {
+          "method": "POST",
+          "path": "/api/admin/users/:uid/generate-email-verification-link",
+          "handler": "generateEmailVerificationLink",
+          "line": 109
+        },
+        {
+          "method": "GET",
+          "path": "/api/admin/users/:uid/identity",
+          "handler": "getIdentityMapping",
+          "line": 120
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/controllers/me.controller.ts",
+      "class": "MeController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/me",
+          "handler": "getMe",
+          "line": 11
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/me",
+          "handler": "deleteMe",
+          "line": 17
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/controllers/password-recovery.controller.ts",
+      "class": "PasswordRecoveryController",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/password-recovery",
+          "handler": "start",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/controllers/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "get",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/controllers/registration.controller.ts",
+      "class": "RegistrationController",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/registration/complete",
+          "handler": "complete",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "service": "identity-management",
+      "file": "sdk/features/identity/applications/management/service/src/app/health/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "handler": "health",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "service": "discussion-management",
+      "file": "apps/services/community/src/app/discussions/discussions.controller.ts",
+      "class": "DiscussionsController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/discussions",
+          "handler": "findAll",
+          "line": 12
+        },
+        {
+          "method": "GET",
+          "path": "/api/discussions/:id",
+          "handler": "findOne",
+          "line": 18
+        },
+        {
+          "method": "POST",
+          "path": "/api/discussions",
+          "handler": "create",
+          "line": 24
+        },
+        {
+          "method": "PUT",
+          "path": "/api/discussions/:id",
+          "handler": "update",
+          "line": 41
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/discussions/:id",
+          "handler": "remove",
+          "line": 47
+        },
+        {
+          "method": "POST",
+          "path": "/api/discussions/comments/:id/like",
+          "handler": "likeComment",
+          "line": 53
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/discussions/comments/:id/like",
+          "handler": "unlikeComment",
+          "line": 68
+        }
+      ]
+    },
+    {
+      "service": "discussion-management",
+      "file": "apps/services/community/src/app/health/health.controller.ts",
+      "class": "HealthController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "handler": "check",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "service": "discussion-management",
+      "file": "apps/services/community/src/app/platform/platform.controller.ts",
+      "class": "PlatformController",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/api/platform",
+          "handler": "get",
+          "line": 7
+        }
+      ]
+    }
+  ],
+  "portalRoutes": [
+    {
+      "portal": "aggregator",
+      "file": "apps/portals/aggregator/application/src/routes.ts",
+      "declarations": [
+        {
+          "line": 51,
+          "pathExpression": "''"
+        },
+        {
+          "line": 56,
+          "pathExpression": "''",
+          "redirectExpression": "NAVIGATION.home.path"
+        },
+        {
+          "line": 61,
+          "pathExpression": "NAVIGATION.home.path"
+        },
+        {
+          "line": 99,
+          "pathExpression": "NAVIGATION.registerApplication.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 136,
+          "pathExpression": "NAVIGATION.createSuite.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 173,
+          "pathExpression": "''"
+        },
+        {
+          "line": 178,
+          "pathExpression": "NAVIGATION.application.path",
+          "redirectExpression": "NAVIGATION.applicationOverview.path"
+        },
+        {
+          "line": 183,
+          "pathExpression": "`${NAVIGATION.applicationOverview.path}`"
+        },
+        {
+          "line": 221,
+          "pathExpression": "NAVIGATION.applicationHealth.path"
+        },
+        {
+          "line": 255,
+          "pathExpression": "NAVIGATION.applicationDevLog.path + '/:version'"
+        },
+        {
+          "line": 289,
+          "pathExpression": "NAVIGATION.applicationDevLog.path"
+        },
+        {
+          "line": 323,
+          "pathExpression": "NAVIGATION.applicationReviews.path"
+        },
+        {
+          "line": 357,
+          "pathExpression": "NAVIGATION.applicationReview.path"
+        },
+        {
+          "line": 391,
+          "pathExpression": "NAVIGATION.applicationDiscussions.path"
+        },
+        {
+          "line": 429,
+          "pathExpression": "NAVIGATION.applicationDiscussion.path"
+        },
+        {
+          "line": 468,
+          "pathExpression": "NAVIGATION.applicationTimeline.path"
+        },
+        {
+          "line": 503,
+          "pathExpression": "NAVIGATION.discover.path"
+        },
+        {
+          "line": 541,
+          "pathExpression": "NAVIGATION.suites.path"
+        },
+        {
+          "line": 578,
+          "pathExpression": "`:${FILTERS.category}/page/:page`"
+        },
+        {
+          "line": 582,
+          "pathExpression": "'page/:page'"
+        },
+        {
+          "line": 588,
+          "pathExpression": "NAVIGATION.suite.path"
+        },
+        {
+          "line": 625,
+          "pathExpression": "NAVIGATION.favouriteSuites.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 663,
+          "pathExpression": "NAVIGATION.articles.path"
+        },
+        {
+          "line": 700,
+          "pathExpression": "`:${FILTERS.category}/page/:page`"
+        },
+        {
+          "line": 704,
+          "pathExpression": "'page/:page'"
+        },
+        {
+          "line": 710,
+          "pathExpression": "NAVIGATION.article.path"
+        },
+        {
+          "line": 746,
+          "pathExpression": "NAVIGATION.mySuites.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 752,
+          "pathExpression": "NAVIGATION.mefavouriteApplications.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 758,
+          "pathExpression": "NAVIGATION.myApplications.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 765,
+          "pathExpression": "NAVIGATION.claimApplicationOwnership.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 772,
+          "pathExpression": "NAVIGATION.tags.path"
+        },
+        {
+          "line": 808,
+          "pathExpression": "NAVIGATION.tag.path"
+        },
+        {
+          "line": 844,
+          "pathExpression": "NAVIGATION.searchByTag.path"
+        },
+        {
+          "line": 880,
+          "pathExpression": "NAVIGATION.categories.path"
+        },
+        {
+          "line": 912,
+          "pathExpression": "NAVIGATION.category.path"
+        },
+        {
+          "line": 944,
+          "pathExpression": "NAVIGATION.searchByCategory.path"
+        },
+        {
+          "line": 976,
+          "pathExpression": "'organization'",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 990,
+          "pathExpression": "NAVIGATION.myProfile.path"
+        },
+        {
+          "line": 1013,
+          "pathExpression": "NAVIGATION.myFavorite.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 1047,
+          "pathExpression": "NAVIGATION.myDiscussions.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 1081,
+          "pathExpression": "NAVIGATION.userProfile.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 1116,
+          "pathExpression": "NAVIGATION.settings.path",
+          "guardExpression": "[AuthenticationGuard]"
+        },
+        {
+          "line": 1147,
+          "pathExpression": "''",
+          "redirectExpression": "'profile'"
+        },
+        {
+          "line": 1152,
+          "pathExpression": "'profile'"
+        },
+        {
+          "line": 1157,
+          "pathExpression": "'preferences'"
+        },
+        {
+          "line": 1162,
+          "pathExpression": "'notifications'"
+        },
+        {
+          "line": 1167,
+          "pathExpression": "'privacy'"
+        },
+        {
+          "line": 1177,
+          "pathExpression": "'identity'"
+        },
+        {
+          "line": 1184,
+          "pathExpression": "''",
+          "redirectExpression": "'authenticate'"
+        },
+        {
+          "line": 1189,
+          "pathExpression": "'authenticate'"
+        },
+        {
+          "line": 1193,
+          "pathExpression": "'recover'"
+        },
+        {
+          "line": 1197,
+          "pathExpression": "'register'"
+        },
+        {
+          "line": 1201,
+          "pathExpression": "'**'",
+          "redirectExpression": "\"\""
+        },
+        {
+          "line": 1208,
+          "pathExpression": "'auth/callback'"
+        },
+        {
+          "line": 1212,
+          "pathExpression": "'**'"
+        },
+        {
+          "line": 1224,
+          "pathExpression": "NAVIGATION.digest.path"
+        }
+      ]
+    },
+    {
+      "portal": "catalog",
+      "file": "apps/portals/catalog/application/src/routes.ts",
+      "declarations": [
+        {
+          "line": 10,
+          "pathExpression": "''"
+        },
+        {
+          "line": 14,
+          "pathExpression": "''",
+          "redirectExpression": "NAVIGATION.catalog.path"
+        },
+        {
+          "line": 19,
+          "pathExpression": "NAVIGATION.catalog.path"
+        },
+        {
+          "line": 31,
+          "pathExpression": "NAVIGATION.appDetails.path"
+        },
+        {
+          "line": 43,
+          "pathExpression": "'**'",
+          "redirectExpression": "NAVIGATION.catalog.path"
+        }
+      ]
+    },
+    {
+      "portal": "discussion",
+      "file": "apps/portals/discussion/application/src/routes.ts",
+      "declarations": [
+        {
+          "line": 12,
+          "pathExpression": "\"auth/callback\""
+        },
+        {
+          "line": 16,
+          "pathExpression": "\"\""
+        },
+        {
+          "line": 20,
+          "pathExpression": "\"\"",
+          "redirectExpression": "NAVIGATION.discussions.path"
+        },
+        {
+          "line": 25,
+          "pathExpression": "NAVIGATION.discussions.path"
+        },
+        {
+          "line": 40,
+          "pathExpression": "NAVIGATION.discussion.path"
+        },
+        {
+          "line": 55,
+          "pathExpression": "\"login\""
+        },
+        {
+          "line": 70,
+          "pathExpression": "\"**\"",
+          "redirectExpression": "NAVIGATION.discussions.path"
+        }
+      ]
+    }
+  ],
+  "sharedFeatures": [
+    {
+      "name": "application-overview",
+      "root": "apps/portals/shared/features/application-overview",
+      "project": true
+    },
+    {
+      "name": "articles",
+      "root": "apps/portals/shared/features/articles",
+      "project": true
+    },
+    {
+      "name": "attribution",
+      "root": "apps/portals/shared/features/attribution",
+      "project": true
+    },
+    {
+      "name": "categories",
+      "root": "apps/portals/shared/features/categories",
+      "project": true
+    },
+    {
+      "name": "changelog",
+      "root": "apps/portals/shared/features/changelog",
+      "project": true
+    },
+    {
+      "name": "compatibility",
+      "root": "apps/portals/shared/features/compatibility",
+      "project": true
+    },
+    {
+      "name": "discovery-search-result",
+      "root": "apps/portals/shared/features/discovery-search-result",
+      "project": true
+    },
+    {
+      "name": "discussion",
+      "root": "apps/portals/shared/features/discussion",
+      "project": true
+    },
+    {
+      "name": "feed",
+      "root": "apps/portals/shared/features/feed",
+      "project": true
+    },
+    {
+      "name": "filtering",
+      "root": "apps/portals/shared/features/filtering",
+      "project": true
+    },
+    {
+      "name": "health-status",
+      "root": "apps/portals/shared/features/health-status",
+      "project": true
+    },
+    {
+      "name": "identity",
+      "root": "apps/portals/shared/features/identity",
+      "project": true
+    },
+    {
+      "name": "listing",
+      "root": "apps/portals/shared/features/listing",
+      "project": true
+    },
+    {
+      "name": "metrics",
+      "root": "apps/portals/shared/features/metrics",
+      "project": true
+    },
+    {
+      "name": "multi-search",
+      "root": "apps/portals/shared/features/multi-search",
+      "project": true
+    },
+    {
+      "name": "my-favorites",
+      "root": "apps/portals/shared/features/my-favorites",
+      "project": true
+    },
+    {
+      "name": "my-profile",
+      "root": "apps/portals/shared/features/my-profile",
+      "project": true
+    },
+    {
+      "name": "platform",
+      "root": "apps/portals/shared/features/platform",
+      "project": false
+    },
+    {
+      "name": "preferences",
+      "root": "apps/portals/shared/features/preferences",
+      "project": true
+    },
+    {
+      "name": "pricing",
+      "root": "apps/portals/shared/features/pricing",
+      "project": true
+    },
+    {
+      "name": "review",
+      "root": "apps/portals/shared/features/review",
+      "project": true
+    },
+    {
+      "name": "search",
+      "root": "apps/portals/shared/features/search",
+      "project": true
+    },
+    {
+      "name": "sharing",
+      "root": "apps/portals/shared/features/sharing",
+      "project": true
+    },
+    {
+      "name": "smart-search",
+      "root": "apps/portals/shared/features/smart-search",
+      "project": true
+    },
+    {
+      "name": "social",
+      "root": "apps/portals/shared/features/social",
+      "project": true
+    },
+    {
+      "name": "suite",
+      "root": "apps/portals/shared/features/suite",
+      "project": true
+    },
+    {
+      "name": "tags",
+      "root": "apps/portals/shared/features/tags",
+      "project": true
+    },
+    {
+      "name": "user-profile",
+      "root": "apps/portals/shared/features/user-profile",
+      "project": true
+    },
+    {
+      "name": "voting",
+      "root": "apps/portals/shared/features/voting",
+      "project": true
+    }
+  ]
+}

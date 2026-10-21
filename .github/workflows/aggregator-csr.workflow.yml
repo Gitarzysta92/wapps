@@ -4,12 +4,27 @@ on:
   push:
     branches: [develop, main]
     paths:
+      - 'apps/portals/shared/**'
+      - 'libs/**'
+      - 'sdk/**'
+      - 'data/**'
+      - 'tools/readiness/**'
+      - 'rules/**'
+      - 'package*.json'
+      - 'nx.json'
+      - 'tsconfig*.json'
+      - 'jest*'
+      - 'eslint*'
+      - '.nvmrc'
+      - '.github/workflows/workspace-quality.workflow.yml'
       - 'apps/portals/aggregator/entrypoints/csr/**'
       - 'apps/portals/aggregator/application/**'
       - 'environments/dev/apps/aggregator-csr-kustomization/**'
       - 'argocd/applications/frontend/aggregator-csr.yaml'
       - '.github/workflows/aggregator-csr.workflow.yml'
       - '.github/actions/deploy-to-argocd/**'
+  pull_request:
+    branches: [develop, main]
   workflow_dispatch:
     inputs:
       environment:
@@ -22,12 +37,21 @@ on:
           - production
 
 env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
   SERVICE_NAME: aggregator-csr
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/aggregator-csr
 
 jobs:
+  quality:
+    name: Workspace Quality
+    uses: ./.github/workflows/workspace-quality.workflow.yml
+
   build:
+    needs: quality
+    if: success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     name: 'Build Docker Image'
     runs-on: ubuntu-latest
     permissions:
@@ -55,7 +79,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
 
       - name: Install dependencies

@@ -38,6 +38,10 @@
     "isolatedModules": true,
     "types": [],
     "paths": {
+      "@sdk/features/discussion/libs/management": [
+        "sdk/features/discussion/libs/management/src/index.ts"
+      ],
+      "@domains/community": ["libs/domains/community/src/index.ts"],
       "@agents/editor/": ["apps/agents/editor/src/index.ts"],
       "@apps/portals/shared/features/health-status": [
         "apps/portals/shared/features/health-status/src/index.ts"
@@ -79,6 +83,9 @@
       ],
       "@domains/discovery": ["libs/domains/discovery/src/index.ts"],
       "@domains/discussion": ["sdk/features/discussion/core/src/index.ts"],
+      "@domains/discussion/contracts": [
+        "sdk/features/discussion/core/src/contracts.ts"
+      ],
       "@domains/editorial": ["libs/domains/editorial/src/index.ts"],
       "@domains/feed": ["libs/domains/feed/src/index.ts"],
       "@domains/identity/authentication": [
@@ -324,7 +331,25 @@
       ],
       "@utils/opa/*": [
         "sdk/features/identity/packages/infrastructure/opa/src/*"
-      ]
+      ],
+      "@wapps/account-mysql": [
+        "libs/adapters/account-mysql/src/index.ts"
+      ],
+      "@domains/publication/suite": [
+        "libs/domains/publication/suite/src/index.ts"
+      ],
+      "@portals/shared/features/application-workspace": [
+        "apps/portals/shared/features/application-workspace/src/index.ts"
+      ],
+      "@sdk/features/review/libs/management": ["sdk/features/review/libs/management/src/index.ts"],
+      "@sdk/features/review/http": ["sdk/features/review/packages/infrastructure/http/src/index.ts"],
+      "@sdk/features/review/core": ["sdk/features/review/core/src/index.ts"],
+      "@domains/publication/classification": [
+        "libs/domains/publication/classification/src/index.ts"
+      ],
+      "@wapps/account": ["libs/usecases/account/src/index.ts"],
+      "@sdk/features/discussion/http": ["sdk/features/discussion/packages/infrastructure/http/src/index.ts"],
+      "@sdk/extras/identity-local": ["sdk/features/identity/packages/infrastructure/local/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

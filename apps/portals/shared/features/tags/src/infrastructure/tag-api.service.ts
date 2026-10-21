@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ITagsProvider, TagDto } from "@domains/catalog/tags";
-import { Result } from "@foundation/standard";
+import { Result } from "@sdk/kernel/standard";
 
 @Injectable()
 export class TagApiService implements ITagsProvider {

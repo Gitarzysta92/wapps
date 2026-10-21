@@ -3,31 +3,36 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "src",
-  "sourceRoot": "apps/portals/shared/features/multi-search",
-  "tags": ["type:ui", "scope:multi-search"],
+  "sourceRoot": "apps/portals/shared/features/multi-search/src",
+  "tags": [
+    "type:ui",
+    "scope:multi-search",
+    "arch:feature"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "project": "apps/portals/shared/features/multi-search/ng-package.json"
+        "project": "apps/portals/shared/features/multi-search/ng-package.json",
+        "tsConfig": "apps/portals/shared/features/multi-search/tsconfig.lib.json"
       },
       "configurations": {
-        "production": {
-          "tsConfig": "apps/portals/shared/features/multi-search/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "apps/portals/shared/features/multi-search/tsconfig.lib.json"
-        }
+        "production": {},
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "apps/portals/shared/features/multi-search/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       },
       "configurations": {
         "ci": {
@@ -38,7 +43,15 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p apps/portals/shared/features/multi-search/tsconfig.spec.json"
+      }
     }
   }
 }

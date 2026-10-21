@@ -1,7 +1,7 @@
-import { CustomerProfileDto } from "@domains/customer/profiles";
+import { CustomerProfileDto } from '@domains/customer/profiles';
 
 export type MyProfileState = {
-  isLoading: boolean
-  isError: boolean
-  data: CustomerProfileDto
-}
+  isLoading: boolean;
+  isError: boolean;
+  data: CustomerProfileDto | null;
+};

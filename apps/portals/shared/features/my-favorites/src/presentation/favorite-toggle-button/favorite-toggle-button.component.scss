@@ -1,9 +1,10 @@
 @use 'ui/design-system/src/styles' as *;
 
-:host { display: block; }
+:host { display: block; min-width: 0; }
+p { max-inline-size: 18rem; margin-block: $space-2; overflow-wrap: anywhere; }
 
 @container card (max-width: 30rem) {
-  button {
+  button.favorite-toggle {
     width: $size-touch-min;
     height: $size-touch-min;
     padding: 0;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 // CommonJS runner that loads TypeScript policy definitions.
 // Uses SWC to transpile TS on the fly (no ESM loader headaches).
 
@@ -11,10 +10,8 @@ const path = require('node:path');
 const { discussionPolicy } = require('../src/discussion.policy');
 /** @type {{ identityAdminPolicy: import('../src/types').DiscussionPolicyDefinition }} */
 const { identityAdminPolicy } = require('../src/identity-admin.policy');
-
-function workspaceRoot() {
-  return path.resolve(__dirname, '../../../../../../..');
-}
+const { editorialPolicy } = require('../src/editorial.policy');
+const { profileAudiencePolicy } = require('../src/profile-audience.policy');
 
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -29,10 +26,19 @@ function jsonStable(obj) {
 }
 
 function renderPolicyBundle(def, sourceFileForHeader) {
+  for (const action of def.selfActions ?? []) {
+    if (
+      !def.supportedActions.includes(action) ||
+      !def.resourceConstraints?.[action]?.identityMustMatchInput
+    )
+      throw new Error(
+        'Self actions require an explicit matching identity constraint'
+      );
+  }
   const data = {
     authority: {
       permissions_by_role: def.rolePermissions,
-      roles_by_identity: def.rolesByIdentityExample ?? {},
+      roles_by_identity: {},
     },
   };
 
@@ -41,7 +47,9 @@ function renderPolicyBundle(def, sourceFileForHeader) {
     .join('\n');
 
   const constrainedActions = Object.keys(def.resourceConstraints ?? {});
-  const constrainedActionsSet = constrainedActions.map((a) => JSON.stringify(a)).join(', ');
+  const constrainedActionsSet = constrainedActions
+    .map((a) => JSON.stringify(a))
+    .join(', ');
 
   let rego = [
     '# GENERATED FILE. DO NOT EDIT MANUALLY.',
@@ -85,6 +93,8 @@ function renderPolicyBundle(def, sourceFileForHeader) {
       : []),
     'allow if {',
     '  has_identity',
+    '  is_array(subject_roles)',
+    '  every role in subject_roles { is_string(role) }',
     '  action := requested_action',
     '  supported_action(action)',
     '  action_permitted(action)',
@@ -94,6 +104,7 @@ function renderPolicyBundle(def, sourceFileForHeader) {
     '### Input helpers',
     '',
     'has_identity if {',
+    '  is_string(input.identityId)',
     '  input.identityId != ""',
     '}',
     '',
@@ -107,11 +118,21 @@ function renderPolicyBundle(def, sourceFileForHeader) {
     '',
     '### Role/permission checks',
     '',
-    'action_permitted(action) if {',
+    ...((def.selfActions ?? []).length
+      ? [
+          'action_permitted(action) if {',
+          `  action in {${def.selfActions
+            .map((a) => JSON.stringify(a))
+            .join(', ')}}`,
+          '}',
+          '',
+        ]
+      : []),
+    'action_permitted(_) if {',
     '  "admin" in subject_roles',
     '}',
     '',
-    'action_permitted(action) if {',
+    'action_permitted(_) if {',
     '  some r in subject_roles',
     '  perms := data.authority.permissions_by_role[r]',
     '  "*" in perms',
@@ -136,20 +157,33 @@ function renderPolicyBundle(def, sourceFileForHeader) {
   if (constrainedActions.length) {
     rego += `resource_constraints_ok(action) if {\n  not action in {${constrainedActionsSet}}\n}\n\n`;
   } else {
-    rego += 'resource_constraints_ok(action) if {\n  true\n}\n\n';
+    rego += 'resource_constraints_ok(_) if {\n  true\n}\n\n';
   }
 
   for (const [action, c] of Object.entries(def.resourceConstraints ?? {})) {
     rego += `resource_constraints_ok(${JSON.stringify(action)}) if {\n`;
     rego += `  input.resource.type == ${JSON.stringify(c.type)}\n`;
-    if (c.requireId) rego += '  input.resource.id != ""\n';
+    if (c.requireId)
+      rego += '  is_string(input.resource.id)\n  input.resource.id != ""\n';
+    if (c.exactId)
+      rego += `  input.resource.id == ${JSON.stringify(c.exactId)}\n`;
+    if (c.identityMustMatchInput)
+      rego += '  input.resource.id == input.identityId\n';
+    if (c.tenantMustBeAbsent)
+      rego += '  not "tenantId" in object.keys(input)\n';
+    if (c.serviceOnly) {
+      rego += `  input.identityId == ${JSON.stringify(
+        c.serviceOnly.identityId
+      )}\n`;
+      rego += `  input.tenantId == ${JSON.stringify(c.serviceOnly.tenantId)}\n`;
+      rego += `  input.subject.roles == [${JSON.stringify(
+        c.serviceOnly.role
+      )}]\n`;
+    }
 
     if (c.tenantMustMatchInput) {
-      rego += '  not input.resource.tenantId\n';
-      rego += '}\n\n';
-      rego += `resource_constraints_ok(${JSON.stringify(action)}) if {\n`;
-      rego += `  input.resource.type == ${JSON.stringify(c.type)}\n`;
-      if (c.requireId) rego += '  input.resource.id != ""\n';
+      rego += '  is_string(input.resource.tenantId)\n';
+      rego += '  input.resource.tenantId != ""\n';
       rego += '  input.resource.tenantId == input.tenantId\n';
       rego += '}\n\n';
       continue;
@@ -162,17 +196,24 @@ function renderPolicyBundle(def, sourceFileForHeader) {
 }
 
 function main() {
-  const root = workspaceRoot();
   const policies = [
+    {
+      name: 'editorial',
+      def: editorialPolicy,
+      source:
+        'sdk/features/identity/packages/infrastructure/opa/src/editorial.policy.ts',
+    },
     {
       name: 'discussion',
       def: discussionPolicy,
-      source: 'sdk/features/identity/packages/infrastructure/opa/src/discussion.policy.ts',
+      source:
+        'sdk/features/identity/packages/infrastructure/opa/src/discussion.policy.ts',
     },
     {
       name: 'identity-admin',
       def: identityAdminPolicy,
-      source: 'sdk/features/identity/packages/infrastructure/opa/src/identity-admin.policy.ts',
+      source:
+        'sdk/features/identity/packages/infrastructure/opa/src/identity-admin.policy.ts',
     },
   ];
 
@@ -180,8 +221,6 @@ function main() {
     const outDirs = [
       // Source-of-truth bundle (developer-facing).
       path.resolve(__dirname, '../bundles', p.name),
-      // Deployment bundle (GitOps, ArgoCD-managed).
-      path.join(root, 'platform', 'cluster', 'opa', 'bundles', p.name),
     ];
     for (const dir of outDirs) ensureDir(dir);
 
@@ -191,7 +230,10 @@ function main() {
       writeFile(path.join(dir, 'policy.rego'), rendered.rego);
     }
   }
+  writeFile(
+    path.resolve(__dirname, '../bundles/identity-admin/profile-audience.rego'),
+    profileAudiencePolicy
+  );
 }
 
 main();
-

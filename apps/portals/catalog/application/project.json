@@ -4,19 +4,16 @@
   "projectType": "library",
   "prefix": "catalog",
   "sourceRoot": "apps/portals/catalog/application/src",
-  "tags": ["type:lib"],
+  "tags": [
+    "type:lib",
+    "arch:portal"
+  ],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/catalog/application/jest.config.ts",
-        "passWithNoTests": true
-      }
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

@@ -1,0 +1,22 @@
+<section aria-label="Profile badges">
+  <h2>Badges</h2>
+  @if (badges.status() === 'loading') {
+    <p role="status">Loading badges...</p>
+  } @else if (badges.status() === 'unavailable') {
+    <p role="alert">Badges could not be loaded. Access may have changed.</p>
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="badges.reload()">Retry badges</button>
+  } @else if (badges.value()?.sharing === 'hidden') {
+    <p>Badges are not shared with this profile's audience.</p>
+  } @else if (!items().length) {
+    <p>No active badges.</p>
+  } @else {
+    <div class="badge-list">
+      @for (badge of items(); track badge.id) {
+        <div><profile-badges [badges]="[badge]" /><span>Awarded {{ badge.awardedAt | preferredDate }}</span></div>
+      }
+    </div>
+  }
+  @if (badges.status() === 'ready') {
+    <button tuiButton type="button" appearance="secondary" size="s" (click)="badges.reload()">Refresh badges</button>
+  }
+</section>

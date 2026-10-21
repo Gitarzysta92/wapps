@@ -1,0 +1,39 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../application-activity-page';
+@use '../page-layout' as page;
+
+.timeline-content {
+  @include page.content;
+}
+.timeline-description {
+  margin: 0 0 $space-6;
+}
+.timeline-items {
+  display: grid;
+  gap: $space-6;
+  margin-bottom: $space-6;
+}
+.timeline-card {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  padding: $space-4;
+  min-width: 0;
+}
+.timeline-card header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-2;
+  color: var(--tui-text-secondary);
+}
+.timeline-copy {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+.timeline-card h3,
+.timeline-card p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

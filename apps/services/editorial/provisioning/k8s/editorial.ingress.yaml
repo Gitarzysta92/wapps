@@ -5,6 +5,8 @@ metadata:
   namespace: editorial
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Optional, for HTTP setups
+    nginx.ingress.kubernetes.io/auth-url: "http://authenticator.default.svc.cluster.local/validate-optional"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Email,X-User-Claims,X-Auth-Time,X-Anonymous,X-Ingress-Auth"
 spec:
   rules:
     - host: editorial-service.wapps.ai

@@ -6,9 +6,9 @@ import { FilterOptionVm } from "../models/filter.vm";
 export class ParamMapToFilterVmListMapper {
   public map(p: { [key: string]: Set<string> }): FilterVm[]  {
     const vms: FilterVm[] = [];
-    for (let key in p) {
+    for (const key in p) {
       const f = { key, name: key, options: [] as FilterOptionVm[] };
-      for (let o of p[key]) {
+      for (const o of p[key]) {
         f.options.push({
           name: o,
           value: o,

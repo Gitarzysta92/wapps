@@ -1,1 +1,1 @@
-export * from './my-profile-avatar.component'
+export * from './my-profile-avatar.component';

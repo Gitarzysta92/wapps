@@ -1,10 +1,12 @@
 @if (state$ | async; as state) {
+@if (state.items.length) {
 <content-feed
   class="content-feed"
   [feedItems]="state.items"
-  [itemTemplate]="itemTemplate"
+  [itemTemplate]="template ?? itemTemplate"
   (scrolledToBottom)="!state.error && loadNextItems()">
 </content-feed>
+}
 @if (state.loading) {
   <p role="status">Loading activity…</p>
 } @else if (state.error) {

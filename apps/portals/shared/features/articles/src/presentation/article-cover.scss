@@ -1,0 +1,51 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.cover-heading {
+  display: grid;
+  gap: $space-2;
+}
+img {
+  display: block;
+  max-width: 100%;
+  width: var(--article-cover-width, auto);
+  height: var(--article-cover-height, auto);
+  object-fit: cover;
+  border-radius: inherit;
+}
+.cover-editor,
+.cover-upload {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  min-width: 0;
+}
+.cover-upload {
+  padding-block: $space-4;
+}
+.cover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+}
+h2,
+h3,
+p {
+  margin: 0;
+}
+input,
+textarea {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+textarea {
+  width: 100%;
+  padding: $space-3 $space-4;
+  font: inherit;
+  resize: vertical;
+}

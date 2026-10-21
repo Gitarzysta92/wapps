@@ -29,6 +29,15 @@ The most important principles are:
 
 ## Mental Model
 
+The aggregator's application API boundary is the BFF. Feature HTTP adapters call
+BFF-owned endpoints; the BFF composes and maps internal service contracts to the
+original frontend's requirements. Pages and browser adapters do not compose
+internal services. Owning backend services retain authorization, domain behavior,
+persistence and materialization. Ingress routing directly to a domain service,
+even on the same browser origin, bypasses this boundary. See
+[`rules/portal-bff-boundary.md`](../rules/portal-bff-boundary.md). Existing direct
+routes remain migration work; this requirement does not claim they are repaired.
+
 The frontend architecture is built around a route-driven shell application.
 
 At a high level:
@@ -102,16 +111,16 @@ component/page
 Example pattern from listing:
 
 ```text
-AppListingService
-  -> APP_LISTING_PROVIDER
-  -> IAppListingProvider
-  -> AppListingBffApiService or AppListingApiService
+CatalogBrowserService
+  -> CATALOG_BROWSER
+  -> CatalogBrowserPort
+  -> CatalogBrowseApiService or CatalogBrowseDemoService
 ```
 
 The host app chooses the implementation through a provider function:
 
 ```text
-provideListingFeature({ useBff: true })
+provideListingFeature({ mode: 'api', apiUrl: API_BASE_URL })
 ```
 
 This gives us several benefits:
@@ -543,7 +552,7 @@ This is one of the main places where dependency inversion is enforced.
 
 Example:
 
-`AppListingService`
+`CatalogBrowserService`
 
 Application services expose use-case-level operations to pages and presentation components.
 
@@ -553,7 +562,7 @@ They should depend on ports/tokens, not concrete infrastructure classes.
 
 Example:
 
-`APP_LISTING_PROVIDER`
+`CATALOG_BROWSER`
 
 A port describes what a feature needs from the outside world. The token lets Angular inject the selected implementation.
 
@@ -569,7 +578,7 @@ Keep the distinction strict:
 
 Examples:
 
-- `AppListingBffApiService`
+- `CatalogBrowseApiService`
 - `AppListingApiService`
 - `BffAuthenticationService`
 - `AuthenticationApiService`
@@ -778,7 +787,7 @@ The provider function is the feature's public setup API.
 Example:
 
 ```text
-provideListingFeature({ useBff: true })
+provideListingFeature({ mode: 'api', apiUrl: API_BASE_URL })
 ```
 
 It should hide implementation selection from pages.
@@ -796,7 +805,7 @@ The port describes what the feature needs.
 Example:
 
 ```text
-IAppListingProvider
+CatalogBrowserPort
 ```
 
 ### Adapter
@@ -806,7 +815,7 @@ The adapter implements the port.
 Example:
 
 ```text
-AppListingBffApiService
+CatalogBrowseApiService
 ```
 
 Adapters are replaceable. That is the point.
@@ -840,7 +849,7 @@ Direct HTTP in a page is acceptable only for short-lived prototypes or highly lo
 Several features support implementation switching through provider options:
 
 ```text
-provideListingFeature({ useBff: true })
+provideListingFeature({ mode: 'api', apiUrl: API_BASE_URL })
 provideTagsFeature({ useBff: true })
 provideCategoryFeature({ useBff: true })
 provideApplicationOverviewFeature({ useBff: true })

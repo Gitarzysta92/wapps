@@ -3,10 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../categories/entities/category.entity';
 import { Tag } from '../tags/entities/tag.entity';
-import { Platform, Device, Social, Store, MonetizationModel, UserSpan } from '../reference/entities/index';
+import {
+  Platform,
+  Device,
+  Social,
+  Store,
+  MonetizationModel,
+  UserSpan,
+} from '../reference/entities/index';
 
-// ✅ THIS WORKS! Import from @data using TypeScript path aliases
-import { categories, tags, platforms, devices, socials, stores, monetizationModels, userSpans } from '@data';
+import {
+  categories,
+  tags,
+  platforms,
+  devices,
+  socials,
+  stores,
+  monetizationModels,
+  userSpans,
+} from '@data';
 
 @Injectable()
 export class SeedService {
@@ -19,8 +34,9 @@ export class SeedService {
     @InjectRepository(Device) private devicesRepo: Repository<Device>,
     @InjectRepository(Social) private socialsRepo: Repository<Social>,
     @InjectRepository(Store) private storesRepo: Repository<Store>,
-    @InjectRepository(MonetizationModel) private monetizationRepo: Repository<MonetizationModel>,
-    @InjectRepository(UserSpan) private userSpansRepo: Repository<UserSpan>,
+    @InjectRepository(MonetizationModel)
+    private monetizationRepo: Repository<MonetizationModel>,
+    @InjectRepository(UserSpan) private userSpansRepo: Repository<UserSpan>
   ) {}
 
   async seed() {
@@ -46,6 +62,7 @@ export class SeedService {
       this.logger.log('✅ Data seeding completed successfully!');
     } catch (error) {
       this.logger.error('❌ Error during seeding:', error);
+      throw error;
     }
   }
 
@@ -83,10 +100,12 @@ export class SeedService {
   private async seedTags() {
     this.logger.log(`Seeding ${tags.length} tags...`);
     for (const tag of tags) {
-      await this.tagsRepo.save(this.tagsRepo.create({
-        name: tag.name,
-        slug: tag.slug,
-      }));
+      await this.tagsRepo.save(
+        this.tagsRepo.create({
+          name: tag.name,
+          slug: tag.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded tags`);
   }
@@ -94,10 +113,12 @@ export class SeedService {
   private async seedPlatforms() {
     this.logger.log(`Seeding ${platforms.length} platforms...`);
     for (const platform of platforms) {
-      await this.platformsRepo.save(this.platformsRepo.create({
-        name: platform.name,
-        slug: platform.slug,
-      }));
+      await this.platformsRepo.save(
+        this.platformsRepo.create({
+          name: platform.name,
+          slug: platform.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded platforms`);
   }
@@ -105,10 +126,12 @@ export class SeedService {
   private async seedDevices() {
     this.logger.log(`Seeding ${devices.length} devices...`);
     for (const device of devices) {
-      await this.devicesRepo.save(this.devicesRepo.create({
-        name: device.name,
-        slug: device.slug,
-      }));
+      await this.devicesRepo.save(
+        this.devicesRepo.create({
+          name: device.name,
+          slug: device.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded devices`);
   }
@@ -116,10 +139,12 @@ export class SeedService {
   private async seedSocials() {
     this.logger.log(`Seeding ${socials.length} socials...`);
     for (const social of socials) {
-      await this.socialsRepo.save(this.socialsRepo.create({
-        name: social.name,
-        slug: social.slug,
-      }));
+      await this.socialsRepo.save(
+        this.socialsRepo.create({
+          name: social.name,
+          slug: social.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded socials`);
   }
@@ -127,21 +152,27 @@ export class SeedService {
   private async seedStores() {
     this.logger.log(`Seeding ${stores.length} stores...`);
     for (const store of stores) {
-      await this.storesRepo.save(this.storesRepo.create({
-        name: store.name,
-        slug: store.slug,
-      }));
+      await this.storesRepo.save(
+        this.storesRepo.create({
+          name: store.name,
+          slug: store.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded stores`);
   }
 
   private async seedMonetizationModels() {
-    this.logger.log(`Seeding ${monetizationModels.length} monetization models...`);
+    this.logger.log(
+      `Seeding ${monetizationModels.length} monetization models...`
+    );
     for (const model of monetizationModels) {
-      await this.monetizationRepo.save(this.monetizationRepo.create({
-        name: model.name,
-        slug: model.slug,
-      }));
+      await this.monetizationRepo.save(
+        this.monetizationRepo.create({
+          name: model.name,
+          slug: model.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded monetization models`);
   }
@@ -149,10 +180,12 @@ export class SeedService {
   private async seedUserSpans() {
     this.logger.log(`Seeding ${userSpans.length} user spans...`);
     for (const span of userSpans) {
-      await this.userSpansRepo.save(this.userSpansRepo.create({
-        name: span.name,
-        slug: span.slug,
-      }));
+      await this.userSpansRepo.save(
+        this.userSpansRepo.create({
+          name: span.name,
+          slug: span.slug,
+        })
+      );
     }
     this.logger.log(`✅ Seeded user spans`);
   }

@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/libs/domains/community",
+    "types": [],
+    "rootDir": "src",
+    "composite": true,
+    "tsBuildInfoFile": "../../../dist/libs/domains/community/tsconfig.lib.tsbuildinfo"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    {
+      "path": "../../../sdk/features/review/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../publication/classification/tsconfig.lib.json"
+    }
+  ]
+}

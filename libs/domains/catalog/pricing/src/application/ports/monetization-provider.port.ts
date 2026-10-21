@@ -1,6 +1,6 @@
-import { Observable } from "rxjs";
-import { Result } from "@foundation/standard";
-import { MonetizationDto } from "../models/app-monetization.dto";
+import { Observable } from 'rxjs';
+import { Result } from '@sdk/kernel/standard';
+import { MonetizationDto } from '../models/app-monetization.dto';
 
 // export const MONETIZATION_PROVIDER = new InjectionToken<IMonetizationProvider>('MONETIZATION_PROVIDER_PORT');
 

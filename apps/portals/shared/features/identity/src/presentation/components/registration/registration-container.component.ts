@@ -1,49 +1,55 @@
-import { Component, inject } from "@angular/core";
-import { TuiNotification, TuiButton, TuiLoader } from "@taiga-ui/core";
-import { WA_WINDOW } from '@ng-web-apis/common';
-import { REGISTRATION_HANDLER } from "../../../application/registration-handler.token";
-import { TimedQueue } from "@foundation/primitives";
-import { RegistrationFormComponent } from "@ui/registration";
-import { RegistrationDto } from "@domains/identity/authentication";
-
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { defer, finalize } from 'rxjs';
+import { TuiNotification, TuiButton, TuiLoader } from '@taiga-ui/core';
+import { REGISTRATION_HANDLER } from '../../../application/registration-handler.token';
+import { RegistrationFormComponent } from '@ui/registration';
+import { RegistrationDto } from '@sdk/features/identity/libs/authentication';
 
 @Component({
-  selector: "registration-container",
-  templateUrl: "./registration-container.component.html",
-  imports: [
-    RegistrationFormComponent,
-    TuiNotification,
-    TuiButton,
-    TuiLoader
-  ]
+  selector: 'registration-container',
+  templateUrl: './registration-container.component.html',
+  imports: [RegistrationFormComponent, TuiNotification, TuiButton, TuiLoader],
 })
 export class RegistrationContainerComponent {
-  public readonly service = inject(REGISTRATION_HANDLER);
-  public readonly window = inject(WA_WINDOW);
-  public readonly timeoutQueue = new TimedQueue<{ text: string }>(window)
-  public isRegistering: boolean = false;
+  private readonly service = inject(REGISTRATION_HANDLER);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changes = inject(ChangeDetectorRef);
+  public isRegistering = false;
+  public registered = false;
+  public error: string | null = null;
 
-  public register(c: RegistrationDto): void {
-    if (this.isRegistering) {
-      return
-    }
+  register(input: RegistrationDto): void {
+    if (this.isRegistering || this.registered) return;
     this.isRegistering = true;
-    this.service.register(c).subscribe({
-      next: v => !v.ok && this.timeoutQueue.enqueue(this._createExpectedErrorNotification(v.error), 2000),
-      error: e => this.timeoutQueue.enqueue(this._createUnexpectedErrorNotification(e), 2000),
-      complete: () => this.isRegistering = false
-    })
-  }
-
-  private _createExpectedErrorNotification(e: Error): { text: string } {
-    return {
-      text: e.message
-    }
-  }
-
-  private _createUnexpectedErrorNotification(e: Error): { text: string } {
-    return {
-      text: e.message
-    }
+    this.error = null;
+    defer(() => this.service.register(input))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isRegistering = false;
+          this.changes.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          if (result.ok && result.value) this.registered = true;
+          else
+            this.error = result.ok
+              ? 'Registration was not confirmed. Please sign in or try again.'
+              : result.error.message;
+          this.changes.markForCheck();
+        },
+        error: () => {
+          this.error =
+            'Registration could not be confirmed. Try signing in if an earlier attempt completed, or retry.';
+          this.changes.markForCheck();
+        },
+      });
   }
 }

@@ -3,11 +3,17 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/services/editorial/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:editorial"],
+  "tags": [
+    "type:app",
+    "scope:editorial",
+    "arch:service"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -45,13 +51,29 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
-        "jestConfig": "apps/services/editorial/jest.config.ts"
+        "jestConfig": "apps/services/editorial/jest.config.ts",
+        "passWithNoTests": false
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p apps/services/editorial/tsconfig.app.json",
+          "tsc --noEmit -p apps/services/editorial/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

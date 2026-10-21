@@ -1,0 +1,45 @@
+{
+  "name": "wapps-account-mysql",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/adapters/account-mysql/src",
+  "projectType": "library",
+  "tags": [
+    "type:infra",
+    "scope:infrastructure",
+    "arch:adapter"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/libs/adapters/account-mysql"
+      ],
+      "options": {
+        "command": "tsc --build libs/adapters/account-mysql/tsconfig.lib.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/adapters/account-mysql/jest.config.cjs",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "commands": [
+          "tsc --noEmit -p libs/adapters/account-mysql/tsconfig.lib.json",
+          "tsc --noEmit -p libs/adapters/account-mysql/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

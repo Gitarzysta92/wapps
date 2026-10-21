@@ -1,197 +1,178 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AuthorityValidationService } from '@sdk/kernel/ontology/authority';
-import { IdentityManagementContext, IdentityManagementService } from '@sdk/features/identity/libs/management';
-import { FirebaseAdminUserAdminPort } from '@sdk/extras/identity-firebase';
-import { OpaPolicyEvaluator } from '../infrastructure/opa-policy-evaluator';
+import {
+  CanonicalIdentityStore,
+  CanonicalIdentityInputError,
+  isCanonicalIdentityId,
+} from '@sdk/features/identity/core';
+import {
+  IdentityManagementContext,
+  IdentityManagementService,
+} from '@sdk/features/identity/libs/management';
+import { err, ok, type Result } from '@sdk/kernel/standard';
 import { AuthenticatedUser } from '../decorators/auth-user.decorator';
-import { IdentityProvisioner } from '../infrastructure/identity/identity-provisioner';
+import { CANONICAL_IDENTITIES } from './identity-state.tokens';
 
 @Injectable()
 export class AccountManagementAppService {
-  private readonly authorityValidationService: AuthorityValidationService;
-  private readonly domain: IdentityManagementService;
-
+  private readonly logger = new Logger(AccountManagementAppService.name);
   constructor(
-    @Inject('IDENTITY_EVENTS_PUBLISHER')
-    private readonly events: {
-      publishCreated: (args: any) => void;
-      publishUpdated: (args: any) => void;
-      publishDeleted: (args: any) => void;
-    },
-    private readonly identityProvisioner: IdentityProvisioner
-  ) {
-    this.authorityValidationService = new (class extends AuthorityValidationService {})(
-      new OpaPolicyEvaluator()
-    );
-
-    this.domain = new IdentityManagementService(
-      this.authorityValidationService,
-      new FirebaseAdminUserAdminPort()
-    );
-  }
+    private readonly domain: IdentityManagementService,
+    private readonly authority: AuthorityValidationService,
+    @Inject(CANONICAL_IDENTITIES)
+    private readonly identities: CanonicalIdentityStore
+  ) {}
 
   private ctxFrom(user: AuthenticatedUser): IdentityManagementContext {
-    const roles = Array.isArray(user.userClaims?.roles) ? user.userClaims.roles : undefined;
+    const roles = user.userClaims?.roles;
+    const tenantId = user.userClaims?.['tenantId'];
+    if (tenantId !== undefined && !isCanonicalIdentityId(tenantId))
+      throw new CanonicalIdentityInputError('Invalid authentication tenant');
     return {
       identityId: user.userId,
+      ...(tenantId !== undefined ? { tenantId } : {}),
       timestamp: Date.now(),
-      subject: roles ? { roles } : undefined,
+      subject: Array.isArray(roles) ? { roles } : undefined,
     };
   }
 
-  disableUser(targetUid: string, user: AuthenticatedUser) {
-    return this.domain.disableUser(targetUid, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { disabled: true },
-          });
-        }
-      }
-      return r;
-    });
+  disableUser(uid: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.disable', uid, user, () =>
+      this.domain.disableUser(uid, this.ctxFrom(user))
+    );
   }
-  enableUser(targetUid: string, user: AuthenticatedUser) {
-    return this.domain.enableUser(targetUid, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { disabled: false },
-          });
-        }
-      }
-      return r;
-    });
+  enableUser(uid: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.enable', uid, user, () =>
+      this.domain.enableUser(uid, this.ctxFrom(user))
+    );
   }
-  revokeTokens(targetUid: string, user: AuthenticatedUser) {
-    return this.domain.revokeTokens(targetUid, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { revokeTokens: true },
-          });
-        }
-      }
-      return r;
-    });
-  }
-  deleteUser(targetUid: string, user: AuthenticatedUser) {
-    return this.domain.deleteUser(targetUid, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishDeleted({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-          });
-        }
-        await this.identityProvisioner.deleteByFirebaseUid(targetUid);
-      }
-      return r;
-    });
-  }
-  updateEmail(targetUid: string, email: string, user: AuthenticatedUser) {
-    return this.domain.updateEmail(targetUid, email, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { email: true },
-          });
-        }
-      }
-      return r;
-    });
-  }
-  updatePassword(targetUid: string, password: string, user: AuthenticatedUser) {
-    return this.domain.updatePassword(targetUid, password, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { password: true },
-          });
-        }
-      }
-      return r;
-    });
-  }
-  unlinkProviders(targetUid: string, providersToUnlink: string[], user: AuthenticatedUser) {
-    return this.domain.unlinkProviders(targetUid, providersToUnlink, this.ctxFrom(user)).then(async (r) => {
-      if (r.ok && this.identityProvisioner) {
-        const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-        if (ensured.ok) {
-          this.events.publishUpdated({
-            identityId: ensured.value.identityId,
-            subjectId: ensured.value.subjectId,
-            actorUserId: user.userId,
-            actorRoles: user.userClaims?.roles,
-            patch: { providersToUnlink },
-          });
-        }
-      }
-      return r;
-    });
-  }
-  generatePasswordResetLink(targetUid: string, email: string, user: AuthenticatedUser) {
-    return this.domain.generatePasswordResetLink(targetUid, email, this.ctxFrom(user));
-  }
-  generateEmailVerificationLink(targetUid: string, email: string, user: AuthenticatedUser) {
-    return this.domain.generateEmailVerificationLink(targetUid, email, this.ctxFrom(user));
+  revokeTokens(uid: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.revoke_tokens', uid, user, () =>
+      this.domain.revokeTokens(uid, this.ctxFrom(user))
+    );
   }
 
-  async getIdentityMapping(targetUid: string, user: AuthenticatedUser) {
-    // Authorization: treat as read on user resource (OPA policy to be added)
-    const ctx = this.ctxFrom(user);
-    const auth = await this.authorityValidationService.validate({
-      ...ctx,
+  private async administer<T>(
+    action: string,
+    uid: string,
+    user: AuthenticatedUser,
+    operation: () => Promise<Result<T, Error>>
+  ): Promise<Result<T, Error>> {
+    let outcome = 'unconfirmed';
+    try {
+      const result = await operation();
+      if (result.ok && result.value !== false) outcome = 'confirmed';
+      else if (!result.ok && result.error.message.startsWith('Forbidden:'))
+        outcome = 'denied';
+      return result;
+    } finally {
+      // Operational evidence only; canonical lifecycle durability remains in the SQL outbox.
+      this.logger.log({
+        event: 'identity.administration',
+        action,
+        actorId: user.userId,
+        targetId: isCanonicalIdentityId(uid) ? uid : null,
+        outcome,
+      });
+    }
+  }
+  deleteUser(uid: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.delete', uid, user, () =>
+      this.domain.deleteUser(uid, this.ctxFrom(user))
+    );
+  }
+  updateEmail(uid: string, email: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.update_email', uid, user, () =>
+      this.domain.updateEmail(uid, email, this.ctxFrom(user))
+    );
+  }
+  updatePassword(uid: string, password: string, user: AuthenticatedUser) {
+    return this.administer('identity.user.update_password', uid, user, () =>
+      this.domain.updatePassword(uid, password, this.ctxFrom(user))
+    );
+  }
+  unlinkProviders(uid: string, providers: string[], user: AuthenticatedUser) {
+    return this.administer('identity.user.unlink_provider', uid, user, () =>
+      this.domain.unlinkProviders(uid, providers, this.ctxFrom(user))
+    );
+  }
+  generatePasswordResetLink(
+    uid: string,
+    email: string,
+    user: AuthenticatedUser
+  ) {
+    return this.administer(
+      'identity.user.generate_password_reset_link',
+      uid,
+      user,
+      () =>
+        this.domain.generatePasswordResetLink(uid, email, this.ctxFrom(user))
+    );
+  }
+  generateEmailVerificationLink(
+    uid: string,
+    email: string,
+    user: AuthenticatedUser
+  ) {
+    return this.administer(
+      'identity.user.generate_email_verification_link',
+      uid,
+      user,
+      () =>
+        this.domain.generateEmailVerificationLink(
+          uid,
+          email,
+          this.ctxFrom(user)
+        )
+    );
+  }
+
+  private async authorizeRead(uid: string, user: AuthenticatedUser) {
+    if (!isCanonicalIdentityId(uid))
+      return err(new CanonicalIdentityInputError('Invalid identity ID'));
+    const authorization = await this.authority.validate({
+      ...this.ctxFrom(user),
       actionName: 'identity.graph.read',
       timestamp: Date.now(),
-      resource: { type: 'user', id: targetUid },
+      resource: { type: 'user', id: uid },
     });
-    if (!auth.ok) return auth as any;
-    if (auth.value !== true) return { ok: false as const, error: new Error('Forbidden: identity.graph.read') };
+    if (!authorization.ok) return err(authorization.error);
+    if (authorization.value !== true)
+      return err(new Error('Forbidden: identity.graph.read'));
+    return ok(true);
+  }
 
-    if (!this.identityProvisioner) {
-      return { ok: false as const, error: new Error('Identity graph not configured (Mongo missing)') };
-    }
+  async getDeletionStatus(uid: string, user: AuthenticatedUser) {
+    const authorization = await this.authorizeRead(uid, user);
+    if (!authorization.ok) return authorization;
+    const state = await this.identities.findDeletion(uid);
+    return ok(
+      state
+        ? {
+            identityId: state.identityId,
+            revision: state.revision,
+            status: 'accepted' as const,
+            cleanup: state.cleanup,
+          }
+        : null
+    );
+  }
 
-    const ensured = await this.identityProvisioner.ensureForFirebaseUid(targetUid);
-    if (!ensured.ok) return ensured as any;
-
-    return {
-      ok: true as const,
-      value: {
-        identityId: ensured.value.identityId,
-        subjectId: ensured.value.subjectId,
-        created: ensured.value.created,
-      },
-    };
+  async getIdentityMapping(uid: string, user: AuthenticatedUser) {
+    const authorization = await this.authorizeRead(uid, user);
+    if (!authorization.ok) return authorization;
+    const state = await this.identities.find(uid);
+    return ok(
+      state
+        ? {
+            identityId: state.identityId,
+            subjectId: state.subjectId,
+            revision: state.revision,
+            isActive: state.isActive,
+            isSuspended: state.isSuspended,
+            isDeleted: state.isDeleted,
+          }
+        : null
+    );
   }
 }
-

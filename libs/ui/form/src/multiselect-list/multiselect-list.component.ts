@@ -20,13 +20,13 @@ export interface SearchableOption {
 export class MultiselectListComponent<O extends SearchableOption, S extends SearchableOption & { isSelected: boolean }> {
   @Input() items: O[] = [];
   @Input() selectedOptions: S[] = [];
-  @Input() placeholder: string = '';
-  @Input() groupLabel: string = '';
+  @Input() placeholder = '';
+  @Input() groupLabel = '';
   @Input() showSelectionSummary = false;
   
   @Output() selectionChange: EventEmitter<O[]> = new EventEmitter();
 
-  public searchQuery: string = '';
+  public searchQuery = '';
   @ViewChild('optionsList') private optionsList?: ElementRef<HTMLElement>;
 
   public get searchPlaceholder(): string {

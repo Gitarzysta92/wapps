@@ -1,10 +1,9 @@
-import { Observable } from "rxjs";
-import { Result } from "@foundation/standard";
-import { EstimatedUserSpanOptionDto } from "../models/estimated-user-span-option.dto";
+import { Observable } from 'rxjs';
+import { Result } from '@sdk/kernel/standard';
+import { EstimatedUserSpanOptionDto } from '../models/estimated-user-span-option.dto';
 
 export interface IEstimatedUserSpanOptionProvider {
-  getEstimatedUserSpanOptions(): Observable<Result<EstimatedUserSpanOptionDto[], Error>>;
+  getEstimatedUserSpanOptions(): Observable<
+    Result<EstimatedUserSpanOptionDto[], Error>
+  >;
 }
-
-
-

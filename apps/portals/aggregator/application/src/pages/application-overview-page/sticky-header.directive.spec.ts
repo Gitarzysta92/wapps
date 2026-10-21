@@ -5,7 +5,9 @@ import { PageHeaderComponent, StickyHeaderDirective } from '@ui/layout';
 @Component({
   standalone: true,
   imports: [PageHeaderComponent, StickyHeaderDirective],
-  template: `<ui-page-header [uiStickyHeader]="pageContent"><h1 slot="title">Sticky title</h1></ui-page-header>
+  template: `<ui-page-header [uiStickyHeader]="pageContent"
+      ><h1 slot="title">Sticky title</h1></ui-page-header
+    >
     <div #pageContent id="page-content"><a href="#">Scrolling content</a></div>
     <ui-page-header><h2 slot="title">Ordinary title</h2></ui-page-header>`,
 })
@@ -19,12 +21,23 @@ describe('sticky page header', () => {
   beforeEach(() => {
     scrollY = 0;
     animationFrame = undefined;
-    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scrollY });
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { animationFrame = callback; return 1; });
-    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => { animationFrame = undefined; });
+    Object.defineProperty(window, 'scrollY', {
+      configurable: true,
+      get: () => scrollY,
+    });
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        animationFrame = callback;
+        return 1;
+      });
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {
+      animationFrame = undefined;
+    });
   });
   afterEach(() => {
-    if (originalScrollY) Object.defineProperty(window, 'scrollY', originalScrollY);
+    if (originalScrollY)
+      Object.defineProperty(window, 'scrollY', originalScrollY);
     else Reflect.deleteProperty(window, 'scrollY');
     jest.restoreAllMocks();
   });
@@ -46,7 +59,8 @@ describe('sticky page header', () => {
 
   it('keeps only the content masked, including before scrolling and after returning to the top', async () => {
     const fixture = await page();
-    const [sticky, ordinary] = fixture.nativeElement.querySelectorAll('ui-page-header');
+    const [sticky, ordinary] =
+      fixture.nativeElement.querySelectorAll('ui-page-header');
     const content = fixture.nativeElement.querySelector('#page-content');
     expect(sticky.classList.contains('ui-sticky-header')).toBe(true);
     expect(content.classList.contains('ui-sticky-content-masked')).toBe(true);
@@ -61,7 +75,11 @@ describe('sticky page header', () => {
   it('initializes correctly when navigation restores a scrolled position', async () => {
     scrollY = 600;
     const fixture = await page();
-    expect(fixture.nativeElement.querySelector('#page-content').classList.contains('ui-sticky-content-masked')).toBe(true);
+    expect(
+      fixture.nativeElement
+        .querySelector('#page-content')
+        .classList.contains('ui-sticky-content-masked')
+    ).toBe(true);
   });
 
   it('keeps the mask aligned with the header as content scrolls and the header resizes', async () => {
@@ -69,15 +87,25 @@ describe('sticky page header', () => {
     const header = fixture.nativeElement.querySelector('.ui-sticky-header');
     const content = fixture.nativeElement.querySelector('#page-content');
     let headerBottom = 180;
-    jest.spyOn(header, 'getBoundingClientRect').mockImplementation(() => ({ bottom: headerBottom }));
-    jest.spyOn(content, 'getBoundingClientRect').mockImplementation(() => ({ top: 200 - scrollY }));
+    jest
+      .spyOn(header, 'getBoundingClientRect')
+      .mockImplementation(() => ({ bottom: headerBottom }));
+    jest
+      .spyOn(content, 'getBoundingClientRect')
+      .mockImplementation(() => ({ top: 200 - scrollY }));
     scrollTo(0);
-    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe('-20px');
+    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe(
+      '-20px'
+    );
     scrollTo(500);
-    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe('480px');
+    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe(
+      '480px'
+    );
     headerBottom = 220;
     window.dispatchEvent(new Event('resize'));
-    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe('520px');
+    expect(content.style.getPropertyValue('--ui-sticky-mask-top')).toBe(
+      '520px'
+    );
   });
 
   it('batches scroll events and cancels pending work on navigation', async () => {
@@ -104,12 +132,20 @@ describe('sticky page header', () => {
     header.style.setProperty('--ui-sticky-header-fade-offset', '16px');
     window.dispatchEvent(new Event('resize'));
     const content = fixture.nativeElement.querySelector('#page-content');
-    expect(content.style.getPropertyValue('--ui-sticky-header-fade-offset')).toBe('16px');
-    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe('calc(80px + 120px + 48px - 16px)');
+    expect(
+      content.style.getPropertyValue('--ui-sticky-header-fade-offset')
+    ).toBe('16px');
+    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe(
+      'calc(80px + 120px + 48px - 16px)'
+    );
     fixture.destroy();
     expect(content.classList.contains('ui-sticky-content-masked')).toBe(false);
-    expect(content.style.getPropertyValue('--ui-sticky-header-fade-offset')).toBe('');
-    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe('12px');
+    expect(
+      content.style.getPropertyValue('--ui-sticky-header-fade-offset')
+    ).toBe('');
+    expect(rootStyle.getPropertyValue('--ui-sticky-header-clearance')).toBe(
+      '12px'
+    );
     rootStyle.removeProperty('--ui-sticky-header-clearance');
   });
 });

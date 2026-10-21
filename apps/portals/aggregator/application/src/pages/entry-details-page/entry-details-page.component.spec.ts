@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
-import { MyFavoritesService } from '@portals/shared/features/my-favorites';
+import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { EntryDetailsPageComponent } from './entry-details-page.component';
 import { MySuitesPageComponent } from '../my-suites/my-suites.component';
 
@@ -18,7 +17,7 @@ describe('Entry details navigation', () => {
         { path: 'suites/:suiteSlug', component: EntryDetailsPageComponent },
         { path: 'my/suites', component: MySuitesPageComponent },
       ]),
-      { provide: MyFavoritesService, useValue: { isFavorite$: () => of(false) } },
+      ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
     ] });
   });
   afterEach(() => localStorage.removeItem('wapps.suite-drafts.v1'));

@@ -1,6 +1,10 @@
 <tui-chip size="s" appearance="action-soft">
-  <voting-indicator
-    [upvotesCount]="voting().upvotesCount"
-    [downvotesCount]="voting().downvotesCount">
-  </voting-indicator>
+  @if (voting(); as votes) {
+    <voting-indicator
+      [upvotesCount]="votes.upvotesCount"
+      [downvotesCount]="votes.downvotesCount">
+    </voting-indicator>
+  } @else {
+    <span>Votes unavailable</span>
+  }
 </tui-chip>

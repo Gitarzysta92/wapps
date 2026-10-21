@@ -1,5 +1,5 @@
 <ui-medium-card class="discussion-card" [tuiAppearance]="appearance()">
-  
+
   <div class="discussion-header">
     <div class="author-info">
       <tui-avatar [src]="data().authorAvatar" size="s" />
@@ -28,14 +28,17 @@
   </div>
 
   <div slot="footer" class="discussion-footer">
-    <span class="discussion-stat">
+    <span class="discussion-stat" [attr.title]="data().repliesIncludeRemoved ? 'Reply count includes removed posts' : null">
       <tui-icon icon="@tui.message-circle" />
       {{ data().repliesCount }} replies
     </span>
+@if (data().viewsCount !== undefined) {
     <span class="discussion-stat">
       <tui-icon icon="@tui.eye" />
       {{ data().viewsCount }} views
     </span>
+} @else if (data().viewsUnavailableLabel) {
+    <span class="discussion-stat"><tui-icon icon="@tui.eye" />{{ data().viewsUnavailableLabel }}</span>
+}
   </div>
 </ui-medium-card>
-

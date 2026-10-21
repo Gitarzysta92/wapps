@@ -8,7 +8,9 @@ import { DiscussionTopicFeedItemComponent } from '@portals/shared/features/feed'
 describe('Projected tile actions', () => {
   it('keeps one working favorite, share and menu control after the tile content', () => {
     const favorite = new BehaviorSubject(false);
+    const favoriteState = { context: {}, isLoading: false, isError: false, isSaving: false, signedIn: true, sessionVersion: 0 };
     const favorites = {
+      mode: 'demo', supports: () => true, myFavorites$: of(favoriteState), getState: () => favoriteState,
       isFavorite$: () => favorite,
       addToFavorites: jest.fn(() => { favorite.next(true); return of({ ok: true }); }),
       removeFromFavorites: jest.fn(() => { favorite.next(false); return of({ ok: true }); }),

@@ -1,0 +1,21 @@
+@use './application-health-page.component';
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+.health-content { @include page.content; }
+.health-content > .health-section { @include page.section; }
+.breadcrumbs { height: auto; min-height: $space-3; }
+.health-description { margin: 0 0 $space-6; }
+.health-monitor { min-width: 0; row-gap: $space-4; }
+.service-header { flex-wrap: wrap; gap: $space-2; margin-bottom: 0; }
+.service-name { overflow-wrap: anywhere; }
+.service-status { flex-shrink: 0; }
+.health-coverage { margin: 0; font-size: $font-size-xs; }
+.health-evidence { display: flex; flex-direction: column; gap: $space-4; padding-top: $space-4; }
+.health-evidence p { margin: 0; }
+.health-url { overflow-wrap: anywhere; }
+.health-http { display: flex; flex-wrap: wrap; gap: $space-4; }
+.service-info { list-style: none; }
+.service-info::-webkit-details-marker { display: none; }
+.health-history-dates { display: flex; justify-content: space-between; gap: $space-2; margin: $space-2 0 0; }
+.health-legend { margin: $space-4 0 0; }

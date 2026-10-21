@@ -4,7 +4,7 @@ on:
   push:
     branches: [develop, main]
     paths:
-      - 'sdk/features/discussion/applications/management/service/**'
+      - 'apps/services/community/**'
       - 'sdk/features/discussion/**'
       - 'sdk/kernel/**'
       - 'sdk/platform/**'
@@ -27,13 +27,21 @@ on:
           - production
 
 env:
+  NX_DAEMON: 'false'
+  NX_ISOLATE_PLUGINS: 'false'
+  NX_NO_CLOUD: 'true'
   SERVICE_NAME: discussion
   REGISTRY: ghcr.io
   IMAGE_NAME: gitarzysta92/wapps/discussion
-  NAMESPACE_MANIFEST: sdk/features/discussion/applications/management/provisioning/k8s/discussion.namespace.yaml
+  NAMESPACE_MANIFEST: apps/services/community/provisioning/k8s/discussion.namespace.yaml
 
 jobs:
+  quality:
+    name: Workspace Quality
+    uses: ./.github/workflows/workspace-quality.workflow.yml
+
   build:
+    needs: quality
     name: 'Build Docker Image'
     runs-on: ubuntu-latest
     permissions:
@@ -61,7 +69,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
 
       - name: Install dependencies
@@ -84,7 +92,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: dist/sdk/features/discussion/applications/management
-          file: sdk/features/discussion/applications/management/service/Dockerfile
+          file: apps/services/community/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           no-cache: true

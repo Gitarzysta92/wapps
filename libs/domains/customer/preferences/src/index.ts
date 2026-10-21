@@ -3,3 +3,4 @@
 export * from './customer-preferences.dto';
 export * from './customer-preferences-provider.port';
 export * from './customer-preferences-updater.port';
+export * from './account-preferences';

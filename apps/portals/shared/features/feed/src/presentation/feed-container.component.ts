@@ -1,4 +1,4 @@
-import { Component, ContentChild, inject, OnInit, TemplateRef } from "@angular/core";
+import { Component, ContentChild, inject, Input, OnInit, TemplateRef } from "@angular/core";
 import { NewsFeedService } from "./services/news-feed.service";
 import { ContentFeedComponent, ContentFeedItemVm } from '@ui/content-feed';
 import { AsyncPipe } from "@angular/common";
@@ -19,6 +19,7 @@ import { IFeedItem } from "./models/feed-item.interface";
   ]
 })
 export class FeedContainerComponent implements OnInit {
+  @Input() template?: TemplateRef<{ $implicit: ContentFeedItemVm }>;
 
   @ContentChild('itemTemplate') itemTemplate: TemplateRef<{ $implicit: ContentFeedItemVm; }> | undefined;
 

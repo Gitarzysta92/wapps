@@ -14,10 +14,9 @@ export interface SuiteApp {
   standalone: true,
   imports: [CommonModule, TuiAvatar, TuiHint],
   templateUrl: './suite-app-avatars.component.html',
-  styleUrl: './suite-app-avatars.component.scss'
+  styleUrl: './suite-app-avatars.component.scss',
 })
 export class SuiteAppAvatarsComponent {
   apps = input.required<SuiteApp[]>();
   maxVisible = input<number>(6);
 }
-

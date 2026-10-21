@@ -1,0 +1,47 @@
+<div class="explore-controls">
+  <button tuiButton type="button" appearance="primary" size="s" iconStart="@tui.refresh-cw" [disabled]="feed.loading()" (click)="latest()">Refresh activity</button>
+</div>
+@if (feed.order() === 'recommended' && feed.personalizationDisabled()) {
+  <p role="status">Personalization is off, so this page uses recent order.</p>
+}
+@if (feed.loading() && !feed.loaded()) {
+  <ui-medium-card tuiAppearance="card-elevated">
+  <p role="status">Loading activity and your saved choices...</p>
+  </ui-medium-card>
+} @else if (feed.error() && !feed.loaded()) {
+  <ui-medium-card tuiAppearance="card-elevated">
+  <ui-content-state title="Could not load activity" [description]="feed.error()" icon="@tui.circle-alert" [error]="true">
+    <button tuiButton type="button" size="m" (click)="feed.retry()">Retry</button>
+    <button tuiButton type="button" size="m" appearance="secondary" (click)="latest()">Latest activity</button>
+  </ui-content-state>
+  </ui-medium-card>
+} @else if (feed.loaded()) {
+  <div class="explore-items" appInfiniteScroll (scrolledToBottom)="scrolledToBottom()">
+    @for (card of cards(); track card.source.kind + ':' + card.source.id) {
+      @if (itemTemplate && card.presentation) {
+        <article [attr.data-kind]="card.source.kind" [attr.data-id]="card.source.id" [attr.data-title]="card.source.title">
+          <ng-container [ngTemplateOutlet]="itemTemplate" [ngTemplateOutletContext]="{ $implicit: card.presentation }" />
+        </article>
+      } @else {
+        <activity-feed-card class="feed-item" [item]="card.source" />
+      }
+    }
+  </div>
+  @if (!feed.items().length) {
+    <ui-medium-card tuiAppearance="card-elevated">
+    <ui-content-state [title]="feed.after() ? 'No visible activity on this page' : 'No activity to show'" description="Your content preferences, category exclusions and current publication visibility are respected." icon="@tui.clock" />
+    </ui-medium-card>
+  }
+  @if (feed.excluded()) { <ui-medium-card tuiAppearance="card-elevated" class="explore-notice"><p role="status">{{ feed.excluded() }} items hidden {{ continuous ? 'in this feed' : 'on this page' }} by your saved content choices.</p></ui-medium-card> }
+  @if (feed.loading()) {
+    <p role="status">Loading more activity...</p>
+  } @else if (feed.error()) {
+    <ui-medium-card tuiAppearance="card-elevated">
+      <ui-content-state title="Could not load more activity" [description]="feed.error()" icon="@tui.circle-alert" [error]="true">
+        <button tuiButton type="button" size="m" (click)="feed.retry()">Retry</button>
+      </ui-content-state>
+    </ui-medium-card>
+  } @else if (feed.after()) {
+    <button tuiButton type="button" appearance="secondary" size="m" (click)="older()">{{ continuous ? 'Load more activity' : 'Older activity' }}</button>
+  }
+}

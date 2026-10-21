@@ -129,6 +129,7 @@ export function createWobbleOutline(host: HTMLElement): () => void {
     if (document.hidden) return;
     if (view.scrollY >= fadeEnd) {
       // The theme has made the backing transparent; no physics, paths, or painting are needed.
+      canvas.style.display = 'none';
       if (!ready) { host.classList.add('ui-wobble-ready'); ready = true; }
       return;
     }
@@ -211,6 +212,8 @@ export function createWobbleOutline(host: HTMLElement): () => void {
   const onScroll = () => {
     geometryDirty = true;
     if (ready && view.scrollY >= fadeEnd) {
+      // A transparent canvas with stale geometry can still overflow after a resize.
+      canvas.style.display = 'none';
       if (frame !== undefined) view.cancelAnimationFrame(frame);
       frame = undefined;
     } else requestDraw();

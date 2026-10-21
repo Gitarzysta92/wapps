@@ -4,7 +4,8 @@
     "outDir": "../../../../../dist/sdk/features/identity/libs/management",
     "types": [],
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "tsBuildInfoFile": "../../../../../dist/sdk/features/identity/libs/management/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "**/*.ts"
@@ -15,6 +16,9 @@
     "**/*.test.ts"
   ],
   "references": [
+    {
+      "path": "../../core/tsconfig.lib.json"
+    },
     {
       "path": "../../../../kernel/standard/tsconfig.lib.json"
     },

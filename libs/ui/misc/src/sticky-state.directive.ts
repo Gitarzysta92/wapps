@@ -42,7 +42,7 @@ export class StickyStateDirective implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   private findIndicatorElement(): void {
-    let indicatorDirectives = this.viewIndicatorDirectives || this.contentIndicatorDirectives;
+    const indicatorDirectives = this.viewIndicatorDirectives || this.contentIndicatorDirectives;
     
     if (indicatorDirectives && indicatorDirectives.length > 0) {
       this.indicatorElement = indicatorDirectives.first.elementRef.nativeElement;

@@ -10,7 +10,7 @@ import { TuiIcon } from '@taiga-ui/core';
   imports: [CommonModule, TuiIcon]
 })
 export class StatusBannerComponent {
-  @Input() status: 'operational' | 'degraded' | 'outage' = 'operational';
+  @Input() status: 'operational' | 'degraded' | 'outage' | 'unknown' | 'stale' = 'operational';
   @Input() message = 'All Systems Operational';
   @Input() timestamp: Date = new Date();
 
@@ -19,11 +19,8 @@ export class StatusBannerComponent {
       case 'operational': return '@tui.check-circle';
       case 'degraded': return '@tui.alert-triangle';
       case 'outage': return '@tui.x-circle';
-      default: return '@tui.check-circle';
+      case 'stale': return '@tui.clock';
+      default: return '@tui.circle-help';
     }
   }
 }
-
-
-
-

@@ -1,14 +1,19 @@
-/* eslint-disable */
 export default {
   displayName: 'portals-shared-features-search',
   preset: '../../../../../jest.preset.js',
-  testEnvironment: 'node',
-  moduleNameMapper: {
-    '^@portals/shared/features/listing$': '<rootDir>/../listing/src/application/catalog-listing.ts',
-  },
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }]
+    '^.+\\.(ts|mjs|js|html)$': [
+      'jest-preset-angular',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        stringifyContentPathRegex: '\\.(html|svg)$',
+      },
+    ],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../../../coverage/apps/portals/shared/features/search'
+  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  moduleFileExtensions: ['ts', 'js', 'html', 'mjs'],
+  coverageDirectory:
+    '../../../../../coverage/apps/portals/shared/features/search',
 };

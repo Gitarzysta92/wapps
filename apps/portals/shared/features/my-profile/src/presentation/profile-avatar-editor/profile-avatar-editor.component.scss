@@ -1,0 +1,23 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+button {
+  max-width: 100%;
+  height: auto;
+  min-height: $space-8;
+  padding-block: $space-2;
+  white-space: normal;
+}
+.photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+.photo-guidance,
+.photo-file {
+  margin: $space-2 0 0;
+  overflow-wrap: anywhere;
+}

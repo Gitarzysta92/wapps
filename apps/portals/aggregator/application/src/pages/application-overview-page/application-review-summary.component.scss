@@ -1,0 +1,27 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rating-text {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: var(--tui-text-primary);
+}
+.reviews-count {
+  font-size: $font-size-sm;
+  color: var(--tui-text-secondary);
+}
+.rating-skeleton {
+  width: 200px;
+  height: 24px;
+  background: var(--skeleton-background);
+  border-radius: $radius-sm;
+  @include skeleton-shimmer(var(--skeleton-shimmer-color));
+}

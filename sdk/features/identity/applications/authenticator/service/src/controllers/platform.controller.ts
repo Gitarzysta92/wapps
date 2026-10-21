@@ -15,8 +15,6 @@ export class PlatformController {
       builtAt: process.env.BUILT_AT,
       endpoints: {
         health: '/health',
-        docs: '/api-docs',
-        openapiJson: '/api-docs.json',
         platform: '/api/platform',
       },
       tags: ['scope:platform', 'layer:auth'],

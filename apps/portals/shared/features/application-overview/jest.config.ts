@@ -1,2 +1,2 @@
-// Run the detail feature and its timeline integration regressions together.
+// Portal composition regressions run in aggregator-angular.
 export default require('./jest.detail.config.cjs');

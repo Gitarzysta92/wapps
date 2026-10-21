@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/identity/packages/infrastructure/local",
+    "declaration": true,
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../../../../../dist/sdk/features/identity/packages/infrastructure/local/tsconfig.lib.tsbuildinfo",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "references": [
+    {
+      "path": "../../../../../kernel/standard/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/authentication/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../core/tsconfig.lib.json"
+    }
+  ]
+}

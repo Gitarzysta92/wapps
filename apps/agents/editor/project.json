@@ -3,11 +3,18 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/agents/editor/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:agents", "layer:app"],
+  "tags": [
+    "type:app",
+    "scope:agents",
+    "layer:app",
+    "arch:service"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -45,4 +52,3 @@
     }
   }
 }
-

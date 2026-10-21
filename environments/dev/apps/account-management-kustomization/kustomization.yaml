@@ -7,6 +7,16 @@ resources:
   - ../../../../sdk/features/identity/applications/management/provisioning/k8s
 
 patches:
+  - target:
+      kind: Ingress
+      name: public-profiles-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: account-management.development.wapps.ai
+      - op: replace
+        path: /metadata/annotations/nginx.ingress.kubernetes.io~1auth-url
+        value: http://authenticator.wapps.svc.cluster.local/validate-optional
   - path: deployment-patch.yaml
     target:
       kind: Deployment
@@ -15,4 +25,11 @@ patches:
     target:
       kind: Ingress
       name: account-management-ingress
+  - target:
+      kind: Ingress
+      name: account-recovery-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: account-management.development.wapps.ai
 

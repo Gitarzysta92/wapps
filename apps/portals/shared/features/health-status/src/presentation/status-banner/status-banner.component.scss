@@ -1,10 +1,11 @@
 .status-banner {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
   border-radius: 0.75rem;
-  margin-bottom: 1.5rem;
   
   &.status-operational {
     background: #10b981;

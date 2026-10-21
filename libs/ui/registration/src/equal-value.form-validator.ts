@@ -27,7 +27,3 @@ export function equalValue(fieldNames: string[]) {
     return null;
   };
 }
-
-
-
-

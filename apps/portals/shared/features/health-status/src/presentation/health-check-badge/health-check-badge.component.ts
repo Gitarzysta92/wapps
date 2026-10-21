@@ -2,6 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { TuiBadge } from '@taiga-ui/kit';
 import { TuiIcon } from '@taiga-ui/core';
 import { ApplicationHealthStatusCode } from '@domains/feed';
+import type { CurrentHealth } from '@domains/reliability';
+import { healthIcon } from '../../application/health-view';
+
+type BadgeStatus = ApplicationHealthStatusCode | CurrentHealth;
 
 /**
  * ARCH: Health Check Badge Component
@@ -41,11 +45,12 @@ import { ApplicationHealthStatusCode } from '@domains/feed';
 })
 export class HealthCheckBadgeComponent {
 
-  public readonly status = input.required<{ code: ApplicationHealthStatusCode; message: string }>();
+  public readonly status = input.required<{ code: BadgeStatus; message: string }>();
   public readonly icon = computed(() => this._getIcon(this.status().code));
   public readonly class = computed(() => this._getClass(this.status().code));
 
-  private _getIcon(code: ApplicationHealthStatusCode): string {
+  private _getIcon(code: BadgeStatus): string {
+    if (typeof code === 'string') return healthIcon(code);
     switch (code) {
       case ApplicationHealthStatusCode.Operational:
         return '@tui.check-circle';
@@ -58,7 +63,8 @@ export class HealthCheckBadgeComponent {
     }
   }
 
-  private _getClass(code: ApplicationHealthStatusCode): string {
+  private _getClass(code: BadgeStatus): string {
+    if (typeof code === 'string') return code;
     switch (code) {
       case ApplicationHealthStatusCode.Operational:
         return 'operational';

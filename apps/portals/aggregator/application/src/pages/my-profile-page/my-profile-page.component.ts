@@ -4,35 +4,110 @@ import { Router, RouterLink } from '@angular/router';
 import { TuiAppearance, TuiButton } from '@taiga-ui/core';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { TuiCardLarge } from '@taiga-ui/layout';
-import { MY_PROFILE_VIEW_STATE_PROVIDER, MyProfileService } from '@portals/shared/features/my-profile';
+import {
+  MY_PROFILE_VIEW_STATE_PROVIDER,
+  MyProfileService,
+} from '@portals/shared/features/my-profile';
 import { AuthenticationService } from '@portals/shared/features/identity';
-import { PageHeaderComponent, PageTitleComponent, ContentStateComponent } from '@ui/layout';
-import { buildRoutePath, IBreadcrumbRouteData, NavigationDeclarationDto, routingDataConsumerFrom } from '@portals/shared/boundary/navigation';
-import { BreadcrumbsComponent, BreadcrumbsSkeletonComponent } from '@ui/breadcrumbs';
+import {
+  PageHeaderComponent,
+  PageTitleComponent,
+  ContentStateComponent,
+} from '@ui/layout';
+import {
+  buildRoutePath,
+  IBreadcrumbRouteData,
+  NavigationDeclarationDto,
+  routingDataConsumerFrom,
+} from '@portals/shared/boundary/navigation';
+import {
+  BreadcrumbsComponent,
+  BreadcrumbsSkeletonComponent,
+} from '@ui/breadcrumbs';
 import { ProfileDetailsComponent } from '../profile-page/profile-details.component';
 import { NAVIGATION } from '../../navigation';
+import {
+  AccountBadgesComponent,
+  ProfileBadgeAccessComponent,
+  provideProfileBadges,
+  provideProfileTotals,
+  ProfileTotalsComponent,
+} from '@portals/shared/features/user-profile';
+import { API_BASE_URL } from '../../environment';
 
 @Component({
   selector: 'my-profile-page',
   standalone: true,
   templateUrl: './my-profile-page.component.html',
   styleUrl: './my-profile-page.component.scss',
-  imports: [AsyncPipe, ContentStateComponent, RouterLink, TuiAppearance, TuiButton, TuiCardLarge, TuiSkeleton, ProfileDetailsComponent,
-    PageHeaderComponent, PageTitleComponent, BreadcrumbsComponent, BreadcrumbsSkeletonComponent]
+  providers: [
+    provideProfileBadges(API_BASE_URL),
+    provideProfileTotals(API_BASE_URL),
+  ],
+  imports: [
+    AsyncPipe,
+    ContentStateComponent,
+    RouterLink,
+    TuiAppearance,
+    TuiButton,
+    TuiCardLarge,
+    TuiSkeleton,
+    ProfileDetailsComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
+    BreadcrumbsComponent,
+    BreadcrumbsSkeletonComponent,
+    AccountBadgesComponent,
+    ProfileBadgeAccessComponent,
+    ProfileTotalsComponent,
+  ],
 })
-export class MyProfilePageComponent implements routingDataConsumerFrom<IBreadcrumbRouteData> {
+export class MyProfilePageComponent
+  implements routingDataConsumerFrom<IBreadcrumbRouteData>
+{
   public readonly breadcrumb = input<NavigationDeclarationDto[]>([]);
-  public readonly authService = inject(AuthenticationService, { optional: true });
+  public readonly authService = inject(AuthenticationService, {
+    optional: true,
+  });
   private readonly router = inject(Router);
   private readonly profileService = inject(MyProfileService);
-  public reload(): void { this.profileService.reload(); }
-  private readonly myProfileStateProvider = inject(MY_PROFILE_VIEW_STATE_PROVIDER);
-  public readonly profile = computed(() => this.myProfileStateProvider.state().data);
+  readonly isDemo = this.profileService.mode === 'demo';
+  readonly badgeAdminPath = buildRoutePath(
+    NAVIGATION.profileBadges.path,
+    {},
+    { absolute: true }
+  );
+  public reload(): void {
+    this.profileService.reload();
+  }
+  private readonly myProfileStateProvider = inject(
+    MY_PROFILE_VIEW_STATE_PROVIDER
+  );
+  public readonly profile = computed(
+    () => this.myProfileStateProvider.state().data
+  );
   public readonly isLoading = this.myProfileStateProvider.isLoading;
   public readonly isError = this.myProfileStateProvider.isError;
-  public readonly publicPath = computed(() => buildRoutePath(NAVIGATION.userProfile.path, { profileId: this.profile()?.id ?? '' }, { absolute: true }));
-  public readonly quickLinks = [NAVIGATION.settingsPreferences, NAVIGATION.settingsNotifications, NAVIGATION.settingsPrivacy]
-    .map(link => ({ ...link, path: buildRoutePath(link.path, {}, { absolute: true }) }));
+  public readonly publicPath = computed(() =>
+    buildRoutePath(
+      NAVIGATION.userProfile.path,
+      {
+        profileId:
+          this.profile()?.publicId ??
+          (this.isDemo ? this.profile()?.id : '') ??
+          '',
+      },
+      { absolute: true }
+    )
+  );
+  public readonly quickLinks = [
+    NAVIGATION.settingsPreferences,
+    NAVIGATION.settingsNotifications,
+    NAVIGATION.settingsPrivacy,
+  ].map((link) => ({
+    ...link,
+    path: buildRoutePath(link.path, {}, { absolute: true }),
+  }));
 
   public logout(): void {
     this.authService?.unauthenticate();

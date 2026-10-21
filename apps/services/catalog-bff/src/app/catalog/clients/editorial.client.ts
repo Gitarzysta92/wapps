@@ -1,272 +1,108 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-
-// =========================
-// Editorial API Response Types
-// =========================
-
-export interface EditorialAppRecord {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  website: string | null;
-  isPwa: boolean;
-  rating: number | null;
-  isSuspended: boolean;
-  estimatedNumberOfUsers: number | null;
-  logoUrl: string | null;
-  bannerUrl: string | null;
-  createdAt: string;
-  updatedAt: string;
-  category: EditorialCategory | null;
-  tags: EditorialTag[];
-  platforms: EditorialPlatform[];
-  devices: EditorialDevice[];
-  monetizationModels: EditorialMonetizationModel[];
-}
-
-export interface EditorialCategory {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-  parent: EditorialCategory | null;
-  children: EditorialCategory[];
-}
-
-export interface EditorialTag {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface EditorialPlatform {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-export interface EditorialDevice {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-export interface EditorialMonetizationModel {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-// =========================
-// Editorial Client
-// =========================
+import { isAxiosError } from 'axios';
+import {
+  CatalogReadPort,
+  CatalogReadQuery,
+  CatalogUnavailableError,
+  catalogAppIds,
+  catalogQueryParameters,
+  catalogSlug,
+  parseCatalogApp,
+  parseCatalogFacets,
+  parseCatalogPage,
+  parseCatalogSelection,
+} from '@domains/catalog/record';
 
 @Injectable()
-export class EditorialClient {
-  private readonly logger = new Logger(EditorialClient.name);
+export class EditorialClient implements CatalogReadPort {
   private readonly baseUrl: string;
-  private readonly apiToken?: string;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService
-  ) {
-    const editorialUrl = this.configService.get<string>('EDITORIAL_URL');
-    if (!editorialUrl) {
-      throw new Error('EDITORIAL_URL environment variable is required');
-    }
-    this.baseUrl = editorialUrl;
-    this.apiToken = this.configService.get<string>('EDITORIAL_API_TOKEN');
+  constructor(private readonly http: HttpService, config: ConfigService) {
+    const origin = config.get<string>('EDITORIAL_URL');
+    if (!origin) throw new Error('EDITORIAL_URL is required');
+    const url = new URL(origin);
+    if (
+      !['http:', 'https:'].includes(url.protocol) ||
+      url.username ||
+      url.password ||
+      url.search ||
+      url.hash ||
+      url.pathname !== '/'
+    )
+      throw new Error('EDITORIAL_URL must be an HTTP service origin');
+    this.baseUrl = url.origin;
   }
 
-  private getHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (this.apiToken) {
-      headers['Authorization'] = `Bearer ${this.apiToken}`;
-    }
-
-    return headers;
-  }
-
-  // =========================
-  // App Records
-  // =========================
-
-  async getAppRecordBySlug(slug: string): Promise<EditorialAppRecord | null> {
+  async browse(query: CatalogReadQuery) {
     try {
-      // Editorial API returns all records, we need to filter by slug client-side
-      // TODO: Add slug-based endpoint to editorial service for better performance
-      const response = await firstValueFrom(
-        this.httpService.get<EditorialAppRecord[]>(
-          `${this.baseUrl}/api/apps`,
-          {
-            headers: this.getHeaders(),
-          }
-        )
+      const page = parseCatalogPage(
+        await this.get('/api/catalog/apps', catalogQueryParameters(query))
       );
-
-      const record = response.data.find(
-        (app) => app.slug === slug && !app.isSuspended
-      );
-
-      return record || null;
-    } catch (error) {
-      this.logger.error(`Failed to fetch app record by slug: ${slug}`, error);
-      throw error;
+      if (
+        page.pageSize !== query.pageSize ||
+        page.page !== Math.min(query.page, page.totalPages)
+      )
+        throw new CatalogUnavailableError('Unexpected catalog pagination');
+      return page;
+    } catch {
+      throw new CatalogUnavailableError('Catalog is temporarily unavailable');
     }
   }
 
-  async getAppRecords(filters: {
-    page: number;
-    pageSize: number;
-    category?: string;
-    tags?: string[];
-    search?: string;
-  }): Promise<{
-    data: EditorialAppRecord[];
-    meta: { page: number; pageSize: number; total: number; pageCount: number };
-  }> {
+  async find(input: string) {
+    const slug = catalogSlug(input);
     try {
-      // Editorial API doesn't support filtering/pagination yet
-      // We'll implement client-side filtering and pagination
-      // TODO: Add filtering and pagination support to editorial service
-      const response = await firstValueFrom(
-        this.httpService.get<EditorialAppRecord[]>(
-          `${this.baseUrl}/api/apps`,
-          {
-            headers: this.getHeaders(),
-          }
-        )
+      const app = parseCatalogApp(
+        await this.get(`/api/catalog/apps/${encodeURIComponent(slug)}`)
       );
-
-      let filteredData = response.data.filter((app) => !app.isSuspended);
-
-      // Apply category filter
-      if (filters.category) {
-        filteredData = filteredData.filter(
-          (app) => app.category?.slug === filters.category
-        );
-      }
-
-      // Apply tags filter
-      if (filters.tags && filters.tags.length > 0) {
-        const tagsToFilter = filters.tags;
-        filteredData = filteredData.filter((app) =>
-          tagsToFilter.some((tagSlug) =>
-            app.tags.some((tag) => tag.slug === tagSlug)
-          )
-        );
-      }
-
-      // Apply search filter
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filteredData = filteredData.filter(
-          (app) =>
-            app.name.toLowerCase().includes(searchLower) ||
-            app.description?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      // Sort by updatedAt desc
-      filteredData.sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-
-      // Apply pagination
-      const total = filteredData.length;
-      const pageCount = Math.ceil(total / filters.pageSize);
-      const startIndex = (filters.page - 1) * filters.pageSize;
-      const endIndex = startIndex + filters.pageSize;
-      const paginatedData = filteredData.slice(startIndex, endIndex);
-
-      return {
-        data: paginatedData,
-        meta: {
-          page: filters.page,
-          pageSize: filters.pageSize,
-          total,
-          pageCount,
-        },
-      };
+      if (app.slug !== slug)
+        throw new CatalogUnavailableError('Unexpected catalog application');
+      return app;
     } catch (error) {
-      this.logger.error('Failed to fetch app records', error);
-      throw error;
+      if (isAxiosError(error) && error.response?.status === 404) return null;
+      throw new CatalogUnavailableError('Catalog is temporarily unavailable');
     }
   }
 
-  // =========================
-  // Categories
-  // =========================
-
-  async getCategories(): Promise<EditorialCategory[]> {
+  async facets() {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get<EditorialCategory[]>(
-          `${this.baseUrl}/api/categories`,
-          {
-            headers: this.getHeaders(),
-          }
-        )
+      return parseCatalogFacets(await this.get('/api/catalog/facets'));
+    } catch {
+      throw new CatalogUnavailableError(
+        'Catalog taxonomy is temporarily unavailable'
       );
-
-      return response.data;
-    } catch (error) {
-      this.logger.error('Failed to fetch categories', error);
-      throw error;
     }
   }
 
-  // =========================
-  // Tags
-  // =========================
-
-  async getTags(): Promise<EditorialTag[]> {
+  async select(input: string[]) {
+    const ids = catalogAppIds(input);
     try {
-      const response = await firstValueFrom(
-        this.httpService.get<EditorialTag[]>(
-          `${this.baseUrl}/api/tags`,
-          {
-            headers: this.getHeaders(),
-          }
-        )
+      return parseCatalogSelection(
+        await this.get('/api/catalog/app-selection', { ids: ids.join(',') }),
+        ids
       );
-
-      return response.data;
-    } catch (error) {
-      this.logger.error('Failed to fetch tags', error);
-      throw error;
+    } catch {
+      // Absence is a successful empty selection. Transport/projection errors stay retryable.
+      throw new CatalogUnavailableError('Catalog is temporarily unavailable');
     }
   }
 
-  async getTagBySlug(slug: string): Promise<EditorialTag | null> {
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get<EditorialTag[]>(
-          `${this.baseUrl}/api/tags`,
-          {
-            headers: this.getHeaders(),
-          }
-        )
-      );
-
-      const tag = response.data.find((t) => t.slug === slug);
-      return tag || null;
-    } catch (error) {
-      this.logger.error(`Failed to fetch tag by slug: ${slug}`, error);
-      throw error;
-    }
+  private async get(
+    path: string,
+    params?: Record<string, string>
+  ): Promise<unknown> {
+    const response = await firstValueFrom(
+      this.http.get<unknown>(`${this.baseUrl}${path}`, {
+        params,
+        timeout: 15_000,
+        maxRedirects: 0,
+        maxContentLength: 16 * 1024 * 1024,
+        headers: { Accept: 'application/json' },
+      })
+    );
+    return response.data;
   }
 }
-

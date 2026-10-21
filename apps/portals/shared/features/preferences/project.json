@@ -4,23 +4,33 @@
   "projectType": "library",
   "prefix": "preferences",
   "sourceRoot": "apps/portals/shared/features/preferences",
-  "tags": ["type:lib", "scope:shared", "scope:features"],
+  "tags": ["type:lib", "scope:shared", "scope:features", "arch:feature"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "outputPath": "dist/apps/portals/shared/features/preferences",
-        "main": "apps/portals/shared/features/preferences/src/index.ts",
-        "tsConfig": "apps/portals/shared/features/preferences/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/features/preferences/*.md"]
+        "project": "apps/portals/shared/features/preferences/ng-package.json",
+        "tsConfig": "apps/portals/shared/features/preferences/tsconfig.lib.json"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/portals/shared/features/preferences/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit -p apps/portals/shared/features/preferences/tsconfig.spec.json"
+      }
     }
   }
 }
-
-

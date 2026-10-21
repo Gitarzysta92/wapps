@@ -25,12 +25,12 @@ export class SmartSearchOutputContainerComponent implements OnInit, OnDestroy {
   private readonly _searchResultsProvider = inject(SMART_SEARCH_RESULTS_PROVIDER);
   private readonly _destroy$ = new Subject<void>();
 
-  @Input() public isVisible: boolean = false;
+  @Input() public isVisible = false;
   @Input() public suggestions: string[] = [];
-  @Input() public query: string = '';
+  @Input() public query = '';
 
-  public loadingResults: boolean = false;
-  public loadingSuggestions: boolean = false;
+  public loadingResults = false;
+  public loadingSuggestions = false;
   public smartRecommendations: any = null;
   public searchResult: any = null;
 

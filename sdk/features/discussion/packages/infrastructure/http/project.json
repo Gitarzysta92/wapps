@@ -1,0 +1,40 @@
+{
+  "name": "sdk-features-discussion-http",
+  "$schema": "../../../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "sdk/features/discussion/packages/infrastructure/http/src",
+  "tags": [
+    "scope:discussion",
+    "arch:adapter"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/sdk/features/discussion/packages/infrastructure/http"
+      ],
+      "options": {
+        "command": "tsc --build sdk/features/discussion/packages/infrastructure/http/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "sdk/features/discussion/packages/infrastructure/http/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "^build"
+      ],
+      "options": {
+        "command": "tsc --noEmit -p sdk/features/discussion/packages/infrastructure/http/tsconfig.spec.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,354 @@
+@if (suiteView() === 'list') {
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      suiteView() === 'list'
+        ? 'My suites'
+        : suiteView() === 'create'
+        ? 'Create a suite'
+        : workspace.detail()?.title || 'Private suite'
+    }}
+  </h1>
+  <p slot="meta">Application collection drafts saved to your account.</p>
+  @if (suiteView() === 'list') {
+  <a slot="actions" tuiButton size="s" routerLink="/suites/create"
+    >Create a suite</a
+  >
+  } @else {
+  <a
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="s"
+    routerLink="/my/suites"
+    >My suites</a
+  >
+  }
+</ui-page-header>
+}
+<div [class.detail-page]="suiteView() !== 'list'">
+@if (suiteView() !== 'list') {
+  <a tuiLink routerLink="/my/suites">← My suites</a>
+  <header class="detail-header">
+    <tui-badge>Personal collection</tui-badge>
+    <h1>{{ suiteView() === 'create' ? 'Create a suite' : workspace.detail()?.title || 'Private suite' }}</h1>
+    @if (suiteView() === 'create') {
+      <p class="intro">Bring the applications you use together into one collection.</p>
+    } @else { @if (workspace.detail(); as suite) {
+      @if (suite.description) { <p class="intro">{{ suite.description }}</p> }
+      <div class="metadata"><span>{{ suite.applicationIds.length }} {{ suite.applicationIds.length === 1 ? 'application' : 'applications' }}</span></div>
+    }
+    }
+    <p class="notice">Your private draft is saved to your account. Publication requires a separate review.</p>
+  </header>
+}
+<section
+  class="suite-workspace"
+  [attr.aria-busy]="workspace.loading() || workspace.saving()"
+>
+  @if (!workspace.signedIn()) {
+  <ui-content-state
+    title="Sign in to manage suites"
+    description="Your private collections are available after signing in."
+  />
+  } @else { @if (workspace.error()) {
+  <p class="suite-feedback" role="alert">{{ workspace.error() }}</p>
+  } @if (workspace.uncertain()) {
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    [disabled]="workspace.saving()"
+    (click)="retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (workspace.error()) {
+  <button
+    tuiButton
+    appearance="secondary"
+    size="m"
+    type="button"
+    [disabled]="workspace.saving()"
+    (click)="reload()"
+  >
+    Reload saved suites
+  </button>
+  } @if (feedback()) {
+  <p role="status">{{ feedback() }}</p>
+  } @if (workspace.loading()) {
+  <p role="status">Loading your suites...</p>
+  } @else if (suiteView() === 'list') { @if (!workspace.error() &&
+  !workspace.suites().length) {
+  <ui-content-state
+    title="No suites yet"
+    description="Choose applications and save your first private collection."
+    icon="@tui.layers"
+  >
+    <a tuiButton size="m" routerLink="/suites/create"
+      >Create your first suite</a
+    >
+  </ui-content-state>
+  } @if (workspace.suites().length) {
+  <div class="suite-grid">
+    @for (suite of workspace.suites(); track suite.id) {
+    <ui-medium-card tuiAppearance="card-panel" class="suite-card">
+      <tui-badge>Saved draft</tui-badge>
+      <h2 slot="header">
+        <a tuiLink [routerLink]="['/my/suites', suite.id]">{{ suite.title }}</a>
+      </h2>
+      @if (suite.description) {
+      <p class="suite-description">{{ suite.description }}</p>
+      }
+      <p>
+        {{ suite.applicationIds.length }}
+        {{ suite.applicationIds.length === 1 ? 'application' : 'applications' }}
+      </p>
+      <a tuiLink [routerLink]="['/my/suites', suite.id]">Open suite</a>
+    </ui-medium-card>
+    }
+  </div>
+  } } @else if (suiteView() === 'create' || workspace.detail()) { @if
+  (editing()) {
+  <form class="suite-form" (ngSubmit)="save()">
+    <fieldset [disabled]="workspace.saving() || workspace.uncertain()">
+      <label for="suite-title">Suite name <span>(required)</span></label>
+      <input
+        id="suite-title"
+        placeholder="e.g. My creative workspace"
+        class="suite-input"
+        name="title"
+        required
+        maxlength="100"
+        [ngModel]="workspace.title()"
+        (ngModelChange)="workspace.title.set($event)"
+      />
+      <label for="suite-description">Description <span>(optional)</span></label>
+      <textarea
+        id="suite-description"
+        placeholder="What will you use this suite for?"
+        class="suite-input"
+        name="description"
+        rows="4"
+        maxlength="1000"
+        [ngModel]="workspace.description()"
+        (ngModelChange)="workspace.description.set($event)"
+      ></textarea>
+      <label for="suite-classification">Proposed content classification</label>
+      <select id="suite-classification" name="classification" class="suite-input" [ngModel]="workspace.classification()" (ngModelChange)="workspace.classification.set($event)">
+        <option [ngValue]="undefined">Unclassified</option>
+        <option value="general">General</option>
+        <option value="mature">Mature</option>
+      </select>
+      <p>Staff reviews this classification with the submitted content. Mature and unclassified content is hidden in Discover when mature content is disabled.</p>
+      <p>Choose 1-50 applications. Saving changes your private draft; publication requires a separate review.</p>
+    </fieldset>
+    <div class="suite-actions">
+      <button
+        tuiButton
+        size="m"
+        type="submit"
+        [disabled]="workspace.saving() || workspace.uncertain()"
+      >
+        {{ workspace.saving() ? 'Saving...' : 'Save suite' }}
+      </button>
+      @if (workspace.detail()) {
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        [disabled]="workspace.saving() || workspace.uncertain()"
+        (click)="reload()"
+      >
+        Cancel editing
+      </button>
+      }
+    </div>
+  </form>
+  } @else {
+  <div class="suite-actions">
+    @if (!workspace.saving() && !workspace.uncertain()) {
+    <a tuiButton appearance="secondary" size="m" [routerLink]="['/my/suites', workspace.detail()?.id, 'publication']">Manage publication</a>
+    }
+    <button
+      tuiButton
+      size="m"
+      type="button"
+      [disabled]="workspace.saving() || workspace.uncertain()"
+      (click)="edit()"
+    >
+      Edit suite
+    </button>
+    <button
+      tuiButton
+      appearance="secondary"
+      size="m"
+      type="button"
+      [disabled]="workspace.saving() || workspace.uncertain()"
+      (click)="confirmingDelete.set(true)"
+    >
+      Delete suite
+    </button>
+  </div>
+  @if (confirmingDelete()) {
+  <div
+    tuiAppearance="card-panel"
+    class="suite-card"
+    role="group"
+    aria-label="Confirm suite deletion"
+  >
+    <p>Delete this suite? Your collection and submitted versions will be removed, and any public version will be withdrawn.</p>
+    <div class="suite-actions">
+      <button
+        tuiButton
+        size="m"
+        type="button"
+        [disabled]="workspace.saving()"
+        (click)="remove()"
+      >
+        Confirm deletion
+      </button>
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="button"
+        [disabled]="workspace.saving()"
+        (click)="confirmingDelete.set(false)"
+      >
+        Keep suite
+      </button>
+    </div>
+  </div>
+  } }
+  <section class="suite-section">
+    <h2>
+      Applications <span>({{ workspace.selected().length }})</span>
+    </h2>
+    @if (workspace.metadataError()) {
+    <p role="alert">{{ workspace.metadataError() }}</p>
+    <button
+      tuiButton
+      appearance="secondary"
+      size="s"
+      type="button"
+      (click)="workspace.resolve()"
+    >
+      Retry application details
+    </button>
+    }
+    <ul class="suite-members">
+      @for (id of workspace.selected(); track id) {
+      <li class="app-card suite-member">
+        <div>
+          @if (workspace.member(id); as app) {
+          <div class="member-heading"><tui-avatar [src]="app.logoUrl || '@tui.box'" size="l" /><a tuiLink [routerLink]="['/apps', app.slug]">{{ app.name }}</a></div> }
+          @else {
+          <span>{{
+            workspace.metadataLoading()
+              ? 'Loading application...'
+              : 'Unavailable application'
+          }}</span
+          ><small>{{ id }}</small> }
+        </div>
+        @if (editing()) {
+        <button
+          tuiButton
+          appearance="secondary"
+          size="s"
+          type="button"
+          [disabled]="workspace.saving() || workspace.uncertain()"
+          [attr.aria-label]="'Remove ' + (workspace.member(id)?.name || id)"
+          (click)="workspace.remove(id)"
+        >
+          Remove
+        </button>
+        }
+      </li>
+      } @empty {
+      <li>No applications selected.</li>
+      }
+    </ul>
+  </section>
+  @if (editing()) {
+  <section class="suite-section">
+    <h2>Add applications</h2>
+    <form class="suite-search" (ngSubmit)="workspace.search(searchInput.value)">
+      <label for="suite-search">Search applications</label>
+      <input
+        #searchInput
+        id="suite-search"
+        class="suite-input"
+        name="search"
+        maxlength="200"
+        [value]="workspace.searchText()"
+      />
+      <button
+        tuiButton
+        appearance="secondary"
+        size="m"
+        type="submit"
+        [disabled]="workspace.searching()"
+      >
+        Search
+      </button>
+    </form>
+    @if (workspace.searching()) {
+    <p role="status">Searching applications...</p>
+    } @if (workspace.searchError()) {
+    <p role="alert">{{ workspace.searchError() }}</p>
+    }
+    <ul class="suite-members">
+      @for (app of workspace.results(); track app.id) {
+      <li>
+        <label class="app-card selectable">
+          <input type="checkbox" [checked]="workspace.selected().includes(app.id)" [disabled]="workspace.saving() || workspace.uncertain()" (change)="workspace.selected().includes(app.id) ? workspace.remove(app.id) : workspace.select(app)" [attr.aria-label]="'Include ' + app.name" />
+          <tui-avatar [src]="app.logoUrl || '@tui.box'" size="m" />
+          <span class="app-copy"><strong>{{ app.name }}</strong><span class="muted">{{ app.description }}</span></span>
+        </label>
+      </li>
+      } @empty { @if (!workspace.searching() && !workspace.searchError()) {
+      <li>No matching applications.</li>
+      } }
+    </ul>
+    @if (workspace.searchPages() > 1) {
+    <nav class="suite-actions" aria-label="Application search pages">
+      <button
+        tuiButton
+        appearance="secondary"
+        size="s"
+        type="button"
+        [disabled]="workspace.searching() || workspace.searchPage() <= 1"
+        (click)="
+          workspace.search(workspace.searchText(), workspace.searchPage() - 1)
+        "
+      >
+        Previous
+      </button>
+      <span
+        >Page {{ workspace.searchPage() }} of
+        {{ workspace.searchPages() }}</span
+      >
+      <button
+        tuiButton
+        appearance="secondary"
+        size="s"
+        type="button"
+        [disabled]="
+          workspace.searching() ||
+          workspace.searchPage() >= workspace.searchPages()
+        "
+        (click)="
+          workspace.search(workspace.searchText(), workspace.searchPage() + 1)
+        "
+      >
+        Next
+      </button>
+    </nav>
+    }
+  </section>
+  } } }
+</section>
+</div>

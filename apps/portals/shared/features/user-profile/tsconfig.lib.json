@@ -1,12 +1,27 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
-    "types": []
+    "outDir": "../../../../../dist/out-tsc/portals-shared-features-user-profile",
+    "types": [],
+    "declaration": true
   },
   "include": [
-    "**/*.ts",
-    "../../../../../libs/domains/customer/src/my-profile/application/ports/profile-api-service.port.ts"
-, "../../../../../libs/standard/src/provider-state.type.ts"  ],
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "src/test-setup.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  },
+  "references": [
+    {
+      "path": "../../../../../libs/domains/community/tsconfig.lib.json"
+    }
+  ]
 }

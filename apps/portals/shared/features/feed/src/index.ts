@@ -20,3 +20,12 @@ export * from './presentation/ports/feed-provider.port';
 
 // Mappers
 export * from './presentation/mappers/feed-item.mapper';
+export * from './explore.providers';
+export * from './presentation/explore/explore.component';
+export * from './application/explore.port';
+export * from './digest.providers';
+export * from './timeline.providers';
+export * from './application/application-timeline.service';
+export * from './application/digest.service';
+
+export * from './presentation/explore/activity-card.component';

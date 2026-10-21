@@ -6,6 +6,6 @@ import { ResultsPageComponent } from '../results-page/results-page.component';
   templateUrl: './articles.component.html',
   styleUrl: './articles.component.scss',
   standalone: true,
-  imports: [ResultsPageComponent]
+  imports: [ResultsPageComponent],
 })
 export class ArticlesPageComponent {}

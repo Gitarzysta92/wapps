@@ -11,7 +11,7 @@ import { TuiIcon } from '@taiga-ui/core';
 })
 export class StatusBannerComponent {
   @Input() status: 'operational' | 'degraded' | 'outage' = 'operational';
-  @Input() message: string = 'All Systems Operational';
+  @Input() message = 'All Systems Operational';
   @Input() timestamp: Date = new Date();
 
   getStatusIcon(): string {

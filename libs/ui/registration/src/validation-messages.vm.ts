@@ -15,6 +15,4 @@ export type ValidationMessagesVM = {
     type: string;
     message: string;
   }[];
-}
-
-
+};

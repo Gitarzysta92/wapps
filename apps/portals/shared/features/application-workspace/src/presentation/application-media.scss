@@ -1,0 +1,67 @@
+@use 'ui/design-system/src/styles' as *;
+:host {
+  display: block;
+  min-width: 0;
+}
+h2,
+h3,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: $font-size-lg;
+}
+h3 {
+  font-size: inherit;
+}
+.media-card {
+  padding: $space-6;
+  display: grid;
+  gap: $space-4;
+  min-width: 0;
+}
+.media-heading {
+  display: grid;
+  gap: $space-2;
+}
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: $space-6;
+}
+.media-slot,
+.media-upload,
+.media-pending,
+.media-file,
+.media-uploads {
+  display: grid;
+  gap: $space-3;
+  min-width: 0;
+}
+.media-uploads {
+  gap: $space-6;
+}
+.media-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: $space-3;
+}
+.media-file input {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  font: inherit;
+}
+img {
+  display: block;
+  max-width: 100%;
+  max-height: 15rem;
+  object-fit: contain;
+  margin-block: $space-2;
+}
+:host > p + button {
+  margin-top: $space-2;
+}

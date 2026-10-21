@@ -1,0 +1,25 @@
+@use 'ui/design-system/src/styles' as *;
+
+.digest-content {
+  margin-top: $space-6;
+}
+.selection-note {
+  margin: 0 0 $space-6;
+  color: var(--tui-text-secondary);
+}
+.activity-card,
+.discussion-card,
+.article-body {
+  gap: $space-4;
+}
+.article-copy {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+.app-body .card-summary {
+  margin-top: $space-2;
+}
+article-cover-image {
+  display: block;
+}

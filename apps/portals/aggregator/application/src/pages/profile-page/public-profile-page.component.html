@@ -1,0 +1,580 @@
+@let articles = profiles.articles();
+@let loaded = profiles.profile(); @let followerList = profiles.followers(); @let
+followingList = profiles.following(); @let directory = profiles.directory();
+@let favorites = profiles.favorites();
+@let suites = profiles.suites();
+@let discussions = profiles.discussions();
+@let activity = profiles.activity();
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">{{ title() }}</h1>
+  <p slot="meta" class="profile-meta">
+    Profile details are shared according to the member's current privacy
+    settings.
+  </p>
+  <button
+    slot="actions"
+    tuiButton
+    appearance="secondary"
+    size="s"
+    type="button"
+    [disabled]="profiles.saving()"
+    (click)="profiles.reload()"
+  >
+    Reload
+  </button>
+</ui-page-header>
+
+<div class="profile-content">
+  @if (profiles.status() === 'loading') {
+  <p role="status" aria-busy="true">Loading profile...</p>
+  } @else if (profiles.status() === 'unavailable') {
+  <ui-content-state
+    [error]="true"
+    title="Could not load this profile"
+    description="The service could not confirm access. Try again."
+    icon="@tui.circle-alert"
+  >
+    <button tuiButton type="button" size="m" (click)="profiles.reload()">
+      Retry profile
+    </button>
+  </ui-content-state>
+  } @else if (profiles.status() === 'missing') {
+  <ui-content-state
+    title="This profile is unavailable"
+    description="It may be private, no longer available, or the link may be incorrect."
+    icon="@tui.user-round"
+  >
+    <a tuiButton appearance="secondary" size="m" routerLink="/"
+      >Back to Explore</a
+    >
+  </ui-content-state>
+  } @else if (loaded) { @if (loaded.profile; as member) {
+  <profile-details [profile]="member" [isLocalProfile]="loaded.view.isOwner" [showLegacyStats]="false" />
+  <profile-totals [profileId]="member.id" />
+  <account-badges [profileId]="member.id" />
+  <section class="profile-directory-section" aria-labelledby="shared-activity-title">
+    <h2 id="shared-activity-title">Recent activity</h2>
+    <p class="profile-meta">Recent publications, contributions and saved favorites that are still public. Suite, discussion and favorite sharing settings also apply.</p>
+    @if (profiles.activityStatus() === 'loading') {
+      <p role="status">Loading recent activity...</p>
+    } @else if (profiles.activityStatus() === 'unavailable') {
+      <p role="alert">Recent activity could not be loaded. Access or public content may have changed.</p>
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadActivity()">Retry recent activity</button>
+    } @else if (activity?.sharing === 'hidden') {
+      <p>Activity is not shared with this profile's audience.</p>
+      @if (loaded.view.isOwner) { <a routerLink="/me/settings/privacy">Change activity sharing</a> }
+    } @else if (activity) {
+      @if (!activity.items.length) { <p>No shared public activity on this page.</p> }
+      <div class="profile-directory shared-activity">
+        @for (item of activity.items; track item.kind + ':' + item.id) {
+          <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="activityPath(item)"
+             [queryParams]="item.target.kind === 'comment' ? { thread: item.target.id } : null">
+            <span><span class="profile-meta">{{ activityLabels[item.kind] }}</span><strong>{{ item.title }}</strong><span class="profile-meta">{{ item.at | preferredDate }}</span></span>
+            <tui-icon icon="@tui.chevron-right" />
+          </a>
+        }
+      </div>
+      <div class="list-actions">
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadActivity()">Refresh recent activity</button>
+        @if (activity.after) { <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadActivity(activity.after)">Next recent activity</button> }
+      </div>
+    }
+  </section>
+  <section class="profile-directory-section" aria-labelledby="shared-discussions-title">
+    <h2 id="shared-discussions-title">Shared discussions</h2>
+    <p class="profile-meta">Public application topics and article comment threads with this member's current contributions.</p>
+    @if (profiles.discussionsStatus() === 'loading') {
+      <p role="status">Loading shared discussions...</p>
+    } @else if (profiles.discussionsStatus() === 'unavailable') {
+      <p role="alert">Shared discussions could not be loaded. Access or public content may have changed.</p>
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadDiscussions()">Retry shared discussions</button>
+    } @else if (discussions?.sharing === 'hidden') {
+      <p>Discussions are not shared with this profile's audience.</p>
+      @if (loaded.view.isOwner) { <a routerLink="/me/settings/privacy">Change discussion sharing</a> }
+    } @else if (discussions) {
+      @if (!discussions.items.length) { <p>No shared public discussions on this page.</p> }
+      <div class="profile-directory shared-discussions">
+        @for (discussion of discussions.items; track discussion.id) {
+          <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="discussionPath(discussion)"
+             [queryParams]="discussion.parentKind === 'article' ? { thread: discussion.id } : null">
+            <span><span class="profile-meta">{{ discussion.parentKind === 'article' ? 'Article comments' : 'Application topic' }}</span>
+              <strong>{{ discussion.title }}</strong><span class="profile-meta">{{ discussion.participation === 'author' ? 'Started by this member' : 'Participated in by this member' }}</span></span>
+            <tui-icon icon="@tui.chevron-right" />
+          </a>
+        }
+      </div>
+      <div class="list-actions">
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadDiscussions()">Refresh shared discussions</button>
+        @if (discussions.after) { <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadDiscussions(discussions.after)">Next shared discussions</button> }
+      </div>
+    }
+  </section>
+  <section class="profile-directory-section" aria-labelledby="shared-articles-title">
+    <h2 id="shared-articles-title">Published articles</h2>
+    <p class="profile-meta">Published articles authored by this member. Shared through Show Activity History.</p>
+    @if (profiles.articlesStatus() === 'loading') {
+      <p role="status">Loading published articles...</p>
+    } @else if (profiles.articlesStatus() === 'unavailable') {
+      <p role="alert">Published articles could not be loaded. Access or publication may have changed.</p>
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadArticles()">Retry published articles</button>
+    } @else if (articles?.sharing === 'hidden') {
+      <p>Articles are not shared with this profile's audience.</p>
+      @if (loaded.view.isOwner) {
+        <a routerLink="/me/settings/privacy">Change activity sharing</a>
+      }
+    } @else if (articles) {
+      @if (!articles.items.length) { <p>No shared published articles on this page.</p> }
+      <div class="profile-directory shared-articles">
+        @for (article of articles.items; track article.id) {
+          <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="articlePath(article.slug)">
+            <span><strong>{{ article.title }}</strong><span class="profile-meta">{{ article.excerpt }}</span><span class="profile-meta">{{ article.publishedAt | preferredDate }}</span></span>
+            <tui-icon icon="@tui.chevron-right" />
+          </a>
+        }
+      </div>
+      <div class="list-actions">
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadArticles()">Refresh published articles</button>
+        @if (articles.after) {
+          <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadArticles(articles.after)">Next published articles</button>
+        }
+      </div>
+    }
+  </section>
+  <section class="profile-directory-section" aria-labelledby="shared-suites-title">
+    <h2 id="shared-suites-title">Published suites</h2>
+    <p class="profile-meta">Reviewed public collections created by this member.</p>
+    @if (profiles.suitesStatus() === 'loading') {
+      <p role="status">Loading published suites...</p>
+    } @else if (profiles.suitesStatus() === 'unavailable') {
+      <p role="alert">Published suites could not be loaded. Access or publication may have changed.</p>
+      <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadSuites()">Retry published suites</button>
+    } @else if (suites?.sharing === 'hidden') {
+      <p>Suites are not shared with this profile's audience.</p>
+      @if (loaded.view.isOwner) {
+        <a routerLink="/me/settings/privacy">Change suite sharing</a>
+      }
+    } @else if (suites) {
+      @if (!suites.items.length) { <p>No shared published suites on this page.</p> }
+      <div class="profile-directory shared-suites">
+        @for (suite of suites.items; track suite.id) {
+          <a tuiAppearance="card-elevated" class="profile-member" [routerLink]="suitePath(suite.id)">
+            <span><strong>{{ suite.title }}</strong><span class="profile-meta">{{ suite.description }}</span></span>
+            <tui-icon icon="@tui.chevron-right" />
+          </a>
+        }
+      </div>
+      <div class="list-actions">
+        <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadSuites()">Refresh published suites</button>
+        @if (suites.after) {
+          <button tuiButton type="button" appearance="secondary" size="m" (click)="profiles.loadSuites(suites.after)">Next published suites</button>
+        }
+      </div>
+    }
+  </section>
+  <section
+    class="profile-directory-section"
+    aria-labelledby="shared-favorites-title"
+  >
+    <h2 id="shared-favorites-title">Shared favorites</h2>
+    <p class="profile-meta">
+      Only currently public items are listed. Sharing follows this member's
+      profile privacy settings.
+    </p>
+    @if (profiles.favoritesStatus() === 'loading') {
+    <p role="status">Loading shared favorites...</p>
+    } @else if (profiles.favoritesStatus() === 'unavailable') {
+    <p role="alert">
+      Shared favorites could not be loaded. Access or an item service may have
+      changed.
+    </p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="profiles.loadFavorites()"
+    >
+      Retry shared favorites
+    </button>
+    } @else if (favorites?.sharing === 'hidden') {
+    <p>Favorites are not shared with this profile's audience.</p>
+    @if (loaded.view.isOwner) {
+    <a routerLink="/me/settings/privacy">Change favorites sharing</a>
+    }
+    } @else if (favorites) { @if (!favorites.items.length) {
+    <p>No shared public favorites on this page.</p>
+    }
+    <div class="profile-directory shared-favorites">
+      @for (item of favorites.items; track item.kind + ':' + item.id) {
+      <a
+        tuiAppearance="card-elevated"
+        class="profile-member"
+        [routerLink]="favoritePath(item)"
+      >
+        <span
+          ><span class="profile-meta">{{ item.kind }}</span
+          ><strong>{{ item.title }}</strong></span
+        >
+        <tui-icon icon="@tui.chevron-right" />
+      </a>
+      }
+    </div>
+    <div class="list-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        (click)="profiles.loadFavorites()"
+      >
+        Refresh shared favorites
+      </button>
+      @if (favorites.after) {
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        (click)="profiles.loadFavorites(favorites.after)"
+      >
+        Next shared favorites
+      </button>
+      }
+    </div>
+    }
+  </section>
+  } @else {
+  <ui-content-state
+    title="This profile is for approved followers"
+    description="The member must approve your request before you can see their profile and photo."
+    icon="@tui.lock"
+  >
+    @if (!profiles.signedIn()) {
+    <button tuiButton type="button" size="m" routedDialogButton="identity">
+      Sign in to request access
+    </button>
+    } @else if (!canRequest()) {
+    <a
+      tuiButton
+      appearance="secondary"
+      size="m"
+      routerLink="/me/settings/profile"
+      >Complete your own profile first</a
+    >
+    }
+  </ui-content-state>
+  } @if (loaded.view.follow; as follow) { @if (follow.status !== 'none' ||
+  (loaded.view.access === 'followers' && canRequest())) {
+  <ui-medium-card
+    tuiAppearance="card-panel"
+    class="access-card"
+    aria-label="Your follower access"
+  >
+    <header slot="header"><h2>Your follower access</h2></header>
+    @if (follow.status === 'pending') {
+    <p>Your request is awaiting the member's approval.</p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      [disabled]="profiles.blocked()"
+      (click)="profiles.change(follow, 'cancel')"
+    >
+      Cancel request
+    </button>
+    } @else if (follow.status === 'approved') {
+    <p>
+      This member has approved your access. Their current privacy settings still
+      apply.
+    </p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      [disabled]="profiles.blocked()"
+      (click)="profiles.change(follow, 'cancel')"
+    >
+      Stop following
+    </button>
+    } @else {
+    <p>
+      Sending a request shares your display name and profile link with this
+      member.
+    </p>
+    <button
+      tuiButton
+      type="button"
+      size="m"
+      [disabled]="profiles.blocked()"
+      (click)="profiles.change(follow, 'request')"
+    >
+      Request access
+    </button>
+    }
+  </ui-medium-card>
+  } } @if (loaded.view.isOwner) {
+  <p class="profile-meta">
+    You can preview your own profile with any visibility setting.
+    <a routerLink="/me/settings/privacy">Change privacy settings</a>.
+  </p>
+  <section class="profile-directory-section" aria-labelledby="followers-title">
+    <h2 id="followers-title">Follower requests and access</h2>
+    <p class="profile-meta">
+      Approval grants access when your profile is set to Followers Only. Private
+      visibility always hides it from other members.
+    </p>
+    @if (profiles.followersStatus() === 'loading') {
+    <p role="status">Loading follower access...</p>
+    } @else if (profiles.followersStatus() === 'unavailable') {
+    <p role="alert">Follower access could not be loaded.</p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="profiles.loadFollowers()"
+    >
+      Retry follower list
+    </button>
+    } @else if (followerList) { @if (!followerList.followers.length) {
+    <p>No pending requests or approved followers on this page.</p>
+    }
+    <div class="follower-list">
+      @for (follow of followerList.followers; track follow.requesterId) {
+      <article tuiAppearance="card-panel" class="follower-card">
+        <div>
+          <h3>{{ follow.requesterName }}</h3>
+          <p>
+            {{
+              follow.status === 'pending'
+                ? 'Awaiting approval'
+                : 'Approved follower'
+            }}
+          </p>
+          <a [routerLink]="profilePath(follow.requesterId)"
+            >View their profile</a
+          >
+        </div>
+        <div class="follower-actions">
+          @if (follow.status === 'pending') {
+          <button
+            tuiButton
+            type="button"
+            size="m"
+            [disabled]="profiles.blocked()"
+            (click)="profiles.change(follow, 'approve')"
+          >
+            Approve
+          </button>
+          }
+          <button
+            tuiButton
+            type="button"
+            appearance="secondary"
+            size="m"
+            [disabled]="profiles.blocked()"
+            (click)="profiles.change(follow, 'remove')"
+          >
+            {{ follow.status === 'pending' ? 'Decline' : 'Remove access' }}
+          </button>
+        </div>
+      </article>
+      }
+    </div>
+    <div class="list-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        [disabled]="profiles.blocked()"
+        (click)="profiles.loadFollowers()"
+      >
+        Refresh follower list
+      </button>
+      @if (followerList.after) {
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        [disabled]="profiles.blocked()"
+        (click)="profiles.loadFollowers(followerList.after)"
+      >
+        Next followers
+      </button>
+      }
+    </div>
+    }
+  </section>
+  <section class="profile-directory-section" aria-labelledby="following-title">
+    <h2 id="following-title">Profiles you follow</h2>
+    <p class="profile-meta">
+      Manage requests and access even when a member changes their profile
+      visibility. Profile links do not grant reciprocal access.
+    </p>
+    @if (profiles.followingStatus() === 'loading') {
+    <p role="status">Loading your requests...</p>
+    } @else if (profiles.followingStatus() === 'unavailable') {
+    <p role="alert">Your requests could not be loaded.</p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="profiles.loadFollowing()"
+    >
+      Retry your requests
+    </button>
+    } @else if (followingList) { @if (!followingList.following.length) {
+    <p>No active requests or followed profiles on this page.</p>
+    }
+    <div class="follower-list">
+      @for (follow of followingList.following; track follow.ownerId) {
+      <article tuiAppearance="card-panel" class="follower-card">
+        <div>
+          <h3>
+            {{
+              follow.status === 'pending'
+                ? 'Pending request'
+                : 'Approved access'
+            }}
+          </h3>
+          <p>{{ follow.ownerId }}</p>
+          <a [routerLink]="profilePath(follow.ownerId)">View profile</a>
+        </div>
+        <button
+          tuiButton
+          type="button"
+          appearance="secondary"
+          size="m"
+          [disabled]="profiles.blocked()"
+          (click)="profiles.change(follow, 'cancel')"
+        >
+          {{
+            follow.status === 'pending' ? 'Cancel request' : 'Stop following'
+          }}
+        </button>
+      </article>
+      }
+    </div>
+    <div class="list-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        [disabled]="profiles.blocked()"
+        (click)="profiles.loadFollowing()"
+      >
+        Refresh your requests
+      </button>
+      @if (followingList.after) {
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        [disabled]="profiles.blocked()"
+        (click)="profiles.loadFollowing(followingList.after)"
+      >
+        Next requests
+      </button>
+      }
+    </div>
+    }
+  </section>
+  } } @if (profiles.feedback()) {
+  <section class="command-feedback" aria-label="Follower action status">
+    <p
+      [attr.role]="
+        profiles.conflict() || profiles.uncertain() ? 'alert' : 'status'
+      "
+    >
+      {{ profiles.feedback() }}
+    </p>
+    @if (profiles.uncertain()) {
+    <button
+      tuiButton
+      type="button"
+      size="m"
+      [disabled]="profiles.saving()"
+      (click)="profiles.retry()"
+    >
+      Retry the same action
+    </button>
+    } @if (profiles.conflict()) {
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="profiles.reload()"
+    >
+      Reload follower state
+    </button>
+    }
+  </section>
+  }
+
+  <section class="profile-directory-section" aria-labelledby="members-title">
+    <h2 id="members-title">Public community members</h2>
+    @if (profiles.directoryStatus() === 'loading') {
+    <p role="status">Loading public members...</p>
+    } @else if (profiles.directoryStatus() === 'unavailable') {
+    <p role="alert">The public directory could not be loaded.</p>
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary"
+      size="m"
+      (click)="profiles.loadDirectory()"
+    >
+      Retry directory
+    </button>
+    } @else if (directory) { @if (!directory.profiles.length) {
+    <p>No public profiles on this page.</p>
+    }
+    <div class="profile-directory">
+      @for (member of directory.profiles; track member.id) {
+      <a
+        tuiAppearance="card-elevated"
+        class="profile-member"
+        [routerLink]="profilePath(member.id)"
+      >
+        <tui-avatar size="m">{{
+          member.name.slice(0, 2).toUpperCase()
+        }}</tui-avatar
+        ><span>{{ member.name }}</span
+        ><tui-icon icon="@tui.chevron-right" />
+      </a>
+      }
+    </div>
+    <div class="list-actions">
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        (click)="profiles.loadDirectory()"
+      >
+        Refresh directory
+      </button>
+      @if (directory.after) {
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="m"
+        (click)="profiles.loadDirectory(directory.after)"
+      >
+        Next members
+      </button>
+      }
+    </div>
+    }
+  </section>
+</div>

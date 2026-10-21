@@ -1,40 +1,70 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Headers,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { AppsService } from './apps.service';
-import { AppRecord } from './entities/app-record.entity';
+import { EditorialCommands } from '../application/editorial-commands';
+import { EditorialQueries } from '../application/editorial-queries';
+import type { EditorialActor } from '../application/editorial.ports';
+import { EditorialUser } from '../http/editorial-auth';
 
 @ApiTags('apps')
 @Controller('apps')
 export class AppsController {
-  constructor(private readonly appsService: AppsService) {}
+  constructor(
+    private readonly commands: EditorialCommands,
+    private readonly queries: EditorialQueries
+  ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all app records' })
-  findAll() {
-    return this.appsService.findAll();
+  findAll(@EditorialUser(true) actor: EditorialActor | null) {
+    return this.queries.list('app', actor);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get app record by ID' })
-  findOne(@Param('id') id: string) {
-    return this.appsService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @EditorialUser(true) actor: EditorialActor | null
+  ) {
+    return this.queries.find('app', id, actor);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new app record' })
-  create(@Body() data: Partial<AppRecord>) {
-    return this.appsService.create(data);
+  @ApiOperation({
+    summary:
+      'Create an authorized catalog resource with a durable materialization intent',
+  })
+  create(
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.create('app', input, actor, key);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update app record' })
-  update(@Param('id') id: string, @Body() data: Partial<AppRecord>) {
-    return this.appsService.update(id, data);
+  update(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.update('app', id, input, actor, key);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete app record' })
-  remove(@Param('id') id: string) {
-    return this.appsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Body() input: unknown,
+    @EditorialUser() actor: EditorialActor,
+    @Headers('idempotency-key') key: string
+  ) {
+    return this.commands.remove('app', id, input, actor, key);
   }
 }

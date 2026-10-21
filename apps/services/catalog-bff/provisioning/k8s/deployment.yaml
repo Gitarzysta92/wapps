@@ -29,10 +29,18 @@ spec:
               containerPort: 3000
               protocol: TCP
           env:
+            - name: EXPLORE_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: explore-service-secret
+                  key: secret
+                  optional: true
             - name: PORT
               value: "3000"
             - name: NODE_ENV
               value: "production"
+            - name: DISCUSSION_URL
+              value: "http://discussion.discussion.svc.cluster.local:1338"
             - name: EDITORIAL_URL
               value: "http://editorial.editorial.svc.cluster.local:1337"
             - name: EDITORIAL_API_TOKEN

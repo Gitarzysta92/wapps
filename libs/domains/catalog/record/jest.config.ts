@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'catalog-record',
   preset: '../../../../jest.preset.js',

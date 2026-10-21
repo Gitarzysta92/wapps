@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { ApplicationHealthStatusCode } from '@domains/feed';
+import type { CurrentHealth } from '@domains/reliability';
 
 export type StatusHistoryItem = {
-  status: ApplicationHealthStatusCode;
+  status: ApplicationHealthStatusCode | CurrentHealth;
   timestamp: number;
+  label?: string;
 };
 
 @Component({
@@ -18,21 +20,28 @@ export type StatusHistoryItem = {
 export class StatusHistoryComponent {
   statusesHistory = input.required<StatusHistoryItem[]>();
 
-  getStatusClass(status: ApplicationHealthStatusCode): string {
+  getStatusClass(status: StatusHistoryItem['status']): string {
     switch (status) {
+      case 'operational':
       case ApplicationHealthStatusCode.Operational:
         return 'operational';
+      case 'degraded':
       case ApplicationHealthStatusCode.Degraded:
         return 'degraded';
+      case 'outage':
       case ApplicationHealthStatusCode.Outage:
         return 'outage';
       default:
-        return 'operational';
+        return 'unknown';
     }
   }
 
-  getStatusLabel(status: ApplicationHealthStatusCode): string {
+  getStatusLabel(status: StatusHistoryItem['status']): string {
     switch (status) {
+      case 'operational': return 'Responding';
+      case 'degraded': return 'Slow response';
+      case 'outage': return 'Check failed';
+      case 'stale': return 'Stale';
       case ApplicationHealthStatusCode.Operational:
         return 'Operational';
       case ApplicationHealthStatusCode.Degraded:

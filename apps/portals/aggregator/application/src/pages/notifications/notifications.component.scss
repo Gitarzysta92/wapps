@@ -1,0 +1,42 @@
+@use 'ui/design-system/src/styles' as *;
+@use '../page-layout' as page;
+
+@include page.page;
+.inbox-content {
+  display: grid;
+  gap: $space-4;
+  @include page.content;
+}
+.page-description {
+  margin: 0;
+  color: var(--tui-text-secondary);
+}
+.notification-heading {
+  margin-bottom: $space-4;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-4;
+}
+h2 {
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.notification-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+}
+.notification-categories {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  overflow-x: auto;
+  > button {
+    flex-shrink: 0;
+  }
+}

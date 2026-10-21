@@ -3,4 +3,4 @@ export type RegistrationFormDto = {
   email: string;
   password: string;
   passwordConfirmation: string;
-}
+};

@@ -1,0 +1,280 @@
+<section
+  id="comments"
+  class="article-comments"
+  aria-labelledby="article-comments-heading"
+  [attr.aria-busy]="comments.loading() || comments.saving()"
+>
+  <div class="comment-heading">
+    <h2 id="article-comments-heading">Comments</h2>
+    <p>
+      Discuss this article with the community. Your chosen name and comment are
+      public.
+    </p>
+  </div>
+  @if (comments.feedback()) {
+  <p role="status">{{ comments.feedback() }}</p>
+  } @if (comments.error()) {
+  <p role="alert">{{ comments.error() }}</p>
+  } @if (comments.saving()) {
+  <p role="status">Saving comment request...</p>
+  } @if (comments.pending() && !comments.saving()) {
+  <div class="comment-card" tuiAppearance="card-panel" role="status">
+    <h3>Resolve the last comment request</h3>
+    <p>
+      The result is unconfirmed. Retry uses the original text and request,
+      including when you return from another article. A full page reload clears
+      this local retry.
+    </p>
+    <button
+      tuiButton
+      size="s"
+      type="button"
+      (click)="comments.retry()"
+      [disabled]="comments.saving() || !comments.signedIn()"
+    >
+      Retry last comment request
+    </button>
+  </div>
+  } @if (comments.signedIn()) {
+  @if (threadId() === null || editing()) {
+  <form class="comment-card" tuiAppearance="card-panel" (ngSubmit)="submit()">
+    <div class="comment-heading">
+      <h3>
+        {{
+          editing()?.type === 'edit'
+            ? 'Edit your comment'
+            : editing()
+            ? 'Write a reply'
+            : 'Join the conversation'
+        }}
+      </h3>
+      @if (editing(); as edit) {
+      <p>
+        {{ edit.type === 'reply' ? 'Replying to' : 'Editing a comment by' }}
+        {{ edit.label }}
+      </p>
+      }
+    </div>
+    <div class="comment-field">
+      <label for="article-comment-name">Public name</label>
+      <input
+        id="article-comment-name"
+        class="application-draft-input"
+        name="publicName"
+        required
+        maxlength="80"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        [disabled]="comments.saving() || !!comments.pending()"
+      />
+    </div>
+    <div class="comment-field">
+      <label for="article-comment-text">Comment</label>
+      <textarea
+        #commentBody
+        id="article-comment-text"
+        class="application-draft-input"
+        name="comment"
+        required
+        maxlength="4000"
+        rows="5"
+        [ngModel]="text()"
+        (ngModelChange)="text.set($event)"
+        [disabled]="comments.saving() || !!comments.pending()"
+      ></textarea>
+    </div>
+    <profile-mention-picker [selected]="mentions()" (selectedChange)="mentions.set($event)" [disabled]="comments.saving() || !!comments.pending()" />
+    <div class="comment-actions">
+      <button
+        tuiButton
+        size="s"
+        type="submit"
+        [disabled]="
+          comments.saving() ||
+          !!comments.pending() ||
+          !name().trim() ||
+          !text().trim()
+        "
+      >
+        {{
+          editing()?.type === 'edit'
+            ? 'Save comment'
+            : editing()
+            ? 'Post reply'
+            : 'Post comment'
+        }}
+      </button>
+      @if (editing()) {
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="editing.set(null)"
+        [disabled]="comments.saving() || !!comments.pending()"
+      >
+        {{ threadId() === null ? 'Use as a new comment' : 'Cancel reply or edit' }}
+      </button>
+      }
+    </div>
+  </form>
+  } @else if (comments.items().length) {
+  <p>Choose Reply on a comment to join this thread.</p>
+  }
+  } @else {
+  <p>Sign in to post, reply, or manage your comments.</p>
+  }
+  <div class="comment-actions">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      (click)="comments.reload()"
+      [disabled]="comments.loading()"
+    >
+      {{ threadId() === null ? 'Reload comments' : 'Reload thread' }}
+    </button>
+    @if (threadId() === null) {
+    <button
+      tuiButton
+      size="s"
+      appearance="flat"
+      type="button"
+      (click)="comments.reload(true)"
+      [disabled]="comments.loading()"
+    >
+      Latest comments
+    </button>
+    }
+  </div>
+  @if (comments.loading()) {
+  <p role="status">Loading comments...</p>
+  } @else if (!comments.items().length && !comments.error()) {
+  <p>No comments yet. Start the conversation.</p>
+  } @for (thread of comments.items(); track thread.id) {
+  <article
+    class="comment-card"
+    tuiAppearance="card-panel"
+    aria-label="Comment thread"
+  >
+    @for (comment of thread.comments; track comment.id) {
+    <div class="comment-entry" [class.comment-reply]="comment.depth > 0">
+      @if (comment.content; as content) {
+      <div class="comment-heading">
+        <h3>{{ content.displayName }}</h3>
+        <p>
+          {{ comment.createdAt | date : 'medium' }} @if (comment.updatedAt) { /
+          Edited {{ comment.updatedAt | date : 'medium' }} }
+        </p>
+        @if (comment.depth > 0) {
+        <p>Reply to {{ parentLabel(comment, thread) }}</p>
+        }
+      </div>
+      <p class="comment-text">{{ content.text }}</p>
+      @if (content.mentions?.length) { <profile-mentioned-members [ids]="content.mentions || []" /> }
+      @if (comments.signedIn()) {
+      <div class="comment-actions">
+        <button
+          tuiButton
+          size="s"
+          appearance="secondary"
+          type="button"
+          (click)="select('reply', comment, thread)"
+          [disabled]="comments.saving() || !!comments.pending()"
+        >
+          Reply
+        </button>
+        @if (comment.editable) {
+        <button
+          tuiButton
+          size="s"
+          appearance="flat"
+          type="button"
+          (click)="select('edit', comment, thread)"
+          [disabled]="comments.saving() || !!comments.pending()"
+        >
+          Edit comment
+        </button>
+        } @if (comment.removable) {
+        <button
+          tuiButton
+          size="s"
+          appearance="flat"
+          type="button"
+          (click)="
+            removing.set({ comment: comment, revision: thread.revision })
+          "
+          [disabled]="comments.saving() || !!comments.pending()"
+        >
+          Remove comment
+        </button>
+        }
+      </div>
+      } } @else {
+      <p>Comment removed. Replies remain in the conversation.</p>
+      }
+    </div>
+    } @if (thread.replyCount > 0 && !comments.expanded().includes(thread.id)) {
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      (click)="comments.expand(thread.id)"
+      [disabled]="comments.loading()"
+    >
+      Read replies ({{ thread.replyCount }})
+    </button>
+    }
+  </article>
+  } @if (comments.next()) {
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    (click)="comments.older()"
+    [disabled]="comments.loading()"
+  >
+    Older comments
+  </button>
+  } @if (removing(); as selected) {
+  <div class="comment-card" tuiAppearance="card-panel" role="alert">
+    <h3>
+      {{
+        selected.comment.depth === 0
+          ? 'Remove this thread and all its replies?'
+          : 'Remove this comment?'
+      }}
+    </h3>
+    <p>
+      {{
+        selected.comment.depth === 0
+          ? 'The thread will no longer be publicly available.'
+          : 'Its text will be removed. Replies remain with a removed-comment placeholder.'
+      }}
+    </p>
+    <div class="comment-actions">
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        (click)="remove()"
+        [disabled]="comments.saving() || !!comments.pending()"
+      >
+        Confirm removal
+      </button>
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="removing.set(null)"
+      >
+        Keep comment
+      </button>
+    </div>
+  </div>
+  }
+</section>

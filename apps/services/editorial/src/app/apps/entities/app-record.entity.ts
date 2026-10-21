@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Tag } from '../../tags/entities/tag.entity';
 import { Platform } from '../../reference/entities/platform.entity';
@@ -8,60 +17,60 @@ import { MonetizationModel } from '../../reference/entities/monetization-model.e
 @Entity('app_records')
 export class AppRecord {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ length: 255, unique: true })
-  slug: string;
+  slug!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string | null;
 
-  @Column({ length: 500, nullable: true })
-  website: string;
+  @Column({ type: 'varchar', length: 2048, nullable: true })
+  website!: string | null;
 
   @Column({ default: false })
-  isPwa: boolean;
+  isPwa!: boolean;
 
   @Column({ type: 'decimal', precision: 2, scale: 1, nullable: true })
-  rating: number;
+  rating!: number | null;
 
-  @Column({ nullable: true })
-  estimatedNumberOfUsers: number;
+  @Column({ type: 'int', nullable: true })
+  estimatedNumberOfUsers!: number | null;
 
   @Column({ default: false })
-  isSuspended: boolean;
+  isSuspended!: boolean;
 
-  @Column({ nullable: true })
-  logoUrl: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  logoUrl!: string | null;
 
-  @Column({ nullable: true })
-  bannerUrl: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  bannerUrl!: string | null;
 
   @ManyToOne(() => Category, { eager: true })
-  category: Category;
+  category!: Category | null;
 
   @ManyToMany(() => Tag)
   @JoinTable({ name: 'app_record_tags' })
-  tags: Tag[];
+  tags!: Tag[];
 
   @ManyToMany(() => Platform)
   @JoinTable({ name: 'app_record_platforms' })
-  platforms: Platform[];
+  platforms!: Platform[];
 
   @ManyToMany(() => Device)
   @JoinTable({ name: 'app_record_devices' })
-  devices: Device[];
+  devices!: Device[];
 
   @ManyToMany(() => MonetizationModel)
   @JoinTable({ name: 'app_record_monetization' })
-  monetizationModels: MonetizationModel[];
+  monetizationModels!: MonetizationModel[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

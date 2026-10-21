@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'domains-identity-authentication',
   preset: '../../../../../jest.preset.js',
@@ -7,5 +6,5 @@ export default {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }]
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../../../../coverage/sdk/features/identity/libs/authentication'
+  coverageDirectory: '../../../../../coverage/sdk/features/identity/libs/authentication'
 };

@@ -10,7 +10,14 @@ export class PreferredDatePipe implements PipeTransform {
 
   transform(value: Date | string | number | null | undefined): string {
     if (value === null || value === undefined || value === '') return '';
-    try { return formatDate(value, this.preferences?.dateFormat() ?? 'dd/MM/yyyy', this.locale); }
-    catch { return ''; }
+    try {
+      return formatDate(
+        value,
+        this.preferences?.dateFormat() ?? 'dd/MM/yyyy',
+        this.locale
+      );
+    } catch {
+      return '';
+    }
   }
 }

@@ -34,6 +34,6 @@ export interface DiscussionPostVM {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DiscussionPostComponent {
-  public readonly post = input.required<DiscussionPostVM>();
+  public readonly post = input<DiscussionPostVM>();
 
 }

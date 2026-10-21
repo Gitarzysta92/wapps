@@ -15,7 +15,10 @@ import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component
 import { FeedDatePipe } from '../actions/feed-date.pipe';
 
 export const DISCUSSION_TOPIC_FEED_ITEM_SELECTOR = 'discussion-topic-feed-item';
-export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
+export type DiscussionTopicFeedItemVM = Omit<DiscussionTopicFeedItem, 'participantsCount' | 'viewsCount'> & {
+  participantsCount: number | null;
+  viewsCount: number | null;
+  replyCount?: number;
   topicLink: string;
   contextMenu: ContextMenuItem[];
   attribution?: AttributionInfoVM;
@@ -32,7 +35,8 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
     <ui-medium-card>
       <ui-card-header slot="header">
         <h3 uiMediumTitle>{{ item.discussionData.topic || item.title }}</h3>
-        <p>{{ item.participantsCount }} participants · {{ item.viewsCount }} views</p>
+        <p>{{ item.participantsCount === null ? 'Participants unavailable' : item.participantsCount + ' participants' }} · {{ item.viewsCount === null ? 'Views unavailable' : item.viewsCount + ' views' }}</p>
+        @if (item.replyCount !== undefined) { <p>{{ item.replyCount }} replies</p> }
         <small>Discussion highlights · {{ item.timestamp | feedDate }}</small>
       </ui-card-header>
 
@@ -65,7 +69,7 @@ export type DiscussionTopicFeedItemVM = DiscussionTopicFeedItem & {
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="discussions" [slug]="item.discussionSlug" />
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="discussions" [slug]="item.discussionSlug" [targetId]="item.id" />
         <feed-actions-menu [iconOnly]="iconOnly" [contextMenu]="item.contextMenu" [title]="item.discussionData.topic" />
         <a
           tuiButton

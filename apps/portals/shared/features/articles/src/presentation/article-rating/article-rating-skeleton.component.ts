@@ -6,8 +6,6 @@ import { TuiSkeleton } from '@taiga-ui/kit';
   standalone: true,
   imports: [TuiSkeleton],
   templateUrl: './article-rating-skeleton.component.html',
-  styleUrl: './article-rating-skeleton.component.scss'
+  styleUrl: './article-rating-skeleton.component.scss',
 })
 export class ArticleRatingSkeletonComponent {}
-
-

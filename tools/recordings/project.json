@@ -1,0 +1,5 @@
+{
+  "name": "wapps-recordings",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "tags": ["arch:tooling"]
+}

@@ -1,3 +1,5 @@
+import { provideIdentityLoginFeature } from '@portals/shared/features/identity';
+import { LOGIN_VALIDATION_MESSAGES } from '@portals/shared/data';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -15,10 +17,11 @@ describe('local public profiles', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({ providers: [
+        ...provideIdentityLoginFeature({ mode: 'demo', authBffUrl: '', accountApiUrl: '', validationMessages: LOGIN_VALIDATION_MESSAGES }).providers,
       provideRouter([{ path: 'profiles/:profileId', component: ProfilePageComponent }, { path: 'me/profile', component: MyProfilePageComponent }, { path: 'me/settings/profile', component: SettingsProfilePageComponent }]),
       provideHttpClient(), provideNoopAnimations(),
-      ...providePreferencesFeature({ apiBaseUrl: '' }).providers,
-      ...provideMyProfileFeature({ apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers
+      ...providePreferencesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
+      ...provideMyProfileFeature({ mode: 'demo', apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers
     ] });
   });
   afterEach(() => TestBed.resetTestingModule());

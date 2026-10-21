@@ -1,5 +1,5 @@
-import { Observable } from "rxjs";
-import { MyProfileState } from "./my-profile.state";
+import { Observable } from 'rxjs';
+import { MyProfileState } from './my-profile.state';
 import { CustomerProfileDto } from '@domains/customer/profiles';
 
 export interface IMyProfileStateProvider {

@@ -1,47 +1,21 @@
-import { CreateIdentities1788566400000 } from './entities/create-identities.migration';
-import { TokenValidationService } from './services/token-validation.service';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { DataSource } from 'typeorm';
+import { FirebaseRegistration1792454400000 } from '@sdk/extras/identity-firebase';
 import {
-  FirebaseAdminIdTokenVerifier,
-  FirebaseUserProvisioner,
-  FirebaseRestSessionGateway,
-  FirebaseTokenGenerator,
-  FirebaseGoogleCodeExchanger,
-  FirebaseGithubCodeExchanger,
-} from '@sdk/extras/identity-firebase';
+  LocalCredentials1792281600000,
+  LocalEnrollment1792281602000,
+} from '@sdk/extras/identity-local';
 import {
-  ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
-  EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
-  GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
-  GITHUB_CODE_EXCHANGER,
-  GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
-  GOOGLE_CODE_EXCHANGER,
-  IDENTITY_AUTH_SERVICE,
-  REST_SESSION_GATEWAY,
-  SWAGGER_DOCUMENT,
-  TOKEN_GENERATOR,
-  USER_PROVISIONER,
-} from './tokens';
+  CREDENTIAL_ADAPTERS,
+  createCredentialAdapters,
+} from './credential-providers';
 import { validateAuthenticatorEnv } from './config/env.validation';
-import { swaggerDocument } from './swagger.document';
-import { DocsController } from './controllers/docs.controller';
 import { HealthController } from './controllers/health.controller';
 import { PlatformController } from './controllers/platform.controller';
-import { ValidationController } from './controllers/validation.controller';
-import { AuthController } from './controllers/auth.controller';
-import { IdentityEventsPublisherHolder } from './services/identity-events-publisher.holder';
-import { AuthEventEmitterAdapter } from './infrastructure/auth-event-emitter.adapter';
-import { FirebaseRefreshTokenAdapter } from './infrastructure/firebase-refresh-token.adapter';
-import { IdentityEntity } from './entities/identity.entity';
-import { AnonymousAuthenticationStrategyFactory } from './strategy/anonymous-strategy.factory';
-import { EmailAuthenticationStrategyFactory } from './strategy/email-strategy.factory';
-import { GithubAuthenticationStrategyFactory } from './strategy/github-strategy.factory';
-import { GoogleAuthenticationStrategyFactory } from './strategy/google-strategy.factory';
-import { IdentityAuthenticationService } from '@sdk/features/identity/libs/authentication';
-import { MysqlIdentityProvider } from './services/mysql-identity-provider';
+import { CredentialController } from './credential.controller';
+import { assertCredentialDatabase } from './credential-data-source';
 
 @Module({
   imports: [
@@ -53,124 +27,35 @@ import { MysqlIdentityProvider } from './services/mysql-identity-provider';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'mysql',
-        host: config.get<string>('MYSQL_HOST'),
-        port: parseInt(config.get<string>('MYSQL_PORT') ?? '3306', 10),
-        username: config.get<string>('MYSQL_USERNAME'),
-        password: config.get<string>('MYSQL_PASSWORD'),
-        database: config.get<string>('MYSQL_DATABASE'),
-        entities: [IdentityEntity],
+        host: config.getOrThrow<string>('MYSQL_HOST'),
+        port: Number(config.getOrThrow<string>('MYSQL_PORT')),
+        username: config.getOrThrow<string>('MYSQL_USERNAME'),
+        password: config.getOrThrow<string>('MYSQL_PASSWORD'),
+        database: config.getOrThrow<string>('MYSQL_DATABASE'),
+        entities: [],
         synchronize: false,
-        migrations: [CreateIdentities1788566400000],
-        migrationsRun: true,
+        migrationsRun: false,
+        migrationsTransactionMode: 'none',
+        migrations: [
+          LocalCredentials1792281600000,
+          LocalEnrollment1792281602000,
+          FirebaseRegistration1792454400000,
+        ],
         logging: false,
       }),
     }),
-    TypeOrmModule.forFeature([IdentityEntity]),
   ],
-  controllers: [
-    DocsController,
-    HealthController,
-    PlatformController,
-    ValidationController,
-    AuthController
-  ],
+  controllers: [HealthController, PlatformController, CredentialController],
   providers: [
-    TokenValidationService,
-    IdentityEventsPublisherHolder,
     {
-      provide: SWAGGER_DOCUMENT,
-      useValue: swaggerDocument,
-    },
-    FirebaseAdminIdTokenVerifier,
-    {
-      provide: REST_SESSION_GATEWAY,
-      useFactory: (config: ConfigService) =>
-        new FirebaseRestSessionGateway(config.get<string>('FIREBASE_WEB_API_KEY')),
-      inject: [ConfigService],
-    },
-    {
-      provide: IDENTITY_AUTH_SERVICE,
-      useFactory: (
-        sessionGateway: FirebaseRestSessionGateway,
-        identityProvider: MysqlIdentityProvider,
-        eventsPublisherHolder: IdentityEventsPublisherHolder
-      ) => {
-        const eventsEmitter = new AuthEventEmitterAdapter(eventsPublisherHolder);
-        const authenticationRefreshToken = new FirebaseRefreshTokenAdapter(sessionGateway);
-        return new IdentityAuthenticationService(identityProvider, eventsEmitter, authenticationRefreshToken);
+      provide: CREDENTIAL_ADAPTERS,
+      inject: [ConfigService, DataSource],
+      useFactory: async (config: ConfigService, source: DataSource) => {
+        await assertCredentialDatabase(source);
+        if (await source.showMigrations())
+          throw new Error('Run authentication --migrate before startup');
+        return createCredentialAdapters(config, source);
       },
-      inject: [REST_SESSION_GATEWAY, MysqlIdentityProvider, IdentityEventsPublisherHolder],
-    },
-    MysqlIdentityProvider,
-    {
-      provide: USER_PROVISIONER,
-      useClass: FirebaseUserProvisioner,
-    },
-    {
-      provide: TOKEN_GENERATOR,
-      useClass: FirebaseTokenGenerator,
-    },
-    {
-      provide: GOOGLE_CODE_EXCHANGER,
-      useFactory: (config: ConfigService) =>
-        new FirebaseGoogleCodeExchanger({
-          clientId: config.get<string>('GOOGLE_CLIENT_ID') ?? '',
-          clientSecret: config.get<string>('GOOGLE_CLIENT_SECRET') ?? '',
-        }),
-      inject: [ConfigService],
-    },
-    {
-      provide: GITHUB_CODE_EXCHANGER,
-      useFactory: (config: ConfigService) =>
-        new FirebaseGithubCodeExchanger({
-          clientId: config.get<string>('GITHUB_CLIENT_ID') ?? '',
-          clientSecret: config.get<string>('GITHUB_CLIENT_SECRET') ?? '',
-        }),
-      inject: [ConfigService],
-    },
-    {
-      provide: GOOGLE_AUTHENTICATION_STRATEGY_FACTORY,
-      useFactory: (
-        googleExchanger: FirebaseGoogleCodeExchanger,
-        userProvisioner: FirebaseUserProvisioner,
-        tokenGenerator: FirebaseTokenGenerator,
-        restGateway: FirebaseRestSessionGateway
-      ) =>
-        new GoogleAuthenticationStrategyFactory(
-          googleExchanger,
-          userProvisioner,
-          tokenGenerator,
-          restGateway
-        ),
-      inject: [GOOGLE_CODE_EXCHANGER, USER_PROVISIONER, TOKEN_GENERATOR, REST_SESSION_GATEWAY],
-    },
-    {
-      provide: GITHUB_AUTHENTICATION_STRATEGY_FACTORY,
-      useFactory: (
-        githubExchanger: FirebaseGithubCodeExchanger,
-        userProvisioner: FirebaseUserProvisioner,
-        tokenGenerator: FirebaseTokenGenerator,
-        restGateway: FirebaseRestSessionGateway
-      ) =>
-        new GithubAuthenticationStrategyFactory(
-          githubExchanger,
-          userProvisioner,
-          tokenGenerator,
-          restGateway
-        ),
-      inject: [GITHUB_CODE_EXCHANGER, USER_PROVISIONER, TOKEN_GENERATOR, REST_SESSION_GATEWAY],
-    },
-    {
-      provide: EMAIL_AUTHENTICATION_STRATEGY_FACTORY,
-      useFactory: (restGateway: FirebaseRestSessionGateway) =>
-        new EmailAuthenticationStrategyFactory(restGateway),
-      inject: [REST_SESSION_GATEWAY],
-    },
-    {
-      provide: ANONYMOUS_AUTHENTICATION_STRATEGY_FACTORY,
-      useFactory: (restGateway: FirebaseRestSessionGateway) =>
-        new AnonymousAuthenticationStrategyFactory(restGateway),
-      inject: [REST_SESSION_GATEWAY],
     },
   ],
 })

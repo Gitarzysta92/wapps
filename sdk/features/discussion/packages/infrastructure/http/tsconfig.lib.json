@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../../../dist/sdk/features/discussion/packages/infrastructure/http",
+    "rootDir": "src",
+    "types": [
+      "node"
+    ],
+    "composite": true,
+    "tsBuildInfoFile": "../../../../../../dist/sdk/features/discussion/packages/infrastructure/http/tsconfig.lib.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../../libs/management/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../../../kernel/ontology/authority/tsconfig.lib.json"
+    }
+  ]
+}

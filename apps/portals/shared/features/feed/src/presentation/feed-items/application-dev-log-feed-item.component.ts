@@ -2,9 +2,9 @@ import { QuickDiscussionButtonComponent } from '@portals/shared/features/discuss
 import { FeedAttributionComponent } from '../actions/feed-attribution.component';
 import { FeedDatePipe } from '../actions/feed-date.pipe';
 import { FeedLocalVoteComponent } from '../actions/feed-local-vote.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FeedActionsMenuComponent } from '../actions/feed-actions-menu.component';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { TuiBadge, TuiChip } from '@taiga-ui/kit';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import type { ApplicationDevLogFeedItem } from '@domains/feed';
@@ -23,7 +23,11 @@ export const APPLICATION_DEV_LOG_FEED_ITEM_SELECTOR = 'application-dev-log-feed-
 
 export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never> & {
   appLink: string;
-  commentsNumber: number;
+  commentsNumber: number | null;
+  avatarUrl?: string;
+  localVoting?: boolean;
+  changeCount?: number;
+  releasedOn?: string;
   contextMenu: ContextMenuItem[];
   voting?: VotingData;
   attribution?: AttributionInfoVM;
@@ -84,7 +88,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         <app-avatar
           slot="left-side"
           [size]="'m'"
-          [avatar]="{ url: 'https://picsum.photos/200', alt: item.appName }"/>
+          [avatar]="{ url: item.avatarUrl ?? '', alt: item.appName }"/>
         <h3 uiMediumTitle>
           {{ item.appName }}
           <span class="changelog-label">
@@ -96,14 +100,15 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
         </div>
       </ui-card-header>
 
-      <section class="changelog-info"><p>Version {{ item.version }} · {{ item.releaseDate | feedDate }}</p><p>{{ item.description }}</p></section>
+      <section class="changelog-info"><p>Version {{ item.version }} · {{ item.releasedOn || (item.releaseDate | feedDate) }}</p><p>{{ item.description }}</p></section>
       <ui-medium-card class="changelog-details">
         <tui-chip size="s" appearance="action-soft" slot="top-edge">
           <tui-icon icon="@tui.package-plus" /> What's New
         </tui-chip>
         <app-changelog-details [data]="{ changes: item.changes }" />
+        @if (item.changeCount !== undefined && item.changeCount > item.changes.length) { <p>{{ item.changeCount - item.changes.length }} more changes in the full release.</p> }
       </ui-medium-card>
-      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.voting?.upvotes || 0" [downvotes]="item.voting?.downvotes || 0" />
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [enabled]="item.localVoting !== false" [upvotes]="item.localVoting === false ? null : item.voting?.upvotes ?? 0" [downvotes]="item.localVoting === false ? null : item.voting?.downvotes ?? 0" />
       @if (item.discussionSlug; as discussionSlug) {
         <discussion-quick-button slot="bottom-bar" [appSlug]="item.appSlug" [discussionSlug]="discussionSlug" />
       }
@@ -129,7 +134,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
           appearance="primary"
           size="s"
           iconStart="@tui.arrow-right"
-          [routerLink]="item.appLink"
+          [routerLink]="router.parseUrl(item.appLink)"
           [attr.aria-label]="'View changelog: ' + item.title"
           >View changelog</a
         >
@@ -138,6 +143,7 @@ export type ApplicationDevLogFeedItemVM = Omit<ApplicationDevLogFeedItem, never>
   `,
 })
 export class ApplicationDevLogFeedItemComponent {
+  readonly router = inject(Router);
   @Input() item!: ApplicationDevLogFeedItemVM;
   @Input() ctaPath = '';
 

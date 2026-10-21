@@ -14,27 +14,33 @@ import { type ContextMenuItem } from '@ui/context-menu-chip';
 import { type AttributionInfoVM } from '@portals/shared/features/attribution';
 import { AppAvatarComponent } from '@portals/shared/features/application-overview';
 import { TagsComponent } from '@ui/tags';
-import { ArticleDetailsBadgeComponent } from '@portals/shared/features/articles';
+import { ArticleCoverImageComponent, provideArticleCovers, ArticleDetailsBadgeComponent } from '@portals/shared/features/articles';
 
 export const ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR = 'article-highlight-feed-item';
 
-export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> & {
+export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, 'coverImage'> & {
   articleLink: string;
   contextMenu: ContextMenuItem[];
-  upvotesCount: number;
-  commentsCount: number;
+  coverImage: ArticleHighlightFeedItem['coverImage'] | null;
+  publishedCover?: { imageId: string; alt: string };
+  avatarUrl?: string;
+  localVoting?: boolean;
+  upvotesCount: number | null;
+  commentsCount: number | null;
   attribution?: AttributionInfoVM;
 }
 
 @Component({
   selector: ARTICLE_HIGHLIGHT_FEED_ITEM_SELECTOR,
   standalone: true,
+  providers: [provideArticleCovers()],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FavoriteToggleButtonComponent,
     FeedLocalVoteComponent,
     AppAvatarComponent,
     ArticleDetailsBadgeComponent,
+    ArticleCoverImageComponent,
     ExcerptComponent,
     TagsComponent,
     CardHeaderComponent,
@@ -55,7 +61,7 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
         <app-avatar
           slot="left-side"
           [size]="'m'"
-          [avatar]="{ url: 'https://picsum.photos/200', alt: item.title }"/>
+          [avatar]="{ url: item.avatarUrl ?? '', alt: item.author }"/>
         <h3 uiMediumTitle>
           {{ item.author }}
           <span class="article-label">
@@ -65,18 +71,22 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
         <article-details-badge class="article-details-badge" [article]="item" />
       </ui-card-header>
 
+      @if (item.publishedCover; as cover) {
+        <article-cover-image class="cover-image" [target]="{ kind: 'published', id: item.id, imageId: cover.imageId }" [alt]="cover.alt" />
+      } @else if (item.coverImage) {
       <ui-cover-image
         class="cover-image"
         [image]="item.coverImage">
       </ui-cover-image>
+      }
 
       <div class="article-summary">
         <h3 uiMediumTitle>{{ item.title }}</h3>
         <ui-tags [tags]="item.tags ?? []"></ui-tags>
         <ui-excerpt [excerpt]="item.excerpt" [maxLength]="200" />
       </div>
-      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount || 0" [allowDownvote]="false" />
-      <span slot="bottom-bar">{{ item.commentsCount || 0 }} comments</span>
+      <feed-local-vote slot="bottom-bar" [itemId]="item.id" [title]="item.title" [upvotes]="item.upvotesCount" [enabled]="item.localVoting !== false" [allowDownvote]="false" />
+      <span slot="bottom-bar">{{ item.commentsCount === null ? 'Comments count unavailable' : item.commentsCount + ' comments' }}</span>
       @if (item.attribution) { <feed-attribution [title]="item.title" slot="bottom-bar-end" [attribution]="item.attribution" /> }
       <ng-template #cardFooterActions let-iconOnly="iconOnly" let-activeZone="activeZone">
         <share-toggle-button [iconOnly]="iconOnly" [activeZone]="activeZone ?? null"
@@ -90,7 +100,7 @@ export type ArticleHighlightFeedItemVM = Omit<ArticleHighlightFeedItem, never> &
       </ng-template>
 
       <ng-template #cardActions let-iconOnly="iconOnly">
-        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="articles" [slug]="articleSlug" />
+        <favorite-toggle-button [iconOnly]="iconOnly" appearance="flat" type="articles" [slug]="articleSlug" [targetId]="item.id" />
         <feed-actions-menu [iconOnly]="iconOnly"
           [contextMenu]="item.contextMenu"
           [title]="item.title"

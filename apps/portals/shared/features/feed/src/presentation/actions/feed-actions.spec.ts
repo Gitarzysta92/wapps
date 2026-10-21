@@ -1,16 +1,64 @@
 import { FeedAttributionComponent } from './feed-attribution.component';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { TuiRoot, TUI_DARK_MODE } from '@taiga-ui/core';
+import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
+import { AttributionType, ContentNature } from '@domains/publication/attribution';
 import { FeedLocalVoteComponent } from './feed-local-vote.component';
 import { FeedDatePipe } from './feed-date.pipe';
 import { FeedActionsMenuComponent } from './feed-actions-menu.component';
 import { DiscussionTopicFeedItemComponent } from '../feed-items/discussion-topic-feed-item.component';
-import { MyFavoritesService } from '@portals/shared/features/my-favorites';
+import { ApplicationDevLogFeedItemComponent } from '../feed-items/application-dev-log-feed-item.component';
+import { provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 import { SharingService } from '@portals/shared/features/sharing';
+
+@Component({
+  imports: [TuiRoot, FeedAttributionComponent],
+  template: `<tui-root><feed-attribution title="Design article" [attribution]="attribution" /></tui-root>`,
+})
+class AttributionHostComponent {
+  readonly attribution = {
+    attributionType: AttributionType.HUMAN_CREATED,
+    contentNature: ContentNature.SPONSORED,
+    sponsor: 'Design Studio',
+    disclosureRequired: true,
+  };
+}
 
 describe('Feed actions and discussion preview', () => {
   afterEach(() => localStorage.removeItem('wapps.feed-vote.test-feed-item'));
+  it('keeps an encoded release version intact when the original card renders its route', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: SharingService, useValue: {} }] });
+    const fixture = TestBed.createComponent(ApplicationDevLogFeedItemComponent);
+    fixture.componentRef.setInput('item', {
+      id: 'release', type: 'application-dev-log-feed-item', title: 'A release', subtitle: 'major',
+      appSlug: 'example', appName: 'Example', appLink: '/apps/example/devlog/2.0%2Bstable',
+      version: '2.0+stable', description: 'Published release', releaseDate: new Date('2026-10-19'),
+      releasedOn: '2026-10-19', changes: [], localVoting: false,
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.card-actions a').getAttribute('href')).toBe('/apps/example/devlog/2.0%2Bstable');
+    expect(fixture.nativeElement.querySelector('.changelog-info').textContent).toContain('2026-10-19');
+  });
+  it('keeps unsupported API votes visible but cannot read or write browser-local votes', () => {
+    localStorage.setItem('wapps.feed-vote.test-feed-item', '1');
+    const fixture = TestBed.createComponent(FeedLocalVoteComponent);
+    fixture.componentRef.setInput('itemId', 'test-feed-item');
+    fixture.componentRef.setInput('enabled', false);
+    fixture.componentRef.setInput('upvotes', null);
+    fixture.componentRef.setInput('downvotes', null);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.vote()).toBe(0);
+    const buttons: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button'));
+    expect(buttons.every((button) => button.disabled)).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Voting unavailable');
+    buttons[0].click();
+    fixture.componentInstance.choose(-1);
+    expect(localStorage.getItem('wapps.feed-vote.test-feed-item')).toBe('1');
+    expect(fixture.componentInstance.vote()).toBe(0);
+  });
   it('persists a named local vote and supports removing it', () => {
     const fixture = TestBed.createComponent(FeedLocalVoteComponent);
     fixture.componentRef.setInput('itemId', 'test-feed-item');
@@ -45,20 +93,24 @@ describe('Feed actions and discussion preview', () => {
     expect(action).toHaveBeenCalledTimes(1);
     expect(fixture.nativeElement.querySelector('details').open).toBe(false);
   });
-  it('exposes source and sponsorship details through a named disclosure', () => {
-    const fixture = TestBed.createComponent(FeedAttributionComponent);
-    fixture.componentRef.setInput('title', 'Design article');
-    fixture.componentRef.setInput('attribution', { attributionType: 'human-created', contentNature: 'sponsored', sponsor: 'Design Studio', disclosureRequired: true });
+  it('exposes source and sponsorship details through a named disclosure', async () => {
+    TestBed.configureTestingModule({ providers: [provideNoopAnimations(), NG_EVENT_PLUGINS, { provide: TUI_DARK_MODE, useValue: signal(false) }] });
+    const fixture = TestBed.createComponent(AttributionHostComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('summary').getAttribute('aria-label')).toBe('Content attribution for Design article');
-    expect(fixture.nativeElement.textContent).toContain('Sponsored by Design Studio');
-    fixture.nativeElement.querySelector('summary').click(); fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('details').open).toBe(true);
-    expect(fixture.nativeElement.querySelector('p').textContent).toContain('Human');
+    const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(trigger.getAttribute('aria-label')).toBe('Content attribution for Design article: Sponsored by Design Studio');
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    trigger.click(); fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    const disclosure = document.querySelector('[aria-label="Content attribution"]');
+    expect(disclosure?.textContent).toContain('Sponsored by Design Studio');
+    expect(disclosure?.querySelector('p')?.textContent).toContain('Human');
   });
   it('renders only actual messages with formatted dates and a working discussion URL', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([]),
-      { provide: MyFavoritesService, useValue: { isFavorite$: () => of(false) } },
+      ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
       { provide: SharingService, useValue: {} },
     ] });
     const fixture = TestBed.createComponent(DiscussionTopicFeedItemComponent);

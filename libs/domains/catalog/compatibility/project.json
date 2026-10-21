@@ -6,7 +6,8 @@
   "sourceRoot": "libs/domains/catalog/compatibility/src",
   "tags": [
     "type:domain",
-    "scope:catalog"
+    "scope:catalog",
+    "arch:domain"
   ],
   "targets": {
     "lint": {
@@ -18,7 +19,7 @@
     "build": {
       "executor": "nx:run-commands",
       "outputs": [
-        "{projectRoot}/../../dist/domains/catalog/compatibility"
+        "{workspaceRoot}/dist/domains/catalog/compatibility"
       ],
       "options": {
         "command": "tsc --build libs/domains/catalog/compatibility/tsconfig.lib.json"

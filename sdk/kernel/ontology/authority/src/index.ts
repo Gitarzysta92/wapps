@@ -5,3 +5,4 @@ export * from './authority-validation.service';
 export * from './models/authority-validation-context';
 export * from './events/authorization.events';
 export * from './ports/policy-evaluator.port';
+export * from './models/permission-denied.error';

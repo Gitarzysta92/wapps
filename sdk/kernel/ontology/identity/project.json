@@ -5,25 +5,10 @@
   "sourceRoot": "sdk/kernel/ontology/identity/src",
   "tags": [
     "type:foundation",
-    "scope:identity-system"
+    "scope:identity-system",
+    "arch:kernel"
   ],
   "targets": {
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "sdk/kernel/ontology/identity/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": [

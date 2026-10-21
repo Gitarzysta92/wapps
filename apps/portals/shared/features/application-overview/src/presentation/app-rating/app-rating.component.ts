@@ -10,7 +10,8 @@ import { TuiIcon } from '@taiga-ui/core';
   styleUrl: './app-rating.component.scss'
 })
 export class AppRatingComponent {
-  rating = input.required<number>();
+  rating = input.required<number | null>();
+  unavailableLabel = input('Rating unavailable');
   readonly = input<boolean>(false);
 }
 

@@ -1,0 +1,48 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  <h1 uiPageTitle slot="title">@if (!discussionSlug()) { <tui-icon icon="@tui.message-circle" /> }{{ title() }}</h1>
+  <p slot="meta">
+    Community conversations{{
+      application() ? ' about ' + application()!.name : ''
+    }}.
+  </p>
+  <a
+    tuiButton
+    slot="actions"
+    size="s"
+    appearance="secondary"
+    [routerLink]="overviewLink()"
+    >Application</a
+  >
+  <nav slot="navigation" aria-label="Discussion sections">
+    <a
+      tuiLink
+      [routerLink]="listLink()"
+      [attr.aria-current]="discussionSlug() ? null : 'page'"
+      >All discussions</a
+    >
+  </nav>
+</ui-page-header>
+<section class="discussion-page" [attr.aria-busy]="app.isLoading()">
+  @if (application()) {
+  <application-discussions
+    [applicationId]="application()!.id"
+    [applicationSlug]="application()!.slug"
+    [threadId]="discussionSlug()"
+    [threadLink]="threadLink"
+  />
+  @if (discussionSlug() && discussions.items().length && !discussions.loading() && !discussions.error()) {
+  <section class="related-topics" aria-labelledby="related-topics-title">
+    <h2 id="related-topics-title">More discussions about this application</h2>
+    <application-discussion-previews
+      [applicationId]="application()!.id"
+      [excludeId]="discussionSlug()"
+      [refreshRevision]="discussions.accepted()?.revision ?? 0"
+      [threadLink]="threadLink"
+    />
+  </section>
+  }
+  } @else {
+  <application-content-state [reader]="app" />
+  }
+</section>

@@ -24,10 +24,7 @@
       "path": "../../../packages/infrastructure/firebase/tsconfig.lib.json"
     },
     {
-      "path": "../../../../../platform/queue/tsconfig.lib.json"
-    },
-    {
-      "path": "../../../../../../apps/shared/tsconfig.lib.json"
+      "path": "../../../packages/infrastructure/local/tsconfig.lib.json"
     }
   ],
   "exclude": [

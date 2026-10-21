@@ -1,27 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { MyFavoritesApiService, MyFavoritesService, MY_FAVORITES_STATE_PROVIDER, provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
+import { MyFavoritesDemoService, MyFavoritesService, MY_FAVORITES_STATE_PROVIDER, provideMyFavoritesFeature } from '@portals/shared/features/my-favorites';
 
 const key = 'wapps.favorites.v1';
 
 describe('local favorites', () => {
   beforeEach(() => {
     localStorage.removeItem(key);
-    TestBed.configureTestingModule({ providers: [MyFavoritesApiService, ...provideMyFavoritesFeature({ apiBaseUrl: '' }).providers] });
+    TestBed.configureTestingModule({ providers: [MyFavoritesDemoService, ...provideMyFavoritesFeature({ mode: 'demo', apiBaseUrl: '' }).providers] });
   });
   afterEach(() => localStorage.removeItem(key));
 
   it('keeps an added item after a new adapter is created and removes it durably', async () => {
-    const adapter = TestBed.inject(MyFavoritesApiService);
+    const adapter = TestBed.inject(MyFavoritesDemoService);
     await firstValueFrom(adapter.addToFavorites('articles', 'tech-trends-2024'));
     await firstValueFrom(adapter.addToFavorites('articles', 'tech-trends-2024'));
-    const restored = TestBed.runInInjectionContext(() => new MyFavoritesApiService());
+    const restored = TestBed.runInInjectionContext(() => new MyFavoritesDemoService());
     const saved = await firstValueFrom(restored.getMyFavorites());
-    expect(saved.ok && saved.value.articles).toEqual(['tech-trends-2024']);
+    expect(saved.ok && saved.value.data.articles).toEqual(['tech-trends-2024']);
     await firstValueFrom(restored.removeFromFavorites('articles', 'tech-trends-2024'));
-    const reloaded = TestBed.runInInjectionContext(() => new MyFavoritesApiService());
+    const reloaded = TestBed.runInInjectionContext(() => new MyFavoritesDemoService());
     const removed = await firstValueFrom(reloaded.getMyFavorites());
-    expect(removed.ok && removed.value.articles).toEqual([]);
+    expect(removed.ok && removed.value.data.articles).toEqual([]);
   });
 
   it('shares one state service between buttons and sidebar consumers', () => {
@@ -30,16 +30,16 @@ describe('local favorites', () => {
 
   it('recovers from corrupt storage and ignores invalid array members', async () => {
     localStorage.setItem(key, '{broken');
-    const adapter = TestBed.runInInjectionContext(() => new MyFavoritesApiService());
+    const adapter = TestBed.runInInjectionContext(() => new MyFavoritesDemoService());
     expect((await firstValueFrom(adapter.getMyFavorites())).ok).toBe(true);
     localStorage.setItem(key, JSON.stringify({ articles: ['safe-slug', 99, null, 'safe-slug'] }));
-    const recovered = TestBed.runInInjectionContext(() => new MyFavoritesApiService());
+    const recovered = TestBed.runInInjectionContext(() => new MyFavoritesDemoService());
     const result = await firstValueFrom(recovered.getMyFavorites());
-    expect(result.ok && result.value.articles).toEqual(['safe-slug']);
+    expect(result.ok && result.value.data.articles).toEqual(['safe-slug']);
   });
 
   it('reports a storage failure without pretending the item was saved', async () => {
-    const adapter = TestBed.inject(MyFavoritesApiService);
+    const adapter = TestBed.inject(MyFavoritesDemoService);
     const before = await firstValueFrom(adapter.getMyFavorites());
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = () => { throw new Error('Storage full'); };

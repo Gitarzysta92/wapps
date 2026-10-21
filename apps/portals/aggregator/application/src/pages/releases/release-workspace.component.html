@@ -1,0 +1,572 @@
+<ui-page-header class="page-header">
+  <ui-breadcrumbs slot="top-bar" [breadcrumbs]="breadcrumb()" />
+  <h1 uiPageTitle slot="title">
+    {{
+      releaseMode() === 'list'
+        ? 'My release notes'
+        : releaseMode() === 'new'
+        ? 'New release draft'
+        : releaseMode() === 'edit'
+        ? 'Edit release notes'
+        : releaseMode() === 'queue'
+        ? 'Release review queue'
+        : 'Review release notes'
+    }}
+  </h1>
+  <p slot="meta">
+    Verified owners draft release notes privately. Independent staff review the
+    submitted version before publication.
+  </p>
+  <a
+    slot="actions"
+    tuiButton
+    size="s"
+    appearance="secondary"
+    routerLink="/my/apps"
+    >My Apps</a
+  >
+  <nav slot="navigation" aria-label="Release workspace sections">
+    <a tuiLink [routerLink]="'/' + paths.releases">My release notes</a>
+    <a tuiLink [routerLink]="'/' + paths.claims"
+      >Choose a verified application</a
+    >
+    <a tuiLink [routerLink]="'/' + paths.releaseReviews">Staff review</a>
+  </nav>
+</ui-page-header>
+<section
+  class="application-workspace"
+  [attr.aria-busy]="
+    workspace.loading() || workspace.saving() || workspace.sourceLoading()
+  "
+>
+  @if (!workspace.signedIn()) {
+  <ui-content-state
+    title="Sign in to continue"
+    description="Release drafts belong to your account and assigned reviewers."
+  />
+  } @else { @if (workspace.error()) {
+  <p role="alert">{{ workspace.error() }}</p>
+  } @if (workspace.uncertain()) {
+  <p>
+    The last change has not been confirmed. Retry it before making another
+    change. Keep this browser session open until it is resolved.
+  </p>
+  <button
+    tuiButton
+    type="button"
+    size="m"
+    [disabled]="
+      workspace.saving() || workspace.loading() || workspace.sourceLoading()
+    "
+    (click)="workspace.retry()"
+  >
+    Retry unconfirmed change
+  </button>
+  } @else if (workspace.error()) {
+  <button
+    tuiButton
+    type="button"
+    size="m"
+    appearance="secondary"
+    [disabled]="workspace.locked()"
+    (click)="confirmation.set('reload')"
+  >
+    Reload saved release
+  </button>
+  } @if (workspace.feedback()) {
+  <p role="status">{{ workspace.feedback() }}</p>
+  } @if (workspace.saving()) {
+  <p role="status">Saving release change...</p>
+  } @if (workspace.result(); as result) { @if (result.id !== draftId() &&
+  hasSavedDraft(result)) {
+  <a tuiLink [routerLink]="receiptPath(result)"
+    >Open completed release request</a
+  >
+  } } @if (workspace.loading()) {
+  <p role="status">Loading release notes...</p>
+  } @else if (releaseMode() === 'list') { @if (!workspace.items().length &&
+  !workspace.error()) {
+  <ui-content-state
+    title="No release drafts yet"
+    description="Open an approved ownership claim and choose Write release notes to start."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (draft of workspace.items(); track draft.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ draft.title }}</h2>
+        <p>
+          {{ draft.version }} / {{ draft.channel }} / Updated
+          {{ draft.updatedAt | date : 'medium' }}
+        </p>
+      </div>
+      <p class="application-draft-description">{{ draft.description }}</p>
+      <a tuiButton size="s" [routerLink]="['/' + paths.releases, draft.id]"
+        >Edit release draft</a
+      >
+    </article>
+    }
+  </div>
+  } @else if (releaseMode() === 'queue') { @if (!workspace.queue().length &&
+  !workspace.error()) {
+  <ui-content-state
+    title="No releases awaiting review"
+    description="Submitted release notes appear here for assigned independent reviewers."
+  />
+  }
+  <div class="application-draft-grid">
+    @for (entry of workspace.queue(); track entry.id) {
+    <article class="application-draft-card" tuiAppearance="card-panel">
+      <div class="application-draft-heading">
+        <h2>{{ entry.latestSubmission?.title }}</h2>
+        <p>
+          {{ entry.application?.name ?? 'Application unavailable' }} /
+          {{ entry.latestSubmission?.version }} /
+          {{ entry.latestSubmission?.releasedOn }}
+        </p>
+      </div>
+      <a
+        tuiButton
+        size="s"
+        [routerLink]="['/' + paths.releaseReviews, entry.id]"
+        >Review submitted notes</a
+      >
+    </article>
+    }
+  </div>
+  @if (!workspace.error()) {
+  <nav class="application-draft-actions" aria-label="Review pages">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      [disabled]="workspace.page() <= 1"
+      (click)="paginate(workspace.page() - 1)"
+    >
+      Previous page
+    </button>
+    <span
+      >Page {{ workspace.page() }} / {{ workspace.total() }} submissions</span
+    >
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      [disabled]="workspace.page() * workspace.pageSize >= workspace.total()"
+      (click)="paginate(workspace.page() + 1)"
+    >
+      Next page
+    </button>
+  </nav>
+  } } @if (workspace.sourceLoading()) {
+  <p role="status">Checking ownership and current release...</p>
+  } @if (workspace.sourceError()) {
+  <p role="alert">{{ workspace.sourceError() }}</p>
+  } @if (releaseMode() === 'new' && !workspace.createdHere()) { @if
+  (!applicationId()) {
+  <ui-content-state
+    title="Choose a verified application"
+    description="Open your approved ownership claim to write release notes."
+  />
+  } @else { @if (!workspace.sourceLoading()) {
+  <button
+    tuiButton
+    type="button"
+    size="s"
+    appearance="secondary"
+    [disabled]="workspace.locked()"
+    (click)="workspace.refreshSource()"
+  >
+    Refresh ownership and release
+  </button>
+  } @if (workspace.source(); as source) {
+  <p>Release notes for {{ source.applicationName }}</p>
+  @if (source.release; as release) {
+  <article class="application-draft-card" tuiAppearance="card-panel">
+    <h2>{{ release.title }}</h2>
+    <p>
+      {{ release.version }} / {{ release.visible ? 'Published' : 'Withdrawn' }}
+    </p>
+    <p class="application-draft-description">{{ release.description }}</p>
+    <button
+      tuiButton
+      size="m"
+      type="button"
+      [disabled]="workspace.locked()"
+      (click)="workspace.openCanonical()"
+    >
+      Create private editing draft
+    </button>
+  </article>
+  } } } } @if ((releaseMode() === 'edit' && workspace.draft()) || (releaseMode()
+  === 'new' && workspace.source() && !workspace.source()?.release &&
+  !workspace.createdHere())) {
+  <form
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    (ngSubmit)="workspace.save()"
+  >
+    <div class="application-draft-heading">
+      <h2>Private release draft</h2>
+      <p>
+        Saving does not publish. Future release dates can be drafted; submit on
+        or after the release date.
+      </p>
+    </div>
+    <fieldset [disabled]="workspace.locked()">
+      @for (field of textFields; track field.key) {
+      <label [for]="'release-' + field.key">{{ field.label }}</label>
+      <input
+        class="application-draft-input"
+        [id]="'release-' + field.key"
+        [name]="field.key"
+        [type]="field.type"
+        [maxlength]="field.max"
+        required
+        [readOnly]="
+          field.key === 'version' &&
+          workspace.status()?.publicationRevision !== null &&
+          !!workspace.status()
+        "
+        [ngModel]="workspace.fields()[field.key]"
+        (ngModelChange)="workspace.setField(field.key, $event)"
+      />
+      }
+      <label for="release-channel">Channel</label>
+      <select
+        class="application-draft-input"
+        id="release-channel"
+        name="channel"
+        [ngModel]="workspace.fields().channel"
+        (ngModelChange)="workspace.setField('channel', $event)"
+      >
+        <option value="stable">Stable</option>
+        <option value="prerelease">Prerelease</option>
+      </select>
+      <label for="release-type">Release type</label>
+      <select
+        class="application-draft-input"
+        id="release-type"
+        name="type"
+        [ngModel]="workspace.fields().type"
+        (ngModelChange)="workspace.setField('type', $event)"
+      >
+        <option value="major">Major</option>
+        <option value="minor">Minor</option>
+        <option value="patch">Patch</option>
+      </select>
+      <label for="release-description">Description</label>
+      <textarea
+        class="application-draft-input"
+        id="release-description"
+        name="description"
+        rows="5"
+        maxlength="4000"
+        required
+        [ngModel]="workspace.fields().description"
+        (ngModelChange)="workspace.setField('description', $event)"
+      ></textarea>
+      <h3>Changes</h3>
+      @for (change of workspace.fields().changes; track $index; let i = $index)
+      {
+      <label [for]="'release-change-type-' + i">Change {{ i + 1 }} type</label>
+      <select
+        class="application-draft-input"
+        [id]="'release-change-type-' + i"
+        [name]="'change-type-' + i"
+        [ngModel]="change.type"
+        (ngModelChange)="workspace.setChange(i, 'type', $event)"
+      >
+        <option value="feature">Feature</option>
+        <option value="fix">Fix</option>
+        <option value="improvement">Improvement</option>
+        <option value="breaking">Breaking change</option>
+        <option value="security">Security</option>
+      </select>
+      <label [for]="'release-change-' + i"
+        >Change {{ i + 1 }} description</label
+      >
+      <textarea
+        class="application-draft-input"
+        [id]="'release-change-' + i"
+        [name]="'change-' + i"
+        rows="3"
+        maxlength="1000"
+        required
+        [ngModel]="change.description"
+        (ngModelChange)="workspace.setChange(i, 'description', $event)"
+      ></textarea>
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="workspace.fields().changes.length <= 1"
+        (click)="workspace.removeChange(i)"
+      >
+        Remove change {{ i + 1 }}
+      </button>
+      }
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="workspace.fields().changes.length >= 100"
+        (click)="workspace.addChange()"
+      >
+        Add change
+      </button>
+    </fieldset>
+    <div class="application-draft-actions">
+      <button tuiButton size="m" type="submit" [disabled]="workspace.locked()">
+        Save release draft
+      </button>
+    </div>
+  </form>
+  @if (workspace.draft()) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Compare current release</h2>
+      <p>
+        Refresh preserves your unsaved notes. Choose any canonical fields to
+        copy, then explicitly merge your chosen draft. Merging cancels a pending
+        review and requires resubmission.
+      </p>
+    </div>
+    <button
+      tuiButton
+      type="button"
+      size="s"
+      appearance="secondary"
+      [disabled]="workspace.locked()"
+      (click)="workspace.refreshSource()"
+    >
+      Refresh canonical notes
+    </button>
+    @if (workspace.source(); as source) {
+    <p>
+      {{ source.applicationName }} /
+      {{
+        source.release
+          ? source.release.visible
+            ? 'Published'
+            : 'Withdrawn'
+          : 'No published notes yet'
+      }}
+    </p>
+    @if (source.release; as release) { @for (field of mergeFields; track
+    field.key) {
+    <details class="application-editing-comparison">
+      <summary>{{ field.label }}: compare saved public notes</summary>
+      @if (field.key === 'changes') { @for (change of release.changes; track
+      $index) {
+      <p class="application-draft-description">
+        {{ change.type }}: {{ change.description }}
+      </p>
+      } } @else {
+      <p class="application-draft-description">{{ release[field.key] }}</p>
+      }
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        appearance="secondary"
+        [disabled]="workspace.locked() || !workspace.mayRebase()"
+        (click)="workspace.useCanonical(field.key)"
+      >
+        Use canonical {{ field.label }}
+      </button>
+    </details>
+    } }
+    <button
+      tuiButton
+      type="button"
+      size="m"
+      [disabled]="workspace.locked() || !workspace.mayRebase()"
+      (click)="confirmation.set('rebase')"
+    >
+      Merge chosen draft
+    </button>
+    }
+  </section>
+  } } @if (workspace.status(); as status) {
+  <section class="application-draft-card" tuiAppearance="card-panel">
+    <div class="application-draft-heading">
+      <h2>Publication and review</h2>
+      @if (status.application; as application) {
+      <a tuiLink [routerLink]="['/apps', application.slug, 'devlog']"
+        >Release notes for {{ application.name }}</a
+      >
+      } @else {
+      <p>
+        Application context is unavailable. Reload before making a review
+        decision.
+      </p>
+      }
+      <p>
+        {{
+          status.publicVersion
+            ? 'Published version: ' + status.publicVersion
+            : 'No currently published version'
+        }}
+      </p>
+    </div>
+    @if (status.latestSubmission; as submission) {
+    <p>
+      Submission {{ submission.status }} / Submitted
+      {{ submission.submittedAt | date : 'medium' }}
+    </p>
+    <h3>Submitted snapshot: {{ submission.title }}</h3>
+    <p>
+      {{ submission.version }} / {{ submission.channel }} /
+      {{ submission.type }} / {{ submission.releasedOn }}
+    </p>
+    <p class="application-draft-description">{{ submission.description }}</p>
+    @for (change of submission.changes; track $index) {
+    <p class="application-draft-description">
+      {{ change.type }}: {{ change.description }}
+    </p>
+    } @if (submission.reason) {
+    <p class="application-draft-description">
+      Review reason: {{ submission.reason }}
+    </p>
+    } } @else {
+    <p>No submitted notes yet.</p>
+    } @if (releaseMode() === 'edit') {
+    <p>
+      Submission freezes the saved draft. Later private edits do not change the
+      submitted snapshot or public notes.
+    </p>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="
+          workspace.locked() ||
+          workspace.dirty() ||
+          status.latestSubmission?.status === 'submitted'
+        "
+        (click)="workspace.publish('submit')"
+      >
+        Submit saved notes for review
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="
+          workspace.locked() ||
+          (!status.publicVersion &&
+            status.latestSubmission?.status !== 'submitted')
+        "
+        (click)="confirmation.set('withdraw')"
+      >
+        Withdraw release
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="workspace.locked()"
+        (click)="confirmation.set('delete')"
+      >
+        Delete private draft
+      </button>
+    </div>
+    } @else if (releaseMode() === 'review' && status.latestSubmission?.status
+    === 'submitted') {
+    <p>
+      Review only this frozen snapshot. You cannot review your own release
+      notes.
+    </p>
+    <fieldset [disabled]="workspace.locked()">
+      <label for="release-review-reason"
+        >Decision reason (required for rejection)</label
+      ><textarea
+        class="application-draft-input"
+        id="release-review-reason"
+        rows="4"
+        maxlength="1000"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      ></textarea>
+    </fieldset>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="workspace.locked()"
+        (click)="workspace.publish('approve', reason())"
+      >
+        Approve release</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        [disabled]="workspace.locked()"
+        (click)="workspace.publish('reject', reason())"
+      >
+        Reject release
+      </button>
+    </div>
+    }
+  </section>
+  } @if (confirmation(); as action) {
+  <section
+    class="application-draft-card"
+    tuiAppearance="card-panel"
+    role="alertdialog"
+    aria-modal="false"
+    aria-labelledby="release-confirm-title"
+  >
+    <h2 id="release-confirm-title">
+      {{
+        action === 'delete'
+          ? 'Delete this private draft?'
+          : action === 'withdraw'
+          ? 'Withdraw these release notes?'
+          : action === 'rebase'
+          ? 'Merge your chosen notes?'
+          : 'Discard unsaved notes and reload?'
+      }}
+    </h2>
+    <p>
+      {{
+        action === 'delete'
+          ? 'This removes private notes and submission history. Already approved public notes remain published. Withdraw first if you also want to remove them from the public devlog.'
+          : action === 'withdraw'
+          ? 'Public release notes will become unavailable immediately, and pending review will be cancelled.'
+          : action === 'rebase'
+          ? 'Your selected draft fields will be saved against the refreshed canonical release. Pending review is cancelled; submit again when ready.'
+          : 'Your unsaved fields will be replaced by the latest saved draft.'
+      }}
+    </p>
+    <div class="application-draft-actions">
+      <button
+        tuiButton
+        type="button"
+        size="m"
+        [disabled]="workspace.locked()"
+        (click)="confirm()"
+      >
+        Confirm {{ action }}</button
+      ><button
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        (click)="confirmation.set(null)"
+      >
+        Cancel
+      </button>
+    </div>
+  </section>
+  } }
+</section>

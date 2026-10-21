@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'ui-password-reset',
   preset: '../../../jest.preset.js',

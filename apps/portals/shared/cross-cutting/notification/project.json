@@ -3,36 +3,32 @@
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "prefix": "id",
-  "sourceRoot": "apps/portals/shared/cross-cutting/notification",
-  "tags": ["type:cross-cutting", "scope:notification"],
+  "sourceRoot": "apps/portals/shared/cross-cutting/notification/src",
+  "tags": [
+    "type:cross-cutting",
+    "scope:notification",
+    "arch:portal-support"
+  ],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/portals/shared/cross-cutting/notification",
         "main": "apps/portals/shared/cross-cutting/notification/src/index.ts",
         "tsConfig": "apps/portals/shared/cross-cutting/notification/tsconfig.lib.json",
-        "assets": ["apps/portals/shared/cross-cutting/notification/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/portals/shared/cross-cutting/notification/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "assets": [
+          "apps/portals/shared/cross-cutting/notification/*.md"
+        ]
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }

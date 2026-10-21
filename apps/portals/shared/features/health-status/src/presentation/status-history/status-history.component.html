@@ -5,11 +5,14 @@
       *ngFor="let statusItem of statusesHistory()"
       class="status-dot"
       role="listitem"
+      tabindex="0"
+      [attr.data-status]="getStatusClass(statusItem.status)"
       [class.operational]="getStatusClass(statusItem.status) === 'operational'"
       [class.degraded]="getStatusClass(statusItem.status) === 'degraded'"
       [class.outage]="getStatusClass(statusItem.status) === 'outage'"
-      [attr.aria-label]="getStatusLabel(statusItem.status) + ' on ' + (statusItem.timestamp | date:'shortDate')"
-      [title]="'Status: ' + getStatusLabel(statusItem.status) + ' on ' + (statusItem.timestamp | date:'short')">
+      [class.unknown]="getStatusClass(statusItem.status) === 'unknown'"
+      [attr.aria-label]="statusItem.label || (getStatusLabel(statusItem.status) + ' on ' + (statusItem.timestamp | date:'yyyy-MM-dd':'UTC') + ' UTC')"
+      [title]="statusItem.label || (getStatusLabel(statusItem.status) + ' on ' + (statusItem.timestamp | date:'yyyy-MM-dd':'UTC') + ' UTC')">
     </div>
   </div>
 </div>

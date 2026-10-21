@@ -11,7 +11,7 @@
   <h1 [tuiSkeleton]="isLoading()" uiPageTitle slot="title">Profile Settings</h1>
 
   <p [tuiSkeleton]="isLoading()" slot="meta" class="page-description">
-    Manage your public profile information
+    Manage your profile details
   </p>
   <settings-navigation slot="navigation" />
 </ui-page-header>
@@ -23,15 +23,26 @@
     }
   </section>
 } @else if (isError()) {
-  <ui-content-state class="error-section" [error]="true" title="Could not load settings" description="Check browser storage access, then try again. Your saved settings have not been changed." icon="@tui.circle-alert">
+  <ui-content-state class="error-section" [error]="true" title="Could not load settings" description="Your profile is unavailable. Try loading it again." icon="@tui.circle-alert">
     <button tuiButton size="m" type="button" (click)="reload()">Retry</button><a tuiButton appearance="secondary" size="m" routerLink="/me/profile">Back to profile</a>
   </ui-content-state>
-} @else {
+} @else if (profile()) {
   <section class="settings-content">
-    <p class="page-description">Changes are saved only on this browser and update the profile shown in this app.</p>
+    <p class="page-description">{{ isDemo ? 'Demo changes are saved only on this browser.' : 'Changes are saved to your account and are available across sessions.' }}</p>
     @if (feedback()) {
       <p [attr.role]="saveError() ? 'alert' : 'status'" aria-live="polite" class="settings-feedback" [class.settings-feedback--error]="saveError()">{{ feedback() }}</p>
     }
+    @if (conflict()) {
+      <button tuiButton appearance="secondary" size="m" type="button" (click)="reload()">Discard edits and reload saved profile</button>
+    }
+    <section tuiAppearance="card-panel" tuiCardLarge class="settings-card" aria-label="Sign-in email">
+      <header class="settings-card-header">
+        <h2 class="section-title">Sign-in email</h2>
+        <p class="page-description">Verify the email used by your sign-in account. Your profile contact details are managed separately.</p>
+      </header>
+      <email-verification-status />
+    </section>
+
     <!-- Avatar Section -->
     <div tuiAppearance="card-panel" tuiCardLarge class="settings-card avatar-card">
       <header class="settings-card-header">
@@ -45,6 +56,7 @@
           {{ (formData().name || 'User').substring(0, 2).toUpperCase() }}
         </tui-avatar>
         <div class="avatar-controls">
+          @if (isDemo) {
           <div class="avatar-actions">
             <input #avatarInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onAvatarSelected($event)" />
             <button tuiButton appearance="secondary" size="s" iconStart="@tui.upload"
@@ -59,6 +71,9 @@
           <p id="avatar-guidance" class="page-description avatar-guidance">
             JPEG, PNG or WebP · Up to 1 MB.<br />Save Changes to apply your photo.
           </p>
+          } @else {
+            <profile-avatar-editor [hasPhoto]="!!avatarUri()" [enabled]="photoEnabled()" (saving)="photoSaving.set($event)" />
+          }
         </div>
       </div>
     </div>
@@ -82,11 +97,12 @@
         <input
           tuiTextfield
           placeholder="Your name"
+          [disabled]="photoSaving()"
           [ngModel]="formData().name"
           (ngModelChange)="onFieldChange('name', $event)"
           name="name"
           required
-          maxlength="100"
+          maxlength="120"
         />
       </tui-textfield>
 
@@ -98,7 +114,8 @@
             [min]="3"
             [max]="6"
             placeholder="Tell others about yourself..."
-            [ngModel]="formData().bio"
+            [disabled]="photoSaving()"
+          [ngModel]="formData().bio"
             (ngModelChange)="onFieldChange('bio', $event)"
             name="bio"
             maxlength="500"
@@ -113,11 +130,42 @@
         <input
           tuiTextfield
           placeholder="City, Country"
+          [disabled]="photoSaving()"
           [ngModel]="formData().location"
           (ngModelChange)="onFieldChange('location', $event)"
           name="location"
+          maxlength="120"
         />
       </tui-textfield>
+
+      <div class="setting-info">
+        <tui-textfield>
+          <label tuiLabel>Contact Email</label>
+          <input
+            tuiTextfield
+            type="email"
+            name="contactEmail"
+            autocomplete="off"
+            placeholder="hello@example.com"
+            maxlength="254"
+            aria-describedby="contact-email-guidance"
+            [disabled]="photoSaving()"
+            [ngModel]="formData().contactEmail"
+            (ngModelChange)="onFieldChange('contactEmail', $event)"
+          />
+        </tui-textfield>
+        <p id="contact-email-guidance" class="setting-description">
+          Optional contact address, separate from your sign-in email. Leave blank
+          to remove it.
+          @if (isDemo) {
+            This demo keeps contact details only in this browser.
+          } @else {
+            It is shared with your profile's audience only when Show Email Address
+            is enabled in <a routerLink="/me/settings/privacy">Privacy Settings</a>.
+          }
+          Wapps does not verify this address.
+        </p>
+      </div>
     </form>
 
     <!-- Social Links Section -->
@@ -139,9 +187,11 @@
         <input
           tuiTextfield
           placeholder="https://yourwebsite.com"
+          [disabled]="photoSaving()"
           [ngModel]="formData().website"
           (ngModelChange)="onFieldChange('website', $event)"
           name="website"
+          maxlength="2048"
         />
       </tui-textfield>
 
@@ -150,9 +200,11 @@
         <input
           tuiTextfield
           placeholder="@username"
+          [disabled]="photoSaving()"
           [ngModel]="formData().twitter"
           (ngModelChange)="onFieldChange('twitter', $event)"
           name="twitter"
+          maxlength="2048"
         />
       </tui-textfield>
 
@@ -161,9 +213,11 @@
         <input
           tuiTextfield
           placeholder="https://linkedin.com/in/username"
+          [disabled]="photoSaving()"
           [ngModel]="formData().linkedin"
           (ngModelChange)="onFieldChange('linkedin', $event)"
           name="linkedin"
+          maxlength="2048"
         />
       </tui-textfield>
 
@@ -172,9 +226,11 @@
         <input
           tuiTextfield
           placeholder="@username"
+          [disabled]="photoSaving()"
           [ngModel]="formData().github"
           (ngModelChange)="onFieldChange('github', $event)"
           name="github"
+          maxlength="2048"
         />
       </tui-textfield>
     </form>
@@ -193,7 +249,7 @@
         tuiButton
         appearance="primary"
         type="button"
-        [disabled]="isSaving() || isLoading() || isReadingAvatar()"
+        [disabled]="isSaving() || photoSaving() || isLoading() || isReadingAvatar()"
         (click)="onSave()"
       >
         @if (isSaving()) {
@@ -204,4 +260,10 @@
       </button>
     </div>
   </section>
+}
+
+@if (!isLoading() && !isError() && !profile()) {
+  <ui-content-state title="Sign in to edit your profile" description="Your account profile will appear after you sign in." icon="@tui.user-round">
+    <a tuiButton appearance="secondary" size="m" routerLink="/">Back to Explore</a>
+  </ui-content-state>
 }

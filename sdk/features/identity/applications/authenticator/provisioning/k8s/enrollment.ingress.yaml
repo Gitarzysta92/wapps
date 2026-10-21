@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: identity-enrollment-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/limit-rpm: "10"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "1"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: authenticator.host.placeholder
+      http:
+        paths:
+          - path: /auth/register
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/password-reset/verify
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/password-reset/complete
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/status
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/request
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/verify
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80
+          - path: /auth/email-verification/complete
+            pathType: Exact
+            backend:
+              service:
+                name: authenticator
+                port:
+                  number: 80

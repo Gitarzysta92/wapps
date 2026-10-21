@@ -1,0 +1,27 @@
+@use 'ui/design-system/src/styles' as *;
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.explore-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-4;
+  justify-content: flex-end;
+  margin-bottom: $space-4;
+}
+.explore-controls p {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+.explore-description {
+  margin: $space-4 0 0;
+}
+.explore-notice { margin-bottom: $space-6; }
+.explore-items {
+  display: grid;
+  gap: $space-5;
+  margin-bottom: $space-6;
+}

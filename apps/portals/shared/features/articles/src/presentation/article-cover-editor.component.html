@@ -1,0 +1,233 @@
+<div class="cover-editor" [attr.aria-busy]="media.saving() || media.loading()">
+  <div class="cover-heading">
+    <h2>Article cover</h2>
+    <p>
+      Upload a still PNG, JPEG or WebP, up to 8 MiB. Choose a cover and describe
+      it, then save the article. Staff review the cover and description with
+      your text.
+    </p>
+  </div>
+  @if (media.error()) {
+  <p role="alert">{{ media.error() }}</p>
+  } @if (media.feedback()) {
+  <p role="status">{{ media.feedback() }}</p>
+  } @if (media.saving()) {
+  <p role="status">Saving cover change...</p>
+  } @if (media.recovering()) {
+  <p role="status">Recovering your last cover request...</p>
+  } @if (!media.recoveryReady() && !media.recovering()) {
+  <button
+    tuiButton
+    size="s"
+    appearance="secondary"
+    type="button"
+    (click)="media.restore()"
+  >
+    Reload cover recovery
+  </button>
+  } @if (media.pending(); as pending) {
+  <section aria-label="Unconfirmed cover request" class="cover-upload">
+    <h3>Resolve the last cover request</h3>
+    <p>
+      The request may already have succeeded. Retry it before starting another
+      upload. Recovery is retained in this tab for the same account session;
+      file bytes are not saved.
+    </p>
+    @if (pending.intent.articleId !== articleId()) {
+    <a tuiLink [routerLink]="[workspacePath(), pending.intent.articleId]"
+      >Open the article for this cover request</a
+    >
+    } @if (pending.intent.type === 'upload' || pending.intent.type ===
+    'reserve') {
+    <label for="article-cover-retry"
+      >Select the exact original file to retry</label
+    >
+    <input
+      id="article-cover-retry"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      [disabled]="disabled() || media.saving() || !media.recoveryReady()"
+      (change)="resume($event)"
+    />
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      [disabled]="disabled() || media.saving() || !media.recoveryReady()"
+      (click)="media.cancelPendingUpload()"
+    >
+      Resolve and cancel unused upload
+    </button>
+    }
+    <button
+      tuiButton
+      size="s"
+      type="button"
+      [disabled]="disabled() || media.saving() || !media.recoveryReady()"
+      (click)="media.retry()"
+    >
+      Retry cover request
+    </button>
+  </section>
+  } @if (cover(); as selected) {
+  <section class="cover-upload" aria-label="Selected article cover">
+    <h3>Selected cover</h3>
+    <article-cover-image
+      [target]="{ kind: 'upload', id: selected.imageId }"
+      [alt]="selected.alt || 'Selected article cover preview'"
+    />
+    <label for="article-cover-alt">Cover description (required)</label>
+    <textarea
+      id="article-cover-alt"
+      required
+      class="application-draft-input"
+      rows="3"
+      maxlength="300"
+      [disabled]="disabled()"
+      [ngModel]="selected.alt"
+      (ngModelChange)="describe($event)"
+    ></textarea>
+    <p>
+      The description is public and serves as alternative text. Save the article
+      to keep cover changes.
+    </p>
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      [disabled]="disabled()"
+      (click)="remove()"
+    >
+      Remove cover from draft
+    </button>
+  </section>
+  } @else {
+  <p>No cover selected. An article can be published without one.</p>
+  }
+  <label for="article-cover-file">Upload a new article cover</label>
+  <input
+    id="article-cover-file"
+    type="file"
+    accept="image/png,image/jpeg,image/webp"
+    [disabled]="disabled() || media.blocked()"
+    (change)="choose($event)"
+  />
+  <div class="cover-actions">
+    <button
+      tuiButton
+      size="s"
+      appearance="secondary"
+      type="button"
+      [disabled]="media.loading() || media.saving()"
+      (click)="media.reload()"
+    >
+      Reload cover uploads
+    </button>
+  </div>
+  @if (media.loading()) {
+  <p role="status">Loading cover uploads...</p>
+  } @if (media.listError()) {
+  <p role="alert">{{ media.listError() }}</p>
+  } @if (!media.loading() && !media.listError() && !media.items().length) {
+  <p>No retained cover uploads for this article.</p>
+  } @for (upload of media.items(); track upload.id) {
+  <section class="cover-upload" [attr.aria-label]="'Cover upload ' + upload.id">
+    <div class="cover-heading">
+      <h3>
+        {{
+          upload.status === 'ready' ? 'Ready cover' : 'Reserved cover upload'
+        }}
+      </h3>
+      <p>Created {{ upload.createdAt | date : 'medium' }}</p>
+    </div>
+    @if (upload.status === 'pending') {
+    <p>
+      Choose the same file to finish this upload. Reservation expires
+      {{ upload.expiresAt | date : 'medium' }}.
+    </p>
+    <label [for]="'cover-resume-' + upload.id">Resume reserved cover</label>
+    <input
+      [id]="'cover-resume-' + upload.id"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      [disabled]="disabled() || media.blocked()"
+      (change)="resume($event, upload)"
+    />
+    } @else { @if (previewing() === upload.id) {
+    <article-cover-image
+      [target]="{ kind: 'upload', id: upload.id }"
+      alt="Uploaded article cover preview"
+    />
+    }
+    <div class="cover-actions">
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="previewing.set(previewing() === upload.id ? null : upload.id)"
+      >
+        {{
+          previewing() === upload.id
+            ? 'Hide cover preview'
+            : 'Preview cover upload'
+        }}
+      </button>
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        [disabled]="
+          disabled() || media.blocked() || cover()?.imageId === upload.id
+        "
+        (click)="select(upload)"
+      >
+        Use this cover
+      </button>
+    </div>
+    }
+    <button
+      tuiButton
+      size="s"
+      appearance="flat"
+      type="button"
+      [disabled]="
+        disabled() || media.blocked() || cover()?.imageId === upload.id
+      "
+      (click)="cancellation.set(upload)"
+    >
+      Cancel unused cover upload
+    </button>
+  </section>
+  } @if (cancellation()) {
+  <section class="cover-upload" role="alert">
+    <h3>Cancel this unused upload?</h3>
+    <p>
+      Its bytes will be queued for cleanup. Covers still used by a saved draft,
+      latest submission or retained publication cannot be cancelled.
+    </p>
+    <div class="cover-actions">
+      <button
+        tuiButton
+        size="s"
+        type="button"
+        [disabled]="disabled() || media.blocked()"
+        (click)="confirmCancel()"
+      >
+        Confirm cover cancellation
+      </button>
+      <button
+        tuiButton
+        size="s"
+        appearance="secondary"
+        type="button"
+        (click)="cancellation.set(null)"
+      >
+        Keep cover upload
+      </button>
+    </div>
+  </section>
+  }
+</div>

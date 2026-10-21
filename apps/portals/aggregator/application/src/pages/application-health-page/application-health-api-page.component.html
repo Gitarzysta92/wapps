@@ -1,0 +1,96 @@
+<ui-page-header class="page-header">
+  @if (app.isLoading()) {
+    <ui-breadcrumbs-skeleton class="breadcrumbs-skeleton" slot="top-bar" />
+  } @else {
+    <ui-breadcrumbs class="breadcrumbs" slot="top-bar" [breadcrumbs]="breadcrumbs()" />
+  }
+  @if (app.isLoading()) {
+    <ui-page-title-skeleton class="page-title-skeleton" slot="title" />
+  } @else {
+    <h1 uiPageTitle class="page-title" slot="title"><tui-icon icon="@tui.heart-pulse" /> System Health</h1>
+  }
+  <ng-container slot="meta">
+  @if (app.isLoading() || (app.application() && health.loading())) {
+    <ui-page-meta-skeleton />
+  } @else { @if (view(); as data) {
+    <ui-page-meta><health-check-badge [status]="data.badge" /></ui-page-meta>
+  } }
+  </ng-container>
+  <button tuiButton slot="actions" type="button" size="s" appearance="secondary" [disabled]="app.isLoading() || (app.application() && health.loading())" (click)="refresh()">Refresh checks</button>
+</ui-page-header>
+<div class="health-content" [attr.aria-busy]="app.isLoading() || (app.application() && health.loading())" aria-label="Application HTTP health">
+  @if (!app.application()) {
+    <application-content-state [reader]="app" />
+  } @else if (health.loading()) {
+    <p role="status">Loading HTTP observations...</p>
+    <ui-medium-card-skeleton tuiAppearance="card-elevated" />
+    <section class="health-section">
+      <h2 class="section-title"><span tuiAppearance="accent-bar-indigo"></span>30-Day Status History</h2>
+      <div class="history-skeleton"></div>
+    </section>
+    <section class="health-section">
+      <h2 class="section-title"><span tuiAppearance="accent-bar-warm"></span>Service Status</h2>
+      <div class="services-grid">@for (i of [1, 2, 3]; track i) { <ui-medium-card-skeleton tuiAppearance="card-elevated" /> }</div>
+    </section>
+  } @else if (health.notFound()) {
+    <ui-content-state title="Application not found" description="This application is unavailable or no longer public." icon="@tui.box"><a tuiButton routerLink="/app" appearance="secondary">Browse applications</a></ui-content-state>
+  } @else if (health.error()) {
+    <ui-content-state title="Observations unavailable" [description]="health.error()" icon="@tui.circle-alert" [error]="true"><button tuiButton type="button" (click)="refresh()">Retry checks</button></ui-content-state>
+  } @else { @if (view(); as data) {
+    <p class="health-description">Checks measure configured public HTTP endpoints every five minutes. They do not verify every internal service. Missing and inconclusive checks remain unknown. This page refreshes every minute.</p>
+    <section class="health-summary" aria-label="Current endpoint status">
+      @if (data.services.length) {
+        <health-status-banner [status]="data.status" [message]="data.message" [timestamp]="data.asOf" />
+      } @else {
+        <ui-content-state title="Health unknown" description="No eligible HTTP checks are configured for this application. No uptime is assumed." icon="@tui.circle-help" />
+      }
+    </section>
+    <section class="health-section" aria-labelledby="health-history-title">
+      <h2 class="section-title" id="health-history-title"><span tuiAppearance="accent-bar-indigo"></span>30-Day Status History</h2>
+      @if (data.history.length) {
+        <status-history [statusesHistory]="data.history" />
+        <p class="health-history-dates"><span>{{ data.history[0].timestamp | date:'MMM d':'UTC' }}</span><span>Today (UTC)</span></p>
+        <p class="health-legend">Across monitored endpoints. A day is responding only when every interval was measured successfully. Slow or failed checks show the observed issue; incomplete history remains unknown.</p>
+      } @else {
+        <ui-content-state title="History unavailable" description="Daily history will appear when HTTP checks are configured." icon="@tui.clock" />
+      }
+    </section>
+    <section class="health-section" aria-labelledby="health-services-title">
+      <h2 class="section-title" id="health-services-title"><span tuiAppearance="accent-bar-warm"></span>Service Status</h2>
+      <div class="services-grid">
+        @for (service of data.services; track service.id) {
+          <ui-medium-card class="service-card health-monitor" tuiAppearance="card-elevated" [attr.data-monitor]="service.id">
+            <div class="service-header" slot="header">
+              <span class="service-name">{{ service.name }}</span>
+              <span class="service-status" [class.operational]="service.status === 'operational'" [class.degraded]="service.status === 'degraded'" [class.outage]="service.status === 'outage'" [class.unknown]="service.status === 'unknown'" [class.stale]="service.status === 'stale'" [attr.data-status]="service.status"><tui-icon [icon]="service.icon" />{{ service.label }}</span>
+            </div>
+            <div class="service-uptime">
+              <div class="uptime-bar" aria-hidden="true">@if (service.availabilityPercent !== null) { <div class="uptime-fill" [style.width.%]="service.availabilityPercent"></div> }</div>
+              <span class="uptime-value">{{ service.availabilityPercent === null ? 'Unknown sampled availability' : (service.availabilityPercent | number:'1.0-2') + '% sampled availability' }}</span>
+              <p class="health-coverage">{{ service.measured }} / {{ service.expected }} five-minute intervals measured</p>
+            </div>
+            <details class="health-details">
+              <summary class="service-info"><tui-icon icon="@tui.info" /><span>View detailed metrics</span></summary>
+              <div class="health-evidence">
+                <p class="health-url">{{ service.url }}</p>
+                @if (service.latest; as latest) {
+                  <p>{{ service.reason }}</p>
+                  @if (latest.httpStatus !== null || latest.durationMs !== null) { <p class="health-http">@if (latest.httpStatus !== null) { <span>HTTP {{ latest.httpStatus }}</span> } @if (latest.durationMs !== null) { <span>Response time: {{ latest.durationMs }} ms</span> }</p> }
+                  <p>Last observed {{ latest.observedAt | date:'medium':'UTC' }} UTC.@if (service.status === 'stale') { <strong> No recent result is available.</strong> }</p>
+                } @else { <p>No observation has been recorded for this configuration.</p> }
+                <status-history [statusesHistory]="service.history" />
+                <p class="health-detail">Thirty UTC calendar days, including today. Slow successful responses count as available. Unknown checks and missing intervals are excluded from sampled availability; coverage is shown separately.</p>
+              </div>
+            </details>
+          </ui-medium-card>
+        } @empty {
+          <ui-content-state title="No configured services" description="There are no eligible HTTP endpoints to display." icon="@tui.heart-pulse" />
+        }
+      </div>
+    </section>
+    <section class="health-section" aria-labelledby="health-notices-title">
+      <h2 class="section-title" id="health-notices-title"><span tuiAppearance="accent-bar-indigo"></span>Recent Notices</h2>
+      <ui-content-state title="Notices unavailable" description="The health service does not yet provide incident or maintenance notices." icon="@tui.file-text" />
+    </section>
+  } }
+</div>

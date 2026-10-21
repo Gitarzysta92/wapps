@@ -4,42 +4,32 @@
   "projectType": "library",
   "prefix": "ui",
   "sourceRoot": "libs/ui/cover-image/src",
-  "tags": ["type:ui", "scope:cover-image"],
+  "tags": [
+    "type:ui",
+    "scope:cover-image",
+    "arch:ui"
+  ],
   "targets": {
     "build": {
-      "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "executor": "@nx/angular:package",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
       "options": {
-        "project": "libs/ui/cover-image/ng-package.json"
+        "project": "libs/ui/cover-image/ng-package.json",
+        "tsConfig": "libs/ui/cover-image/tsconfig.lib.json"
       },
       "configurations": {
-        "production": {
-          "tsConfig": "libs/ui/cover-image/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "libs/ui/cover-image/tsconfig.lib.json"
-        }
+        "production": {},
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "libs/ui/cover-image/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     }
   }
 }
-

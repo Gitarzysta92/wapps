@@ -1,0 +1,60 @@
+@let job = exporter.job();
+<section class="export-content" aria-labelledby="account-export-title" [attr.aria-busy]="!!exporter.busy()">
+  <div class="export-heading">
+    <h3 id="account-export-title">Export Your Account Data</h3>
+    <p>Prepare a private archive of your retained account, credential profile, publications, drafts, media and discussion data. Passwords, tokens and other members' private data are excluded.</p>
+    <p>The download is gzip-compressed JSON Lines. Each service captures its own consistent snapshot. Archives expire 24 hours after the request; preparing another is limited to six requests per day.</p>
+  </div>
+  @if (!exporter.signedIn()) {
+    <p>Sign in to manage your account export.</p>
+  } @else {
+    <div aria-live="polite" role="status">
+      @if (exporter.busy() === 'read') {
+        <p>Checking export status...</p>
+      } @else if (!exporter.loaded()) {
+        <p>Current export status is unavailable.</p>
+      } @else if (job) {
+        @switch (job.status) {
+          @case ('queued') {
+            <p>{{ job.attempts > 0 ? 'Waiting to retry after an interrupted capture.' : 'Your export is queued.' }} This page checks progress automatically.</p>
+          }
+          @case ('building') {
+            <p>Preparing your archive. Attempt {{ job.attempts }} of 6. You can leave this page and return later.</p>
+          }
+          @case ('ready') {
+            <p>Your archive is ready. Download size: {{ (job.bytes || 0) / 1024 | number:'1.0-1' }} KiB.</p>
+            <p>Available until {{ job.expiresAt | date:'medium' }}.</p>
+          }
+          @case ('cancelled') { <p>The export was cancelled and its archive removed.</p> }
+          @case ('expired') { <p>This export has expired. Request a new snapshot when you need it.</p> }
+          @case ('failed') {
+            @switch (job.failure) {
+              @case ('limit-exceeded') { <p>The export exceeded its size or time limits. Contact support if a new request also fails.</p> }
+              @case ('account-unavailable') { <p>The export stopped because the account became unavailable. Check your account status.</p> }
+              @case ('invalid-source') { <p>The source data could not be verified, so no archive was released. Contact support if this persists.</p> }
+              @default { <p>The export failed after repeated source errors. You can request a new snapshot.</p> }
+            }
+          }
+        }
+      } @else { <p>You have no account export yet.</p> }
+    </div>
+    @if (exporter.feedback()) { <p [attr.role]="exporter.error() ? 'alert' : 'status'">{{ exporter.feedback() }}</p> }
+    @if (exporter.busy() === 'download') { <p role="status">Downloading and verifying the archive. Keep this page open.</p> }
+    <div class="export-actions">
+      @if (!exporter.active() || exporter.uncertain()) {
+        <button tuiButton appearance="secondary" type="button" [disabled]="!exporter.canRequest()" (click)="exporter.request()">
+          {{ exporter.busy() === 'request' ? 'Requesting...' : exporter.uncertain() ? 'Retry Same Export Request' : 'Request Account Export' }}
+        </button>
+      }
+      @if (exporter.job()?.status === 'ready') {
+        <button tuiButton appearance="secondary" iconStart="@tui.download" type="button" [disabled]="!!exporter.busy() || !exporter.loaded()" (click)="exporter.download()">Download Account Archive</button>
+      }
+      <button tuiButton appearance="flat" type="button" [disabled]="!!exporter.busy()" (click)="exporter.refresh()">Refresh Export Status</button>
+      @if (exporter.active()) {
+        <button tuiButton appearance="flat" type="button" [disabled]="!!exporter.busy() || !exporter.loaded()" (click)="exporter.cancel()">
+          {{ exporter.busy() === 'cancel' ? 'Removing...' : exporter.job()?.status === 'ready' ? 'Remove Account Archive' : 'Cancel Account Export' }}
+        </button>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,3 @@
+@use './application-reviews-page.component';
+@use '../page-layout' as page;
+.review-page { @include page.content; }

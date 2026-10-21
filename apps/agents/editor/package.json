@@ -2,13 +2,15 @@
   "name": "editor-agent",
   "version": "0.0.1",
   "dependencies": {
-    "amqplib": "^0.10.3",
     "dotenv": "^16.5.0",
     "axios": "^1.6.0",
     "openai": "^4.77.3",
-    "tslib": "^2.6.0"
+    "@domains/catalog/record": "0.0.1",
+    "@domains/catalog/category": "0.0.1",
+    "@sdk/kernel/standard": "0.0.1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.0"
-  }
+  },
+  "private": true
 }

@@ -1,0 +1,35 @@
+{
+  "name": "domains-community",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "prefix": "domains",
+  "sourceRoot": "libs/domains/community/src",
+  "tags": ["type:domain", "scope:discussion", "arch:domain"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/libs/domains/community"],
+      "options": {
+        "command": "tsc --build libs/domains/community/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/domains/community/jest.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit -p libs/domains/community/tsconfig.spec.json"
+      }
+    }
+  }
+}

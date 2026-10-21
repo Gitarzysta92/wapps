@@ -5,7 +5,8 @@
   "projectType": "library",
   "tags": [
     "type:lib",
-    "scope:opa"
+    "scope:opa",
+    "arch:adapter"
   ],
   "targets": {
     "build": {

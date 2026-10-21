@@ -1,9 +1,15 @@
-import { Component, ChangeDetectionStrategy, input, inject, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  inject,
+  computed,
+} from '@angular/core';
 import { CommonSidebarComponent } from '../common-sidebar/common-sidebar.component';
 import { NavigationDeclarationDto } from '@portals/shared/boundary/navigation';
-import { APPLICATION_OVERVIEW_PROVIDER } from '@portals/shared/features/application-overview';
+import { ApplicationOverviewService } from '@portals/shared/features/application-overview';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { switchMap, map, catchError, of } from 'rxjs';
+import { switchMap, catchError, of, startWith, map } from 'rxjs';
 
 @Component({
   selector: 'application-common-sidebar',
@@ -14,31 +20,47 @@ import { switchMap, map, catchError, of } from 'rxjs';
       [navigation]="navigation()"
       [navigationSecondary]="navigationSecondary()"
       [navigationAvatar]="navigationAvatar()"
-      [alignment]="alignment()" />
+      [alignment]="alignment()"
+    />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonSidebarComponent]
+  imports: [CommonSidebarComponent],
 })
 export class ApplicationCommonSidebarComponent {
   public readonly appSlug = input.required<string>();
-  public readonly navigationAvatar = input<NavigationDeclarationDto | null>(null);
+  public readonly navigationAvatar = input<NavigationDeclarationDto | null>(
+    null
+  );
   public readonly isExpanded = input<boolean>(false);
   public readonly navigation = input<NavigationDeclarationDto[]>([]);
   public readonly navigationSecondary = input<NavigationDeclarationDto[]>([]);
   public readonly alignment = input<'start' | 'end'>('end');
 
-  private readonly overviewProvider = inject(APPLICATION_OVERVIEW_PROVIDER);
+  private readonly overviewProvider = inject(ApplicationOverviewService);
 
-  private readonly overview$ = toObservable(this.appSlug).pipe(
-    switchMap(slug => this.overviewProvider.getOverview(slug).pipe(
-      map(result => result.ok ? result.value : null),
-      catchError(() => of(null))
-    ))
+  private readonly overview$ = toObservable(
+    computed(() => ({
+      slug: this.appSlug(),
+      choice: this.overviewProvider.contentChoice(),
+    }))
+  ).pipe(
+    switchMap(({ slug, choice }) =>
+      this.overviewProvider.getOverview(slug).pipe(
+        map((record) => ({ record, slug, choice })),
+        catchError(() => of(null)),
+        startWith(null)
+      )
+    )
   );
 
   private readonly overview = toSignal(this.overview$, { initialValue: null });
 
-  protected readonly avatarPath = computed(() => this.overview()?.logo ?? null);
+  protected readonly avatarPath = computed(() => {
+    const result = this.overview();
+    return result?.choice === this.overviewProvider.contentChoice() &&
+      result?.slug === this.appSlug()
+      ? result?.record.logo ?? '@tui.box'
+      : '@tui.box';
+  });
 }
-

@@ -1,3 +1,5 @@
+import { provideIdentityLoginFeature } from '@portals/shared/features/identity';
+import { LOGIN_VALIDATION_MESSAGES } from '@portals/shared/data';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -6,11 +8,11 @@ import { firstValueFrom } from 'rxjs';
 import { DEFAULT_CUSTOMER_PREFERENCES } from '@domains/customer/preferences';
 import { DEFAULT_PROFILE } from '@portals/shared/data';
 import {
-  PreferencesApiService, PreferencesService, PREFERENCES_STORAGE_KEY,
+  PreferencesDemoService, PreferencesService, PREFERENCES_STORAGE_KEY,
   providePreferencesFeature
 } from '@portals/shared/features/preferences';
 import {
-  MyProfileApiService, MyProfileService, MY_PROFILE_VIEW_STATE_PROVIDER,
+  MyProfileDemoService, MyProfileService, MY_PROFILE_VIEW_STATE_PROVIDER,
   PROFILE_STORAGE_KEY, provideMyProfileFeature
 } from '@portals/shared/features/my-profile';
 import { SettingsProfilePageComponent } from './settings-profile.component';
@@ -22,19 +24,20 @@ describe('Local account settings', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({ providers: [
+        ...provideIdentityLoginFeature({ mode: 'demo', authBffUrl: '', accountApiUrl: '', validationMessages: LOGIN_VALIDATION_MESSAGES }).providers,
       provideRouter([]), provideHttpClient(), provideNoopAnimations(),
-      ...providePreferencesFeature({ apiBaseUrl: '' }).providers,
-      ...provideMyProfileFeature({ apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers
+      ...providePreferencesFeature({ mode: 'demo', apiBaseUrl: '' }).providers,
+      ...provideMyProfileFeature({ mode: 'demo', apiBaseUrl: '', avatarBaseUrl: '', guestProfile: DEFAULT_PROFILE }).providers
     ] });
   });
   afterEach(() => { jest.restoreAllMocks(); TestBed.resetTestingModule(); });
 
   it('persists preferences across service instances without replacing unrelated sections', async () => {
-    const api = new PreferencesApiService();
+    const api = new PreferencesDemoService();
     await firstValueFrom(api.updatePrivacyPreferences({ showEmail: true }));
     await firstValueFrom(api.updateDisplayPreferences({ theme: 'dark' }));
     await firstValueFrom(api.updateDisplayPreferences({ itemsPerPage: 50 }));
-    const result = await firstValueFrom(new PreferencesApiService().getPreferences());
+    const result = await firstValueFrom(new PreferencesDemoService().getPreferences());
     expect(result).toEqual({ ok: true, value: {
       ...DEFAULT_CUSTOMER_PREFERENCES,
       display: { ...DEFAULT_CUSTOMER_PREFERENCES.display, theme: 'dark', itemsPerPage: 50 },
@@ -44,7 +47,7 @@ describe('Local account settings', () => {
 
   it('restores missing nested fields and does not mutate defaults', async () => {
     localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify({ notifications: { email: { enabled: false } } }));
-    const result = await firstValueFrom(new PreferencesApiService().getPreferences());
+    const result = await firstValueFrom(new PreferencesDemoService().getPreferences());
     if (!result.ok) throw result.error;
     expect(result.value.notifications.email.enabled).toBe(false);
     expect(result.value.notifications.email.frequency).toBe('daily');
@@ -54,11 +57,11 @@ describe('Local account settings', () => {
 
   it('reports corrupt data and unavailable storage without overwriting records', async () => {
     localStorage.setItem(PREFERENCES_STORAGE_KEY, '{broken');
-    expect((await firstValueFrom(new PreferencesApiService().getPreferences())).ok).toBe(false);
-    expect((await firstValueFrom(new PreferencesApiService().updateDisplayPreferences({ theme: 'dark' }))).ok).toBe(false);
+    expect((await firstValueFrom(new PreferencesDemoService().getPreferences())).ok).toBe(false);
+    expect((await firstValueFrom(new PreferencesDemoService().updateDisplayPreferences({ theme: 'dark' }))).ok).toBe(false);
     expect(localStorage.getItem(PREFERENCES_STORAGE_KEY)).toBe('{broken');
     jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('blocked'); });
-    expect((await firstValueFrom(new MyProfileApiService().getMyProfile())).ok).toBe(false);
+    expect((await firstValueFrom(new MyProfileDemoService().getMyProfile())).ok).toBe(false);
   });
 
   it('publishes successful profile changes globally, including avatar removal and reload', async () => {
@@ -70,7 +73,7 @@ describe('Local account settings', () => {
     expect(view.avatar()).toBe(profile.avatar.uri);
     await firstValueFrom(service.updateProfile({ ...profile, avatar: undefined }));
     expect(view.avatar()).toBe(null);
-    expect(await firstValueFrom(new MyProfileApiService().getMyProfile())).toEqual({ ok: true, value: { ...profile, avatar: undefined } });
+    expect(await firstValueFrom(new MyProfileDemoService().getMyProfile())).toEqual({ ok: true, value: { ...profile, avatar: undefined } });
   });
 
   it('keeps shared profile and preferences unchanged when storage is full', async () => {
@@ -209,7 +212,7 @@ describe('Local account settings', () => {
     expect(page['isReadingAvatar']()).toBe(false);
     expect(localStorage.getItem(PROFILE_STORAGE_KEY)).toBe(null);
     await page['onSave']();
-    const result = await firstValueFrom(new MyProfileApiService().getMyProfile());
+    const result = await firstValueFrom(new MyProfileDemoService().getMyProfile());
     if (!result.ok) throw result.error;
     expect(result.value.avatar?.uri).toBe(page['avatarUri']());
     expect(TestBed.inject(MY_PROFILE_VIEW_STATE_PROVIDER).avatar()).toBe(page['avatarUri']());
@@ -219,7 +222,7 @@ describe('Local account settings', () => {
     SettingsProfilePageComponent, SettingsPreferencesPageComponent,
     SettingsNotificationsPageComponent, SettingsPrivacyPageComponent
   ])('renders settings template %p with working save controls', async component => {
-    const fixture = TestBed.createComponent(component);
+    const fixture = TestBed.createComponent<unknown>(component);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();

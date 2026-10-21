@@ -1,8 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
-    "types": []
+    "outDir": "../../../dist/out-tsc/ui-form",
+    "types": [],
+    "declaration": true
   },
   "include": [
     "src/**/*.ts"
@@ -10,11 +11,10 @@
   "exclude": [
     "jest.config.ts",
     "src/**/*.spec.ts",
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/test-setup.ts"
   ],
-  "references": [
-    {
-      "path": "../../foundation/standard/tsconfig.lib.json"
-    }
-  ]
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
 }

@@ -1,0 +1,63 @@
+@use 'ui/design-system/src/styles' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+.mention-members {
+  display: grid;
+  gap: $space-3;
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+legend {
+  padding: 0 0 $space-2;
+  font-weight: $font-weight-bold;
+}
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.mention-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+.mention-selection,
+.mention-directory {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: $space-2;
+}
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  min-width: 0;
+}
+li > span,
+li > a {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+button {
+  flex-shrink: 0;
+  justify-self: start;
+}
+.mention-link {
+  display: grid;
+  gap: $space-2;
+}
+input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: $space-3 $space-4;
+  font: inherit;
+}

@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: wapps
 
 resources:
-  - ../../../../sdk/features/discussion/applications/management/provisioning/k8s
+  - ../../../../apps/services/community/provisioning/k8s
 
 patches:
   - path: deployment-patch.yaml
